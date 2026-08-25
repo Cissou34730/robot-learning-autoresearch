@@ -49,7 +49,7 @@ Improve the PPO policy for the `reach` task until it reaches:
 2. NEVER edit: `environments/`, `robots/`, `evaluate.py`, `play.py`,
    `normalization.py`, `viewer_callback.py`, `tests/`, this file, the driver script.
 3. NEVER change: success threshold, target radius range, training timesteps
-   (30000), seed (0), number of evaluation episodes (200), or evaluation seeds.
+   (60000), seed (0), number of evaluation episodes (200), or evaluation seeds.
    These define the task and the metric — changing them is cheating.
 4. No new files except inside `research/`. No new dependencies. No comments-heavy
    rewrites: keep changes small, targeted, readable.
@@ -70,7 +70,7 @@ Improve the PPO policy for the `reach` task until it reaches:
    If the diff is empty, you have NOT made the change — do not train.
    Record the diff summary in your EXPERIMENTS.md entry before training.
 5. Train:
-   `uv run python -m robot_learning.train --timesteps 30000 --seed 0`
+   `uv run python -m robot_learning.train --timesteps 60000 --seed 0`
 6. Evaluate using the model path printed at the end of training:
    `uv run python -m robot_learning.evaluate --model models/<run-dir>/model.zip --episodes 200`
 7. Immediately append the results to your EXPERIMENTS.md entry: success rate,
@@ -101,6 +101,23 @@ Improve the PPO policy for the `reach` task until it reaches:
     No prose between rows; notes go after the full table.
 - Long-form analysis belongs in `research/archive.md`, never in the main log.
 - Do not re-read files you have already read this session.
+
+## Budget change notice (experimenter decision, 2026-08-25 evening)
+
+The training budget was doubled: **30000 -> 60000 steps**. Rationale: experiments
+9 and 13 both falsified their hypotheses specifically because convergence needed
+more steps than 30k allows.
+
+Consequences you MUST respect:
+
+1. All previous scores were measured at 30k. They are NOT comparable with 60k
+   results.
+2. Your FIRST experiment under this notice is a **re-baseline**: re-run the
+   CURRENT COMMITTED configuration completely unchanged at 60k steps. Log it
+   as a normal experiment row (change: "re-baseline at 60k budget").
+3. Whatever the re-baseline scores becomes the new "Best so far" — even if it
+   is lower than 55%. Old numbers are retired, not compared against.
+4. Only after the re-baseline is logged may you test new hypotheses.
 
 ## Failure handling
 
