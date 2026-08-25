@@ -58,6 +58,8 @@ Improve the PPO policy for the `reach` task until it reaches:
 
 ## Protocol (follow in order)
 
+0. If `research/GOAL_REACHED` or `research/STAGNATED` already exists, stop
+   immediately without running anything.
 1. Run `git status`. If anything outside `research/EXPERIMENTS.md` is modified,
    run `git checkout -- robot_learning/` first. Always start from committed state.
 2. Read the last ~10 entries of `research/EXPERIMENTS.md` and `git log --oneline`.
