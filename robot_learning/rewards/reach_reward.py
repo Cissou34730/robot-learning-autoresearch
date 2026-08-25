@@ -3,6 +3,12 @@ import numpy as np
 PROGRESS_COEFFICIENT = 10.0
 SUCCESS_BONUS = 5.0
 ACTION_COST_COEFFICIENT = 0.05
+CLOSENESS_COEFFICIENT = 2.0
+CLOSENESS_LENGTH_SCALE = 0.05
+
+
+def _closeness_potential(distance: float) -> float:
+    return CLOSENESS_COEFFICIENT * float(np.exp(-distance / CLOSENESS_LENGTH_SCALE))
 
 
 def reach_reward(
@@ -12,6 +18,9 @@ def reach_reward(
     action: np.ndarray | None = None,
 ) -> float:
     reward = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
+    reward += _closeness_potential(current_distance) - _closeness_potential(
+        previous_distance
+    )
     if current_distance <= success_threshold:
         reward += SUCCESS_BONUS
     if action is not None:
