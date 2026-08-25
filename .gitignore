@@ -11,3 +11,6 @@ wheels/
 
 # Training results (timestamped runs, never silently overwritten)
 models/
+
+# Tooling caches
+.mypy_cache/

@@ -4,6 +4,14 @@ You are an autonomous research agent. This file is your complete instructions.
 Execute **exactly one experiment** per session, following the protocol below,
 then stop.
 
+## Environment notes
+
+- You are on **Windows PowerShell**, not bash: there is no `head`, `tail`,
+  `grep` or `&&`. Use `Select-Object -First 20`, `Select-String`, and separate
+  commands instead.
+- A modified `research/program.md` or `research/EXPERIMENTS.md` in git status
+  is normal and expected; never revert them.
+
 ## Mission
 
 Improve the PPO policy for the `reach` task until it reaches:
@@ -41,19 +49,22 @@ Improve the PPO policy for the `reach` task until it reaches:
    Understand what has been tried and what worked.
 3. Choose ONE change. Write your entry in `research/EXPERIMENTS.md` FIRST:
    experiment number, date, the change, and your hypothesis.
-4. Train:
+4. Make the actual code edit, then verify it exists: run `git diff --stat`.
+   If the diff is empty, you have NOT made the change — do not train.
+   Record the diff summary in your EXPERIMENTS.md entry before training.
+5. Train:
    `uv run python -m robot_learning.train --timesteps 30000 --seed 0`
-5. Evaluate using the model path printed at the end of training:
+6. Evaluate using the model path printed at the end of training:
    `uv run python -m robot_learning.evaluate --model models/<run-dir>/model.zip --episodes 200`
-6. Immediately append the results to your EXPERIMENTS.md entry: success rate,
+7. Immediately append the results to your EXPERIMENTS.md entry: success rate,
    mean distance, median distance.
-7. Apply the ratchet:
+8. Apply the ratchet:
    - **Improvement over best so far** → `git add robot_learning/rewards/reach_reward.py robot_learning/train.py`
      then `git commit -m "exp N: <one-line description> -> <X>%"`
    - **Equal or worse** → revert with `git checkout -- robot_learning/` AND delete
      the losing run directory under `models/`.
-8. Update the "Best so far" line at the top of `research/EXPERIMENTS.md`.
-9. If the new best is >= 98%: write a short summary to `research/GOAL_REACHED`
+9. Update the "Best so far" line at the top of `research/EXPERIMENTS.md`.
+10. If the new best is >= 98%: write a short summary to `research/GOAL_REACHED`
    and stop. The outer loop will not start new sessions after seeing this file.
 
 ## Failure handling
