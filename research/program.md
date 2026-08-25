@@ -81,6 +81,12 @@ Improve the PPO policy for the `reach` task until it reaches:
 9. Update the "Best so far" line at the top of `research/EXPERIMENTS.md`.
 10. If the new best is >= 98%: write a short summary to `research/GOAL_REACHED`
    and stop. The outer loop will not start new sessions after seeing this file.
+11. **Stagnation check**: look at the Verdict column of the results table. If the
+   last 5 completed experiments are ALL reverted or equal (no new best), write
+   `research/STAGNATED` containing: the current best config and score, the list
+   of lever classes tried and falsified, and your recommendation (e.g. "needs
+   longer training budget", "needs observation redesign"). Then stop. Do not
+   start an experiment you know is the 5th consecutive failure.
 
 ## Log discipline (keeps iterations fast — read this before writing anything)
 
