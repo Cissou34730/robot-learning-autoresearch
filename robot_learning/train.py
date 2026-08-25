@@ -3,6 +3,7 @@ import json
 import time
 from pathlib import Path
 
+import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
@@ -22,6 +23,11 @@ PPO_HYPERPARAMETERS = {
     "gamma": 0.99,
     "learning_rate": 3e-4,
     "gae_lambda": 0.95,
+}
+
+POLICY_KWARGS = {
+    "net_arch": [64, 64],
+    "activation_fn": torch.nn.Tanh,
 }
 
 
@@ -92,6 +98,7 @@ def main() -> None:
             seed=args.seed,
             verbose=1,
             tensorboard_log=tensorboard_log,
+            policy_kwargs=POLICY_KWARGS,
             **PPO_HYPERPARAMETERS,
         )
 
@@ -125,6 +132,7 @@ def main() -> None:
                     "seed": args.seed,
                     "resumed_from": str(args.resume) if args.resume else None,
                     "hyperparameters": PPO_HYPERPARAMETERS,
+                    "policy_kwargs": {k: str(v) for k, v in POLICY_KWARGS.items()},
                 },
                 indent=2,
             ),

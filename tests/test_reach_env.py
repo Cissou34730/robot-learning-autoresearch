@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.rewards import reach_reward as reach_reward_module
 from robot_learning.rewards.reach_reward import SUCCESS_BONUS, reach_reward
 from robot_learning.robots.two_joint_arm import MAX_REACH
 
@@ -68,6 +69,13 @@ def test_success_bonus_added_when_threshold_met():
     just_above = reach_reward(0.05, 0.03 + 1e-9, success_threshold=0.03)
     just_below = reach_reward(0.05, 0.03 - 1e-9, success_threshold=0.03)
     assert just_below - just_above == pytest.approx(SUCCESS_BONUS)
+
+
+def test_action_cost_penalizes_large_actions(monkeypatch):
+    monkeypatch.setattr(reach_reward_module, "ACTION_COST_COEFFICIENT", 1.0)
+    gentle = reach_reward(0.05, 0.04, success_threshold=0.03, action=np.full(2, 0.1))
+    violent = reach_reward(0.05, 0.04, success_threshold=0.03, action=np.full(2, 1.0))
+    assert violent < gentle
 
 
 def test_invalid_target_radius_range_rejected():

@@ -14,10 +14,15 @@ Improve the PPO policy for the `reach` task until it reaches:
 
 ## Hard rules (violating any of these invalidates the experiment)
 
-1. You may ONLY edit these two files:
-   - `robot_learning/rewards/reach_reward.py` — reward function and its coefficients
-   - `robot_learning/train.py` — ONLY the `PPO_HYPERPARAMETERS` dict and the env
-     construction kwargs in `main()` (e.g. `max_episode_steps`, `frame_skip`)
+1. You may ONLY edit these:
+   - `robot_learning/rewards/reach_reward.py` — reward function, its coefficients
+     and structure. The function receives the applied `action`, so energy or
+     stability penalties are possible via the action argument.
+   - `robot_learning/train.py` — ONLY these parts:
+     - the `PPO_HYPERPARAMETERS` dict (any valid SB3 PPO parameter)
+     - the `POLICY_KWARGS` dict (network architecture, activation function)
+     - the env construction kwargs in `main()` (e.g. `max_episode_steps`,
+       `frame_skip`)
 2. NEVER edit: `environments/`, `robots/`, `evaluate.py`, `play.py`,
    `normalization.py`, `viewer_callback.py`, `tests/`, this file, the driver script.
 3. NEVER change: success threshold, target radius range, training timesteps

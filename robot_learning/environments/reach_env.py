@@ -96,7 +96,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
-        reward = reach_reward(self._previous_distance, distance, self.success_threshold)
+        reward = reach_reward(
+            self._previous_distance, distance, self.success_threshold, action
+        )
         self._previous_distance = distance
 
         self._step_count += 1
