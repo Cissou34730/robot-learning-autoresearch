@@ -20,6 +20,7 @@ LOG_PATH = ROOT / "research" / "EXPERIMENTS.md"
 PROPOSAL_PATH = ROOT / "research" / "proposal.json"
 SENTINEL_DIR = ROOT / "research"
 CODE_DIR = "robot_learning"
+MODELS_DIR = ROOT / "models"
 
 TIMESTEPS = 60000
 EVAL_EPISODES = 200
@@ -30,8 +31,13 @@ STAGNATION_WINDOW = 5
 
 def git(*args: str) -> str:
     result = subprocess.run(
-        ["git", *args], cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-        errors="replace", check=False,
+        ["git", *args],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
     )
     if result.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
@@ -41,7 +47,11 @@ def git(*args: str) -> str:
 def run_module(module: str, *args: str) -> str:
     result = subprocess.run(
         [sys.executable, "-m", module, *args],
-        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
     if result.returncode != 0:
@@ -52,7 +62,9 @@ def run_module(module: str, *args: str) -> str:
 
 
 def next_index(log_text: str) -> int:
-    indices = [int(m) for m in re.findall(r"^\| (\d+) \|", log_text, flags=re.MULTILINE)]
+    indices = [
+        int(m) for m in re.findall(r"^\| (\d+) \|", log_text, flags=re.MULTILINE)
+    ]
     return max(indices, default=0) + 1
 
 
@@ -111,34 +123,76 @@ def main() -> int:
         if "failed" in checks:
             raise RuntimeError("pytest reported failures")
 
-        print(f"Training ({args.timesteps} steps, seed {TRAIN_SEED})...")
-        train_out = run_module(
-            "robot_learning.train",
-            "--timesteps", str(args.timesteps),
-            "--seed", str(TRAIN_SEED),
-        )
-        match = re.search(r"Model saved to (.+)model\.zip", train_out)
-        if not match:
-            raise RuntimeError("could not locate saved model path in trainer output")
-        model_dir = Path(match.group(1))
-        model_zip = f"{match.group(1)}model.zip"
+        print(f"[runner] training started: {args.timesteps} steps, seed {TRAIN_SEED}")
+        print("[runner] progress updates every 15 s (checkpoints every 5k steps)")
+        started = time.time()
+        train_log = ROOT / "research" / "last_train.log"
+        with train_log.open("w", encoding="utf-8") as log_file:
+            process = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-m",
+                    "robot_learning.train",
+                    "--timesteps",
+                    str(args.timesteps),
+                    "--seed",
+                    str(TRAIN_SEED),
+                ],
+                cwd=ROOT,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            last_reported = -1
+            while process.poll() is None:
+                time.sleep(15)
+                candidates = [
+                    p
+                    for p in MODELS_DIR.glob("*/checkpoints/reach_*_steps.zip")
+                    if p.stat().st_mtime >= started
+                ]
+                if candidates:
+                    latest = max(
+                        int(re.search(r"_(\d+)_steps\.zip$", p.name).group(1))
+                        for p in candidates
+                    )
+                    if latest > last_reported:
+                        elapsed = time.time() - started
+                        print(
+                            f"[train] {latest} / {args.timesteps} steps "
+                            f"({elapsed:.0f}s elapsed)"
+                        )
+                        last_reported = latest
+        if process.returncode != 0:
+            tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
+            raise RuntimeError("training failed:\n" + "\n".join(tail))
 
-        print(f"Evaluating ({EVAL_EPISODES} episodes)...")
+        run_dirs = sorted(MODELS_DIR.glob("reach-*"), key=lambda p: p.stat().st_mtime)
+        model_dir = run_dirs[-1]
+        model_zip = str(model_dir / "model.zip")
+        print(f"[runner] training done in {time.time() - started:.0f}s")
+
+        print(f"[runner] evaluating on {EVAL_EPISODES} fresh episodes (~1-2 min)...")
+        eval_started = time.time()
         eval_out = run_module(
             "robot_learning.evaluate",
-            "--model", model_zip,
-            "--episodes", str(EVAL_EPISODES),
+            "--model",
+            model_zip,
+            "--episodes",
+            str(EVAL_EPISODES),
         )
-        rate = re.search(r"Success rate: \d+/\d+ \((\d+(?:\.\d+)?)%\)", eval_out)
-        dists = re.search(
-            r"mean (\d+(?:\.\d+)?), median (\d+(?:\.\d+)?)", eval_out
-        )
+        rate = re.search(r"Success rate: (\d+)/(\d+) \((\d+(?:\.\d+)?)%\)", eval_out)
+        dists = re.search(r"mean (\d+(?:\.\d+)?), median (\d+(?:\.\d+)?)", eval_out)
         if not rate or not dists:
             raise RuntimeError("could not parse evaluation output")
 
-        success = float(rate.group(1))
+        success = float(rate.group(3))
         mean_dist = dists.group(1)
         median_dist = dists.group(2)
+        print(
+            f"[runner] evaluation done in {time.time() - eval_started:.0f}s: "
+            f"{success:g}% success"
+        )
 
     except Exception as error:  # noqa: BLE001
         git("checkout", "--", CODE_DIR)
@@ -148,7 +202,7 @@ def main() -> int:
         )
         LOG_PATH.write_text(append_row(log_text, row), encoding="utf-8")
         PROPOSAL_PATH.unlink(missing_ok=True)
-        print(f"SUMMARY: {{\"status\": \"error\", \"index\": {index}}}")
+        print(f'SUMMARY: {{"status": "error", "index": {index}}}')
         return 1
 
     improved = success > best_before
@@ -209,6 +263,16 @@ def main() -> int:
         )
         summary["sentinel"] = "STAGNATED"
 
+    print("=" * 60)
+    print(
+        f"Experiment {index} finished: {success:g}% success "
+        f"(previous best {best_before:g}%)"
+    )
+    print(f"Change tested : {change}")
+    print(f"Verdict       : {verdict}" + ("  -> committed to git" if improved else ""))
+    if "sentinel" in summary:
+        print(f"Loop outcome  : {summary['sentinel']}")
+    print("=" * 60)
     print("SUMMARY: " + json.dumps(summary))
     return 0
 
