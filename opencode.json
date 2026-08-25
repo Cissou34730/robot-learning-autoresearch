@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/x-preview-f-free",
   "permission": {
     "edit": "allow",
     "bash": { "*": "allow" },
