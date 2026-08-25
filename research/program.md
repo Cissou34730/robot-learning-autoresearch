@@ -1,0 +1,68 @@
+# RL Research Program
+
+You are an autonomous research agent. This file is your complete instructions.
+Execute **exactly one experiment** per session, following the protocol below,
+then stop.
+
+## Mission
+
+Improve the PPO policy for the `reach` task until it reaches:
+
+> **success rate >= 98%** measured by
+> `uv run python -m robot_learning.evaluate --model models/<run>/model.zip --episodes 200`
+> (fixed evaluation seeds, threshold 3 cm)
+
+## Hard rules (violating any of these invalidates the experiment)
+
+1. You may ONLY edit these two files:
+   - `robot_learning/rewards/reach_reward.py` — reward function and its coefficients
+   - `robot_learning/train.py` — ONLY the `PPO_HYPERPARAMETERS` dict and the env
+     construction kwargs in `main()` (e.g. `max_episode_steps`, `frame_skip`)
+2. NEVER edit: `environments/`, `robots/`, `evaluate.py`, `play.py`,
+   `normalization.py`, `viewer_callback.py`, `tests/`, this file, the driver script.
+3. NEVER change: success threshold, target radius range, training timesteps
+   (30000), seed (0), number of evaluation episodes (200), or evaluation seeds.
+   These define the task and the metric — changing them is cheating.
+4. No new files except inside `research/`. No new dependencies. No comments-heavy
+   rewrites: keep changes small, targeted, readable.
+5. One variable change per experiment. If you want to try two things, that is two
+   experiments.
+
+## Protocol (follow in order)
+
+1. Run `git status`. If anything outside `research/EXPERIMENTS.md` is modified,
+   run `git checkout -- robot_learning/` first. Always start from committed state.
+2. Read the last ~10 entries of `research/EXPERIMENTS.md` and `git log --oneline`.
+   Understand what has been tried and what worked.
+3. Choose ONE change. Write your entry in `research/EXPERIMENTS.md` FIRST:
+   experiment number, date, the change, and your hypothesis.
+4. Train:
+   `uv run python -m robot_learning.train --timesteps 30000 --seed 0`
+5. Evaluate using the model path printed at the end of training:
+   `uv run python -m robot_learning.evaluate --model models/<run-dir>/model.zip --episodes 200`
+6. Immediately append the results to your EXPERIMENTS.md entry: success rate,
+   mean distance, median distance.
+7. Apply the ratchet:
+   - **Improvement over best so far** → `git add robot_learning/rewards/reach_reward.py robot_learning/train.py`
+     then `git commit -m "exp N: <one-line description> -> <X>%"`
+   - **Equal or worse** → revert with `git checkout -- robot_learning/` AND delete
+     the losing run directory under `models/`.
+8. Update the "Best so far" line at the top of `research/EXPERIMENTS.md`.
+9. If the new best is >= 98%: write a short summary to `research/GOAL_REACHED`
+   and stop. The outer loop will not start new sessions after seeing this file.
+
+## Failure handling
+
+- A command fails or crashes? Record what happened as the experiment result,
+  revert your code changes (`git checkout -- robot_learning/`), update
+  EXPERIMENTS.md, and stop. The next session will pick up from clean state.
+- Never leave the repo in a modified state when stopping.
+
+## Research taste
+
+- Prefer structural insights over parameter jitter: if three coefficient tweaks
+  all failed, propose a *different kind* of change (observation design, reward
+  structure, exploration).
+- Small consistent gains beat rare big gambles: the ratchet only keeps wins.
+- Read the reward function before touching it; understand why the current shape
+  produces the observed behavior.
