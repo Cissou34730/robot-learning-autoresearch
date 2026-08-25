@@ -12,7 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
-from datetime import datetime
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,7 +31,7 @@ STAGNATION_WINDOW = 5
 def git(*args: str) -> str:
     result = subprocess.run(
         ["git", *args], cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-        errors="replace",
+        errors="replace", check=False,
     )
     if result.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
@@ -42,6 +42,7 @@ def run_module(module: str, *args: str) -> str:
     result = subprocess.run(
         [sys.executable, "-m", module, *args],
         cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        check=False,
     )
     if result.returncode != 0:
         raise RuntimeError(
@@ -51,7 +52,7 @@ def run_module(module: str, *args: str) -> str:
 
 
 def next_index(log_text: str) -> int:
-    indices = [int(m) for m in re.findall(r"^\| (\d+) \|", log_text, flags=re.M)]
+    indices = [int(m) for m in re.findall(r"^\| (\d+) \|", log_text, flags=re.MULTILINE)]
     return max(indices, default=0) + 1
 
 
@@ -73,7 +74,7 @@ def append_row(log_text: str, row: str) -> str:
 
 
 def recent_verdicts(log_text: str, window: int) -> list[str]:
-    rows = re.findall(r"^\| \d+ \|.+\|$", log_text, flags=re.M)
+    rows = re.findall(r"^\| \d+ \|.+\|$", log_text, flags=re.MULTILINE)
     verdicts = []
     for row_text in rows[-window:]:
         cells = [c.strip() for c in row_text.split("|")]
@@ -139,10 +140,10 @@ def main() -> int:
         mean_dist = dists.group(1)
         median_dist = dists.group(2)
 
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001
         git("checkout", "--", CODE_DIR)
         row = (
-            f"| {index} | {datetime.now():%Y-%m-%d} | {change} | {hypothesis} "
+            f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
             f"| - | - | - | error ({str(error)[:80]}) |"
         )
         LOG_PATH.write_text(append_row(log_text, row), encoding="utf-8")
@@ -160,7 +161,7 @@ def main() -> int:
         verdict = "reverted (worse)"
 
     row = (
-        f"| {index} | {datetime.now():%Y-%m-%d} | {change} | {hypothesis} "
+        f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
         f"| {success:g} | {mean_dist} | {median_dist} | {verdict} |"
     )
     log_text = append_row(log_text, row)
