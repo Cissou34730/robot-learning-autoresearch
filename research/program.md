@@ -12,6 +12,21 @@ then stop.
 - A modified `research/program.md` or `research/EXPERIMENTS.md` in git status
   is normal and expected; never revert them.
 
+## Repository map (do NOT waste turns re-discovering this)
+
+```
+robot_learning/
+├── rewards/reach_reward.py        # THE REWARD — your main editing surface
+├── train.py                       # PPO_HYPERPARAMETERS, POLICY_KWARGS, env kwargs (editable)
+│                                    also: VecNormalize setup, checkpointing, save logic (do NOT edit)
+├── environments/reach_env.py      # obs/action/episode logic — READ ONLY (context for hypotheses)
+├── robots/two_joint_arm.xml       # arm morphology — READ ONLY
+├── evaluate.py                    # the metric: 200 episodes, fixed seeds 1000+ — READ ONLY
+├── play.py                        # viewer — irrelevant to research
+└── training/                      # normalization/viewer plumbing — READ ONLY
+tests/test_reach_env.py             # must keep passing after any edit
+```
+
 ## Mission
 
 Improve the PPO policy for the `reach` task until it reaches:
