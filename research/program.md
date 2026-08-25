@@ -82,6 +82,18 @@ Improve the PPO policy for the `reach` task until it reaches:
 10. If the new best is >= 98%: write a short summary to `research/GOAL_REACHED`
    and stop. The outer loop will not start new sessions after seeing this file.
 
+## Log discipline (keeps iterations fast — read this before writing anything)
+
+- `EXPERIMENTS.md` is read by EVERY future session. Its size slows down all
+  research. Keep your additions tight:
+  - Hypothesis: **max 3 sentences**.
+  - Post-mortem note: **max 5 sentences**, only when a result teaches something
+    non-obvious.
+  - Exactly ONE table row per experiment, appended at the END of the table.
+    No prose between rows; notes go after the full table.
+- Long-form analysis belongs in `research/archive.md`, never in the main log.
+- Do not re-read files you have already read this session.
+
 ## Failure handling
 
 - A command fails or crashes? Record what happened as the experiment result,
