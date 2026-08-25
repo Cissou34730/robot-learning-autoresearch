@@ -18,10 +18,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def __init__(
         self,
-        max_episode_steps: int = 200,
+        max_episode_steps: int = 500,
         frame_skip: int = 10,
         target_radius_range: tuple[float, float] = (0.06, 0.20),
-        success_threshold: float = 0.03,
+        success_threshold: float = 0.01,
+        hold_seconds: float = 2.0,
     ) -> None:
         super().__init__()
         if not 0 < target_radius_range[1] <= MAX_REACH:
@@ -36,10 +37,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        control_dt = self.model.opt.timestep * self.frame_skip
+        self.hold_steps_required = round(hold_seconds / control_dt)
 
         n_joints = 2
         self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(2 * n_joints + 3 + 4,), dtype=np.float32
+            low=-np.inf,
+            high=np.inf,
+            shape=(2 * n_joints + 3 + 4 + 1,),
+            dtype=np.float32,
         )
         self.action_space = gym.spaces.Box(
             low=-1.0, high=1.0, shape=(n_joints,), dtype=np.float32
@@ -47,6 +53,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = 0.0
+        self._held_steps = 0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -99,6 +106,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self.data.qvel,
                 self._end_effector_position() - self.data.mocap_pos[0],
                 ik_deltas,
+                [self._held_steps / self.hold_steps_required],
             ]
         ).astype(np.float32)
 
@@ -114,6 +122,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
+        self._held_steps = 0
         return self._observation(), {}
 
     def step(
@@ -129,13 +138,28 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
+
+        if distance <= self.success_threshold:
+            self._held_steps += 1
+        else:
+            self._held_steps = 0
+
         reward = reach_reward(
-            self._previous_distance, distance, self.success_threshold, action
+            self._previous_distance,
+            distance,
+            self.success_threshold,
+            action,
+            held_steps=self._held_steps,
+            hold_steps_required=self.hold_steps_required,
         )
         self._previous_distance = distance
 
         self._step_count += 1
-        terminated = distance <= self.success_threshold
+        terminated = self._held_steps >= self.hold_steps_required
         truncated = self._step_count >= self.max_episode_steps
-        info = {"distance": distance, "is_success": terminated}
+        info = {
+            "distance": distance,
+            "is_success": terminated,
+            "held_steps": self._held_steps,
+        }
         return self._observation(), float(reward), terminated, truncated, info

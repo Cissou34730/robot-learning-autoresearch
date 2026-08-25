@@ -3,7 +3,7 @@ import pytest
 
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.rewards import reach_reward as reach_reward_module
-from robot_learning.rewards.reach_reward import SUCCESS_BONUS, reach_reward
+from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.robots.two_joint_arm import MAX_REACH
 
 
@@ -65,10 +65,29 @@ def test_reward_is_positive_when_closer_and_negative_when_farther():
     )
 
 
-def test_success_bonus_added_when_threshold_met():
-    just_above = reach_reward(0.05, 0.03 + 1e-9, success_threshold=0.03)
-    just_below = reach_reward(0.05, 0.03 - 1e-9, success_threshold=0.03)
-    assert just_below - just_above == pytest.approx(SUCCESS_BONUS)
+def test_dwell_bonus_grows_with_hold_progress():
+    early = reach_reward(
+        0.005, 0.005, success_threshold=0.01, held_steps=1, hold_steps_required=100
+    )
+    late = reach_reward(
+        0.005, 0.005, success_threshold=0.01, held_steps=99, hold_steps_required=100
+    )
+    assert late > early > 0
+
+
+def test_hold_completion_adds_final_bonus():
+    before = reach_reward(
+        0.005, 0.005, success_threshold=0.01, held_steps=99, hold_steps_required=100
+    )
+    after = reach_reward(
+        0.005, 0.005, success_threshold=0.01, held_steps=100, hold_steps_required=100
+    )
+    delta = after - before
+    expected = (
+        HOLD_COMPLETE_BONUS
+        + reach_reward_module.DWELL_BONUS_PER_STEP / 100
+    )
+    assert delta == pytest.approx(expected)
 
 
 def test_action_cost_penalizes_large_actions(monkeypatch):
@@ -81,3 +100,32 @@ def test_action_cost_penalizes_large_actions(monkeypatch):
 def test_invalid_target_radius_range_rejected():
     with pytest.raises(ValueError):
         TwoJointArmReachEnv(target_radius_range=(0.06, MAX_REACH + 0.1))
+
+
+def test_holding_target_terminates_episode_after_required_steps():
+    env = TwoJointArmReachEnv()
+    env.reset(seed=0)
+    env.data.mocap_pos[0] = env.data.site("end_effector").xpos.copy()
+    action = np.zeros(2)
+    done = False
+    steps = 0
+    while not done:
+        _, _, terminated, truncated, info = env.step(action)
+        done = terminated or truncated
+        steps += 1
+    assert terminated
+    assert not truncated
+    assert steps == env.hold_steps_required
+    assert info["held_steps"] == env.hold_steps_required
+
+
+def test_leaving_the_band_resets_the_hold_counter():
+    env = TwoJointArmReachEnv()
+    env.reset(seed=0)
+    env.data.mocap_pos[0] = env.data.site("end_effector").xpos.copy()
+    for _ in range(20):
+        _, _, _, _, info = env.step(np.zeros(2))
+    assert info["held_steps"] == 20
+    env.data.mocap_pos[0] = [0.30, 0.0, 0.0]
+    _, _, _, _, info = env.step(np.zeros(2))
+    assert info["held_steps"] == 0
