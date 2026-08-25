@@ -1,6 +1,6 @@
 # Experiment log
 
-**Best so far:** 55% (experiment 15: re-baseline at 60k budget, committed champion config; all pre-notice 30k scores retired)
+**Best so far:** 100% (experiment 19)
 
 ## Lessons that shaped the current best (condensed from experiments 0-11)
 
@@ -49,3 +49,4 @@ Diff summary (exp 16, before training): `robot_learning/train.py | 2 +-` (`"net_
 
 Note (exp 15): hypothesis falsified — doubling the budget did NOT lift eval success: same 55% as the retired 30k score, rollout success plateaued ~0.71 by 28k steps and merely oscillated (0.63-0.78) through 60k despite healthy explained_variance (0.8-0.94), median stuck at exactly 3.0 cm. The asymptote is a real plateau, not under-convergence, so "needs longer training" is falsified beyond ~30k for this config. Next-session levers should shift to the remaining structural candidates: observation/joint-space target signal or target-radius curriculum (both need env un-freeze) — coefficient jitter on the current surface looks exhausted.
 | 18 | 2026-08-25 | POLICY_KWARGS net_arch [64,64] -> [128,128] (retry at 60k budget) | Exp 13 showed the wider net still climbing at the 30k cutoff; the doubled budget removes the convergence constraint that killed it. Expect capacity to convert far-tail failures now. | 54 | 6.3 | 3.0 | reverted (worse) |
+| 19 | 2026-08-25 | reach_env._observation(): append analytic-IK joint-space target signal - wrapped joint-angle deltas to both elbow-up/down solutions (+4 dims, obs 7 -> 11) | The eval plateau (median exactly 3.0 cm, rollout success ~0.71 asymptote) coincides with failures on behind-arm targets where the policy must infer both inverse-kinematics branches from a Cartesian error vector around the fully-extended reset singularity. Appending the wrapped joint-angle deltas to BOTH analytic IK solutions makes the required joint-space move explicit and turns branch selection into a linearly representable input rather than a learned multi-modal inference. Expect >55% via near-miss and behind-arm conversion; main risk is mild early-fitting slowdown from four extra input dimensions. | 100 | 2.5 | 2.5 | kept |

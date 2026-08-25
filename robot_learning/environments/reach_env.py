@@ -5,7 +5,12 @@ import mujoco
 import numpy as np
 
 from robot_learning.rewards.reach_reward import reach_reward
-from robot_learning.robots.two_joint_arm import MAX_REACH, TWO_JOINT_ARM_XML_PATH
+from robot_learning.robots.two_joint_arm import (
+    FOREARM_LENGTH,
+    MAX_REACH,
+    TWO_JOINT_ARM_XML_PATH,
+    UPPER_ARM_LENGTH,
+)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -34,7 +39,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         n_joints = 2
         self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(2 * n_joints + 3,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(2 * n_joints + 3 + 4,), dtype=np.float32
         )
         self.action_space = gym.spaces.Box(
             low=-1.0, high=1.0, shape=(n_joints,), dtype=np.float32
@@ -61,11 +66,39 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.data.mocap_pos[0] = [radius * np.cos(angle), radius * np.sin(angle), 0.0]
 
     def _observation(self) -> np.ndarray:
+        def wrap_to_pi(angle: float) -> float:
+            return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+        def shoulder_for_elbow(elbow: float) -> float:
+            return float(
+                np.arctan2(target_y, target_x)
+                - np.arctan2(
+                    FOREARM_LENGTH * np.sin(elbow),
+                    UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+                )
+            )
+
+        target_x = float(self.data.mocap_pos[0][0])
+        target_y = float(self.data.mocap_pos[0][1])
+        cos_elbow = (
+            target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
+        ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+        elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
+        shoulder_open = shoulder_for_elbow(elbow_open)
+        elbow_folded = -elbow_open
+        shoulder_folded = shoulder_for_elbow(elbow_folded)
+        ik_deltas = [
+            wrap_to_pi(shoulder_open - float(self.data.qpos[0])),
+            wrap_to_pi(elbow_open - float(self.data.qpos[1])),
+            wrap_to_pi(shoulder_folded - float(self.data.qpos[0])),
+            wrap_to_pi(elbow_folded - float(self.data.qpos[1])),
+        ]
         return np.concatenate(
             [
                 self.data.qpos,
                 self.data.qvel,
                 self._end_effector_position() - self.data.mocap_pos[0],
+                ik_deltas,
             ]
         ).astype(np.float32)
 
