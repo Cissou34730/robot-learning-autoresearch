@@ -23,6 +23,7 @@ PPO_HYPERPARAMETERS = {
     "gamma": 0.99,
     "learning_rate": 3e-4,
     "gae_lambda": 0.95,
+    "ent_coef": 0.01,
 }
 
 POLICY_KWARGS = {
