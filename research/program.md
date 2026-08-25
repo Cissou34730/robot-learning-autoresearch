@@ -20,7 +20,8 @@ robot_learning/
 ├── rewards/reach_reward.py        # THE REWARD — your main editing surface
 ├── train.py                       # PPO_HYPERPARAMETERS, POLICY_KWARGS, env kwargs (editable)
 │                                    everything else in train.py: do NOT edit
-├── environments/reach_env.py      # obs/action/episode logic — READ ONLY (context)
+├── environments/reach_env.py      # ONLY _observation() editable (see Hard rules);
+│                                    everything else READ ONLY
 ├── robots/two_joint_arm.xml       # arm morphology — READ ONLY
 ├── evaluate.py                    # the metric — READ ONLY
 └── training/                      # normalization/viewer plumbing — READ ONLY
@@ -43,11 +44,19 @@ this automatically.
      are possible.
    - `robot_learning/train.py` — ONLY `PPO_HYPERPARAMETERS` (any valid SB3 PPO
      parameter), `POLICY_KWARGS`, and env construction kwargs in `main()`.
+   - `robot_learning/environments/reach_env.py` — **ONLY the `_observation()`
+     method** (and the `observation_space` shape if your change requires it).
+     You may change HOW information is presented to the network (encoding of
+     angles, adding derived quantities like distance or direction). You may NOT
+     touch: target sampling, success/termination logic, reward computation,
+     action handling, physics parameters, or anything else in that file.
 2. NEVER change: success threshold, target radius range, training timesteps
    (60000), seed (0), evaluation episodes (200), evaluation seeds.
 3. No new files except `research/proposal.json`. No new dependencies.
 4. One variable change per experiment.
 5. Never run training or evaluation yourself; never edit EXPERIMENTS.md.
+6. Observation changes must keep tests passing; update
+   `tests/test_reach_env.py` observation-shape expectations if needed.
 
 ## Protocol
 
