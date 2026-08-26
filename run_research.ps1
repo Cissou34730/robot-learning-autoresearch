@@ -31,7 +31,7 @@ while ($true) {
         }
         Update-ResearchBrief
         Write-Host "=== Baseline complete ==="
-        continue
+        break
     }
 
     Update-ResearchBrief
@@ -60,3 +60,4 @@ while ($true) {
     Write-Host "=== Experiment session ended at $(Get-Date -Format 'HH:mm:ss') ==="
     Start-Sleep -Seconds 5
 }
+
