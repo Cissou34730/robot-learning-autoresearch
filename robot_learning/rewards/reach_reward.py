@@ -1,11 +1,25 @@
 import numpy as np
 
-PROGRESS_COEFFICIENT = 10.0
-CLOSENESS_COEFFICIENT = 4.0
-CLOSENESS_LENGTH_SCALE = 0.05
-ACTION_COST_COEFFICIENT = 0.05
-DWELL_BONUS_PER_STEP = 0.5
-HOLD_COMPLETE_BONUS = 50.0
+from robot_learning.training.research_config import load_experiment_config
+
+_VALUES = load_experiment_config()["reward"]
+
+PROGRESS_COEFFICIENT = _VALUES["PROGRESS_COEFFICIENT"]
+CLOSENESS_COEFFICIENT = _VALUES["CLOSENESS_COEFFICIENT"]
+CLOSENESS_LENGTH_SCALE = _VALUES["CLOSENESS_LENGTH_SCALE"]
+ACTION_COST_COEFFICIENT = _VALUES["ACTION_COST_COEFFICIENT"]
+DWELL_BONUS_PER_STEP = _VALUES["DWELL_BONUS_PER_STEP"]
+HOLD_COMPLETE_BONUS = _VALUES["HOLD_COMPLETE_BONUS"]
+
+REWARD_PARAMETER_KEYS = frozenset(_VALUES)
+
+
+def apply_reward_overrides(overrides: dict[str, float]) -> None:
+    invalid = set(overrides) - REWARD_PARAMETER_KEYS
+    if invalid:
+        raise ValueError(f"unknown reward parameters: {sorted(invalid)}")
+    for key, value in overrides.items():
+        globals()[key] = float(value)
 
 
 def _closeness_potential(distance: float) -> float:

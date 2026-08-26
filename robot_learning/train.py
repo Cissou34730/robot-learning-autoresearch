@@ -10,6 +10,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.training.research_config import load_experiment_config
 from robot_learning.training.viewer_callback import LiveViewerCallback
 
 MODELS_DIR = Path("models")
@@ -17,18 +18,10 @@ CHECKPOINT_EVERY_STEPS = 5000
 
 ENVIRONMENTS = {"reach": TwoJointArmReachEnv}
 
-PPO_HYPERPARAMETERS = {
-    "n_steps": 1024,
-    "batch_size": 64,
-    "gamma": 0.99,
-    "learning_rate": 3e-4,
-    "gae_lambda": 0.95,
-    "ent_coef": 0.01,
-}
-
-POLICY_KWARGS = {
-    "net_arch": [64, 64],
-    "activation_fn": torch.nn.Tanh,
+ACTIVATION_FUNCTIONS = {
+    "tanh": torch.nn.Tanh,
+    "relu": torch.nn.ReLU,
+    "elu": torch.nn.ELU,
 }
 
 
@@ -55,8 +48,23 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def build_policy_kwargs(policy_config: dict) -> dict:
+    net_arch = policy_config["net_arch"]
+    activation_name = str(policy_config["activation"]).lower()
+    if activation_name not in ACTIVATION_FUNCTIONS:
+        raise ValueError(f"unknown activation: {activation_name}")
+    return {
+        "net_arch": list(net_arch),
+        "activation_fn": ACTIVATION_FUNCTIONS[activation_name](),
+    }
+
+
 def main() -> None:
     args = parse_args()
+    config = load_experiment_config()
+    ppo_params = dict(config["ppo"])
+    policy_kwargs = build_policy_kwargs(config["policy"])
+    env_kwargs = {"curriculum": True, **config["env"]}
 
     save_dir = MODELS_DIR / (
         f"{args.env}-resume-{time.strftime('%Y%m%d-%H%M%S')}"
@@ -65,7 +73,7 @@ def main() -> None:
     )
     tensorboard_log = str(save_dir / "tensorboard")
 
-    venv = DummyVecEnv([lambda: Monitor(ENVIRONMENTS[args.env]())])
+    venv = DummyVecEnv([lambda: Monitor(ENVIRONMENTS[args.env](**env_kwargs))])
     if args.resume is not None:
         stats_path = args.resume.parent / "vecnormalize.pkl"
         if stats_path.exists():
@@ -73,7 +81,7 @@ def main() -> None:
             print(f"Loaded observation statistics from {stats_path}")
         else:
             raise SystemExit(
-                f"No vecnormalize.pkl next to {args.resume} — this model was trained "
+                f"No vecnormalize.pkl next to {args.resume} - this model was trained "
                 "without normalization and cannot be resumed into a normalized run."
             )
     else:
@@ -81,7 +89,7 @@ def main() -> None:
             venv,
             norm_obs=True,
             norm_reward=False,
-            gamma=PPO_HYPERPARAMETERS["gamma"],
+            gamma=ppo_params["gamma"],
         )
 
     callbacks = []
@@ -99,8 +107,8 @@ def main() -> None:
             seed=args.seed,
             verbose=1,
             tensorboard_log=tensorboard_log,
-            policy_kwargs=POLICY_KWARGS,
-            **PPO_HYPERPARAMETERS,
+            policy_kwargs=policy_kwargs,
+            **ppo_params,
         )
 
     callbacks.append(
@@ -121,7 +129,7 @@ def main() -> None:
             callback=callbacks,
         )
     except KeyboardInterrupt:
-        print("\nTraining interrupted — saving current policy before exit.")
+        print("\nTraining interrupted - saving current policy before exit.")
     finally:
         model.save(save_dir / "model")
         venv.save(str(save_dir / "vecnormalize.pkl"))
@@ -132,10 +140,11 @@ def main() -> None:
                     "timesteps": args.timesteps,
                     "seed": args.seed,
                     "resumed_from": str(args.resume) if args.resume else None,
-                    "hyperparameters": PPO_HYPERPARAMETERS,
-                    "policy_kwargs": {k: str(v) for k, v in POLICY_KWARGS.items()},
+                    "hyperparameters": ppo_params,
+                    "policy_config": config["policy"],
                 },
                 indent=2,
+                default=str,
             ),
             encoding="utf-8",
         )
