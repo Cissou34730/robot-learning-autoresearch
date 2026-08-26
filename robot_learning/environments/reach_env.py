@@ -14,10 +14,9 @@ from robot_learning.robots.two_joint_arm import (
 )
 
 CURRICULUM_STAGES: tuple[tuple[float, float], ...] = (
-    # Stage 0: pure touch (1 step in-band) - reachable by chance
-    (0.03, 0.02),
-    # Phase A - entry precision (no hold duration increase yet)
+    # Stage 0: 2 cm touch (0.02 s) - the first curriculum goal
     (0.02, 0.02),
+    # Phase A - entry precision at the final threshold
     (0.01, 0.02),
     # Phase B - stabilization at 1 cm (now increase hold)
     (0.01, 0.10),
