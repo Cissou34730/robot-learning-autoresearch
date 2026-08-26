@@ -162,10 +162,12 @@ def main() -> int:
 
         previous_config = load_experiment_config()
         effective_params = merge_param_overrides(previous_config, param_overrides or {})
+        config_written = False
 
         if param_overrides:
             validate_param_overrides(param_overrides)
             write_experiment_config(effective_params)
+            config_written = True
             print(f"[runner] parameter mode: applying {param_overrides}")
         else:
             print("[runner] code mode: running checks (ruff, pytest)...")
@@ -252,7 +254,8 @@ def main() -> int:
 
     except Exception as error:  # noqa: BLE001
         git("checkout", "--", CODE_DIR)
-        write_experiment_config(previous_config)
+        if config_written:
+            write_experiment_config(previous_config)
         row = (
             f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
             f"| - | - | - | error ({str(error)[:80]}) |"
@@ -296,7 +299,8 @@ def main() -> int:
         git("add", *files_to_commit)
         git("commit", "-m", f"exp {index}: {change} -> {success:g}%")
     else:
-        write_experiment_config(previous_config)
+        if config_written:
+            write_experiment_config(previous_config)
         if code_diff:
             git("checkout", "--", CODE_DIR)
         if model_dir is not None and model_dir.exists():
