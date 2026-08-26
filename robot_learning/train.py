@@ -159,7 +159,10 @@ def main() -> None:
     try:
         model.learn(
             total_timesteps=args.timesteps,
-            reset_num_timesteps=args.resume is None,
+            # Each invocation owns exactly ``args.timesteps`` transitions.  A
+            # resumed policy keeps its weights, but its run counter resets so
+            # progress and checkpoint names describe this run, not its parent.
+            reset_num_timesteps=True,
             callback=callbacks,
         )
     except KeyboardInterrupt:
