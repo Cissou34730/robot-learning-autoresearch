@@ -1,4 +1,6 @@
 {
-  "consecutive_failures": 2,
-  "hypothesis_class": "coefficient and hyperparameter tuning"
+  "consecutive_failures": 0,
+  "hypothesis_class": null,
+  "curriculum_reset_after_experiment": 35,
+  "baseline_model": "models/reach-exp19/model.zip"
 }

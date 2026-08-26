@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
 
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.environments.reach_env import (
+    CURRICULUM_STAGES,
+    TwoJointArmReachEnv,
+)
 from robot_learning.rewards import reach_reward as reach_reward_module
 from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.robots.two_joint_arm import MAX_REACH
@@ -144,6 +147,12 @@ def test_default_env_is_fixed_at_final_difficulty():
     assert not env.curriculum_enabled
     assert env.success_threshold == pytest.approx(0.01)
     assert env.hold_steps_required == 100
+
+
+def test_curriculum_tightens_precision_before_extending_the_hold():
+    assert CURRICULUM_STAGES[:3] == ((0.03, 0.02), (0.02, 0.02), (0.01, 0.02))
+    assert CURRICULUM_STAGES[-1] == (0.01, 2.00)
+    assert all(seconds > 0 for _, seconds in CURRICULUM_STAGES)
 
 
 def test_curriculum_env_starts_at_easiest_stage():

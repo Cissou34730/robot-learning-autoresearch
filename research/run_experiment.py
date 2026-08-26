@@ -16,6 +16,7 @@ import sys
 import time
 from pathlib import Path
 
+from research.build_research_brief import write_training_summary
 from robot_learning.training.research_config import (
     assert_immutable_invariants,
     escalation_ladder,
@@ -33,11 +34,18 @@ ESCALATION_PATH = ROOT / "research" / "ESCALATION_REQUEST"
 SENTINEL_DIR = ROOT / "research"
 CODE_DIR = "robot_learning"
 MODELS_DIR = ROOT / "models"
-ALLOWED_CODE_FILES = {
+BASELINE_MODEL_PATH = MODELS_DIR / "reach-exp19" / "model.zip"
+BASE_ALLOWED_CODE_FILES = {
     "robot_learning/rewards/reach_reward.py",
     "robot_learning/environments/reach_env.py",
     "tests/test_reach_env.py",
 }
+ALGORITHM_CODE_FILES = {
+    "robot_learning/train.py",
+    "robot_learning/evaluate.py",
+    "robot_learning/play.py",
+}
+RESEARCH_DIFF_PATHS = (CODE_DIR, "tests/test_reach_env.py")
 
 TIMESTEPS = 120000
 EVAL_EPISODES = 200
@@ -124,14 +132,52 @@ def main() -> int:
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
     param_overrides = proposal.get("params")
+    hypothesis_class = str(proposal.get("class", "")).strip().lower()
+    initialization = str(proposal.get("initialization", "transfer")).strip().lower()
 
     log_text = LOG_PATH.read_text(encoding="utf-8")
     index = next_index(log_text)
     best_before = current_best(log_text)
     model_dir: Path | None = None
+    code_diff = ""
+    previous_config: dict | None = None
+    config_written = False
 
     try:
-        code_diff = git("diff", "--stat", CODE_DIR).strip()
+        if not hypothesis_class:
+            raise ValueError(
+                "proposal must include a 'class' field naming the ladder level "
+                "(e.g. 'reward structure')"
+            )
+        if initialization not in {"transfer", "fresh"}:
+            raise ValueError("initialization must be 'transfer' or 'fresh'")
+
+        immutable_env_overrides = {"max_episode_steps", "frame_skip"} & set(
+            (param_overrides or {}).get("env", {})
+        )
+        if immutable_env_overrides:
+            raise ValueError(
+                f"immutable environment parameters cannot be changed: "
+                f"{sorted(immutable_env_overrides)}"
+            )
+        ladder = escalation_ladder()
+        normalized_class = next(
+            (
+                item
+                for item in ladder
+                if hypothesis_class == item
+                or hypothesis_class.startswith(item.split(" (", maxsplit=1)[0])
+            ),
+            None,
+        )
+        if initialization == "fresh" and (
+            normalized_class is None or ladder.index(normalized_class) < 2
+        ):
+            raise ValueError(
+                "fresh initialization is allowed from observation representation onward"
+            )
+
+        code_diff = git("diff", "--stat", *RESEARCH_DIFF_PATHS).strip()
         if param_overrides and code_diff:
             raise ValueError(
                 "proposal contains both params and a code edit - use one or the other"
@@ -139,21 +185,24 @@ def main() -> int:
         if not param_overrides and not code_diff:
             print("ERROR: no parameter overrides and no code diff - nothing to test.")
             return 1
-
-        hypothesis_class = str(proposal.get("class", "")).strip().lower()
-        if not hypothesis_class:
+        if initialization == "transfer" and param_overrides and param_overrides.get(
+            "policy"
+        ):
             raise ValueError(
-                "proposal must include a 'class' field naming the ladder level "
-                "(e.g. 'reward structure')"
+                "policy changes require initialization='fresh' because checkpoint "
+                "tensor shapes may be incompatible"
             )
 
         if code_diff:
             changed_files = {
-                line.split("|")[0].strip()
-                for line in git("diff", "--name-only", CODE_DIR).splitlines()
+                line.strip()
+                for line in git("diff", "--name-only", *RESEARCH_DIFF_PATHS).splitlines()
                 if line.strip()
             }
-            outside = changed_files - ALLOWED_CODE_FILES
+            allowed_code_files = set(BASE_ALLOWED_CODE_FILES)
+            if normalized_class and ladder.index(normalized_class) >= 5:
+                allowed_code_files.update(ALGORITHM_CODE_FILES)
+            outside = changed_files - allowed_code_files
             if outside:
                 raise ValueError(
                     f"edits touch files outside the allowed research surface: "
@@ -162,7 +211,6 @@ def main() -> int:
 
         previous_config = load_experiment_config()
         effective_params = merge_param_overrides(previous_config, param_overrides or {})
-        config_written = False
 
         if param_overrides:
             validate_param_overrides(param_overrides)
@@ -185,17 +233,25 @@ def main() -> int:
         print("[runner] progress updates every 15 s (checkpoints every 5k steps)")
         started = time.time()
         train_log = ROOT / "research" / "last_train.log"
+        train_command = [
+            sys.executable,
+            "-m",
+            "robot_learning.train",
+            "--timesteps",
+            str(args.timesteps),
+            "--seed",
+            str(TRAIN_SEED),
+        ]
+        if initialization == "transfer":
+            if not BASELINE_MODEL_PATH.exists():
+                raise FileNotFoundError(
+                    f"baseline model not found: {BASELINE_MODEL_PATH}"
+                )
+            train_command.extend(["--resume", str(BASELINE_MODEL_PATH)])
+
         with train_log.open("w", encoding="utf-8") as log_file:
             process = subprocess.Popen(
-                [
-                    sys.executable,
-                    "-m",
-                    "robot_learning.train",
-                    "--timesteps",
-                    str(args.timesteps),
-                    "--seed",
-                    str(TRAIN_SEED),
-                ],
+                train_command,
                 cwd=ROOT,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
@@ -221,6 +277,7 @@ def main() -> int:
                             f"({elapsed:.0f}s elapsed)"
                         )
                         last_reported = latest
+        write_training_summary()
         if process.returncode != 0:
             tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
             raise RuntimeError("training failed:\n" + "\n".join(tail))
@@ -253,8 +310,9 @@ def main() -> int:
         )
 
     except Exception as error:  # noqa: BLE001
-        git("checkout", "--", CODE_DIR)
-        if config_written:
+        if code_diff and not param_overrides:
+            git("checkout", "--", *RESEARCH_DIFF_PATHS)
+        if config_written and previous_config is not None:
             write_experiment_config(previous_config)
         row = (
             f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
@@ -293,7 +351,7 @@ def main() -> int:
 
     files_to_commit = ["research/EXPERIMENTS.md", "research/current_params.json"]
     if improved and code_diff:
-        files_to_commit.append(CODE_DIR)
+        files_to_commit.extend(RESEARCH_DIFF_PATHS)
 
     if improved:
         git("add", *files_to_commit)
@@ -302,7 +360,7 @@ def main() -> int:
         if config_written:
             write_experiment_config(previous_config)
         if code_diff:
-            git("checkout", "--", CODE_DIR)
+            git("checkout", "--", *RESEARCH_DIFF_PATHS)
         if model_dir is not None and model_dir.exists():
             shutil.rmtree(model_dir, ignore_errors=True)
     PROPOSAL_PATH.unlink(missing_ok=True)
@@ -358,8 +416,8 @@ def main() -> int:
             f"ESCALATION: the next researcher must stop tuning '{current_class}' "
             f"and propose experiments from the next ladder class:\n"
             f"  >>> {next_class} <<<\n\n"
-            f"Read the postmortems in research/postmortems.md first, analyse the "
-            f"accumulated evidence, and form a coherent hypothesis in the new "
+            f"Read research/brief.md first, analyse the compact accumulated "
+            f"evidence, and form a coherent hypothesis in the new "
             f"class.\n",
             encoding="utf-8",
         )

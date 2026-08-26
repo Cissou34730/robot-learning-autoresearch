@@ -98,7 +98,12 @@ def main() -> None:
 
     if args.resume is not None:
         model = PPO.load(
-            args.resume, env=venv, seed=args.seed, tensorboard_log=tensorboard_log
+            args.resume,
+            env=venv,
+            seed=args.seed,
+            tensorboard_log=tensorboard_log,
+            policy_kwargs=policy_kwargs,
+            **ppo_params,
         )
     else:
         model = PPO(

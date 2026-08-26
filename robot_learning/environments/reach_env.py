@@ -16,12 +16,14 @@ from robot_learning.robots.two_joint_arm import (
 CURRICULUM_STAGES: tuple[tuple[float, float], ...] = (
     # Stage 0: pure touch (1 step in-band) - reachable by chance
     (0.03, 0.02),
-    # Phase A - entry precision
-    (0.02, 0.10),
+    # Phase A - entry precision (no hold duration increase yet)
+    (0.02, 0.02),
+    (0.01, 0.02),
+    # Phase B - stabilization at 1 cm (now increase hold)
     (0.01, 0.10),
-    # Phase B - stabilization at 1 cm
     (0.01, 0.50),
     (0.01, 1.00),
+    (0.01, 1.50),
     (0.01, 2.00),
 )
 STAGE_ADVANCE_MIN_EPISODES = 15
@@ -68,7 +70,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.observation_space = gym.spaces.Box(
             low=-np.inf,
             high=np.inf,
-            shape=(2 * n_joints + 3 + 4 + 3,),
+            shape=(2 * n_joints + 3 + 4,),
             dtype=np.float32,
         )
         self.action_space = gym.spaces.Box(
@@ -150,9 +152,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self.data.qvel,
                 self._end_effector_position() - self.data.mocap_pos[0],
                 ik_deltas,
-                [self._held_steps / max(self.hold_steps_required, 1)],
-                [self.success_threshold / 0.01],
-                [self.hold_steps_required / 100],
             ]
         ).astype(np.float32)
 

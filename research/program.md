@@ -1,113 +1,110 @@
 # RL Research Program - Scenario 2: "Reach and Hold"
 
-You are an autonomous research agent. Execute **exactly one experiment** per
-session following this protocol, then stop.
+You are an autonomous research agent. Execute exactly one experiment per
+session, then stop. Do not create subagents.
 
-## Environment notes
+## Environment and bounded context
 
-- Windows PowerShell: no `head`, `tail`, `grep`, `&&`. Use `Select-Object
-  -First 20`, `Select-String`, separate commands.
-- Modified `research/EXPERIMENTS.md` / `research/postmortems.md` in git status
-  is normal; never revert them. You never edit EXPERIMENTS.md - the runner owns it.
-- Do NOT read `run_experiment.py`, `train.py`, or `research_config.py` source:
-  this document fully specifies the proposal format, allowed parameter keys,
-  boundaries, and error semantics, and is kept in sync with them. If SUMMARY
-  reports an input error, its message is authoritative - fix per the message,
-  not by re-reading source.
-- A previous scenario solved the same arm at "touch 3 cm" (100%). This scenario
-  requires precision (1 cm) and stability (2 s hold): a different kind of skill.
+- Windows PowerShell: use PowerShell-native commands.
+- Start with `research/brief.md`; it is the compact source of research state.
+- Use `research/last_train_summary.md`, never the full training log, unless the
+  summary explicitly says parsing failed.
+- Do not read full `EXPERIMENTS.md`, `postmortems.md`, or `archive.md`
+  unless one specific ambiguity cannot be resolved from the brief.
+- Modified generated research files are normal. Never edit
+  `research/EXPERIMENTS.md`; the runner owns it.
+- Do not inspect runner or immutable-task source during an experiment. Input
+  errors reported by SUMMARY are authoritative.
 
-## Repository map (do not re-discover)
+## Repository map
 
 ```
-robot_learning/
-├── rewards/reach_reward.py        # reward structure (editable, code mode)
-├── environments/reach_env.py      # ONLY _observation() editable (code mode);
-│                                    curriculum, hold logic, physics: READ ONLY
-├── training/research_config.py    # config loader + boundaries - READ ONLY
-├── train.py                       # READ ONLY (all parameters come from JSON)
-tests/test_reach_env.py            # must keep passing; update if obs changes
-research/current_params.json       # ALL tunable parameters (single source of truth)
-research/run_experiment.py         # executes experiments - READ ONLY
-research/postmortems.md            # researcher-owned scientific memory
+research/brief.md                    # compact default context
+research/last_train_summary.md       # compressed training dynamics
+research/current_params.json         # tunable parameters
+research/proposal.json               # agent-written experiment proposal
+research/postmortems.md              # full scientific memory; append only
+robot_learning/rewards/reach_reward.py
+robot_learning/environments/reach_env.py
+tests/test_reach_env.py
 ```
 
-## Mission & goal (immutable)
+For learning-algorithm experiments only, the runner additionally permits
+focused edits to `robot_learning/train.py`, `evaluate.py`, and `play.py`.
 
-Success = end-effector within 1.0 cm of the ball for 100 consecutive steps
-(2 s), episodes up to 500 steps, random targets (radius 6-20 cm).
-Goal: >= 98% success over the standard 200-episode evaluation.
-A training-time curriculum eases intermediate stages; candidates are always
-evaluated on this unchanged final task.
+## Immutable mission
+
+Success means the end-effector remains within 1.0 cm of a random target for 100
+consecutive control steps (2.0 s). Targets remain 6–20 cm from the base,
+episodes remain at most 500 steps, evaluation remains 200 episodes, and the goal
+is at least 98% success.
+
+Training uses a transfer curriculum initialized from the solved experiment-19
+3 cm policy. The curriculum may ease intermediate stages, but its final stage
+and every evaluation must retain the immutable 1 cm / 2 s task.
 
 ## Escalation ladder
 
-Experiments belong to a class. After 5 consecutive failures in one class, the
-runner writes `ESCALATION_REQUEST` and you MUST move to the next class:
+After five consecutive failures in a class, follow `ESCALATION_REQUEST`:
 
 1. coefficient and hyperparameter tuning
 2. reward structure
 3. observation representation
 4. training curriculum
 5. policy architecture and training schedule
-6. learning algorithm (e.g. PPO vs SAC)
+6. learning algorithm
 7. broader goal-preserving training-method changes
 
-If an `ESCALATION_REQUEST` exists, your session must propose an experiment in
-the requested next class.
+## Experiment modes
 
-## Hard rules (machine-enforced by the runner)
+Use one coherent hypothesis and exactly one mode:
 
-1. One coherent hypothesis per experiment. Coordinated edits across areas are
-   allowed IF they serve that single hypothesis.
-2. Parameter mode (preferred): no code edits; change values only, via `"params"`
-   in proposal.json. Allowed keys:
-   - reward: PROGRESS_COEFFICIENT, CLOSENESS_COEFFICIENT,
-     CLOSENESS_LENGTH_SCALE, ACTION_COST_COEFFICIENT, DWELL_BONUS_PER_STEP,
-     HOLD_COMPLETE_BONUS
-   - ppo: learning_rate, gamma, gae_lambda, n_steps, batch_size, n_epochs,
-     clip_range, ent_coef, vf_coef, max_grad_norm, target_kl
-   - policy: net_arch, activation ("tanh"|"relu"|"elu")
-   - env: max_episode_steps
-3. Code mode (for structural changes): edits allowed ONLY in
-   `rewards/reach_reward.py`, `environments/reach_env.py` (`_observation()`
-   only), `tests/test_reach_env.py`. The runner REJECTS any other file and
-   verifies immutable task invariants after every code-mode edit.
-4. NEVER touch: robot morphology/physics, success threshold, hold duration,
-   target distribution, evaluator, seeds, episode count, or the goal itself.
-   Training-time curricula may ease intermediate stages only.
-5. Never mix parameter mode and code mode in one experiment.
-6. Never run training/evaluation yourself; never edit EXPERIMENTS.md.
+- Parameter mode: put changes under `"params"` in `proposal.json`; do not
+  edit code.
+- Code mode: make only the allowed focused edits and omit `"params"`.
+
+Every proposal contains `change`, `hypothesis`, `class`, and optionally
+`initialization`:
+
+- `"transfer"` is the default and resumes the experiment-19 checkpoint.
+- `"fresh"` is allowed from observation representation onward when checkpoint
+  compatibility would be invalid, including observation-size, policy-
+  architecture, and learning-algorithm changes.
+
+The runner rejects policy-architecture parameter changes under transfer
+initialization because checkpoint tensor shapes may not match.
+
+Allowed parameter keys:
+
+- reward: `PROGRESS_COEFFICIENT`, `CLOSENESS_COEFFICIENT`,
+  `CLOSENESS_LENGTH_SCALE`, `ACTION_COST_COEFFICIENT`,
+  `DWELL_BONUS_PER_STEP`, `HOLD_COMPLETE_BONUS`
+- ppo: `learning_rate`, `gamma`, `gae_lambda`, `n_steps`, `batch_size`,
+  `n_epochs`, `clip_range`, `ent_coef`, `vf_coef`, `max_grad_norm`,
+  `target_kl`
+- policy: `net_arch`, `activation`
+- env: training-only curriculum advancement rate and minimum-episode settings
+
+Never change robot physics, success threshold, final hold duration, target
+distribution, evaluator, seed, episode count, or the goal.
 
 ## Protocol
 
-Phase 1 - decide:
-0. If GOAL_REACHED exists, stop. If ESCALATION_REQUEST exists, read it: your
-   experiment must come from the requested class.
-1. Read EXPERIMENTS.md, the last sections of postmortems.md, git log --oneline.
-2. Form ONE coherent hypothesis. Choose its class and mode.
-3. Parameter mode: write proposal.json with "change", "hypothesis", "class",
-   "params". Code mode: make the structural edit first, then proposal.json
-   WITHOUT params. Every proposal requires a "class" field.
-
-Phase 2 - execute:
-4. Run exactly: `uv run python research/run_experiment.py`
-5. Read the SUMMARY line. On error, fix trivial input problems and rerun once.
-
-Phase 3 - research (mandatory):
-6. Inspect `research/last_train.log` (training dynamics) and think about what
-   the result means beyond the number.
-7. Append to `research/postmortems.md`:
-   - experiment number and whether the hypothesis was supported
-   - what behavior changed (approach distance, hold steps reached, stability)
-   - the likely current binding constraint
-   - what was learned and what should NOT be retried
-   - recommended next experiment class
-8. Stop.
+1. Stop if `GOAL_REACHED` exists. Obey `ESCALATION_REQUEST` if present.
+2. Read `research/brief.md` and `git log --oneline -8`.
+3. Form one falsifiable hypothesis and write `research/proposal.json`.
+4. Run exactly `uv run python research/run_experiment.py`.
+5. Read the SUMMARY line. Fix and rerun once only for a trivial input error.
+6. Read `research/last_train_summary.md` and interpret behavior beyond score.
+7. Append a 300–500 word postmortem containing:
+   - whether the hypothesis was supported
+   - approach distance, hold/stability behavior, and curriculum progression
+   - the likely binding constraint
+   - what must not be retried
+   - the recommended next class
+8. Run `uv run python research/build_research_brief.py`, then stop.
 
 ## Budget
 
-Fixed 120000 training steps per experiment (seed 0). This optimizes sample
-efficiency and comparability between experiments; unlike Karpathy's wall-clock
-budget it does not optimize performance per unit of compute. Only the
-experimenter may change it, between sessions.
+Each experiment uses 120000 training steps with seed 0. Only the experimenter
+may change this budget between sessions.

@@ -48,8 +48,8 @@ PARAM_WHITELIST: dict[str, set[str]] = {
         "share_features_extractor",
     },
     "env": {
-        "max_episode_steps",
         "frame_skip",
+        "max_episode_steps",
         "curriculum_stage_advance_success_rate",
         "curriculum_stage_advance_min_episodes",
     },
