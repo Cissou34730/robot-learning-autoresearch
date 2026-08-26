@@ -14,3 +14,4 @@ models/
 
 # Tooling caches
 .mypy_cache/
+research/last_train.log

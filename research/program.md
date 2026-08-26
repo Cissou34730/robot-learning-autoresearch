@@ -50,16 +50,31 @@ reference numbers.
 
 ## Hard rules
 
-1. You may ONLY edit:
-   - `robot_learning/rewards/reach_reward.py` — reward structure and coefficients.
-     The function receives the applied `action` plus the hold counters.
-   - `robot_learning/train.py` — ONLY `PPO_HYPERPARAMETERS` (any valid SB3 PPO
-     parameter), `POLICY_KWARGS`, and env construction kwargs in `main()`.
-   - `robot_learning/environments/reach_env.py` — **ONLY the `_observation()`
-     method** (and the `observation_space` shape if needed). You may change HOW
-     information is presented to the network. You may NOT touch: hold logic,
-     target sampling, success/termination logic, reward computation, action
-     handling, physics parameters, or anything else in that file.
+1. **Two experiment modes - never mix them in one experiment:**
+
+   **Parameter mode (PREFERRED - fastest)**: no code edits at all. Put your
+   change under `"params"` in `research/proposal.json`, using ONLY these keys:
+   - `"reward"`: PROGRESS_COEFFICIENT, CLOSENESS_COEFFICIENT,
+     CLOSENESS_LENGTH_SCALE, ACTION_COST_COEFFICIENT, DWELL_BONUS_PER_STEP,
+     HOLD_COMPLETE_BONUS
+   - `"ppo"`: learning_rate, gamma, gae_lambda, n_steps, batch_size, n_epochs,
+     clip_range, ent_coef, vf_coef, max_grad_norm, target_kl
+   - `"policy"`: net_arch (list of ints), activation (tanh | relu | elu)
+   - `"env"`: max_episode_steps
+
+   Params are DELTAS from the champion config; the runner merges them with
+   `research/current_params.json` automatically. No ruff/pytest needed.
+
+   **Code mode (structural changes only)**: edit allowed files directly:
+   - `robot_learning/rewards/reach_reward.py` - reward *structure* (new terms).
+     Coefficient VALUES belong in parameter mode.
+   - `robot_learning/environments/reach_env.py` - **ONLY `_observation()`**
+     (and observation_space shape if needed). Hold logic, target sampling,
+     success/termination, physics: READ ONLY.
+   Code mode runs the full lint+test gates. Do not touch
+   PPO_HYPERPARAMETERS/POLICY_KWARGS in train.py - parameter mode supersedes
+   them; train.py is otherwise READ ONLY now.
+
 2. NEVER change: success threshold (0.01), hold requirement (2 s), target
    radius range, training timesteps (120000), seed (0), evaluation episodes
    (200), evaluation seeds.
@@ -71,26 +86,30 @@ reference numbers.
 
 ## Protocol
 
-**Phase 1 — decide**
+**Phase 1 - decide**
 
 0. If `research/GOAL_REACHED` or `research/STAGNATED` exists, stop immediately.
 1. Read `research/EXPERIMENTS.md` and `git log --oneline`. Understand what was
    tried, what worked, what remains untried.
-2. Choose ONE change to the allowed files.
-3. Write `research/proposal.json`:
+2. Choose ONE change. If it can be expressed as parameter values, use
+   **parameter mode**: write `research/proposal.json` as:
    ```json
-   {"change": "<one-line description>", "hypothesis": "<max 3 sentences>"}
+   {"change": "<one line>", "hypothesis": "<max 3 sentences>",
+    "params": {"ppo": {"gamma": 0.995}}}
    ```
-4. Make the code edit. Verify with `git diff --stat`: if empty on your edited
-   files, you have not made the change — do not proceed.
+3. Otherwise use **code mode**: make the structural code edit in the allowed
+   files and write proposal.json WITHOUT the params key.
+4. Verify your intent: parameter mode needs a non-empty params object; code
+   mode needs a non-empty `git diff --stat robot_learning`.
 
-**Phase 2 — execute (hands off)**
+**Phase 2 - execute (hands off)**
 
 5. Run exactly: `uv run python research/run_experiment.py`
-   It validates the diff, runs ruff+pytest, trains 120000 steps, evaluates 200
-   episodes, appends the results row, applies the ratchet (commit on
-   improvement, revert + cleanup otherwise), updates Best so far, and writes
-   `GOAL_REACHED` / `STAGNATED` sentinels when appropriate.
+   It validates input, runs gates when needed (ruff+pytest in code mode only),
+   trains 120000 steps, evaluates 200 episodes, appends the results row,
+   applies the ratchet (commit on improvement, revert + cleanup otherwise),
+   updates Best so far, and writes GOAL_REACHED / STAGNATED sentinels when
+   appropriate.
 6. Read the `SUMMARY:` line it prints. If status is "error", fix only trivially
    wrong input (e.g. malformed proposal.json) and rerun once; otherwise stop.
 7. Stop. The outer loop starts the next session.

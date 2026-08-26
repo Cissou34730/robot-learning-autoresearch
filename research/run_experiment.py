@@ -18,6 +18,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LOG_PATH = ROOT / "research" / "EXPERIMENTS.md"
 PROPOSAL_PATH = ROOT / "research" / "proposal.json"
+CURRENT_PARAMS_PATH = ROOT / "research" / "current_params.json"
+ACTIVE_PARAMS_PATH = ROOT / "research" / "active_params.json"
 SENTINEL_DIR = ROOT / "research"
 CODE_DIR = "robot_learning"
 MODELS_DIR = ROOT / "models"
@@ -27,6 +29,32 @@ EVAL_EPISODES = 200
 TRAIN_SEED = 0
 GOAL_PERCENT = 98.0
 STAGNATION_WINDOW = 5
+
+PARAM_WHITELIST = {
+    "reward": {
+        "PROGRESS_COEFFICIENT",
+        "CLOSENESS_COEFFICIENT",
+        "CLOSENESS_LENGTH_SCALE",
+        "ACTION_COST_COEFFICIENT",
+        "DWELL_BONUS_PER_STEP",
+        "HOLD_COMPLETE_BONUS",
+    },
+    "ppo": {
+        "learning_rate",
+        "gamma",
+        "gae_lambda",
+        "n_steps",
+        "batch_size",
+        "n_epochs",
+        "clip_range",
+        "ent_coef",
+        "vf_coef",
+        "max_grad_norm",
+        "target_kl",
+    },
+    "policy": {"net_arch", "activation"},
+    "env": {"max_episode_steps"},
+}
 
 
 def git(*args: str) -> str:
@@ -94,6 +122,37 @@ def recent_verdicts(log_text: str, window: int) -> list[str]:
     return verdicts
 
 
+def load_current_params() -> dict:
+    if not CURRENT_PARAMS_PATH.exists():
+        return {}
+    return json.loads(CURRENT_PARAMS_PATH.read_text(encoding="utf-8"))
+
+
+def validate_params(params: dict) -> None:
+    unknown_sections = set(params) - set(PARAM_WHITELIST)
+    if unknown_sections:
+        raise ValueError(f"unknown parameter sections: {sorted(unknown_sections)}")
+    for section, overrides in params.items():
+        invalid = set(overrides) - PARAM_WHITELIST[section]
+        if invalid:
+            raise ValueError(
+                f"unknown {section} parameters: {sorted(invalid)}"
+            )
+
+
+def merge_params(current: dict, overrides: dict) -> dict:
+    effective = {section: dict(values) for section, values in current.items()}
+    for section, values in overrides.items():
+        effective.setdefault(section, {}).update(values)
+    return effective
+
+
+def write_active_params(effective: dict) -> None:
+    ACTIVE_PARAMS_PATH.write_text(
+        json.dumps(effective, indent=2), encoding="utf-8"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
@@ -105,6 +164,7 @@ def main() -> int:
     proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
+    param_overrides = proposal.get("params")
 
     log_text = LOG_PATH.read_text(encoding="utf-8")
     index = next_index(log_text)
@@ -112,16 +172,27 @@ def main() -> int:
     model_dir: Path | None = None
 
     try:
-        diff = git("diff", "--stat", CODE_DIR)
-        if not diff.strip():
-            print("ERROR: no code diff in robot_learning/ — nothing to test.")
+        code_diff = git("diff", "--stat", CODE_DIR).strip()
+        if param_overrides and code_diff:
+            raise ValueError(
+                "proposal contains both params and a code edit — use one or the other"
+            )
+        if not param_overrides and not code_diff:
+            print("ERROR: no parameter overrides and no code diff — nothing to test.")
             return 1
 
-        print("Running checks (ruff, pytest)...")
-        run_module("ruff", "check", ".")
-        checks = run_module("pytest", "-q")
-        if "failed" in checks:
-            raise RuntimeError("pytest reported failures")
+        effective_params = merge_params(load_current_params(), param_overrides or {})
+
+        if param_overrides:
+            validate_params(param_overrides)
+            write_active_params(effective_params)
+            print(f"[runner] parameter mode: applying {param_overrides}")
+        else:
+            print("[runner] code mode: running checks (ruff, pytest)...")
+            run_module("ruff", "check", ".")
+            checks = run_module("pytest", "-q")
+            if "failed" in checks:
+                raise RuntimeError("pytest reported failures")
 
         print(f"[runner] training started: {args.timesteps} steps, seed {TRAIN_SEED}")
         print("[runner] progress updates every 15 s (checkpoints every 5k steps)")
@@ -196,13 +267,22 @@ def main() -> int:
 
     except Exception as error:  # noqa: BLE001
         git("checkout", "--", CODE_DIR)
+        if load_current_params():
+            write_active_params(load_current_params())
+        elif ACTIVE_PARAMS_PATH.exists():
+            ACTIVE_PARAMS_PATH.unlink()
         row = (
             f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
             f"| - | - | - | error ({str(error)[:80]}) |"
         )
         LOG_PATH.write_text(append_row(log_text, row), encoding="utf-8")
         PROPOSAL_PATH.unlink(missing_ok=True)
-        print(f'SUMMARY: {{"status": "error", "index": {index}}}')
+        print(
+            "SUMMARY: "
+            + json.dumps(
+                {"status": "error", "index": index, "error": str(error)[:300]}
+            )
+        )
         return 1
 
     improved = success > best_before
@@ -223,11 +303,25 @@ def main() -> int:
         log_text = set_best_line(log_text, success, index)
     LOG_PATH.write_text(log_text, encoding="utf-8")
 
+    files_to_commit = ["research/EXPERIMENTS.md"]
+    if improved and param_overrides:
+        CURRENT_PARAMS_PATH.write_text(
+            json.dumps(effective_params, indent=2), encoding="utf-8"
+        )
+        files_to_commit.append("research/current_params.json")
+    if code_diff:
+        files_to_commit.append(CODE_DIR)
+
     if improved:
-        git("add", CODE_DIR, "research/EXPERIMENTS.md")
+        git("add", *files_to_commit)
         git("commit", "-m", f"exp {index}: {change} -> {success:g}%")
     else:
-        git("checkout", "--", CODE_DIR)
+        if code_diff:
+            git("checkout", "--", CODE_DIR)
+        if load_current_params():
+            write_active_params(load_current_params())
+        elif ACTIVE_PARAMS_PATH.exists():
+            ACTIVE_PARAMS_PATH.unlink()
         if model_dir is not None and model_dir.exists():
             shutil.rmtree(model_dir, ignore_errors=True)
     PROPOSAL_PATH.unlink(missing_ok=True)

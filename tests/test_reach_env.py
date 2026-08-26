@@ -129,3 +129,26 @@ def test_leaving_the_band_resets_the_hold_counter():
     env.data.mocap_pos[0] = [0.30, 0.0, 0.0]
     _, _, _, _, info = env.step(np.zeros(2))
     assert info["held_steps"] == 0
+
+
+def test_default_env_is_fixed_at_final_difficulty():
+    env = TwoJointArmReachEnv()
+    assert not env.curriculum_enabled
+    assert env.success_threshold == pytest.approx(0.01)
+    assert env.hold_steps_required == 100
+
+
+def test_curriculum_env_starts_at_easiest_stage():
+    env = TwoJointArmReachEnv(curriculum=True)
+    env.reset(seed=0)
+    assert env.success_threshold == pytest.approx(0.03)
+    assert env.hold_steps_required == 5
+
+
+def test_curriculum_advances_after_enough_successes():
+    env = TwoJointArmReachEnv(curriculum=True)
+    env.reset(seed=0)
+    for _ in range(15):
+        env._record_episode_outcome(True)
+    assert env.success_threshold == pytest.approx(0.02)
+    assert len(env._episode_outcomes) == 0
