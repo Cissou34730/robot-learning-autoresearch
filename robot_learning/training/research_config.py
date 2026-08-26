@@ -36,9 +36,24 @@ PARAM_WHITELIST: dict[str, set[str]] = {
         "vf_coef",
         "max_grad_norm",
         "target_kl",
+        "log_std_init",
+        "use_sde",
+        "sde_sample_freq",
+        "normalize_advantage",
+        "ortho_init",
     },
-    "policy": {"net_arch", "activation"},
-    "env": {"max_episode_steps"},
+    "policy": {
+        "net_arch",
+        "activation",
+        "share_features_extractor",
+        "log_std_init",
+    },
+    "env": {
+        "max_episode_steps",
+        "frame_skip",
+        "curriculum_stage_advance_success_rate",
+        "curriculum_stage_advance_min_episodes",
+    },
 }
 
 IMMUTABLE_INVARIANTS = {

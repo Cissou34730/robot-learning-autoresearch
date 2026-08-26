@@ -36,6 +36,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = 10,
         target_radius_range: tuple[float, float] = (0.06, 0.20),
         curriculum: bool = False,
+        stage_advance_success_rate: float = STAGE_ADVANCE_SUCCESS_RATE,
+        stage_advance_min_episodes: int = STAGE_ADVANCE_MIN_EPISODES,
     ) -> None:
         super().__init__()
         if not 0 < target_radius_range[1] <= MAX_REACH:
@@ -47,6 +49,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.curriculum_enabled = curriculum
+        self.stage_advance_success_rate = stage_advance_success_rate
+        self.stage_advance_min_episodes = stage_advance_min_episodes
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -73,7 +77,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._step_count = 0
         self._previous_distance = 0.0
         self._held_steps = 0
-        self._episode_outcomes: deque[bool] = deque(maxlen=STAGE_ADVANCE_MIN_EPISODES)
+        self._episode_outcomes: deque[bool] = deque(maxlen=self.stage_advance_min_episodes)
 
     def _apply_stage(self) -> None:
         threshold_m, hold_seconds = CURRICULUM_STAGES[self._stage_index]
@@ -83,11 +87,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _record_episode_outcome(self, success: bool) -> None:
         self._episode_outcomes.append(success)
-        if len(self._episode_outcomes) < STAGE_ADVANCE_MIN_EPISODES:
+        if len(self._episode_outcomes) < self.stage_advance_min_episodes:
             return
         success_rate = sum(self._episode_outcomes) / len(self._episode_outcomes)
         if (
-            success_rate >= STAGE_ADVANCE_SUCCESS_RATE
+            success_rate >= self.stage_advance_success_rate
             and self._stage_index < len(CURRICULUM_STAGES) - 1
         ):
             self._stage_index += 1

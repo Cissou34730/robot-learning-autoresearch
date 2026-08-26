@@ -1,64 +1,30 @@
 # AGENTS.md
 
-Instructions for AI coding agents (Codex, Copilot, OpenCode) working on this repository.
-
-## Project overview
-
-Local virtual robotics learning playground for reinforcement learning experimentation.
-Not production robotics — prioritize readability, explicitness, and easily adjustable
-parameters over performance optimization.
-
-Stack: Python 3.13+, MuJoCo (physics), Gymnasium (env API), Stable-Baselines3 (PPO/SAC),
-PyTorch (NN backend). Dependency management via **uv**. Must work CPU-only; GPU is optional.
-
-Core loop: observation → action → MuJoCo simulation → new state → reward → learning.
-Behavior must emerge from the reward function and available actions — never hard-code
-movement logic.
+Virtual robotics RL playground (MuJoCo + Gymnasium + Stable-Baselines3, CPU-first).
+Core loop: robot -> environment -> reward -> PPO training -> saved policy -> viewer.
+Readability and tunability beat performance. Never hard-code movement logic.
 
 ## Commands
 
 ```bash
-uv sync                      # install/sync dependencies
-uv run python -m robot_learning.train --env <env> [--resume <path>]   # train an agent
-uv run python -m robot_learning.play --model <path>                   # watch trained agent in MuJoCo viewer
-uv run pytest                # run tests
-uv run ruff check .          # lint
-uv run ruff format .         # format
-uv run mypy .                # type check
+uv sync                                  # install dependencies
+uv run python -m robot_learning.train    # train (see --help)
+uv run python -m robot_learning.play --model <model.zip>   # watch in MuJoCo viewer
+uv run pytest                            # tests
 ```
 
-Note: mypy is not configured yet. Verify actual command names before relying on them.
+## Layout
 
-## Architecture
-
-Keep these concepts separate and identifiable:
-
-- `robots/` — robot definitions (MuJoCo XML morphologies + physics). A robot definition
-  must be reusable across scenarios without duplicating its physical model.
-- `environments/` or `tasks/` — Gymnasium environments wrapping robots: observations,
-  actions, termination, terrain, difficulty settings.
-- `rewards/` — reward functions. They must be explicit, easy to locate, read and modify.
-  Do NOT hide reward logic behind abstraction layers — prefer plain readable functions
-  with named coefficients.
-- `training/` — training configuration and scripts (SB3). Training results are saved under
-  `models/` and must never be overwritten silently. Prefer resuming from a saved policy
-  over restarting from scratch when the setup is compatible.
-- `configs/` — hyperparameters and experiment configurations.
+- `robot_learning/environments/reach_env.py` - task: observations, episode, hold logic
+- `robot_learning/rewards/reach_reward.py` - reward structure (values live in JSON, see below)
+- `robot_learning/train.py`, `play.py` - CLIs
+- `research/current_params.json` - single source of truth for ALL tunable parameters
+- `research/program.md` - rules for autonomous research sessions (read before touching `research/`)
+- `models/<timestamp>/` - training outputs, never overwrite silently
 
 ## Conventions
 
-- Increase task/environment difficulty (constraints, terrain, randomization, objectives)
-  before changing the robot itself.
-- Training must render nothing (headless); rendering happens only in the viewer/play path.
-- Random seeds should be configurable for reproducibility.
-- Keep abstractions minimal: introduce one only when there is an actual reuse problem.
-
-## Verification
-
-Before declaring a change done:
-
-1. `uv run ruff check .` and `uv run ruff format --check .`
-2. Type check if configured (`uv run mypy .`)
-3. Run relevant tests with `uv run pytest`
-4. For env/reward changes: short smoke training run (e.g., a few thousand steps) to prove
-   the loop runs end-to-end without error.
+- Training is headless; rendering only in play/viewer paths.
+- Do not run repo-wide lint/format passes; format only files you touched.
+- Immutable task definition (threshold, hold duration, targets, evaluator): see
+  `robot_learning/training/research_config.py`.
