@@ -9,6 +9,11 @@ session following this protocol, then stop.
   -First 20`, `Select-String`, separate commands.
 - Modified `research/EXPERIMENTS.md` / `research/postmortems.md` in git status
   is normal; never revert them. You never edit EXPERIMENTS.md - the runner owns it.
+- Do NOT read `run_experiment.py`, `train.py`, or `research_config.py` source:
+  this document fully specifies the proposal format, allowed parameter keys,
+  boundaries, and error semantics, and is kept in sync with them. If SUMMARY
+  reports an input error, its message is authoritative - fix per the message,
+  not by re-reading source.
 - A previous scenario solved the same arm at "touch 3 cm" (100%). This scenario
   requires precision (1 cm) and stability (2 s hold): a different kind of skill.
 
