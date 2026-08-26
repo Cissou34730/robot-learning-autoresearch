@@ -16,7 +16,10 @@
     "ent_coef": 0.01
   },
   "policy": {
-    "net_arch": [64, 64],
+    "net_arch": [
+      64,
+      64
+    ],
     "activation": "tanh"
   },
   "env": {

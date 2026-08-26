@@ -36,7 +36,6 @@ PARAM_WHITELIST: dict[str, set[str]] = {
         "vf_coef",
         "max_grad_norm",
         "target_kl",
-        "log_std_init",
         "use_sde",
         "sde_sample_freq",
         "normalize_advantage",
@@ -45,8 +44,8 @@ PARAM_WHITELIST: dict[str, set[str]] = {
     "policy": {
         "net_arch",
         "activation",
-        "share_features_extractor",
         "log_std_init",
+        "share_features_extractor",
     },
     "env": {
         "max_episode_steps",

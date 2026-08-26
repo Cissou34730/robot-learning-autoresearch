@@ -55,7 +55,7 @@ def build_policy_kwargs(policy_config: dict) -> dict:
         raise ValueError(f"unknown activation: {activation_name}")
     return {
         "net_arch": list(net_arch),
-        "activation_fn": ACTIVATION_FUNCTIONS[activation_name](),
+        "activation_fn": ACTIVATION_FUNCTIONS[activation_name],
     }
 
 
