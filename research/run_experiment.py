@@ -1,9 +1,10 @@
 """Deterministic experiment runner for the autoresearch loop.
 
-The research agent writes `research/proposal.json` and edits the allowed code
-files. This script does everything else: verifies the diff, runs checks,
-trains, evaluates, appends the results row, applies the ratchet, updates the
-best-so-far marker, and manages the GOAL_REACHED / STAGNATED sentinels.
+The research agent writes `research/proposal.json` (and, in code mode, edits
+the allowed files). This script does everything else: validates input against
+machine-enforced boundaries, runs gates when needed, trains, evaluates,
+appends the results row, applies the ratchet, updates best-so-far, escalates
+between hypothesis classes, and writes GOAL_REACHED on success.
 """
 
 import argparse
@@ -15,47 +16,34 @@ import sys
 import time
 from pathlib import Path
 
+from robot_learning.training.research_config import (
+    assert_immutable_invariants,
+    escalation_ladder,
+    load_experiment_config,
+    merge_param_overrides,
+    validate_param_overrides,
+    write_experiment_config,
+)
+
 ROOT = Path(__file__).resolve().parent.parent
 LOG_PATH = ROOT / "research" / "EXPERIMENTS.md"
 PROPOSAL_PATH = ROOT / "research" / "proposal.json"
-CURRENT_PARAMS_PATH = ROOT / "research" / "current_params.json"
-ACTIVE_PARAMS_PATH = ROOT / "research" / "active_params.json"
+STATE_PATH = ROOT / "research" / "research_state.json"
+ESCALATION_PATH = ROOT / "research" / "ESCALATION_REQUEST"
 SENTINEL_DIR = ROOT / "research"
 CODE_DIR = "robot_learning"
 MODELS_DIR = ROOT / "models"
+ALLOWED_CODE_FILES = {
+    "robot_learning/rewards/reach_reward.py",
+    "robot_learning/environments/reach_env.py",
+    "tests/test_reach_env.py",
+}
 
 TIMESTEPS = 120000
 EVAL_EPISODES = 200
 TRAIN_SEED = 0
 GOAL_PERCENT = 98.0
 STAGNATION_WINDOW = 5
-
-PARAM_WHITELIST = {
-    "reward": {
-        "PROGRESS_COEFFICIENT",
-        "CLOSENESS_COEFFICIENT",
-        "CLOSENESS_LENGTH_SCALE",
-        "ACTION_COST_COEFFICIENT",
-        "DWELL_BONUS_PER_STEP",
-        "HOLD_COMPLETE_BONUS",
-    },
-    "ppo": {
-        "learning_rate",
-        "gamma",
-        "gae_lambda",
-        "n_steps",
-        "batch_size",
-        "n_epochs",
-        "clip_range",
-        "ent_coef",
-        "vf_coef",
-        "max_grad_norm",
-        "target_kl",
-    },
-    "policy": {"net_arch", "activation"},
-    "env": {"max_episode_steps"},
-}
-
 
 def git(*args: str) -> str:
     result = subprocess.run(
@@ -122,35 +110,6 @@ def recent_verdicts(log_text: str, window: int) -> list[str]:
     return verdicts
 
 
-def load_current_params() -> dict:
-    if not CURRENT_PARAMS_PATH.exists():
-        return {}
-    return json.loads(CURRENT_PARAMS_PATH.read_text(encoding="utf-8"))
-
-
-def validate_params(params: dict) -> None:
-    unknown_sections = set(params) - set(PARAM_WHITELIST)
-    if unknown_sections:
-        raise ValueError(f"unknown parameter sections: {sorted(unknown_sections)}")
-    for section, overrides in params.items():
-        invalid = set(overrides) - PARAM_WHITELIST[section]
-        if invalid:
-            raise ValueError(
-                f"unknown {section} parameters: {sorted(invalid)}"
-            )
-
-
-def merge_params(current: dict, overrides: dict) -> dict:
-    effective = {section: dict(values) for section, values in current.items()}
-    for section, values in overrides.items():
-        effective.setdefault(section, {}).update(values)
-    return effective
-
-
-def write_active_params(effective: dict) -> None:
-    ACTIVE_PARAMS_PATH.write_text(
-        json.dumps(effective, indent=2), encoding="utf-8"
-    )
 
 
 def main() -> int:
@@ -175,17 +134,38 @@ def main() -> int:
         code_diff = git("diff", "--stat", CODE_DIR).strip()
         if param_overrides and code_diff:
             raise ValueError(
-                "proposal contains both params and a code edit — use one or the other"
+                "proposal contains both params and a code edit - use one or the other"
             )
         if not param_overrides and not code_diff:
-            print("ERROR: no parameter overrides and no code diff — nothing to test.")
+            print("ERROR: no parameter overrides and no code diff - nothing to test.")
             return 1
 
-        effective_params = merge_params(load_current_params(), param_overrides or {})
+        hypothesis_class = str(proposal.get("class", "")).strip().lower()
+        if not hypothesis_class:
+            raise ValueError(
+                "proposal must include a 'class' field naming the ladder level "
+                "(e.g. 'reward structure')"
+            )
+
+        if code_diff:
+            changed_files = {
+                line.split("|")[0].strip()
+                for line in git("diff", "--name-only", CODE_DIR).splitlines()
+                if line.strip()
+            }
+            outside = changed_files - ALLOWED_CODE_FILES
+            if outside:
+                raise ValueError(
+                    f"edits touch files outside the allowed research surface: "
+                    f"{sorted(outside)}"
+                )
+
+        previous_config = load_experiment_config()
+        effective_params = merge_param_overrides(previous_config, param_overrides or {})
 
         if param_overrides:
-            validate_params(param_overrides)
-            write_active_params(effective_params)
+            validate_param_overrides(param_overrides)
+            write_experiment_config(effective_params)
             print(f"[runner] parameter mode: applying {param_overrides}")
         else:
             print("[runner] code mode: running checks (ruff, pytest)...")
@@ -193,6 +173,11 @@ def main() -> int:
             checks = run_module("pytest", "-q")
             if "failed" in checks:
                 raise RuntimeError("pytest reported failures")
+            from robot_learning.environments.reach_env import TwoJointArmReachEnv
+
+            probe_env = TwoJointArmReachEnv()
+            assert_immutable_invariants(probe_env)
+            print("[runner] immutable invariants verified")
 
         print(f"[runner] training started: {args.timesteps} steps, seed {TRAIN_SEED}")
         print("[runner] progress updates every 15 s (checkpoints every 5k steps)")
@@ -267,10 +252,7 @@ def main() -> int:
 
     except Exception as error:  # noqa: BLE001
         git("checkout", "--", CODE_DIR)
-        if load_current_params():
-            write_active_params(load_current_params())
-        elif ACTIVE_PARAMS_PATH.exists():
-            ACTIVE_PARAMS_PATH.unlink()
+        write_experiment_config(previous_config)
         row = (
             f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
             f"| - | - | - | error ({str(error)[:80]}) |"
@@ -303,25 +285,20 @@ def main() -> int:
         log_text = set_best_line(log_text, success, index)
     LOG_PATH.write_text(log_text, encoding="utf-8")
 
-    files_to_commit = ["research/EXPERIMENTS.md"]
     if improved and param_overrides:
-        CURRENT_PARAMS_PATH.write_text(
-            json.dumps(effective_params, indent=2), encoding="utf-8"
-        )
-        files_to_commit.append("research/current_params.json")
-    if code_diff:
+        write_experiment_config(effective_params)
+
+    files_to_commit = ["research/EXPERIMENTS.md", "research/current_params.json"]
+    if improved and code_diff:
         files_to_commit.append(CODE_DIR)
 
     if improved:
         git("add", *files_to_commit)
         git("commit", "-m", f"exp {index}: {change} -> {success:g}%")
     else:
+        write_experiment_config(previous_config)
         if code_diff:
             git("checkout", "--", CODE_DIR)
-        if load_current_params():
-            write_active_params(load_current_params())
-        elif ACTIVE_PARAMS_PATH.exists():
-            ACTIVE_PARAMS_PATH.unlink()
         if model_dir is not None and model_dir.exists():
             shutil.rmtree(model_dir, ignore_errors=True)
     PROPOSAL_PATH.unlink(missing_ok=True)
@@ -342,20 +319,50 @@ def main() -> int:
         )
         summary["sentinel"] = "GOAL_REACHED"
 
+    state = {}
+    if STATE_PATH.exists():
+        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    if improved:
+        state["consecutive_failures"] = 0
+    else:
+        state["consecutive_failures"] = state.get("consecutive_failures", 0) + 1
+    if hypothesis_class:
+        state["hypothesis_class"] = hypothesis_class
+    STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
+
     verdicts = recent_verdicts(LOG_PATH.read_text(encoding="utf-8"), STAGNATION_WINDOW)
     completed_recent = [v for v in verdicts if v and not v.startswith("error")]
-    if (
+    exhausted = (
         len(completed_recent) == STAGNATION_WINDOW
         and all(v.startswith("reverted") for v in completed_recent)
-        and not (SENTINEL_DIR / "STAGNATED").exists()
-    ):
-        (SENTINEL_DIR / "STAGNATED").write_text(
-            f"{STAGNATION_WINDOW} consecutive experiments without improvement "
-            f"(best remains {best_before:g}%). Recommend revisiting budget, task "
-            f"definition, or observation design.\n",
+        and not (SENTINEL_DIR / "ESCALATION_REQUEST").exists()
+    )
+    if exhausted:
+        ladder = escalation_ladder()
+        current_class = state.get("hypothesis_class", ladder[0])
+        if current_class in ladder:
+            next_index_in_ladder = min(
+                ladder.index(current_class) + 1, len(ladder) - 1
+            )
+        else:
+            next_index_in_ladder = 1
+        next_class = ladder[next_index_in_ladder]
+        (SENTINEL_DIR / "ESCALATION_REQUEST").write_text(
+            f"{STAGNATION_WINDOW} consecutive experiments in class "
+            f"'{current_class}' produced no improvement (best remains "
+            f"{best_before:g}%).\n\n"
+            f"ESCALATION: the next researcher must stop tuning '{current_class}' "
+            f"and propose experiments from the next ladder class:\n"
+            f"  >>> {next_class} <<<\n\n"
+            f"Read the postmortems in research/postmortems.md first, analyse the "
+            f"accumulated evidence, and form a coherent hypothesis in the new "
+            f"class.\n",
             encoding="utf-8",
         )
-        summary["sentinel"] = "STAGNATED"
+        summary["escalation"] = next_class
+        state["hypothesis_class"] = next_class
+        state["consecutive_failures"] = 0
+        STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     print("=" * 60)
     print(
