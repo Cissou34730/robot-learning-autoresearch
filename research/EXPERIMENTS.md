@@ -1,6 +1,6 @@
 # Experiment log
 
-**Best so far:** 0% (experiment 36)
+**Best so far:** 0% (experiment 39)
 
 ## Lessons that shaped the current best (condensed from experiments 0-11)
 
@@ -76,3 +76,4 @@ Traceback (most recent call last):
 
 =================================== ERRORS =====================) |
 | 38 | 2026-08-26 | Increase PPO gamma from 0.99 to 0.995. | A longer return horizon will assign more value to reaching the target and sustaining the final 100-step hold, improving deterministic evaluation success. | 0 | 2.4 | 2.3 | reverted (equal) |
+| 39 | 2026-08-27 | Unchanged control using the transfer checkpoint and current curriculum | Establish the fixed-evaluator baseline for the current curriculum. | 0 | 2.1 | 2.0 | kept (baseline) |
