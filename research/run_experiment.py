@@ -19,7 +19,6 @@ from pathlib import Path
 from research.build_research_brief import write_training_summary
 from robot_learning.training.research_config import (
     assert_immutable_invariants,
-    escalation_ladder,
     load_experiment_config,
     merge_param_overrides,
     validate_param_overrides,
@@ -30,7 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LOG_PATH = ROOT / "research" / "EXPERIMENTS.md"
 PROPOSAL_PATH = ROOT / "research" / "proposal.json"
 STATE_PATH = ROOT / "research" / "research_state.json"
-ESCALATION_PATH = ROOT / "research" / "ESCALATION_REQUEST"
+BASELINE_PENDING_PATH = ROOT / "research" / "BASELINE_PENDING"
 SENTINEL_DIR = ROOT / "research"
 CODE_DIR = "robot_learning"
 MODELS_DIR = ROOT / "models"
@@ -51,7 +50,6 @@ TIMESTEPS = 120000
 EVAL_EPISODES = 200
 TRAIN_SEED = 0
 GOAL_PERCENT = 98.0
-STAGNATION_WINDOW = 5
 
 def git(*args: str) -> str:
     result = subprocess.run(
@@ -109,16 +107,6 @@ def append_row(log_text: str, row: str) -> str:
     return log_text.rstrip("\n") + "\n" + row + "\n"
 
 
-def recent_verdicts(log_text: str, window: int) -> list[str]:
-    rows = re.findall(r"^\| \d+ \|.+\|$", log_text, flags=re.MULTILINE)
-    verdicts = []
-    for row_text in rows[-window:]:
-        cells = [c.strip() for c in row_text.split("|")]
-        verdicts.append(cells[-2] if len(cells) >= 2 else "")
-    return verdicts
-
-
-
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -132,8 +120,9 @@ def main() -> int:
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
     param_overrides = proposal.get("params")
-    hypothesis_class = str(proposal.get("class", "")).strip().lower()
+    hypothesis_class = str(proposal.get("class", "unclassified")).strip().lower()
     initialization = str(proposal.get("initialization", "transfer")).strip().lower()
+    baseline = bool(proposal.get("baseline", False))
 
     log_text = LOG_PATH.read_text(encoding="utf-8")
     index = next_index(log_text)
@@ -144,13 +133,12 @@ def main() -> int:
     config_written = False
 
     try:
-        if not hypothesis_class:
-            raise ValueError(
-                "proposal must include a 'class' field naming the ladder level "
-                "(e.g. 'reward structure')"
-            )
         if initialization not in {"transfer", "fresh"}:
             raise ValueError("initialization must be 'transfer' or 'fresh'")
+        if baseline and initialization != "transfer":
+            raise ValueError("the baseline must use transfer initialization")
+        if baseline and not BASELINE_PENDING_PATH.exists():
+            raise ValueError("baseline requested but research/BASELINE_PENDING is absent")
 
         immutable_env_overrides = {"max_episode_steps", "frame_skip"} & set(
             (param_overrides or {}).get("env", {})
@@ -160,29 +148,14 @@ def main() -> int:
                 f"immutable environment parameters cannot be changed: "
                 f"{sorted(immutable_env_overrides)}"
             )
-        ladder = escalation_ladder()
-        normalized_class = next(
-            (
-                item
-                for item in ladder
-                if hypothesis_class == item
-                or hypothesis_class.startswith(item.split(" (", maxsplit=1)[0])
-            ),
-            None,
-        )
-        if initialization == "fresh" and (
-            normalized_class is None or ladder.index(normalized_class) < 2
-        ):
-            raise ValueError(
-                "fresh initialization is allowed from observation representation onward"
-            )
-
         code_diff = git("diff", "--stat", *RESEARCH_DIFF_PATHS).strip()
+        if baseline and (param_overrides or code_diff):
+            raise ValueError("baseline requires no parameter overrides or code edits")
         if param_overrides and code_diff:
             raise ValueError(
                 "proposal contains both params and a code edit - use one or the other"
             )
-        if not param_overrides and not code_diff:
+        if not baseline and not param_overrides and not code_diff:
             print("ERROR: no parameter overrides and no code diff - nothing to test.")
             return 1
         if initialization == "transfer" and param_overrides and param_overrides.get(
@@ -200,7 +173,7 @@ def main() -> int:
                 if line.strip()
             }
             allowed_code_files = set(BASE_ALLOWED_CODE_FILES)
-            if normalized_class and ladder.index(normalized_class) >= 5:
+            if "learning algorithm" in hypothesis_class or "broader" in hypothesis_class:
                 allowed_code_files.update(ALGORITHM_CODE_FILES)
             outside = changed_files - allowed_code_files
             if outside:
@@ -328,9 +301,11 @@ def main() -> int:
         )
         return 1
 
-    improved = success > best_before
+    improved = baseline or success > best_before
     equal = success == best_before
-    if improved:
+    if baseline:
+        verdict = "kept (baseline)"
+    elif improved:
         verdict = "kept"
     elif equal:
         verdict = "reverted (equal)"
@@ -352,6 +327,9 @@ def main() -> int:
     files_to_commit = ["research/EXPERIMENTS.md", "research/current_params.json"]
     if improved and code_diff:
         files_to_commit.extend(RESEARCH_DIFF_PATHS)
+    if baseline:
+        BASELINE_PENDING_PATH.unlink(missing_ok=True)
+        files_to_commit.append("research/BASELINE_PENDING")
 
     if improved:
         git("add", *files_to_commit)
@@ -384,47 +362,13 @@ def main() -> int:
     state = {}
     if STATE_PATH.exists():
         state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    if improved:
-        state["consecutive_failures"] = 0
-    else:
-        state["consecutive_failures"] = state.get("consecutive_failures", 0) + 1
-    if hypothesis_class:
-        state["hypothesis_class"] = hypothesis_class
+    state["last_experiment"] = index
+    state["last_class"] = hypothesis_class
+    state["last_verdict"] = verdict
+    if baseline:
+        state["baseline_experiment"] = index
+        state["baseline_success_percent"] = success
     STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
-
-    verdicts = recent_verdicts(LOG_PATH.read_text(encoding="utf-8"), STAGNATION_WINDOW)
-    completed_recent = [v for v in verdicts if v and not v.startswith("error")]
-    exhausted = (
-        len(completed_recent) == STAGNATION_WINDOW
-        and all(v.startswith("reverted") for v in completed_recent)
-        and not (SENTINEL_DIR / "ESCALATION_REQUEST").exists()
-    )
-    if exhausted:
-        ladder = escalation_ladder()
-        current_class = state.get("hypothesis_class", ladder[0])
-        if current_class in ladder:
-            next_index_in_ladder = min(
-                ladder.index(current_class) + 1, len(ladder) - 1
-            )
-        else:
-            next_index_in_ladder = 1
-        next_class = ladder[next_index_in_ladder]
-        (SENTINEL_DIR / "ESCALATION_REQUEST").write_text(
-            f"{STAGNATION_WINDOW} consecutive experiments in class "
-            f"'{current_class}' produced no improvement (best remains "
-            f"{best_before:g}%).\n\n"
-            f"ESCALATION: the next researcher must stop tuning '{current_class}' "
-            f"and propose experiments from the next ladder class:\n"
-            f"  >>> {next_class} <<<\n\n"
-            f"Read research/brief.md first, analyse the compact accumulated "
-            f"evidence, and form a coherent hypothesis in the new "
-            f"class.\n",
-            encoding="utf-8",
-        )
-        summary["escalation"] = next_class
-        state["hypothesis_class"] = next_class
-        state["consecutive_failures"] = 0
-        STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     print("=" * 60)
     print(

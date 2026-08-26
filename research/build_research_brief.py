@@ -177,7 +177,6 @@ def render_research_brief() -> str:
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
     state_path = RESEARCH_DIR / "research_state.json"
-    escalation_path = RESEARCH_DIR / "ESCALATION_REQUEST"
 
     experiments = experiments_path.read_text(encoding="utf-8")
     postmortems = (
@@ -193,6 +192,17 @@ def render_research_brief() -> str:
     )
     best_match = re.search(r"^\*\*Best so far:\*\*.*$", experiments, re.MULTILINE)
     best = best_match.group(0) if best_match else "**Best so far:** unknown"
+    reset_after = int(state.get("curriculum_reset_after_experiment", 0))
+    experiment_rows = _experiment_rows(experiments)
+    current_rows = [row for row in experiment_rows if int(row[0]) > reset_after]
+    displayed_rows = current_rows[-5:] if current_rows else experiment_rows[-3:]
+    baseline_experiment = state.get("baseline_experiment")
+    baseline_score = state.get("baseline_success_percent")
+    baseline_status = (
+        f"experiment {baseline_experiment} at {baseline_score:g}%"
+        if baseline_experiment is not None and baseline_score is not None
+        else "pending"
+    )
 
     lines = [
         "# Compact Research Brief",
@@ -213,19 +223,11 @@ def render_research_brief() -> str:
         "## Current status",
         "",
         f"- {best}",
-        f"- Hypothesis class: {state.get('hypothesis_class') or 'not set'}",
-        f"- Consecutive failures in class: {state.get('consecutive_failures', 0)}",
-        (
-            f"- Curriculum reset after experiment: "
-            f"{state.get('curriculum_reset_after_experiment', 'not recorded')}"
-        ),
-        f"- Transfer baseline: {state.get('baseline_model', 'not recorded')}",
-        "- Escalation: "
-        + (
-            _compact(escalation_path.read_text(encoding="utf-8"), 500)
-            if escalation_path.exists()
-            else "none"
-        ),
+        f"- Baseline: {baseline_status}",
+        f"- Last experiment: {state.get('last_experiment', 'none')}",
+        f"- Last area: {state.get('last_class', 'none')}",
+        f"- Last verdict: {state.get('last_verdict', 'none')}",
+        f"- Transfer checkpoint: {state.get('baseline_model', 'not recorded')}",
         "",
         "## Current parameters",
         "",
@@ -233,18 +235,23 @@ def render_research_brief() -> str:
         json.dumps(params, indent=2),
         "```",
         "",
-        "## Historical experiments immediately before the curriculum reset",
+        (
+            "## Current curriculum experiments"
+            if current_rows
+            else "## Pre-reset evidence (baseline still pending)"
+        ),
         "",
         (
-            "These results are scientific background only; they do not count toward the "
-            "new curriculum's failure streak."
+            "These runs share the current curriculum and baseline."
+            if current_rows
+            else "Pre-reset rows are background only."
         ),
         "",
         "| # | Change | Success | Median cm | Verdict |",
         "|---:|---|---:|---:|---|",
     ]
 
-    for cells in _experiment_rows(experiments)[-5:]:
+    for cells in displayed_rows:
         index, _date, change, _hypothesis, success, _mean, median, verdict = cells[:8]
         lines.append(
             f"| {index} | {_compact(change, 180)} | {success} | {median} | "
@@ -273,7 +280,7 @@ def render_research_brief() -> str:
                 "evidence is insufficient for one specific decision."
             ),
             "- One experiment, one hypothesis, no subagents.",
-            "- Keep the new postmortem between 300 and 500 words.",
+            "- Record only 5-8 concise postmortem lines.",
         ]
     )
     return "\n".join(lines).rstrip() + "\n"
