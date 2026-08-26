@@ -2,6 +2,17 @@
 
 Set-Location $PSScriptRoot
 
+$createdNew = $false
+$loopMutex = [System.Threading.Mutex]::new(
+    $true,
+    "Local\RobotLearningAutoresearch",
+    [ref]$createdNew
+)
+if (-not $createdNew) {
+    $loopMutex.Dispose()
+    throw "Another robot autoresearch loop is already running."
+}
+
 function Update-ResearchBrief {
     uv run python research/build_research_brief.py
     if ($LASTEXITCODE -ne 0) {
@@ -9,6 +20,7 @@ function Update-ResearchBrief {
     }
 }
 
+try {
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
         Write-Host "GOAL REACHED - research loop finished."
@@ -31,7 +43,7 @@ while ($true) {
         }
         Update-ResearchBrief
         Write-Host "=== Baseline complete ==="
-        break
+        continue
     }
 
     Update-ResearchBrief
@@ -59,5 +71,10 @@ while ($true) {
     Update-ResearchBrief
     Write-Host "=== Experiment session ended at $(Get-Date -Format 'HH:mm:ss') ==="
     Start-Sleep -Seconds 5
+}
+}
+finally {
+    $loopMutex.ReleaseMutex()
+    $loopMutex.Dispose()
 }
 
