@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -12,6 +13,19 @@ from robot_learning.robots.two_joint_arm import (
     UPPER_ARM_LENGTH,
 )
 
+CURRICULUM_STAGES: tuple[tuple[float, float], ...] = (
+    # Phase A - entry precision (tiny hold seed)
+    (0.03, 0.10),
+    (0.02, 0.10),
+    (0.01, 0.10),
+    # Phase B - stabilization at 1 cm
+    (0.01, 0.50),
+    (0.01, 1.00),
+    (0.01, 2.00),
+)
+STAGE_ADVANCE_MIN_EPISODES = 15
+STAGE_ADVANCE_SUCCESS_RATE = 0.7
+
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
@@ -21,8 +35,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         max_episode_steps: int = 500,
         frame_skip: int = 10,
         target_radius_range: tuple[float, float] = (0.06, 0.20),
-        success_threshold: float = 0.01,
-        hold_seconds: float = 2.0,
+        curriculum: bool = False,
     ) -> None:
         super().__init__()
         if not 0 < target_radius_range[1] <= MAX_REACH:
@@ -33,10 +46,16 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.success_threshold = success_threshold
+        self.curriculum_enabled = curriculum
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+
+        self._stage_index = len(CURRICULUM_STAGES) - 1
+        if curriculum:
+            self._stage_index = 0
+        threshold_m, hold_seconds = CURRICULUM_STAGES[self._stage_index]
+        self.success_threshold = threshold_m
         control_dt = self.model.opt.timestep * self.frame_skip
         self.hold_steps_required = round(hold_seconds / control_dt)
 
@@ -44,7 +63,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.observation_space = gym.spaces.Box(
             low=-np.inf,
             high=np.inf,
-            shape=(2 * n_joints + 3 + 4 + 1,),
+            shape=(2 * n_joints + 3 + 4 + 3,),
             dtype=np.float32,
         )
         self.action_space = gym.spaces.Box(
@@ -54,6 +73,26 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._step_count = 0
         self._previous_distance = 0.0
         self._held_steps = 0
+        self._episode_outcomes: deque[bool] = deque(maxlen=STAGE_ADVANCE_MIN_EPISODES)
+
+    def _apply_stage(self) -> None:
+        threshold_m, hold_seconds = CURRICULUM_STAGES[self._stage_index]
+        self.success_threshold = threshold_m
+        control_dt = self.model.opt.timestep * self.frame_skip
+        self.hold_steps_required = round(hold_seconds / control_dt)
+
+    def _record_episode_outcome(self, success: bool) -> None:
+        self._episode_outcomes.append(success)
+        if len(self._episode_outcomes) < STAGE_ADVANCE_MIN_EPISODES:
+            return
+        success_rate = sum(self._episode_outcomes) / len(self._episode_outcomes)
+        if (
+            success_rate >= STAGE_ADVANCE_SUCCESS_RATE
+            and self._stage_index < len(CURRICULUM_STAGES) - 1
+        ):
+            self._stage_index += 1
+            self._apply_stage()
+            self._episode_outcomes.clear()
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -106,7 +145,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self.data.qvel,
                 self._end_effector_position() - self.data.mocap_pos[0],
                 ik_deltas,
-                [self._held_steps / self.hold_steps_required],
+                [self._held_steps / max(self.hold_steps_required, 1)],
+                [self.success_threshold / 0.01],
+                [self.hold_steps_required / 100],
             ]
         ).astype(np.float32)
 
@@ -161,5 +202,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
+            "stage_index": self._stage_index,
         }
+        if self.curriculum_enabled and (terminated or truncated):
+            self._record_episode_outcome(terminated)
         return self._observation(), float(reward), terminated, truncated, info
