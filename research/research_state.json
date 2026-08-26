@@ -1,9 +1,4 @@
 {
   "curriculum_reset_after_experiment": 35,
-  "baseline_model": "models/reach-exp19/model.zip",
-  "last_experiment": 36,
-  "last_class": "baseline",
-  "last_verdict": "kept (baseline)",
-  "baseline_experiment": 36,
-  "baseline_success_percent": 0.0
+  "baseline_model": "models/reach-exp19/model.zip"
 }

@@ -34,17 +34,12 @@ SENTINEL_DIR = ROOT / "research"
 CODE_DIR = "robot_learning"
 MODELS_DIR = ROOT / "models"
 BASELINE_MODEL_PATH = MODELS_DIR / "reach-exp19" / "model.zip"
-BASE_ALLOWED_CODE_FILES = {
-    "robot_learning/rewards/reach_reward.py",
-    "robot_learning/environments/reach_env.py",
-    "tests/test_reach_env.py",
-}
-ALGORITHM_CODE_FILES = {
-    "robot_learning/train.py",
-    "robot_learning/evaluate.py",
-    "robot_learning/play.py",
-}
 RESEARCH_DIFF_PATHS = (CODE_DIR, "tests/test_reach_env.py")
+IMMUTABLE_CODE_FILES = {
+    "robot_learning/evaluate.py",
+    "robot_learning/training/research_config.py",
+    "research/run_experiment.py",
+}
 
 TIMESTEPS = 120000
 EVAL_EPISODES = 200
@@ -172,10 +167,11 @@ def main() -> int:
                 for line in git("diff", "--name-only", *RESEARCH_DIFF_PATHS).splitlines()
                 if line.strip()
             }
-            allowed_code_files = set(BASE_ALLOWED_CODE_FILES)
-            if "learning algorithm" in hypothesis_class or "broader" in hypothesis_class:
-                allowed_code_files.update(ALGORITHM_CODE_FILES)
-            outside = changed_files - allowed_code_files
+            outside = {
+                path for path in changed_files
+                if path in IMMUTABLE_CODE_FILES
+                or (not path.startswith("robot_learning/") and path != "tests/test_reach_env.py")
+            }
             if outside:
                 raise ValueError(
                     f"edits touch files outside the allowed research surface: "
@@ -386,3 +382,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+

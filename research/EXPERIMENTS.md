@@ -75,3 +75,4 @@ Traceback (most recent call last):
 | 37 | 2026-08-26 | Switch training and evaluation from PPO to SAC with replay and automatic entropy tuning | Off-policy replay will preserve rare in-band trajectories after fresh exploration declines, while SAC entropy tuning will maintain useful exploration and improve deterministic hold success. | - | - | - | error (pytest failed:
 
 =================================== ERRORS =====================) |
+| 38 | 2026-08-26 | Increase PPO gamma from 0.99 to 0.995. | A longer return horizon will assign more value to reaching the target and sustaining the final 100-step hold, improving deterministic evaluation success. | 0 | 2.4 | 2.3 | reverted (equal) |
