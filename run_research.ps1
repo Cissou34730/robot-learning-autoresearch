@@ -1,6 +1,4 @@
-# Token-efficient autonomous RL research loop.
-# Uses a fresh session for each experiment and escalates model capability only
-# for structural work or recovery from an invalid run.
+# Token-efficient autonomous robot-learning loop.
 
 Set-Location $PSScriptRoot
 
@@ -17,26 +15,34 @@ while ($true) {
         break
     }
 
+    if (Test-Path "research\BASELINE_PENDING") {
+        Write-Host "=== Running automatic curriculum baseline ==="
+        @{
+            baseline = $true
+            change = "Unchanged control using the transfer checkpoint and current curriculum"
+            hypothesis = "Establish the fixed-evaluator baseline for the current curriculum."
+            class = "baseline"
+            initialization = "transfer"
+        } | ConvertTo-Json | Set-Content "research\proposal.json"
+
+        uv run python research/run_experiment.py
+        if ($LASTEXITCODE -ne 0) {
+            throw "Baseline failed. The research loop stopped instead of silently continuing."
+        }
+        Update-ResearchBrief
+        Write-Host "=== Baseline complete ==="
+        continue
+    }
+
     Update-ResearchBrief
 
     $model = "github-copilot/gpt-5.6-luna"
     $reasoning = "medium"
-    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
-    $complexClasses = @(
-        "reward structure",
-        "observation representation",
-        "training curriculum",
-        "policy architecture and training schedule",
-        "learning algorithm",
-        "learning algorithm (e.g. PPO vs SAC)",
-        "broader goal-preserving training-method changes"
-    )
     $lastRow = Get-Content "research\EXPERIMENTS.md" |
         Where-Object { $_ -match '^\| \d+ \|' } |
         Select-Object -Last 1
 
-    if (($complexClasses -contains [string]$state.hypothesis_class) -or
-        ($lastRow -match '\| error \(')) {
+    if ($lastRow -match '\| error \(') {
         $model = "github-copilot/gpt-5.6-terra"
     }
     if ($env:RESEARCH_MODEL) {

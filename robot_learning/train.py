@@ -6,8 +6,8 @@ from pathlib import Path
 import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.training.research_config import load_experiment_config
@@ -30,6 +30,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--env", default="reach", choices=sorted(ENVIRONMENTS))
     parser.add_argument("--timesteps", type=int, default=100_000)
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument(
+        "--n-envs",
+        type=int,
+        default=4,
+        help="parallel CPU environments (default: 4; use 1 for the old behavior)",
+    )
     parser.add_argument(
         "--view", action="store_true", help="open a live MuJoCo viewer during training"
     )
@@ -59,10 +65,26 @@ def build_policy_kwargs(policy_config: dict) -> dict:
     }
 
 
+def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
+    if n_envs < 1:
+        raise ValueError("n_envs must be at least 1")
+    rollout_size = int(ppo_params["n_steps"])
+    if rollout_size % n_envs:
+        raise ValueError(
+            f"n_steps ({rollout_size}) must be divisible by n_envs ({n_envs})"
+        )
+    result = dict(ppo_params)
+    result["n_steps"] = rollout_size // n_envs
+    return result
+
+
+
+
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
     ppo_params = dict(config["ppo"])
+    ppo_params = parallel_ppo_params(ppo_params, args.n_envs)
     policy_kwargs = build_policy_kwargs(config["policy"])
     env_kwargs = {"curriculum": True, **config["env"]}
 
@@ -73,7 +95,14 @@ def main() -> None:
     )
     tensorboard_log = str(save_dir / "tensorboard")
 
-    venv = DummyVecEnv([lambda: Monitor(ENVIRONMENTS[args.env](**env_kwargs))])
+    vec_env_cls = DummyVecEnv if args.n_envs == 1 else SubprocVecEnv
+    venv = make_vec_env(
+        ENVIRONMENTS[args.env],
+        n_envs=args.n_envs,
+        seed=args.seed,
+        env_kwargs=env_kwargs,
+        vec_env_cls=vec_env_cls,
+    )
     if args.resume is not None:
         stats_path = args.resume.parent / "vecnormalize.pkl"
         if stats_path.exists():
@@ -118,7 +147,7 @@ def main() -> None:
 
     callbacks.append(
         CheckpointCallback(
-            save_freq=CHECKPOINT_EVERY_STEPS,
+            save_freq=max(CHECKPOINT_EVERY_STEPS // args.n_envs, 1),
             save_path=str(save_dir / "checkpoints"),
             name_prefix=args.env,
             save_vecnormalize=True,
@@ -146,6 +175,7 @@ def main() -> None:
                     "seed": args.seed,
                     "resumed_from": str(args.resume) if args.resume else None,
                     "hyperparameters": ppo_params,
+                    "n_envs": args.n_envs,
                     "policy_config": config["policy"],
                 },
                 indent=2,
