@@ -14,8 +14,9 @@ from robot_learning.robots.two_joint_arm import (
 )
 
 CURRICULUM_STAGES: tuple[tuple[float, float], ...] = (
-    # Phase A - entry precision (tiny hold seed)
-    (0.03, 0.10),
+    # Stage 0: pure touch (1 step in-band) - reachable by chance
+    (0.03, 0.02),
+    # Phase A - entry precision
     (0.02, 0.10),
     (0.01, 0.10),
     # Phase B - stabilization at 1 cm
@@ -24,7 +25,7 @@ CURRICULUM_STAGES: tuple[tuple[float, float], ...] = (
     (0.01, 2.00),
 )
 STAGE_ADVANCE_MIN_EPISODES = 15
-STAGE_ADVANCE_SUCCESS_RATE = 0.7
+STAGE_ADVANCE_SUCCESS_RATE = 0.6
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):

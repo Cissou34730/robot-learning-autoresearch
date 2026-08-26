@@ -65,14 +65,25 @@ def test_reward_is_positive_when_closer_and_negative_when_farther():
     )
 
 
-def test_dwell_bonus_grows_with_hold_progress():
+def test_in_band_payment_is_flat_per_step():
     early = reach_reward(
         0.005, 0.005, success_threshold=0.01, held_steps=1, hold_steps_required=100
     )
     late = reach_reward(
         0.005, 0.005, success_threshold=0.01, held_steps=99, hold_steps_required=100
     )
-    assert late > early > 0
+    assert early == pytest.approx(late)
+    assert late == pytest.approx(reach_reward_module.DWELL_BONUS_PER_STEP)
+
+
+def test_out_of_band_step_pays_no_dwell():
+    after_long_streak = reach_reward(
+        0.02, 0.02, success_threshold=0.01, held_steps=50, hold_steps_required=100
+    )
+    fresh = reach_reward(
+        0.02, 0.02, success_threshold=0.01, held_steps=0, hold_steps_required=100
+    )
+    assert after_long_streak == pytest.approx(fresh)
 
 
 def test_hold_completion_adds_final_bonus():
@@ -83,10 +94,7 @@ def test_hold_completion_adds_final_bonus():
         0.005, 0.005, success_threshold=0.01, held_steps=100, hold_steps_required=100
     )
     delta = after - before
-    expected = (
-        HOLD_COMPLETE_BONUS
-        + reach_reward_module.DWELL_BONUS_PER_STEP / 100
-    )
+    expected = HOLD_COMPLETE_BONUS
     assert delta == pytest.approx(expected)
 
 
@@ -142,7 +150,7 @@ def test_curriculum_env_starts_at_easiest_stage():
     env = TwoJointArmReachEnv(curriculum=True)
     env.reset(seed=0)
     assert env.success_threshold == pytest.approx(0.03)
-    assert env.hold_steps_required == 5
+    assert env.hold_steps_required == 1
 
 
 def test_curriculum_advances_after_enough_successes():

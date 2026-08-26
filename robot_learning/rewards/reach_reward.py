@@ -39,7 +39,7 @@ def reach_reward(
         previous_distance
     )
     if current_distance <= success_threshold:
-        reward += DWELL_BONUS_PER_STEP * held_steps / hold_steps_required
+        reward += DWELL_BONUS_PER_STEP
         if held_steps >= hold_steps_required:
             reward += HOLD_COMPLETE_BONUS
     if action is not None:
