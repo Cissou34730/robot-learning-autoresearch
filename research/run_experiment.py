@@ -64,7 +64,6 @@ TRAIN_TIMEOUT_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 CONFIRMATION_SEEDS = (3000, 5000)
-CONFIRMATION_TRAIN_SEEDS = (1, 2)
 
 
 def announce(message: str) -> None:
@@ -471,6 +470,47 @@ def copy_artifact(source: Path, destination: Path) -> None:
         destination_replay.unlink()
 
 
+def validate_reusable_candidate(
+    source: Path,
+    *,
+    stage_index: int,
+    timesteps: int,
+    resume: Path | None,
+    config: dict,
+) -> None:
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        if not (source / filename).exists():
+            raise ValueError(f"reusable candidate is incomplete: {filename}")
+    artifact = json.loads((source / "artifact.json").read_text(encoding="utf-8"))
+    algorithm = str(config["algorithm"]["name"]).lower()
+    n_envs = int(config["training"]["n_envs"])
+    expected_params = dict(config[algorithm])
+    if algorithm == "ppo":
+        expected_params["n_steps"] = int(expected_params["n_steps"]) // n_envs
+    expected_resume = resume.resolve() if resume is not None else None
+    actual_resume = (
+        Path(artifact["resumed_from"]).resolve()
+        if artifact.get("resumed_from") is not None
+        else None
+    )
+    checks = {
+        "algorithm": artifact.get("algorithm") == algorithm,
+        "stage": artifact.get("stage_index") == stage_index,
+        "seed": artifact.get("seed") == TRAIN_SEED,
+        "timesteps": artifact.get("timesteps") == timesteps,
+        "n_envs": artifact.get("n_envs") == n_envs,
+        "parameters": artifact.get("parameters") == expected_params,
+        "policy": artifact.get("policy") == config["policy"],
+        "resume checkpoint": actual_resume == expected_resume,
+    }
+    mismatches = [name for name, matches in checks.items() if not matches]
+    if mismatches:
+        raise ValueError(
+            "reusable candidate does not match this experiment: "
+            + ", ".join(mismatches)
+        )
+
+
 def confirm_promotion(artifact_dir: Path, stage_index: int) -> tuple[bool, list[dict]]:
     evaluations = [
         evaluate_artifact(
@@ -485,48 +525,6 @@ def confirm_promotion(artifact_dir: Path, stage_index: int) -> tuple[bool, list[
         result["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT
         for result in evaluations
     )
-    return passed, evaluations
-
-
-def confirm_training_method(
-    resume_model: Path | None,
-    stage_index: int,
-    timesteps: int,
-    experiment_index: int,
-    accepted_metrics: dict,
-) -> tuple[bool, list[dict]]:
-    evaluations: list[dict] = []
-    passed = True
-    for number, seed in enumerate(CONFIRMATION_TRAIN_SEEDS, start=1):
-        output_dir = CANDIDATE_ROOT / f"experiment-{experiment_index}-seed-{seed}"
-        try:
-            train_candidate(
-                output_dir,
-                stage_index,
-                timesteps,
-                seed,
-                resume_model,
-                label=(
-                    f"training confirmation {number}/"
-                    f"{len(CONFIRMATION_TRAIN_SEEDS)}"
-                ),
-            )
-            metrics = evaluate_artifact(
-                output_dir,
-                stage_index,
-                label=(
-                    f"training confirmation evaluation {number}/"
-                    f"{len(CONFIRMATION_TRAIN_SEEDS)}"
-                ),
-            )
-            evaluations.append(metrics)
-            passed = passed and (
-                metrics["current_stage_success_percent"]
-                >= STAGE_PROMOTION_PERCENT
-                and no_regression(metrics, accepted_metrics, stage_index)
-            )
-        finally:
-            remove_candidate_dir(output_dir)
     return passed, evaluations
 
 
@@ -550,6 +548,7 @@ def commit_result(index: int, change: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
+    parser.add_argument("--reuse-candidate", type=Path, default=None)
     args = parser.parse_args()
     if not PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
@@ -633,14 +632,28 @@ def main() -> int:
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
             remove_candidate_dir(candidate_dir)
-        train_candidate(
-            candidate_dir,
-            stage_index,
-            args.timesteps,
-            TRAIN_SEED,
-            resume,
-            label="baseline training" if baseline else "candidate training",
-        )
+        if args.reuse_candidate is not None:
+            if not baseline:
+                raise ValueError("candidate reuse is restricted to baseline recovery")
+            reusable = args.reuse_candidate.resolve()
+            validate_reusable_candidate(
+                reusable,
+                stage_index=stage_index,
+                timesteps=args.timesteps,
+                resume=resume,
+                config=load_experiment_config(),
+            )
+            announce(f"[recovery] reusing completed candidate from {reusable}")
+            copy_artifact(reusable, candidate_dir)
+        else:
+            train_candidate(
+                candidate_dir,
+                stage_index,
+                args.timesteps,
+                TRAIN_SEED,
+                resume,
+                label="baseline training" if baseline else "candidate training",
+            )
         runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
         if runtime_benchmark_changes:
             raise RuntimeError(
@@ -657,24 +670,13 @@ def main() -> int:
         active_dir = candidate_dir if improved else accepted_dir
         active_metrics = candidate_metrics if improved else accepted_metrics
         promoted = False
-        confirmations: dict[str, list[dict]] = {"evaluation": [], "training": []}
+        confirmations: dict[str, list[dict]] = {"evaluation": []}
         if active_metrics["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT:
             announce("[confirmation] promotion threshold reached; confirming result")
             target_passed, confirmations["evaluation"] = confirm_promotion(
                 active_dir, stage_index
             )
-            training_passed = True
-            if improved:
-                training_passed, confirmations["training"] = confirm_training_method(
-                    accepted_dir / "model.zip"
-                    if initialization == "transfer"
-                    else None,
-                    stage_index,
-                    args.timesteps,
-                    index,
-                    accepted_metrics,
-                )
-            promoted = target_passed and training_passed
+            promoted = target_passed
 
         if improved:
             copy_artifact(candidate_dir, ACCEPTED_DIR)

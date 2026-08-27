@@ -6,6 +6,7 @@ from research.run_experiment import (
     latest_training_steps,
     no_regression,
     rank,
+    validate_reusable_candidate,
 )
 
 
@@ -72,3 +73,35 @@ def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
     assert log_path.read_text(encoding="utf-8").count("\n") == 2
     assert "line one line two" in log_path.read_text(encoding="utf-8")
     assert "safe / table" in log_path.read_text(encoding="utf-8")
+
+
+def test_reusable_candidate_must_match_experiment(tmp_path):
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    (candidate / "model.zip").touch()
+    (candidate / "vecnormalize.pkl").touch()
+    (candidate / "artifact.json").write_text(
+        '{"algorithm":"ppo","stage_index":1,"seed":0,"timesteps":120000,'
+        '"n_envs":1,"parameters":{"n_steps":1024},"policy":{},'
+        '"resumed_from":null}',
+        encoding="utf-8",
+    )
+    config = {
+        "algorithm": {"name": "ppo"},
+        "training": {"n_envs": 1},
+        "ppo": {"n_steps": 1024},
+        "policy": {},
+    }
+
+    try:
+        validate_reusable_candidate(
+            candidate,
+            stage_index=0,
+            timesteps=120_000,
+            resume=None,
+            config=config,
+        )
+    except ValueError as error:
+        assert "stage" in str(error)
+    else:
+        raise AssertionError("mismatched candidate was accepted")
