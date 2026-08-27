@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "algorithm": "ppo",
-  "stage_index": 0,
+  "stage_index": 1,
   "seed": 0,
   "timesteps": 120000,
   "resumed_from": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\research\\checkpoints\\accepted\\model.zip",

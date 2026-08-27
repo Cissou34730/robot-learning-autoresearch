@@ -2,21 +2,21 @@
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_metrics": {
     "closest_distance_cm": {
-      "mean": 2.104969639644253,
-      "median": 2.071452726132944
+      "mean": 2.0765287315955607,
+      "median": 2.0246762287370372
     },
-    "current_stage_success_percent": 100.0,
+    "current_stage_success_percent": 0.0,
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 2.513588932402026,
-      "median": 2.37769015727546,
-      "worst": 4.1459247615704236
+      "mean": 2.1726290838967186,
+      "median": 2.0505631295183138,
+      "worst": 4.854761273243682
     },
     "final_success_percent": 0.0,
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-78\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-79\\model.zip",
     "schema_version": 1,
     "seed": 1000,
-    "stage_index": 0,
+    "stage_index": 1,
     "stage_success_percent": [
       100.0,
       0.0,
@@ -53,7 +53,7 @@
       "CLOSENESS_LENGTH_SCALE": 0.05,
       "DWELL_BONUS_PER_STEP": 0.5,
       "HOLD_COMPLETE_BONUS": 50.0,
-      "PROGRESS_COEFFICIENT": 10.0
+      "PROGRESS_COEFFICIENT": 20.0
     },
     "sac": {
       "batch_size": 256,
@@ -74,24 +74,24 @@
     }
   },
   "current_stage": 1,
-  "last_experiment": 78,
+  "last_experiment": 79,
   "last_metrics": {
     "closest_distance_cm": {
-      "mean": 2.104969639644253,
-      "median": 2.071452726132944
+      "mean": 2.0765287315955607,
+      "median": 2.0246762287370372
     },
-    "current_stage_success_percent": 100.0,
+    "current_stage_success_percent": 0.0,
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 2.513588932402026,
-      "median": 2.37769015727546,
-      "worst": 4.1459247615704236
+      "mean": 2.1726290838967186,
+      "median": 2.0505631295183138,
+      "worst": 4.854761273243682
     },
     "final_success_percent": 0.0,
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-78\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-79\\model.zip",
     "schema_version": 1,
     "seed": 1000,
-    "stage_index": 0,
+    "stage_index": 1,
     "stage_success_percent": [
       100.0,
       0.0,
@@ -103,6 +103,6 @@
       0.0
     ]
   },
-  "last_verdict": "kept; promoted to stage 1",
+  "last_verdict": "kept",
   "schema_version": 2
 }
