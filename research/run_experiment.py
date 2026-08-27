@@ -108,10 +108,21 @@ def main() -> int:
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     args = parser.parse_args()
 
-    if not PROPOSAL_PATH.exists():
+    automatic_baseline = BASELINE_PENDING_PATH.exists()
+    if automatic_baseline:
+        proposal = {
+            "change": "unchanged control for the current research metric",
+            "hypothesis": "Establish the baseline before testing research changes.",
+            "class": "baseline",
+            "initialization": "transfer",
+            "baseline": True,
+        }
+        print("[runner] baseline pending: running the unchanged control automatically")
+    elif not PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
         return 1
-    proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
+    else:
+        proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
     param_overrides = proposal.get("params")
@@ -122,6 +133,11 @@ def main() -> int:
     log_text = LOG_PATH.read_text(encoding="utf-8")
     index = next_index(log_text)
     best_before = current_best(log_text)
+    state = {}
+    if STATE_PATH.exists():
+        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    best_progress_before = float(state.get("best_progress_score", 0.0))
+    best_closest_before = float(state.get("best_closest_distance_cm", "inf"))
     model_dir: Path | None = None
     code_diff = ""
     previous_config: dict | None = None
@@ -266,16 +282,30 @@ def main() -> int:
             str(EVAL_EPISODES),
         )
         rate = re.search(r"Success rate: (\d+)/(\d+) \((\d+(?:\.\d+)?)%\)", eval_out)
-        dists = re.search(r"mean (\d+(?:\.\d+)?), median (\d+(?:\.\d+)?)", eval_out)
-        if not rate or not dists:
+        dists = re.search(
+            r"Final distance \(cm\): mean (\d+(?:\.\d+)?), "
+            r"median (\d+(?:\.\d+)?)",
+            eval_out,
+        )
+        closest = re.search(
+            r"Closest distance \(cm\): mean (\d+(?:\.\d+)?), "
+            r"median (\d+(?:\.\d+)?)",
+            eval_out,
+        )
+        progress = re.search(
+            r"Curriculum progress score: (\d+(?:\.\d+)?)%", eval_out
+        )
+        if not rate or not dists or not closest or not progress:
             raise RuntimeError("could not parse evaluation output")
 
         success = float(rate.group(3))
         mean_dist = dists.group(1)
         median_dist = dists.group(2)
+        closest_median = float(closest.group(2))
+        progress_score = float(progress.group(1))
         print(
             f"[runner] evaluation done in {time.time() - eval_started:.0f}s: "
-            f"{success:g}% success"
+            f"{success:g}% final success, {progress_score:g}% curriculum progress"
         )
 
     except Exception as error:  # noqa: BLE001
@@ -288,7 +318,8 @@ def main() -> int:
             f"| - | - | - | error ({str(error)[:80]}) |"
         )
         LOG_PATH.write_text(append_row(log_text, row), encoding="utf-8")
-        PROPOSAL_PATH.unlink(missing_ok=True)
+        if not automatic_baseline:
+            PROPOSAL_PATH.unlink(missing_ok=True)
         print(
             "SUMMARY: "
             + json.dumps(
@@ -297,12 +328,14 @@ def main() -> int:
         )
         return 1
 
-    improved = baseline or success > best_before
-    equal = success == best_before
+    candidate_rank = (success, progress_score, -closest_median)
+    best_rank = (best_before, best_progress_before, -best_closest_before)
+    improved = baseline or candidate_rank > best_rank
+    equal = candidate_rank == best_rank
     if baseline:
         verdict = "kept (baseline)"
     elif improved:
-        verdict = "kept"
+        verdict = "kept" if success > best_before else "kept (progress)"
     elif equal:
         verdict = "reverted (equal)"
     else:
@@ -310,7 +343,8 @@ def main() -> int:
 
     row = (
         f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
-        f"| {success:g} | {mean_dist} | {median_dist} | {verdict} |"
+        f"| {success:g} | {mean_dist} | {median_dist} | {verdict}; "
+        f"progress {progress_score:g}%, closest {closest_median:g} cm |"
     )
     log_text = append_row(log_text, row)
     if improved:
@@ -337,14 +371,18 @@ def main() -> int:
             git("checkout", "--", *RESEARCH_DIFF_PATHS)
         if model_dir is not None and model_dir.exists():
             shutil.rmtree(model_dir, ignore_errors=True)
-    PROPOSAL_PATH.unlink(missing_ok=True)
+    if not automatic_baseline:
+        PROPOSAL_PATH.unlink(missing_ok=True)
 
     summary = {
         "status": "ok",
         "index": index,
         "change": change,
         "success_percent": success,
+        "progress_score": progress_score,
+        "closest_distance_cm": closest_median,
         "best_before": best_before,
+        "best_progress_before": best_progress_before,
         "improved": improved,
         "verdict": verdict,
     }
@@ -355,21 +393,24 @@ def main() -> int:
         )
         summary["sentinel"] = "GOAL_REACHED"
 
-    state = {}
-    if STATE_PATH.exists():
-        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     state["last_experiment"] = index
     state["last_class"] = hypothesis_class
     state["last_verdict"] = verdict
     if baseline:
         state["baseline_experiment"] = index
         state["baseline_success_percent"] = success
+        state["baseline_progress_score"] = progress_score
+        state["baseline_closest_distance_cm"] = closest_median
+    if improved:
+        state["best_progress_score"] = progress_score
+        state["best_closest_distance_cm"] = closest_median
     STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     print("=" * 60)
     print(
         f"Experiment {index} finished: {success:g}% success "
-        f"(previous best {best_before:g}%)"
+        f"and {progress_score:g}% progress "
+        f"(previous best {best_before:g}% / {best_progress_before:g}%)"
     )
     print(f"Change tested : {change}")
     print(f"Verdict       : {verdict}" + ("  -> committed to git" if improved else ""))

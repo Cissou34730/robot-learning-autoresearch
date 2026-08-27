@@ -1,6 +1,21 @@
 import pytest
 
-from robot_learning.train import parallel_ppo_params
+from robot_learning.train import build_env_kwargs, parallel_ppo_params
+
+
+def test_build_env_kwargs_translates_curriculum_parameter_names():
+    assert build_env_kwargs(
+        {
+            "max_episode_steps": 500,
+            "curriculum_stage_advance_success_rate": 0.3,
+            "curriculum_stage_advance_min_episodes": 5,
+        }
+    ) == {
+        "curriculum": True,
+        "max_episode_steps": 500,
+        "stage_advance_success_rate": 0.3,
+        "stage_advance_min_episodes": 5,
+    }
 
 
 def test_parallel_envs_preserve_total_rollout_size():

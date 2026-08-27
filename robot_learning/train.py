@@ -78,6 +78,18 @@ def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
     return result
 
 
+def build_env_kwargs(env_config: dict) -> dict:
+    """Translate public research parameter names to environment arguments."""
+    result = {"curriculum": True}
+    aliases = {
+        "curriculum_stage_advance_success_rate": "stage_advance_success_rate",
+        "curriculum_stage_advance_min_episodes": "stage_advance_min_episodes",
+    }
+    for key, value in env_config.items():
+        result[aliases.get(key, key)] = value
+    return result
+
+
 
 
 def main() -> None:
@@ -86,7 +98,7 @@ def main() -> None:
     ppo_params = dict(config["ppo"])
     ppo_params = parallel_ppo_params(ppo_params, args.n_envs)
     policy_kwargs = build_policy_kwargs(config["policy"])
-    env_kwargs = {"curriculum": True, **config["env"]}
+    env_kwargs = build_env_kwargs(config["env"])
 
     save_dir = MODELS_DIR / (
         f"{args.env}-resume-{time.strftime('%Y%m%d-%H%M%S')}"

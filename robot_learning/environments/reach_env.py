@@ -14,11 +14,12 @@ from robot_learning.robots.two_joint_arm import (
 )
 
 CURRICULUM_STAGES: tuple[tuple[float, float], ...] = (
-    # Stage 0: 2 cm touch (0.02 s) - the first curriculum goal
+    # Begin at the transferred policy's demonstrated 3 cm capability. A
+    # curriculum must start with a task the student can already solve.
+    (0.03, 0.02),
+    # Tighten precision gradually before extending the hold.
     (0.02, 0.02),
-    # Phase A - entry precision at the final threshold
     (0.01, 0.02),
-    # Phase B - stabilization at 1 cm (now increase hold)
     (0.01, 0.10),
     (0.01, 0.50),
     (0.01, 1.00),

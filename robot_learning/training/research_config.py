@@ -62,6 +62,20 @@ IMMUTABLE_INVARIANTS = {
     "max_episode_steps": 500,
 }
 
+# Fixed diagnostic ladder used by evaluation. This is deliberately separate
+# from the training curriculum: researchers may change how the agent is taught,
+# but not the ruler used to compare experiments.
+EVALUATION_MILESTONES: tuple[tuple[float, float], ...] = (
+    (0.03, 0.02),
+    (0.02, 0.02),
+    (0.01, 0.02),
+    (0.01, 0.10),
+    (0.01, 0.50),
+    (0.01, 1.00),
+    (0.01, 1.50),
+    (0.01, 2.00),
+)
+
 
 def validate_param_overrides(overrides: dict) -> None:
     unknown_sections = set(overrides) - set(PARAM_WHITELIST)

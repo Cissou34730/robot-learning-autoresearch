@@ -150,7 +150,11 @@ def test_default_env_is_fixed_at_final_difficulty():
 
 
 def test_curriculum_tightens_precision_before_extending_the_hold():
-    assert CURRICULUM_STAGES[:2] == ((0.02, 0.02), (0.01, 0.02))
+    assert CURRICULUM_STAGES[:3] == (
+        (0.03, 0.02),
+        (0.02, 0.02),
+        (0.01, 0.02),
+    )
     assert CURRICULUM_STAGES[-1] == (0.01, 2.00)
     assert all(seconds > 0 for _, seconds in CURRICULUM_STAGES)
 
@@ -158,7 +162,7 @@ def test_curriculum_tightens_precision_before_extending_the_hold():
 def test_curriculum_env_starts_at_easiest_stage():
     env = TwoJointArmReachEnv(curriculum=True)
     env.reset(seed=0)
-    assert env.success_threshold == pytest.approx(0.02)
+    assert env.success_threshold == pytest.approx(0.03)
     assert env.hold_steps_required == 1
 
 
@@ -167,5 +171,5 @@ def test_curriculum_advances_after_enough_successes():
     env.reset(seed=0)
     for _ in range(15):
         env._record_episode_outcome(True)
-    assert env.success_threshold == pytest.approx(0.01)
+    assert env.success_threshold == pytest.approx(0.02)
     assert len(env._episode_outcomes) == 0
