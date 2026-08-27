@@ -8,8 +8,11 @@ the human stops it.
 ## Fixed benchmark
 
 Train the MuJoCo two-joint arm to reach a random target 6–20 cm away and stay
-within 1 cm for 2 seconds. Never edit `robot_learning/benchmark/`, the robot,
-physics, environment mechanics, evaluator, runner, or `tests/benchmark/`.
+within 1 cm for 2 seconds. With the fixed control timestep, those 2 seconds are
+currently 100 consecutive control steps; the duration is the source of truth
+and the step count is derived from it. Never edit `robot_learning/benchmark/`,
+the robot, physics, environment mechanics, evaluator, runner, or
+`tests/benchmark/`.
 The protected evaluation target is always the final 1 cm / 2 s goal, not a
 restriction on training.
 

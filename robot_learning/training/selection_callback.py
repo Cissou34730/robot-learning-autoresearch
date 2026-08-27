@@ -105,6 +105,6 @@ class SelectionCallback(BaseCallback):
         while self.next_evaluation <= self.num_timesteps:
             self.next_evaluation += self.eval_every_steps
 
-    def evaluate_final_policy(self) -> None:
+    def _on_training_end(self) -> None:
         if self.last_evaluation_steps != self.num_timesteps:
             self._evaluate_and_save()

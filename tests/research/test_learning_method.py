@@ -82,9 +82,9 @@ def test_selection_waits_for_a_completed_rollout_update(monkeypatch, tmp_path):
     assert evaluations == [21_504]
     assert callback.next_evaluation == 40_000
 
-    callback.evaluate_final_policy()
+    callback._on_training_end()
     assert evaluations == [21_504]
 
     callback.num_timesteps = 24_576
-    callback.evaluate_final_policy()
+    callback._on_training_end()
     assert evaluations == [21_504, 24_576]
