@@ -1,3 +1,5 @@
+import json
+
 from research.run_experiment import (
     IMMUTABLE_PATHS,
     MUTABLE_PATHS,
@@ -6,6 +8,7 @@ from research.run_experiment import (
     latest_training_steps,
     no_regression,
     rank,
+    train_candidate_curriculum,
     validate_reusable_candidate,
 )
 
@@ -105,3 +108,44 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
         assert "stage" in str(error)
     else:
         raise AssertionError("mismatched candidate was accepted")
+
+
+def test_curriculum_continues_one_candidate_across_stages(monkeypatch, tmp_path):
+    candidate_root = tmp_path / "candidates"
+    candidate_root.mkdir()
+    output_dir = candidate_root / "experiment-1"
+    calls = []
+
+    def fake_train(output, stage, timesteps, seed, resume, **kwargs):
+        calls.append((stage, timesteps, str(resume) if resume else None))
+        output.mkdir()
+        (output / "model.zip").touch()
+        (output / "vecnormalize.pkl").touch()
+        (output / "artifact.json").write_text(
+            '{"algorithm":"ppo","timesteps":1}', encoding="utf-8"
+        )
+
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", candidate_root)
+    monkeypatch.setattr("research.run_experiment.train_candidate", fake_train)
+
+    train_candidate_curriculum(
+        output_dir,
+        [(0, 30_000), (1, 90_000)],
+        seed=0,
+        resume=None,
+        baseline=False,
+    )
+
+    assert calls == [
+        (0, 30_000, None),
+        (1, 90_000, str(candidate_root / "experiment-1-part-1" / "model.zip")),
+    ]
+    artifact = json.loads(
+        (output_dir / "artifact.json").read_text(encoding="utf-8")
+    )
+    assert artifact["timesteps"] == 120_000
+    assert artifact["training_curriculum"] == [
+        {"stage_index": 0, "timesteps": 30_000},
+        {"stage_index": 1, "timesteps": 90_000},
+    ]
+    assert not (candidate_root / "experiment-1-part-1").exists()

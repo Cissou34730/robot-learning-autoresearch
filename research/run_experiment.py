@@ -23,6 +23,7 @@ from robot_learning.benchmark.spec import (
 from robot_learning.training.research_config import (
     load_experiment_config,
     merge_param_overrides,
+    resolve_training_curriculum,
     validate_param_overrides,
     write_experiment_config,
 )
@@ -61,7 +62,8 @@ IMMUTABLE_PATHS = (
 
 TIMESTEPS = 120_000
 TRAIN_SEED = 0
-TRAIN_TIMEOUT_SECONDS = 30 * 60
+TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
+TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 CONFIRMATION_SEEDS = (3000, 5000)
@@ -82,10 +84,12 @@ def format_duration(seconds: float) -> str:
     return f"{seconds}s"
 
 
-def latest_training_steps(log_path: Path) -> int | None:
+def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
     if not log_path.exists():
         return None
-    text = log_path.read_text(encoding="utf-8", errors="replace")
+    with log_path.open(encoding="utf-8", errors="replace") as handle:
+        handle.seek(after_offset)
+        text = handle.read()
     matches = re.findall(r"\|\s+total_timesteps\s+\|\s+(\d+)\s+\|", text)
     return int(matches[-1]) if matches else None
 
@@ -372,6 +376,7 @@ def train_candidate(
     seed: int,
     resume: Path | None,
     label: str = "candidate training",
+    append_log: bool = False,
 ) -> None:
     command = [
         sys.executable,
@@ -394,7 +399,10 @@ def train_candidate(
         f"[train] {label} | stage {stage_index} | seed {seed} | "
         f"{timesteps:,} steps"
     )
-    with train_log.open("w", encoding="utf-8") as log_file:
+    with train_log.open("a" if append_log else "w", encoding="utf-8") as log_file:
+        log_file.write(f"\n=== {label} ===\n")
+        log_file.flush()
+        progress_offset = log_file.tell()
         process = subprocess.Popen(
             command,
             cwd=ROOT,
@@ -404,6 +412,8 @@ def train_candidate(
             **process_group_options(),
         )
         last_selection: tuple[int, float, float] | None = None
+        last_steps: int | None = None
+        last_progress_at = started
         try:
             while process.poll() is None:
                 try:
@@ -411,12 +421,17 @@ def train_candidate(
                 except subprocess.TimeoutExpired:
                     pass
                 elapsed = time.monotonic() - started
-                steps = latest_training_steps(train_log)
+                steps = latest_training_steps(
+                    train_log, after_offset=progress_offset
+                )
                 if steps is None:
                     announce(
                         f"[train] starting ({format_duration(elapsed)} elapsed)"
                     )
                 else:
+                    if steps != last_steps:
+                        last_steps = steps
+                        last_progress_at = time.monotonic()
                     progress = min(100.0, 100 * steps / timesteps)
                     eta = elapsed * max(timesteps - steps, 0) / steps if steps else 0
                     announce(
@@ -439,10 +454,15 @@ def train_candidate(
                             f"closest median: {current_selection[2]:.2f} cm"
                         )
                         last_selection = current_selection
-                if elapsed > TRAIN_TIMEOUT_SECONDS:
-                    announce("[train] 30 minute safety limit reached; stopping.")
+                stalled_for = time.monotonic() - last_progress_at
+                if stalled_for > TRAIN_STALL_SECONDS:
+                    announce("[train] no progress for 30 minutes; stopping.")
                     stop_process(process, graceful=False)
-                    raise TimeoutError("training exceeded the 30 minute safety limit")
+                    raise TimeoutError("training made no progress for 30 minutes")
+                if elapsed > TRAIN_TIMEOUT_SECONDS:
+                    announce("[train] 12 hour safety limit reached; stopping.")
+                    stop_process(process, graceful=False)
+                    raise TimeoutError("training exceeded the 12 hour safety limit")
         except KeyboardInterrupt:
             announce("\n[runner] Stopping training and waiting for it to close...")
             stop_process(process, graceful=True)
@@ -457,6 +477,54 @@ def train_candidate(
     announce(
         f"[train] {label} complete in {format_duration(time.monotonic() - started)}"
     )
+
+
+def train_candidate_curriculum(
+    output_dir: Path,
+    curriculum: list[tuple[int, int]],
+    seed: int,
+    resume: Path | None,
+    *,
+    baseline: bool,
+) -> None:
+    part_dirs: list[Path] = []
+    current_resume = resume
+    initial_resume = str(resume) if resume is not None else None
+    try:
+        for number, (stage_index, timesteps) in enumerate(curriculum, start=1):
+            part_dir = CANDIDATE_ROOT / f"{output_dir.name}-part-{number}"
+            remove_candidate_dir(part_dir)
+            part_dirs.append(part_dir)
+            label = (
+                f"{'baseline' if baseline else 'candidate'} curriculum "
+                f"{number}/{len(curriculum)} (stage {stage_index})"
+            )
+            train_candidate(
+                part_dir,
+                stage_index,
+                timesteps,
+                seed,
+                current_resume,
+                label=label,
+                append_log=number > 1,
+            )
+            current_resume = part_dir / "model.zip"
+        copy_artifact(part_dirs[-1], output_dir)
+        artifact_path = output_dir / "artifact.json"
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        artifact["timesteps"] = sum(steps for _, steps in curriculum)
+        artifact["resumed_from"] = initial_resume
+        artifact["training_curriculum"] = [
+            {"stage_index": stage_index, "timesteps": steps}
+            for stage_index, steps in curriculum
+        ]
+        artifact_path.write_text(
+            json.dumps(artifact, indent=2, default=str) + "\n",
+            encoding="utf-8",
+        )
+    finally:
+        for part_dir in part_dirs:
+            remove_candidate_dir(part_dir)
 
 
 def copy_artifact(source: Path, destination: Path) -> None:
@@ -629,6 +697,19 @@ def main() -> int:
             state["accepted_metrics"] = accepted_metrics
             state["accepted_parameters"] = previous_config
 
+        effective_config = load_experiment_config()
+        training_curriculum = resolve_training_curriculum(
+            effective_config,
+            current_stage=stage_index,
+            total_timesteps=args.timesteps,
+        )
+        announce(
+            "[curriculum] "
+            + " -> ".join(
+                f"stage {stage} ({steps:,} steps)"
+                for stage, steps in training_curriculum
+            )
+        )
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
@@ -642,18 +723,17 @@ def main() -> int:
                 stage_index=stage_index,
                 timesteps=args.timesteps,
                 resume=resume,
-                config=load_experiment_config(),
+                config=effective_config,
             )
             announce(f"[recovery] reusing completed candidate from {reusable}")
             copy_artifact(reusable, candidate_dir)
         else:
-            train_candidate(
+            train_candidate_curriculum(
                 candidate_dir,
-                stage_index,
-                args.timesteps,
+                training_curriculum,
                 TRAIN_SEED,
                 resume,
-                label="baseline training" if baseline else "candidate training",
+                baseline=baseline,
             )
         runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
         if runtime_benchmark_changes:
@@ -720,6 +800,10 @@ def main() -> int:
                 "promoted": promoted,
                 "candidate_metrics": candidate_metrics,
                 "confirmation_metrics": confirmations,
+                "training_curriculum": [
+                    {"stage_index": stage, "timesteps": steps}
+                    for stage, steps in training_curriculum
+                ],
                 "final_success_percent": candidate_metrics[
                     "final_success_percent"
                 ],

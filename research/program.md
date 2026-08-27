@@ -8,12 +8,18 @@ promotion, evaluation, rollback, and commits.
 Train the MuJoCo two-joint arm to reach a random target 6–20 cm away and stay
 within 1 cm for 2 seconds. Never edit `robot_learning/benchmark/`, the robot,
 physics, environment mechanics, evaluator, runner, or `tests/benchmark/`.
+The runner's current stage is the protected evaluation target, not a restriction
+on training.
 
 ## Research surface
 
 You may change rewards, observations, PPO/SAC choice, network size, exploration,
-schedules, and all whitelisted training parameters. All parallel environments
-receive the single persistent stage recorded in `research/research_state.json`.
+schedules, and all whitelisted training parameters. You also own the training
+curriculum through `params.curriculum.segments`: choose any ordered benchmark
+stages and positive fractions summing to 1.0. The model, normalization state,
+optimizer, and replay buffer continue across segments. A fresh algorithm may
+start at stage 0 and finish at the current evaluation stage. Never modify the
+global stage in `research/research_state.json` directly.
 
 Use one hypothesis and one coherent change. Write `research/proposal.json`, make
 the corresponding research-surface edit when needed, then stop. Do not launch
