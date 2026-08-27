@@ -91,13 +91,6 @@ while ($true) {
 
     $model = "github-copilot/gpt-5.6-luna"
     $reasoning = "medium"
-    $lastRow = Get-Content "research\EXPERIMENTS.md" |
-        Where-Object { $_ -match '^\| \d+ \|' } |
-        Select-Object -Last 1
-
-    if ($lastRow -match '\| error \(') {
-        $model = "github-copilot/gpt-5.6-terra"
-    }
     if ($env:RESEARCH_MODEL) {
         $model = $env:RESEARCH_MODEL
     }
