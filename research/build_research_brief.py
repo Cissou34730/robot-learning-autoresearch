@@ -228,7 +228,7 @@ def render_research_brief() -> str:
         "",
         "## Current status",
         "",
-        f"- Curriculum stage: {stage_index} ({100 * threshold:g} cm / {hold_seconds:g} s)",
+        f"- Evaluation target: {100 * threshold:g} cm / {hold_seconds:g} s",
         f"- Accepted current-stage success: {accepted_status}",
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         f"- Last experiment: {state.get('last_experiment', 'none')}",
@@ -241,7 +241,7 @@ def render_research_brief() -> str:
         "```",
         "",
         (
-            "## Current curriculum experiments"
+            "## Current experiments"
         ),
         "",
         "| # | Change | Stage success | Final success | Closest cm | Verdict |",

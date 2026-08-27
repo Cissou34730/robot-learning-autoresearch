@@ -49,32 +49,7 @@ def test_parallel_env_count_must_be_valid():
         parallel_ppo_params({"n_steps": 1024}, n_envs=0)
 
 
-def test_researcher_controls_training_curriculum():
-    config = {
-        "curriculum": {
-            "segments": [
-                {"stage_index": 0, "fraction": 0.25},
-                {"stage_index": "current", "fraction": 0.75},
-            ]
-        }
-    }
-
+def test_default_training_uses_full_budget_on_final_goal():
     assert resolve_training_curriculum(
-        config, current_stage=2, total_timesteps=120_000
-    ) == [(0, 30_000), (2, 90_000)]
-
-
-def test_training_curriculum_requires_a_complete_budget():
-    config = {
-        "curriculum": {
-            "segments": [
-                {"stage_index": 0, "fraction": 0.5},
-                {"stage_index": 1, "fraction": 0.4},
-            ]
-        }
-    }
-
-    with pytest.raises(ValueError, match="sum to 1.0"):
-        resolve_training_curriculum(
-            config, current_stage=1, total_timesteps=120_000
-        )
+        {}, current_stage=7, total_timesteps=120_000
+    ) == [(7, 120_000)]

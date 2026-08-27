@@ -31,14 +31,6 @@
     "selection_eval_every_steps": 20000,
     "selection_eval_episodes": 10
   },
-  "curriculum": {
-    "segments": [
-      {
-        "stage_index": "current",
-        "fraction": 1.0
-      }
-    ]
-  },
   "sac": {
     "learning_rate": 0.0003,
     "buffer_size": 120000,

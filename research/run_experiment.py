@@ -1,4 +1,4 @@
-"""Transactional autonomous-research runner for the robot curriculum."""
+"""Transactional autonomous-research runner for robot learning."""
 
 import argparse
 import json
@@ -501,8 +501,12 @@ def train_candidate_curriculum(
             remove_candidate_dir(part_dir)
             part_dirs.append(part_dir)
             label = (
-                f"{'baseline' if baseline else 'candidate'} curriculum "
-                f"{number}/{len(curriculum)} (stage {stage_index})"
+                f"{'baseline' if baseline else 'candidate'} training"
+                if len(curriculum) == 1
+                else (
+                    f"{'baseline' if baseline else 'candidate'} curriculum "
+                    f"{number}/{len(curriculum)} (stage {stage_index})"
+                )
             )
             train_candidate(
                 part_dir,
@@ -712,13 +716,19 @@ def main() -> int:
             current_stage=stage_index,
             total_timesteps=args.timesteps,
         )
-        announce(
-            "[curriculum] "
-            + " -> ".join(
-                f"stage {stage} ({steps:,} steps)"
-                for stage, steps in training_curriculum
+        if len(training_curriculum) == 1:
+            announce(
+                f"[training plan] final goal "
+                f"({training_curriculum[0][1]:,} steps)"
             )
-        )
+        else:
+            announce(
+                "[training plan] "
+                + " -> ".join(
+                    f"stage {stage} ({steps:,} steps)"
+                    for stage, steps in training_curriculum
+                )
+            )
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")

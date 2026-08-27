@@ -14,12 +14,12 @@ restriction on training.
 ## Research surface
 
 You may change rewards, observations, PPO/SAC choice, network size, exploration,
-schedules, and all whitelisted training parameters. You also own the training
-curriculum through `params.curriculum.segments`: choose any ordered benchmark
-stages and positive fractions summing to 1.0. The model, normalization state,
-optimizer, and replay buffer continue across segments. A fresh algorithm may
-start at stage 0 and finish at the current evaluation stage. Never modify the
-global stage in `research/research_state.json` directly.
+schedules, all whitelisted training parameters, and `robot_learning/train.py`.
+Training defaults to the final 1 cm / 2 s task for the full fixed budget. There
+is no preconfigured curriculum API. If a curriculum is your hypothesis, design
+and implement it as the single coherent training-method change for that
+experiment. Never modify the evaluation target in
+`research/research_state.json` directly.
 
 Use one hypothesis and one coherent change. Write `research/proposal.json`, make
 the corresponding research-surface edit when needed, then stop. Do not launch

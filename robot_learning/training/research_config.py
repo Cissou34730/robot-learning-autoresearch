@@ -12,8 +12,6 @@ be modified by experiments.
 import json
 from pathlib import Path
 
-from robot_learning.benchmark.spec import FINAL_STAGE_INDEX
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
 
@@ -56,7 +54,6 @@ PARAM_WHITELIST: dict[str, set[str]] = {
         "selection_eval_every_steps",
         "selection_eval_episodes",
     },
-    "curriculum": {"segments"},
     "sac": {
         "learning_rate",
         "buffer_size",
@@ -72,42 +69,9 @@ PARAM_WHITELIST: dict[str, set[str]] = {
 
 
 def resolve_training_curriculum(
-    config: dict, *, current_stage: int, total_timesteps: int
+    _config: dict, *, current_stage: int, total_timesteps: int
 ) -> list[tuple[int, int]]:
-    raw_segments = config["curriculum"]["segments"]
-    if not isinstance(raw_segments, list) or not raw_segments:
-        raise ValueError("curriculum.segments must be a non-empty list")
-    parsed: list[tuple[int, float]] = []
-    for number, segment in enumerate(raw_segments, start=1):
-        if not isinstance(segment, dict) or set(segment) != {"stage_index", "fraction"}:
-            raise ValueError(
-                f"curriculum segment {number} requires stage_index and fraction"
-            )
-        raw_stage = segment["stage_index"]
-        stage_index = current_stage if raw_stage == "current" else int(raw_stage)
-        if not 0 <= stage_index <= FINAL_STAGE_INDEX:
-            raise ValueError(f"invalid curriculum stage: {stage_index}")
-        fraction = float(segment["fraction"])
-        if fraction <= 0:
-            raise ValueError("curriculum fractions must be positive")
-        parsed.append((stage_index, fraction))
-    total_fraction = sum(fraction for _, fraction in parsed)
-    if abs(total_fraction - 1.0) > 1e-9:
-        raise ValueError("curriculum fractions must sum to 1.0")
-
-    remaining = total_timesteps
-    resolved: list[tuple[int, int]] = []
-    for number, (stage_index, fraction) in enumerate(parsed):
-        steps = (
-            remaining
-            if number == len(parsed) - 1
-            else round(total_timesteps * fraction)
-        )
-        if steps < 1:
-            raise ValueError("every curriculum segment needs at least one timestep")
-        resolved.append((stage_index, steps))
-        remaining -= steps
-    return resolved
+    return [(current_stage, total_timesteps)]
 
 
 def validate_param_overrides(overrides: dict) -> None:
