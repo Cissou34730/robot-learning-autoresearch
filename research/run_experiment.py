@@ -2,8 +2,10 @@
 
 import argparse
 import json
+import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -16,6 +18,7 @@ from robot_learning.benchmark.spec import (
     FINAL_STAGE_INDEX,
     FINAL_SUCCESS_PERCENT,
     STAGE_PROMOTION_PERCENT,
+    stage_spec,
 )
 from robot_learning.training.research_config import (
     load_experiment_config,
@@ -58,8 +61,87 @@ IMMUTABLE_PATHS = (
 TIMESTEPS = 120_000
 TRAIN_SEED = 0
 TRAIN_TIMEOUT_SECONDS = 30 * 60
+STATUS_INTERVAL_SECONDS = 15
+INTERRUPT_GRACE_SECONDS = 30
 CONFIRMATION_SEEDS = (3000, 5000)
 CONFIRMATION_TRAIN_SEEDS = (1, 2)
+
+
+def announce(message: str) -> None:
+    print(message, flush=True)
+
+
+def format_duration(seconds: float) -> str:
+    total = max(int(seconds), 0)
+    minutes, seconds = divmod(total, 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        return f"{hours}h{minutes:02d}m"
+    if minutes:
+        return f"{minutes}m{seconds:02d}s"
+    return f"{seconds}s"
+
+
+def latest_training_steps(log_path: Path) -> int | None:
+    if not log_path.exists():
+        return None
+    text = log_path.read_text(encoding="utf-8", errors="replace")
+    matches = re.findall(r"\|\s+total_timesteps\s+\|\s+(\d+)\s+\|", text)
+    return int(matches[-1]) if matches else None
+
+
+def process_group_options() -> dict:
+    if os.name == "nt":
+        return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    return {"start_new_session": True}
+
+
+def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
+    if process.poll() is not None:
+        return
+    if os.name == "nt":
+        subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True,
+            check=False,
+        )
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+        return
+    if graceful:
+        try:
+            os.killpg(process.pid, signal.SIGINT)
+            process.wait(timeout=INTERRUPT_GRACE_SECONDS)
+            return
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    process.terminate()
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+
+
+def remove_candidate_dir(path: Path) -> None:
+    if not path.exists():
+        return
+    resolved = path.resolve()
+    if resolved.parent != CANDIDATE_ROOT.resolve():
+        raise RuntimeError(f"refusing to remove non-candidate directory: {resolved}")
+    for attempt in range(20):
+        try:
+            shutil.rmtree(resolved)
+            return
+        except FileNotFoundError:
+            return
+        except OSError:
+            if attempt == 19:
+                raise
+            time.sleep(0.25)
 
 
 def git(*args: str) -> str:
@@ -198,10 +280,16 @@ def append_result(result: dict) -> None:
 
 
 def evaluate_artifact(
-    artifact_dir: Path, stage_index: int, seed: int = EVALUATION_SEED
+    artifact_dir: Path,
+    stage_index: int,
+    seed: int = EVALUATION_SEED,
+    label: str = "official evaluation",
 ) -> dict:
-    output_path = artifact_dir / f"evaluation-{seed}.json"
-    run_module(
+    output_path = RESEARCH_DIR / "last_evaluation.json"
+    output_path.unlink(missing_ok=True)
+    command = [
+        sys.executable,
+        "-m",
         "robot_learning.evaluate",
         "--model",
         str(artifact_dir / "model.zip"),
@@ -213,9 +301,49 @@ def evaluate_artifact(
         str(seed),
         "--output-json",
         str(output_path),
-        timeout=10 * 60,
+    ]
+    announce(
+        f"[evaluation] {label} | {EVALUATION_EPISODES} episodes | seed {seed}"
     )
-    return json.loads(output_path.read_text(encoding="utf-8"))
+    started = time.monotonic()
+    process = subprocess.Popen(
+        command,
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        **process_group_options(),
+    )
+    try:
+        while True:
+            try:
+                process.wait(timeout=STATUS_INTERVAL_SECONDS)
+                break
+            except subprocess.TimeoutExpired:
+                announce(
+                    f"[evaluation] {label} still running "
+                    f"({format_duration(time.monotonic() - started)} elapsed)"
+                )
+                if time.monotonic() - started > 10 * 60:
+                    stop_process(process, graceful=False)
+                    raise TimeoutError(f"{label} exceeded the 10 minute safety limit")
+    except KeyboardInterrupt:
+        announce(f"\n[runner] Stopping {label}...")
+        stop_process(process, graceful=True)
+        raise
+    stdout, stderr = process.communicate()
+    if process.returncode != 0:
+        raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
+    metrics = json.loads(output_path.read_text(encoding="utf-8"))
+    announce(
+        f"[evaluation] {label} complete in "
+        f"{format_duration(time.monotonic() - started)} | "
+        f"stage {stage_index}: {metrics['current_stage_success_percent']:.1f}% | "
+        f"closest median: {metrics['closest_distance_cm']['median']:.2f} cm"
+    )
+    return metrics
 
 
 def rank(metrics: dict, stage_index: int) -> tuple[float, float]:
@@ -239,6 +367,7 @@ def train_candidate(
     timesteps: int,
     seed: int,
     resume: Path | None,
+    label: str = "candidate training",
 ) -> None:
     command = [
         sys.executable,
@@ -257,6 +386,10 @@ def train_candidate(
         command.extend(["--resume", str(resume)])
     train_log = RESEARCH_DIR / "last_train.log"
     started = time.monotonic()
+    announce(
+        f"[train] {label} | stage {stage_index} | seed {seed} | "
+        f"{timesteps:,} steps"
+    )
     with train_log.open("w", encoding="utf-8") as log_file:
         process = subprocess.Popen(
             command,
@@ -264,16 +397,52 @@ def train_candidate(
             stdout=log_file,
             stderr=subprocess.STDOUT,
             text=True,
+            **process_group_options(),
         )
-        while process.poll() is None:
-            if time.monotonic() - started > TRAIN_TIMEOUT_SECONDS:
-                process.terminate()
+        last_selection: tuple[int, float, float] | None = None
+        try:
+            while process.poll() is None:
                 try:
-                    process.wait(timeout=10)
+                    process.wait(timeout=STATUS_INTERVAL_SECONDS)
                 except subprocess.TimeoutExpired:
-                    process.kill()
-                raise TimeoutError("training exceeded the 30 minute safety limit")
-            time.sleep(15)
+                    pass
+                elapsed = time.monotonic() - started
+                steps = latest_training_steps(train_log)
+                if steps is None:
+                    announce(
+                        f"[train] starting ({format_duration(elapsed)} elapsed)"
+                    )
+                else:
+                    progress = min(100.0, 100 * steps / timesteps)
+                    eta = elapsed * max(timesteps - steps, 0) / steps if steps else 0
+                    announce(
+                        f"[train] {steps:,} / {timesteps:,} steps "
+                        f"({progress:.0f}%) | {format_duration(elapsed)} elapsed | "
+                        f"ETA ~{format_duration(eta)}"
+                    )
+                selection_path = output_dir / "best_selection.json"
+                if selection_path.exists():
+                    selection = json.loads(selection_path.read_text(encoding="utf-8"))
+                    current_selection = (
+                        int(selection["timesteps"]),
+                        float(selection["success_percent"]),
+                        float(selection["closest_distance_cm"]),
+                    )
+                    if current_selection != last_selection:
+                        announce(
+                            f"[selection] new best at {current_selection[0]:,} steps | "
+                            f"stage {stage_index}: {current_selection[1]:.1f}% | "
+                            f"closest median: {current_selection[2]:.2f} cm"
+                        )
+                        last_selection = current_selection
+                if elapsed > TRAIN_TIMEOUT_SECONDS:
+                    announce("[train] 30 minute safety limit reached; stopping.")
+                    stop_process(process, graceful=False)
+                    raise TimeoutError("training exceeded the 30 minute safety limit")
+        except KeyboardInterrupt:
+            announce("\n[runner] Stopping training and waiting for it to close...")
+            stop_process(process, graceful=True)
+            raise
     write_training_summary()
     if process.returncode != 0:
         tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
@@ -281,6 +450,9 @@ def train_candidate(
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         if not (output_dir / filename).exists():
             raise RuntimeError(f"training output is incomplete: {filename}")
+    announce(
+        f"[train] {label} complete in {format_duration(time.monotonic() - started)}"
+    )
 
 
 def copy_artifact(source: Path, destination: Path) -> None:
@@ -296,7 +468,15 @@ def copy_artifact(source: Path, destination: Path) -> None:
 
 
 def confirm_promotion(artifact_dir: Path, stage_index: int) -> tuple[bool, list[dict]]:
-    evaluations = [evaluate_artifact(artifact_dir, stage_index, seed) for seed in CONFIRMATION_SEEDS]
+    evaluations = [
+        evaluate_artifact(
+            artifact_dir,
+            stage_index,
+            seed,
+            label=f"promotion confirmation {number}/{len(CONFIRMATION_SEEDS)}",
+        )
+        for number, seed in enumerate(CONFIRMATION_SEEDS, start=1)
+    ]
     passed = all(
         result["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT
         for result in evaluations
@@ -313,7 +493,7 @@ def confirm_training_method(
 ) -> tuple[bool, list[dict]]:
     evaluations: list[dict] = []
     passed = True
-    for seed in CONFIRMATION_TRAIN_SEEDS:
+    for number, seed in enumerate(CONFIRMATION_TRAIN_SEEDS, start=1):
         output_dir = CANDIDATE_ROOT / f"experiment-{experiment_index}-seed-{seed}"
         try:
             train_candidate(
@@ -322,8 +502,19 @@ def confirm_training_method(
                 timesteps,
                 seed,
                 resume_model,
+                label=(
+                    f"training confirmation {number}/"
+                    f"{len(CONFIRMATION_TRAIN_SEEDS)}"
+                ),
             )
-            metrics = evaluate_artifact(output_dir, stage_index)
+            metrics = evaluate_artifact(
+                output_dir,
+                stage_index,
+                label=(
+                    f"training confirmation evaluation {number}/"
+                    f"{len(CONFIRMATION_TRAIN_SEEDS)}"
+                ),
+            )
             evaluations.append(metrics)
             passed = passed and (
                 metrics["current_stage_success_percent"]
@@ -331,8 +522,7 @@ def confirm_training_method(
                 and no_regression(metrics, accepted_metrics, stage_index)
             )
         finally:
-            if output_dir.exists():
-                shutil.rmtree(output_dir)
+            remove_candidate_dir(output_dir)
     return passed, evaluations
 
 
@@ -376,6 +566,13 @@ def main() -> int:
     config_written = False
     code_changes: list[str] = []
 
+    target_m, hold_seconds = stage_spec(stage_index)
+    announce(
+        f"[runner] experiment {index} | stage {stage_index}: "
+        f"reach {target_m * 100:.1f} cm and hold {hold_seconds:.2f} s"
+    )
+    announce(f"[runner] mode: {'baseline' if baseline else initialization}")
+
     result = {
         "schema_version": 1,
         "index": index,
@@ -403,30 +600,47 @@ def main() -> int:
             raise ValueError("policy architecture changes require fresh initialization")
 
         if parameter_overrides:
+            announce("[checks] validating proposed parameters")
             validate_param_overrides(parameter_overrides)
             write_experiment_config(
                 merge_param_overrides(previous_config, parameter_overrides)
             )
             config_written = True
         else:
+            announce("[checks] running research-surface checks")
             run_module("ruff", "check", *MUTABLE_PATHS)
             run_module("pytest", "-q")
+            announce("[checks] passed")
 
         accepted_metrics = state.get("accepted_metrics")
         if accepted_metrics is None:
-            accepted_metrics = evaluate_artifact(accepted_dir, stage_index)
+            accepted_metrics = evaluate_artifact(
+                accepted_dir, stage_index, label="accepted-policy baseline"
+            )
             state["accepted_metrics"] = accepted_metrics
             state["accepted_parameters"] = previous_config
 
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
-        train_candidate(candidate_dir, stage_index, args.timesteps, TRAIN_SEED, resume)
+        if candidate_dir.exists():
+            announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
+            remove_candidate_dir(candidate_dir)
+        train_candidate(
+            candidate_dir,
+            stage_index,
+            args.timesteps,
+            TRAIN_SEED,
+            resume,
+            label="baseline training" if baseline else "candidate training",
+        )
         runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
         if runtime_benchmark_changes:
             raise RuntimeError(
                 "training modified protected benchmark files: "
                 f"{runtime_benchmark_changes}"
             )
-        candidate_metrics = evaluate_artifact(candidate_dir, stage_index)
+        candidate_metrics = evaluate_artifact(
+            candidate_dir, stage_index, label="candidate evaluation"
+        )
         improved = rank(candidate_metrics, stage_index) > rank(
             accepted_metrics, stage_index
         ) and no_regression(candidate_metrics, accepted_metrics, stage_index)
@@ -436,6 +650,7 @@ def main() -> int:
         promoted = False
         confirmations: dict[str, list[dict]] = {"evaluation": [], "training": []}
         if active_metrics["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT:
+            announce("[confirmation] promotion threshold reached; confirming result")
             target_passed, confirmations["evaluation"] = confirm_promotion(
                 active_dir, stage_index
             )
@@ -509,6 +724,17 @@ def main() -> int:
         atomic_write_json(STATE_PATH, state)
         append_result(result)
         commit_result(index, change)
+        announce(f"[decision] {verdict}")
+    except KeyboardInterrupt:
+        if config_written:
+            write_experiment_config(previous_config)
+        if code_changes:
+            clean_mutable_changes()
+        announce(
+            "[runner] Interrupted by user. No candidate was accepted and the "
+            "baseline remains pending."
+        )
+        return 130
     except Exception as error:  # noqa: BLE001
         if config_written:
             write_experiment_config(previous_config)
@@ -523,8 +749,10 @@ def main() -> int:
         return 1
     finally:
         PROPOSAL_PATH.unlink(missing_ok=True)
-        if candidate_dir.exists():
-            shutil.rmtree(candidate_dir)
+        try:
+            remove_candidate_dir(candidate_dir)
+        except OSError as cleanup_error:
+            announce(f"[runner] WARNING: candidate cleanup failed: {cleanup_error}")
 
     print("SUMMARY: " + json.dumps(result))
     return 0

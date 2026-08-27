@@ -64,6 +64,10 @@ while ($true) {
         } | ConvertTo-Json | Set-Content "research\proposal.json"
 
         uv run python research/run_experiment.py
+        if ($LASTEXITCODE -eq 130) {
+            Write-Host "=== Baseline interrupted cleanly; it remains pending ==="
+            break
+        }
         if ($LASTEXITCODE -ne 0) {
             throw "Baseline failed. The research loop stopped instead of silently continuing."
         }
@@ -98,6 +102,10 @@ while ($true) {
     Save-ResearchMemory
     Assert-BenchmarkIntegrity
     uv run python research/run_experiment.py
+    if ($LASTEXITCODE -eq 130) {
+        Write-Host "=== Experiment interrupted cleanly; no candidate accepted ==="
+        break
+    }
     if ($LASTEXITCODE -ne 0) {
         throw "Experiment runner failed. The loop stopped safely."
     }

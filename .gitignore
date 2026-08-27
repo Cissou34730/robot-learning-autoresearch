@@ -19,4 +19,5 @@ models/
 .mypy_cache/
 research/last_train.log
 research/last_train_summary.md
+research/last_evaluation.json
 research/brief.md
