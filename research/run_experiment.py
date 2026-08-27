@@ -171,7 +171,11 @@ def atomic_write_json(path: Path, value: dict) -> None:
     temporary.replace(path)
 
 
-def load_state(*, allow_unmeasured: bool = False) -> dict:
+def load_state(
+    *,
+    allow_unmeasured: bool = False,
+    allow_missing_artifact: bool = False,
+) -> dict:
     if not STATE_PATH.exists():
         raise RuntimeError("research state is missing; refusing to run")
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
@@ -181,10 +185,11 @@ def load_state(*, allow_unmeasured: bool = False) -> dict:
         raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
     if state["schema_version"] != 2:
         raise RuntimeError("unsupported research state schema")
-    artifact = ROOT / state["accepted_artifact"]
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        if not (artifact / filename).exists():
-            raise RuntimeError(f"accepted artifact is incomplete: {filename}")
+    if not allow_missing_artifact:
+        artifact = ROOT / state["accepted_artifact"]
+        for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+            if not (artifact / filename).exists():
+                raise RuntimeError(f"accepted artifact is incomplete: {filename}")
     if not allow_unmeasured and state.get("accepted_metrics") is None:
         raise RuntimeError("accepted checkpoint has no baseline metrics")
     return state
@@ -630,7 +635,11 @@ def main() -> int:
     baseline = bool(proposal.get("baseline", False))
     initialization = str(proposal.get("initialization", "transfer")).lower()
     index = next_index()
-    state = load_state(allow_unmeasured=baseline)
+    fresh_baseline = baseline and initialization == "fresh"
+    state = load_state(
+        allow_unmeasured=baseline,
+        allow_missing_artifact=fresh_baseline,
+    )
     stage_index = int(state["current_stage"])
     accepted_dir = ROOT / state["accepted_artifact"]
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
@@ -690,7 +699,7 @@ def main() -> int:
             announce("[checks] passed")
 
         accepted_metrics = state.get("accepted_metrics")
-        if accepted_metrics is None:
+        if accepted_metrics is None and not fresh_baseline:
             accepted_metrics = evaluate_artifact(
                 accepted_dir, stage_index, label="accepted-policy baseline"
             )
@@ -744,9 +753,12 @@ def main() -> int:
         candidate_metrics = evaluate_artifact(
             candidate_dir, stage_index, label="candidate evaluation"
         )
-        improved = rank(candidate_metrics, stage_index) > rank(
-            accepted_metrics, stage_index
-        ) and no_regression(candidate_metrics, accepted_metrics, stage_index)
+        improved = fresh_baseline or (
+            rank(candidate_metrics, stage_index) > rank(
+                accepted_metrics, stage_index
+            )
+            and no_regression(candidate_metrics, accepted_metrics, stage_index)
+        )
 
         active_dir = candidate_dir if improved else accepted_dir
         active_metrics = candidate_metrics if improved else accepted_metrics

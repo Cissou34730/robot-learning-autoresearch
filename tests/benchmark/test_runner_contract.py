@@ -1,11 +1,14 @@
 import json
 
+import pytest
+
 from research.run_experiment import (
     IMMUTABLE_PATHS,
     MUTABLE_PATHS,
     append_result,
     format_duration,
     latest_training_steps,
+    load_state,
     no_regression,
     rank,
     train_candidate_curriculum,
@@ -54,6 +57,30 @@ def test_duration_is_compact_and_human_readable():
     assert format_duration(15) == "15s"
     assert format_duration(125) == "2m05s"
     assert format_duration(3720) == "1h02m"
+
+
+def test_fresh_baseline_can_start_without_an_accepted_artifact(
+    monkeypatch, tmp_path
+):
+    state_path = tmp_path / "research_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "current_stage": 0,
+                "accepted_artifact": "missing-checkpoint",
+                "accepted_metrics": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+
+    state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    assert state["accepted_metrics"] is None
+    with pytest.raises(RuntimeError, match="accepted artifact is incomplete"):
+        load_state(allow_unmeasured=True)
 
 
 def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):

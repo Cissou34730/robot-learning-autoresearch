@@ -67,7 +67,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self.target_radius_range[0], self.target_radius_range[1]
             )
         )
-        self.data.mocap_pos[0] = [radius * np.cos(angle), radius * np.sin(angle), 0.0]
+        # The arm is planar but its plane sits above the world origin. Keep the
+        # target in that same plane so the 3-D distance can genuinely reach zero.
+        target_z = float(self._end_effector_position()[2])
+        self.data.mocap_pos[0] = [
+            radius * np.cos(angle),
+            radius * np.sin(angle),
+            target_z,
+        ]
 
     def _observation(self) -> np.ndarray:
         return reach_observation(self.data)
@@ -79,6 +86,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         mujoco.mj_resetData(self.model, self.data)
         self.data.qpos[:] = 0.0
         self.data.qvel[:] = 0.0
+        mujoco.mj_forward(self.model, self.data)
         self._sample_target_position()
         mujoco.mj_forward(self.model, self.data)
 
