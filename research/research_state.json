@@ -2,18 +2,18 @@
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_metrics": {
     "closest_distance_cm": {
-      "mean": 2.0765287315955607,
-      "median": 2.0246762287370372
+      "mean": 2.0804546797491845,
+      "median": 2.0128626579620024
     },
     "current_stage_success_percent": 0.0,
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 2.1726290838967186,
-      "median": 2.0505631295183138,
-      "worst": 4.854761273243682
+      "mean": 2.1582521280849645,
+      "median": 2.0797041304309443,
+      "worst": 4.230891570430387
     },
     "final_success_percent": 0.0,
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-79\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-81\\model.zip",
     "schema_version": 1,
     "seed": 1000,
     "stage_index": 1,
@@ -31,6 +31,18 @@
   "accepted_parameters": {
     "algorithm": {
       "name": "ppo"
+    },
+    "curriculum": {
+      "segments": [
+        {
+          "fraction": 0.5,
+          "stage_index": 0
+        },
+        {
+          "fraction": 0.5,
+          "stage_index": "current"
+        }
+      ]
     },
     "policy": {
       "activation": "tanh",
@@ -74,21 +86,21 @@
     }
   },
   "current_stage": 1,
-  "last_experiment": 79,
+  "last_experiment": 81,
   "last_metrics": {
     "closest_distance_cm": {
-      "mean": 2.0765287315955607,
-      "median": 2.0246762287370372
+      "mean": 2.0804546797491845,
+      "median": 2.0128626579620024
     },
     "current_stage_success_percent": 0.0,
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 2.1726290838967186,
-      "median": 2.0505631295183138,
-      "worst": 4.854761273243682
+      "mean": 2.1582521280849645,
+      "median": 2.0797041304309443,
+      "worst": 4.230891570430387
     },
     "final_success_percent": 0.0,
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-79\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-81\\model.zip",
     "schema_version": 1,
     "seed": 1000,
     "stage_index": 1,

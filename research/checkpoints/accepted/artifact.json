@@ -20,5 +20,15 @@
       64
     ],
     "activation": "tanh"
-  }
+  },
+  "training_curriculum": [
+    {
+      "stage_index": 0,
+      "timesteps": 60000
+    },
+    {
+      "stage_index": 1,
+      "timesteps": 60000
+    }
+  ]
 }

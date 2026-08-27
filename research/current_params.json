@@ -34,8 +34,12 @@
   "curriculum": {
     "segments": [
       {
+        "stage_index": 0,
+        "fraction": 0.5
+      },
+      {
         "stage_index": "current",
-        "fraction": 1.0
+        "fraction": 0.5
       }
     ]
   },
