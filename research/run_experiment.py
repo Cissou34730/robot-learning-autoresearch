@@ -34,6 +34,7 @@ RESULTS_PATH = RESEARCH_DIR / "results.jsonl"
 PROPOSAL_PATH = RESEARCH_DIR / "proposal.json"
 STATE_PATH = RESEARCH_DIR / "research_state.json"
 BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
+RECOVERY_PENDING_PATH = RESEARCH_DIR / "RECOVERY_PENDING"
 GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 STAGE_ARCHIVE_DIR = RESEARCH_DIR / "checkpoints" / "stages"
@@ -732,6 +733,7 @@ def main() -> int:
         )
         if baseline:
             BASELINE_PENDING_PATH.unlink(missing_ok=True)
+            RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         atomic_write_json(STATE_PATH, state)
         append_result(result)
         commit_result(index, change)

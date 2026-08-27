@@ -63,7 +63,18 @@ while ($true) {
             initialization = "transfer"
         } | ConvertTo-Json | Set-Content "research\proposal.json"
 
-        uv run python research/run_experiment.py
+        $runnerArguments = @("run", "python", "research/run_experiment.py")
+        if (Test-Path "research\RECOVERY_PENDING") {
+            $recoveryCandidate = (
+                Get-Content "research\RECOVERY_PENDING" -Raw
+            ).Trim()
+            if (-not (Test-Path -LiteralPath $recoveryCandidate)) {
+                throw "Recovery candidate is missing: $recoveryCandidate"
+            }
+            Write-Host "=== Reusing completed candidate: $recoveryCandidate ==="
+            $runnerArguments += @("--reuse-candidate", $recoveryCandidate)
+        }
+        uv @runnerArguments
         if ($LASTEXITCODE -eq 130) {
             Write-Host "=== Baseline interrupted cleanly; it remains pending ==="
             break
