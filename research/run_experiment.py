@@ -268,12 +268,16 @@ def next_index() -> int:
 def append_result(result: dict) -> None:
     with RESULTS_PATH.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(result, sort_keys=True) + "\n")
+    def cell(value: object) -> str:
+        return " ".join(str(value).replace("|", "/").split())
+
     row = (
         f"| {result['index']} | {time.strftime('%Y-%m-%d')} | "
-        f"{result['change']} | {result['hypothesis']} | "
-        f"{result.get('final_success_percent', '-')} | "
-        f"{result.get('closest_distance_cm', '-')} | "
-        f"stage {result.get('stage_index', '-')} | {result['verdict']} |"
+        f"{cell(result['change'])} | {cell(result['hypothesis'])} | "
+        f"{cell(result.get('final_success_percent', '-'))} | "
+        f"{cell(result.get('closest_distance_cm', '-'))} | "
+        f"stage {cell(result.get('stage_index', '-'))} | "
+        f"{cell(result['verdict'])} |"
     )
     text = LOG_PATH.read_text(encoding="utf-8").rstrip("\n") + "\n" + row + "\n"
     LOG_PATH.write_text(text, encoding="utf-8")
@@ -609,7 +613,12 @@ def main() -> int:
         else:
             announce("[checks] running research-surface checks")
             run_module("ruff", "check", *MUTABLE_PATHS)
-            run_module("pytest", "-q")
+            run_module(
+                "pytest",
+                "-q",
+                "--basetemp",
+                str(ROOT / ".pytest-run-temp"),
+            )
             announce("[checks] passed")
 
         accepted_metrics = state.get("accepted_metrics")

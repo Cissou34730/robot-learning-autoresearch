@@ -1,6 +1,7 @@
 from research.run_experiment import (
     IMMUTABLE_PATHS,
     MUTABLE_PATHS,
+    append_result,
     format_duration,
     latest_training_steps,
     no_regression,
@@ -49,3 +50,25 @@ def test_duration_is_compact_and_human_readable():
     assert format_duration(15) == "15s"
     assert format_duration(125) == "2m05s"
     assert format_duration(3720) == "1h02m"
+
+
+def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
+    log_path = tmp_path / "EXPERIMENTS.md"
+    results_path = tmp_path / "results.jsonl"
+    log_path.write_text("header\n", encoding="utf-8")
+    monkeypatch.setattr("research.run_experiment.LOG_PATH", log_path)
+    monkeypatch.setattr("research.run_experiment.RESULTS_PATH", results_path)
+
+    append_result(
+        {
+            "index": 1,
+            "change": "line one\nline two",
+            "hypothesis": "safe | table",
+            "stage_index": 0,
+            "verdict": "error:\ntraceback",
+        }
+    )
+
+    assert log_path.read_text(encoding="utf-8").count("\n") == 2
+    assert "line one line two" in log_path.read_text(encoding="utf-8")
+    assert "safe / table" in log_path.read_text(encoding="utf-8")
