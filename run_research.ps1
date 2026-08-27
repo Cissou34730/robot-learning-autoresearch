@@ -54,7 +54,7 @@ while ($true) {
     }
 
     if (Test-Path "research\BASELINE_PENDING") {
-        Write-Host "=== Running automatic curriculum baseline ==="
+        Write-Host "=== Running fresh final-goal baseline ==="
         @{
             baseline = $true
             change = "Fresh PPO baseline"

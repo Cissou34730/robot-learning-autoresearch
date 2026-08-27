@@ -1,15 +1,15 @@
 # Robot autoresearch
 
-Run exactly one experiment, then stop. The runner owns checkpoints, curriculum
-promotion, evaluation, rollback, and commits.
+Run exactly one experiment, then stop. The runner owns checkpoints, evaluation,
+rollback, and commits.
 
 ## Fixed benchmark
 
 Train the MuJoCo two-joint arm to reach a random target 6–20 cm away and stay
 within 1 cm for 2 seconds. Never edit `robot_learning/benchmark/`, the robot,
 physics, environment mechanics, evaluator, runner, or `tests/benchmark/`.
-The runner's current stage is the protected evaluation target, not a restriction
-on training.
+The protected evaluation target is always the final 1 cm / 2 s goal, not a
+restriction on training.
 
 ## Research surface
 
@@ -32,11 +32,10 @@ after training. Do not paste full logs or histories into context.
 If `research/BASELINE_PENDING` exists, `run_research.ps1` runs the unchanged
 control first; no LLM decision is needed.
 
-The current-stage held-out success rate decides first, then closest distance.
-Earlier stages may not regress. Confirm a passing checkpoint by evaluating that
-same trained model on additional held-out seeds; never retrain merely to confirm
-a promotion. Promote the checkpoint with its parameters, normalization, and
-optimizer. The final 1 cm / 2 s score remains a parallel global measurement.
+The final-goal held-out success rate decides first, then closest distance.
+Confirm a passing checkpoint by evaluating that same trained model on additional
+held-out seeds; never retrain merely to confirm it. Keep the checkpoint with its
+parameters, normalization, and optimizer.
 
 Record 3–6 short lines in `research/postmortems.md`: result, behavior, what it
 rules out, and the next idea. Then stop.
