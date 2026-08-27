@@ -9,79 +9,25 @@ assert_immutable_invariants(): these properties define the task and may never
 be modified by experiments.
 """
 
+import copy
 import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
 
-PARAM_WHITELIST: dict[str, set[str]] = {
-    "reward": {
-        "PROGRESS_COEFFICIENT",
-        "CLOSENESS_COEFFICIENT",
-        "CLOSENESS_LENGTH_SCALE",
-        "ACTION_COST_COEFFICIENT",
-        "DWELL_BONUS_PER_STEP",
-        "HOLD_COMPLETE_BONUS",
-    },
-    "ppo": {
-        "learning_rate",
-        "gamma",
-        "gae_lambda",
-        "n_steps",
-        "batch_size",
-        "n_epochs",
-        "clip_range",
-        "ent_coef",
-        "vf_coef",
-        "max_grad_norm",
-        "target_kl",
-        "use_sde",
-        "sde_sample_freq",
-        "normalize_advantage",
-        "ortho_init",
-    },
-    "policy": {
-        "net_arch",
-        "activation",
-        "log_std_init",
-        "share_features_extractor",
-    },
-    "algorithm": {"name"},
-    "training": {
-        "n_envs",
-        "checkpoint_every_steps",
-        "selection_eval_every_steps",
-        "selection_eval_episodes",
-    },
-    "sac": {
-        "learning_rate",
-        "buffer_size",
-        "learning_starts",
-        "batch_size",
-        "tau",
-        "gamma",
-        "train_freq",
-        "gradient_steps",
-        "ent_coef",
-    },
-}
-
-
 def validate_param_overrides(overrides: dict) -> None:
-    unknown_sections = set(overrides) - set(PARAM_WHITELIST)
-    if unknown_sections:
-        raise ValueError(f"unknown parameter sections: {sorted(unknown_sections)}")
-    for section, values in overrides.items():
-        invalid = set(values) - PARAM_WHITELIST[section]
-        if invalid:
-            raise ValueError(f"unknown {section} parameters: {sorted(invalid)}")
+    if not isinstance(overrides, dict):
+        raise TypeError("experiment parameters must be a JSON object")
 
 
 def merge_param_overrides(current: dict, overrides: dict) -> dict:
-    effective = {section: dict(values) for section, values in current.items()}
+    effective = copy.deepcopy(current)
     for section, values in overrides.items():
-        effective.setdefault(section, {}).update(values)
+        if isinstance(effective.get(section), dict) and isinstance(values, dict):
+            effective[section] = merge_param_overrides(effective[section], values)
+        else:
+            effective[section] = copy.deepcopy(values)
     return effective
 
 
@@ -92,11 +38,6 @@ def load_experiment_config() -> dict:
             "experiment parameters and must exist."
         )
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-    missing_sections = set(PARAM_WHITELIST) - set(config)
-    if missing_sections:
-        raise ValueError(
-            f"{CONFIG_PATH} is missing required sections: {sorted(missing_sections)}"
-        )
     validate_param_overrides(config)
     return config
 

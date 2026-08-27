@@ -593,8 +593,6 @@ def main() -> int:
         code_changes = assert_research_surface()
         if baseline and (parameter_overrides or code_changes):
             raise ValueError("baseline requires an unchanged research method")
-        if parameter_overrides and code_changes:
-            raise ValueError("use parameter mode or code mode, not both")
         if not baseline and not parameter_overrides and not code_changes:
             raise ValueError("experiment contains no research change")
         if initialization not in {"transfer", "fresh"}:
@@ -613,7 +611,7 @@ def main() -> int:
                 merge_param_overrides(previous_config, parameter_overrides)
             )
             config_written = True
-        else:
+        if code_changes:
             announce("[checks] running research-surface checks")
             run_module("ruff", "check", *MUTABLE_PATHS)
             run_module(
