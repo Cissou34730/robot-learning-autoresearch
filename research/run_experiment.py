@@ -727,10 +727,16 @@ def main() -> int:
             write_experiment_config(previous_config)
         if code_changes:
             clean_mutable_changes()
-        announce(
-            "[runner] Interrupted by user. No candidate was accepted and the "
-            "baseline remains pending."
-        )
+        if baseline:
+            announce(
+                "[runner] Baseline interrupted by user. It remains pending and "
+                "will restart from the beginning next time."
+            )
+        else:
+            announce(
+                "[runner] Experiment interrupted by user. The candidate was "
+                "discarded and the accepted checkpoint is unchanged."
+            )
         return 130
     except Exception as error:  # noqa: BLE001
         if config_written:
