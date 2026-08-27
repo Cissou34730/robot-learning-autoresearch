@@ -108,21 +108,10 @@ def main() -> int:
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     args = parser.parse_args()
 
-    automatic_baseline = BASELINE_PENDING_PATH.exists()
-    if automatic_baseline:
-        proposal = {
-            "change": "unchanged control for the current research metric",
-            "hypothesis": "Establish the baseline before testing research changes.",
-            "class": "baseline",
-            "initialization": "transfer",
-            "baseline": True,
-        }
-        print("[runner] baseline pending: running the unchanged control automatically")
-    elif not PROPOSAL_PATH.exists():
+    if not PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
         return 1
-    else:
-        proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
+    proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
     param_overrides = proposal.get("params")
@@ -318,8 +307,7 @@ def main() -> int:
             f"| - | - | - | error ({str(error)[:80]}) |"
         )
         LOG_PATH.write_text(append_row(log_text, row), encoding="utf-8")
-        if not automatic_baseline:
-            PROPOSAL_PATH.unlink(missing_ok=True)
+        PROPOSAL_PATH.unlink(missing_ok=True)
         print(
             "SUMMARY: "
             + json.dumps(
@@ -371,8 +359,7 @@ def main() -> int:
             git("checkout", "--", *RESEARCH_DIFF_PATHS)
         if model_dir is not None and model_dir.exists():
             shutil.rmtree(model_dir, ignore_errors=True)
-    if not automatic_baseline:
-        PROPOSAL_PATH.unlink(missing_ok=True)
+    PROPOSAL_PATH.unlink(missing_ok=True)
 
     summary = {
         "status": "ok",

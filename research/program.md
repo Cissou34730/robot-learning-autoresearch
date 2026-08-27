@@ -14,8 +14,8 @@ Use one hypothesis and one coherent change. Write `research/proposal.json`, then
 
 Read `research/brief.md` before choosing. Read `research/last_train_summary.md` after training. Do not paste full logs or histories into context.
 
-If `research/BASELINE_PENDING` exists, the runner automatically runs the unchanged
-control first; no proposal or LLM decision is needed for that baseline.
+If `research/BASELINE_PENDING` exists, `run_research.ps1` automatically runs the
+unchanged control first; no LLM decision is needed for that baseline.
 
 The ratchet is lexicographic: maximize fixed-benchmark success first, then fixed
 curriculum progress, then minimize closest distance. This lets learning progress
