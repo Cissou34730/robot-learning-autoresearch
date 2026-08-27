@@ -47,34 +47,25 @@ PARAM_WHITELIST: dict[str, set[str]] = {
         "log_std_init",
         "share_features_extractor",
     },
-    "env": {
-        "frame_skip",
-        "max_episode_steps",
-        "curriculum_stage_advance_success_rate",
-        "curriculum_stage_advance_min_episodes",
+    "algorithm": {"name"},
+    "training": {
+        "n_envs",
+        "checkpoint_every_steps",
+        "selection_eval_every_steps",
+        "selection_eval_episodes",
+    },
+    "sac": {
+        "learning_rate",
+        "buffer_size",
+        "learning_starts",
+        "batch_size",
+        "tau",
+        "gamma",
+        "train_freq",
+        "gradient_steps",
+        "ent_coef",
     },
 }
-
-IMMUTABLE_INVARIANTS = {
-    "success_threshold": 0.01,
-    "hold_steps_required": 100,
-    "target_radius_range": (0.06, 0.20),
-    "max_episode_steps": 500,
-}
-
-# Fixed diagnostic ladder used by evaluation. This is deliberately separate
-# from the training curriculum: researchers may change how the agent is taught,
-# but not the ruler used to compare experiments.
-EVALUATION_MILESTONES: tuple[tuple[float, float], ...] = (
-    (0.03, 0.02),
-    (0.02, 0.02),
-    (0.01, 0.02),
-    (0.01, 0.10),
-    (0.01, 0.50),
-    (0.01, 1.00),
-    (0.01, 1.50),
-    (0.01, 2.00),
-)
 
 
 def validate_param_overrides(overrides: dict) -> None:
@@ -116,19 +107,18 @@ def write_experiment_config(config: dict) -> None:
 
 
 def assert_immutable_invariants(env) -> None:
-    assert env.success_threshold == IMMUTABLE_INVARIANTS["success_threshold"]
-    assert env.hold_steps_required == IMMUTABLE_INVARIANTS["hold_steps_required"]
-    assert env.target_radius_range == IMMUTABLE_INVARIANTS["target_radius_range"]
-    assert env.max_episode_steps == IMMUTABLE_INVARIANTS["max_episode_steps"]
+    from robot_learning.benchmark.spec import (
+        FINAL_STAGE_INDEX,
+        FRAME_SKIP,
+        MAX_EPISODE_STEPS,
+        TARGET_RADIUS_RANGE,
+        stage_spec,
+    )
 
-
-def escalation_ladder() -> list[str]:
-    return [
-        "coefficient and hyperparameter tuning",
-        "reward structure",
-        "observation representation",
-        "training curriculum",
-        "policy architecture and training schedule",
-        "learning algorithm (e.g. PPO vs SAC)",
-        "broader goal-preserving training-method changes",
-    ]
+    threshold, hold_seconds = stage_spec(FINAL_STAGE_INDEX)
+    control_dt = env.model.opt.timestep * env.frame_skip
+    assert env.success_threshold == threshold
+    assert env.hold_steps_required == round(hold_seconds / control_dt)
+    assert env.target_radius_range == TARGET_RADIUS_RANGE
+    assert env.max_episode_steps == MAX_EPISODE_STEPS
+    assert env.frame_skip == FRAME_SKIP

@@ -1,11 +1,4 @@
-"""Deterministic experiment runner for the autoresearch loop.
-
-The research agent writes `research/proposal.json` (and, in code mode, edits
-the allowed files). This script does everything else: validates input against
-machine-enforced boundaries, runs gates when needed, trains, evaluates,
-appends the results row, applies the ratchet, updates best-so-far, escalates
-between hypothesis classes, and writes GOAL_REACHED on success.
-"""
+"""Transactional autonomous-research runner for the robot curriculum."""
 
 import argparse
 import json
@@ -17,8 +10,14 @@ import time
 from pathlib import Path
 
 from research.build_research_brief import write_training_summary
+from robot_learning.benchmark.spec import (
+    EVALUATION_EPISODES,
+    EVALUATION_SEED,
+    FINAL_STAGE_INDEX,
+    FINAL_SUCCESS_PERCENT,
+    STAGE_PROMOTION_PERCENT,
+)
 from robot_learning.training.research_config import (
-    assert_immutable_invariants,
     load_experiment_config,
     merge_param_overrides,
     validate_param_overrides,
@@ -26,25 +25,42 @@ from robot_learning.training.research_config import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-LOG_PATH = ROOT / "research" / "EXPERIMENTS.md"
-PROPOSAL_PATH = ROOT / "research" / "proposal.json"
-STATE_PATH = ROOT / "research" / "research_state.json"
-BASELINE_PENDING_PATH = ROOT / "research" / "BASELINE_PENDING"
-SENTINEL_DIR = ROOT / "research"
-CODE_DIR = "robot_learning"
-MODELS_DIR = ROOT / "models"
-BASELINE_MODEL_PATH = MODELS_DIR / "reach-exp19" / "model.zip"
-RESEARCH_DIFF_PATHS = (CODE_DIR, "tests/test_reach_env.py")
-IMMUTABLE_CODE_FILES = {
+RESEARCH_DIR = ROOT / "research"
+LOG_PATH = RESEARCH_DIR / "EXPERIMENTS.md"
+RESULTS_PATH = RESEARCH_DIR / "results.jsonl"
+PROPOSAL_PATH = RESEARCH_DIR / "proposal.json"
+STATE_PATH = RESEARCH_DIR / "research_state.json"
+BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
+GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
+ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
+STAGE_ARCHIVE_DIR = RESEARCH_DIR / "checkpoints" / "stages"
+CANDIDATE_ROOT = ROOT / "models" / "candidates"
+
+MUTABLE_PATHS = (
+    "robot_learning/rewards",
+    "robot_learning/train.py",
+    "robot_learning/training/observations.py",
+    "robot_learning/training/selection_callback.py",
+    "tests/research",
+)
+IMMUTABLE_PATHS = (
+    "robot_learning/benchmark",
+    "robot_learning/environments/reach_env.py",
     "robot_learning/evaluate.py",
+    "robot_learning/robots",
+    "robot_learning/training/algorithms.py",
+    "robot_learning/training/normalization.py",
     "robot_learning/training/research_config.py",
     "research/run_experiment.py",
-}
+    "tests/benchmark",
+)
 
-TIMESTEPS = 120000
-EVAL_EPISODES = 200
+TIMESTEPS = 120_000
 TRAIN_SEED = 0
-GOAL_PERCENT = 98.0
+TRAIN_TIMEOUT_SECONDS = 30 * 60
+CONFIRMATION_SEEDS = (3000, 5000)
+CONFIRMATION_TRAIN_SEEDS = (1, 2)
+
 
 def git(*args: str) -> str:
     result = subprocess.run(
@@ -61,7 +77,79 @@ def git(*args: str) -> str:
     return result.stdout
 
 
-def run_module(module: str, *args: str) -> str:
+def atomic_write_json(path: Path, value: dict) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    temporary.replace(path)
+
+
+def load_state(*, allow_unmeasured: bool = False) -> dict:
+    if not STATE_PATH.exists():
+        raise RuntimeError("research state is missing; refusing to run")
+    state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    required = {"schema_version", "current_stage", "accepted_artifact"}
+    missing = required - set(state)
+    if missing:
+        raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
+    if state["schema_version"] != 2:
+        raise RuntimeError("unsupported research state schema")
+    artifact = ROOT / state["accepted_artifact"]
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        if not (artifact / filename).exists():
+            raise RuntimeError(f"accepted artifact is incomplete: {filename}")
+    if not allow_unmeasured and state.get("accepted_metrics") is None:
+        raise RuntimeError("accepted checkpoint has no baseline metrics")
+    return state
+
+
+def status_paths(paths: tuple[str, ...]) -> list[str]:
+    output = git("status", "--porcelain", "--untracked-files=all", "--", *paths)
+    return [line[3:].strip().strip('"') for line in output.splitlines() if line]
+
+
+def path_is_within(path: str, roots: tuple[str, ...]) -> bool:
+    normalized = path.replace("\\", "/")
+    return any(
+        normalized == root or normalized.startswith(root.rstrip("/") + "/")
+        for root in roots
+    )
+
+
+def assert_research_surface() -> list[str]:
+    changed = status_paths((".",))
+    allowed_control = {"research/proposal.json"}
+    unexpected = [
+        path
+        for path in changed
+        if path not in allowed_control and not path_is_within(path, MUTABLE_PATHS)
+    ]
+    if unexpected:
+        raise ValueError(f"changes outside the research surface: {unexpected}")
+    return [path for path in changed if path_is_within(path, MUTABLE_PATHS)]
+
+
+def clean_mutable_changes() -> None:
+    tracked = git("diff", "--name-only", "--", *MUTABLE_PATHS).splitlines()
+    tracked += git("diff", "--cached", "--name-only", "--", *MUTABLE_PATHS).splitlines()
+    if tracked:
+        git("restore", "--staged", "--worktree", "--", *sorted(set(tracked)))
+    untracked = git(
+        "ls-files", "--others", "--exclude-standard", "--", *MUTABLE_PATHS
+    ).splitlines()
+    allowed_roots = [(ROOT / path).resolve() for path in MUTABLE_PATHS]
+    for relative in untracked:
+        target = (ROOT / relative).resolve()
+        if not any(target == root or root in target.parents for root in allowed_roots):
+            raise RuntimeError(f"refusing to remove unexpected path: {target}")
+        if target.is_dir():
+            shutil.rmtree(target)
+        elif target.exists():
+            target.unlink()
+
+
+def run_module(module: str, *args: str, timeout: int | None = None) -> str:
     result = subprocess.run(
         [sys.executable, "-m", module, *args],
         cwd=ROOT,
@@ -69,6 +157,7 @@ def run_module(module: str, *args: str) -> str:
         text=True,
         encoding="utf-8",
         errors="replace",
+        timeout=timeout,
         check=False,
     )
     if result.returncode != 0:
@@ -78,337 +167,368 @@ def run_module(module: str, *args: str) -> str:
     return result.stdout
 
 
-def next_index(log_text: str) -> int:
-    indices = [
-        int(m) for m in re.findall(r"^\| (\d+) \|", log_text, flags=re.MULTILINE)
-    ]
+def next_index() -> int:
+    indices: list[int] = []
+    if RESULTS_PATH.exists():
+        for line in RESULTS_PATH.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                indices.append(int(json.loads(line)["index"]))
+    if not indices and LOG_PATH.exists():
+        indices = [
+            int(value)
+            for value in re.findall(
+                r"^\| (\d+) \|", LOG_PATH.read_text(encoding="utf-8"), re.MULTILINE
+            )
+        ]
     return max(indices, default=0) + 1
 
 
-def current_best(log_text: str) -> float:
-    match = re.search(r"\*\*Best so far:\*\* (\d+(?:\.\d+)?)%", log_text)
-    return float(match.group(1)) if match else 0.0
+def append_result(result: dict) -> None:
+    with RESULTS_PATH.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(result, sort_keys=True) + "\n")
+    row = (
+        f"| {result['index']} | {time.strftime('%Y-%m-%d')} | "
+        f"{result['change']} | {result['hypothesis']} | "
+        f"{result.get('final_success_percent', '-')} | "
+        f"{result.get('closest_distance_cm', '-')} | "
+        f"stage {result.get('stage_index', '-')} | {result['verdict']} |"
+    )
+    text = LOG_PATH.read_text(encoding="utf-8").rstrip("\n") + "\n" + row + "\n"
+    LOG_PATH.write_text(text, encoding="utf-8")
 
 
-def set_best_line(log_text: str, percent: float, index: int) -> str:
-    replacement = f"**Best so far:** {percent:g}% (experiment {index})"
-    updated, count = re.subn(r"\*\*Best so far:\*\*.*", replacement, log_text, count=1)
-    if count == 0:
-        updated = replacement + "\n\n" + log_text
-    return updated
+def evaluate_artifact(
+    artifact_dir: Path, stage_index: int, seed: int = EVALUATION_SEED
+) -> dict:
+    output_path = artifact_dir / f"evaluation-{seed}.json"
+    run_module(
+        "robot_learning.evaluate",
+        "--model",
+        str(artifact_dir / "model.zip"),
+        "--stage-index",
+        str(stage_index),
+        "--episodes",
+        str(EVALUATION_EPISODES),
+        "--seed",
+        str(seed),
+        "--output-json",
+        str(output_path),
+        timeout=10 * 60,
+    )
+    return json.loads(output_path.read_text(encoding="utf-8"))
 
 
-def append_row(log_text: str, row: str) -> str:
-    return log_text.rstrip("\n") + "\n" + row + "\n"
+def rank(metrics: dict, stage_index: int) -> tuple[float, float]:
+    return (
+        float(metrics["stage_success_percent"][stage_index]),
+        -float(metrics["closest_distance_cm"]["median"]),
+    )
 
+
+def no_regression(candidate: dict, accepted: dict, stage_index: int) -> bool:
+    return all(
+        candidate["stage_success_percent"][index]
+        >= accepted["stage_success_percent"][index]
+        for index in range(stage_index)
+    )
+
+
+def train_candidate(
+    output_dir: Path,
+    stage_index: int,
+    timesteps: int,
+    seed: int,
+    resume: Path | None,
+) -> None:
+    command = [
+        sys.executable,
+        "-m",
+        "robot_learning.train",
+        "--timesteps",
+        str(timesteps),
+        "--seed",
+        str(seed),
+        "--stage-index",
+        str(stage_index),
+        "--output-dir",
+        str(output_dir),
+    ]
+    if resume is not None:
+        command.extend(["--resume", str(resume)])
+    train_log = RESEARCH_DIR / "last_train.log"
+    started = time.monotonic()
+    with train_log.open("w", encoding="utf-8") as log_file:
+        process = subprocess.Popen(
+            command,
+            cwd=ROOT,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        while process.poll() is None:
+            if time.monotonic() - started > TRAIN_TIMEOUT_SECONDS:
+                process.terminate()
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                raise TimeoutError("training exceeded the 30 minute safety limit")
+            time.sleep(15)
+    write_training_summary()
+    if process.returncode != 0:
+        tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
+        raise RuntimeError("training failed:\n" + "\n".join(tail))
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        if not (output_dir / filename).exists():
+            raise RuntimeError(f"training output is incomplete: {filename}")
+
+
+def copy_artifact(source: Path, destination: Path) -> None:
+    destination.mkdir(parents=True, exist_ok=True)
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        shutil.copyfile(source / filename, destination / filename)
+    replay_buffer = source / "replay_buffer.pkl"
+    destination_replay = destination / "replay_buffer.pkl"
+    if replay_buffer.exists():
+        shutil.copyfile(replay_buffer, destination_replay)
+    elif destination_replay.exists():
+        destination_replay.unlink()
+
+
+def confirm_promotion(artifact_dir: Path, stage_index: int) -> tuple[bool, list[dict]]:
+    evaluations = [evaluate_artifact(artifact_dir, stage_index, seed) for seed in CONFIRMATION_SEEDS]
+    passed = all(
+        result["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT
+        for result in evaluations
+    )
+    return passed, evaluations
+
+
+def confirm_training_method(
+    resume_model: Path | None,
+    stage_index: int,
+    timesteps: int,
+    experiment_index: int,
+    accepted_metrics: dict,
+) -> tuple[bool, list[dict]]:
+    evaluations: list[dict] = []
+    passed = True
+    for seed in CONFIRMATION_TRAIN_SEEDS:
+        output_dir = CANDIDATE_ROOT / f"experiment-{experiment_index}-seed-{seed}"
+        try:
+            train_candidate(
+                output_dir,
+                stage_index,
+                timesteps,
+                seed,
+                resume_model,
+            )
+            metrics = evaluate_artifact(output_dir, stage_index)
+            evaluations.append(metrics)
+            passed = passed and (
+                metrics["current_stage_success_percent"]
+                >= STAGE_PROMOTION_PERCENT
+                and no_regression(metrics, accepted_metrics, stage_index)
+            )
+        finally:
+            if output_dir.exists():
+                shutil.rmtree(output_dir)
+    return passed, evaluations
+
+
+def commit_result(index: int, change: str) -> None:
+    paths = [
+        "research/EXPERIMENTS.md",
+        "research/results.jsonl",
+        "research/research_state.json",
+        "research/current_params.json",
+        "research/checkpoints",
+    ]
+    if BASELINE_PENDING_PATH.exists() or git("ls-files", "research/BASELINE_PENDING").strip():
+        paths.append("research/BASELINE_PENDING")
+    paths.extend(MUTABLE_PATHS)
+    git("add", "-A", "--", *paths)
+    if not git("diff", "--cached", "--name-only").strip():
+        return
+    git("commit", "-m", f"exp {index}: {change}")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     args = parser.parse_args()
-
     if not PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
         return 1
+
     proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
-    param_overrides = proposal.get("params")
-    hypothesis_class = str(proposal.get("class", "unclassified")).strip().lower()
-    initialization = str(proposal.get("initialization", "transfer")).strip().lower()
+    parameter_overrides = proposal.get("params")
     baseline = bool(proposal.get("baseline", False))
-
-    log_text = LOG_PATH.read_text(encoding="utf-8")
-    index = next_index(log_text)
-    best_before = current_best(log_text)
-    state = {}
-    if STATE_PATH.exists():
-        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    best_progress_before = float(state.get("best_progress_score", 0.0))
-    best_closest_before = float(state.get("best_closest_distance_cm", "inf"))
-    model_dir: Path | None = None
-    code_diff = ""
-    previous_config: dict | None = None
+    initialization = str(proposal.get("initialization", "transfer")).lower()
+    index = next_index()
+    state = load_state(allow_unmeasured=baseline)
+    stage_index = int(state["current_stage"])
+    accepted_dir = ROOT / state["accepted_artifact"]
+    candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
+    previous_config = load_experiment_config()
     config_written = False
+    code_changes: list[str] = []
 
-    try:
-        if initialization not in {"transfer", "fresh"}:
-            raise ValueError("initialization must be 'transfer' or 'fresh'")
-        if baseline and initialization != "transfer":
-            raise ValueError("the baseline must use transfer initialization")
-        if baseline and not BASELINE_PENDING_PATH.exists():
-            raise ValueError("baseline requested but research/BASELINE_PENDING is absent")
-
-        immutable_env_overrides = {"max_episode_steps", "frame_skip"} & set(
-            (param_overrides or {}).get("env", {})
-        )
-        if immutable_env_overrides:
-            raise ValueError(
-                f"immutable environment parameters cannot be changed: "
-                f"{sorted(immutable_env_overrides)}"
-            )
-        code_diff = git("diff", "--stat", *RESEARCH_DIFF_PATHS).strip()
-        if baseline and (param_overrides or code_diff):
-            raise ValueError("baseline requires no parameter overrides or code edits")
-        if param_overrides and code_diff:
-            raise ValueError(
-                "proposal contains both params and a code edit - use one or the other"
-            )
-        if not baseline and not param_overrides and not code_diff:
-            print("ERROR: no parameter overrides and no code diff - nothing to test.")
-            return 1
-        if initialization == "transfer" and param_overrides and param_overrides.get(
-            "policy"
-        ):
-            raise ValueError(
-                "policy changes require initialization='fresh' because checkpoint "
-                "tensor shapes may be incompatible"
-            )
-
-        if code_diff:
-            changed_files = {
-                line.strip()
-                for line in git("diff", "--name-only", *RESEARCH_DIFF_PATHS).splitlines()
-                if line.strip()
-            }
-            outside = {
-                path for path in changed_files
-                if path in IMMUTABLE_CODE_FILES
-                or (not path.startswith("robot_learning/") and path != "tests/test_reach_env.py")
-            }
-            if outside:
-                raise ValueError(
-                    f"edits touch files outside the allowed research surface: "
-                    f"{sorted(outside)}"
-                )
-
-        previous_config = load_experiment_config()
-        effective_params = merge_param_overrides(previous_config, param_overrides or {})
-
-        if param_overrides:
-            validate_param_overrides(param_overrides)
-            write_experiment_config(effective_params)
-            config_written = True
-            print(f"[runner] parameter mode: applying {param_overrides}")
-        else:
-            print("[runner] code mode: running checks (ruff, pytest)...")
-            run_module("ruff", "check", ".")
-            checks = run_module("pytest", "-q")
-            if "failed" in checks:
-                raise RuntimeError("pytest reported failures")
-            from robot_learning.environments.reach_env import TwoJointArmReachEnv
-
-            probe_env = TwoJointArmReachEnv()
-            assert_immutable_invariants(probe_env)
-            print("[runner] immutable invariants verified")
-
-        print(f"[runner] training started: {args.timesteps} steps, seed {TRAIN_SEED}")
-        print("[runner] progress updates every 15 s (checkpoints every 5k steps)")
-        started = time.time()
-        train_log = ROOT / "research" / "last_train.log"
-        train_command = [
-            sys.executable,
-            "-m",
-            "robot_learning.train",
-            "--timesteps",
-            str(args.timesteps),
-            "--seed",
-            str(TRAIN_SEED),
-        ]
-        if initialization == "transfer":
-            if not BASELINE_MODEL_PATH.exists():
-                raise FileNotFoundError(
-                    f"baseline model not found: {BASELINE_MODEL_PATH}"
-                )
-            train_command.extend(["--resume", str(BASELINE_MODEL_PATH)])
-
-        with train_log.open("w", encoding="utf-8") as log_file:
-            process = subprocess.Popen(
-                train_command,
-                cwd=ROOT,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-                text=True,
-            )
-            last_reported = -1
-            while process.poll() is None:
-                time.sleep(15)
-                candidates = [
-                    p
-                    for p in MODELS_DIR.glob("*/checkpoints/reach_*_steps.zip")
-                    if p.stat().st_mtime >= started
-                ]
-                if candidates:
-                    latest = max(
-                        int(re.search(r"_(\d+)_steps\.zip$", p.name).group(1))
-                        for p in candidates
-                    )
-                    if latest > last_reported:
-                        elapsed = time.time() - started
-                        print(
-                            f"[train] {latest} / {args.timesteps} steps "
-                            f"({elapsed:.0f}s elapsed)"
-                        )
-                        last_reported = latest
-        write_training_summary()
-        if process.returncode != 0:
-            tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
-            raise RuntimeError("training failed:\n" + "\n".join(tail))
-
-        run_dirs = sorted(MODELS_DIR.glob("reach-*"), key=lambda p: p.stat().st_mtime)
-        model_dir = run_dirs[-1]
-        model_zip = str(model_dir / "model.zip")
-        print(f"[runner] training done in {time.time() - started:.0f}s")
-
-        print(f"[runner] evaluating on {EVAL_EPISODES} fresh episodes (~1-2 min)...")
-        eval_started = time.time()
-        eval_out = run_module(
-            "robot_learning.evaluate",
-            "--model",
-            model_zip,
-            "--episodes",
-            str(EVAL_EPISODES),
-        )
-        rate = re.search(r"Success rate: (\d+)/(\d+) \((\d+(?:\.\d+)?)%\)", eval_out)
-        dists = re.search(
-            r"Final distance \(cm\): mean (\d+(?:\.\d+)?), "
-            r"median (\d+(?:\.\d+)?)",
-            eval_out,
-        )
-        closest = re.search(
-            r"Closest distance \(cm\): mean (\d+(?:\.\d+)?), "
-            r"median (\d+(?:\.\d+)?)",
-            eval_out,
-        )
-        progress = re.search(
-            r"Curriculum progress score: (\d+(?:\.\d+)?)%", eval_out
-        )
-        if not rate or not dists or not closest or not progress:
-            raise RuntimeError("could not parse evaluation output")
-
-        success = float(rate.group(3))
-        mean_dist = dists.group(1)
-        median_dist = dists.group(2)
-        closest_median = float(closest.group(2))
-        progress_score = float(progress.group(1))
-        print(
-            f"[runner] evaluation done in {time.time() - eval_started:.0f}s: "
-            f"{success:g}% final success, {progress_score:g}% curriculum progress"
-        )
-
-    except Exception as error:  # noqa: BLE001
-        if code_diff and not param_overrides:
-            git("checkout", "--", *RESEARCH_DIFF_PATHS)
-        if config_written and previous_config is not None:
-            write_experiment_config(previous_config)
-        row = (
-            f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
-            f"| - | - | - | error ({str(error)[:80]}) |"
-        )
-        LOG_PATH.write_text(append_row(log_text, row), encoding="utf-8")
-        PROPOSAL_PATH.unlink(missing_ok=True)
-        print(
-            "SUMMARY: "
-            + json.dumps(
-                {"status": "error", "index": index, "error": str(error)[:300]}
-            )
-        )
-        return 1
-
-    candidate_rank = (success, progress_score, -closest_median)
-    best_rank = (best_before, best_progress_before, -best_closest_before)
-    improved = baseline or candidate_rank > best_rank
-    equal = candidate_rank == best_rank
-    if baseline:
-        verdict = "kept (baseline)"
-    elif improved:
-        verdict = "kept" if success > best_before else "kept (progress)"
-    elif equal:
-        verdict = "reverted (equal)"
-    else:
-        verdict = "reverted (worse)"
-
-    row = (
-        f"| {index} | {time.strftime('%Y-%m-%d')} | {change} | {hypothesis} "
-        f"| {success:g} | {mean_dist} | {median_dist} | {verdict}; "
-        f"progress {progress_score:g}%, closest {closest_median:g} cm |"
-    )
-    log_text = append_row(log_text, row)
-    if improved:
-        log_text = set_best_line(log_text, success, index)
-    LOG_PATH.write_text(log_text, encoding="utf-8")
-
-    if improved and param_overrides:
-        write_experiment_config(effective_params)
-
-    files_to_commit = ["research/EXPERIMENTS.md", "research/current_params.json"]
-    if improved and code_diff:
-        files_to_commit.extend(RESEARCH_DIFF_PATHS)
-    if baseline:
-        BASELINE_PENDING_PATH.unlink(missing_ok=True)
-        files_to_commit.append("research/BASELINE_PENDING")
-
-    if improved:
-        git("add", *files_to_commit)
-        git("commit", "-m", f"exp {index}: {change} -> {success:g}%")
-    else:
-        if config_written:
-            write_experiment_config(previous_config)
-        if code_diff:
-            git("checkout", "--", *RESEARCH_DIFF_PATHS)
-        if model_dir is not None and model_dir.exists():
-            shutil.rmtree(model_dir, ignore_errors=True)
-    PROPOSAL_PATH.unlink(missing_ok=True)
-
-    summary = {
-        "status": "ok",
+    result = {
+        "schema_version": 1,
         "index": index,
         "change": change,
-        "success_percent": success,
-        "progress_score": progress_score,
-        "closest_distance_cm": closest_median,
-        "best_before": best_before,
-        "best_progress_before": best_progress_before,
-        "improved": improved,
-        "verdict": verdict,
+        "hypothesis": hypothesis,
+        "stage_index": stage_index,
+        "status": "error",
+        "verdict": "error",
     }
+    try:
+        code_changes = assert_research_surface()
+        if baseline and (parameter_overrides or code_changes):
+            raise ValueError("baseline requires an unchanged research method")
+        if parameter_overrides and code_changes:
+            raise ValueError("use parameter mode or code mode, not both")
+        if not baseline and not parameter_overrides and not code_changes:
+            raise ValueError("experiment contains no research change")
+        if initialization not in {"transfer", "fresh"}:
+            raise ValueError("initialization must be transfer or fresh")
+        if (
+            initialization == "transfer"
+            and parameter_overrides
+            and parameter_overrides.get("policy")
+        ):
+            raise ValueError("policy architecture changes require fresh initialization")
 
-    if improved and success >= GOAL_PERCENT:
-        (SENTINEL_DIR / "GOAL_REACHED").write_text(
-            f"Goal reached at experiment {index}: {success:g}%.\n", encoding="utf-8"
+        if parameter_overrides:
+            validate_param_overrides(parameter_overrides)
+            write_experiment_config(
+                merge_param_overrides(previous_config, parameter_overrides)
+            )
+            config_written = True
+        else:
+            run_module("ruff", "check", *MUTABLE_PATHS)
+            run_module("pytest", "-q")
+
+        accepted_metrics = state.get("accepted_metrics")
+        if accepted_metrics is None:
+            accepted_metrics = evaluate_artifact(accepted_dir, stage_index)
+            state["accepted_metrics"] = accepted_metrics
+            state["accepted_parameters"] = previous_config
+
+        resume = accepted_dir / "model.zip" if initialization == "transfer" else None
+        train_candidate(candidate_dir, stage_index, args.timesteps, TRAIN_SEED, resume)
+        runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
+        if runtime_benchmark_changes:
+            raise RuntimeError(
+                "training modified protected benchmark files: "
+                f"{runtime_benchmark_changes}"
+            )
+        candidate_metrics = evaluate_artifact(candidate_dir, stage_index)
+        improved = rank(candidate_metrics, stage_index) > rank(
+            accepted_metrics, stage_index
+        ) and no_regression(candidate_metrics, accepted_metrics, stage_index)
+
+        active_dir = candidate_dir if improved else accepted_dir
+        active_metrics = candidate_metrics if improved else accepted_metrics
+        promoted = False
+        confirmations: dict[str, list[dict]] = {"evaluation": [], "training": []}
+        if active_metrics["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT:
+            target_passed, confirmations["evaluation"] = confirm_promotion(
+                active_dir, stage_index
+            )
+            training_passed = True
+            if improved:
+                training_passed, confirmations["training"] = confirm_training_method(
+                    accepted_dir / "model.zip"
+                    if initialization == "transfer"
+                    else None,
+                    stage_index,
+                    args.timesteps,
+                    index,
+                    accepted_metrics,
+                )
+            promoted = target_passed and training_passed
+
+        if improved:
+            copy_artifact(candidate_dir, ACCEPTED_DIR)
+            state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
+            state["accepted_metrics"] = candidate_metrics
+            state["accepted_parameters"] = load_experiment_config()
+            verdict = "kept"
+        else:
+            verdict = "reverted (no improvement)"
+            if config_written:
+                write_experiment_config(previous_config)
+            if code_changes:
+                clean_mutable_changes()
+
+        active_dir = ACCEPTED_DIR if improved else accepted_dir
+        if promoted:
+            archive = STAGE_ARCHIVE_DIR / f"stage-{stage_index:02d}"
+            copy_artifact(active_dir, archive)
+            if stage_index < FINAL_STAGE_INDEX:
+                state["current_stage"] = stage_index + 1
+                verdict += f"; promoted to stage {stage_index + 1}"
+            elif active_metrics["final_success_percent"] >= FINAL_SUCCESS_PERCENT:
+                GOAL_PATH.write_text(
+                    f"Goal reached at experiment {index}.\n", encoding="utf-8"
+                )
+                verdict += "; goal reached"
+
+        state.update(
+            {
+                "last_experiment": index,
+                "last_verdict": verdict,
+                "last_metrics": candidate_metrics,
+            }
         )
-        summary["sentinel"] = "GOAL_REACHED"
+        result.update(
+            {
+                "status": "ok",
+                "verdict": verdict,
+                "accepted": improved,
+                "promoted": promoted,
+                "candidate_metrics": candidate_metrics,
+                "confirmation_metrics": confirmations,
+                "final_success_percent": candidate_metrics[
+                    "final_success_percent"
+                ],
+                "current_stage_success_percent": candidate_metrics[
+                    "current_stage_success_percent"
+                ],
+                "closest_distance_cm": candidate_metrics[
+                    "closest_distance_cm"
+                ]["median"],
+            }
+        )
+        if baseline:
+            BASELINE_PENDING_PATH.unlink(missing_ok=True)
+        atomic_write_json(STATE_PATH, state)
+        append_result(result)
+        commit_result(index, change)
+    except Exception as error:  # noqa: BLE001
+        if config_written:
+            write_experiment_config(previous_config)
+        if code_changes:
+            clean_mutable_changes()
+        result["error"] = str(error)[:500]
+        result["verdict"] = f"error: {str(error)[:120]}"
+        append_result(result)
+        atomic_write_json(STATE_PATH, state)
+        commit_result(index, change)
+        print("SUMMARY: " + json.dumps(result))
+        return 1
+    finally:
+        PROPOSAL_PATH.unlink(missing_ok=True)
+        if candidate_dir.exists():
+            shutil.rmtree(candidate_dir)
 
-    state["last_experiment"] = index
-    state["last_class"] = hypothesis_class
-    state["last_verdict"] = verdict
-    if baseline:
-        state["baseline_experiment"] = index
-        state["baseline_success_percent"] = success
-        state["baseline_progress_score"] = progress_score
-        state["baseline_closest_distance_cm"] = closest_median
-    if improved:
-        state["best_progress_score"] = progress_score
-        state["best_closest_distance_cm"] = closest_median
-    STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
-
-    print("=" * 60)
-    print(
-        f"Experiment {index} finished: {success:g}% success "
-        f"and {progress_score:g}% progress "
-        f"(previous best {best_before:g}% / {best_progress_before:g}%)"
-    )
-    print(f"Change tested : {change}")
-    print(f"Verdict       : {verdict}" + ("  -> committed to git" if improved else ""))
-    if "sentinel" in summary:
-        print(f"Loop outcome  : {summary['sentinel']}")
-    print("=" * 60)
-    print("SUMMARY: " + json.dumps(summary))
+    print("SUMMARY: " + json.dumps(result))
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
-
-

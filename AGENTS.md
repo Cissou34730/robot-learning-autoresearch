@@ -15,16 +15,19 @@ uv run pytest                            # tests
 
 ## Layout
 
-- `robot_learning/environments/reach_env.py` - task: observations, episode, hold logic
+- `robot_learning/benchmark/` - immutable task stages and metrics
+- `robot_learning/environments/reach_env.py` - immutable physics/task mechanics
+- `robot_learning/training/observations.py` - research-mutable observations
 - `robot_learning/rewards/reach_reward.py` - reward structure (values live in JSON, see below)
 - `robot_learning/train.py`, `play.py` - CLIs
 - `research/current_params.json` - single source of truth for ALL tunable parameters
 - `research/program.md` - rules for autonomous research sessions (read before touching `research/`)
-- `models/<timestamp>/` - training outputs, never overwrite silently
+- `research/checkpoints/accepted/` - Git-versioned accepted policy
+- `models/candidates/` - disposable training candidates
 
 ## Conventions
 
 - Training is headless; rendering only in play/viewer paths.
 - Do not run repo-wide lint/format passes; format only files you touched.
-- Immutable task definition (threshold, hold duration, targets, evaluator): see
-  `robot_learning/training/research_config.py`.
+- Immutable benchmark tests live in `tests/benchmark/`; research-method tests
+  live in `tests/research/`.

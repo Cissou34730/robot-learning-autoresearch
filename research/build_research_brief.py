@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path
 
+from robot_learning.benchmark.spec import CURRICULUM_STAGES
+
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
 TRAIN_LOG_PATH = RESEARCH_DIR / "last_train.log"
@@ -173,12 +175,11 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
 
 
 def render_research_brief() -> str:
-    experiments_path = RESEARCH_DIR / "EXPERIMENTS.md"
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
     state_path = RESEARCH_DIR / "research_state.json"
+    results_path = RESEARCH_DIR / "results.jsonl"
 
-    experiments = experiments_path.read_text(encoding="utf-8")
     postmortems = (
         postmortems_path.read_text(encoding="utf-8")
         if postmortems_path.exists()
@@ -190,18 +191,23 @@ def render_research_brief() -> str:
         if state_path.exists()
         else {}
     )
-    best_match = re.search(r"^\*\*Best so far:\*\*.*$", experiments, re.MULTILINE)
-    best = best_match.group(0) if best_match else "**Best so far:** unknown"
-    reset_after = int(state.get("curriculum_reset_after_experiment", 0))
-    experiment_rows = _experiment_rows(experiments)
-    current_rows = [row for row in experiment_rows if int(row[0]) > reset_after]
-    displayed_rows = current_rows[-5:] if current_rows else experiment_rows[-3:]
-    baseline_experiment = state.get("baseline_experiment")
-    baseline_score = state.get("baseline_success_percent")
-    baseline_status = (
-        f"experiment {baseline_experiment} at {baseline_score:g}%"
-        if baseline_experiment is not None and baseline_score is not None
-        else "pending"
+    results = []
+    if results_path.exists():
+        results = [
+            json.loads(line)
+            for line in results_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    stage_index = int(state.get("current_stage", 0))
+    threshold, hold_seconds = CURRICULUM_STAGES[stage_index]
+    accepted_metrics = state.get("accepted_metrics")
+    accepted_score = (
+        accepted_metrics["stage_success_percent"][stage_index]
+        if accepted_metrics is not None
+        else None
+    )
+    accepted_status = (
+        f"{accepted_score:g}%" if accepted_score is not None else "baseline pending"
     )
 
     lines = [
@@ -222,12 +228,11 @@ def render_research_brief() -> str:
         "",
         "## Current status",
         "",
-        f"- {best}",
-        f"- Baseline: {baseline_status}",
+        f"- Curriculum stage: {stage_index} ({100 * threshold:g} cm / {hold_seconds:g} s)",
+        f"- Accepted current-stage success: {accepted_status}",
+        f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         f"- Last experiment: {state.get('last_experiment', 'none')}",
-        f"- Last area: {state.get('last_class', 'none')}",
         f"- Last verdict: {state.get('last_verdict', 'none')}",
-        f"- Transfer checkpoint: {state.get('baseline_model', 'not recorded')}",
         "",
         "## Current parameters",
         "",
@@ -237,26 +242,22 @@ def render_research_brief() -> str:
         "",
         (
             "## Current curriculum experiments"
-            if current_rows
-            else "## Pre-reset evidence (baseline still pending)"
         ),
         "",
-        (
-            "These runs share the current curriculum and baseline."
-            if current_rows
-            else "Pre-reset rows are background only."
-        ),
-        "",
-        "| # | Change | Success | Median cm | Verdict |",
-        "|---:|---|---:|---:|---|",
+        "| # | Change | Stage success | Final success | Closest cm | Verdict |",
+        "|---:|---|---:|---:|---:|---|",
     ]
 
-    for cells in displayed_rows:
-        index, _date, change, _hypothesis, success, _mean, median, verdict = cells[:8]
+    for result in results[-5:]:
         lines.append(
-            f"| {index} | {_compact(change, 180)} | {success} | {median} | "
-            f"{_compact(verdict, 80)} |"
+            f"| {result['index']} | {_compact(result['change'], 180)} | "
+            f"{result.get('current_stage_success_percent', '-')} | "
+            f"{result.get('final_success_percent', '-')} | "
+            f"{result.get('closest_distance_cm', '-')} | "
+            f"{_compact(result['verdict'], 80)} |"
         )
+    if not results:
+        lines.append("| - | New baseline pending | - | - | - | - |")
 
     lines.extend(["", "## Recent scientific memory", ""])
     memories = _postmortem_memory(postmortems)

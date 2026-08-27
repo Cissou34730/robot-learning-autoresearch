@@ -1,4 +1,9 @@
 {
-  "curriculum_reset_after_experiment": 35,
-  "baseline_model": "models/reach-exp19/model.zip"
+  "schema_version": 2,
+  "current_stage": 0,
+  "accepted_artifact": "research/checkpoints/accepted",
+  "accepted_metrics": null,
+  "accepted_parameters": null,
+  "last_experiment": 75,
+  "last_verdict": "legacy state migrated; baseline required"
 }

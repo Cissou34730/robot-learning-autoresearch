@@ -1,22 +1,19 @@
 import argparse
 import json
-import time
+import shutil
 from pathlib import Path
 
 import torch
-from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
+from robot_learning.benchmark.spec import FINAL_STAGE_INDEX
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.training.algorithms import algorithm_class, artifact_algorithm
 from robot_learning.training.research_config import load_experiment_config
+from robot_learning.training.selection_callback import StageSelectionCallback
 from robot_learning.training.viewer_callback import LiveViewerCallback
-
-MODELS_DIR = Path("models")
-CHECKPOINT_EVERY_STEPS = 5000
-
-ENVIRONMENTS = {"reach": TwoJointArmReachEnv}
 
 ACTIVATION_FUNCTIONS = {
     "tanh": torch.nn.Tanh,
@@ -26,43 +23,30 @@ ACTIVATION_FUNCTIONS = {
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train a PPO agent")
-    parser.add_argument("--env", default="reach", choices=sorted(ENVIRONMENTS))
+    parser = argparse.ArgumentParser(description="Train a robot policy")
     parser.add_argument("--timesteps", type=int, default=100_000)
-    parser.add_argument("--seed", type=int, default=None)
-    parser.add_argument(
-        "--n-envs",
-        type=int,
-        default=4,
-        help="parallel CPU environments (default: 4; use 1 for the old behavior)",
-    )
-    parser.add_argument(
-        "--view", action="store_true", help="open a live MuJoCo viewer during training"
-    )
-    parser.add_argument(
-        "--speed",
-        type=float,
-        default=1.0,
-        help="playback speed of the live viewer (2.0 = twice real time)",
-    )
-    parser.add_argument(
-        "--resume",
-        type=Path,
-        default=None,
-        help="path to an existing model.zip to continue training from",
-    )
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--stage-index", type=int, default=FINAL_STAGE_INDEX)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--resume", type=Path, default=None)
+    parser.add_argument("--algorithm", choices=("ppo", "sac"), default=None)
+    parser.add_argument("--n-envs", type=int, default=None)
+    parser.add_argument("--view", action="store_true")
+    parser.add_argument("--speed", type=float, default=1.0)
     return parser.parse_args()
 
 
 def build_policy_kwargs(policy_config: dict) -> dict:
-    net_arch = policy_config["net_arch"]
     activation_name = str(policy_config["activation"]).lower()
     if activation_name not in ACTIVATION_FUNCTIONS:
         raise ValueError(f"unknown activation: {activation_name}")
-    return {
-        "net_arch": list(net_arch),
+    result = {
+        "net_arch": list(policy_config["net_arch"]),
         "activation_fn": ACTIVATION_FUNCTIONS[activation_name],
     }
+    if "log_std_init" in policy_config:
+        result["log_std_init"] = policy_config["log_std_init"]
+    return result
 
 
 def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
@@ -78,128 +62,135 @@ def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
     return result
 
 
-def build_env_kwargs(env_config: dict) -> dict:
-    """Translate public research parameter names to environment arguments."""
-    result = {"curriculum": True}
-    aliases = {
-        "curriculum_stage_advance_success_rate": "stage_advance_success_rate",
-        "curriculum_stage_advance_min_episodes": "stage_advance_min_episodes",
-    }
-    for key, value in env_config.items():
-        result[aliases.get(key, key)] = value
-    return result
-
-
-
-
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
-    ppo_params = dict(config["ppo"])
-    ppo_params = parallel_ppo_params(ppo_params, args.n_envs)
-    policy_kwargs = build_policy_kwargs(config["policy"])
-    env_kwargs = build_env_kwargs(config["env"])
+    algorithm = args.algorithm or str(config["algorithm"]["name"]).lower()
+    n_envs = args.n_envs or int(config["training"]["n_envs"])
+    if args.resume is not None:
+        resume_algorithm = artifact_algorithm(args.resume)
+        if resume_algorithm != algorithm:
+            raise SystemExit(
+                f"cannot resume {resume_algorithm} checkpoint as {algorithm}; "
+                "use fresh initialization for an algorithm change"
+            )
 
-    save_dir = MODELS_DIR / (
-        f"{args.env}-resume-{time.strftime('%Y%m%d-%H%M%S')}"
-        if args.resume is not None
-        else f"{args.env}-{time.strftime('%Y%m%d-%H%M%S')}"
-    )
-    tensorboard_log = str(save_dir / "tensorboard")
-
-    vec_env_cls = DummyVecEnv if args.n_envs == 1 else SubprocVecEnv
+    args.output_dir.mkdir(parents=True, exist_ok=False)
+    env_kwargs = {"stage_index": args.stage_index}
+    vec_env_cls = DummyVecEnv if n_envs == 1 else SubprocVecEnv
     venv = make_vec_env(
-        ENVIRONMENTS[args.env],
-        n_envs=args.n_envs,
+        TwoJointArmReachEnv,
+        n_envs=n_envs,
         seed=args.seed,
         env_kwargs=env_kwargs,
         vec_env_cls=vec_env_cls,
     )
+
+    params = dict(config[algorithm])
+    if algorithm == "ppo":
+        params = parallel_ppo_params(params, n_envs)
+    policy_kwargs = build_policy_kwargs(config["policy"])
     if args.resume is not None:
         stats_path = args.resume.parent / "vecnormalize.pkl"
-        if stats_path.exists():
-            venv = VecNormalize.load(str(stats_path), venv)
-            print(f"Loaded observation statistics from {stats_path}")
-        else:
-            raise SystemExit(
-                f"No vecnormalize.pkl next to {args.resume} - this model was trained "
-                "without normalization and cannot be resumed into a normalized run."
-            )
+        if not stats_path.exists():
+            raise SystemExit(f"normalization statistics missing: {stats_path}")
+        venv = VecNormalize.load(str(stats_path), venv)
     else:
         venv = VecNormalize(
             venv,
             norm_obs=True,
             norm_reward=False,
-            gamma=ppo_params["gamma"],
+            gamma=float(params["gamma"]),
         )
 
-    callbacks = []
-    if args.view:
-        callbacks.append(LiveViewerCallback(speed=args.speed))
-
+    algorithm_type = algorithm_class(algorithm)
+    tensorboard_log = str(args.output_dir / "tensorboard")
     if args.resume is not None:
-        model = PPO.load(
+        model = algorithm_type.load(
             args.resume,
             env=venv,
             seed=args.seed,
             tensorboard_log=tensorboard_log,
-            policy_kwargs=policy_kwargs,
-            **ppo_params,
+            **params,
         )
+        replay_path = args.resume.parent / "replay_buffer.pkl"
+        if algorithm == "sac" and replay_path.exists():
+            model.load_replay_buffer(replay_path)
     else:
-        model = PPO(
+        model = algorithm_type(
             "MlpPolicy",
             venv,
             seed=args.seed,
             verbose=1,
             tensorboard_log=tensorboard_log,
             policy_kwargs=policy_kwargs,
-            **ppo_params,
+            **params,
         )
 
-    callbacks.append(
+    training = config["training"]
+    callbacks = [
         CheckpointCallback(
-            save_freq=max(CHECKPOINT_EVERY_STEPS // args.n_envs, 1),
-            save_path=str(save_dir / "checkpoints"),
-            name_prefix=args.env,
+            save_freq=max(int(training["checkpoint_every_steps"]) // n_envs, 1),
+            save_path=str(args.output_dir / "checkpoints"),
+            name_prefix="reach",
             save_vecnormalize=True,
-        )
-    )
-
-    save_dir.mkdir(parents=True, exist_ok=False)
+        ),
+        StageSelectionCallback(
+            output_dir=args.output_dir,
+            stage_index=args.stage_index,
+            eval_every_steps=int(training["selection_eval_every_steps"]),
+            episodes=int(training["selection_eval_episodes"]),
+        ),
+    ]
+    if args.view:
+        callbacks.append(LiveViewerCallback(speed=args.speed))
 
     try:
         model.learn(
             total_timesteps=args.timesteps,
-            # Each invocation owns exactly ``args.timesteps`` transitions.  A
-            # resumed policy keeps its weights, but its run counter resets so
-            # progress and checkpoint names describe this run, not its parent.
             reset_num_timesteps=True,
             callback=callbacks,
         )
     except KeyboardInterrupt:
-        print("\nTraining interrupted - saving current policy before exit.")
+        print("\nTraining interrupted - saving the best available policy.")
     finally:
-        model.save(save_dir / "model")
-        venv.save(str(save_dir / "vecnormalize.pkl"))
-        (save_dir / "run_config.json").write_text(
-            json.dumps(
-                {
-                    "env": args.env,
-                    "timesteps": args.timesteps,
-                    "seed": args.seed,
-                    "resumed_from": str(args.resume) if args.resume else None,
-                    "hyperparameters": ppo_params,
-                    "n_envs": args.n_envs,
-                    "policy_config": config["policy"],
-                },
-                indent=2,
-                default=str,
-            ),
+        model.save(args.output_dir / "last_model")
+        if hasattr(model, "save_replay_buffer"):
+            model.save_replay_buffer(args.output_dir / "last_replay_buffer.pkl")
+        venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
+        best_model = args.output_dir / "best_model.zip"
+        best_stats = args.output_dir / "best_vecnormalize.pkl"
+        if best_model.exists() and best_stats.exists():
+            shutil.copyfile(best_model, args.output_dir / "model.zip")
+            shutil.copyfile(best_stats, args.output_dir / "vecnormalize.pkl")
+            best_replay = args.output_dir / "best_replay_buffer.pkl"
+            if best_replay.exists():
+                shutil.copyfile(best_replay, args.output_dir / "replay_buffer.pkl")
+        else:
+            shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
+            shutil.copyfile(
+                args.output_dir / "last_vecnormalize.pkl",
+                args.output_dir / "vecnormalize.pkl",
+            )
+            last_replay = args.output_dir / "last_replay_buffer.pkl"
+            if last_replay.exists():
+                shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
+        artifact = {
+            "schema_version": 1,
+            "algorithm": algorithm,
+            "stage_index": args.stage_index,
+            "seed": args.seed,
+            "timesteps": args.timesteps,
+            "resumed_from": str(args.resume) if args.resume else None,
+            "n_envs": n_envs,
+            "parameters": params,
+            "policy": config["policy"],
+        }
+        (args.output_dir / "artifact.json").write_text(
+            json.dumps(artifact, indent=2, default=str) + "\n",
             encoding="utf-8",
         )
-        print(f"Model saved to {save_dir / 'model.zip'}")
-        print(f"Metrics: uv run tensorboard --logdir {MODELS_DIR}")
+        print(f"ARTIFACT_DIR: {args.output_dir.resolve()}")
 
 
 if __name__ == "__main__":

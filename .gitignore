@@ -12,6 +12,9 @@ wheels/
 # Training results (timestamped runs, never silently overwritten)
 models/
 
+# Validated curriculum checkpoints live under research/checkpoints and are
+# intentionally versioned. Only disposable training candidates stay in models/.
+
 # Tooling caches
 .mypy_cache/
 research/last_train.log

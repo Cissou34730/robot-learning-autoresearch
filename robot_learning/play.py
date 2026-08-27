@@ -4,9 +4,9 @@ from pathlib import Path
 
 import mujoco
 import mujoco.viewer
-from stable_baselines3 import PPO
 
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
 
 
@@ -27,8 +27,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     env = TwoJointArmReachEnv()
-    model = PPO.load(args.model)
+    model = load_policy(args.model)
     normalize_obs = load_observation_normalizer(args.model)
+    if normalize_obs is None:
+        normalize_obs = lambda obs: obs
     control_dt = env.model.opt.timestep * env.frame_skip
 
     with mujoco.viewer.launch_passive(env.model, env.data) as viewer:

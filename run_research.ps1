@@ -20,6 +20,32 @@ function Update-ResearchBrief {
     }
 }
 
+function Save-ResearchMemory {
+    git add -- research/postmortems.md
+    git diff --cached --quiet
+    if ($LASTEXITCODE -ne 0) {
+        git commit -m "record research postmortem"
+    }
+}
+
+function Assert-BenchmarkIntegrity {
+    $protected = @(
+        "robot_learning/benchmark",
+        "robot_learning/environments/reach_env.py",
+        "robot_learning/evaluate.py",
+        "robot_learning/robots",
+        "robot_learning/training/algorithms.py",
+        "robot_learning/training/normalization.py",
+        "robot_learning/training/research_config.py",
+        "research/run_experiment.py",
+        "tests/benchmark"
+    )
+    $changes = git status --porcelain --untracked-files=all -- $protected
+    if ($changes) {
+        throw "The researcher modified protected benchmark files. Nothing was run.`n$changes"
+    }
+}
+
 try {
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
@@ -68,6 +94,13 @@ while ($true) {
     Write-Host "Model: $model, reasoning: $reasoning"
     opencode run --model $model --variant $reasoning "Read research/program.md and execute exactly one experiment following its protocol."
 
+    Update-ResearchBrief
+    Save-ResearchMemory
+    Assert-BenchmarkIntegrity
+    uv run python research/run_experiment.py
+    if ($LASTEXITCODE -ne 0) {
+        throw "Experiment runner failed. The loop stopped safely."
+    }
     Update-ResearchBrief
     Write-Host "=== Experiment session ended at $(Get-Date -Format 'HH:mm:ss') ==="
     Start-Sleep -Seconds 5

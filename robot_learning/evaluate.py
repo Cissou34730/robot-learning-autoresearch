@@ -1,103 +1,102 @@
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
-from stable_baselines3 import PPO
 
+from robot_learning.benchmark.metrics import achieved_milestones
+from robot_learning.benchmark.spec import (
+    CURRICULUM_STAGES,
+    EVALUATION_EPISODES,
+    EVALUATION_SEED,
+    FINAL_STAGE_INDEX,
+)
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
-from robot_learning.training.research_config import EVALUATION_MILESTONES
-
-
-def milestone_steps(hold_seconds: float, control_dt: float) -> int:
-    return max(round(hold_seconds / control_dt), 1)
-
-
-def achieved_milestones(
-    distances: list[float], control_dt: float
-) -> list[bool]:
-    """Return fixed-ladder achievements for one complete episode."""
-    achieved: list[bool] = []
-    for threshold, hold_seconds in EVALUATION_MILESTONES:
-        required = milestone_steps(hold_seconds, control_dt)
-        streak = 0
-        best_streak = 0
-        for distance in distances:
-            streak = streak + 1 if distance <= threshold else 0
-            best_streak = max(best_streak, streak)
-        achieved.append(best_streak >= required)
-    return achieved
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Evaluate a trained agent over random targets"
-    )
-    parser.add_argument(
-        "--model", type=Path, required=True, help="path to a trained model.zip"
-    )
-    parser.add_argument("--episodes", type=int, default=100)
-    parser.add_argument("--seed", type=int, default=1000)
+    parser = argparse.ArgumentParser(description="Evaluate a trained robot policy")
+    parser.add_argument("--model", type=Path, required=True)
+    parser.add_argument("--algorithm", default=None)
+    parser.add_argument("--episodes", type=int, default=EVALUATION_EPISODES)
+    parser.add_argument("--seed", type=int, default=EVALUATION_SEED)
+    parser.add_argument("--stage-index", type=int, required=True)
+    parser.add_argument("--output-json", type=Path, default=None)
     return parser.parse_args()
+
+
+def evaluate_model(
+    model_path: Path,
+    stage_index: int,
+    episodes: int = EVALUATION_EPISODES,
+    seed: int = EVALUATION_SEED,
+    algorithm: str | None = None,
+) -> dict:
+    if not 0 <= stage_index < len(CURRICULUM_STAGES):
+        raise ValueError(f"invalid curriculum stage: {stage_index}")
+    model = load_policy(model_path, algorithm)
+    # The final task keeps episodes alive long enough to measure every easier
+    # milestone on exactly the same deterministic trajectories.
+    env = TwoJointArmReachEnv(stage_index=FINAL_STAGE_INDEX)
+    normalize_obs = load_observation_normalizer(model_path)
+    if normalize_obs is None:
+        normalize_obs = lambda obs: obs
+
+    milestone_counts = np.zeros(len(CURRICULUM_STAGES), dtype=np.int64)
+    closest_distances: list[float] = []
+    final_distances: list[float] = []
+    control_dt = env.model.opt.timestep * env.frame_skip
+    for episode in range(episodes):
+        obs, _ = env.reset(seed=seed + episode)
+        distances: list[float] = []
+        done = False
+        while not done:
+            action, _ = model.predict(normalize_obs(obs), deterministic=True)
+            obs, _, terminated, truncated, info = env.step(action)
+            distances.append(float(info["distance"]))
+            done = terminated or truncated
+        milestone_counts += achieved_milestones(distances, control_dt)
+        closest_distances.append(min(distances))
+        final_distances.append(distances[-1])
+
+    rates = (100 * milestone_counts / episodes).tolist()
+    return {
+        "schema_version": 1,
+        "model": str(model_path),
+        "episodes": episodes,
+        "seed": seed,
+        "stage_index": stage_index,
+        "stage_success_percent": rates,
+        "current_stage_success_percent": rates[stage_index],
+        "final_success_percent": rates[FINAL_STAGE_INDEX],
+        "closest_distance_cm": {
+            "mean": float(np.mean(closest_distances) * 100),
+            "median": float(np.median(closest_distances) * 100),
+        },
+        "final_distance_cm": {
+            "mean": float(np.mean(final_distances) * 100),
+            "median": float(np.median(final_distances) * 100),
+            "worst": float(np.max(final_distances) * 100),
+        },
+    }
 
 
 def main() -> None:
     args = parse_args()
-    model = PPO.load(args.model)
-    env = TwoJointArmReachEnv()
-    normalize_obs = load_observation_normalizer(args.model)
-    if normalize_obs is None:
-        print("Warning: no vecnormalize.pkl found — evaluating without normalization")
-
-    successes = 0
-    final_distances = []
-    closest_distances = []
-    episode_lengths = []
-    milestone_counts = np.zeros(len(EVALUATION_MILESTONES), dtype=np.int64)
-    control_dt = env.model.opt.timestep * env.frame_skip
-    for episode in range(args.episodes):
-        obs, _ = env.reset(seed=args.seed + episode)
-        done = False
-        steps = 0
-        distances = []
-        while not done:
-            action, _ = model.predict(normalize_obs(obs), deterministic=True)
-            obs, _, terminated, truncated, info = env.step(action)
-            done = terminated or truncated
-            steps += 1
-            distances.append(float(info["distance"]))
-        successes += info["is_success"]
-        final_distances.append(info["distance"])
-        closest_distances.append(min(distances))
-        milestone_counts += achieved_milestones(distances, control_dt)
-        episode_lengths.append(steps)
-
-    distances_cm = np.array(final_distances) * 100
-    closest_cm = np.array(closest_distances) * 100
-    milestone_rates = 100 * milestone_counts / args.episodes
-    progress_score = float(np.mean(milestone_rates))
-    print(f"Model: {args.model}")
-    print(f"Episodes: {args.episodes}")
-    print(
-        f"Success rate: {successes}/{args.episodes} ({100 * successes / args.episodes:.0f}%)"
+    result = evaluate_model(
+        args.model,
+        args.stage_index,
+        episodes=args.episodes,
+        seed=args.seed,
+        algorithm=args.algorithm,
     )
-    print(
-        f"Final distance (cm): mean {distances_cm.mean():.1f}, "
-        f"median {np.median(distances_cm):.1f}, worst {distances_cm.max():.1f}"
-    )
-    print(
-        f"Closest distance (cm): mean {closest_cm.mean():.2f}, "
-        f"median {np.median(closest_cm):.2f}"
-    )
-    print(f"Curriculum progress score: {progress_score:.2f}%")
-    for (threshold, hold_seconds), rate in zip(
-        EVALUATION_MILESTONES, milestone_rates, strict=True
-    ):
-        print(
-            f"  milestone {100 * threshold:g} cm / {hold_seconds:g} s: "
-            f"{rate:.1f}%"
-        )
-    print(f"Episode length: mean {np.mean(episode_lengths):.0f}/500 steps")
+    output = json.dumps(result, indent=2)
+    if args.output_json is not None:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(output + "\n", encoding="utf-8")
+    print(output)
 
 
 if __name__ == "__main__":
