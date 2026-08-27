@@ -207,6 +207,16 @@ def render_research_brief() -> str:
     accepted_status = (
         f"{accepted_score:g}%" if accepted_score is not None else "baseline pending"
     )
+    accepted_hold = (
+        accepted_metrics.get("consecutive_hold_steps", {})
+        if accepted_metrics is not None
+        else {}
+    )
+    accepted_closest = (
+        accepted_metrics.get("closest_distance_cm", {}).get("median", "-")
+        if accepted_metrics is not None
+        else "-"
+    )
 
     lines = [
         "# Compact Research Brief",
@@ -228,6 +238,15 @@ def render_research_brief() -> str:
         "",
         f"- Evaluation target: {100 * SUCCESS_THRESHOLD:g} cm / {HOLD_SECONDS:g} s",
         f"- Accepted success: {accepted_status}",
+        (
+            f"- Accepted hold median: {accepted_hold.get('median', '-')} / "
+            f"{accepted_hold.get('required', '-')}"
+        ),
+        (
+            f"- Accepted hold mean: {accepted_hold.get('mean', '-')} / "
+            f"{accepted_hold.get('required', '-')}"
+        ),
+        f"- Accepted closest median: {accepted_closest} cm",
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         f"- Last experiment: {state.get('last_experiment', 'none')}",
         f"- Last verdict: {state.get('last_verdict', 'none')}",
@@ -242,19 +261,23 @@ def render_research_brief() -> str:
             "## Current experiments"
         ),
         "",
-        "| # | Change | Success | Closest cm | Verdict |",
-        "|---:|---|---:|---:|---|",
+        "| # | Change | Success | Hold median | Hold mean | Closest cm | Verdict |",
+        "|---:|---|---:|---:|---:|---:|---|",
     ]
 
     for result in results[-5:]:
+        candidate = result.get("candidate_metrics", {})
+        hold = candidate.get("consecutive_hold_steps", {})
         lines.append(
             f"| {result['index']} | {_compact(result['change'], 180)} | "
             f"{result.get('success_percent', '-')} | "
+            f"{hold.get('median', '-')} | "
+            f"{hold.get('mean', '-')} | "
             f"{result.get('closest_distance_cm', '-')} | "
             f"{_compact(result['verdict'], 80)} |"
         )
     if not results:
-        lines.append("| - | New baseline pending | - | - | - |")
+        lines.append("| - | New baseline pending | - | - | - | - | - |")
 
     lines.extend(["", "## Recent scientific memory", ""])
     memories = _postmortem_memory(postmortems)

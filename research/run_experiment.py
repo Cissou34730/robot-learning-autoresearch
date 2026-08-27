@@ -12,6 +12,7 @@ import time
 from pathlib import Path
 
 from research.build_research_brief import write_training_summary
+from robot_learning.benchmark.metrics import evaluation_rank
 from robot_learning.benchmark.spec import (
     EVALUATION_EPISODES,
     EVALUATION_SEED,
@@ -347,16 +348,17 @@ def evaluate_artifact(
         f"[evaluation] {label} complete in "
         f"{format_duration(time.monotonic() - started)} | "
         f"success: {metrics['success_percent']:.1f}% | "
+        f"hold median: {metrics['consecutive_hold_steps']['median']:.1f}/"
+        f"{metrics['consecutive_hold_steps']['required']} | "
+        f"hold mean: {metrics['consecutive_hold_steps']['mean']:.1f}/"
+        f"{metrics['consecutive_hold_steps']['required']} | "
         f"closest median: {metrics['closest_distance_cm']['median']:.2f} cm"
     )
     return metrics
 
 
-def rank(metrics: dict) -> tuple[float, float]:
-    return (
-        float(metrics["success_percent"]),
-        -float(metrics["closest_distance_cm"]["median"]),
-    )
+def rank(metrics: dict) -> tuple[float, float, float, float]:
+    return evaluation_rank(metrics)
 
 
 def train_candidate(
@@ -396,7 +398,7 @@ def train_candidate(
             text=True,
             **process_group_options(),
         )
-        last_selection: tuple[int, float, float] | None = None
+        last_selection: tuple[int, float, float, float, int, float] | None = None
         last_steps: int | None = None
         last_progress_at = started
         try:
@@ -430,13 +432,20 @@ def train_candidate(
                     current_selection = (
                         int(selection["timesteps"]),
                         float(selection["success_percent"]),
-                        float(selection["closest_distance_cm"]),
+                        float(selection["consecutive_hold_steps"]["median"]),
+                        float(selection["consecutive_hold_steps"]["mean"]),
+                        int(selection["consecutive_hold_steps"]["required"]),
+                        float(selection["closest_distance_cm"]["median"]),
                     )
                     if current_selection != last_selection:
                         announce(
                             f"[selection] new best at {current_selection[0]:,} steps | "
                             f"success: {current_selection[1]:.1f}% | "
-                            f"closest median: {current_selection[2]:.2f} cm"
+                            f"hold median: {current_selection[2]:.1f}/"
+                            f"{current_selection[4]} | "
+                            f"hold mean: {current_selection[3]:.1f}/"
+                            f"{current_selection[4]} | "
+                            f"closest median: {current_selection[5]:.2f} cm"
                         )
                         last_selection = current_selection
                 stalled_for = time.monotonic() - last_progress_at

@@ -4,10 +4,15 @@ from pathlib import Path
 
 import numpy as np
 
-from robot_learning.benchmark.metrics import achieved_goal
+from robot_learning.benchmark.metrics import (
+    maximum_consecutive_hold_steps,
+    milestone_steps,
+    summarize_consecutive_hold_steps,
+)
 from robot_learning.benchmark.spec import (
     EVALUATION_EPISODES,
     EVALUATION_SEED,
+    HOLD_SECONDS,
 )
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.training.algorithms import load_policy
@@ -37,9 +42,11 @@ def evaluate_model(
         normalize_obs = lambda obs: obs
 
     successes = 0
+    consecutive_hold_steps: list[int] = []
     closest_distances: list[float] = []
     final_distances: list[float] = []
     control_dt = env.model.opt.timestep * env.frame_skip
+    required_hold_steps = milestone_steps(HOLD_SECONDS, control_dt)
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         distances: list[float] = []
@@ -49,7 +56,9 @@ def evaluate_model(
             obs, _, terminated, truncated, info = env.step(action)
             distances.append(float(info["distance"]))
             done = terminated or truncated
-        successes += achieved_goal(distances, control_dt)
+        maximum_hold = maximum_consecutive_hold_steps(distances)
+        successes += maximum_hold >= required_hold_steps
+        consecutive_hold_steps.append(maximum_hold)
         closest_distances.append(min(distances))
         final_distances.append(distances[-1])
 
@@ -59,6 +68,9 @@ def evaluate_model(
         "episodes": episodes,
         "seed": seed,
         "success_percent": 100 * successes / episodes,
+        "consecutive_hold_steps": summarize_consecutive_hold_steps(
+            consecutive_hold_steps, required_hold_steps
+        ),
         "closest_distance_cm": {
             "mean": float(np.mean(closest_distances) * 100),
             "median": float(np.median(closest_distances) * 100),

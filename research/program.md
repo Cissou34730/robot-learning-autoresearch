@@ -33,7 +33,9 @@ choosing the next hypothesis. Do not paste full logs or histories into context.
 If `research/BASELINE_PENDING` exists, `run_research.ps1` runs the unchanged
 control first; no LLM decision is needed.
 
-The final-goal held-out success rate decides first, then closest distance.
+The fixed held-out ranking is final-goal success rate, then median maximum
+consecutive hold steps, then mean maximum consecutive hold steps, then closest
+median distance.
 Confirm a passing checkpoint by evaluating that same trained model on additional
 held-out seeds; never retrain merely to confirm it. Keep the checkpoint with its
 parameters, normalization, and optimizer.

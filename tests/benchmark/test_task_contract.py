@@ -3,7 +3,11 @@ import hashlib
 import numpy as np
 import pytest
 
-from robot_learning.benchmark.metrics import achieved_goal
+from robot_learning.benchmark.metrics import (
+    achieved_goal,
+    maximum_consecutive_hold_steps,
+    summarize_consecutive_hold_steps,
+)
 from robot_learning.benchmark.spec import (
     FRAME_SKIP,
     HOLD_SECONDS,
@@ -53,3 +57,13 @@ def test_final_hold_requires_100_consecutive_steps():
 def test_fixed_metric_requires_the_complete_hold():
     assert not achieved_goal([0.005] * 99, control_dt=0.02)
     assert achieved_goal([0.005] * 100, control_dt=0.02)
+
+
+def test_fixed_metric_measures_the_longest_unbroken_hold():
+    distances = [0.005] * 40 + [0.02] + [0.005] * 75 + [0.02] + [0.005] * 60
+    assert maximum_consecutive_hold_steps(distances) == 75
+
+
+def test_fixed_metric_summarizes_typical_and_all_episode_holds():
+    summary = summarize_consecutive_hold_steps([100, 100, 80, 20], required=100)
+    assert summary == {"median": 90.0, "mean": 75.0, "required": 100}

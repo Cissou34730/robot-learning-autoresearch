@@ -5,6 +5,7 @@ from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.rewards import reach_reward as reward_module
 from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.train import parallel_ppo_params
+from robot_learning.training.selection_callback import SelectionCallback
 
 
 def test_observation_matches_declared_space():
@@ -46,3 +47,44 @@ def test_parallel_env_count_must_be_valid():
         parallel_ppo_params({"n_steps": 1024}, n_envs=3)
     with pytest.raises(ValueError, match="at least 1"):
         parallel_ppo_params({"n_steps": 1024}, n_envs=0)
+
+
+def test_selection_waits_for_a_completed_rollout_update(monkeypatch, tmp_path):
+    callback = SelectionCallback(
+        output_dir=tmp_path,
+        eval_every_steps=20_000,
+        episodes=10,
+    )
+    evaluations: list[int] = []
+    callback.best_rank = (101.0, 101.0, 101.0, 0.0)
+    monkeypatch.setattr(
+        callback,
+        "_evaluate",
+        lambda: evaluations.append(callback.num_timesteps)
+        or {
+            "success_percent": 100.0,
+            "consecutive_hold_steps": {
+                "median": 100.0,
+                "mean": 100.0,
+                "required": 100,
+            },
+            "closest_distance_cm": {"median": 0.1},
+            "timesteps": callback.num_timesteps,
+        },
+    )
+
+    callback.num_timesteps = 20_000
+    assert callback._on_step()
+    assert evaluations == []
+
+    callback.num_timesteps = 21_504
+    callback._on_rollout_start()
+    assert evaluations == [21_504]
+    assert callback.next_evaluation == 40_000
+
+    callback.evaluate_final_policy()
+    assert evaluations == [21_504]
+
+    callback.num_timesteps = 24_576
+    callback.evaluate_final_policy()
+    assert evaluations == [21_504, 24_576]

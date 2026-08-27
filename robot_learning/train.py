@@ -124,6 +124,11 @@ def main() -> None:
         )
 
     training = config["training"]
+    selection_callback = SelectionCallback(
+        output_dir=args.output_dir,
+        eval_every_steps=int(training["selection_eval_every_steps"]),
+        episodes=int(training["selection_eval_episodes"]),
+    )
     callbacks = [
         CheckpointCallback(
             save_freq=max(int(training["checkpoint_every_steps"]) // n_envs, 1),
@@ -131,11 +136,7 @@ def main() -> None:
             name_prefix="reach",
             save_vecnormalize=True,
         ),
-        SelectionCallback(
-            output_dir=args.output_dir,
-            eval_every_steps=int(training["selection_eval_every_steps"]),
-            episodes=int(training["selection_eval_episodes"]),
-        ),
+        selection_callback,
     ]
     if args.view:
         callbacks.append(LiveViewerCallback(speed=args.speed))
@@ -146,6 +147,7 @@ def main() -> None:
             reset_num_timesteps=True,
             callback=callbacks,
         )
+        selection_callback.evaluate_final_policy()
     except KeyboardInterrupt:
         print("\nTraining interrupted - saving the best available policy.")
     finally:

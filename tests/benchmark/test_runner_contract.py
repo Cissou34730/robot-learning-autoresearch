@@ -14,9 +14,14 @@ from research.run_experiment import (
 )
 
 
-def metrics(success, closest):
+def metrics(success, hold_median, hold_mean, closest):
     return {
         "success_percent": success,
+        "consecutive_hold_steps": {
+            "median": hold_median,
+            "mean": hold_mean,
+            "required": 100,
+        },
         "closest_distance_cm": {"median": closest},
     }
 
@@ -29,7 +34,27 @@ def test_research_and_benchmark_surfaces_are_disjoint():
 
 
 def test_success_precedes_distance():
-    assert rank(metrics(80.0, 4.0)) > rank(metrics(79.0, 1.0))
+    assert rank(metrics(80.0, 10.0, 10.0, 4.0)) > rank(
+        metrics(79.0, 100.0, 100.0, 1.0)
+    )
+
+
+def test_hold_median_precedes_hold_mean_and_distance():
+    assert rank(metrics(80.0, 90.0, 90.0, 4.0)) > rank(
+        metrics(80.0, 89.0, 100.0, 1.0)
+    )
+
+
+def test_hold_mean_precedes_distance():
+    assert rank(metrics(80.0, 90.0, 95.0, 4.0)) > rank(
+        metrics(80.0, 90.0, 94.0, 1.0)
+    )
+
+
+def test_distance_breaks_a_complete_metric_tie():
+    assert rank(metrics(80.0, 90.0, 95.0, 1.0)) > rank(
+        metrics(80.0, 90.0, 95.0, 2.0)
+    )
 
 
 def test_training_progress_reads_latest_complete_snapshot(tmp_path):
