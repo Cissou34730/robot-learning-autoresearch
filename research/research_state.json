@@ -1,9 +1,9 @@
 {
-  "schema_version": 2,
-  "current_stage": 0,
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_metrics": null,
   "accepted_parameters": null,
+  "current_stage": 0,
   "last_experiment": 75,
-  "last_verdict": "legacy state migrated; baseline required"
+  "last_verdict": "legacy state migrated; baseline required",
+  "schema_version": 2
 }
