@@ -2,21 +2,21 @@
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_metrics": {
     "closest_distance_cm": {
-      "mean": 0.17313377413002307,
-      "median": 0.14550245847722193
+      "mean": 0.1924537267761808,
+      "median": 0.16082067021384652
     },
     "consecutive_hold_steps": {
-      "mean": 98.505,
+      "mean": 98.51,
       "median": 100.0,
       "required": 100
     },
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 0.26778944898862445,
-      "median": 0.22218800209590364,
-      "worst": 2.303961493296741
+      "mean": 0.3083769402830451,
+      "median": 0.2759550259349583,
+      "worst": 2.2842623295827558
     },
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-2\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-4\\model.zip",
     "schema_version": 1,
     "seed": 1000,
     "success_percent": 98.5
@@ -38,7 +38,7 @@
       "gae_lambda": 0.95,
       "gamma": 0.99,
       "learning_rate": 0.0001,
-      "n_steps": 1024
+      "n_steps": 2048
     },
     "reward": {
       "ACTION_COST_COEFFICIENT": 0.05,
@@ -67,28 +67,28 @@
     }
   },
   "current_stage": 0,
-  "last_experiment": 3,
+  "last_experiment": 4,
   "last_metrics": {
     "closest_distance_cm": {
-      "mean": 0.20495980467843747,
-      "median": 0.1946642697697896
+      "mean": 0.1924537267761808,
+      "median": 0.16082067021384652
     },
     "consecutive_hold_steps": {
-      "mean": 98.04,
+      "mean": 98.51,
       "median": 100.0,
       "required": 100
     },
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 0.3271387976224812,
-      "median": 0.301805345819048,
-      "worst": 2.396701878369408
+      "mean": 0.3083769402830451,
+      "median": 0.2759550259349583,
+      "worst": 2.2842623295827558
     },
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-3\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-4\\model.zip",
     "schema_version": 1,
     "seed": 1000,
-    "success_percent": 98.0
+    "success_percent": 98.5
   },
-  "last_verdict": "reverted (no improvement)",
+  "last_verdict": "kept",
   "schema_version": 2
 }

@@ -8,7 +8,7 @@
     "HOLD_COMPLETE_BONUS": 50.0
   },
   "ppo": {
-    "n_steps": 1024,
+    "n_steps": 2048,
     "batch_size": 64,
     "gamma": 0.99,
     "learning_rate": 0.0001,
