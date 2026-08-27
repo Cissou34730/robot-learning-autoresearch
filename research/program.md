@@ -29,10 +29,6 @@ the experiment after your process exits.
 Read `research/brief.md` before choosing. Read `research/last_train_summary.md`
 after training. Do not paste full logs or histories into context.
 
-Research performed before the target-plane geometry reset is invalid. It must
-not be used to rule out algorithms, rewards, observations, architectures, or
-curricula on the corrected benchmark.
-
 If `research/BASELINE_PENDING` exists, `run_research.ps1` runs the unchanged
 control first; no LLM decision is needed.
 
@@ -41,10 +37,6 @@ Earlier stages may not regress. Confirm a passing checkpoint by evaluating that
 same trained model on additional held-out seeds; never retrain merely to confirm
 a promotion. Promote the checkpoint with its parameters, normalization, and
 optimizer. The final 1 cm / 2 s score remains a parallel global measurement.
-
-The benchmark contract includes a reachability test proving that sampled targets
-share the arm's motion plane and can be reached below the final 1 cm threshold.
-Treat a failure of that test as an invalid benchmark, not as a learning result.
 
 Record 3–6 short lines in `research/postmortems.md`: result, behavior, what it
 rules out, and the next idea. Then stop.

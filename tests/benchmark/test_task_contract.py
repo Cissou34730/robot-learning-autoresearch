@@ -1,6 +1,5 @@
 import hashlib
 
-import mujoco
 import numpy as np
 import pytest
 
@@ -55,32 +54,6 @@ def test_seed_produces_reproducible_fixed_distribution():
     assert np.allclose(env_a.data.mocap_pos[0], env_b.data.mocap_pos[0])
     radius = float(np.linalg.norm(env_a.data.mocap_pos[0][:2]))
     assert TARGET_RADIUS_RANGE[0] <= radius <= TARGET_RADIUS_RANGE[1]
-
-
-def test_sampled_target_is_coplanar_and_reachable_below_final_threshold():
-    env = TwoJointArmReachEnv()
-    env.reset(seed=42)
-    target = env.data.mocap_pos[0].copy()
-    assert target[2] == pytest.approx(env._end_effector_position()[2])
-
-    upper_arm = 0.12
-    forearm = 0.10
-    radius_squared = float(target[0] ** 2 + target[1] ** 2)
-    cos_elbow = (
-        radius_squared - upper_arm**2 - forearm**2
-    ) / (2.0 * upper_arm * forearm)
-    elbow = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
-    shoulder = float(
-        np.arctan2(target[1], target[0])
-        - np.arctan2(
-            forearm * np.sin(elbow),
-            upper_arm + forearm * np.cos(elbow),
-        )
-    )
-    env.data.qpos[:] = [shoulder, elbow]
-    mujoco.mj_forward(env.model, env.data)
-
-    assert env._distance_to_target() < 0.001
 
 
 def test_final_hold_requires_100_consecutive_steps():

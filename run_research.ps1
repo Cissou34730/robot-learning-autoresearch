@@ -57,8 +57,8 @@ while ($true) {
         Write-Host "=== Running automatic curriculum baseline ==="
         @{
             baseline = $true
-            change = "Fresh PPO baseline after correcting target geometry"
-            hypothesis = "Establish an uncontaminated baseline for the corrected reachable benchmark."
+            change = "Fresh PPO baseline"
+            hypothesis = "Establish the initial fixed-evaluator baseline."
             class = "baseline"
             initialization = "fresh"
         } | ConvertTo-Json | Set-Content "research\proposal.json"
@@ -89,8 +89,8 @@ while ($true) {
 
     Update-ResearchBrief
 
-    $model = "github-copilot/gpt-5.6-terra"
-    $reasoning = "high"
+    $model = "github-copilot/gpt-5.6-luna"
+    $reasoning = "medium"
     $lastRow = Get-Content "research\EXPERIMENTS.md" |
         Where-Object { $_ -match '^\| \d+ \|' } |
         Select-Object -Last 1
