@@ -1,9 +1,8 @@
 # Robot Learning Autoresearch
 
-The robot advances through a persistent reach-and-hold curriculum. Every
-experiment trains a copy of the currently accepted checkpoint. The candidate is
-promoted only when held-out current-stage success improves without regressing on
-earlier stages.
+The fixed goal is to reach a random target within 1 cm and hold for 2 seconds.
+Every experiment changes the training method while the evaluator and 120,000-step
+budget remain fixed. A candidate is kept only when its held-out score improves.
 
 Start the autonomous loop from PowerShell:
 

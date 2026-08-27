@@ -5,7 +5,6 @@ from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.rewards import reach_reward as reward_module
 from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.train import parallel_ppo_params
-from robot_learning.training.research_config import resolve_training_curriculum
 
 
 def test_observation_matches_declared_space():
@@ -47,9 +46,3 @@ def test_parallel_env_count_must_be_valid():
         parallel_ppo_params({"n_steps": 1024}, n_envs=3)
     with pytest.raises(ValueError, match="at least 1"):
         parallel_ppo_params({"n_steps": 1024}, n_envs=0)
-
-
-def test_default_training_uses_full_budget_on_final_goal():
-    assert resolve_training_curriculum(
-        {}, current_stage=7, total_timesteps=120_000
-    ) == [(7, 120_000)]

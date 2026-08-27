@@ -16,7 +16,6 @@ def measure(n_envs: int, transitions: int = 4000) -> dict:
         TwoJointArmReachEnv,
         n_envs=n_envs,
         seed=0,
-        env_kwargs={"stage_index": 0},
         vec_env_cls=vec_type,
     )
     env.reset()

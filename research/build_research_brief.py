@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-from robot_learning.benchmark.spec import CURRICULUM_STAGES
+from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -198,11 +198,9 @@ def render_research_brief() -> str:
             for line in results_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-    stage_index = int(state.get("current_stage", 0))
-    threshold, hold_seconds = CURRICULUM_STAGES[stage_index]
     accepted_metrics = state.get("accepted_metrics")
     accepted_score = (
-        accepted_metrics["stage_success_percent"][stage_index]
+        accepted_metrics["success_percent"]
         if accepted_metrics is not None
         else None
     )
@@ -228,8 +226,8 @@ def render_research_brief() -> str:
         "",
         "## Current status",
         "",
-        f"- Evaluation target: {100 * threshold:g} cm / {hold_seconds:g} s",
-        f"- Accepted current-stage success: {accepted_status}",
+        f"- Evaluation target: {100 * SUCCESS_THRESHOLD:g} cm / {HOLD_SECONDS:g} s",
+        f"- Accepted success: {accepted_status}",
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         f"- Last experiment: {state.get('last_experiment', 'none')}",
         f"- Last verdict: {state.get('last_verdict', 'none')}",
@@ -244,20 +242,19 @@ def render_research_brief() -> str:
             "## Current experiments"
         ),
         "",
-        "| # | Change | Stage success | Final success | Closest cm | Verdict |",
-        "|---:|---|---:|---:|---:|---|",
+        "| # | Change | Success | Closest cm | Verdict |",
+        "|---:|---|---:|---:|---|",
     ]
 
     for result in results[-5:]:
         lines.append(
             f"| {result['index']} | {_compact(result['change'], 180)} | "
-            f"{result.get('current_stage_success_percent', '-')} | "
-            f"{result.get('final_success_percent', '-')} | "
+            f"{result.get('success_percent', '-')} | "
             f"{result.get('closest_distance_cm', '-')} | "
             f"{_compact(result['verdict'], 80)} |"
         )
     if not results:
-        lines.append("| - | New baseline pending | - | - | - | - |")
+        lines.append("| - | New baseline pending | - | - | - |")
 
     lines.extend(["", "## Recent scientific memory", ""])
     memories = _postmortem_memory(postmortems)

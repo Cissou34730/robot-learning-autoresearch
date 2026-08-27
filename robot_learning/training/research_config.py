@@ -68,12 +68,6 @@ PARAM_WHITELIST: dict[str, set[str]] = {
 }
 
 
-def resolve_training_curriculum(
-    _config: dict, *, current_stage: int, total_timesteps: int
-) -> list[tuple[int, int]]:
-    return [(current_stage, total_timesteps)]
-
-
 def validate_param_overrides(overrides: dict) -> None:
     unknown_sections = set(overrides) - set(PARAM_WHITELIST)
     if unknown_sections:
@@ -114,17 +108,16 @@ def write_experiment_config(config: dict) -> None:
 
 def assert_immutable_invariants(env) -> None:
     from robot_learning.benchmark.spec import (
-        FINAL_STAGE_INDEX,
         FRAME_SKIP,
+        HOLD_SECONDS,
         MAX_EPISODE_STEPS,
+        SUCCESS_THRESHOLD,
         TARGET_RADIUS_RANGE,
-        stage_spec,
     )
 
-    threshold, hold_seconds = stage_spec(FINAL_STAGE_INDEX)
     control_dt = env.model.opt.timestep * env.frame_skip
-    assert env.success_threshold == threshold
-    assert env.hold_steps_required == round(hold_seconds / control_dt)
+    assert env.success_threshold == SUCCESS_THRESHOLD
+    assert env.hold_steps_required == round(HOLD_SECONDS / control_dt)
     assert env.target_radius_range == TARGET_RADIUS_RANGE
     assert env.max_episode_steps == MAX_EPISODE_STEPS
     assert env.frame_skip == FRAME_SKIP

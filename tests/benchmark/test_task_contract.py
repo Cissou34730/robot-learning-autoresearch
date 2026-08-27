@@ -3,12 +3,12 @@ import hashlib
 import numpy as np
 import pytest
 
-from robot_learning.benchmark.metrics import achieved_milestones
+from robot_learning.benchmark.metrics import achieved_goal
 from robot_learning.benchmark.spec import (
-    CURRICULUM_STAGES,
-    FINAL_STAGE_INDEX,
     FRAME_SKIP,
+    HOLD_SECONDS,
     MAX_EPISODE_STEPS,
+    SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
@@ -22,29 +22,12 @@ def test_robot_physics_asset_is_frozen():
 
 def test_final_task_contract_is_fixed():
     env = TwoJointArmReachEnv()
-    assert env._stage_index == FINAL_STAGE_INDEX
-    assert env.success_threshold == pytest.approx(0.01)
-    assert env.hold_steps_required == 100
+    assert env.success_threshold == pytest.approx(SUCCESS_THRESHOLD)
+    control_dt = env.model.opt.timestep * env.frame_skip
+    assert env.hold_steps_required == round(HOLD_SECONDS / control_dt)
     assert env.target_radius_range == TARGET_RADIUS_RANGE
     assert env.frame_skip == FRAME_SKIP
     assert env.max_episode_steps == MAX_EPISODE_STEPS
-
-
-def test_curriculum_contract_is_progressive():
-    assert CURRICULUM_STAGES == (
-        (0.03, 0.02), (0.02, 0.02), (0.01, 0.02), (0.01, 0.10),
-        (0.01, 0.50), (0.01, 1.00), (0.01, 1.50), (0.01, 2.00),
-    )
-
-
-def test_stage_is_imposed_and_never_self_advances():
-    env = TwoJointArmReachEnv(stage_index=0)
-    for episode in range(20):
-        env.reset(seed=episode)
-        env.data.mocap_pos[0] = env.data.site("end_effector").xpos.copy()
-        env.step(np.zeros(2))
-    assert env._stage_index == 0
-    assert env.success_threshold == pytest.approx(0.03)
 
 
 def test_seed_produces_reproducible_fixed_distribution():
@@ -67,10 +50,6 @@ def test_final_hold_requires_100_consecutive_steps():
     assert info["held_steps"] == 100
 
 
-def test_fixed_metrics_measure_touch_and_hold_separately():
-    touch = achieved_milestones([0.05, 0.015, 0.04], control_dt=0.02)
-    assert touch[:2] == [True, True]
-    assert touch[2:] == [False] * 6
-    half_second = achieved_milestones([0.005] * 25, control_dt=0.02)
-    assert half_second[:5] == [True] * 5
-    assert half_second[5:] == [False] * 3
+def test_fixed_metric_requires_the_complete_hold():
+    assert not achieved_goal([0.005] * 99, control_dt=0.02)
+    assert achieved_goal([0.005] * 100, control_dt=0.02)

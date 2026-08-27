@@ -15,15 +15,13 @@ from research.build_research_brief import write_training_summary
 from robot_learning.benchmark.spec import (
     EVALUATION_EPISODES,
     EVALUATION_SEED,
-    FINAL_STAGE_INDEX,
     FINAL_SUCCESS_PERCENT,
-    STAGE_PROMOTION_PERCENT,
-    stage_spec,
+    HOLD_SECONDS,
+    SUCCESS_THRESHOLD,
 )
 from robot_learning.training.research_config import (
     load_experiment_config,
     merge_param_overrides,
-    resolve_training_curriculum,
     validate_param_overrides,
     write_experiment_config,
 )
@@ -38,7 +36,6 @@ BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
 RECOVERY_PENDING_PATH = RESEARCH_DIR / "RECOVERY_PENDING"
 GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
-STAGE_ARCHIVE_DIR = RESEARCH_DIR / "checkpoints" / "stages"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
 
 MUTABLE_PATHS = (
@@ -179,7 +176,7 @@ def load_state(
     if not STATE_PATH.exists():
         raise RuntimeError("research state is missing; refusing to run")
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    required = {"schema_version", "current_stage", "accepted_artifact"}
+    required = {"schema_version", "accepted_artifact"}
     missing = required - set(state)
     if missing:
         raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
@@ -283,9 +280,8 @@ def append_result(result: dict) -> None:
     row = (
         f"| {result['index']} | {time.strftime('%Y-%m-%d')} | "
         f"{cell(result['change'])} | {cell(result['hypothesis'])} | "
-        f"{cell(result.get('final_success_percent', '-'))} | "
+        f"{cell(result.get('success_percent', '-'))} | "
         f"{cell(result.get('closest_distance_cm', '-'))} | "
-        f"stage {cell(result.get('stage_index', '-'))} | "
         f"{cell(result['verdict'])} |"
     )
     text = LOG_PATH.read_text(encoding="utf-8").rstrip("\n") + "\n" + row + "\n"
@@ -294,7 +290,6 @@ def append_result(result: dict) -> None:
 
 def evaluate_artifact(
     artifact_dir: Path,
-    stage_index: int,
     seed: int = EVALUATION_SEED,
     label: str = "official evaluation",
 ) -> dict:
@@ -306,8 +301,6 @@ def evaluate_artifact(
         "robot_learning.evaluate",
         "--model",
         str(artifact_dir / "model.zip"),
-        "--stage-index",
-        str(stage_index),
         "--episodes",
         str(EVALUATION_EPISODES),
         "--seed",
@@ -353,35 +346,25 @@ def evaluate_artifact(
     announce(
         f"[evaluation] {label} complete in "
         f"{format_duration(time.monotonic() - started)} | "
-        f"stage {stage_index}: {metrics['current_stage_success_percent']:.1f}% | "
+        f"success: {metrics['success_percent']:.1f}% | "
         f"closest median: {metrics['closest_distance_cm']['median']:.2f} cm"
     )
     return metrics
 
 
-def rank(metrics: dict, stage_index: int) -> tuple[float, float]:
+def rank(metrics: dict) -> tuple[float, float]:
     return (
-        float(metrics["stage_success_percent"][stage_index]),
+        float(metrics["success_percent"]),
         -float(metrics["closest_distance_cm"]["median"]),
-    )
-
-
-def no_regression(candidate: dict, accepted: dict, stage_index: int) -> bool:
-    return all(
-        candidate["stage_success_percent"][index]
-        >= accepted["stage_success_percent"][index]
-        for index in range(stage_index)
     )
 
 
 def train_candidate(
     output_dir: Path,
-    stage_index: int,
     timesteps: int,
     seed: int,
     resume: Path | None,
     label: str = "candidate training",
-    append_log: bool = False,
 ) -> None:
     command = [
         sys.executable,
@@ -391,8 +374,6 @@ def train_candidate(
         str(timesteps),
         "--seed",
         str(seed),
-        "--stage-index",
-        str(stage_index),
         "--output-dir",
         str(output_dir),
     ]
@@ -401,10 +382,9 @@ def train_candidate(
     train_log = RESEARCH_DIR / "last_train.log"
     started = time.monotonic()
     announce(
-        f"[train] {label} | stage {stage_index} | seed {seed} | "
-        f"{timesteps:,} steps"
+        f"[train] {label} | seed {seed} | {timesteps:,} steps"
     )
-    with train_log.open("a" if append_log else "w", encoding="utf-8") as log_file:
+    with train_log.open("w", encoding="utf-8") as log_file:
         log_file.write(f"\n=== {label} ===\n")
         log_file.flush()
         progress_offset = log_file.tell()
@@ -455,7 +435,7 @@ def train_candidate(
                     if current_selection != last_selection:
                         announce(
                             f"[selection] new best at {current_selection[0]:,} steps | "
-                            f"stage {stage_index}: {current_selection[1]:.1f}% | "
+                            f"success: {current_selection[1]:.1f}% | "
                             f"closest median: {current_selection[2]:.2f} cm"
                         )
                         last_selection = current_selection
@@ -484,58 +464,6 @@ def train_candidate(
     )
 
 
-def train_candidate_curriculum(
-    output_dir: Path,
-    curriculum: list[tuple[int, int]],
-    seed: int,
-    resume: Path | None,
-    *,
-    baseline: bool,
-) -> None:
-    part_dirs: list[Path] = []
-    current_resume = resume
-    initial_resume = str(resume) if resume is not None else None
-    try:
-        for number, (stage_index, timesteps) in enumerate(curriculum, start=1):
-            part_dir = CANDIDATE_ROOT / f"{output_dir.name}-part-{number}"
-            remove_candidate_dir(part_dir)
-            part_dirs.append(part_dir)
-            label = (
-                f"{'baseline' if baseline else 'candidate'} training"
-                if len(curriculum) == 1
-                else (
-                    f"{'baseline' if baseline else 'candidate'} curriculum "
-                    f"{number}/{len(curriculum)} (stage {stage_index})"
-                )
-            )
-            train_candidate(
-                part_dir,
-                stage_index,
-                timesteps,
-                seed,
-                current_resume,
-                label=label,
-                append_log=number > 1,
-            )
-            current_resume = part_dir / "model.zip"
-        copy_artifact(part_dirs[-1], output_dir)
-        artifact_path = output_dir / "artifact.json"
-        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
-        artifact["timesteps"] = sum(steps for _, steps in curriculum)
-        artifact["resumed_from"] = initial_resume
-        artifact["training_curriculum"] = [
-            {"stage_index": stage_index, "timesteps": steps}
-            for stage_index, steps in curriculum
-        ]
-        artifact_path.write_text(
-            json.dumps(artifact, indent=2, default=str) + "\n",
-            encoding="utf-8",
-        )
-    finally:
-        for part_dir in part_dirs:
-            remove_candidate_dir(part_dir)
-
-
 def copy_artifact(source: Path, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
@@ -551,7 +479,6 @@ def copy_artifact(source: Path, destination: Path) -> None:
 def validate_reusable_candidate(
     source: Path,
     *,
-    stage_index: int,
     timesteps: int,
     resume: Path | None,
     config: dict,
@@ -573,7 +500,6 @@ def validate_reusable_candidate(
     )
     checks = {
         "algorithm": artifact.get("algorithm") == algorithm,
-        "stage": artifact.get("stage_index") == stage_index,
         "seed": artifact.get("seed") == TRAIN_SEED,
         "timesteps": artifact.get("timesteps") == timesteps,
         "n_envs": artifact.get("n_envs") == n_envs,
@@ -589,18 +515,17 @@ def validate_reusable_candidate(
         )
 
 
-def confirm_promotion(artifact_dir: Path, stage_index: int) -> tuple[bool, list[dict]]:
+def confirm_goal(artifact_dir: Path) -> tuple[bool, list[dict]]:
     evaluations = [
         evaluate_artifact(
             artifact_dir,
-            stage_index,
             seed,
-            label=f"promotion confirmation {number}/{len(CONFIRMATION_SEEDS)}",
+            label=f"goal confirmation {number}/{len(CONFIRMATION_SEEDS)}",
         )
         for number, seed in enumerate(CONFIRMATION_SEEDS, start=1)
     ]
     passed = all(
-        result["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT
+        result["success_percent"] >= FINAL_SUCCESS_PERCENT
         for result in evaluations
     )
     return passed, evaluations
@@ -644,17 +569,15 @@ def main() -> int:
         allow_unmeasured=baseline,
         allow_missing_artifact=fresh_baseline,
     )
-    stage_index = int(state["current_stage"])
     accepted_dir = ROOT / state["accepted_artifact"]
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     previous_config = load_experiment_config()
     config_written = False
     code_changes: list[str] = []
 
-    target_m, hold_seconds = stage_spec(stage_index)
     announce(
-        f"[runner] experiment {index} | stage {stage_index}: "
-        f"reach {target_m * 100:.1f} cm and hold {hold_seconds:.2f} s"
+        f"[runner] experiment {index} | goal: reach "
+        f"{SUCCESS_THRESHOLD * 100:.1f} cm and hold {HOLD_SECONDS:.2f} s"
     )
     announce(f"[runner] mode: {'baseline' if baseline else initialization}")
 
@@ -663,7 +586,6 @@ def main() -> int:
         "index": index,
         "change": change,
         "hypothesis": hypothesis,
-        "stage_index": stage_index,
         "status": "error",
         "verdict": "error",
     }
@@ -705,30 +627,13 @@ def main() -> int:
         accepted_metrics = state.get("accepted_metrics")
         if accepted_metrics is None and not fresh_baseline:
             accepted_metrics = evaluate_artifact(
-                accepted_dir, stage_index, label="accepted-policy baseline"
+                accepted_dir, label="accepted-policy baseline"
             )
             state["accepted_metrics"] = accepted_metrics
             state["accepted_parameters"] = previous_config
 
         effective_config = load_experiment_config()
-        training_curriculum = resolve_training_curriculum(
-            effective_config,
-            current_stage=stage_index,
-            total_timesteps=args.timesteps,
-        )
-        if len(training_curriculum) == 1:
-            announce(
-                f"[training plan] final goal "
-                f"({training_curriculum[0][1]:,} steps)"
-            )
-        else:
-            announce(
-                "[training plan] "
-                + " -> ".join(
-                    f"stage {stage} ({steps:,} steps)"
-                    for stage, steps in training_curriculum
-                )
-            )
+        announce(f"[training plan] {args.timesteps:,} steps")
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
@@ -739,7 +644,6 @@ def main() -> int:
             reusable = args.reuse_candidate.resolve()
             validate_reusable_candidate(
                 reusable,
-                stage_index=stage_index,
                 timesteps=args.timesteps,
                 resume=resume,
                 config=effective_config,
@@ -747,12 +651,12 @@ def main() -> int:
             announce(f"[recovery] reusing completed candidate from {reusable}")
             copy_artifact(reusable, candidate_dir)
         else:
-            train_candidate_curriculum(
+            train_candidate(
                 candidate_dir,
-                training_curriculum,
+                args.timesteps,
                 TRAIN_SEED,
                 resume,
-                baseline=baseline,
+                label="baseline training" if baseline else "candidate training",
             )
         runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
         if runtime_benchmark_changes:
@@ -760,26 +664,18 @@ def main() -> int:
                 "training modified protected benchmark files: "
                 f"{runtime_benchmark_changes}"
             )
-        candidate_metrics = evaluate_artifact(
-            candidate_dir, stage_index, label="candidate evaluation"
-        )
+        candidate_metrics = evaluate_artifact(candidate_dir, label="candidate evaluation")
         improved = fresh_baseline or (
-            rank(candidate_metrics, stage_index) > rank(
-                accepted_metrics, stage_index
-            )
-            and no_regression(candidate_metrics, accepted_metrics, stage_index)
+            rank(candidate_metrics) > rank(accepted_metrics)
         )
 
         active_dir = candidate_dir if improved else accepted_dir
         active_metrics = candidate_metrics if improved else accepted_metrics
-        promoted = False
         confirmations: dict[str, list[dict]] = {"evaluation": []}
-        if active_metrics["current_stage_success_percent"] >= STAGE_PROMOTION_PERCENT:
-            announce("[confirmation] promotion threshold reached; confirming result")
-            target_passed, confirmations["evaluation"] = confirm_promotion(
-                active_dir, stage_index
-            )
-            promoted = target_passed
+        goal_reached = False
+        if active_metrics["success_percent"] >= FINAL_SUCCESS_PERCENT:
+            announce("[confirmation] goal threshold reached; confirming result")
+            goal_reached, confirmations["evaluation"] = confirm_goal(active_dir)
 
         if improved:
             copy_artifact(candidate_dir, ACCEPTED_DIR)
@@ -794,18 +690,11 @@ def main() -> int:
             if code_changes:
                 clean_mutable_changes()
 
-        active_dir = ACCEPTED_DIR if improved else accepted_dir
-        if promoted:
-            archive = STAGE_ARCHIVE_DIR / f"stage-{stage_index:02d}"
-            copy_artifact(active_dir, archive)
-            if stage_index < FINAL_STAGE_INDEX:
-                state["current_stage"] = stage_index + 1
-                verdict += f"; promoted to stage {stage_index + 1}"
-            elif active_metrics["final_success_percent"] >= FINAL_SUCCESS_PERCENT:
-                GOAL_PATH.write_text(
-                    f"Goal reached at experiment {index}.\n", encoding="utf-8"
-                )
-                verdict += "; goal reached"
+        if goal_reached:
+            GOAL_PATH.write_text(
+                f"Goal reached at experiment {index}.\n", encoding="utf-8"
+            )
+            verdict += "; goal reached"
 
         state.update(
             {
@@ -819,19 +708,10 @@ def main() -> int:
                 "status": "ok",
                 "verdict": verdict,
                 "accepted": improved,
-                "promoted": promoted,
+                "goal_reached": goal_reached,
                 "candidate_metrics": candidate_metrics,
                 "confirmation_metrics": confirmations,
-                "training_curriculum": [
-                    {"stage_index": stage, "timesteps": steps}
-                    for stage, steps in training_curriculum
-                ],
-                "final_success_percent": candidate_metrics[
-                    "final_success_percent"
-                ],
-                "current_stage_success_percent": candidate_metrics[
-                    "current_stage_success_percent"
-                ],
+                "success_percent": candidate_metrics["success_percent"],
                 "closest_distance_cm": candidate_metrics[
                     "closest_distance_cm"
                 ]["median"],

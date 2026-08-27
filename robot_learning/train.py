@@ -8,11 +8,10 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
-from robot_learning.benchmark.spec import FINAL_STAGE_INDEX
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.training.algorithms import algorithm_class, artifact_algorithm
 from robot_learning.training.research_config import load_experiment_config
-from robot_learning.training.selection_callback import StageSelectionCallback
+from robot_learning.training.selection_callback import SelectionCallback
 from robot_learning.training.viewer_callback import LiveViewerCallback
 
 ACTIVATION_FUNCTIONS = {
@@ -26,7 +25,6 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train a robot policy")
     parser.add_argument("--timesteps", type=int, default=100_000)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--stage-index", type=int, default=FINAL_STAGE_INDEX)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--resume", type=Path, default=None)
     parser.add_argument("--algorithm", choices=("ppo", "sac"), default=None)
@@ -76,13 +74,11 @@ def main() -> None:
             )
 
     args.output_dir.mkdir(parents=True, exist_ok=False)
-    env_kwargs = {"stage_index": args.stage_index}
     vec_env_cls = DummyVecEnv if n_envs == 1 else SubprocVecEnv
     venv = make_vec_env(
         TwoJointArmReachEnv,
         n_envs=n_envs,
         seed=args.seed,
-        env_kwargs=env_kwargs,
         vec_env_cls=vec_env_cls,
     )
 
@@ -135,9 +131,8 @@ def main() -> None:
             name_prefix="reach",
             save_vecnormalize=True,
         ),
-        StageSelectionCallback(
+        SelectionCallback(
             output_dir=args.output_dir,
-            stage_index=args.stage_index,
             eval_every_steps=int(training["selection_eval_every_steps"]),
             episodes=int(training["selection_eval_episodes"]),
         ),
@@ -178,7 +173,6 @@ def main() -> None:
         artifact = {
             "schema_version": 1,
             "algorithm": algorithm,
-            "stage_index": args.stage_index,
             "seed": args.seed,
             "timesteps": args.timesteps,
             "resumed_from": str(args.resume) if args.resume else None,

@@ -4,25 +4,22 @@ from pathlib import Path
 import numpy as np
 from stable_baselines3.common.callbacks import BaseCallback
 
-from robot_learning.benchmark.metrics import achieved_milestones
-from robot_learning.benchmark.spec import FINAL_STAGE_INDEX
+from robot_learning.benchmark.metrics import achieved_goal
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 
 
-class StageSelectionCallback(BaseCallback):
+class SelectionCallback(BaseCallback):
     """Keep the best deterministic checkpoint seen inside one training run."""
 
     def __init__(
         self,
         output_dir: Path,
-        stage_index: int,
         eval_every_steps: int,
         episodes: int,
         seed: int = 2000,
     ) -> None:
         super().__init__()
         self.output_dir = output_dir
-        self.stage_index = stage_index
         self.eval_every_steps = eval_every_steps
         self.episodes = episodes
         self.seed = seed
@@ -35,7 +32,7 @@ class StageSelectionCallback(BaseCallback):
         return obs
 
     def _evaluate(self) -> tuple[float, float]:
-        env = TwoJointArmReachEnv(stage_index=FINAL_STAGE_INDEX)
+        env = TwoJointArmReachEnv()
         successes = 0
         closest: list[float] = []
         control_dt = env.model.opt.timestep * env.frame_skip
@@ -50,7 +47,7 @@ class StageSelectionCallback(BaseCallback):
                 obs, _, terminated, truncated, info = env.step(action)
                 distances.append(float(info["distance"]))
                 done = terminated or truncated
-            successes += achieved_milestones(distances, control_dt)[self.stage_index]
+            successes += achieved_goal(distances, control_dt)
             closest.append(min(distances))
         return 100 * successes / self.episodes, float(np.median(closest) * 100)
 
@@ -71,7 +68,6 @@ class StageSelectionCallback(BaseCallback):
             (self.output_dir / "best_selection.json").write_text(
                 json.dumps(
                     {
-                        "stage_index": self.stage_index,
                         "success_percent": success,
                         "closest_distance_cm": closest_cm,
                         "timesteps": self.num_timesteps,
