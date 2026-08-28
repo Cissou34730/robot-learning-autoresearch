@@ -65,8 +65,8 @@ TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
-MIN_EVALUATION_TIMEOUT_SECONDS = 10 * 60
-EVALUATION_TIMEOUT_SECONDS_PER_EPISODE = 10
+EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
+EVALUATION_STALL_SECONDS = 30 * 60
 SELECTION_METHOD_VERSION = 4
 # Development selection uses seed 2000 and the immutable reported benchmark uses
 # EVALUATION_SEED (1000). Tournament data must be disjoint from both.
@@ -408,6 +408,8 @@ def evaluate_artifact(
 ) -> dict:
     output_path = output_path or RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
+    progress_path = output_path.with_suffix(output_path.suffix + ".progress")
+    progress_path.unlink(missing_ok=True)
     command = [
         sys.executable,
         "-m",
@@ -420,15 +422,15 @@ def evaluate_artifact(
         str(seed),
         "--output-json",
         str(output_path),
+        "--progress-json",
+        str(progress_path),
     ]
     announce(
         f"[evaluation] {label} | {episodes} episodes | seed {seed}"
     )
     started = time.monotonic()
-    timeout_seconds = max(
-        MIN_EVALUATION_TIMEOUT_SECONDS,
-        episodes * EVALUATION_TIMEOUT_SECONDS_PER_EPISODE,
-    )
+    last_progress_at = started
+    completed_episodes = 0
     # The evaluator can emit large episode-level diagnostics. File-backed streams
     # avoid filling a Windows pipe while this process waits and prints heartbeats.
     with (
@@ -451,15 +453,32 @@ def evaluate_artifact(
                     process.wait(timeout=STATUS_INTERVAL_SECONDS)
                     break
                 except subprocess.TimeoutExpired:
+                    try:
+                        progress = json.loads(progress_path.read_text(encoding="utf-8"))
+                        current_completed = int(progress["completed"])
+                    except (FileNotFoundError, json.JSONDecodeError, KeyError, ValueError):
+                        current_completed = completed_episodes
+                    if current_completed > completed_episodes:
+                        completed_episodes = current_completed
+                        last_progress_at = time.monotonic()
                     announce(
                         f"[evaluation] {label} still running "
+                        f"| {completed_episodes}/{episodes} episodes "
                         f"({format_duration(time.monotonic() - started)} elapsed)"
                     )
-                    if time.monotonic() - started > timeout_seconds:
+                    if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
+                        stop_process(process, graceful=False)
+                        raise TimeoutError(
+                            f"{label} made no episode progress for "
+                            f"{format_duration(EVALUATION_STALL_SECONDS)} "
+                            f"({completed_episodes}/{episodes} complete)"
+                        )
+                    if time.monotonic() - started > EVALUATION_TIMEOUT_SECONDS:
                         stop_process(process, graceful=False)
                         raise TimeoutError(
                             f"{label} exceeded the "
-                            f"{format_duration(timeout_seconds)} safety limit"
+                            f"{format_duration(EVALUATION_TIMEOUT_SECONDS)} total limit "
+                            f"({completed_episodes}/{episodes} complete)"
                         )
         except KeyboardInterrupt:
             announce(f"\n[runner] Stopping {label}...")
@@ -469,6 +488,7 @@ def evaluate_artifact(
         stderr_file.seek(0)
         stdout = stdout_file.read()
         stderr = stderr_file.read()
+    progress_path.unlink(missing_ok=True)
     if process.returncode != 0:
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
@@ -988,7 +1008,7 @@ def commit_result(index: int, change: str) -> None:
     if BASELINE_PENDING_PATH.exists() or git("ls-files", "research/BASELINE_PENDING").strip():
         paths.append("research/BASELINE_PENDING")
     paths.extend(MUTABLE_PATHS)
-    git("add", "-A", "--", *paths)
+    stage_existing_or_tracked(paths)
     git("reset", "--", "research/proposal.json")
     if not git("diff", "--cached", "--name-only").strip():
         return
@@ -1001,9 +1021,19 @@ def commit_lineage_decision(experiment: int, selected: str) -> None:
         "research/checkpoints/accepted",
         "research/GOAL_REACHED",
     ]
-    git("add", "-A", "--", *paths)
+    stage_existing_or_tracked(paths)
     if git("diff", "--cached", "--name-only").strip():
         git("commit", "-m", f"select experiment {experiment} lineage: {selected}")
+
+
+def stage_existing_or_tracked(paths: list[str]) -> None:
+    stageable = [
+        path
+        for path in dict.fromkeys(paths)
+        if (ROOT / path).exists() or git("ls-files", "--", path).strip()
+    ]
+    if stageable:
+        git("add", "-A", "--", *stageable)
 
 
 def main() -> int:

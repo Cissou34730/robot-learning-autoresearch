@@ -1,6 +1,7 @@
 import argparse
 import json
 import math
+from collections.abc import Callable
 from pathlib import Path
 
 import numpy as np
@@ -27,6 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--episodes", type=int, default=EVALUATION_EPISODES)
     parser.add_argument("--seed", type=int, default=EVALUATION_SEED)
     parser.add_argument("--output-json", type=Path, default=None)
+    parser.add_argument("--progress-json", type=Path, default=None)
     return parser.parse_args()
 
 
@@ -35,6 +37,7 @@ def evaluate_model(
     episodes: int = EVALUATION_EPISODES,
     seed: int = EVALUATION_SEED,
     algorithm: str | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> dict:
     model = load_policy(model_path, algorithm)
     env = TwoJointArmReachEnv()
@@ -80,6 +83,8 @@ def evaluate_model(
                 100 * distance for distance in distances
             ]
         episode_results.append(episode_result)
+        if progress_callback is not None:
+            progress_callback(episode + 1, episodes)
 
     return {
         "schema_version": 3,
@@ -101,11 +106,26 @@ def evaluate_model(
 
 def main() -> None:
     args = parse_args()
+
+    def report_progress(completed: int, total: int) -> None:
+        if args.progress_json is None:
+            return
+        args.progress_json.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path = args.progress_json.with_suffix(
+            args.progress_json.suffix + ".tmp"
+        )
+        temporary_path.write_text(
+            json.dumps({"completed": completed, "total": total}) + "\n",
+            encoding="utf-8",
+        )
+        temporary_path.replace(args.progress_json)
+
     result = evaluate_model(
         args.model,
         episodes=args.episodes,
         seed=args.seed,
         algorithm=args.algorithm,
+        progress_callback=report_progress,
     )
     output = json.dumps(result, indent=2)
     if args.output_json is not None:

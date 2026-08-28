@@ -201,10 +201,13 @@ superseded. It does not instruct the autonomous researcher and does not replace
   baseline pending for a clean restart. Partial optimizer progress is not
   currently resumed.
 - **Decision:** Training has a 12-hour hard safety limit and a separate
-  30-minute no-progress limit. Evaluation allows the greater of 10 minutes or
-  10 seconds per episode (33 minutes 20 seconds for 200 episodes).
+  30-minute no-progress limit. Evaluation now reports completed episodes, has
+  the same 12-hour hard limit, and stops after 30 minutes without completing a
+  new episode.
 - **Reason:** These are failure guards, not research compute budgets. They stop
-  hung processes without imposing the old accidental 30-minute experiment cap.
+  hung processes without rejecting a slow evaluation that is still advancing.
+  The former estimate of 10 seconds per episode incorrectly rejected a live
+  200-episode evaluation after 33 minutes 20 seconds.
 
 ## 2026-08-28 — Keep Luna as the default researcher model
 
