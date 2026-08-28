@@ -44,3 +44,4 @@
 
 | # | Date | Change | Hypothesis | Candidate pooled success | Seeds passed | Verdict |
 |---:|---|---|---|---:|---:|---|
+| 38 | 2026-08-28 | Calibrate unchanged PPO training-seed noise floor | Running the unchanged accepted PPO recipe from the accepted champion across three independent training seeds will measure the stochastic training noise floor required for statistically grounded promotion decisions. | - | - | invalid |
