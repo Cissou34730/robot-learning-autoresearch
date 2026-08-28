@@ -46,3 +46,4 @@
 |---:|---|---|---|---:|---:|---|
 | 38 | 2026-08-28 | Calibrate unchanged PPO training-seed noise floor | Running the unchanged accepted PPO recipe from the accepted champion across three independent training seeds will measure the stochastic training noise floor required for statistically grounded promotion decisions. | - | - | invalid |
 | 39 | 2026-08-28 | Calibrate unchanged PPO training-seed noise floor | Running the unchanged accepted PPO recipe from the accepted champion across three independent training seeds will measure the stochastic training noise floor required for statistically grounded promotion decisions. | - | - | invalid |
+| 40 | 2026-08-28 | Calibrate unchanged PPO training-seed noise floor | Running the unchanged accepted PPO recipe from the accepted champion across three independent training seeds will measure the training-seed noise floor required for statistically grounded promotion decisions. | - | - | calibration recorded |
