@@ -37,6 +37,7 @@ PROPOSAL_PATH = RESEARCH_DIR / "proposal.json"
 STATE_PATH = RESEARCH_DIR / "research_state.json"
 BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
 RECOVERY_PENDING_PATH = RESEARCH_DIR / "RECOVERY_PENDING"
+RESTART_PENDING_PATH = RESEARCH_DIR / "RESTART_PENDING"
 GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
@@ -52,6 +53,7 @@ MUTABLE_PATHS = (
 IMMUTABLE_PATHS = (
     "robot_learning/benchmark/spec.py",
     "robot_learning/environments/reach_env.py",
+    "robot_learning/evaluate.py",
     "robot_learning/robots",
     "research/run_experiment.py",
     "run_research.ps1",
@@ -130,6 +132,13 @@ def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
     if process.poll() is not None:
         return
     if os.name == "nt":
+        if graceful:
+            try:
+                process.send_signal(signal.CTRL_BREAK_EVENT)
+                process.wait(timeout=INTERRUPT_GRACE_SECONDS)
+                return
+            except (OSError, subprocess.TimeoutExpired):
+                pass
         subprocess.run(
             ["taskkill", "/PID", str(process.pid), "/T", "/F"],
             capture_output=True,
@@ -733,6 +742,8 @@ def train_candidate(
     resume: Path | None,
     selection_reference_path: Path | None = None,
     label: str = "candidate training",
+    continue_timesteps: bool = False,
+    target_timesteps: int | None = None,
 ) -> None:
     command = [
         sys.executable,
@@ -747,6 +758,10 @@ def train_candidate(
     ]
     if resume is not None:
         command.extend(["--resume", str(resume)])
+    if continue_timesteps:
+        command.append("--continue-timesteps")
+    if target_timesteps is not None:
+        command.extend(["--target-timesteps", str(target_timesteps)])
     if selection_reference_path is not None:
         command.extend(
             ["--selection-reference-json", str(selection_reference_path)]
@@ -789,10 +804,20 @@ def train_candidate(
                     if steps != last_steps:
                         last_steps = steps
                         last_progress_at = time.monotonic()
-                    progress = min(100.0, 100 * steps / timesteps)
-                    eta = elapsed * max(timesteps - steps, 0) / steps if steps else 0
+                    progress_target = target_timesteps or timesteps
+                    progress = min(100.0, 100 * steps / progress_target)
+                    completed_this_run = (
+                        steps
+                        if not continue_timesteps
+                        else max(steps - (progress_target - timesteps), 0)
+                    )
+                    eta = (
+                        elapsed * max(progress_target - steps, 0) / completed_this_run
+                        if completed_this_run
+                        else 0
+                    )
                     announce(
-                        f"[train] {steps:,} / {timesteps:,} steps "
+                        f"[train] {steps:,} / {progress_target:,} steps "
                         f"({progress:.0f}%) | {format_duration(elapsed)} elapsed | "
                         f"ETA ~{format_duration(eta)}"
                     )
@@ -904,11 +929,17 @@ def validate_reusable_candidate(
     checks = {
         "algorithm": artifact.get("algorithm") == algorithm,
         "seed": artifact.get("seed") == TRAIN_SEED,
-        "timesteps": artifact.get("timesteps") == timesteps,
+        "requested timesteps": int(
+            artifact.get("requested_timesteps", artifact.get("timesteps", -1))
+        )
+        == timesteps,
         "n_envs": artifact.get("n_envs") == n_envs,
         "parameters": artifact.get("parameters") == expected_params,
         "policy": artifact.get("policy") == config["policy"],
-        "resume checkpoint": actual_resume == expected_resume,
+        "resume checkpoint": (
+            not bool(artifact.get("completed", True))
+            or actual_resume == expected_resume
+        ),
     }
     mismatches = [name for name, matches in checks.items() if not matches]
     if mismatches:
@@ -1076,6 +1107,8 @@ def main() -> int:
     previous_config = load_experiment_config()
     selection_reference_path: Path | None = None
     code_changes: list[str] = []
+    preserve_proposal = False
+    reused_candidate: Path | None = None
 
     announce(
         f"[runner] experiment {index} | goal: reach "
@@ -1253,17 +1286,50 @@ def main() -> int:
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
             remove_candidate_dir(candidate_dir)
         if args.reuse_candidate is not None:
-            if not baseline:
-                raise ValueError("candidate reuse is restricted to baseline recovery")
             reusable = args.reuse_candidate.resolve()
+            reused_candidate = reusable
             validate_reusable_candidate(
                 reusable,
-                timesteps=args.timesteps,
+                timesteps=effective_timesteps,
                 resume=resume,
                 config=effective_config,
             )
-            announce(f"[recovery] reusing completed candidate from {reusable}")
-            copy_candidate_outputs(reusable, candidate_dir)
+            artifact = json.loads(
+                (reusable / "artifact.json").read_text(encoding="utf-8")
+            )
+            completed_timesteps = int(artifact["timesteps"])
+            if bool(artifact.get("completed", True)):
+                announce(f"[recovery] reusing completed candidate from {reusable}")
+                copy_candidate_outputs(reusable, candidate_dir)
+            else:
+                remaining_timesteps = max(
+                    effective_timesteps - completed_timesteps, 0
+                )
+                if remaining_timesteps == 0:
+                    announce(
+                        "[recovery] interrupted training already reached its budget"
+                    )
+                    copy_candidate_outputs(reusable, candidate_dir)
+                else:
+                    announce(
+                        f"[recovery] resuming at {completed_timesteps:,} / "
+                        f"{effective_timesteps:,} steps"
+                    )
+                    created_candidate_dirs.append(candidate_dir)
+                    train_candidate(
+                        candidate_dir,
+                        remaining_timesteps,
+                        TRAIN_SEED,
+                        reusable / "final_checkpoint" / "model.zip",
+                        selection_reference_path,
+                        label=(
+                            "resumed baseline training"
+                            if baseline
+                            else "resumed candidate training"
+                        ),
+                        continue_timesteps=True,
+                        target_timesteps=effective_timesteps,
+                    )
         else:
             created_candidate_dirs.append(candidate_dir)
             train_candidate(
@@ -1365,33 +1431,48 @@ def main() -> int:
         )
         if baseline:
             BASELINE_PENDING_PATH.unlink(missing_ok=True)
+        if args.reuse_candidate is not None:
             RECOVERY_PENDING_PATH.unlink(missing_ok=True)
+        RESTART_PENDING_PATH.unlink(missing_ok=True)
         atomic_write_json(STATE_PATH, state)
         append_result(result)
         commit_result(index, change)
         announce(f"[result] {verdict}")
     except KeyboardInterrupt:
-        result.update(
-            {
-                "status": "interrupted",
-                "verdict": "interrupted; no model decision",
-            }
+        recovery_dir = CANDIDATE_ROOT / f"recovery-experiment-{index}"
+        recoverable = all(
+            (candidate_dir / filename).exists()
+            for filename in ("model.zip", "vecnormalize.pkl", "artifact.json")
         )
-        state["last_experiment"] = index
-        state["last_verdict"] = result["verdict"]
-        append_result(result)
-        atomic_write_json(STATE_PATH, state)
-        commit_result(index, change)
-        if baseline:
+        if recoverable:
+            if recovery_dir.exists():
+                remove_candidate_dir(recovery_dir)
+            candidate_dir.replace(recovery_dir)
+            RECOVERY_PENDING_PATH.write_text(
+                str(recovery_dir.relative_to(ROOT)) + "\n", encoding="utf-8"
+            )
+            preserve_proposal = True
             announce(
-                "[runner] Baseline interrupted by user. It remains pending and "
-                "will restart from the beginning next time."
+                "[runner] Experiment paused. The latest complete training state "
+                "was saved and will resume on the next launch."
             )
         else:
-            announce(
-                "[runner] Experiment interrupted by user. The candidate was "
-                "discarded and the accepted checkpoint is unchanged."
-            )
+            preserve_proposal = True
+            if reused_candidate is not None and RECOVERY_PENDING_PATH.exists():
+                announce(
+                    "[runner] No newer complete state was produced; the previous "
+                    "recovery checkpoint remains available for the next launch."
+                )
+            else:
+                RESTART_PENDING_PATH.write_text(
+                    "Restart the preserved proposal from the beginning.\n",
+                    encoding="utf-8",
+                )
+                announce(
+                    "[runner] Experiment stopped before a recoverable training "
+                    "state was produced; the same experiment will restart from "
+                    "the beginning."
+                )
         return 130
     except Exception as error:  # noqa: BLE001
         result["error"] = str(error)[:500]
@@ -1402,7 +1483,8 @@ def main() -> int:
         print("SUMMARY: " + json.dumps(result))
         return 1
     finally:
-        PROPOSAL_PATH.unlink(missing_ok=True)
+        if not preserve_proposal:
+            PROPOSAL_PATH.unlink(missing_ok=True)
         cleanup_targets = created_candidate_dirs or [candidate_dir]
         for cleanup_target in cleanup_targets:
             try:
@@ -1411,6 +1493,12 @@ def main() -> int:
                 announce(f"[runner] WARNING: candidate cleanup failed: {cleanup_error}")
         if selection_reference_path is not None:
             selection_reference_path.unlink(missing_ok=True)
+        if (
+            reused_candidate is not None
+            and not RECOVERY_PENDING_PATH.exists()
+            and reused_candidate.exists()
+        ):
+            remove_candidate_dir(reused_candidate)
 
     print("SUMMARY: " + json.dumps(result))
     return 0

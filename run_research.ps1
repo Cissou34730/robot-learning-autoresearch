@@ -32,6 +32,7 @@ function Assert-BenchmarkIntegrity {
     $protected = @(
         "robot_learning/benchmark/spec.py",
         "robot_learning/environments/reach_env.py",
+        "robot_learning/evaluate.py",
         "robot_learning/robots",
         "research/run_experiment.py",
         "run_research.ps1",
@@ -50,6 +51,48 @@ while ($true) {
         break
     }
 
+    if (Test-Path "research\RECOVERY_PENDING") {
+        if (-not (Test-Path "research\proposal.json")) {
+            throw "Interrupted experiment has no proposal to resume."
+        }
+        $recoveryCandidate = (
+            Get-Content "research\RECOVERY_PENDING" -Raw
+        ).Trim()
+        if (-not (Test-Path -LiteralPath $recoveryCandidate)) {
+            throw "Recovery candidate is missing: $recoveryCandidate"
+        }
+        Write-Host "=== Resuming interrupted experiment: $recoveryCandidate ==="
+        uv run python research/run_experiment.py --reuse-candidate $recoveryCandidate
+        if ($LASTEXITCODE -eq 130) {
+            Write-Host "=== Experiment paused again; progress remains saved ==="
+            break
+        }
+        if ($LASTEXITCODE -ne 0) {
+            throw "Resumed experiment failed. Its recovery state was preserved."
+        }
+        Update-ResearchBrief
+        Write-Host "=== Resumed experiment complete ==="
+        continue
+    }
+
+    if (Test-Path "research\RESTART_PENDING") {
+        if (-not (Test-Path "research\proposal.json")) {
+            throw "Interrupted experiment has no proposal to restart."
+        }
+        Write-Host "=== Restarting interrupted experiment from its beginning ==="
+        uv run python research/run_experiment.py
+        if ($LASTEXITCODE -eq 130) {
+            Write-Host "=== Experiment paused again ==="
+            break
+        }
+        if ($LASTEXITCODE -ne 0) {
+            throw "Restarted experiment failed."
+        }
+        Update-ResearchBrief
+        Write-Host "=== Restarted experiment complete ==="
+        continue
+    }
+
     if (Test-Path "research\BASELINE_PENDING") {
         Write-Host "=== Running fresh final-goal baseline ==="
         @{
@@ -60,18 +103,7 @@ while ($true) {
             initialization = "fresh"
         } | ConvertTo-Json | Set-Content "research\proposal.json"
 
-        $runnerArguments = @("run", "python", "research/run_experiment.py")
-        if (Test-Path "research\RECOVERY_PENDING") {
-            $recoveryCandidate = (
-                Get-Content "research\RECOVERY_PENDING" -Raw
-            ).Trim()
-            if (-not (Test-Path -LiteralPath $recoveryCandidate)) {
-                throw "Recovery candidate is missing: $recoveryCandidate"
-            }
-            Write-Host "=== Reusing completed candidate: $recoveryCandidate ==="
-            $runnerArguments += @("--reuse-candidate", $recoveryCandidate)
-        }
-        uv @runnerArguments
+        uv run python research/run_experiment.py
         if ($LASTEXITCODE -eq 130) {
             Write-Host "=== Baseline interrupted cleanly; it remains pending ==="
             break

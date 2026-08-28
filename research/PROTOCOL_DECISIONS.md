@@ -196,10 +196,14 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-08-28 — Safe interruption and safety limits
 
-- **Decision:** `Ctrl-C` stops the child process, discards the incomplete
-  candidate, leaves the accepted champion unchanged, and leaves an interrupted
-  baseline pending for a clean restart. Partial optimizer progress is not
-  currently resumed.
+- **Decision:** `Ctrl-C` asks training to stop cleanly and saves the current
+  model, optimizer state, observation normalization and SAC replay buffer when
+  applicable. The proposal is preserved. The next launch resumes only the
+  remaining training steps, or resumes evaluation directly when training had
+  already completed. A second interruption updates the same recovery state.
+- **Fallback:** If interruption occurs before any recoverable training artifact
+  exists, the same preserved proposal restarts from the beginning; the runner
+  does not ask the researcher for a different experiment.
 - **Decision:** Training has a 12-hour hard safety limit and a separate
   30-minute no-progress limit. Evaluation now reports completed episodes, has
   the same 12-hour hard limit, and stops after 30 minutes without completing a

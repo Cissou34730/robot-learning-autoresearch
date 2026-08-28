@@ -27,6 +27,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--resume", type=Path, default=None)
+    parser.add_argument("--continue-timesteps", action="store_true")
+    parser.add_argument("--target-timesteps", type=int, default=None)
     parser.add_argument("--algorithm", choices=("ppo", "sac"), default=None)
     parser.add_argument("--n-envs", type=int, default=None)
     parser.add_argument("--selection-reference-json", type=Path, default=None)
@@ -131,6 +133,7 @@ def main() -> None:
             save_path=str(args.output_dir / "checkpoints"),
             name_prefix="reach",
             save_vecnormalize=True,
+            save_replay_buffer=True,
         ),
         SelectionCallback(
             output_dir=args.output_dir,
@@ -143,13 +146,15 @@ def main() -> None:
     if args.view:
         callbacks.append(LiveViewerCallback(speed=args.speed))
 
+    interrupted = False
     try:
         model.learn(
             total_timesteps=args.timesteps,
-            reset_num_timesteps=True,
+            reset_num_timesteps=not args.continue_timesteps,
             callback=callbacks,
         )
     except KeyboardInterrupt:
+        interrupted = True
         print("\nTraining interrupted - saving the best available policy.")
     finally:
         model.save(args.output_dir / "last_model")
@@ -160,7 +165,9 @@ def main() -> None:
             "schema_version": 1,
             "algorithm": algorithm,
             "seed": args.seed,
-            "timesteps": args.timesteps,
+            "timesteps": int(model.num_timesteps),
+            "requested_timesteps": args.target_timesteps or args.timesteps,
+            "completed": not interrupted,
             "resumed_from": str(args.resume) if args.resume else None,
             "n_envs": n_envs,
             "parameters": params,

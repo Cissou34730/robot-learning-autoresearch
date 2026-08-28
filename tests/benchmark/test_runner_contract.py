@@ -19,6 +19,7 @@ from research.run_experiment import (
 def test_research_and_benchmark_surfaces_are_disjoint():
     assert set(IMMUTABLE_PATHS).isdisjoint(MUTABLE_PATHS)
     assert "robot_learning/environments/reach_env.py" in IMMUTABLE_PATHS
+    assert "robot_learning/evaluate.py" in IMMUTABLE_PATHS
     assert "robot_learning/benchmark/spec.py" in IMMUTABLE_PATHS
     assert "tests/benchmark/test_task_contract.py" in IMMUTABLE_PATHS
     assert "tests" in MUTABLE_PATHS
@@ -132,6 +133,33 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
             resume=None,
             config=config,
         )
+
+
+def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    for filename in ("model.zip", "vecnormalize.pkl"):
+        (candidate / filename).touch()
+    (candidate / "artifact.json").write_text(
+        '{"algorithm":"ppo","seed":0,"timesteps":50000,'
+        '"requested_timesteps":120000,"completed":false,'
+        '"n_envs":1,"parameters":{"n_steps":1024},"policy":{},'
+        '"resumed_from":"a prior recovery checkpoint"}',
+        encoding="utf-8",
+    )
+    config = {
+        "algorithm": {"name": "ppo"},
+        "training": {"n_envs": 1},
+        "ppo": {"n_steps": 1024},
+        "policy": {},
+    }
+
+    validate_reusable_candidate(
+        candidate,
+        timesteps=120_000,
+        resume=None,
+        config=config,
+    )
 
 
 def test_finalist_manifest_exposes_three_complete_artifacts(tmp_path):
