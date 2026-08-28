@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import math
 import os
 import re
 import shutil
@@ -21,6 +20,7 @@ from robot_learning.benchmark.spec import (
     HOLD_SECONDS,
     SUCCESS_THRESHOLD,
 )
+from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.research_config import (
     load_experiment_config,
     merge_param_overrides,
@@ -44,6 +44,7 @@ MUTABLE_CODE_PATHS = (
     "robot_learning/rewards",
     "robot_learning/train.py",
     "robot_learning/training/observations.py",
+    "robot_learning/training/comparison.py",
     "robot_learning/training/selection_callback.py",
     "tests/research",
 )
@@ -67,12 +68,13 @@ TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
-SELECTION_METHOD_VERSION = 3
+SELECTION_METHOD_VERSION = 4
 # Development selection uses seed 2000 and the immutable reported benchmark uses
 # EVALUATION_SEED (1000). Tournament data must be disjoint from both.
 TOURNAMENT_SEEDS = (3000, 5000, 7000)
 EXTENDED_TOURNAMENT_SEEDS = (9000, 11000)
 PAIRED_SIGNIFICANCE_LEVEL = 0.05
+SELECTION_SEED = 2000
 
 
 def announce(message: str) -> None:
@@ -99,6 +101,15 @@ def training_budget(
     if initialization == "fresh" and not baseline:
         return max(standard_timesteps, accepted_training_steps)
     return standard_timesteps
+
+
+def comparison_label(entry: dict) -> str:
+    comparison = entry.get("paired_vs_reference")
+    if comparison is None:
+        return "time-diverse"
+    if comparison["exact_p_value"] > PAIRED_SIGNIFICANCE_LEVEL:
+        return "equivalent"
+    return "better" if comparison["net_wins"] > 0 else "worse"
 
 
 def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
@@ -359,8 +370,10 @@ def evaluate_artifact(
     artifact_dir: Path,
     seed: int = EVALUATION_SEED,
     label: str = "official evaluation",
+    episodes: int = EVALUATION_EPISODES,
+    output_path: Path | None = None,
 ) -> dict:
-    output_path = RESEARCH_DIR / "last_evaluation.json"
+    output_path = output_path or RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
     command = [
         sys.executable,
@@ -369,14 +382,14 @@ def evaluate_artifact(
         "--model",
         str(artifact_dir / "model.zip"),
         "--episodes",
-        str(EVALUATION_EPISODES),
+        str(episodes),
         "--seed",
         str(seed),
         "--output-json",
         str(output_path),
     ]
     announce(
-        f"[evaluation] {label} | {EVALUATION_EPISODES} episodes | seed {seed}"
+        f"[evaluation] {label} | {episodes} episodes | seed {seed}"
     )
     started = time.monotonic()
     process = subprocess.Popen(
@@ -498,52 +511,6 @@ def summarize_tournament(
             "required_steps": required,
         },
         "failure_diagnostics": failed_diagnostics,
-    }
-
-
-def exact_mcnemar_pvalue(candidate_wins: int, champion_wins: int) -> float:
-    """Two-sided exact sign test over discordant paired episodes."""
-    discordant = candidate_wins + champion_wins
-    if discordant == 0:
-        return 1.0
-    smaller = min(candidate_wins, champion_wins)
-    tail = sum(math.comb(discordant, value) for value in range(smaller + 1))
-    return min(1.0, 2 * tail / (2**discordant))
-
-
-def paired_comparison(candidate: list[dict], champion: list[dict]) -> dict:
-    def outcomes(evaluations: list[dict]) -> dict[tuple[int, int], bool]:
-        return {
-            (int(evaluation["seed"]), int(episode["episode"])): bool(
-                episode["success"]
-            )
-            for evaluation in evaluations
-            for episode in evaluation.get("episode_results", [])
-        }
-
-    candidate_outcomes = outcomes(candidate)
-    champion_outcomes = outcomes(champion)
-    if not candidate_outcomes or candidate_outcomes.keys() != champion_outcomes.keys():
-        raise ValueError("paired tournament evaluations do not cover identical episodes")
-    candidate_wins = sum(
-        candidate_outcomes[key] and not champion_outcomes[key]
-        for key in candidate_outcomes
-    )
-    champion_wins = sum(
-        champion_outcomes[key] and not candidate_outcomes[key]
-        for key in candidate_outcomes
-    )
-    episode_count = len(candidate_outcomes)
-    return {
-        "episodes": episode_count,
-        "candidate_wins": candidate_wins,
-        "champion_wins": champion_wins,
-        "discordant_episodes": candidate_wins + champion_wins,
-        "net_wins": candidate_wins - champion_wins,
-        "success_delta_percent": 100
-        * (candidate_wins - champion_wins)
-        / episode_count,
-        "exact_p_value": exact_mcnemar_pvalue(candidate_wins, champion_wins),
     }
 
 
@@ -761,6 +728,7 @@ def train_candidate(
     timesteps: int,
     seed: int,
     resume: Path | None,
+    selection_reference_path: Path | None = None,
     label: str = "candidate training",
 ) -> None:
     command = [
@@ -776,6 +744,10 @@ def train_candidate(
     ]
     if resume is not None:
         command.extend(["--resume", str(resume)])
+    if selection_reference_path is not None:
+        command.extend(
+            ["--selection-reference-json", str(selection_reference_path)]
+        )
     train_log = RESEARCH_DIR / "last_train.log"
     started = time.monotonic()
     announce(
@@ -793,7 +765,7 @@ def train_candidate(
             text=True,
             **process_group_options(),
         )
-        last_selection: tuple[int, int, float, int, float, float, float] | None = None
+        last_selection: tuple | None = None
         last_steps: int | None = None
         last_progress_at = started
         try:
@@ -826,24 +798,25 @@ def train_candidate(
                     selection = json.loads(selection_path.read_text(encoding="utf-8"))
                     selection_metrics = selection["metrics"]
                     failure_progress = selection_metrics["failed_episode_progress"]
+                    paired = selection.get("paired_vs_reference")
                     current_selection = (
-                        int(selection["position"]),
                         int(selection["timesteps"]),
+                        str(selection["status"]),
                         float(selection_metrics["success_percent"]),
                         int(failure_progress["failed_episodes"]),
-                        float(failure_progress["longest_consecutive_steps_mean"]),
-                        float(failure_progress["best_window_inside_steps_mean"]),
-                        float(failure_progress["best_window_excess_cm_mean"]),
+                        int(paired["candidate_wins"]) if paired else 0,
+                        int(paired["reference_wins"]) if paired else 0,
+                        float(paired["exact_p_value"]) if paired else 1.0,
                     )
                     if current_selection != last_selection:
                         announce(
-                            f"[selection] checkpoint entered top 3 at position "
-                            f"{current_selection[0]} | {current_selection[1]:,} steps | "
+                            f"[selection] {current_selection[0]:,} steps | "
+                            f"{current_selection[1]} | "
                             f"success: {current_selection[2]:.1f}% | "
                             f"failures: {current_selection[3]} | "
-                            f"failed hold: {current_selection[4]:.1f}/100 | "
-                            f"best window: {current_selection[5]:.1f}/100 | "
-                            f"outside excess: {current_selection[6]:.3f} cm"
+                            f"paired wins candidate/reference: "
+                            f"{current_selection[4]}/{current_selection[5]} | "
+                            f"p={current_selection[6]:.3f}"
                         )
                         last_selection = current_selection
                 stalled_for = time.monotonic() - last_progress_at
@@ -866,6 +839,14 @@ def train_candidate(
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         if not (output_dir / filename).exists():
             raise RuntimeError(f"training output is incomplete: {filename}")
+    manifest_path = output_dir / "selection_manifest.json"
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        finalists = ", ".join(
+            f"{item['timesteps']:,} ({comparison_label(item)})"
+            for item in manifest["finalists"]
+        )
+        announce(f"[selection] final tournament checkpoints: {finalists}")
     announce(
         f"[train] {label} complete in {format_duration(time.monotonic() - started)}"
     )
@@ -978,6 +959,7 @@ def main() -> int:
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
+    selection_reference_path: Path | None = None
     config_written = False
     code_changes: list[str] = []
 
@@ -1099,6 +1081,18 @@ def main() -> int:
         else:
             announce(f"[training plan] {effective_timesteps:,} steps")
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
+        if not fresh_baseline:
+            selection_reference_path = (
+                CANDIDATE_ROOT / f"selection-reference-experiment-{index}.json"
+            )
+            selection_reference_path.unlink(missing_ok=True)
+            evaluate_artifact(
+                accepted_dir,
+                SELECTION_SEED,
+                label="development-panel champion reference",
+                episodes=int(effective_config["training"]["selection_eval_episodes"]),
+                output_path=selection_reference_path,
+            )
 
         if experiment_kind == "calibration":
             if initialization != "transfer":
@@ -1116,6 +1110,7 @@ def main() -> int:
                     effective_timesteps,
                     training_seed,
                     resume,
+                    selection_reference_path,
                     label=f"A/A replicate {training_seed + 1}/{len(CALIBRATION_TRAIN_SEEDS)}",
                 )
                 replicates.append(
@@ -1123,7 +1118,7 @@ def main() -> int:
                         "name": f"training-seed-{training_seed}",
                         "kind": "calibration",
                         "training_seed": training_seed,
-                        "path": replicate_dir,
+                        "path": replicate_dir / "final_checkpoint",
                         "evaluations": [],
                     }
                 )
@@ -1184,6 +1179,7 @@ def main() -> int:
                 effective_timesteps,
                 TRAIN_SEED,
                 resume,
+                selection_reference_path,
                 label="baseline training" if baseline else "candidate training",
             )
         runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
@@ -1358,6 +1354,8 @@ def main() -> int:
                 remove_candidate_dir(cleanup_target)
             except OSError as cleanup_error:
                 announce(f"[runner] WARNING: candidate cleanup failed: {cleanup_error}")
+        if selection_reference_path is not None:
+            selection_reference_path.unlink(missing_ok=True)
 
     print("SUMMARY: " + json.dumps(result))
     return 0

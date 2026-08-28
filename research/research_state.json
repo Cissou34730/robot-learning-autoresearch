@@ -94,6 +94,6 @@
   "last_verdict": "reverted (no improvement)",
   "noise_floor": null,
   "official_metrics": null,
-  "selection_method_version": 3,
+  "selection_method_version": 4,
   "schema_version": 2
 }

@@ -60,30 +60,12 @@ def test_selection_waits_for_a_completed_rollout_update(monkeypatch, tmp_path):
         top_k=3,
     )
     evaluations: list[int] = []
-    callback.finalists = [
-        {
-            "rank": [101.0, 101.0, 101.0, 0.0],
-            "timesteps": step,
-            "path": f"unused-{step}",
-        }
-        for step in range(3)
-    ]
-    monkeypatch.setattr(
-        callback,
-        "_evaluate",
-        lambda: evaluations.append(callback.num_timesteps)
-        or {
-            "success_percent": 100.0,
-            "failed_episode_progress": {
-                "failed_episodes": 0,
-                "longest_consecutive_steps_mean": 100.0,
-                "best_window_inside_steps_mean": 100.0,
-                "best_window_excess_cm_mean": 0.0,
-                "required_steps": 100,
-            },
-            "timesteps": callback.num_timesteps,
-        },
-    )
+    def record_evaluation():
+        evaluations.append(callback.num_timesteps)
+        callback.last_evaluation_steps = callback.num_timesteps
+
+    monkeypatch.setattr(callback, "_evaluate_and_save", record_evaluation)
+    monkeypatch.setattr(callback, "_finalize_selection", lambda: None)
 
     callback.num_timesteps = 20_000
     assert callback._on_step()
@@ -111,3 +93,44 @@ def test_selection_retains_exactly_the_three_best_checkpoints():
     selected = select_top_finalists(entries, top_k=3)
 
     assert [item["rank"][0] for item in selected] == [5, 4, 3]
+
+
+def test_equivalent_checkpoints_are_spread_over_training_time():
+    entries = [
+        {
+            "rank": [98, 2, 2, -21 + step / 100_000],
+            "timesteps": step,
+            "path": str(step),
+            "paired_vs_reference": {
+                "net_wins": 0,
+                "exact_p_value": 1.0,
+            },
+        }
+        for step in (20_000, 40_000, 60_000, 80_000, 100_000, 120_000)
+    ]
+
+    selected = select_top_finalists(entries, top_k=3)
+
+    assert [item["timesteps"] for item in selected] == [20_000, 60_000, 120_000]
+
+
+def test_meaningfully_better_checkpoint_precedes_equivalent_ones():
+    equivalent = [
+        {
+            "rank": [98, 2, 2, -21],
+            "timesteps": step,
+            "path": str(step),
+            "paired_vs_reference": {"net_wins": 0, "exact_p_value": 1.0},
+        }
+        for step in (20_000, 60_000, 120_000)
+    ]
+    better = {
+        "rank": [99, 50, 90, -1],
+        "timesteps": 80_000,
+        "path": "better",
+        "paired_vs_reference": {"net_wins": 8, "exact_p_value": 0.01},
+    }
+
+    selected = select_top_finalists([*equivalent, better], top_k=3)
+
+    assert selected[0] is better

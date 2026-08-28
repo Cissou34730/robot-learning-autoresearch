@@ -3,13 +3,15 @@ import json
 import pytest
 
 from research.run_experiment import (
-    exact_mcnemar_pvalue,
-    paired_comparison,
     record_previous_postmortem,
     select_tournament_winner,
     summarize_noise_floor,
     summarize_tournament,
     training_budget,
+)
+from robot_learning.training.comparison import (
+    exact_mcnemar_pvalue,
+    paired_comparison,
 )
 
 
@@ -50,7 +52,7 @@ def test_paired_comparison_uses_identical_episode_outcomes():
     comparison = paired_comparison(candidate, champion)
 
     assert comparison["candidate_wins"] == 6
-    assert comparison["champion_wins"] == 0
+    assert comparison["reference_wins"] == 0
     assert comparison["success_delta_percent"] == 100.0
     assert comparison["exact_p_value"] == pytest.approx(0.03125)
 

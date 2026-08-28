@@ -29,6 +29,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", type=Path, default=None)
     parser.add_argument("--algorithm", choices=("ppo", "sac"), default=None)
     parser.add_argument("--n-envs", type=int, default=None)
+    parser.add_argument("--selection-reference-json", type=Path, default=None)
     parser.add_argument("--view", action="store_true")
     parser.add_argument("--speed", type=float, default=1.0)
     return parser.parse_args()
@@ -136,6 +137,7 @@ def main() -> None:
             eval_every_steps=int(training["selection_eval_every_steps"]),
             episodes=int(training["selection_eval_episodes"]),
             top_k=int(training["selection_top_k"]),
+            reference_metrics_path=args.selection_reference_json,
         ),
     ]
     if args.view:
@@ -168,6 +170,22 @@ def main() -> None:
             json.dumps(artifact, indent=2, default=str) + "\n",
             encoding="utf-8",
         )
+        final_checkpoint = args.output_dir / "final_checkpoint"
+        final_checkpoint.mkdir()
+        shutil.copyfile(
+            args.output_dir / "last_model.zip", final_checkpoint / "model.zip"
+        )
+        shutil.copyfile(
+            args.output_dir / "last_vecnormalize.pkl",
+            final_checkpoint / "vecnormalize.pkl",
+        )
+        (final_checkpoint / "artifact.json").write_text(
+            json.dumps(artifact, indent=2, default=str) + "\n",
+            encoding="utf-8",
+        )
+        last_replay = args.output_dir / "last_replay_buffer.pkl"
+        if last_replay.exists():
+            shutil.copyfile(last_replay, final_checkpoint / "replay_buffer.pkl")
         manifest_path = args.output_dir / "selection_manifest.json"
         if manifest_path.exists():
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -192,7 +210,6 @@ def main() -> None:
                 args.output_dir / "last_vecnormalize.pkl",
                 args.output_dir / "vecnormalize.pkl",
             )
-            last_replay = args.output_dir / "last_replay_buffer.pkl"
             if last_replay.exists():
                 shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
         print(f"ARTIFACT_DIR: {args.output_dir.resolve()}")

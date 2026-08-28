@@ -45,14 +45,16 @@ short fields: `result`, `behavior`, `learned`, and `next_class`. The runner
 records this memory and rejects an amnesiac proposal. Consult the compact
 "hypotheses already tested" index before proposing a change.
 
-## Selection method v3
+## Selection method v4
 
-During training, evaluate the policy after completed learning updates on 50
-fixed development episodes. Rank checkpoints by success count, then—only for
-failed episodes—longest consecutive in-circle hold, steps inside the best
-100-step window, and cumulative distance outside the 1 cm boundary in that
-window. Keep the top three checkpoints with their normalization and optimizer
-state.
+During training, evaluate the policy after completed learning updates on 200
+fixed development episodes. Evaluate the accepted champion once on that exact
+panel, then compare each checkpoint with it episode by episode. A checkpoint is
+meaningfully different only when the exact paired test reaches p <= 0.05;
+microscopic changes in one failed trajectory never create a fake ordering.
+Keep checkpoints that are meaningfully better first. When checkpoints are
+statistically equivalent, keep early, middle, and late representatives instead
+of ranking numerical noise. Preserve their normalization and optimizer state.
 
 After 120,000 steps, run one tournament containing those three checkpoints and
 the accepted champion. Evaluate every contender on the same 200 episodes for
@@ -75,7 +77,8 @@ A fresh initialization competing with an accumulated champion receives the
 same cumulative training budget already invested in the accepted champion
 lineage. An A/A calibration trains the unchanged champion recipe from the
 same checkpoint with three independent training seeds, stores the resulting
-success spread as the noise floor, and never promotes one of those replicates.
+success spread at the fixed final 120,000-step endpoint as the noise floor, and
+never promotes or cherry-picks one of those replicates.
 When the brief says the noise floor is not calibrated, the next proposal must
 be this unchanged `"kind": "calibration"` experiment; ordinary training
 proposals are rejected until it exists.
