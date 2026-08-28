@@ -9,6 +9,7 @@ import signal
 import statistics
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -398,37 +399,46 @@ def evaluate_artifact(
         MIN_EVALUATION_TIMEOUT_SECONDS,
         episodes * EVALUATION_TIMEOUT_SECONDS_PER_EPISODE,
     )
-    process = subprocess.Popen(
-        command,
-        cwd=ROOT,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        **process_group_options(),
-    )
-    try:
-        while True:
-            try:
-                process.wait(timeout=STATUS_INTERVAL_SECONDS)
-                break
-            except subprocess.TimeoutExpired:
-                announce(
-                    f"[evaluation] {label} still running "
-                    f"({format_duration(time.monotonic() - started)} elapsed)"
-                )
-                if time.monotonic() - started > timeout_seconds:
-                    stop_process(process, graceful=False)
-                    raise TimeoutError(
-                        f"{label} exceeded the "
-                        f"{format_duration(timeout_seconds)} safety limit"
+    # The evaluator can emit large episode-level diagnostics. File-backed streams
+    # avoid filling a Windows pipe while this process waits and prints heartbeats.
+    with (
+        tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stdout_file,
+        tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stderr_file,
+    ):
+        process = subprocess.Popen(
+            command,
+            cwd=ROOT,
+            stdout=stdout_file,
+            stderr=stderr_file,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            **process_group_options(),
+        )
+        try:
+            while True:
+                try:
+                    process.wait(timeout=STATUS_INTERVAL_SECONDS)
+                    break
+                except subprocess.TimeoutExpired:
+                    announce(
+                        f"[evaluation] {label} still running "
+                        f"({format_duration(time.monotonic() - started)} elapsed)"
                     )
-    except KeyboardInterrupt:
-        announce(f"\n[runner] Stopping {label}...")
-        stop_process(process, graceful=True)
-        raise
-    stdout, stderr = process.communicate()
+                    if time.monotonic() - started > timeout_seconds:
+                        stop_process(process, graceful=False)
+                        raise TimeoutError(
+                            f"{label} exceeded the "
+                            f"{format_duration(timeout_seconds)} safety limit"
+                        )
+        except KeyboardInterrupt:
+            announce(f"\n[runner] Stopping {label}...")
+            stop_process(process, graceful=True)
+            raise
+        stdout_file.seek(0)
+        stderr_file.seek(0)
+        stdout = stdout_file.read()
+        stderr = stderr_file.read()
     if process.returncode != 0:
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
