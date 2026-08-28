@@ -67,11 +67,11 @@
     }
   },
   "current_stage": 0,
-  "last_experiment": 26,
+  "last_experiment": 27,
   "last_metrics": {
     "closest_distance_cm": {
-      "mean": 0.19325626786853883,
-      "median": 0.1431659662961673
+      "mean": 0.20137939573674782,
+      "median": 0.1689673134455711
     },
     "consecutive_hold_steps": {
       "mean": 98.51,
@@ -80,11 +80,11 @@
     },
     "episodes": 200,
     "final_distance_cm": {
-      "mean": 0.30356110683246396,
-      "median": 0.2655153346748274,
-      "worst": 2.161413473940805
+      "mean": 0.29933642460996973,
+      "median": 0.24968823754135933,
+      "worst": 2.2142811634339474
     },
-    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-26\\model.zip",
+    "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\models\\candidates\\experiment-27\\model.zip",
     "schema_version": 1,
     "seed": 1000,
     "success_percent": 98.5
