@@ -1,8 +1,11 @@
 # Robot Learning Autoresearch
 
 The fixed goal is to reach a random target within 1 cm and hold for 2 seconds.
-Every experiment changes the training method while the evaluator and 120,000-step
-budget remain fixed. A candidate is kept only when its held-out score improves.
+Every experiment tests one training hypothesis while the evaluator remains fixed.
+Transfer runs receive 120,000 steps; fresh policies receive the runner-owned
+cumulative budget already invested in the champion lineage so architecture and
+algorithm changes are not structurally handicapped.
+A candidate is promoted only by a significant paired improvement over the champion.
 
 Start the autonomous loop from PowerShell:
 

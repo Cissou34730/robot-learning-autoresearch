@@ -1,5 +1,6 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
+  "accepted_training_steps": 720000,
   "accepted_metrics": {
     "closest_distance_cm": {
       "mean": 0.18034632329589795,
@@ -91,6 +92,8 @@
     "success_percent": 98.5
   },
   "last_verdict": "reverted (no improvement)",
-  "selection_method_version": 2,
+  "noise_floor": null,
+  "official_metrics": null,
+  "selection_method_version": 3,
   "schema_version": 2
 }

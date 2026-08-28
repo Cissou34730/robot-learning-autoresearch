@@ -2,10 +2,12 @@
 
 import argparse
 import json
+import math
 import os
 import re
 import shutil
 import signal
+import statistics
 import subprocess
 import sys
 import time
@@ -60,13 +62,17 @@ IMMUTABLE_PATHS = (
 
 TIMESTEPS = 120_000
 TRAIN_SEED = 0
+CALIBRATION_TRAIN_SEEDS = (0, 1, 2)
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
-SELECTION_METHOD_VERSION = 2
-TOURNAMENT_SEEDS = (1000, 3000, 5000)
-EXTENDED_TOURNAMENT_SEEDS = (7000, 9000)
+SELECTION_METHOD_VERSION = 3
+# Development selection uses seed 2000 and the immutable reported benchmark uses
+# EVALUATION_SEED (1000). Tournament data must be disjoint from both.
+TOURNAMENT_SEEDS = (3000, 5000, 7000)
+EXTENDED_TOURNAMENT_SEEDS = (9000, 11000)
+PAIRED_SIGNIFICANCE_LEVEL = 0.05
 
 
 def announce(message: str) -> None:
@@ -82,6 +88,17 @@ def format_duration(seconds: float) -> str:
     if minutes:
         return f"{minutes}m{seconds:02d}s"
     return f"{seconds}s"
+
+
+def training_budget(
+    standard_timesteps: int,
+    initialization: str,
+    baseline: bool,
+    accepted_training_steps: int,
+) -> int:
+    if initialization == "fresh" and not baseline:
+        return max(standard_timesteps, accepted_training_steps)
+    return standard_timesteps
 
 
 def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
@@ -291,6 +308,53 @@ def append_result(result: dict) -> None:
     LOG_PATH.write_text(text, encoding="utf-8")
 
 
+def latest_recorded_experiment() -> int | None:
+    if not RESULTS_PATH.exists():
+        return None
+    records = [
+        json.loads(line)
+        for line in RESULTS_PATH.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    return int(records[-1]["index"]) if records else None
+
+
+def record_previous_postmortem(proposal: dict, *, baseline: bool) -> None:
+    previous_index = latest_recorded_experiment()
+    if baseline or previous_index is None:
+        return
+    memory = proposal.get("previous_experiment_postmortem")
+    if not isinstance(memory, dict):
+        raise TypeError(
+            "proposal must include previous_experiment_postmortem for experiment "
+            f"{previous_index}"
+        )
+    if int(memory.get("experiment", -1)) != previous_index:
+        raise ValueError(
+            "previous_experiment_postmortem must describe experiment "
+            f"{previous_index}"
+        )
+    fields = {
+        "result": "Result",
+        "behavior": "Observed behavior",
+        "learned": "What was learned / do NOT retry",
+        "next_class": "Recommended next experiment class",
+    }
+    missing = [key for key in fields if not str(memory.get(key, "")).strip()]
+    if missing:
+        raise ValueError(f"postmortem fields are missing: {missing}")
+    path = RESEARCH_DIR / "postmortems.md"
+    text = path.read_text(encoding="utf-8") if path.exists() else "# Research postmortems\n"
+    if re.search(rf"^## Experiment {previous_index}\b", text, re.MULTILINE):
+        return
+    lines = ["", f"## Experiment {previous_index}", ""]
+    for key, label in fields.items():
+        value = " ".join(str(memory[key]).split())
+        lines.append(f"**{label}:** {value}")
+        lines.append("")
+    path.write_text(text.rstrip() + "\n" + "\n".join(lines).rstrip() + "\n", encoding="utf-8")
+
+
 def evaluate_artifact(
     artifact_dir: Path,
     seed: int = EVALUATION_SEED,
@@ -390,6 +454,23 @@ def summarize_tournament(
     seed_success = {
         str(item["seed"]): float(item["success_percent"]) for item in evaluations
     }
+    failed_diagnostics = [
+        {
+            key: value
+            for key, value in episode.items()
+            if key != "distance_trace_cm"
+        }
+        for evaluation in evaluations
+        for episode in evaluation.get("episode_results", [])
+        if not episode["success"]
+    ]
+    failed_diagnostics.sort(
+        key=lambda item: (
+            item["longest_consecutive_steps"],
+            item["best_window_inside_steps"],
+            -item["best_window_excess_cm"],
+        )
+    )
     pooled_success = 100 * total_successes / total_episodes
     return {
         "schema_version": 1,
@@ -416,6 +497,66 @@ def summarize_tournament(
             ),
             "required_steps": required,
         },
+        "failure_diagnostics": failed_diagnostics,
+    }
+
+
+def exact_mcnemar_pvalue(candidate_wins: int, champion_wins: int) -> float:
+    """Two-sided exact sign test over discordant paired episodes."""
+    discordant = candidate_wins + champion_wins
+    if discordant == 0:
+        return 1.0
+    smaller = min(candidate_wins, champion_wins)
+    tail = sum(math.comb(discordant, value) for value in range(smaller + 1))
+    return min(1.0, 2 * tail / (2**discordant))
+
+
+def paired_comparison(candidate: list[dict], champion: list[dict]) -> dict:
+    def outcomes(evaluations: list[dict]) -> dict[tuple[int, int], bool]:
+        return {
+            (int(evaluation["seed"]), int(episode["episode"])): bool(
+                episode["success"]
+            )
+            for evaluation in evaluations
+            for episode in evaluation.get("episode_results", [])
+        }
+
+    candidate_outcomes = outcomes(candidate)
+    champion_outcomes = outcomes(champion)
+    if not candidate_outcomes or candidate_outcomes.keys() != champion_outcomes.keys():
+        raise ValueError("paired tournament evaluations do not cover identical episodes")
+    candidate_wins = sum(
+        candidate_outcomes[key] and not champion_outcomes[key]
+        for key in candidate_outcomes
+    )
+    champion_wins = sum(
+        champion_outcomes[key] and not candidate_outcomes[key]
+        for key in candidate_outcomes
+    )
+    episode_count = len(candidate_outcomes)
+    return {
+        "episodes": episode_count,
+        "candidate_wins": candidate_wins,
+        "champion_wins": champion_wins,
+        "discordant_episodes": candidate_wins + champion_wins,
+        "net_wins": candidate_wins - champion_wins,
+        "success_delta_percent": 100
+        * (candidate_wins - champion_wins)
+        / episode_count,
+        "exact_p_value": exact_mcnemar_pvalue(candidate_wins, champion_wins),
+    }
+
+
+def summarize_noise_floor(replicates: list[dict]) -> dict:
+    scores = [float(item["summary"]["pooled_success_percent"]) for item in replicates]
+    if len(scores) < 2:
+        raise ValueError("noise calibration requires at least two training replicates")
+    return {
+        "training_seeds": [int(item["training_seed"]) for item in replicates],
+        "pooled_success_percent": scores,
+        "pooled_success_mean_percent": statistics.mean(scores),
+        "pooled_success_std_pp": statistics.stdev(scores),
+        "pooled_success_range_pp": max(scores) - min(scores),
     }
 
 
@@ -460,18 +601,41 @@ def finalist_directories(candidate_dir: Path) -> list[Path]:
     return finalists
 
 
-def select_tournament_winner(contenders: list[dict]) -> dict:
+def select_tournament_winner(
+    contenders: list[dict], noise_floor_pp: float = 0.0
+) -> dict:
+    champion = next(
+        (item for item in contenders if item["kind"] == "champion"), None
+    )
+    if champion is None:
+        return max(contenders, key=lambda item: rank(item["summary"]))
+
+    eligible = [
+        item
+        for item in contenders
+        if item["kind"] == "candidate"
+        and item.get("paired_vs_champion", {}).get("net_wins", 0) > 0
+        and item["paired_vs_champion"]["success_delta_percent"] > noise_floor_pp
+        and item["paired_vs_champion"]["exact_p_value"]
+        <= PAIRED_SIGNIFICANCE_LEVEL
+    ]
+    if not eligible:
+        return champion
     return max(
-        contenders,
+        eligible,
         key=lambda item: (
+            item["paired_vs_champion"]["net_wins"],
             rank(item["summary"]),
-            item["kind"] == "champion",
         ),
     )
 
 
 def evaluate_tournament(
-    contenders: list[dict], selection_method_version: int
+    contenders: list[dict],
+    selection_method_version: int,
+    noise_floor_pp: float = 0.0,
+    *,
+    extend_close: bool = True,
 ) -> tuple[list[dict], dict]:
     seeds = list(TOURNAMENT_SEEDS)
 
@@ -491,16 +655,37 @@ def evaluate_tournament(
                 contender["evaluations"], selection_method_version
             )
 
+    def attach_pairing() -> None:
+        champion = next(
+            (item for item in contenders if item["kind"] == "champion"), None
+        )
+        if champion is None:
+            return
+        for contender in contenders:
+            if contender["kind"] == "candidate":
+                contender["paired_vs_champion"] = paired_comparison(
+                    contender["evaluations"], champion["evaluations"]
+                )
+
     evaluate_missing(seeds)
+    attach_pairing()
     ordered = sorted(contenders, key=lambda item: rank(item["summary"]), reverse=True)
-    if len(ordered) > 1 and tournament_result_is_close(
-        ordered[0]["summary"], ordered[1]["summary"]
+    positive_but_uncertain = any(
+        item.get("paired_vs_champion", {}).get("net_wins", 0) > 0
+        and item["paired_vs_champion"]["exact_p_value"]
+        > PAIRED_SIGNIFICANCE_LEVEL
+        for item in contenders
+    )
+    if extend_close and len(ordered) > 1 and (
+        tournament_result_is_close(ordered[0]["summary"], ordered[1]["summary"])
+        or positive_but_uncertain
     ):
         announce("[tournament] leading models are close; extending evaluation")
         seeds.extend(EXTENDED_TOURNAMENT_SEEDS)
         evaluate_missing(seeds)
+        attach_pairing()
 
-    winner = select_tournament_winner(contenders)
+    winner = select_tournament_winner(contenders, noise_floor_pp)
     return contenders, winner
 
 
@@ -529,8 +714,35 @@ def archive_candidate(
                     "name": item["name"],
                     "kind": item["kind"],
                     "summary": item["summary"],
+                    "paired_vs_champion": item.get("paired_vs_champion"),
                 }
                 for item in tournament
+            ],
+        },
+    )
+    return destination
+
+
+def archive_calibration(index: int, replicates: list[dict], noise_floor: dict) -> Path:
+    destination = RESEARCH_DIR / "checkpoints" / "calibrations" / f"experiment-{index}"
+    if destination.exists():
+        raise RuntimeError(f"calibration archive already exists: {destination}")
+    destination.mkdir(parents=True)
+    for replicate in replicates:
+        copy_artifact(
+            replicate["path"], destination / f"seed-{replicate['training_seed']}"
+        )
+    atomic_write_json(
+        destination / "calibration.json",
+        {
+            "schema_version": 1,
+            "noise_floor": noise_floor,
+            "replicates": [
+                {
+                    "training_seed": item["training_seed"],
+                    "summary": item["summary"],
+                }
+                for item in replicates
             ],
         },
     )
@@ -728,6 +940,7 @@ def commit_result(index: int, change: str) -> None:
         "research/results.jsonl",
         "research/research_state.json",
         "research/current_params.json",
+        "research/postmortems.md",
         "research/checkpoints",
     ]
     if BASELINE_PENDING_PATH.exists() or git("ls-files", "research/BASELINE_PENDING").strip():
@@ -763,6 +976,7 @@ def main() -> int:
     )
     accepted_dir = ROOT / state["accepted_artifact"]
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
+    created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
     config_written = False
     code_changes: list[str] = []
@@ -784,13 +998,20 @@ def main() -> int:
     }
     try:
         code_changes = assert_research_surface()
-        if experiment_kind not in {"training", "method"}:
-            raise ValueError("experiment kind must be training or method")
+        if experiment_kind not in {"training", "method", "calibration"}:
+            raise ValueError("experiment kind must be training, method, or calibration")
         if baseline and experiment_kind != "training":
             raise ValueError("a baseline must be a training experiment")
+        if experiment_kind == "calibration" and (parameter_overrides or code_changes):
+            raise ValueError("A/A calibration requires an unchanged training recipe")
         if baseline and (parameter_overrides or code_changes):
             raise ValueError("baseline requires an unchanged research method")
-        if not baseline and not parameter_overrides and not code_changes:
+        if (
+            not baseline
+            and experiment_kind != "calibration"
+            and not parameter_overrides
+            and not code_changes
+        ):
             raise ValueError("experiment contains no research change")
         if initialization not in {"transfer", "fresh"}:
             raise ValueError("initialization must be transfer or fresh")
@@ -800,6 +1021,17 @@ def main() -> int:
             and parameter_overrides.get("policy")
         ):
             raise ValueError("policy architecture changes require fresh initialization")
+
+        record_previous_postmortem(proposal, baseline=baseline)
+        if (
+            experiment_kind == "training"
+            and not baseline
+            and state.get("noise_floor") is None
+        ):
+            raise ValueError(
+                "training-seed noise floor is not calibrated; the next proposal "
+                "must be an unchanged kind=calibration A/A experiment"
+            )
 
         if parameter_overrides:
             announce("[checks] validating proposed parameters")
@@ -853,8 +1085,83 @@ def main() -> int:
             state["accepted_parameters"] = previous_config
 
         effective_config = load_experiment_config()
-        announce(f"[training plan] {args.timesteps:,} steps")
+        effective_timesteps = training_budget(
+            args.timesteps,
+            initialization,
+            fresh_baseline,
+            int(state.get("accepted_training_steps", args.timesteps)),
+        )
+        if initialization == "fresh" and not fresh_baseline:
+            announce(
+                "[training plan] fresh initialization receives the fixed "
+                f"compute-matched budget: {effective_timesteps:,} steps"
+            )
+        else:
+            announce(f"[training plan] {effective_timesteps:,} steps")
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
+
+        if experiment_kind == "calibration":
+            if initialization != "transfer":
+                raise ValueError("A/A calibration must start each replicate from the champion")
+            replicates: list[dict] = []
+            for training_seed in CALIBRATION_TRAIN_SEEDS:
+                replicate_dir = CANDIDATE_ROOT / (
+                    f"experiment-{index}-calibration-seed-{training_seed}"
+                )
+                if replicate_dir.exists():
+                    remove_candidate_dir(replicate_dir)
+                created_candidate_dirs.append(replicate_dir)
+                train_candidate(
+                    replicate_dir,
+                    effective_timesteps,
+                    training_seed,
+                    resume,
+                    label=f"A/A replicate {training_seed + 1}/{len(CALIBRATION_TRAIN_SEEDS)}",
+                )
+                replicates.append(
+                    {
+                        "name": f"training-seed-{training_seed}",
+                        "kind": "calibration",
+                        "training_seed": training_seed,
+                        "path": replicate_dir,
+                        "evaluations": [],
+                    }
+                )
+            calibration_tournament, _ = evaluate_tournament(
+                replicates,
+                int(state.get("selection_method_version", SELECTION_METHOD_VERSION)),
+                extend_close=False,
+            )
+            noise_floor = summarize_noise_floor(calibration_tournament)
+            calibration_archive = archive_calibration(
+                index, calibration_tournament, noise_floor
+            )
+            verdict = "calibration recorded"
+            state.update(
+                {
+                    "noise_floor": noise_floor,
+                    "last_experiment": index,
+                    "last_verdict": verdict,
+                }
+            )
+            result.update(
+                {
+                    "status": "ok",
+                    "verdict": verdict,
+                    "noise_floor": noise_floor,
+                    "calibration_archive": str(calibration_archive.relative_to(ROOT)),
+                }
+            )
+            atomic_write_json(STATE_PATH, state)
+            append_result(result)
+            commit_result(index, change)
+            announce(
+                "[calibration] training-seed noise floor: "
+                f"std {noise_floor['pooled_success_std_pp']:.3f} pp | "
+                f"range {noise_floor['pooled_success_range_pp']:.3f} pp"
+            )
+            return 0
+
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
             remove_candidate_dir(candidate_dir)
@@ -871,9 +1178,10 @@ def main() -> int:
             announce(f"[recovery] reusing completed candidate from {reusable}")
             copy_candidate_outputs(reusable, candidate_dir)
         else:
+            created_candidate_dirs.append(candidate_dir)
             train_candidate(
                 candidate_dir,
-                args.timesteps,
+                effective_timesteps,
                 TRAIN_SEED,
                 resume,
                 label="baseline training" if baseline else "candidate training",
@@ -905,8 +1213,11 @@ def main() -> int:
         selection_method_version = int(
             state.get("selection_method_version", SELECTION_METHOD_VERSION)
         )
+        noise_floor_pp = float(
+            (state.get("noise_floor") or {}).get("pooled_success_std_pp", 0.0)
+        )
         tournament, winner = evaluate_tournament(
-            contenders, selection_method_version
+            contenders, selection_method_version, noise_floor_pp
         )
         candidate_winner = max(
             (item for item in tournament if item["kind"] == "candidate"),
@@ -916,9 +1227,13 @@ def main() -> int:
             index, candidate_winner, effective_config, tournament
         )
         promoted = winner["kind"] == "candidate"
+        official_metrics = evaluate_artifact(
+            winner["path"], EVALUATION_SEED, label="fixed reported benchmark"
+        )
         goal_reached = (
             winner["summary"]["seeds_passing_98_percent"]
             == winner["summary"]["seed_count"]
+            and official_metrics["success_percent"] >= FINAL_SUCCESS_PERCENT
         )
 
         if promoted:
@@ -926,6 +1241,12 @@ def main() -> int:
             state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
             state["accepted_metrics"] = winner["summary"]
             state["accepted_parameters"] = load_experiment_config()
+            if initialization == "transfer":
+                state["accepted_training_steps"] = int(
+                    state.get("accepted_training_steps", 0)
+                ) + effective_timesteps
+            else:
+                state["accepted_training_steps"] = effective_timesteps
             verdict = "promoted"
         else:
             state["accepted_metrics"] = winner["summary"]
@@ -946,6 +1267,7 @@ def main() -> int:
                 "name": item["name"],
                 "kind": item["kind"],
                 "summary": item["summary"],
+                "paired_vs_champion": item.get("paired_vs_champion"),
                 "evaluations": metrics_without_artifact_path(item["evaluations"]),
             }
             for item in tournament
@@ -957,6 +1279,9 @@ def main() -> int:
                 "last_experiment": index,
                 "last_verdict": verdict,
                 "last_metrics": candidate_winner["summary"],
+                "official_metrics": metrics_without_artifact_path(
+                    [official_metrics]
+                )[0],
                 "accepted_tournament": metrics_without_artifact_path(
                     winner["evaluations"]
                 ),
@@ -980,6 +1305,10 @@ def main() -> int:
                 ),
                 "challenger_archive": str(challenger_archive.relative_to(ROOT)),
                 "winner": winner["name"],
+                "official_metrics": metrics_without_artifact_path(
+                    [official_metrics]
+                )[0],
+                "noise_floor_pp": noise_floor_pp,
                 "tournament": tournament_result,
             }
         )
@@ -1023,10 +1352,12 @@ def main() -> int:
         return 1
     finally:
         PROPOSAL_PATH.unlink(missing_ok=True)
-        try:
-            remove_candidate_dir(candidate_dir)
-        except OSError as cleanup_error:
-            announce(f"[runner] WARNING: candidate cleanup failed: {cleanup_error}")
+        cleanup_targets = created_candidate_dirs or [candidate_dir]
+        for cleanup_target in cleanup_targets:
+            try:
+                remove_candidate_dir(cleanup_target)
+            except OSError as cleanup_error:
+                announce(f"[runner] WARNING: candidate cleanup failed: {cleanup_error}")
 
     print("SUMMARY: " + json.dumps(result))
     return 0

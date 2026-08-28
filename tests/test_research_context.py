@@ -41,7 +41,8 @@ def test_training_log_parser_groups_metric_snapshots():
 def test_training_summary_keeps_decision_relevant_metrics():
     summary = render_training_summary(SAMPLE_LOG)
 
-    assert "Peak success: 0.25 at 1024 steps" in summary
-    assert "First zero-success snapshot after the peak: 2048 steps" in summary
+    assert "Peak-success snapshot" not in summary
+    assert "stochastic training policy" in summary
+    assert "false peak" in summary
     assert "Final policy std: 0.5" in summary
     assert "models/reach-example/model.zip" in summary

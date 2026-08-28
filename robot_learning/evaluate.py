@@ -1,5 +1,6 @@
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -44,10 +45,14 @@ def evaluate_model(
     successes = 0
     episode_progress: list[dict] = []
     final_distances: list[float] = []
+    episode_results: list[dict] = []
     control_dt = env.model.opt.timestep * env.frame_skip
     required_hold_steps = milestone_steps(HOLD_SECONDS, control_dt)
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
+        target_x, target_y = (float(value) for value in env.data.mocap_pos[0][:2])
+        target_radius_cm = 100 * math.hypot(target_x, target_y)
+        target_angle_degrees = math.degrees(math.atan2(target_y, target_x))
         distances: list[float] = []
         done = False
         while not done:
@@ -59,9 +64,25 @@ def evaluate_model(
         successes += progress["success"]
         episode_progress.append(progress)
         final_distances.append(distances[-1])
+        episode_result = {
+            "episode": episode,
+            "episode_seed": seed + episode,
+            "success": bool(progress["success"]),
+            "target_radius_cm": target_radius_cm,
+            "target_angle_degrees": target_angle_degrees,
+            "longest_consecutive_steps": progress["longest_consecutive_steps"],
+            "best_window_inside_steps": progress["best_window_inside_steps"],
+            "best_window_excess_cm": progress["best_window_excess_cm"],
+            "final_distance_cm": 100 * distances[-1],
+        }
+        if not progress["success"]:
+            episode_result["distance_trace_cm"] = [
+                100 * distance for distance in distances
+            ]
+        episode_results.append(episode_result)
 
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -69,6 +90,7 @@ def evaluate_model(
         "failed_episode_progress": summarize_hold_progress(
             episode_progress, required_hold_steps
         ),
+        "episode_results": episode_results,
         "final_distance_cm": {
             "mean": float(np.mean(final_distances) * 100),
             "median": float(np.median(final_distances) * 100),

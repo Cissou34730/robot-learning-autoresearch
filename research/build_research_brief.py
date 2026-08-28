@@ -73,7 +73,6 @@ def render_training_summary(log_text: str) -> str:
         )
 
     first = records[0]
-    peak = max(records, key=lambda row: row.get("success_rate", float("-inf")))
     final = records[-1]
     fields = [
         ("Steps", "total_timesteps"),
@@ -93,32 +92,26 @@ def render_training_summary(log_text: str) -> str:
             f"{len(records)} metric snapshots."
         ),
         "",
-        "| Metric | First | Peak-success snapshot | Final |",
-        "|---|---:|---:|---:|",
+        "| Metric | First | Final |",
+        "|---|---:|---:|",
     ]
     for label, key in fields:
         lines.append(
             f"| {label} | {_format_value(first, key)} | "
-            f"{_format_value(peak, key)} | {_format_value(final, key)} |"
+            f"{_format_value(final, key)} |"
         )
 
-    peak_index = records.index(peak)
-    zero_after_peak = next(
-        (row for row in records[peak_index + 1 :] if row.get("success_rate") == 0),
-        None,
-    )
     lines.extend(
         [
             "",
             (
-                f"- Peak success: {_format_value(peak, 'success_rate')} at "
-                f"{_format_value(peak, 'total_timesteps')} steps."
+                "- `Success` is Stable-Baselines3's rolling 100-episode rate "
+                "for the stochastic training policy; it is not the deterministic "
+                "held-out benchmark."
             ),
-            "- First zero-success snapshot after the peak: "
-            + (
-                f"{_format_value(zero_after_peak, 'total_timesteps')} steps."
-                if zero_after_peak
-                else "not observed."
+            (
+                "- Snapshot maxima are intentionally omitted because selecting the "
+                "maximum of a noisy rolling series creates a false peak."
             ),
             f"- Final policy std: {_format_value(final, 'std')}.",
         ]
@@ -155,7 +148,7 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
     memories: list[str] = []
     labels = [
         "Result",
-        "Likely current binding constraint",
+        "Observed behavior",
         "What was learned / do NOT retry",
         "Recommended next experiment class",
     ]
@@ -199,6 +192,7 @@ def render_research_brief() -> str:
             if line.strip()
         ]
     accepted_metrics = state.get("accepted_metrics")
+    latest_result = results[-1] if results else None
     accepted_score = None
     if accepted_metrics is not None:
         accepted_score = accepted_metrics.get(
@@ -212,6 +206,19 @@ def render_research_brief() -> str:
         if accepted_metrics is not None
         else {}
     )
+    noise_floor = state.get("noise_floor")
+    official_metrics = state.get("official_metrics")
+    accepted_seed_count = accepted_metrics.get("seed_count") if accepted_metrics else None
+    accepted_seed_passes = (
+        accepted_metrics.get("seeds_passing_98_percent")
+        if accepted_metrics
+        else None
+    )
+    if accepted_metrics and accepted_seed_count is None:
+        accepted_seed_count = 1
+        accepted_seed_passes = int(
+            float(accepted_metrics.get("success_percent", 0)) >= 98.0
+        )
 
     lines = [
         "# Compact Research Brief",
@@ -236,13 +243,37 @@ def render_research_brief() -> str:
         f"- Accepted success: {accepted_status}",
         (
             f"- Accepted seeds passing 98%: "
-            f"{accepted_metrics.get('seeds_passing_98_percent', '-') if accepted_metrics else '-'}"
-            f"/{accepted_metrics.get('seed_count', '-') if accepted_metrics else '-'}"
+            f"{accepted_seed_passes if accepted_seed_passes is not None else '-'}"
+            f"/{accepted_seed_count if accepted_seed_count is not None else '-'}"
+            + (" (legacy single-seed measurement)" if accepted_metrics and "seed_count" not in accepted_metrics else "")
         ),
         f"- Accepted failed episodes: {accepted_progress.get('failed_episodes', '-')}",
+        (
+            "- Training-seed noise floor: not calibrated"
+            if noise_floor is None
+            else "- Training-seed noise floor: "
+            f"std {noise_floor['pooled_success_std_pp']:.3f} pp; "
+            f"range {noise_floor['pooled_success_range_pp']:.3f} pp"
+        ),
+        (
+            "- Fixed reported benchmark: pending v3 evaluation"
+            if official_metrics is None
+            else f"- Fixed reported benchmark: {official_metrics['success_percent']:.1f}% "
+            f"on seed {official_metrics['seed']}"
+        ),
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
-        f"- Last experiment: {state.get('last_experiment', 'none')}",
-        f"- Last verdict: {state.get('last_verdict', 'none')}",
+        (
+            f"- Accepted lineage training budget: "
+            f"{int(state.get('accepted_training_steps', 0)):,} steps"
+        ),
+        (
+            f"- Last experiment: "
+            f"{latest_result['index'] if latest_result else state.get('last_experiment', 'none')}"
+        ),
+        (
+            f"- Last verdict: "
+            f"{latest_result['verdict'] if latest_result else state.get('last_verdict', 'none')}"
+        ),
         "",
         "## Current parameters",
         "",
@@ -276,6 +307,33 @@ def render_research_brief() -> str:
         )
     if not results:
         lines.append("| - | New baseline pending | - | - | - | - | - |")
+
+    tested = [
+        f"#{result['index']} {_compact(result['change'], 100)}"
+        for result in results
+        if result.get("status") == "ok"
+    ]
+    lines.extend(["", "## Hypotheses already tested", ""])
+    if tested:
+        lines.append("; ".join(tested))
+    else:
+        lines.append("None yet.")
+
+    diagnostics = (
+        accepted_metrics.get("failure_diagnostics", []) if accepted_metrics else []
+    )
+    lines.extend(["", "## Accepted-policy failure diagnostics", ""])
+    if diagnostics:
+        for item in diagnostics[:5]:
+            lines.append(
+                f"- seed {item['episode_seed']}: radius "
+                f"{item['target_radius_cm']:.2f} cm, angle "
+                f"{item['target_angle_degrees']:.1f}°, longest hold "
+                f"{item['longest_consecutive_steps']}/100, best window "
+                f"{item['best_window_inside_steps']}/100."
+            )
+    else:
+        lines.append("Not available until the next v3 tournament evaluation.")
 
     lines.extend(["", "## Recent scientific memory", ""])
     memories = _postmortem_memory(postmortems)
