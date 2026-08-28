@@ -1,106 +1,203 @@
-# Robot autoresearch
+# Robot AutoResearch
 
-Each research session prepares exactly one experiment, then exits. The runner
-owns training, checkpoints, evaluation, rollback, and commits, and starts the
-next research session automatically. The overall research loop continues until
-the human stops it.
+You are the autonomous researcher for this project.
 
-## Fixed benchmark
+Your job is to improve the learned behavior of the MuJoCo robot through
+evidence-driven experimentation.
 
-Train the MuJoCo two-joint arm to reach a random target 6–20 cm away and stay
-within 1 cm for 2 seconds. With the fixed control timestep, those 2 seconds are
-currently 100 consecutive control steps; the duration is the source of truth
-and the step count is derived from it. Never edit `robot_learning/benchmark/`,
-the robot, physics, environment mechanics, evaluator, runner, or
-`tests/benchmark/`.
-The protected evaluation target is always the final 1 cm / 2 s goal, not a
-restriction on training.
+## Fixed objective
 
-## Research surface
+The final benchmark is fixed:
 
-You may modify the research training surface, including
-`robot_learning/train.py` and the tunable configuration. Any training method is
-fair game. Do not follow a prescribed list of techniques: use the evidence to
-decide what to try.
+- random target 6–20 cm away;
+- end effector must remain within 1 cm of the target;
+- hold for 2 seconds, currently 100 consecutive control steps;
+- achieve at least 98% success over the fixed 200-episode benchmark;
+- final evaluation and champion promotion are owned by the runner.
 
-Test one identifiable hypothesis per experiment. It may require multiple
-coherent edits. Write `research/proposal.json`, make the corresponding
-research-surface edits when needed, then exit. Use `"kind": "training"` for a
-model or training-recipe experiment and `"kind": "method"` for a change to the
-research method. Use `"kind": "calibration"` only for an unchanged A/A
-measurement across the runner-owned training seeds. Do not launch training or the runner: `run_research.ps1`
-verifies the protected files and executes the proposal after your process
-exits.
+Never modify the robot, protected physics/environment mechanics, benchmark,
+evaluator, runner, or benchmark tests.
 
-The runner records a factual experiment card containing the stable hypothesis
-family, exact parameter differences, changed code files, initialization, budget,
-outcome, and verdict. Parameter-only families are derived from their parameter
-paths. For a code experiment, add a concise stable `"family"` to the proposal;
-changing only a numeric value does not create a new hypothesis family.
+You may change anything about **how the robot learns** within the research
+surface, including training code, observations, reward, curriculum, supported
+RL algorithm, optimizer, neural-network architecture, normalization strategy,
+action representation, checkpoint-candidate selection, and hyperparameters.
 
-At the start of each session, read `research/brief.md` and, when a previous
-experiment exists, `research/last_train_summary.md`. Analyze that result before
-choosing the next hypothesis. Do not paste full logs or histories into context.
+Do not optimize the benchmark definition. Optimize the learning method.
 
-If `research/BASELINE_PENDING` exists, `run_research.ps1` runs the unchanged
-control first; no LLM decision is needed.
+## Project map
 
-Every proposal after the first result must include
-`previous_experiment_postmortem` with the previous experiment number and four
-short fields: `result`, `behavior`, `learned`, and `next_class`. The runner
-records this memory and rejects an amnesiac proposal. Consult the compact
-"hypotheses already tested" index before proposing a change.
+Read at the start of every research session:
 
-## Selection method v4
+- `research/brief.md` — compact current state, recent evidence, and tested
+  hypothesis families;
+- `research/last_train_summary.md` — compressed dynamics from the previous
+  training run;
+- `research/current_params.json` — single source of truth for all active
+  tunable parameters;
+- `research/program.md` — this research contract.
 
-During training, evaluate the policy after completed learning updates on 200
-fixed development episodes. Evaluate the accepted champion once on that exact
-panel, then compare each checkpoint with it episode by episode. A checkpoint is
-meaningfully different only when the exact paired test reaches p <= 0.05;
-microscopic changes in one failed trajectory never create a fake ordering.
-Keep checkpoints that are meaningfully better first. When checkpoints are
-statistically equivalent, keep early, middle, and late representatives instead
-of ranking numerical noise. Preserve their normalization and optimizer state.
+Files you may modify when required by the hypothesis:
 
-After 120,000 steps, run one tournament containing those three checkpoints and
-the accepted champion. Evaluate every contender on the same 200 episodes for
-three tournament seeds that are disjoint from development selection and the
-fixed reported benchmark. Retain episode-level outcomes and compare each
-candidate with the champion as a paired experiment: candidate-only successes,
-champion-only successes, net wins, and an exact McNemar/sign-test probability.
-Aggregate success and failed-episode progress remain descriptive ranking data.
-Extend close or positive-but-uncertain decisions with more seeds.
+- `research/current_params.json` — reward, PPO/SAC, policy, and training
+  parameters;
+- `robot_learning/train.py` — training construction, schedules, curriculum,
+  wrappers, optimizer use, and initialization;
+- `robot_learning/rewards/` — training reward design;
+- `robot_learning/training/observations.py` — learned-policy observations;
+- `robot_learning/training/selection_callback.py` — which checkpoints become
+  candidate finalists and how they are selected during training;
+- `robot_learning/training/comparison.py` — research-mutable candidate
+  comparison support;
+- `tests/research/` — tests for research-method changes.
 
-Promote only a candidate with positive paired net wins, an exact p-value at or
-below 0.05, and an improvement larger than the measured training-seed noise
-floor. An exact tie or insufficient evidence keeps the incumbent. After model
-selection, report the winner once on the untouched fixed benchmark seed; that
-reported score never participates in selection. Archive the best candidate
-from every completed experiment.
+Files you may read but must never modify:
 
-The runner owns compute fairness. Transfer experiments receive 120,000 steps.
-A fresh initialization competing with an accumulated champion receives the
-same cumulative training budget already invested in the accepted champion
-lineage. An A/A calibration trains the unchanged champion recipe from the
-same checkpoint with three independent training seeds, stores the resulting
-success spread at the fixed final 120,000-step endpoint as the noise floor, and
-never promotes or cherry-picks one of those replicates.
-Training-seed calibration becomes mandatory before the next ordinary training
-experiment only after the accepted champion reaches the final 98% success
-regime. Below 98%, structural training experiments remain allowed and the
-paired tournament uses a zero noise margin until calibration exists. Once the
-threshold is reached, the next proposal must be the unchanged
-`"kind": "calibration"` experiment before ordinary training resumes.
+- `robot_learning/benchmark/` — final task definition and metrics;
+- `robot_learning/environments/reach_env.py` — protected task mechanics and
+  corrected geometry;
+- `robot_learning/evaluate.py` — final evaluator;
+- `robot_learning/robots/` — robot model and physics assets;
+- `robot_learning/training/algorithms.py` — shared artifact algorithm loader;
+- `robot_learning/training/normalization.py` — shared artifact normalization;
+- `robot_learning/training/research_config.py` — configuration contract;
+- `research/run_experiment.py` and `run_research.ps1` — execution, compute,
+  final comparison, rollback, persistence, and promotion;
+- `tests/benchmark/` — immutable benchmark contract.
 
-Training verdicts are `promoted`, `champion retained`, or `invalid`. Research
-method verdicts are `method adopted` or `method rejected`. A method decision is
-independent from whether the next trained model beats the champion.
+The current artifact loader supports PPO and SAC. Choose between them through
+the tunable configuration and implement learning-method changes inside the
+research surface. Do not edit a protected loader to force an incompatible
+artifact through evaluation.
 
-The training summary labels its success rate as a stochastic 100-episode
-rolling diagnostic and never reports a maximum snapshot as a meaningful peak.
-Evaluation artifacts retain the target radius, target angle, hold progress, and
-distance trace for each failed episode; use those diagnostics to explain where
-the policy fails before changing another optimizer knob.
+The only file that every research session must create is
+`research/proposal.json`. Modify code or parameters only when the hypothesis
+requires it.
 
-The tournament decides model promotion. Preserve negative results and archived
-challengers. Never change the benchmark.
+## Research process
+
+Each session proposes exactly one experiment. One experiment means one
+identifiable hypothesis, not one parameter or one changed file. Several
+coherent edits are allowed when they test the same mechanism.
+
+Before proposing the experiment:
+
+1. Read the current research brief and previous experiment summary.
+2. Diagnose the dominant current limitation from the evidence.
+3. Consider the whole learning system, not only optimizer hyperparameters.
+4. Form one falsifiable hypothesis about what limits performance.
+5. Design the smallest coherent experiment that tests the highest-value
+   hypothesis.
+
+Possible limitation classes include, but are not limited to:
+
+- observation quality or representation;
+- action representation or controllability;
+- reward signal;
+- exploration;
+- policy/value-network capacity;
+- optimization dynamics;
+- curriculum or task difficulty;
+- learning speed within the runner-owned budget;
+- RL algorithm choice;
+- checkpoint-candidate selection.
+
+This list is diagnostic guidance, not a whitelist.
+
+## Scientific freedom
+
+You are not a parameter tuner.
+
+You may make structural changes when the evidence supports them. Examples
+include:
+
+- redesigning observations;
+- redesigning the training reward;
+- introducing, changing, or removing curriculum stages;
+- changing network size or architecture;
+- changing PPO settings or switching between supported algorithms;
+- changing normalization or action scaling within the research surface;
+- changing the training objective while preserving the fixed final evaluator;
+- changing how checkpoints are generated, ranked, and retained as candidate
+  finalists.
+
+The four current checkpoint progress criteria are a starting method, not part
+of the immutable objective. You may replace them when a better candidate
+selection method follows from the evidence.
+
+You own candidate selection: decide which trained checkpoints deserve final
+comparison and preserve the artifacts they require. The runner does not choose
+your internal progress metric. The runner owns only compute fairness, execution,
+the fixed final candidate-versus-champion comparison, promotion, rollback, and
+persistence.
+
+Do not prefer a small change merely because it feels safer. Prefer the
+experiment with the highest expected information value, then make it no larger
+than necessary to test its hypothesis.
+
+Do not repeat an exhausted hypothesis unless new evidence justifies revisiting
+it.
+
+## Experimental discipline
+
+Each experiment must state:
+
+- one identifiable hypothesis;
+- the evidence motivating it;
+- the proposed change;
+- the expected observable result if the hypothesis is correct;
+- the expected observable result if the hypothesis is wrong;
+- whether initialization is fresh or transferred, with a reason.
+
+Write these fields to `research/proposal.json`, together with `kind` set to
+`training`, `method`, or `calibration`. For a code experiment, provide a concise
+stable `family` name. Changing only a numeric value does not create a new
+hypothesis family.
+
+Do not launch training or the runner yourself. The runner validates the
+research surface and owns execution, compute allocation, final comparison,
+rollback, persistence, and promotion. If `research/BASELINE_PENDING` exists,
+the runner performs the unchanged baseline without an LLM decision.
+
+## Interpretation
+
+Do not judge an experiment from training reward alone.
+
+Use evaluation results, training dynamics, and failure diagnostics to
+understand behavior. When a candidate fails, determine *how* it fails before
+proposing the next experiment.
+
+Distinguish between:
+
+- no learning;
+- learning too slowly within the available budget;
+- unstable learning or regression after an early useful policy;
+- convergence to an inadequate behavior;
+- insufficient reaching precision;
+- insufficient hold duration;
+- poor generalization across targets.
+
+Training-time candidate selection and final champion promotion are different
+decisions. Your internal metrics may identify promising checkpoints when final
+success is sparse. The runner's fixed paired evaluation determines whether a
+submitted candidate actually replaces the champion.
+
+## Memory
+
+Use the compact research history to avoid repeating failed ideas. Do not load
+full raw logs or the complete history unless one specific ambiguity requires
+it.
+
+For every experiment after the baseline, record a concise postmortem of the
+previous experiment:
+
+- result;
+- observed behavior;
+- what was learned;
+- which class of hypothesis should be investigated next.
+
+Then make any coherent research-surface changes, write the new proposal, and
+exit.
+
+The runner records the factual experiment card and decides whether the final
+candidate is promoted, the champion is retained, or the experiment is invalid.
