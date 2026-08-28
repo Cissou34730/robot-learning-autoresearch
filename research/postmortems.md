@@ -12,3 +12,13 @@
 **What was learned / do NOT retry:** Proposal validation must begin from a clean research surface; do not retry the learning-rate change before calibration.
 
 **Recommended next experiment class:** Calibration is mandatory now because the training-seed noise floor is still unmeasured.
+
+## Experiment 38
+
+**Result:** The unchanged A/A calibration was invalid because the development-panel champion reference exceeded the runner's 10 minute safety limit before training began.
+
+**Observed behavior:** No calibration replicates were trained and the accepted champion remained unchanged.
+
+**What was learned / do NOT retry:** Calibration remains mandatory; do not propose an ordinary training change until the runner completes the unchanged calibration.
+
+**Recommended next experiment class:** Calibration
