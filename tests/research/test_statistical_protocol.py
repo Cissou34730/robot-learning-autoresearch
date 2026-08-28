@@ -3,11 +3,10 @@ import json
 import pytest
 
 from research.run_experiment import (
+    apply_previous_result_decision,
     experiment_family,
-    noise_calibration_required,
     parameter_change_records,
     record_previous_postmortem,
-    select_tournament_winner,
     summarize_noise_floor,
     summarize_tournament,
     training_budget,
@@ -78,28 +77,6 @@ def test_tournament_summary_keeps_failed_target_diagnostics():
     ]
 
 
-def test_paired_promotion_requires_significance_and_noise_margin():
-    candidate_summary = summarize_tournament(
-        [evaluation(3000, [True, True, True, True, True, True])]
-    )
-    champion_summary = summarize_tournament(
-        [evaluation(3000, [False, False, False, False, False, False])]
-    )
-    candidate = {
-        "name": "candidate",
-        "kind": "candidate",
-        "summary": candidate_summary,
-        "paired_vs_champion": paired_comparison(
-            [evaluation(3000, [True] * 6)],
-            [evaluation(3000, [False] * 6)],
-        ),
-    }
-    champion = {"name": "champion", "kind": "champion", "summary": champion_summary}
-
-    assert select_tournament_winner([candidate, champion], 10.0) is candidate
-    assert select_tournament_winner([candidate, champion], 100.0) is champion
-
-
 def test_exact_p_value_is_one_without_discordant_episodes():
     assert exact_mcnemar_pvalue(0, 0) == 1.0
 
@@ -117,20 +94,78 @@ def test_noise_floor_comes_from_independent_training_replicates():
     assert floor["pooled_success_std_pp"] == 1.0
 
 
-def test_noise_calibration_is_deferred_until_champion_reaches_goal_regime():
-    assert not noise_calibration_required({"accepted_metrics": None})
-    assert not noise_calibration_required(
-        {"accepted_metrics": {"pooled_success_percent": 97.99}}
-    )
-    assert noise_calibration_required(
-        {"accepted_metrics": {"pooled_success_percent": 98.0}}
-    )
-    assert not noise_calibration_required(
-        {
-            "accepted_metrics": {"pooled_success_percent": 98.0},
-            "noise_floor": {"pooled_success_std_pp": 0.1},
+def test_pending_result_requires_an_explicit_researcher_decision():
+    state = {
+        "pending_researcher_decision": {
+            "experiment": 7,
+            "candidates": [],
+            "champion_available": True,
         }
+    }
+
+    with pytest.raises(TypeError, match="previous_result_decision"):
+        apply_previous_result_decision({}, state)
+
+
+def test_researcher_can_select_an_archived_candidate_as_next_lineage(
+    monkeypatch, tmp_path
+):
+    candidate = tmp_path / "archive" / "candidate-2"
+    candidate.mkdir(parents=True)
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        (candidate / filename).write_bytes(b"artifact")
+    summary = summarize_tournament([evaluation(3000, [True, False])])
+    state = {
+        "accepted_artifact": "accepted",
+        "accepted_training_steps": 0,
+        "pending_researcher_decision": {
+            "experiment": 7,
+            "candidates": [
+                {
+                    "name": "candidate-2",
+                    "artifact": "archive/candidate-2",
+                    "summary": summary,
+                }
+            ],
+            "champion_available": False,
+            "parameters": {"algorithm": {"name": "ppo"}},
+            "initialization": "fresh",
+            "training_budget_steps": 120_000,
+        },
+    }
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr(
+        "research.run_experiment.STATE_PATH", tmp_path / "research_state.json"
     )
+    monkeypatch.setattr(
+        "research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED"
+    )
+    monkeypatch.setattr(
+        "research.run_experiment.evaluate_artifact",
+        lambda *_args, **_kwargs: {
+            "seed": 1000,
+            "episodes": 200,
+            "success_percent": 50.0,
+        },
+    )
+
+    reached = apply_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 7,
+                "continue_from": "candidate-2",
+                "reason": "It is the most useful measured lineage.",
+            }
+        },
+        state,
+    )
+
+    assert not reached
+    assert (tmp_path / "accepted" / "model.zip").read_bytes() == b"artifact"
+    assert state["accepted_metrics"] == summary
+    assert state["accepted_training_steps"] == 120_000
+    assert state["pending_researcher_decision"] is None
 
 
 def test_fresh_challenger_receives_runner_owned_compute_matching():

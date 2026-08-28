@@ -7,11 +7,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from robot_learning.benchmark.spec import (
-    FINAL_SUCCESS_PERCENT,
-    HOLD_SECONDS,
-    SUCCESS_THRESHOLD,
-)
+from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -352,17 +348,9 @@ def render_research_brief() -> str:
         else {}
     )
     noise_floor = state.get("noise_floor")
-    if noise_floor is None and accepted_score is None:
+    if noise_floor is None:
         noise_floor_status = (
-            "not calibrated; deferred until a champion reaches the 98% regime"
-        )
-    elif noise_floor is None and float(accepted_score) < FINAL_SUCCESS_PERCENT:
-        noise_floor_status = (
-            "not calibrated; deferred while the champion remains below 98%"
-        )
-    elif noise_floor is None:
-        noise_floor_status = (
-            "not calibrated; calibration required before the next training experiment"
+            "not calibrated; the researcher decides when calibration is useful"
         )
     else:
         noise_floor_status = (
@@ -381,6 +369,36 @@ def render_research_brief() -> str:
         accepted_seed_passes = int(
             float(accepted_metrics.get("success_percent", 0)) >= 98.0
         )
+    pending_decision = state.get("pending_researcher_decision")
+    decision_lines: list[str] = []
+    if pending_decision:
+        choices = [item["name"] for item in pending_decision["candidates"]]
+        if pending_decision.get("champion_available"):
+            choices.append("champion")
+        decision_lines = [
+            "",
+            "## Researcher lineage decision required",
+            "",
+            (
+                f"Experiment {pending_decision['experiment']} has been measured. "
+                "The runner made no promotion or rollback decision."
+            ),
+            (
+                "The next proposal must include `previous_result_decision` with "
+                f"`experiment`, `continue_from` ({', '.join(choices)}), and `reason`."
+            ),
+        ]
+        for candidate in pending_decision["candidates"]:
+            summary = candidate["summary"]
+            progress = summary["failed_episode_progress"]
+            decision_lines.append(
+                f"- {candidate['name']}: pooled success "
+                f"{summary['pooled_success_percent']:.2f}%; "
+                f"seeds passing 98% {summary['seeds_passing_98_percent']}/"
+                f"{summary['seed_count']}; failed hold "
+                f"{progress['longest_consecutive_steps_mean']:.1f}/"
+                f"{progress['required_steps']}."
+            )
 
     lines = [
         "# Compact Research Brief",
@@ -430,6 +448,7 @@ def render_research_brief() -> str:
             f"- Last verdict: "
             f"{latest_result['verdict'] if latest_result else state.get('last_verdict', 'none')}"
         ),
+        *decision_lines,
         "",
         "## Current parameters",
         "",

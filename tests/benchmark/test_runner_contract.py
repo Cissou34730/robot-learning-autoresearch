@@ -12,36 +12,30 @@ from research.run_experiment import (
     format_duration,
     latest_training_steps,
     load_state,
-    rank,
-    select_tournament_winner,
-    summarize_tournament,
-    tournament_result_is_close,
     validate_reusable_candidate,
 )
-
-
-def evaluation(seed, success, failures, longest, inside, excess):
-    return {
-        "episodes": 200,
-        "seed": seed,
-        "success_percent": success,
-        "failed_episode_progress": {
-            "failed_episodes": failures,
-            "longest_consecutive_steps_mean": longest,
-            "best_window_inside_steps_mean": inside,
-            "best_window_excess_cm_mean": excess,
-            "required_steps": 100,
-        },
-    }
 
 
 def test_research_and_benchmark_surfaces_are_disjoint():
     assert set(IMMUTABLE_PATHS).isdisjoint(MUTABLE_PATHS)
     assert "robot_learning/environments/reach_env.py" in IMMUTABLE_PATHS
-    assert "tests/benchmark" in IMMUTABLE_PATHS
-    assert "tests/research" in MUTABLE_PATHS
-    assert "research/current_params.json" in MUTABLE_PATHS
+    assert "robot_learning/benchmark/spec.py" in IMMUTABLE_PATHS
+    assert "tests/benchmark/test_task_contract.py" in IMMUTABLE_PATHS
+    assert "tests" in MUTABLE_PATHS
+    assert "research" in MUTABLE_PATHS
     assert "research/current_params.json" not in MUTABLE_CODE_PATHS
+
+
+def test_fixed_objective_change_is_rejected_even_under_broad_code_surface(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        "research.run_experiment.status_paths",
+        lambda _paths: ["robot_learning/benchmark/spec.py"],
+    )
+
+    with pytest.raises(ValueError, match="fixed objective"):
+        assert_research_surface()
 
 
 def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
@@ -51,58 +45,6 @@ def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     )
 
     assert assert_research_surface() == ["research/current_params.json"]
-
-
-def tournament(*evaluations):
-    return summarize_tournament(list(evaluations))
-
-
-def test_seeds_passing_precede_other_tournament_metrics():
-    robust = tournament(
-        evaluation(1000, 98.0, 4, 20, 80, 2),
-        evaluation(3000, 98.0, 4, 20, 80, 2),
-    )
-    fragile = tournament(
-        evaluation(1000, 100.0, 0, 100, 100, 0),
-        evaluation(3000, 97.5, 5, 99, 99, 0.01),
-    )
-    assert rank(robust) > rank(fragile)
-
-
-def test_worst_seed_precedes_pooled_success():
-    balanced = tournament(
-        evaluation(1000, 99.0, 2, 10, 20, 3),
-        evaluation(3000, 99.0, 2, 10, 20, 3),
-    )
-    uneven = tournament(
-        evaluation(1000, 100.0, 0, 100, 100, 0),
-        evaluation(3000, 98.5, 3, 99, 99, 0.01),
-    )
-    assert rank(balanced) > rank(uneven)
-
-
-def test_failed_hold_progress_breaks_a_success_tie():
-    almost = tournament(evaluation(1000, 98.0, 4, 99, 99, 0.01))
-    distant = tournament(evaluation(1000, 98.0, 4, 20, 80, 10.0))
-    assert rank(almost) > rank(distant)
-
-
-def test_close_tournament_result_requests_more_evidence():
-    first = tournament(evaluation(1000, 98.5, 3, 99, 99, 0.01))
-    second = tournament(evaluation(1000, 98.0, 4, 90, 95, 1.0))
-    assert tournament_result_is_close(first, second)
-
-
-def test_exact_tournament_tie_keeps_the_champion():
-    summary = tournament(evaluation(1000, 98.5, 3, 99, 99, 0.01))
-    winner = select_tournament_winner(
-        [
-            {"name": "candidate", "kind": "candidate", "summary": summary},
-            {"name": "champion", "kind": "champion", "summary": summary},
-        ]
-    )
-
-    assert winner["name"] == "champion"
 
 
 def test_training_progress_reads_latest_complete_snapshot(tmp_path):
@@ -208,3 +150,19 @@ def test_finalist_manifest_exposes_three_complete_artifacts(tmp_path):
     assert finalist_directories(tmp_path) == [
         tmp_path / item["path"] for item in finalists
     ]
+
+
+def test_researcher_may_submit_more_than_three_finalists(tmp_path):
+    finalists = []
+    for number in range(5):
+        relative = f"finalists/checkpoint-{number}"
+        artifact_dir = tmp_path / relative
+        artifact_dir.mkdir(parents=True)
+        for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+            (artifact_dir / filename).touch()
+        finalists.append({"path": relative})
+    (tmp_path / "selection_manifest.json").write_text(
+        json.dumps({"finalists": finalists}), encoding="utf-8"
+    )
+
+    assert len(finalist_directories(tmp_path)) == 5

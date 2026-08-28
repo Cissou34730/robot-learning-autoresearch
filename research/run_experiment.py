@@ -41,25 +41,21 @@ GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
 
-MUTABLE_CODE_PATHS = (
-    "robot_learning/rewards",
-    "robot_learning/train.py",
-    "robot_learning/training/observations.py",
-    "robot_learning/training/comparison.py",
-    "robot_learning/training/selection_callback.py",
-    "tests/research",
+MUTABLE_CODE_PATHS = ("robot_learning", "tests/research")
+MUTABLE_PATHS = (
+    "robot_learning",
+    "research",
+    "tests",
+    "pyproject.toml",
+    "uv.lock",
 )
-MUTABLE_PATHS = ("research/current_params.json", *MUTABLE_CODE_PATHS)
 IMMUTABLE_PATHS = (
-    "robot_learning/benchmark",
+    "robot_learning/benchmark/spec.py",
     "robot_learning/environments/reach_env.py",
-    "robot_learning/evaluate.py",
     "robot_learning/robots",
-    "robot_learning/training/algorithms.py",
-    "robot_learning/training/normalization.py",
-    "robot_learning/training/research_config.py",
     "research/run_experiment.py",
-    "tests/benchmark",
+    "run_research.ps1",
+    "tests/benchmark/test_task_contract.py",
 )
 
 TIMESTEPS = 120_000
@@ -75,7 +71,6 @@ SELECTION_METHOD_VERSION = 4
 # Development selection uses seed 2000 and the immutable reported benchmark uses
 # EVALUATION_SEED (1000). Tournament data must be disjoint from both.
 TOURNAMENT_SEEDS = (3000, 5000, 7000)
-EXTENDED_TOURNAMENT_SEEDS = (9000, 11000)
 PAIRED_SIGNIFICANCE_LEVEL = 0.05
 SELECTION_SEED = 2000
 
@@ -104,16 +99,6 @@ def training_budget(
     if initialization == "fresh" and not baseline:
         return max(standard_timesteps, accepted_training_steps)
     return standard_timesteps
-
-
-def noise_calibration_required(state: dict) -> bool:
-    if state.get("noise_floor") is not None:
-        return False
-    accepted_metrics = state.get("accepted_metrics") or {}
-    accepted_success = accepted_metrics.get(
-        "pooled_success_percent", accepted_metrics.get("success_percent", 0.0)
-    )
-    return float(accepted_success) >= FINAL_SUCCESS_PERCENT
 
 
 def comparison_label(entry: dict) -> str:
@@ -252,6 +237,9 @@ def path_is_within(path: str, roots: tuple[str, ...]) -> bool:
 def assert_research_surface() -> list[str]:
     changed = status_paths((".",))
     allowed_control = {"research/proposal.json"}
+    protected = [path for path in changed if path_is_within(path, IMMUTABLE_PATHS)]
+    if protected:
+        raise ValueError(f"changes alter the fixed objective or runner: {protected}")
     unexpected = [
         path
         for path in changed
@@ -259,26 +247,11 @@ def assert_research_surface() -> list[str]:
     ]
     if unexpected:
         raise ValueError(f"changes outside the research surface: {unexpected}")
-    return [path for path in changed if path_is_within(path, MUTABLE_PATHS)]
-
-
-def clean_mutable_changes() -> None:
-    tracked = git("diff", "--name-only", "--", *MUTABLE_PATHS).splitlines()
-    tracked += git("diff", "--cached", "--name-only", "--", *MUTABLE_PATHS).splitlines()
-    if tracked:
-        git("restore", "--staged", "--worktree", "--", *sorted(set(tracked)))
-    untracked = git(
-        "ls-files", "--others", "--exclude-standard", "--", *MUTABLE_PATHS
-    ).splitlines()
-    allowed_roots = [(ROOT / path).resolve() for path in MUTABLE_PATHS]
-    for relative in untracked:
-        target = (ROOT / relative).resolve()
-        if not any(target == root or root in target.parents for root in allowed_roots):
-            raise RuntimeError(f"refusing to remove unexpected path: {target}")
-        if target.is_dir():
-            shutil.rmtree(target)
-        elif target.exists():
-            target.unlink()
+    return [
+        path
+        for path in changed
+        if path not in allowed_control and path_is_within(path, MUTABLE_PATHS)
+    ]
 
 
 def run_module(module: str, *args: str, timeout: int | None = None) -> str:
@@ -603,40 +576,14 @@ def summarize_noise_floor(replicates: list[dict]) -> dict:
     }
 
 
-def rank(metrics: dict) -> tuple[float, float, float, float, float, float]:
-    progress = metrics["failed_episode_progress"]
-    return (
-        float(metrics["seeds_passing_98_percent"]),
-        float(metrics["worst_seed_success_percent"]),
-        float(metrics["pooled_success_percent"]),
-        float(progress["longest_consecutive_steps_mean"]),
-        float(progress["best_window_inside_steps_mean"]),
-        -float(progress["best_window_excess_cm_mean"]),
-    )
-
-
-def tournament_result_is_close(first: dict, second: dict) -> bool:
-    return (
-        first["seeds_passing_98_percent"]
-        == second["seeds_passing_98_percent"]
-        and abs(
-            first["worst_seed_success_percent"]
-            - second["worst_seed_success_percent"]
-        )
-        <= 0.5
-        and abs(first["pooled_success_percent"] - second["pooled_success_percent"])
-        <= 0.5
-    )
-
-
 def finalist_directories(candidate_dir: Path) -> list[Path]:
     manifest_path = candidate_dir / "selection_manifest.json"
     if not manifest_path.exists():
         return [candidate_dir]
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     finalists = [candidate_dir / item["path"] for item in manifest["finalists"]]
-    if not 1 <= len(finalists) <= 3:
-        raise RuntimeError("training must produce between one and three finalists")
+    if not finalists:
+        raise RuntimeError("training must produce at least one finalist")
     for finalist in finalists:
         for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
             if not (finalist / filename).exists():
@@ -644,42 +591,10 @@ def finalist_directories(candidate_dir: Path) -> list[Path]:
     return finalists
 
 
-def select_tournament_winner(
-    contenders: list[dict], noise_floor_pp: float = 0.0
-) -> dict:
-    champion = next(
-        (item for item in contenders if item["kind"] == "champion"), None
-    )
-    if champion is None:
-        return max(contenders, key=lambda item: rank(item["summary"]))
-
-    eligible = [
-        item
-        for item in contenders
-        if item["kind"] == "candidate"
-        and item.get("paired_vs_champion", {}).get("net_wins", 0) > 0
-        and item["paired_vs_champion"]["success_delta_percent"] > noise_floor_pp
-        and item["paired_vs_champion"]["exact_p_value"]
-        <= PAIRED_SIGNIFICANCE_LEVEL
-    ]
-    if not eligible:
-        return champion
-    return max(
-        eligible,
-        key=lambda item: (
-            item["paired_vs_champion"]["net_wins"],
-            rank(item["summary"]),
-        ),
-    )
-
-
 def evaluate_tournament(
     contenders: list[dict],
     selection_method_version: int,
-    noise_floor_pp: float = 0.0,
-    *,
-    extend_close: bool = True,
-) -> tuple[list[dict], dict]:
+) -> list[dict]:
     seeds = list(TOURNAMENT_SEEDS)
 
     def evaluate_missing(active_seeds: list[int]) -> None:
@@ -712,46 +627,38 @@ def evaluate_tournament(
 
     evaluate_missing(seeds)
     attach_pairing()
-    ordered = sorted(contenders, key=lambda item: rank(item["summary"]), reverse=True)
-    positive_but_uncertain = any(
-        item.get("paired_vs_champion", {}).get("net_wins", 0) > 0
-        and item["paired_vs_champion"]["exact_p_value"]
-        > PAIRED_SIGNIFICANCE_LEVEL
-        for item in contenders
-    )
-    if extend_close and len(ordered) > 1 and (
-        tournament_result_is_close(ordered[0]["summary"], ordered[1]["summary"])
-        or positive_but_uncertain
-    ):
-        announce("[tournament] leading models are close; extending evaluation")
-        seeds.extend(EXTENDED_TOURNAMENT_SEEDS)
-        evaluate_missing(seeds)
-        attach_pairing()
-
-    winner = select_tournament_winner(contenders, noise_floor_pp)
-    return contenders, winner
+    return contenders
 
 
-def archive_candidate(
+def archive_candidates(
     index: int,
-    contender: dict,
+    contenders: list[dict],
     config: dict,
     tournament: list[dict],
-) -> Path:
+) -> list[dict]:
     destination = RESEARCH_DIR / "checkpoints" / "challengers" / f"experiment-{index}"
     if destination.exists():
         raise RuntimeError(f"challenger archive already exists: {destination}")
-    copy_artifact(contender["path"], destination)
+    destination.mkdir(parents=True)
+    archived: list[dict] = []
+    for contender in contenders:
+        if contender["kind"] != "candidate":
+            continue
+        artifact = destination / contender["name"]
+        copy_artifact(contender["path"], artifact)
+        archived.append(
+            {
+                "name": contender["name"],
+                "artifact": str(artifact.relative_to(ROOT)),
+                "summary": contender["summary"],
+            }
+        )
     atomic_write_json(destination / "parameters.json", config)
     atomic_write_json(
-        destination / "tournament.json",
+        destination / "evaluation.json",
         {
             "schema_version": 1,
-            "selection_method_version": contender["summary"][
-                "selection_method_version"
-            ],
-            "selected_candidate": contender["name"],
-            "summary": contender["summary"],
+            "candidates": archived,
             "contenders": [
                 {
                     "name": item["name"],
@@ -763,7 +670,7 @@ def archive_candidate(
             ],
         },
     )
-    return destination
+    return archived
 
 
 def archive_calibration(index: int, replicates: list[dict], noise_floor: dict) -> Path:
@@ -991,6 +898,84 @@ def validate_reusable_candidate(
         )
 
 
+def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
+    pending = state.get("pending_researcher_decision")
+    if pending is None:
+        return False
+    decision = proposal.get("previous_result_decision")
+    if not isinstance(decision, dict):
+        raise TypeError(
+            "the previous experiment is awaiting a researcher decision; add "
+            "previous_result_decision to the proposal"
+        )
+    if int(decision.get("experiment", -1)) != int(pending["experiment"]):
+        raise ValueError("previous_result_decision references the wrong experiment")
+    selected_name = str(decision.get("continue_from", "")).strip()
+    reason = str(decision.get("reason", "")).strip()
+    if not reason:
+        raise ValueError("previous_result_decision requires a reason")
+
+    selected_summary: dict | None = None
+    if selected_name == "champion":
+        artifact = ROOT / state["accepted_artifact"]
+        if not artifact.exists():
+            raise ValueError("there is no existing champion to continue from")
+    else:
+        selected = next(
+            (
+                item
+                for item in pending["candidates"]
+                if item["name"] == selected_name
+            ),
+            None,
+        )
+        if selected is None:
+            choices = [item["name"] for item in pending["candidates"]]
+            if pending.get("champion_available"):
+                choices.append("champion")
+            raise ValueError(f"continue_from must be one of {choices}")
+        artifact = ROOT / selected["artifact"]
+        copy_artifact(artifact, ACCEPTED_DIR)
+        state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
+        selected_summary = selected["summary"]
+        state["accepted_metrics"] = selected_summary
+        state["accepted_parameters"] = pending["parameters"]
+        if pending["initialization"] == "transfer":
+            state["accepted_training_steps"] = int(
+                pending.get("parent_training_steps", 0)
+            ) + int(pending["training_budget_steps"])
+        else:
+            state["accepted_training_steps"] = int(pending["training_budget_steps"])
+
+    official_metrics = evaluate_artifact(
+        artifact, EVALUATION_SEED, label="researcher-selected lineage benchmark"
+    )
+    state["official_metrics"] = metrics_without_artifact_path([official_metrics])[0]
+    state["last_lineage_decision"] = {
+        "experiment": int(pending["experiment"]),
+        "continue_from": selected_name,
+        "reason": reason,
+    }
+    state["pending_researcher_decision"] = None
+    state["last_verdict"] = f"researcher selected {selected_name}"
+    goal_reached = bool(
+        selected_summary
+        and selected_summary["seeds_passing_98_percent"]
+        == selected_summary["seed_count"]
+        and official_metrics["success_percent"] >= FINAL_SUCCESS_PERCENT
+    )
+    if goal_reached:
+        GOAL_PATH.write_text(
+            f"Goal reached with {selected_name} from experiment {pending['experiment']}.\n",
+            encoding="utf-8",
+        )
+    atomic_write_json(STATE_PATH, state)
+    announce(
+        f"[researcher decision] continuing from {selected_name}: {reason}"
+    )
+    return goal_reached
+
+
 def commit_result(index: int, change: str) -> None:
     paths = [
         "research/EXPERIMENTS.md",
@@ -1004,9 +989,21 @@ def commit_result(index: int, change: str) -> None:
         paths.append("research/BASELINE_PENDING")
     paths.extend(MUTABLE_PATHS)
     git("add", "-A", "--", *paths)
+    git("reset", "--", "research/proposal.json")
     if not git("diff", "--cached", "--name-only").strip():
         return
     git("commit", "-m", f"exp {index}: {change}")
+
+
+def commit_lineage_decision(experiment: int, selected: str) -> None:
+    paths = [
+        "research/research_state.json",
+        "research/checkpoints/accepted",
+        "research/GOAL_REACHED",
+    ]
+    git("add", "-A", "--", *paths)
+    if git("diff", "--cached", "--name-only").strip():
+        git("commit", "-m", f"select experiment {experiment} lineage: {selected}")
 
 
 def main() -> int:
@@ -1027,16 +1024,27 @@ def main() -> int:
     initialization = str(proposal.get("initialization", "transfer")).lower()
     index = next_index()
     fresh_baseline = baseline and initialization == "fresh"
+    raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    decision_pending = raw_state.get("pending_researcher_decision") is not None
     state = load_state(
-        allow_unmeasured=baseline,
-        allow_missing_artifact=fresh_baseline,
+        allow_unmeasured=baseline or decision_pending,
+        allow_missing_artifact=fresh_baseline or decision_pending,
     )
+    if decision_pending:
+        goal_reached = apply_previous_result_decision(proposal, state)
+        pending_experiment = int(raw_state["pending_researcher_decision"]["experiment"])
+        selected_lineage = str(
+            proposal["previous_result_decision"]["continue_from"]
+        )
+        commit_lineage_decision(pending_experiment, selected_lineage)
+        if goal_reached:
+            PROPOSAL_PATH.unlink(missing_ok=True)
+            return 0
     accepted_dir = ROOT / state["accepted_artifact"]
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
     selection_reference_path: Path | None = None
-    config_written = False
     code_changes: list[str] = []
 
     announce(
@@ -1086,17 +1094,6 @@ def main() -> int:
             raise ValueError("policy architecture changes require fresh initialization")
 
         record_previous_postmortem(proposal, baseline=baseline)
-        if (
-            experiment_kind == "training"
-            and not baseline
-            and noise_calibration_required(state)
-        ):
-            raise ValueError(
-                "the accepted champion has reached the final success regime, but "
-                "its training-seed noise floor is not calibrated; the next proposal "
-                "must be an unchanged kind=calibration A/A experiment"
-            )
-
         if parameter_overrides:
             announce("[checks] validating proposed parameters")
             validate_param_overrides(parameter_overrides)
@@ -1106,7 +1103,6 @@ def main() -> int:
             write_experiment_config(
                 merge_param_overrides(previous_config, parameter_overrides)
             )
-            config_written = True
         result["family"] = experiment_family(
             proposal,
             experiment_kind,
@@ -1123,31 +1119,6 @@ def main() -> int:
                 str(ROOT / ".pytest-run-temp"),
             )
             announce("[checks] passed")
-
-        if experiment_kind == "method":
-            method_version = int(
-                state.get("selection_method_version", SELECTION_METHOD_VERSION)
-            ) + 1
-            verdict = "method adopted"
-            state.update(
-                {
-                    "selection_method_version": method_version,
-                    "last_experiment": index,
-                    "last_verdict": verdict,
-                }
-            )
-            result.update(
-                {
-                    "status": "ok",
-                    "verdict": verdict,
-                    "selection_method_version": method_version,
-                }
-            )
-            atomic_write_json(STATE_PATH, state)
-            append_result(result)
-            commit_result(index, change)
-            announce(f"[decision] {verdict} as selection method v{method_version}")
-            return 0
 
         accepted_metrics = state.get("accepted_metrics")
         if accepted_metrics is None and not fresh_baseline:
@@ -1214,10 +1185,9 @@ def main() -> int:
                         "evaluations": [],
                     }
                 )
-            calibration_tournament, _ = evaluate_tournament(
+            calibration_tournament = evaluate_tournament(
                 replicates,
                 int(state.get("selection_method_version", SELECTION_METHOD_VERSION)),
-                extend_close=False,
             )
             noise_floor = summarize_noise_floor(calibration_tournament)
             calibration_archive = archive_calibration(
@@ -1304,51 +1274,15 @@ def main() -> int:
         noise_floor_pp = float(
             (state.get("noise_floor") or {}).get("pooled_success_std_pp", 0.0)
         )
-        tournament, winner = evaluate_tournament(
-            contenders, selection_method_version, noise_floor_pp
+        tournament = evaluate_tournament(contenders, selection_method_version)
+        candidate_contenders = [
+            item for item in tournament if item["kind"] == "candidate"
+        ]
+        archived_candidates = archive_candidates(
+            index, candidate_contenders, effective_config, tournament
         )
-        candidate_winner = max(
-            (item for item in tournament if item["kind"] == "candidate"),
-            key=lambda item: rank(item["summary"]),
-        )
-        challenger_archive = archive_candidate(
-            index, candidate_winner, effective_config, tournament
-        )
-        promoted = winner["kind"] == "candidate"
-        official_metrics = evaluate_artifact(
-            winner["path"], EVALUATION_SEED, label="fixed reported benchmark"
-        )
-        goal_reached = (
-            winner["summary"]["seeds_passing_98_percent"]
-            == winner["summary"]["seed_count"]
-            and official_metrics["success_percent"] >= FINAL_SUCCESS_PERCENT
-        )
-
-        if promoted:
-            copy_artifact(winner["path"], ACCEPTED_DIR)
-            state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
-            state["accepted_metrics"] = winner["summary"]
-            state["accepted_parameters"] = load_experiment_config()
-            if initialization == "transfer":
-                state["accepted_training_steps"] = int(
-                    state.get("accepted_training_steps", 0)
-                ) + effective_timesteps
-            else:
-                state["accepted_training_steps"] = effective_timesteps
-            verdict = "promoted"
-        else:
-            state["accepted_metrics"] = winner["summary"]
-            verdict = "champion retained"
-            if config_written:
-                write_experiment_config(previous_config)
-            if code_changes:
-                clean_mutable_changes()
-
-        if goal_reached:
-            GOAL_PATH.write_text(
-                f"Goal reached at experiment {index}.\n", encoding="utf-8"
-            )
-            verdict += "; goal reached"
+        primary_candidate = archived_candidates[0]
+        verdict = "measured; awaiting researcher decision"
 
         tournament_result = [
             {
@@ -1366,36 +1300,35 @@ def main() -> int:
                 "selection_method_version": selection_method_version,
                 "last_experiment": index,
                 "last_verdict": verdict,
-                "last_metrics": candidate_winner["summary"],
-                "official_metrics": metrics_without_artifact_path(
-                    [official_metrics]
-                )[0],
-                "accepted_tournament": metrics_without_artifact_path(
-                    winner["evaluations"]
-                ),
+                "last_metrics": primary_candidate["summary"],
+                "pending_researcher_decision": {
+                    "experiment": index,
+                    "candidates": archived_candidates,
+                    "champion_available": not fresh_baseline,
+                    "parameters": effective_config,
+                    "initialization": initialization,
+                    "training_budget_steps": effective_timesteps,
+                    "parent_training_steps": int(
+                        state.get("accepted_training_steps", 0)
+                    ),
+                },
             }
         )
         result.update(
             {
                 "status": "ok",
                 "verdict": verdict,
-                "accepted": promoted,
-                "promoted": promoted,
-                "goal_reached": goal_reached,
+                "decision_pending": True,
                 "selection_method_version": selection_method_version,
-                "candidate_metrics": candidate_winner["summary"],
-                "candidate_success_percent": candidate_winner["summary"][
+                "candidate_metrics": primary_candidate["summary"],
+                "candidate_success_percent": primary_candidate["summary"][
                     "pooled_success_percent"
                 ],
                 "candidate_seeds_passed": (
-                    f"{candidate_winner['summary']['seeds_passing_98_percent']}/"
-                    f"{candidate_winner['summary']['seed_count']}"
+                    f"{primary_candidate['summary']['seeds_passing_98_percent']}/"
+                    f"{primary_candidate['summary']['seed_count']}"
                 ),
-                "challenger_archive": str(challenger_archive.relative_to(ROOT)),
-                "winner": winner["name"],
-                "official_metrics": metrics_without_artifact_path(
-                    [official_metrics]
-                )[0],
+                "candidates": archived_candidates,
                 "noise_floor_pp": noise_floor_pp,
                 "tournament": tournament_result,
             }
@@ -1406,12 +1339,19 @@ def main() -> int:
         atomic_write_json(STATE_PATH, state)
         append_result(result)
         commit_result(index, change)
-        announce(f"[decision] {verdict}")
+        announce(f"[result] {verdict}")
     except KeyboardInterrupt:
-        if config_written:
-            write_experiment_config(previous_config)
-        if code_changes or status_paths(MUTABLE_PATHS):
-            clean_mutable_changes()
+        result.update(
+            {
+                "status": "interrupted",
+                "verdict": "interrupted; no model decision",
+            }
+        )
+        state["last_experiment"] = index
+        state["last_verdict"] = result["verdict"]
+        append_result(result)
+        atomic_write_json(STATE_PATH, state)
+        commit_result(index, change)
         if baseline:
             announce(
                 "[runner] Baseline interrupted by user. It remains pending and "
@@ -1424,15 +1364,8 @@ def main() -> int:
             )
         return 130
     except Exception as error:  # noqa: BLE001
-        if config_written:
-            write_experiment_config(previous_config)
-        if code_changes or status_paths(MUTABLE_PATHS):
-            clean_mutable_changes()
         result["error"] = str(error)[:500]
-        if experiment_kind == "method":
-            result["verdict"] = "method rejected"
-        else:
-            result["verdict"] = "invalid"
+        result["verdict"] = "invalid; researcher changes preserved"
         append_result(result)
         atomic_write_json(STATE_PATH, state)
         commit_result(index, change)

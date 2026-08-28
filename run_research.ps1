@@ -30,15 +30,12 @@ function Save-ResearchMemory {
 
 function Assert-BenchmarkIntegrity {
     $protected = @(
-        "robot_learning/benchmark",
+        "robot_learning/benchmark/spec.py",
         "robot_learning/environments/reach_env.py",
-        "robot_learning/evaluate.py",
         "robot_learning/robots",
-        "robot_learning/training/algorithms.py",
-        "robot_learning/training/normalization.py",
-        "robot_learning/training/research_config.py",
         "research/run_experiment.py",
-        "tests/benchmark"
+        "run_research.ps1",
+        "tests/benchmark/test_task_contract.py"
     )
     $changes = git status --porcelain --untracked-files=all -- $protected
     if ($changes) {
@@ -146,7 +143,7 @@ valid research/proposal.json before exiting. Do not launch training or the runne
     }
     uv run python research/run_experiment.py
     if ($LASTEXITCODE -eq 130) {
-        Write-Host "=== Experiment interrupted cleanly; no candidate accepted ==="
+        Write-Host "=== Experiment interrupted cleanly; no model decision was made ==="
         break
     }
     if ($LASTEXITCODE -ne 0) {

@@ -156,6 +156,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-08-28 — Conservative champion promotion
 
+- **Status:** Superseded later on 2026-08-28 by researcher-owned lineage
+  selection.
+
 - **Decision:** Promote a challenger only with positive paired net wins, an
   exact paired-test probability at or below 0.05, and an improvement exceeding
   the measured training-seed noise floor. Ties or insufficient evidence retain
@@ -166,6 +169,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
   participates in choosing the winner.
 
 ## 2026-08-28 — Defer A/A calibration until the 98% regime
+
+- **Status:** Superseded later on 2026-08-28. Calibration is now a researcher
+  choice rather than a runner gate.
 
 - **Decision:** Training-seed A/A calibration becomes mandatory only after the
   accepted champion reaches 98% success. Below 98%, structural experiments,
@@ -225,3 +231,31 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Reason:** Models are small and local, so Git gives a recoverable lineage and
   prevents a later training run from silently erasing a previously accepted
   model or repeating a failed idea.
+
+## 2026-08-28 — Researcher owns candidates and lineage decisions
+
+- **Decision:** The researcher controls checkpoint timing, metrics, ranking,
+  number of finalists, candidate submission, and which candidate or prior
+  champion becomes the lineage for subsequent work.
+- **Runner role:** Allocate compute, execute, measure the fixed objective, and
+  persist every submitted candidate and its evidence. Do not promote, retain,
+  or roll back scientific work automatically.
+- **Workflow:** An experiment ends with measured candidates and a pending
+  researcher decision. The next proposal records `continue_from` and its
+  rationale before defining the next experiment.
+- **Reason:** Candidate selection and temporary regressions are part of the
+  research method. A fixed automatic promotion rule can discard a lineage that
+  is scientifically useful for curriculum or longer-term learning.
+- **Supersedes:** Runner-owned `promoted/champion retained`, automatic rollback,
+  mandatory A/A gating, the three-finalist limit, and the four progress metrics
+  as fixed runner policy.
+
+## 2026-08-28 — Project map is descriptive, not a code whitelist
+
+- **Decision:** Explain the role of important files without instructing the
+  researcher that learning changes must fit a narrow per-file whitelist.
+- **Invariant:** The objective definition, robot identity, corrected task
+  geometry, and mechanical runner remain protected. Other learning and
+  measurement implementation may evolve while tests preserve the objective.
+- **Reason:** Scientific freedom must exist in executable code, not only in the
+  wording of `program.md`.
