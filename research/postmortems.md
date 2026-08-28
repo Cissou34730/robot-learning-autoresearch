@@ -32,3 +32,13 @@
 **What was learned / do NOT retry:** Calibration remains mandatory; do not propose an ordinary training change until the runner completes the unchanged calibration.
 
 **Recommended next experiment class:** Calibration
+
+## Experiment 40
+
+**Result:** The unchanged A/A calibration completed and recorded a training-seed noise floor of 0.096 percentage points standard deviation and 0.167 percentage points range.
+
+**Observed behavior:** All three unchanged PPO replicates remained near the accepted 98.5 percent success level, so the accepted champion was retained and calibration did not change the recipe.
+
+**What was learned / do NOT retry:** Promotion comparisons now have a measured noise floor; calibration is complete and ordinary training experiments are valid again.
+
+**Recommended next experiment class:** Training
