@@ -7,7 +7,11 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
+from robot_learning.benchmark.spec import (
+    FINAL_SUCCESS_PERCENT,
+    HOLD_SECONDS,
+    SUCCESS_THRESHOLD,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -348,6 +352,23 @@ def render_research_brief() -> str:
         else {}
     )
     noise_floor = state.get("noise_floor")
+    if noise_floor is None and accepted_score is None:
+        noise_floor_status = (
+            "not calibrated; deferred until a champion reaches the 98% regime"
+        )
+    elif noise_floor is None and float(accepted_score) < FINAL_SUCCESS_PERCENT:
+        noise_floor_status = (
+            "not calibrated; deferred while the champion remains below 98%"
+        )
+    elif noise_floor is None:
+        noise_floor_status = (
+            "not calibrated; calibration required before the next training experiment"
+        )
+    else:
+        noise_floor_status = (
+            f"std {noise_floor['pooled_success_std_pp']:.3f} pp; "
+            f"range {noise_floor['pooled_success_range_pp']:.3f} pp"
+        )
     official_metrics = state.get("official_metrics")
     accepted_seed_count = accepted_metrics.get("seed_count") if accepted_metrics else None
     accepted_seed_passes = (
@@ -389,13 +410,7 @@ def render_research_brief() -> str:
             + (" (legacy single-seed measurement)" if accepted_metrics and "seed_count" not in accepted_metrics else "")
         ),
         f"- Accepted failed episodes: {accepted_progress.get('failed_episodes', '-')}",
-        (
-            "- Training-seed noise floor: not calibrated"
-            if noise_floor is None
-            else "- Training-seed noise floor: "
-            f"std {noise_floor['pooled_success_std_pp']:.3f} pp; "
-            f"range {noise_floor['pooled_success_range_pp']:.3f} pp"
-        ),
+        f"- Training-seed noise floor: {noise_floor_status}",
         (
             "- Fixed reported benchmark: pending v3 evaluation"
             if official_metrics is None

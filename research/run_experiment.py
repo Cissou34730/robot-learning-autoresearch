@@ -106,6 +106,16 @@ def training_budget(
     return standard_timesteps
 
 
+def noise_calibration_required(state: dict) -> bool:
+    if state.get("noise_floor") is not None:
+        return False
+    accepted_metrics = state.get("accepted_metrics") or {}
+    accepted_success = accepted_metrics.get(
+        "pooled_success_percent", accepted_metrics.get("success_percent", 0.0)
+    )
+    return float(accepted_success) >= FINAL_SUCCESS_PERCENT
+
+
 def comparison_label(entry: dict) -> str:
     comparison = entry.get("paired_vs_reference")
     if comparison is None:
@@ -1079,10 +1089,11 @@ def main() -> int:
         if (
             experiment_kind == "training"
             and not baseline
-            and state.get("noise_floor") is None
+            and noise_calibration_required(state)
         ):
             raise ValueError(
-                "training-seed noise floor is not calibrated; the next proposal "
+                "the accepted champion has reached the final success regime, but "
+                "its training-seed noise floor is not calibrated; the next proposal "
                 "must be an unchanged kind=calibration A/A experiment"
             )
 

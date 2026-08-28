@@ -6,15 +6,16 @@
     "ACTION_COST_COEFFICIENT": 0.05,
     "HOLD_PROGRESS_BONUS": 50.0,
     "HOLD_PROGRESS_EXPONENT": 2.0,
+    "HOLD_EXIT_FORFEIT_FRACTION": 0.5,
     "OUTSIDE_BAND_WIDTH": 0.01,
     "OUTSIDE_BAND_PENALTY": 0.5,
     "HOLD_COMPLETE_BONUS": 50.0
   },
   "ppo": {
-    "n_steps": 4096,
-    "batch_size": 128,
+    "n_steps": 1024,
+    "batch_size": 64,
     "gamma": 0.99,
-    "learning_rate": 5e-05,
+    "learning_rate": 0.0003,
     "gae_lambda": 0.95,
     "ent_coef": 0.01
   },

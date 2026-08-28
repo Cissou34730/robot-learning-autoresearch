@@ -10,6 +10,7 @@ CLOSENESS_LENGTH_SCALE = _VALUES["CLOSENESS_LENGTH_SCALE"]
 ACTION_COST_COEFFICIENT = _VALUES["ACTION_COST_COEFFICIENT"]
 HOLD_PROGRESS_BONUS = _VALUES["HOLD_PROGRESS_BONUS"]
 HOLD_PROGRESS_EXPONENT = _VALUES["HOLD_PROGRESS_EXPONENT"]
+HOLD_EXIT_FORFEIT_FRACTION = _VALUES["HOLD_EXIT_FORFEIT_FRACTION"]
 OUTSIDE_BAND_WIDTH = _VALUES["OUTSIDE_BAND_WIDTH"]
 OUTSIDE_BAND_PENALTY = _VALUES["OUTSIDE_BAND_PENALTY"]
 HOLD_COMPLETE_BONUS = _VALUES["HOLD_COMPLETE_BONUS"]
@@ -50,8 +51,16 @@ def reach_reward(
     reward += _closeness_potential(current_distance) - _closeness_potential(
         previous_distance
     )
-    reward += _hold_progress_potential(held_steps, hold_steps_required)
-    reward -= _hold_progress_potential(previous_held_steps, hold_steps_required)
+    current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
+    previous_hold_capital = _hold_progress_potential(
+        previous_held_steps, hold_steps_required
+    )
+    if held_steps == 0 and previous_held_steps > 0:
+        if not 0 <= HOLD_EXIT_FORFEIT_FRACTION <= 1:
+            raise ValueError("HOLD_EXIT_FORFEIT_FRACTION must be between 0 and 1")
+        reward -= HOLD_EXIT_FORFEIT_FRACTION * previous_hold_capital
+    else:
+        reward += current_hold_capital - previous_hold_capital
 
     if penalize_outside and current_distance > success_threshold:
         if OUTSIDE_BAND_WIDTH <= 0:

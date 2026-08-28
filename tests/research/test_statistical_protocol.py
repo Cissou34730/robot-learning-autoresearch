@@ -4,6 +4,7 @@ import pytest
 
 from research.run_experiment import (
     experiment_family,
+    noise_calibration_required,
     parameter_change_records,
     record_previous_postmortem,
     select_tournament_winner,
@@ -114,6 +115,22 @@ def test_noise_floor_comes_from_independent_training_replicates():
 
     assert floor["pooled_success_range_pp"] == 2.0
     assert floor["pooled_success_std_pp"] == 1.0
+
+
+def test_noise_calibration_is_deferred_until_champion_reaches_goal_regime():
+    assert not noise_calibration_required({"accepted_metrics": None})
+    assert not noise_calibration_required(
+        {"accepted_metrics": {"pooled_success_percent": 97.99}}
+    )
+    assert noise_calibration_required(
+        {"accepted_metrics": {"pooled_success_percent": 98.0}}
+    )
+    assert not noise_calibration_required(
+        {
+            "accepted_metrics": {"pooled_success_percent": 98.0},
+            "noise_floor": {"pooled_success_std_pp": 0.1},
+        }
+    )
 
 
 def test_fresh_challenger_receives_runner_owned_compute_matching():

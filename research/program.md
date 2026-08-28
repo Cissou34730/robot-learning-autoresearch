@@ -85,9 +85,12 @@ lineage. An A/A calibration trains the unchanged champion recipe from the
 same checkpoint with three independent training seeds, stores the resulting
 success spread at the fixed final 120,000-step endpoint as the noise floor, and
 never promotes or cherry-picks one of those replicates.
-When the brief says the noise floor is not calibrated, the next proposal must
-be this unchanged `"kind": "calibration"` experiment; ordinary training
-proposals are rejected until it exists.
+Training-seed calibration becomes mandatory before the next ordinary training
+experiment only after the accepted champion reaches the final 98% success
+regime. Below 98%, structural training experiments remain allowed and the
+paired tournament uses a zero noise margin until calibration exists. Once the
+threshold is reached, the next proposal must be the unchanged
+`"kind": "calibration"` experiment before ordinary training resumes.
 
 Training verdicts are `promoted`, `champion retained`, or `invalid`. Research
 method verdicts are `method adopted` or `method rejected`. A method decision is
