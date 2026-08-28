@@ -47,6 +47,19 @@ def build_policy_kwargs(policy_config: dict) -> dict:
     return result
 
 
+def apply_learning_rate_schedule(params: dict) -> dict:
+    schedule = params.pop("learning_rate_schedule", None)
+    if schedule is None:
+        return params
+    if schedule != "linear_decay":
+        raise ValueError(f"unknown learning rate schedule: {schedule}")
+    initial_rate = float(params["learning_rate"])
+    params["learning_rate"] = lambda progress_remaining: (
+        initial_rate * progress_remaining
+    )
+    return params
+
+
 def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
     if n_envs < 1:
         raise ValueError("n_envs must be at least 1")
@@ -83,6 +96,7 @@ def main() -> None:
     )
 
     params = dict(config[algorithm])
+    params = apply_learning_rate_schedule(params)
     if algorithm == "ppo":
         params = parallel_ppo_params(params, n_envs)
     policy_kwargs = build_policy_kwargs(config["policy"])
