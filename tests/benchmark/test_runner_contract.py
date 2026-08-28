@@ -4,8 +4,10 @@ import pytest
 
 from research.run_experiment import (
     IMMUTABLE_PATHS,
+    MUTABLE_CODE_PATHS,
     MUTABLE_PATHS,
     append_result,
+    assert_research_surface,
     format_duration,
     latest_training_steps,
     load_state,
@@ -31,6 +33,17 @@ def test_research_and_benchmark_surfaces_are_disjoint():
     assert "robot_learning/environments/reach_env.py" in IMMUTABLE_PATHS
     assert "tests/benchmark" in IMMUTABLE_PATHS
     assert "tests/research" in MUTABLE_PATHS
+    assert "research/current_params.json" in MUTABLE_PATHS
+    assert "research/current_params.json" not in MUTABLE_CODE_PATHS
+
+
+def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
+    monkeypatch.setattr(
+        "research.run_experiment.status_paths",
+        lambda _paths: ["research/current_params.json"],
+    )
+
+    assert assert_research_surface() == ["research/current_params.json"]
 
 
 def test_success_precedes_distance():

@@ -12,7 +12,6 @@
     "batch_size": 128,
     "gamma": 0.99,
     "learning_rate": 5e-05,
-    "learning_rate_schedule": "linear_decay",
     "gae_lambda": 0.95,
     "ent_coef": 0.01
   },

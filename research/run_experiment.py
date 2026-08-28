@@ -39,13 +39,14 @@ GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
 
-MUTABLE_PATHS = (
+MUTABLE_CODE_PATHS = (
     "robot_learning/rewards",
     "robot_learning/train.py",
     "robot_learning/training/observations.py",
     "robot_learning/training/selection_callback.py",
     "tests/research",
 )
+MUTABLE_PATHS = ("research/current_params.json", *MUTABLE_CODE_PATHS)
 IMMUTABLE_PATHS = (
     "robot_learning/benchmark",
     "robot_learning/environments/reach_env.py",
@@ -622,7 +623,7 @@ def main() -> int:
             config_written = True
         if code_changes:
             announce("[checks] running research-surface checks")
-            run_module("ruff", "check", *MUTABLE_PATHS)
+            run_module("ruff", "check", *MUTABLE_CODE_PATHS)
             run_module(
                 "pytest",
                 "-q",
