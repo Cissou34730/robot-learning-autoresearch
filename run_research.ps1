@@ -101,7 +101,16 @@ while ($true) {
     Write-Host "=== New experiment at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
-    opencode run --model $model --variant $reasoning "Read research/program.md and execute exactly one experiment following its protocol."
+    $researchPrompt = @"
+Read research/program.md, research/brief.md, research/last_train_summary.md, and
+research/current_params.json. Treat these compact files as the complete default
+research context. Do not read research/results.jsonl, research/EXPERIMENTS.md,
+research/postmortems.md, research/last_evaluation.json, research/run_experiment.py,
+or full logs unless the compact brief identifies one specific ambiguity that
+requires one of them. Prepare exactly one protocol-compliant experiment and
+write research/proposal.json before exiting. Do not launch training or the runner.
+"@
+    opencode run --model $model --variant $reasoning $researchPrompt
 
     Update-ResearchBrief
     Save-ResearchMemory
@@ -112,7 +121,28 @@ while ($true) {
             Write-Host "=== Experiment was already executed during the research session ==="
             continue
         }
-        throw "Research session ended without creating research/proposal.json."
+        Write-Host "=== Researcher ended without a proposal; retrying once with bounded context ==="
+        $retryPrompt = @"
+The previous researcher session ended before writing research/proposal.json.
+Complete that same single research task; do not begin a second hypothesis.
+Read only research/program.md, research/brief.md, research/last_train_summary.md,
+research/current_params.json, and git status. Use existing research-surface edits,
+if any, only when they clearly belong to that unfinished experiment. Write a
+valid research/proposal.json before exiting. Do not launch training or the runner.
+"@
+        opencode run --model $model --variant $reasoning $retryPrompt
+        Update-ResearchBrief
+        Save-ResearchMemory
+        Assert-BenchmarkIntegrity
+
+        if (-not (Test-Path "research\proposal.json")) {
+            $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
+            if ($resultCountAfter -gt $resultCountBefore) {
+                Write-Host "=== Experiment was already executed during the research session ==="
+                continue
+            }
+            throw "Researcher ended twice without creating research/proposal.json. The loop stopped safely."
+        }
     }
     uv run python research/run_experiment.py
     if ($LASTEXITCODE -eq 130) {
@@ -131,4 +161,3 @@ finally {
     $loopMutex.ReleaseMutex()
     $loopMutex.Dispose()
 }
-
