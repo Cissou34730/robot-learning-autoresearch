@@ -5,7 +5,10 @@ from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.rewards import reach_reward as reward_module
 from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.train import parallel_ppo_params
-from robot_learning.training.selection_callback import SelectionCallback
+from robot_learning.training.selection_callback import (
+    SelectionCallback,
+    select_top_finalists,
+)
 
 
 def test_observation_matches_declared_space():
@@ -53,22 +56,31 @@ def test_selection_waits_for_a_completed_rollout_update(monkeypatch, tmp_path):
     callback = SelectionCallback(
         output_dir=tmp_path,
         eval_every_steps=20_000,
-        episodes=10,
+        episodes=50,
+        top_k=3,
     )
     evaluations: list[int] = []
-    callback.best_rank = (101.0, 101.0, 101.0, 0.0)
+    callback.finalists = [
+        {
+            "rank": [101.0, 101.0, 101.0, 0.0],
+            "timesteps": step,
+            "path": f"unused-{step}",
+        }
+        for step in range(3)
+    ]
     monkeypatch.setattr(
         callback,
         "_evaluate",
         lambda: evaluations.append(callback.num_timesteps)
         or {
             "success_percent": 100.0,
-            "consecutive_hold_steps": {
-                "median": 100.0,
-                "mean": 100.0,
-                "required": 100,
+            "failed_episode_progress": {
+                "failed_episodes": 0,
+                "longest_consecutive_steps_mean": 100.0,
+                "best_window_inside_steps_mean": 100.0,
+                "best_window_excess_cm_mean": 0.0,
+                "required_steps": 100,
             },
-            "closest_distance_cm": {"median": 0.1},
             "timesteps": callback.num_timesteps,
         },
     )
@@ -88,3 +100,14 @@ def test_selection_waits_for_a_completed_rollout_update(monkeypatch, tmp_path):
     callback.num_timesteps = 24_576
     callback._on_training_end()
     assert evaluations == [21_504, 24_576]
+
+
+def test_selection_retains_exactly_the_three_best_checkpoints():
+    entries = [
+        {"rank": [score, 0, 0, 0], "timesteps": score, "path": str(score)}
+        for score in (1, 4, 2, 5, 3)
+    ]
+
+    selected = select_top_finalists(entries, top_k=3)
+
+    assert [item["rank"][0] for item in selected] == [5, 4, 3]

@@ -8,23 +8,30 @@ from research.run_experiment import (
     MUTABLE_PATHS,
     append_result,
     assert_research_surface,
+    finalist_directories,
     format_duration,
     latest_training_steps,
     load_state,
     rank,
+    select_tournament_winner,
+    summarize_tournament,
+    tournament_result_is_close,
     validate_reusable_candidate,
 )
 
 
-def metrics(success, hold_median, hold_mean, closest):
+def evaluation(seed, success, failures, longest, inside, excess):
     return {
+        "episodes": 200,
+        "seed": seed,
         "success_percent": success,
-        "consecutive_hold_steps": {
-            "median": hold_median,
-            "mean": hold_mean,
-            "required": 100,
+        "failed_episode_progress": {
+            "failed_episodes": failures,
+            "longest_consecutive_steps_mean": longest,
+            "best_window_inside_steps_mean": inside,
+            "best_window_excess_cm_mean": excess,
+            "required_steps": 100,
         },
-        "closest_distance_cm": {"median": closest},
     }
 
 
@@ -46,28 +53,56 @@ def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     assert assert_research_surface() == ["research/current_params.json"]
 
 
-def test_success_precedes_distance():
-    assert rank(metrics(80.0, 10.0, 10.0, 4.0)) > rank(
-        metrics(79.0, 100.0, 100.0, 1.0)
+def tournament(*evaluations):
+    return summarize_tournament(list(evaluations))
+
+
+def test_seeds_passing_precede_other_tournament_metrics():
+    robust = tournament(
+        evaluation(1000, 98.0, 4, 20, 80, 2),
+        evaluation(3000, 98.0, 4, 20, 80, 2),
+    )
+    fragile = tournament(
+        evaluation(1000, 100.0, 0, 100, 100, 0),
+        evaluation(3000, 97.5, 5, 99, 99, 0.01),
+    )
+    assert rank(robust) > rank(fragile)
+
+
+def test_worst_seed_precedes_pooled_success():
+    balanced = tournament(
+        evaluation(1000, 99.0, 2, 10, 20, 3),
+        evaluation(3000, 99.0, 2, 10, 20, 3),
+    )
+    uneven = tournament(
+        evaluation(1000, 100.0, 0, 100, 100, 0),
+        evaluation(3000, 98.5, 3, 99, 99, 0.01),
+    )
+    assert rank(balanced) > rank(uneven)
+
+
+def test_failed_hold_progress_breaks_a_success_tie():
+    almost = tournament(evaluation(1000, 98.0, 4, 99, 99, 0.01))
+    distant = tournament(evaluation(1000, 98.0, 4, 20, 80, 10.0))
+    assert rank(almost) > rank(distant)
+
+
+def test_close_tournament_result_requests_more_evidence():
+    first = tournament(evaluation(1000, 98.5, 3, 99, 99, 0.01))
+    second = tournament(evaluation(1000, 98.0, 4, 90, 95, 1.0))
+    assert tournament_result_is_close(first, second)
+
+
+def test_exact_tournament_tie_keeps_the_champion():
+    summary = tournament(evaluation(1000, 98.5, 3, 99, 99, 0.01))
+    winner = select_tournament_winner(
+        [
+            {"name": "candidate", "kind": "candidate", "summary": summary},
+            {"name": "champion", "kind": "champion", "summary": summary},
+        ]
     )
 
-
-def test_hold_median_precedes_hold_mean_and_distance():
-    assert rank(metrics(80.0, 90.0, 90.0, 4.0)) > rank(
-        metrics(80.0, 89.0, 100.0, 1.0)
-    )
-
-
-def test_hold_mean_precedes_distance():
-    assert rank(metrics(80.0, 90.0, 95.0, 4.0)) > rank(
-        metrics(80.0, 90.0, 94.0, 1.0)
-    )
-
-
-def test_distance_breaks_a_complete_metric_tie():
-    assert rank(metrics(80.0, 90.0, 95.0, 1.0)) > rank(
-        metrics(80.0, 90.0, 95.0, 2.0)
-    )
+    assert winner["name"] == "champion"
 
 
 def test_training_progress_reads_latest_complete_snapshot(tmp_path):
@@ -155,3 +190,21 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
             resume=None,
             config=config,
         )
+
+
+def test_finalist_manifest_exposes_three_complete_artifacts(tmp_path):
+    finalists = []
+    for number in range(3):
+        relative = f"finalists/checkpoint-{number}"
+        artifact_dir = tmp_path / relative
+        artifact_dir.mkdir(parents=True)
+        for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+            (artifact_dir / filename).touch()
+        finalists.append({"path": relative})
+    (tmp_path / "selection_manifest.json").write_text(
+        json.dumps({"finalists": finalists}), encoding="utf-8"
+    )
+
+    assert finalist_directories(tmp_path) == [
+        tmp_path / item["path"] for item in finalists
+    ]

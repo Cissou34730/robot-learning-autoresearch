@@ -5,8 +5,9 @@ import pytest
 
 from robot_learning.benchmark.metrics import (
     achieved_goal,
+    episode_hold_progress,
     maximum_consecutive_hold_steps,
-    summarize_consecutive_hold_steps,
+    summarize_hold_progress,
 )
 from robot_learning.benchmark.spec import (
     FRAME_SKIP,
@@ -64,6 +65,28 @@ def test_fixed_metric_measures_the_longest_unbroken_hold():
     assert maximum_consecutive_hold_steps(distances) == 75
 
 
-def test_fixed_metric_summarizes_typical_and_all_episode_holds():
-    summary = summarize_consecutive_hold_steps([100, 100, 80, 20], required=100)
-    assert summary == {"median": 90.0, "mean": 75.0, "required": 100}
+def test_failed_episode_progress_rewards_task_aligned_near_success():
+    almost = episode_hold_progress([0.005] * 99 + [0.0101], required=100)
+    intermittent = episode_hold_progress(
+        [0.005] * 70 + [0.02] + [0.005] * 29,
+        required=100,
+    )
+
+    assert almost["longest_consecutive_steps"] == 99
+    assert almost["best_window_inside_steps"] == 99
+    assert almost["best_window_excess_cm"] == pytest.approx(0.01)
+    assert intermittent["longest_consecutive_steps"] == 70
+    assert intermittent["best_window_inside_steps"] == 99
+
+
+def test_progress_summary_uses_failed_episodes_only():
+    episodes = [
+        episode_hold_progress([0.005] * 100, required=100),
+        episode_hold_progress([0.005] * 80 + [0.02] * 20, required=100),
+    ]
+
+    summary = summarize_hold_progress(episodes, required=100)
+    assert summary["failed_episodes"] == 1
+    assert summary["longest_consecutive_steps_mean"] == 80
+    assert summary["best_window_inside_steps_mean"] == 80
+    assert summary["best_window_excess_cm_mean"] == pytest.approx(20.0)

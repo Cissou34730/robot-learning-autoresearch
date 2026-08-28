@@ -39,3 +39,8 @@
 | 35 | 2026-08-28 | Increase PPO GAE lambda | The 2-second hold creates long-horizon credit assignment, while the accepted transferred policy still shows late-training degradation; increasing PPO gae_lambda from 0.95 to 0.98 should propagate hold rewards across more of each rollout and preserve or improve final held-out success and hold ranking without changing the benchmark or policy architecture. | 98.5 | 0.14651984751783054 | reverted (no improvement) |
 | 36 | 2026-08-28 | Lower PPO gradient clipping threshold | The accepted transferred policy is reliable, but occasional large PPO gradients may contribute to late-training policy drift; lowering max_grad_norm from the default 0.5 to 0.2 should constrain disruptive updates and preserve or improve final held-out success and hold ranking. | 98.5 | 0.1663366173234153 | reverted (no improvement) |
 | 37 | 2026-08-28 | Linearly decay PPO learning rate | The accepted transferred policy is reliable, but the latest training still degrades after an early peak, indicating that constant-size PPO updates continue to perturb a good policy late in training; linearly decaying the PPO learning rate from 0.00005 to zero should reduce late transfer drift and improve or preserve the fixed held-out ranking. | - | - | error: changes outside the research surface: ['research/current_params.json'] |
+
+## Selection method v2
+
+| # | Date | Change | Hypothesis | Candidate pooled success | Seeds passed | Verdict |
+|---:|---|---|---|---:|---:|---|

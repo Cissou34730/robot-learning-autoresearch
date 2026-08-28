@@ -12,7 +12,6 @@ import time
 from pathlib import Path
 
 from research.build_research_brief import write_training_summary
-from robot_learning.benchmark.metrics import evaluation_rank
 from robot_learning.benchmark.spec import (
     EVALUATION_EPISODES,
     EVALUATION_SEED,
@@ -65,7 +64,9 @@ TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
-CONFIRMATION_SEEDS = (3000, 5000)
+SELECTION_METHOD_VERSION = 2
+TOURNAMENT_SEEDS = (1000, 3000, 5000)
+EXTENDED_TOURNAMENT_SEEDS = (7000, 9000)
 
 
 def announce(message: str) -> None:
@@ -282,8 +283,8 @@ def append_result(result: dict) -> None:
     row = (
         f"| {result['index']} | {time.strftime('%Y-%m-%d')} | "
         f"{cell(result['change'])} | {cell(result['hypothesis'])} | "
-        f"{cell(result.get('success_percent', '-'))} | "
-        f"{cell(result.get('closest_distance_cm', '-'))} | "
+        f"{cell(result.get('candidate_success_percent', '-'))} | "
+        f"{cell(result.get('candidate_seeds_passed', '-'))} | "
         f"{cell(result['verdict'])} |"
     )
     text = LOG_PATH.read_text(encoding="utf-8").rstrip("\n") + "\n" + row + "\n"
@@ -349,17 +350,198 @@ def evaluate_artifact(
         f"[evaluation] {label} complete in "
         f"{format_duration(time.monotonic() - started)} | "
         f"success: {metrics['success_percent']:.1f}% | "
-        f"hold median: {metrics['consecutive_hold_steps']['median']:.1f}/"
-        f"{metrics['consecutive_hold_steps']['required']} | "
-        f"hold mean: {metrics['consecutive_hold_steps']['mean']:.1f}/"
-        f"{metrics['consecutive_hold_steps']['required']} | "
-        f"closest median: {metrics['closest_distance_cm']['median']:.2f} cm"
+        f"failed episodes: {metrics['failed_episode_progress']['failed_episodes']} | "
+        f"failed hold: "
+        f"{metrics['failed_episode_progress']['longest_consecutive_steps_mean']:.1f}/"
+        f"{metrics['failed_episode_progress']['required_steps']} | "
+        f"best window: "
+        f"{metrics['failed_episode_progress']['best_window_inside_steps_mean']:.1f}/"
+        f"{metrics['failed_episode_progress']['required_steps']}"
     )
     return metrics
 
 
-def rank(metrics: dict) -> tuple[float, float, float, float]:
-    return evaluation_rank(metrics)
+def summarize_tournament(
+    evaluations: list[dict],
+    selection_method_version: int = SELECTION_METHOD_VERSION,
+) -> dict:
+    if not evaluations:
+        raise ValueError("a tournament summary requires at least one evaluation")
+    total_episodes = sum(int(item["episodes"]) for item in evaluations)
+    total_successes = sum(
+        float(item["success_percent"]) * int(item["episodes"]) / 100
+        for item in evaluations
+    )
+    total_failures = sum(
+        int(item["failed_episode_progress"]["failed_episodes"])
+        for item in evaluations
+    )
+    required = int(evaluations[0]["failed_episode_progress"]["required_steps"])
+
+    def failure_weighted_mean(field: str, perfect: float) -> float:
+        if not total_failures:
+            return perfect
+        return sum(
+            float(item["failed_episode_progress"][field])
+            * int(item["failed_episode_progress"]["failed_episodes"])
+            for item in evaluations
+        ) / total_failures
+
+    seed_success = {
+        str(item["seed"]): float(item["success_percent"]) for item in evaluations
+    }
+    pooled_success = 100 * total_successes / total_episodes
+    return {
+        "schema_version": 1,
+        "selection_method_version": selection_method_version,
+        "episodes": total_episodes,
+        "seed_count": len(evaluations),
+        "seed_success_percent": seed_success,
+        "seeds_passing_98_percent": sum(
+            success >= FINAL_SUCCESS_PERCENT for success in seed_success.values()
+        ),
+        "worst_seed_success_percent": min(seed_success.values()),
+        "pooled_success_percent": pooled_success,
+        "success_percent": pooled_success,
+        "failed_episode_progress": {
+            "failed_episodes": total_failures,
+            "longest_consecutive_steps_mean": failure_weighted_mean(
+                "longest_consecutive_steps_mean", float(required)
+            ),
+            "best_window_inside_steps_mean": failure_weighted_mean(
+                "best_window_inside_steps_mean", float(required)
+            ),
+            "best_window_excess_cm_mean": failure_weighted_mean(
+                "best_window_excess_cm_mean", 0.0
+            ),
+            "required_steps": required,
+        },
+    }
+
+
+def rank(metrics: dict) -> tuple[float, float, float, float, float, float]:
+    progress = metrics["failed_episode_progress"]
+    return (
+        float(metrics["seeds_passing_98_percent"]),
+        float(metrics["worst_seed_success_percent"]),
+        float(metrics["pooled_success_percent"]),
+        float(progress["longest_consecutive_steps_mean"]),
+        float(progress["best_window_inside_steps_mean"]),
+        -float(progress["best_window_excess_cm_mean"]),
+    )
+
+
+def tournament_result_is_close(first: dict, second: dict) -> bool:
+    return (
+        first["seeds_passing_98_percent"]
+        == second["seeds_passing_98_percent"]
+        and abs(
+            first["worst_seed_success_percent"]
+            - second["worst_seed_success_percent"]
+        )
+        <= 0.5
+        and abs(first["pooled_success_percent"] - second["pooled_success_percent"])
+        <= 0.5
+    )
+
+
+def finalist_directories(candidate_dir: Path) -> list[Path]:
+    manifest_path = candidate_dir / "selection_manifest.json"
+    if not manifest_path.exists():
+        return [candidate_dir]
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    finalists = [candidate_dir / item["path"] for item in manifest["finalists"]]
+    if not 1 <= len(finalists) <= 3:
+        raise RuntimeError("training must produce between one and three finalists")
+    for finalist in finalists:
+        for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+            if not (finalist / filename).exists():
+                raise RuntimeError(f"finalist is incomplete: {finalist / filename}")
+    return finalists
+
+
+def select_tournament_winner(contenders: list[dict]) -> dict:
+    return max(
+        contenders,
+        key=lambda item: (
+            rank(item["summary"]),
+            item["kind"] == "champion",
+        ),
+    )
+
+
+def evaluate_tournament(
+    contenders: list[dict], selection_method_version: int
+) -> tuple[list[dict], dict]:
+    seeds = list(TOURNAMENT_SEEDS)
+
+    def evaluate_missing(active_seeds: list[int]) -> None:
+        for contender in contenders:
+            completed = {item["seed"] for item in contender["evaluations"]}
+            for seed in active_seeds:
+                if seed not in completed:
+                    contender["evaluations"].append(
+                        evaluate_artifact(
+                            contender["path"],
+                            seed,
+                            label=f"tournament {contender['name']} seed {seed}",
+                        )
+                    )
+            contender["summary"] = summarize_tournament(
+                contender["evaluations"], selection_method_version
+            )
+
+    evaluate_missing(seeds)
+    ordered = sorted(contenders, key=lambda item: rank(item["summary"]), reverse=True)
+    if len(ordered) > 1 and tournament_result_is_close(
+        ordered[0]["summary"], ordered[1]["summary"]
+    ):
+        announce("[tournament] leading models are close; extending evaluation")
+        seeds.extend(EXTENDED_TOURNAMENT_SEEDS)
+        evaluate_missing(seeds)
+
+    winner = select_tournament_winner(contenders)
+    return contenders, winner
+
+
+def archive_candidate(
+    index: int,
+    contender: dict,
+    config: dict,
+    tournament: list[dict],
+) -> Path:
+    destination = RESEARCH_DIR / "checkpoints" / "challengers" / f"experiment-{index}"
+    if destination.exists():
+        raise RuntimeError(f"challenger archive already exists: {destination}")
+    copy_artifact(contender["path"], destination)
+    atomic_write_json(destination / "parameters.json", config)
+    atomic_write_json(
+        destination / "tournament.json",
+        {
+            "schema_version": 1,
+            "selection_method_version": contender["summary"][
+                "selection_method_version"
+            ],
+            "selected_candidate": contender["name"],
+            "summary": contender["summary"],
+            "contenders": [
+                {
+                    "name": item["name"],
+                    "kind": item["kind"],
+                    "summary": item["summary"],
+                }
+                for item in tournament
+            ],
+        },
+    )
+    return destination
+
+
+def metrics_without_artifact_path(evaluations: list[dict]) -> list[dict]:
+    return [
+        {key: value for key, value in evaluation.items() if key != "model"}
+        for evaluation in evaluations
+    ]
 
 
 def train_candidate(
@@ -399,7 +581,7 @@ def train_candidate(
             text=True,
             **process_group_options(),
         )
-        last_selection: tuple[int, float, float, float, int, float] | None = None
+        last_selection: tuple[int, int, float, int, float, float, float] | None = None
         last_steps: int | None = None
         last_progress_at = started
         try:
@@ -427,26 +609,29 @@ def train_candidate(
                         f"({progress:.0f}%) | {format_duration(elapsed)} elapsed | "
                         f"ETA ~{format_duration(eta)}"
                     )
-                selection_path = output_dir / "best_selection.json"
+                selection_path = output_dir / "selection_update.json"
                 if selection_path.exists():
                     selection = json.loads(selection_path.read_text(encoding="utf-8"))
+                    selection_metrics = selection["metrics"]
+                    failure_progress = selection_metrics["failed_episode_progress"]
                     current_selection = (
+                        int(selection["position"]),
                         int(selection["timesteps"]),
-                        float(selection["success_percent"]),
-                        float(selection["consecutive_hold_steps"]["median"]),
-                        float(selection["consecutive_hold_steps"]["mean"]),
-                        int(selection["consecutive_hold_steps"]["required"]),
-                        float(selection["closest_distance_cm"]["median"]),
+                        float(selection_metrics["success_percent"]),
+                        int(failure_progress["failed_episodes"]),
+                        float(failure_progress["longest_consecutive_steps_mean"]),
+                        float(failure_progress["best_window_inside_steps_mean"]),
+                        float(failure_progress["best_window_excess_cm_mean"]),
                     )
                     if current_selection != last_selection:
                         announce(
-                            f"[selection] new best at {current_selection[0]:,} steps | "
-                            f"success: {current_selection[1]:.1f}% | "
-                            f"hold median: {current_selection[2]:.1f}/"
-                            f"{current_selection[4]} | "
-                            f"hold mean: {current_selection[3]:.1f}/"
-                            f"{current_selection[4]} | "
-                            f"closest median: {current_selection[5]:.2f} cm"
+                            f"[selection] checkpoint entered top 3 at position "
+                            f"{current_selection[0]} | {current_selection[1]:,} steps | "
+                            f"success: {current_selection[2]:.1f}% | "
+                            f"failures: {current_selection[3]} | "
+                            f"failed hold: {current_selection[4]:.1f}/100 | "
+                            f"best window: {current_selection[5]:.1f}/100 | "
+                            f"outside excess: {current_selection[6]:.3f} cm"
                         )
                         last_selection = current_selection
                 stalled_for = time.monotonic() - last_progress_at
@@ -484,6 +669,18 @@ def copy_artifact(source: Path, destination: Path) -> None:
         shutil.copyfile(replay_buffer, destination_replay)
     elif destination_replay.exists():
         destination_replay.unlink()
+
+
+def copy_candidate_outputs(source: Path, destination: Path) -> None:
+    copy_artifact(source, destination)
+    manifest_path = source / "selection_manifest.json"
+    if not manifest_path.exists():
+        return
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    shutil.copyfile(manifest_path, destination / "selection_manifest.json")
+    for finalist in manifest["finalists"]:
+        relative = Path(finalist["path"])
+        shutil.copytree(source / relative, destination / relative)
 
 
 def validate_reusable_candidate(
@@ -525,22 +722,6 @@ def validate_reusable_candidate(
         )
 
 
-def confirm_goal(artifact_dir: Path) -> tuple[bool, list[dict]]:
-    evaluations = [
-        evaluate_artifact(
-            artifact_dir,
-            seed,
-            label=f"goal confirmation {number}/{len(CONFIRMATION_SEEDS)}",
-        )
-        for number, seed in enumerate(CONFIRMATION_SEEDS, start=1)
-    ]
-    passed = all(
-        result["success_percent"] >= FINAL_SUCCESS_PERCENT
-        for result in evaluations
-    )
-    return passed, evaluations
-
-
 def commit_result(index: int, change: str) -> None:
     paths = [
         "research/EXPERIMENTS.md",
@@ -570,6 +751,7 @@ def main() -> int:
     proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
+    experiment_kind = str(proposal.get("kind", "training")).lower()
     parameter_overrides = proposal.get("params")
     baseline = bool(proposal.get("baseline", False))
     initialization = str(proposal.get("initialization", "transfer")).lower()
@@ -596,11 +778,16 @@ def main() -> int:
         "index": index,
         "change": change,
         "hypothesis": hypothesis,
+        "kind": experiment_kind,
         "status": "error",
         "verdict": "error",
     }
     try:
         code_changes = assert_research_surface()
+        if experiment_kind not in {"training", "method"}:
+            raise ValueError("experiment kind must be training or method")
+        if baseline and experiment_kind != "training":
+            raise ValueError("a baseline must be a training experiment")
         if baseline and (parameter_overrides or code_changes):
             raise ValueError("baseline requires an unchanged research method")
         if not baseline and not parameter_overrides and not code_changes:
@@ -632,6 +819,31 @@ def main() -> int:
             )
             announce("[checks] passed")
 
+        if experiment_kind == "method":
+            method_version = int(
+                state.get("selection_method_version", SELECTION_METHOD_VERSION)
+            ) + 1
+            verdict = "method adopted"
+            state.update(
+                {
+                    "selection_method_version": method_version,
+                    "last_experiment": index,
+                    "last_verdict": verdict,
+                }
+            )
+            result.update(
+                {
+                    "status": "ok",
+                    "verdict": verdict,
+                    "selection_method_version": method_version,
+                }
+            )
+            atomic_write_json(STATE_PATH, state)
+            append_result(result)
+            commit_result(index, change)
+            announce(f"[decision] {verdict} as selection method v{method_version}")
+            return 0
+
         accepted_metrics = state.get("accepted_metrics")
         if accepted_metrics is None and not fresh_baseline:
             accepted_metrics = evaluate_artifact(
@@ -657,7 +869,7 @@ def main() -> int:
                 config=effective_config,
             )
             announce(f"[recovery] reusing completed candidate from {reusable}")
-            copy_artifact(reusable, candidate_dir)
+            copy_candidate_outputs(reusable, candidate_dir)
         else:
             train_candidate(
                 candidate_dir,
@@ -672,27 +884,52 @@ def main() -> int:
                 "training modified protected benchmark files: "
                 f"{runtime_benchmark_changes}"
             )
-        candidate_metrics = evaluate_artifact(candidate_dir, label="candidate evaluation")
-        improved = fresh_baseline or (
-            rank(candidate_metrics) > rank(accepted_metrics)
+        contenders = [
+            {
+                "name": f"candidate-{number}",
+                "kind": "candidate",
+                "path": path,
+                "evaluations": [],
+            }
+            for number, path in enumerate(finalist_directories(candidate_dir), start=1)
+        ]
+        if not fresh_baseline:
+            contenders.append(
+                {
+                    "name": "champion",
+                    "kind": "champion",
+                    "path": accepted_dir,
+                    "evaluations": [],
+                }
+            )
+        selection_method_version = int(
+            state.get("selection_method_version", SELECTION_METHOD_VERSION)
+        )
+        tournament, winner = evaluate_tournament(
+            contenders, selection_method_version
+        )
+        candidate_winner = max(
+            (item for item in tournament if item["kind"] == "candidate"),
+            key=lambda item: rank(item["summary"]),
+        )
+        challenger_archive = archive_candidate(
+            index, candidate_winner, effective_config, tournament
+        )
+        promoted = winner["kind"] == "candidate"
+        goal_reached = (
+            winner["summary"]["seeds_passing_98_percent"]
+            == winner["summary"]["seed_count"]
         )
 
-        active_dir = candidate_dir if improved else accepted_dir
-        active_metrics = candidate_metrics if improved else accepted_metrics
-        confirmations: dict[str, list[dict]] = {"evaluation": []}
-        goal_reached = False
-        if active_metrics["success_percent"] >= FINAL_SUCCESS_PERCENT:
-            announce("[confirmation] goal threshold reached; confirming result")
-            goal_reached, confirmations["evaluation"] = confirm_goal(active_dir)
-
-        if improved:
-            copy_artifact(candidate_dir, ACCEPTED_DIR)
+        if promoted:
+            copy_artifact(winner["path"], ACCEPTED_DIR)
             state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
-            state["accepted_metrics"] = candidate_metrics
+            state["accepted_metrics"] = winner["summary"]
             state["accepted_parameters"] = load_experiment_config()
-            verdict = "kept"
+            verdict = "promoted"
         else:
-            verdict = "reverted (no improvement)"
+            state["accepted_metrics"] = winner["summary"]
+            verdict = "champion retained"
             if config_written:
                 write_experiment_config(previous_config)
             if code_changes:
@@ -704,25 +941,46 @@ def main() -> int:
             )
             verdict += "; goal reached"
 
+        tournament_result = [
+            {
+                "name": item["name"],
+                "kind": item["kind"],
+                "summary": item["summary"],
+                "evaluations": metrics_without_artifact_path(item["evaluations"]),
+            }
+            for item in tournament
+        ]
+
         state.update(
             {
+                "selection_method_version": selection_method_version,
                 "last_experiment": index,
                 "last_verdict": verdict,
-                "last_metrics": candidate_metrics,
+                "last_metrics": candidate_winner["summary"],
+                "accepted_tournament": metrics_without_artifact_path(
+                    winner["evaluations"]
+                ),
             }
         )
         result.update(
             {
                 "status": "ok",
                 "verdict": verdict,
-                "accepted": improved,
+                "accepted": promoted,
+                "promoted": promoted,
                 "goal_reached": goal_reached,
-                "candidate_metrics": candidate_metrics,
-                "confirmation_metrics": confirmations,
-                "success_percent": candidate_metrics["success_percent"],
-                "closest_distance_cm": candidate_metrics[
-                    "closest_distance_cm"
-                ]["median"],
+                "selection_method_version": selection_method_version,
+                "candidate_metrics": candidate_winner["summary"],
+                "candidate_success_percent": candidate_winner["summary"][
+                    "pooled_success_percent"
+                ],
+                "candidate_seeds_passed": (
+                    f"{candidate_winner['summary']['seeds_passing_98_percent']}/"
+                    f"{candidate_winner['summary']['seed_count']}"
+                ),
+                "challenger_archive": str(challenger_archive.relative_to(ROOT)),
+                "winner": winner["name"],
+                "tournament": tournament_result,
             }
         )
         if baseline:
@@ -735,7 +993,7 @@ def main() -> int:
     except KeyboardInterrupt:
         if config_written:
             write_experiment_config(previous_config)
-        if code_changes:
+        if code_changes or status_paths(MUTABLE_PATHS):
             clean_mutable_changes()
         if baseline:
             announce(
@@ -751,10 +1009,13 @@ def main() -> int:
     except Exception as error:  # noqa: BLE001
         if config_written:
             write_experiment_config(previous_config)
-        if code_changes:
+        if code_changes or status_paths(MUTABLE_PATHS):
             clean_mutable_changes()
         result["error"] = str(error)[:500]
-        result["verdict"] = f"error: {str(error)[:120]}"
+        if experiment_kind == "method":
+            result["verdict"] = "method rejected"
+        else:
+            result["verdict"] = "invalid"
         append_result(result)
         atomic_write_json(STATE_PATH, state)
         commit_result(index, change)

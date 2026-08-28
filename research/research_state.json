@@ -62,8 +62,9 @@
     "training": {
       "checkpoint_every_steps": 5000,
       "n_envs": 1,
-      "selection_eval_episodes": 10,
-      "selection_eval_every_steps": 20000
+      "selection_eval_episodes": 50,
+      "selection_eval_every_steps": 20000,
+      "selection_top_k": 3
     }
   },
   "current_stage": 0,
@@ -90,5 +91,6 @@
     "success_percent": 98.5
   },
   "last_verdict": "reverted (no improvement)",
+  "selection_method_version": 2,
   "schema_version": 2
 }

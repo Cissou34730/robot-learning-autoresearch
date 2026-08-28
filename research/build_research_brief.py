@@ -199,23 +199,18 @@ def render_research_brief() -> str:
             if line.strip()
         ]
     accepted_metrics = state.get("accepted_metrics")
-    accepted_score = (
-        accepted_metrics["success_percent"]
-        if accepted_metrics is not None
-        else None
-    )
+    accepted_score = None
+    if accepted_metrics is not None:
+        accepted_score = accepted_metrics.get(
+            "pooled_success_percent", accepted_metrics.get("success_percent")
+        )
     accepted_status = (
         f"{accepted_score:g}%" if accepted_score is not None else "baseline pending"
     )
-    accepted_hold = (
-        accepted_metrics.get("consecutive_hold_steps", {})
+    accepted_progress = (
+        accepted_metrics.get("failed_episode_progress", {})
         if accepted_metrics is not None
         else {}
-    )
-    accepted_closest = (
-        accepted_metrics.get("closest_distance_cm", {}).get("median", "-")
-        if accepted_metrics is not None
-        else "-"
     )
 
     lines = [
@@ -237,16 +232,14 @@ def render_research_brief() -> str:
         "## Current status",
         "",
         f"- Evaluation target: {100 * SUCCESS_THRESHOLD:g} cm / {HOLD_SECONDS:g} s",
+        f"- Selection method: v{state.get('selection_method_version', 1)}",
         f"- Accepted success: {accepted_status}",
         (
-            f"- Accepted hold median: {accepted_hold.get('median', '-')} / "
-            f"{accepted_hold.get('required', '-')}"
+            f"- Accepted seeds passing 98%: "
+            f"{accepted_metrics.get('seeds_passing_98_percent', '-') if accepted_metrics else '-'}"
+            f"/{accepted_metrics.get('seed_count', '-') if accepted_metrics else '-'}"
         ),
-        (
-            f"- Accepted hold mean: {accepted_hold.get('mean', '-')} / "
-            f"{accepted_hold.get('required', '-')}"
-        ),
-        f"- Accepted closest median: {accepted_closest} cm",
+        f"- Accepted failed episodes: {accepted_progress.get('failed_episodes', '-')}",
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         f"- Last experiment: {state.get('last_experiment', 'none')}",
         f"- Last verdict: {state.get('last_verdict', 'none')}",
@@ -261,19 +254,24 @@ def render_research_brief() -> str:
             "## Current experiments"
         ),
         "",
-        "| # | Change | Success | Hold median | Hold mean | Closest cm | Verdict |",
+        "| # | Change | Pooled success | Seeds passed | Failed hold | Best window | Verdict |",
         "|---:|---|---:|---:|---:|---:|---|",
     ]
 
     for result in results[-5:]:
         candidate = result.get("candidate_metrics", {})
-        hold = candidate.get("consecutive_hold_steps", {})
+        progress = candidate.get("failed_episode_progress", {})
+        pooled_success = candidate.get(
+            "pooled_success_percent", candidate.get("success_percent", "-")
+        )
+        passed = candidate.get("seeds_passing_98_percent", "-")
+        seed_count = candidate.get("seed_count", "-")
         lines.append(
             f"| {result['index']} | {_compact(result['change'], 180)} | "
-            f"{result.get('success_percent', '-')} | "
-            f"{hold.get('median', '-')} | "
-            f"{hold.get('mean', '-')} | "
-            f"{result.get('closest_distance_cm', '-')} | "
+            f"{pooled_success} | "
+            f"{passed}/{seed_count} | "
+            f"{progress.get('longest_consecutive_steps_mean', '-')} | "
+            f"{progress.get('best_window_inside_steps_mean', '-')} | "
             f"{_compact(result['verdict'], 80)} |"
         )
     if not results:

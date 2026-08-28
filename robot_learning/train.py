@@ -135,6 +135,7 @@ def main() -> None:
             output_dir=args.output_dir,
             eval_every_steps=int(training["selection_eval_every_steps"]),
             episodes=int(training["selection_eval_episodes"]),
+            top_k=int(training["selection_top_k"]),
         ),
     ]
     if args.view:
@@ -153,23 +154,6 @@ def main() -> None:
         if hasattr(model, "save_replay_buffer"):
             model.save_replay_buffer(args.output_dir / "last_replay_buffer.pkl")
         venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
-        best_model = args.output_dir / "best_model.zip"
-        best_stats = args.output_dir / "best_vecnormalize.pkl"
-        if best_model.exists() and best_stats.exists():
-            shutil.copyfile(best_model, args.output_dir / "model.zip")
-            shutil.copyfile(best_stats, args.output_dir / "vecnormalize.pkl")
-            best_replay = args.output_dir / "best_replay_buffer.pkl"
-            if best_replay.exists():
-                shutil.copyfile(best_replay, args.output_dir / "replay_buffer.pkl")
-        else:
-            shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
-            shutil.copyfile(
-                args.output_dir / "last_vecnormalize.pkl",
-                args.output_dir / "vecnormalize.pkl",
-            )
-            last_replay = args.output_dir / "last_replay_buffer.pkl"
-            if last_replay.exists():
-                shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
         artifact = {
             "schema_version": 1,
             "algorithm": algorithm,
@@ -184,6 +168,33 @@ def main() -> None:
             json.dumps(artifact, indent=2, default=str) + "\n",
             encoding="utf-8",
         )
+        manifest_path = args.output_dir / "selection_manifest.json"
+        if manifest_path.exists():
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            selected_dir = args.output_dir / manifest["finalists"][0]["path"]
+            for finalist in manifest["finalists"]:
+                finalist_dir = args.output_dir / finalist["path"]
+                (finalist_dir / "artifact.json").write_text(
+                    json.dumps(artifact, indent=2, default=str) + "\n",
+                    encoding="utf-8",
+                )
+            shutil.copyfile(selected_dir / "model.zip", args.output_dir / "model.zip")
+            shutil.copyfile(
+                selected_dir / "vecnormalize.pkl",
+                args.output_dir / "vecnormalize.pkl",
+            )
+            selected_replay = selected_dir / "replay_buffer.pkl"
+            if selected_replay.exists():
+                shutil.copyfile(selected_replay, args.output_dir / "replay_buffer.pkl")
+        else:
+            shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
+            shutil.copyfile(
+                args.output_dir / "last_vecnormalize.pkl",
+                args.output_dir / "vecnormalize.pkl",
+            )
+            last_replay = args.output_dir / "last_replay_buffer.pkl"
+            if last_replay.exists():
+                shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
         print(f"ARTIFACT_DIR: {args.output_dir.resolve()}")
 
 

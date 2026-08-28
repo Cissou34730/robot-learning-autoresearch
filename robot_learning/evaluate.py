@@ -5,9 +5,9 @@ from pathlib import Path
 import numpy as np
 
 from robot_learning.benchmark.metrics import (
-    maximum_consecutive_hold_steps,
+    episode_hold_progress,
     milestone_steps,
-    summarize_consecutive_hold_steps,
+    summarize_hold_progress,
 )
 from robot_learning.benchmark.spec import (
     EVALUATION_EPISODES,
@@ -42,8 +42,7 @@ def evaluate_model(
         normalize_obs = lambda obs: obs
 
     successes = 0
-    consecutive_hold_steps: list[int] = []
-    closest_distances: list[float] = []
+    episode_progress: list[dict] = []
     final_distances: list[float] = []
     control_dt = env.model.opt.timestep * env.frame_skip
     required_hold_steps = milestone_steps(HOLD_SECONDS, control_dt)
@@ -56,25 +55,20 @@ def evaluate_model(
             obs, _, terminated, truncated, info = env.step(action)
             distances.append(float(info["distance"]))
             done = terminated or truncated
-        maximum_hold = maximum_consecutive_hold_steps(distances)
-        successes += maximum_hold >= required_hold_steps
-        consecutive_hold_steps.append(maximum_hold)
-        closest_distances.append(min(distances))
+        progress = episode_hold_progress(distances, required_hold_steps)
+        successes += progress["success"]
+        episode_progress.append(progress)
         final_distances.append(distances[-1])
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
         "success_percent": 100 * successes / episodes,
-        "consecutive_hold_steps": summarize_consecutive_hold_steps(
-            consecutive_hold_steps, required_hold_steps
+        "failed_episode_progress": summarize_hold_progress(
+            episode_progress, required_hold_steps
         ),
-        "closest_distance_cm": {
-            "mean": float(np.mean(closest_distances) * 100),
-            "median": float(np.median(closest_distances) * 100),
-        },
         "final_distance_cm": {
             "mean": float(np.mean(final_distances) * 100),
             "median": float(np.median(final_distances) * 100),
