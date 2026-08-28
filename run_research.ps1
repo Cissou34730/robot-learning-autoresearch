@@ -100,11 +100,20 @@ while ($true) {
 
     Write-Host "=== New experiment at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
+    $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     opencode run --model $model --variant $reasoning "Read research/program.md and execute exactly one experiment following its protocol."
 
     Update-ResearchBrief
     Save-ResearchMemory
     Assert-BenchmarkIntegrity
+    if (-not (Test-Path "research\proposal.json")) {
+        $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
+        if ($resultCountAfter -gt $resultCountBefore) {
+            Write-Host "=== Experiment was already executed during the research session ==="
+            continue
+        }
+        throw "Research session ended without creating research/proposal.json."
+    }
     uv run python research/run_experiment.py
     if ($LASTEXITCODE -eq 130) {
         Write-Host "=== Experiment interrupted cleanly; no candidate accepted ==="

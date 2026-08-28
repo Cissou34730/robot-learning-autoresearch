@@ -68,6 +68,8 @@ TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
+MIN_EVALUATION_TIMEOUT_SECONDS = 10 * 60
+EVALUATION_TIMEOUT_SECONDS_PER_EPISODE = 10
 SELECTION_METHOD_VERSION = 4
 # Development selection uses seed 2000 and the immutable reported benchmark uses
 # EVALUATION_SEED (1000). Tournament data must be disjoint from both.
@@ -392,6 +394,10 @@ def evaluate_artifact(
         f"[evaluation] {label} | {episodes} episodes | seed {seed}"
     )
     started = time.monotonic()
+    timeout_seconds = max(
+        MIN_EVALUATION_TIMEOUT_SECONDS,
+        episodes * EVALUATION_TIMEOUT_SECONDS_PER_EPISODE,
+    )
     process = subprocess.Popen(
         command,
         cwd=ROOT,
@@ -412,9 +418,12 @@ def evaluate_artifact(
                     f"[evaluation] {label} still running "
                     f"({format_duration(time.monotonic() - started)} elapsed)"
                 )
-                if time.monotonic() - started > 10 * 60:
+                if time.monotonic() - started > timeout_seconds:
                     stop_process(process, graceful=False)
-                    raise TimeoutError(f"{label} exceeded the 10 minute safety limit")
+                    raise TimeoutError(
+                        f"{label} exceeded the "
+                        f"{format_duration(timeout_seconds)} safety limit"
+                    )
     except KeyboardInterrupt:
         announce(f"\n[runner] Stopping {label}...")
         stop_process(process, graceful=True)
