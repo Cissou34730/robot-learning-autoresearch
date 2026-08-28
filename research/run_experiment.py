@@ -305,6 +305,53 @@ def next_index() -> int:
     return max(indices, default=0) + 1
 
 
+def parameter_change_records(
+    previous: dict,
+    overrides: dict,
+    prefix: str = "",
+) -> list[dict]:
+    """Describe only the leaves explicitly changed by a proposal."""
+    changes: list[dict] = []
+    for key, after in overrides.items():
+        path = f"{prefix}.{key}" if prefix else key
+        before = previous.get(key) if isinstance(previous, dict) else None
+        if isinstance(after, dict):
+            changes.extend(
+                parameter_change_records(
+                    before if isinstance(before, dict) else {},
+                    after,
+                    path,
+                )
+            )
+        elif before != after:
+            changes.append({"path": path, "before": before, "after": after})
+    return changes
+
+
+def experiment_family(
+    proposal: dict,
+    experiment_kind: str,
+    parameter_changes: list[dict],
+    code_changes: list[str],
+) -> str:
+    declared = str(proposal.get("family", "")).strip()
+    if declared:
+        return declared
+    if experiment_kind == "calibration":
+        return "research.training_seed_calibration"
+    if proposal.get("baseline"):
+        return "training.baseline"
+    parameter_paths = sorted({item["path"] for item in parameter_changes})
+    if parameter_paths:
+        return "+".join(parameter_paths)
+    if experiment_kind == "method":
+        return "research.selection_method"
+    if code_changes:
+        normalized = re.sub(r"[^a-z0-9]+", "_", str(proposal["change"]).lower())
+        return f"code.{normalized.strip('_')[:80]}"
+    return experiment_kind
+
+
 def append_result(result: dict) -> None:
     with RESULTS_PATH.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(result, sort_keys=True) + "\n")
@@ -994,11 +1041,16 @@ def main() -> int:
         "change": change,
         "hypothesis": hypothesis,
         "kind": experiment_kind,
+        "family": str(proposal.get("family", "")).strip() or experiment_kind,
+        "initialization": initialization,
+        "parameter_changes": [],
+        "code_changes": [],
         "status": "error",
         "verdict": "error",
     }
     try:
         code_changes = assert_research_surface()
+        result["code_changes"] = code_changes
         if experiment_kind not in {"training", "method", "calibration"}:
             raise ValueError("experiment kind must be training, method, or calibration")
         if baseline and experiment_kind != "training":
@@ -1037,10 +1089,19 @@ def main() -> int:
         if parameter_overrides:
             announce("[checks] validating proposed parameters")
             validate_param_overrides(parameter_overrides)
+            result["parameter_changes"] = parameter_change_records(
+                previous_config, parameter_overrides
+            )
             write_experiment_config(
                 merge_param_overrides(previous_config, parameter_overrides)
             )
             config_written = True
+        result["family"] = experiment_family(
+            proposal,
+            experiment_kind,
+            result["parameter_changes"],
+            code_changes,
+        )
         if code_changes:
             announce("[checks] running research-surface checks")
             run_module("ruff", "check", *MUTABLE_CODE_PATHS)
@@ -1092,6 +1153,7 @@ def main() -> int:
             fresh_baseline,
             int(state.get("accepted_training_steps", args.timesteps)),
         )
+        result["training_budget_steps"] = effective_timesteps
         if initialization == "fresh" and not fresh_baseline:
             announce(
                 "[training plan] fresh initialization receives the fixed "

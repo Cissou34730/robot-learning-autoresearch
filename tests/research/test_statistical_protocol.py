@@ -3,6 +3,8 @@ import json
 import pytest
 
 from research.run_experiment import (
+    experiment_family,
+    parameter_change_records,
     record_previous_postmortem,
     select_tournament_winner,
     summarize_noise_floor,
@@ -118,6 +120,27 @@ def test_fresh_challenger_receives_runner_owned_compute_matching():
     assert training_budget(120_000, "transfer", False, 720_000) == 120_000
     assert training_budget(120_000, "fresh", False, 720_000) == 720_000
     assert training_budget(120_000, "fresh", True, 720_000) == 120_000
+
+
+def test_experiment_card_records_exact_nested_parameter_changes():
+    previous = {"ppo": {"n_steps": 4096, "learning_rate": 5e-5}}
+    overrides = {"ppo": {"n_steps": 16384}}
+
+    changes = parameter_change_records(previous, overrides)
+
+    assert changes == [{"path": "ppo.n_steps", "before": 4096, "after": 16384}]
+    assert experiment_family({}, "training", changes, []) == "ppo.n_steps"
+
+
+def test_declared_code_family_is_stable_across_numeric_variants():
+    proposal = {"family": "reward.outside_boundary_penalty"}
+
+    assert experiment_family(
+        proposal,
+        "training",
+        [],
+        ["robot_learning/rewards/reach_reward.py"],
+    ) == "reward.outside_boundary_penalty"
 
 
 def test_previous_postmortem_is_required_and_recorded(monkeypatch, tmp_path):

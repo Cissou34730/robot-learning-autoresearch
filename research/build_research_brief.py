@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections import Counter
 from pathlib import Path
 
 from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
@@ -167,6 +168,146 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
     return memories
 
 
+def _postmortem_lessons(text: str) -> dict[int, str]:
+    lessons: dict[int, str] = {}
+    sections = re.split(r"(?=^## Experiment \d+\b)", text, flags=re.MULTILINE)
+    for section in sections:
+        title = re.match(r"^## Experiment (\d+)\b", section)
+        learned = re.search(
+            r"\*\*What was learned / do NOT retry:\*\*\s*(.+?)"
+            r"(?=\n\s*\n|\n\*\*|\Z)",
+            section,
+            flags=re.DOTALL,
+        )
+        if title and learned:
+            lessons[int(title.group(1))] = _compact(learned.group(1), 240)
+    return lessons
+
+
+def _legacy_family(result: dict) -> str:
+    if result.get("family") and result["family"] not in {
+        "training",
+        "method",
+        "calibration",
+    }:
+        return str(result["family"])
+    if result.get("kind") == "calibration":
+        return "research.training_seed_calibration"
+    change = str(result.get("change", "")).lower()
+    families = [
+        (("rollout length",), "ppo.n_steps"),
+        (("learning rate",), "ppo.learning_rate"),
+        (("entropy",), "ppo.ent_coef"),
+        (("gae",), "ppo.gae_lambda"),
+        (("minibatch", "batch size"), "ppo.batch_size"),
+        (("optimization epochs", "update epochs"), "ppo.n_epochs"),
+        (("gradient clipping",), "ppo.max_grad_norm"),
+        (("value-function loss", "value function loss"), "ppo.vf_coef"),
+        (("clipping range",), "ppo.clip_range"),
+        (("discount factor",), "ppo.gamma"),
+        (("target kl",), "ppo.target_kl"),
+        (("policy network", "network"), "policy.net_arch"),
+        (("relu", "activation"), "policy.activation"),
+        (("action standard deviation",), "policy.log_std_init"),
+        (("parallel",), "training.n_envs"),
+        (("sac",), "algorithm.name"),
+        (("dwell reward",), "reward.DWELL_BONUS_PER_STEP"),
+        (("completion bonus",), "reward.HOLD_COMPLETE_BONUS"),
+        (("closeness reward potential", "sharpen closeness"), "reward.CLOSENESS_LENGTH_SCALE"),
+        (("closeness reward",), "reward.CLOSENESS_COEFFICIENT"),
+        (("progress reward",), "reward.PROGRESS_COEFFICIENT"),
+        (("action cost",), "reward.ACTION_COST_COEFFICIENT"),
+        (("selection evaluation episodes",), "training.selection_eval_episodes"),
+        (("checkpoint selection frequency",), "training.selection_eval_every_steps"),
+        (("baseline",), "training.baseline"),
+    ]
+    for terms, family in families:
+        if any(term in change for term in terms):
+            return family
+    return _compact(str(result.get("change", result.get("kind", "unknown"))), 80)
+
+
+def _change_details(result: dict) -> str:
+    parameter_changes = result.get("parameter_changes") or []
+    if parameter_changes:
+        return "; ".join(
+            f"{item['path']}: {item.get('before')} → {item.get('after')}"
+            for item in parameter_changes
+        )
+    hypothesis = str(result.get("hypothesis", ""))
+    transitions = re.findall(
+        r"(?:from\s+)?(`?[-+]?\d[\d,._e-]*`?)\s+"
+        r"(?:to|->|→)\s+(`?[-+]?\d[\d,._e-]*`?)",
+        hypothesis,
+        flags=re.IGNORECASE,
+    )
+    if transitions:
+        unique_transitions = list(dict.fromkeys(transitions))
+        return "; ".join(
+            f"{before} → {after}" for before, after in unique_transitions
+        )
+    code_changes = result.get("code_changes") or []
+    if code_changes:
+        return f"{result.get('change', '-')}; files: {', '.join(code_changes)}"
+    return str(result.get("change", "-"))
+
+
+def _experiment_outcome(result: dict) -> str:
+    candidate = result.get("candidate_metrics") or {}
+    success = candidate.get("pooled_success_percent", candidate.get("success_percent"))
+    paired = None
+    for contender in result.get("tournament", []):
+        if contender.get("kind") == "candidate":
+            paired = contender.get("paired_vs_champion")
+            break
+    parts = []
+    if success is not None:
+        parts.append(f"success {float(success):.2f}%")
+    if paired:
+        parts.append(
+            f"paired wins {paired.get('candidate_wins', '-')}/"
+            f"{paired.get('reference_wins', '-')}, "
+            f"p={paired.get('exact_p_value', '-')}"
+        )
+    if result.get("noise_floor"):
+        parts.append(
+            f"noise range {result['noise_floor']['pooled_success_range_pp']:.3f} pp"
+        )
+    if result.get("error"):
+        parts.append(_compact(str(result["error"]), 120))
+    return "; ".join(parts) or "no measured candidate result"
+
+
+def _calibration_failure_diagnostics(results: list[dict]) -> list[dict]:
+    calibration = next(
+        (
+            result
+            for result in reversed(results)
+            if result.get("calibration_archive") and result.get("status") == "ok"
+        ),
+        None,
+    )
+    if calibration is None:
+        return []
+    path = ROOT / calibration["calibration_archive"] / "calibration.json"
+    if not path.exists():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    diagnostics = [
+        item
+        for replicate in payload.get("replicates", [])
+        for item in replicate.get("summary", {}).get("failure_diagnostics", [])
+    ]
+    counts = Counter(item["episode_seed"] for item in diagnostics)
+    representative = {}
+    for item in diagnostics:
+        representative.setdefault(item["episode_seed"], item)
+    return [
+        {**representative[seed], "replicate_failures": count}
+        for seed, count in counts.most_common(5)
+    ]
+
+
 def render_research_brief() -> str:
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
@@ -281,59 +422,95 @@ def render_research_brief() -> str:
         json.dumps(params, indent=2),
         "```",
         "",
-        (
-            "## Current experiments"
-        ),
+        "## Recent experiment cards",
         "",
-        "| # | Change | Pooled success | Seeds passed | Failed hold | Best window | Verdict |",
-        "|---:|---|---:|---:|---:|---:|---|",
+        "| # | Family | Exact change | Init / budget | Outcome | Verdict |",
+        "|---:|---|---|---|---|---|",
     ]
 
     for result in results[-5:]:
-        candidate = result.get("candidate_metrics", {})
-        progress = candidate.get("failed_episode_progress", {})
-        pooled_success = candidate.get(
-            "pooled_success_percent", candidate.get("success_percent", "-")
-        )
-        passed = candidate.get("seeds_passing_98_percent", "-")
-        seed_count = candidate.get("seed_count", "-")
+        family = _legacy_family(result).replace("|", "/")
+        details = _compact(_change_details(result), 220).replace("|", "/")
+        initialization = result.get("initialization", "-")
+        budget = result.get("training_budget_steps")
+        setup = initialization
+        if budget is not None:
+            setup += f" / {int(budget):,} steps"
+        outcome = _compact(_experiment_outcome(result), 220).replace("|", "/")
+        verdict = _compact(result["verdict"], 100).replace("|", "/")
         lines.append(
-            f"| {result['index']} | {_compact(result['change'], 180)} | "
-            f"{pooled_success} | "
-            f"{passed}/{seed_count} | "
-            f"{progress.get('longest_consecutive_steps_mean', '-')} | "
-            f"{progress.get('best_window_inside_steps_mean', '-')} | "
-            f"{_compact(result['verdict'], 80)} |"
+            f"| {result['index']} | {family} | {details} | {setup} | "
+            f"{outcome} | {verdict} |"
         )
     if not results:
-        lines.append("| - | New baseline pending | - | - | - | - | - |")
+        lines.append("| - | training.baseline | New baseline pending | - | - | - |")
 
-    tested = [
-        f"#{result['index']} {_compact(result['change'], 100)}"
-        for result in results
-        if result.get("status") == "ok"
-    ]
-    lines.extend(["", "## Hypotheses already tested", ""])
-    if tested:
-        lines.append("; ".join(tested))
+    lessons = _postmortem_lessons(postmortems)
+    families: dict[str, dict[str, list[str] | str]] = {}
+    for result in results:
+        family = _legacy_family(result)
+        entry = families.setdefault(
+            family,
+            {"experiments": [], "changes": [], "lesson": "-"},
+        )
+        experiment_label = f"#{result['index']} {result['verdict']}"
+        entry["experiments"].append(experiment_label)
+        details = _change_details(result)
+        if details not in entry["changes"]:
+            entry["changes"].append(details)
+        if int(result["index"]) in lessons:
+            entry["lesson"] = lessons[int(result["index"])]
+
+    lines.extend(
+        [
+            "",
+            "## Tested hypothesis families",
+            "",
+            (
+                "A different numeric value is not a new hypothesis family. Revisit a "
+                "family only when new evidence identifies a materially different mechanism."
+            ),
+            "",
+            "| Family | Experiments and verdicts | Changes tested | Latest conclusion |",
+            "|---|---|---|---|",
+        ]
+    )
+    if families:
+        for family, entry in families.items():
+            experiments = _compact("; ".join(entry["experiments"]), 280)
+            changes = _compact("; ".join(entry["changes"]), 320)
+            lesson = _compact(str(entry["lesson"]), 240)
+            lines.append(
+                f"| {family.replace('|', '/')} | {experiments.replace('|', '/')} | "
+                f"{changes.replace('|', '/')} | {lesson.replace('|', '/')} |"
+            )
     else:
-        lines.append("None yet.")
+        lines.append("| None yet | - | - | - |")
 
     diagnostics = (
         accepted_metrics.get("failure_diagnostics", []) if accepted_metrics else []
     )
-    lines.extend(["", "## Accepted-policy failure diagnostics", ""])
+    calibration_diagnostics = False
+    if not diagnostics:
+        diagnostics = _calibration_failure_diagnostics(results)
+        calibration_diagnostics = bool(diagnostics)
+    lines.extend(["", "## Observed failure diagnostics", ""])
     if diagnostics:
         for item in diagnostics[:5]:
+            recurrence = (
+                f", failed in {item['replicate_failures']}/3 unchanged training replicates"
+                if calibration_diagnostics
+                else ""
+            )
             lines.append(
                 f"- seed {item['episode_seed']}: radius "
                 f"{item['target_radius_cm']:.2f} cm, angle "
                 f"{item['target_angle_degrees']:.1f}°, longest hold "
                 f"{item['longest_consecutive_steps']}/100, best window "
-                f"{item['best_window_inside_steps']}/100."
+                f"{item['best_window_inside_steps']}/100{recurrence}."
             )
     else:
-        lines.append("Not available until the next v3 tournament evaluation.")
+        lines.append("Not available yet.")
 
     lines.extend(["", "## Recent scientific memory", ""])
     memories = _postmortem_memory(postmortems)

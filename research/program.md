@@ -32,6 +32,12 @@ measurement across the runner-owned training seeds. Do not launch training or th
 verifies the protected files and executes the proposal after your process
 exits.
 
+The runner records a factual experiment card containing the stable hypothesis
+family, exact parameter differences, changed code files, initialization, budget,
+outcome, and verdict. Parameter-only families are derived from their parameter
+paths. For a code experiment, add a concise stable `"family"` to the proposal;
+changing only a numeric value does not create a new hypothesis family.
+
 At the start of each session, read `research/brief.md` and, when a previous
 experiment exists, `research/last_train_summary.md`. Analyze that result before
 choosing the next hypothesis. Do not paste full logs or histories into context.
