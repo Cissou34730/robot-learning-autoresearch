@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -11,6 +12,7 @@ from research.run_experiment import (
     load_state,
     validate_reusable_candidate,
 )
+from robot_learning.evaluate import write_progress
 
 
 def test_research_surface_has_no_file_whitelist(monkeypatch):
@@ -53,6 +55,21 @@ def test_duration_is_compact_and_human_readable():
     assert format_duration(15) == "15s"
     assert format_duration(125) == "2m05s"
     assert format_duration(3720) == "1h02m"
+
+
+def test_evaluation_progress_is_best_effort(monkeypatch, tmp_path):
+    progress = tmp_path / "evaluation.progress"
+    assert write_progress(progress, 80, 200)
+    assert json.loads(progress.read_text(encoding="utf-8")) == {
+        "completed": 80,
+        "total": 200,
+    }
+
+    def deny_write(_path, *_args, **_kwargs):
+        raise PermissionError("simulated Windows reader lock")
+
+    monkeypatch.setattr(Path, "write_text", deny_write)
+    assert not write_progress(progress, 81, 200)
 
 
 def test_fresh_baseline_can_start_without_an_accepted_artifact(

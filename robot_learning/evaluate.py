@@ -104,21 +104,29 @@ def evaluate_model(
     }
 
 
+def write_progress(path: Path, completed: int, total: int) -> bool:
+    """Write best-effort telemetry without risking the evaluation itself."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps({"completed": completed, "total": total}) + "\n",
+            encoding="utf-8",
+        )
+    except OSError:
+        # Progress is only a heartbeat. The final evaluation result remains the
+        # authoritative output and must not fail because Windows briefly locks
+        # this file while the parent process reads it.
+        return False
+    return True
+
+
 def main() -> None:
     args = parse_args()
 
     def report_progress(completed: int, total: int) -> None:
         if args.progress_json is None:
             return
-        args.progress_json.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = args.progress_json.with_suffix(
-            args.progress_json.suffix + ".tmp"
-        )
-        temporary_path.write_text(
-            json.dumps({"completed": completed, "total": total}) + "\n",
-            encoding="utf-8",
-        )
-        temporary_path.replace(args.progress_json)
+        write_progress(args.progress_json, completed, total)
 
     result = evaluate_model(
         args.model,

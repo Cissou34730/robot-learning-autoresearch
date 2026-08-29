@@ -156,6 +156,23 @@
     ],
     "champion_available": false,
     "code_parent_commit": "930dc424d92644cce208f2299b07d03be39ad0af",
+    "evaluation_plan": {
+      "evaluations": [
+        {
+          "candidate": "checkpoint-60416",
+          "episodes": 200,
+          "label": "mid-training benchmark and hold diagnostic",
+          "seed": 1000
+        },
+        {
+          "candidate": "checkpoint-120832",
+          "episodes": 200,
+          "label": "final baseline benchmark and hold diagnostic",
+          "seed": 1000
+        }
+      ],
+      "experiment": 1
+    },
     "experiment": 1,
     "initialization": "fresh",
     "parameters": {
@@ -206,6 +223,7 @@
       }
     },
     "parent_training_steps": 0,
+    "partial_evaluations": [],
     "result": {
       "change": "Fresh PPO baseline",
       "code_changes": [],

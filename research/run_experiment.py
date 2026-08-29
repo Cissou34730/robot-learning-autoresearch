@@ -367,7 +367,11 @@ def evaluate_artifact(
     output_path = output_path or RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
     progress_path = output_path.with_suffix(output_path.suffix + ".progress")
+    stale_temporary_progress = progress_path.with_suffix(
+        progress_path.suffix + ".tmp"
+    )
     progress_path.unlink(missing_ok=True)
+    stale_temporary_progress.unlink(missing_ok=True)
     command = [
         sys.executable,
         "-m",
@@ -447,6 +451,7 @@ def evaluate_artifact(
         stdout = stdout_file.read()
         stderr = stderr_file.read()
     progress_path.unlink(missing_ok=True)
+    stale_temporary_progress.unlink(missing_ok=True)
     if process.returncode != 0:
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
