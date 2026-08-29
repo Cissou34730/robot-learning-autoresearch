@@ -108,6 +108,17 @@ while ($true) {
     }
 
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    if ($null -ne $researchState.pending_final_benchmark) {
+        Write-Host "=== Evaluating the committed accepted lineage on the final benchmark ==="
+        uv run python research/run_experiment.py --evaluate-pending-final
+        if ($LASTEXITCODE -ne 0) {
+            throw "Final benchmark failed. The committed lineage remains pending for recovery."
+        }
+        Update-ResearchBrief
+        Write-Host "=== Final benchmark complete ==="
+        continue
+    }
+
     if ($null -ne $researchState.pending_evaluation_request) {
         Update-ResearchBrief
         $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
@@ -184,7 +195,7 @@ while ($true) {
             "This is the complete lineage-resolution task; do not wait for more input."
             "Read research/program.md and research/brief.md."
             "Record the required postmortem and write research/proposal.json containing only previous_result_decision for the pending experiment."
-            "Decide the measured model lineage, code lineage, retained alternatives, and any preserved candidate artifacts."
+            "Decide the measured model lineage, code lineage, and retained alternatives."
             "Do not create the next scientific mutation, evaluation request, or training proposal. Do not run the runner."
         ) -join " "
         opencode run --model $model --variant $reasoning $decisionPrompt

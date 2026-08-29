@@ -315,13 +315,48 @@ def _failure_profile(metrics: dict | None) -> list[str]:
     return lines
 
 
+def _replicated_experiment_index(result: dict) -> int | None:
+    raw_value = result.get("replication_of")
+    if raw_value is None:
+        return None
+    try:
+        return int(str(raw_value))
+    except ValueError:
+        return None
+
+
+def _result_index(result: dict) -> int | None:
+    raw_value = result.get("index")
+    if raw_value is None:
+        return None
+    try:
+        return int(str(raw_value))
+    except ValueError:
+        return None
+
+
 def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
-    groups: dict[str, list[dict]] = {}
+    groups: dict[int, list[dict]] = {}
     for result in results:
-        identity = str(result.get("replication_of", "")).strip()
-        if identity:
-            groups.setdefault(identity, []).append(result)
-    return [(identity, entries) for identity, entries in groups.items() if len(entries) > 1]
+        replicated_experiment = _replicated_experiment_index(result)
+        if replicated_experiment is not None:
+            groups.setdefault(replicated_experiment, [])
+    results_by_index: dict[int, dict] = {}
+    for result in results:
+        result_index = _result_index(result)
+        if result_index is not None:
+            results_by_index[result_index] = result
+    for original, entries in groups.items():
+        if original in results_by_index:
+            entries.append(results_by_index[original])
+        for result in results:
+            if _replicated_experiment_index(result) == original:
+                entries.append(result)
+    return [
+        (str(original), entries)
+        for original, entries in groups.items()
+        if len(entries) > 1
+    ]
 
 
 def render_research_brief() -> str:
@@ -559,14 +594,14 @@ def render_research_brief() -> str:
         for identity, entries in replication_groups:
             replication_details: list[str] = []
             successes = []
-            for entry in entries:
-                metrics = entry.get("candidate_metrics") or {}
+            for replication_result in entries:
+                metrics = replication_result.get("candidate_metrics") or {}
                 success = metrics.get("pooled_success_percent", metrics.get("success_percent"))
                 if success is not None:
                     successes.append(float(success))
                 replication_details.append(
-                    f"seed {entry.get('training_seed', '-')}: "
-                    f"{_experiment_outcome(entry)}"
+                    f"seed {replication_result.get('training_seed', '-')}: "
+                    f"{_experiment_outcome(replication_result)}"
                 )
             spread = (
                 f" success range {min(successes):.2f}-{max(successes):.2f}%"
@@ -581,17 +616,18 @@ def render_research_brief() -> str:
     families: dict[str, FamilySummary] = {}
     for result in results:
         family = _legacy_family(result)
-        entry = families.setdefault(
-            family,
-            {"experiments": [], "changes": [], "lesson": "-"},
-        )
+        family_summary: FamilySummary | None = families.get(family)
+        if family_summary is None:
+            family_summary = {"experiments": [], "changes": [], "lesson": "-"}
+            families[family] = family_summary
         experiment_label = f"#{result['index']} {result['verdict']}"
-        entry["experiments"].append(experiment_label)
+        family_summary["experiments"].append(experiment_label)
         details = _change_details(result)
-        if details not in entry["changes"]:
-            entry["changes"].append(details)
-        if int(result["index"]) in lessons:
-            entry["lesson"] = lessons[int(result["index"])]
+        if details not in family_summary["changes"]:
+            family_summary["changes"].append(details)
+        result_index = _result_index(result)
+        if result_index in lessons:
+            family_summary["lesson"] = lessons[result_index]
 
     lines.extend(
         [
@@ -608,10 +644,10 @@ def render_research_brief() -> str:
         ]
     )
     if families:
-        for family, entry in families.items():
-            experiments = _compact("; ".join(entry["experiments"]), 280)
-            changes = _compact("; ".join(entry["changes"]), 320)
-            lesson = _compact(str(entry["lesson"]), 240)
+        for family, family_summary in families.items():
+            experiments = _compact("; ".join(family_summary["experiments"]), 280)
+            changes = _compact("; ".join(family_summary["changes"]), 320)
+            lesson = _compact(str(family_summary["lesson"]), 240)
             lines.append(
                 f"| {family.replace('|', '/')} | {experiments.replace('|', '/')} | "
                 f"{changes.replace('|', '/')} | {lesson.replace('|', '/')} |"

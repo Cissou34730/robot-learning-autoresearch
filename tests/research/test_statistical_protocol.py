@@ -5,6 +5,7 @@ import pytest
 from research.run_experiment import (
     apply_previous_result_decision,
     execute_pending_evaluations,
+    execute_pending_final_benchmark,
     experiment_family,
     parameter_change_records,
     plan_previous_result_decision,
@@ -231,6 +232,57 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     assert len(final_state["pending_researcher_decision"]["candidates"][0]["evaluations"]) == 1
 
 
+def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_path):
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state_path.write_text(json.dumps({
+        "schema_version": 2, "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 4,
+            "candidates": [{"name": "checkpoint", "artifact": "archive/checkpoint", "timesteps": 100, "evaluations": []}],
+            "champion_available": False, "parameters": {}, "initialization": "fresh",
+            "training_budget_steps": 100, "parent_training_steps": 0,
+            "result": {"index": 4, "change": "measure", "hypothesis": "test"},
+        },
+    }), encoding="utf-8")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    monkeypatch.setattr("research.run_experiment.append_result", lambda result: None)
+
+    calls: list[int] = []
+
+    def record_evaluation(artifact, seed, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        return evaluation(seed, [True, False])
+
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", record_evaluation)
+    request_path.write_text(json.dumps({"experiment": 4, "evaluations": [
+        {"candidate": "checkpoint", "episodes": 2, "seed": 1000},
+    ], "need_more_evidence": True}), encoding="utf-8")
+
+    assert execute_pending_evaluations() == 0
+    first_round = json.loads(state_path.read_text(encoding="utf-8"))
+    assert calls == [1000]
+    assert first_round["pending_researcher_decision"] is None
+    assert [item["seed"] for item in first_round["pending_evaluation_request"]["partial_evaluations"]] == [1000]
+
+    request_path.write_text(json.dumps({"experiment": 4, "evaluations": [
+        {"candidate": "checkpoint", "episodes": 2, "seed": 1000, "label": "reused A"},
+        {"candidate": "checkpoint", "episodes": 2, "seed": 2000, "label": "new B"},
+    ], "need_more_evidence": False}), encoding="utf-8")
+
+    assert execute_pending_evaluations() == 0
+    second_round = json.loads(state_path.read_text(encoding="utf-8"))
+    candidate = second_round["pending_researcher_decision"]["candidates"][0]
+    assert calls == [1000, 2000]
+    assert [item["seed"] for item in candidate["evaluations"]] == [1000, 2000]
+    assert candidate["summary"]["episodes"] == 4
+
+
 def test_pending_result_requires_an_explicit_researcher_decision():
     state = {
         "pending_researcher_decision": {
@@ -368,7 +420,7 @@ def _lineage_decision():
     }
 
 
-def test_final_benchmark_runs_only_after_lineage_selection(monkeypatch, tmp_path):
+def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
@@ -376,23 +428,59 @@ def test_final_benchmark_runs_only_after_lineage_selection(monkeypatch, tmp_path
     monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
 
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
-    assert not apply_previous_result_decision(_lineage_decision(), state)
-    assert state["official_metrics"] is None
+    request = _lineage_decision()
+    request["previous_result_decision"]["request_final_benchmark"] = True
+    calls = []
+    monkeypatch.setattr(
+        "research.run_experiment.evaluate_final_model",
+        lambda model: calls.append(model) or {"episodes": 200, "seed": 1000, "success_percent": 100.0},
+    )
+    assert not apply_previous_result_decision(request, state)
+    assert calls == []
+    assert state["pending_researcher_decision"] is None
+    assert state["pending_final_benchmark"]["artifact"] == "accepted"
     assert not (tmp_path / "GOAL_REACHED").exists()
 
+    assert execute_pending_final_benchmark() == 0
+    assert calls == [tmp_path / "accepted" / "model.zip"]
+    persisted = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    assert persisted["official_metrics"]["success_percent"] == 100.0
+    assert persisted["pending_final_benchmark"] is None
+    assert (tmp_path / "GOAL_REACHED").exists()
+
+
+def test_pending_final_benchmark_survives_failure_and_failed_result(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
+    assert not apply_previous_result_decision(request, state)
+
+    def failed_benchmark(model):
+        del model
+        raise RuntimeError("benchmark crashed")
+
+    monkeypatch.setattr("research.run_experiment.evaluate_final_model", failed_benchmark)
+    with pytest.raises(RuntimeError, match="benchmark crashed"):
+        execute_pending_final_benchmark()
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["pending_final_benchmark"]["fingerprint"] == state["pending_final_benchmark"]["fingerprint"]
+    assert persisted["official_metrics"] is None
+
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model",
-        lambda model: {"episodes": 200, "seed": 1000, "success_percent": 100.0}
-        if model
-        else {},
+        lambda model: {"episodes": 200, "seed": 1000, "success_percent": 97.5},
     )
-    assert apply_previous_result_decision(request, state)
-    assert state["official_metrics"]["success_percent"] == 100.0
-    assert (tmp_path / "GOAL_REACHED").exists()
+    assert execute_pending_final_benchmark() == 0
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["pending_final_benchmark"] is None
+    assert persisted["official_metrics"]["success_percent"] == 97.5
+    assert not (tmp_path / "GOAL_REACHED").exists()
 
 
 def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path):
@@ -436,7 +524,7 @@ def test_continuation_and_replication_allow_unchanged_methods():
         validate_experiment_semantics({}, "continuation", "fresh", None, [], False)
 
     validate_experiment_semantics(
-        {"training_seed": 19, "replication_of": "method-a"}, "replication", "fresh", None, [], False
+        {"training_seed": 19, "replication_of": 12}, "replication", "fresh", None, [], False
     )
     with pytest.raises(ValueError, match="explicit training_seed"):
         validate_experiment_semantics({}, "replication", "fresh", None, [], False)

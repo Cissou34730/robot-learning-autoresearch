@@ -8,6 +8,7 @@ from research.run_experiment import (
     assert_research_surface,
     candidate_directories,
     commit_and_push,
+    execute_pending_final_benchmark,
     format_duration,
     latest_training_steps,
     load_state,
@@ -267,6 +268,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
                     "continue_from": "candidate",
                     "reason": "Selected measured lineage.",
                     "code": {"action": "keep", "reason": "Keep this parent."},
+                    "request_final_benchmark": True,
                 }
             }
         ),
@@ -277,10 +279,12 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    def skip_lineage_commit(*args):
-        del args
+    committed = []
 
-    monkeypatch.setattr("research.run_experiment.commit_lineage_decision", skip_lineage_commit)
+    def record_lineage_commit(*args):
+        committed.append(args)
+
+    monkeypatch.setattr("research.run_experiment.commit_lineage_decision", record_lineage_commit)
 
     def fail_if_training_starts(*args, **kwargs):
         del args, kwargs
@@ -294,4 +298,15 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
 
     assert main() == 0
     assert not proposal_path.exists()
-    assert json.loads(state_path.read_text(encoding="utf-8"))["pending_researcher_decision"] is None
+    resolved = json.loads(state_path.read_text(encoding="utf-8"))
+    assert committed == [(3, "candidate")]
+    assert resolved["pending_researcher_decision"] is None
+    assert resolved["pending_final_benchmark"]["selected"] == "candidate"
+
+    def evaluate_after_commit(model):
+        assert committed == [(3, "candidate")]
+        assert model == tmp_path / "accepted" / "model.zip"
+        return {"episodes": 200, "seed": 1000, "success_percent": 100.0}
+
+    monkeypatch.setattr("research.run_experiment.evaluate_final_model", evaluate_after_commit)
+    assert execute_pending_final_benchmark() == 0

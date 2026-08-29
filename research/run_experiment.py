@@ -1066,8 +1066,12 @@ def validate_experiment_semantics(
             raise ValueError("replication requires an explicit training_seed")
         if parameter_overrides or code_changes:
             raise ValueError("replication requires an unchanged learning method")
-        if not str(proposal.get("replication_of", "")).strip():
-            raise ValueError("replication requires a non-empty replication_of")
+        try:
+            replicated_experiment = int(proposal["replication_of"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError("replication requires an exact experiment number") from error
+        if replicated_experiment < 1:
+            raise ValueError("replication requires an exact experiment number")
 
 
 def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
@@ -1315,22 +1319,47 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         remove_heavyweight_artifacts(ROOT / candidate["artifact"])
     for lineage in plan["removed_retained"]:
         remove_heavyweight_artifacts(ROOT / lineage["artifact"])
-    goal_reached = False
     if plan["request_final_benchmark"]:
-        official_metrics = evaluate_final_model(ACCEPTED_DIR / "model.zip")
-        state["official_metrics"] = official_metrics
-        state["official_benchmark_artifact"] = plan["selected_fingerprint"]
+        state["pending_final_benchmark"] = {
+            "experiment": int(pending["experiment"]),
+            "selected": selected_name,
+            "artifact": str(ACCEPTED_DIR.relative_to(ROOT)),
+            "fingerprint": plan["selected_fingerprint"],
+        }
         atomic_write_json(STATE_PATH, state)
-        goal_reached = float(official_metrics["success_percent"]) >= FINAL_SUCCESS_PERCENT
-        if goal_reached:
-            GOAL_PATH.write_text(
-                f"Goal reached with {selected_name} from experiment {pending['experiment']}.\n",
-                encoding="utf-8",
-            )
     announce(
         f"[researcher decision] continuing from {selected_name}: {plan['decision']['reason']}"
     )
-    return goal_reached
+    return False
+
+
+def execute_pending_final_benchmark() -> int:
+    state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    pending = state.get("pending_final_benchmark")
+    if not isinstance(pending, dict):
+        raise TypeError("there is no accepted lineage awaiting final benchmark evaluation")
+    artifact = str(pending.get("artifact", "")).strip()
+    if artifact != state.get("accepted_artifact"):
+        raise ValueError("pending final benchmark does not identify the accepted artifact")
+    accepted_artifact = ROOT / artifact
+    require_complete_artifact(accepted_artifact, "pending final benchmark artifact")
+    fingerprint = str(pending.get("fingerprint", "")).strip()
+    if not fingerprint or artifact_fingerprint(accepted_artifact) != fingerprint:
+        raise ValueError("pending final benchmark artifact fingerprint does not match accepted lineage")
+    if state.get("official_benchmark_artifact") == fingerprint:
+        raise ValueError("the selected accepted artifact already received an official benchmark")
+
+    official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
+    state["official_metrics"] = official_metrics
+    state["official_benchmark_artifact"] = fingerprint
+    state["pending_final_benchmark"] = None
+    atomic_write_json(STATE_PATH, state)
+    if float(official_metrics["success_percent"]) >= FINAL_SUCCESS_PERCENT:
+        GOAL_PATH.write_text(
+            f"Goal reached with {pending['selected']} from experiment {pending['experiment']}.\n",
+            encoding="utf-8",
+        )
+    return 0
 
 
 def commit_result(index: int, change: str) -> None:
@@ -1389,7 +1418,10 @@ def main() -> int:
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     parser.add_argument("--reuse-candidate", type=Path, default=None)
     parser.add_argument("--evaluate-pending", action="store_true")
+    parser.add_argument("--evaluate-pending-final", action="store_true")
     args = parser.parse_args()
+    if args.evaluate_pending_final:
+        return execute_pending_final_benchmark()
     if args.evaluate_pending:
         return execute_pending_evaluations()
     if not PROPOSAL_PATH.exists():
