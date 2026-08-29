@@ -26,4 +26,3 @@ def artifact_algorithm(model_path: Path) -> str:
 def load_policy(model_path: Path, algorithm: str | None = None):
     name = algorithm or artifact_algorithm(model_path)
     return algorithm_class(name).load(model_path)
-

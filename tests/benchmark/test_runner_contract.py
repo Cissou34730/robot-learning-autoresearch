@@ -21,11 +21,15 @@ from robot_learning.evaluate import write_progress
 def test_research_surface_has_no_file_whitelist(monkeypatch):
     monkeypatch.setattr(
         "research.run_experiment.status_paths",
-        lambda paths: [
-            "robot_learning/benchmark/spec.py",
-            "robot_learning/evaluate.py",
-            "research/run_experiment.py",
-        ] if paths else [],
+        lambda paths: (
+            [
+                "robot_learning/benchmark/spec.py",
+                "robot_learning/evaluate.py",
+                "research/run_experiment.py",
+            ]
+            if paths
+            else []
+        ),
     )
 
     assert assert_research_surface() == [
@@ -91,9 +95,7 @@ def test_automatic_commit_is_immediately_pushed(monkeypatch):
     ]
 
 
-def test_fresh_baseline_can_start_without_an_accepted_artifact(
-    monkeypatch, tmp_path
-):
+def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_path):
     state_path = tmp_path / "research_state.json"
     state_path.write_text(
         json.dumps(
@@ -284,7 +286,9 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     def record_lineage_commit(*args):
         committed.append(args)
 
-    monkeypatch.setattr("research.run_experiment.commit_lineage_decision", record_lineage_commit)
+    monkeypatch.setattr(
+        "research.run_experiment.commit_lineage_decision", record_lineage_commit
+    )
 
     def fail_if_training_starts(*args, **kwargs):
         del args, kwargs
@@ -313,5 +317,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
             "goal_reached": True,
         }
 
-    monkeypatch.setattr("research.run_experiment.evaluate_final_model", evaluate_after_commit)
+    monkeypatch.setattr(
+        "research.run_experiment.evaluate_final_model", evaluate_after_commit
+    )
     assert execute_pending_final_benchmark() == 0

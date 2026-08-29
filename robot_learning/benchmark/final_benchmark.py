@@ -29,7 +29,9 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = final_contract.FRAME_SKIP
         self.max_episode_steps = final_contract.MAX_EPISODE_STEPS
         control_dt = self.model.opt.timestep * self.frame_skip
-        self.hold_steps_required = max(round(final_contract.HOLD_SECONDS / control_dt), 1)
+        self.hold_steps_required = max(
+            round(final_contract.HOLD_SECONDS / control_dt), 1
+        )
         self.observation_space = gym.spaces.Box(
             low=-np.inf, high=np.inf, shape=(OBSERVATION_SIZE,), dtype=np.float32
         )
@@ -43,7 +45,9 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         return self.data.site("end_effector").xpos.copy()
 
     def _distance_to_target(self) -> float:
-        return float(np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0]))
+        return float(
+            np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
+        )
 
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
@@ -71,7 +75,9 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
         distance = self._distance_to_target()
-        self._held_steps = self._held_steps + 1 if distance <= self.success_threshold else 0
+        self._held_steps = (
+            self._held_steps + 1 if distance <= self.success_threshold else 0
+        )
         self._step_count += 1
         return (
             reach_observation(self.data),

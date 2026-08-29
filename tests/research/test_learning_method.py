@@ -48,8 +48,7 @@ def test_hold_progress_reward_accelerates_and_pays_completion():
     ).total
     assert late > early > 0
     assert done - late == pytest.approx(
-        HOLD_COMPLETE_BONUS
-        + reward_module.HOLD_PROGRESS_BONUS * 2 / 10_000
+        HOLD_COMPLETE_BONUS + reward_module.HOLD_PROGRESS_BONUS * 2 / 10_000
     )
 
 

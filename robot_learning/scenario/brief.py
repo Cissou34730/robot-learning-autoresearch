@@ -18,9 +18,7 @@ def render_scenario_evidence(metrics: dict | None) -> list[str]:
 
     successes = episodes - len(failures)
     required = int(metrics["failed_episode_progress"]["required_steps"])
-    longest_holds = sorted(
-        int(item["longest_consecutive_steps"]) for item in failures
-    )
+    longest_holds = sorted(int(item["longest_consecutive_steps"]) for item in failures)
     best_windows = sorted(int(item["best_window_inside_steps"]) for item in failures)
 
     def quantile(values: list[int], fraction: float) -> int:
@@ -37,7 +35,11 @@ def render_scenario_evidence(metrics: dict | None) -> list[str]:
                 f"- Failed best-window progress: median {quantile(best_windows, 0.5)}/{required}; upper quantile {quantile(best_windows, 0.9)}/{required}.",
             ]
         )
-    for label, low, high in (("6-10 cm", 6, 10), ("10-15 cm", 10, 15), ("15-20 cm", 15, 20)):
+    for label, low, high in (
+        ("6-10 cm", 6, 10),
+        ("10-15 cm", 10, 15),
+        ("15-20 cm", 15, 20),
+    ):
         bucket = [item for item in failures if low <= item["target_radius_cm"] < high]
         if bucket:
             lines.append(
@@ -47,7 +49,9 @@ def render_scenario_evidence(metrics: dict | None) -> list[str]:
     directional: dict[str, list[dict]] = {"left": [], "right": []}
     for item in failures:
         if "target_angle_degrees" in item:
-            directional["left" if float(item["target_angle_degrees"]) < 0 else "right"].append(item)
+            directional[
+                "left" if float(item["target_angle_degrees"]) < 0 else "right"
+            ].append(item)
     if len(failures) >= 4 and all(directional.values()):
         lines.append(
             "- Directional failures: "

@@ -52,9 +52,7 @@ def test_training_summary_keeps_decision_relevant_metrics():
     assert "models/reach-example/model.zip" in summary
 
 
-def test_brief_includes_compact_measured_challenger_diagnostics(
-    monkeypatch, tmp_path
-):
+def test_brief_includes_compact_measured_challenger_diagnostics(monkeypatch, tmp_path):
     summary = {
         "episodes": 4,
         "success_percent": 50.0,
@@ -105,14 +103,33 @@ def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
-    (tmp_path / "results.jsonl").write_text("\n".join(json.dumps({
-        "index": index, "verdict": "measured", "change": "same method", "hypothesis": "check spread",
-        "family": "method", "training_seed": seed,
-        "candidate_metrics": {"success_percent": success},
-        **({"replication_of": replication_of} if replication_of is not None else {}),
-    }) for index, seed, success, replication_of in [
-        (12, 1, 40.0, None), (15, 2, 60.0, 12), (16, 3, 50.0, 12),
-    ]) + "\n", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text(
+        "\n".join(
+            json.dumps(
+                {
+                    "index": index,
+                    "verdict": "measured",
+                    "change": "same method",
+                    "hypothesis": "check spread",
+                    "family": "method",
+                    "training_seed": seed,
+                    "candidate_metrics": {"success_percent": success},
+                    **(
+                        {"replication_of": replication_of}
+                        if replication_of is not None
+                        else {}
+                    ),
+                }
+            )
+            for index, seed, success, replication_of in [
+                (12, 1, 40.0, None),
+                (15, 2, 60.0, 12),
+                (16, 3, 50.0, 12),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
@@ -136,25 +153,42 @@ def test_brief_surfaces_directional_failure_diagnostics(monkeypatch, tmp_path):
             "required_steps": 100,
         },
         "failure_diagnostics": [
-            {"episode_seed": 3000 + index, "best_window_inside_steps": 30, "longest_consecutive_steps": hold, "target_radius_cm": 12.0, "target_angle_degrees": angle}
-            for index, (angle, hold) in enumerate([(-30.0, 10), (-10.0, 20), (10.0, 40), (30.0, 50)])
+            {
+                "episode_seed": 3000 + index,
+                "best_window_inside_steps": 30,
+                "longest_consecutive_steps": hold,
+                "target_radius_cm": 12.0,
+                "target_angle_degrees": angle,
+            }
+            for index, (angle, hold) in enumerate(
+                [(-30.0, 10), (-10.0, 20), (10.0, 40), (30.0, 50)]
+            )
         ],
     }
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(json.dumps({
-        "accepted_artifact": "accepted",
-        "pending_researcher_decision": {
-            "experiment": 4, "candidates": [{"name": "challenger", "summary": summary}],
-            "champion_available": False,
-        },
-    }), encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(
+            {
+                "accepted_artifact": "accepted",
+                "pending_researcher_decision": {
+                    "experiment": 4,
+                    "candidates": [{"name": "challenger", "summary": summary}],
+                    "champion_available": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
 
-    assert "Directional failures: left 2 failures, median hold 10/100; right 2 failures, median hold 40/100." in brief
+    assert (
+        "Directional failures: left 2 failures, median hold 10/100; right 2 failures, median hold 40/100."
+        in brief
+    )
 
 
 def test_lineage_orchestration_requires_markdown_postmortem():

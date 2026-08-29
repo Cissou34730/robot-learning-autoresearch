@@ -224,11 +224,7 @@ def assert_research_surface() -> list[str]:
         "research/proposal.json",
         "research/evaluation_request.json",
     }
-    return [
-        path
-        for path in changed
-        if path.replace("\\", "/") not in control_files
-    ]
+    return [path for path in changed if path.replace("\\", "/") not in control_files]
 
 
 def run_module(module: str, *args: str, timeout: int | None = None) -> str:
@@ -315,6 +311,7 @@ def experiment_family(
 def append_result(result: dict) -> None:
     with RESULTS_PATH.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(result, sort_keys=True) + "\n")
+
     def cell(value: object) -> str:
         return " ".join(str(value).replace("|", "/").split())
 
@@ -351,9 +348,7 @@ def evaluate_artifact(
     output_path = output_path or RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
     progress_path = output_path.with_suffix(output_path.suffix + ".progress")
-    stale_temporary_progress = progress_path.with_suffix(
-        progress_path.suffix + ".tmp"
-    )
+    stale_temporary_progress = progress_path.with_suffix(progress_path.suffix + ".tmp")
     progress_path.unlink(missing_ok=True)
     stale_temporary_progress.unlink(missing_ok=True)
     command = [
@@ -373,9 +368,7 @@ def evaluate_artifact(
     ]
     if official_benchmark:
         command.append("--official-benchmark")
-    announce(
-        f"[evaluation] {label} | {episodes} episodes | seed {seed}"
-    )
+    announce(f"[evaluation] {label} | {episodes} episodes | seed {seed}")
     started = time.monotonic()
     last_progress_at = started
     completed_episodes = 0
@@ -404,7 +397,12 @@ def evaluate_artifact(
                     try:
                         progress = json.loads(progress_path.read_text(encoding="utf-8"))
                         current_completed = int(progress["completed"])
-                    except (FileNotFoundError, json.JSONDecodeError, KeyError, ValueError):
+                    except (
+                        FileNotFoundError,
+                        json.JSONDecodeError,
+                        KeyError,
+                        ValueError,
+                    ):
                         current_completed = completed_episodes
                     if current_completed > completed_episodes:
                         completed_episodes = current_completed
@@ -468,29 +466,27 @@ def summarize_evaluations(
         for item in evaluations
     )
     total_failures = sum(
-        int(item["failed_episode_progress"]["failed_episodes"])
-        for item in evaluations
+        int(item["failed_episode_progress"]["failed_episodes"]) for item in evaluations
     )
     required = int(evaluations[0]["failed_episode_progress"]["required_steps"])
 
     def failure_weighted_mean(field: str, perfect: float) -> float:
         if not total_failures:
             return perfect
-        return sum(
-            float(item["failed_episode_progress"][field])
-            * int(item["failed_episode_progress"]["failed_episodes"])
-            for item in evaluations
-        ) / total_failures
+        return (
+            sum(
+                float(item["failed_episode_progress"][field])
+                * int(item["failed_episode_progress"]["failed_episodes"])
+                for item in evaluations
+            )
+            / total_failures
+        )
 
     seed_success = {
         str(item["seed"]): float(item["success_percent"]) for item in evaluations
     }
     failed_diagnostics = [
-        {
-            key: value
-            for key, value in episode.items()
-            if key != "distance_trace_cm"
-        }
+        {key: value for key, value in episode.items() if key != "distance_trace_cm"}
         for evaluation in evaluations
         for episode in evaluation.get("episode_results", [])
         if not episode["success"]
@@ -682,7 +678,9 @@ def execute_pending_evaluations() -> int:
             if missing:
                 raise ValueError(f"evaluation is missing required fields: {missing}")
             if "official_benchmark" in spec:
-                raise ValueError("official_benchmark is not valid in a research evaluation request")
+                raise ValueError(
+                    "official_benchmark is not valid in a research evaluation request"
+                )
             name = str(spec.get("candidate", "")).strip()
             contender = available.get(name)
             if contender is None:
@@ -694,9 +692,7 @@ def execute_pending_evaluations() -> int:
             seed = int(spec["seed"])
             if episodes < 1:
                 raise ValueError("evaluation episodes must be positive")
-            label = str(
-                spec.get("label", f"requested evaluation {number}: {name}")
-            )
+            label = str(spec.get("label", f"requested evaluation {number}: {name}"))
             key = request_key(name, episodes, seed)
             if key in completed_keys:
                 announce(f"[evaluation] already complete; reusing {label}")
@@ -738,21 +734,16 @@ def execute_pending_evaluations() -> int:
     for candidate in candidates:
         evaluations = candidate.get("evaluations", [])
         candidate["summary"] = (
-            summarize_evaluations(evaluations)
-            if evaluations
-            else None
+            summarize_evaluations(evaluations) if evaluations else None
         )
 
     champion_evaluations = available.get("champion", {}).get("evaluations", [])
     champion_summary = (
-        summarize_evaluations(champion_evaluations)
-        if champion_evaluations
-        else None
+        summarize_evaluations(champion_evaluations) if champion_evaluations else None
     )
 
     comparison_inputs = {
-        name: contender.get("evaluations", [])
-        for name, contender in available.items()
+        name: contender.get("evaluations", []) for name, contender in available.items()
     }
     comparisons = requested_paired_comparisons(request, comparison_inputs)
     result = pending["result"]
@@ -791,7 +782,9 @@ def execute_pending_evaluations() -> int:
         pending["partial_evaluations"] = executed
         state["pending_evaluation_request"] = pending
         state["pending_researcher_decision"] = None
-        state["last_verdict"] = "measured; researcher requested another evaluation round"
+        state["last_verdict"] = (
+            "measured; researcher requested another evaluation round"
+        )
     else:
         state["pending_researcher_decision"] = researcher_context
         state["pending_evaluation_request"] = None
@@ -805,7 +798,11 @@ def execute_pending_evaluations() -> int:
         append_result(result)
     announce(
         "[result] requested evaluations complete; "
-        + ("another evaluation round requested" if more_evidence else "researcher analysis required")
+        + (
+            "another evaluation round requested"
+            if more_evidence
+            else "researcher analysis required"
+        )
     )
     return 0
 
@@ -845,9 +842,7 @@ def train_candidate(
         command.extend(["--target-timesteps", str(target_timesteps)])
     train_log = RESEARCH_DIR / "last_train.log"
     started = time.monotonic()
-    announce(
-        f"[train] {label} | seed {seed} | {timesteps:,} steps"
-    )
+    announce(f"[train] {label} | seed {seed} | {timesteps:,} steps")
     with train_log.open("w", encoding="utf-8") as log_file:
         log_file.write(f"\n=== {label} ===\n")
         log_file.flush()
@@ -869,13 +864,9 @@ def train_candidate(
                 except subprocess.TimeoutExpired:
                     pass
                 elapsed = time.monotonic() - started
-                steps = latest_training_steps(
-                    train_log, after_offset=progress_offset
-                )
+                steps = latest_training_steps(train_log, after_offset=progress_offset)
                 if steps is None:
-                    announce(
-                        f"[train] starting ({format_duration(elapsed)} elapsed)"
-                    )
+                    announce(f"[train] starting ({format_duration(elapsed)} elapsed)")
                 else:
                     if steps != last_steps:
                         last_steps = steps
@@ -1008,11 +999,15 @@ def retained_lineage(state: dict, identifier: str) -> dict | None:
     )
 
 
-def training_parent(proposal: dict, state: dict, initialization: str) -> tuple[str, Path, int]:
+def training_parent(
+    proposal: dict, state: dict, initialization: str
+) -> tuple[str, Path, int]:
     identifier = str(proposal.get("training_parent", "accepted")).strip()
     if initialization != "transfer":
         if identifier != "accepted":
-            raise ValueError("training_parent is only valid with transfer initialization")
+            raise ValueError(
+                "training_parent is only valid with transfer initialization"
+            )
         return "fresh", Path(), 0
     if identifier == "accepted":
         return (
@@ -1026,7 +1021,9 @@ def training_parent(proposal: dict, state: dict, initialization: str) -> tuple[s
     artifact = ROOT / lineage["artifact"]
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         if not (artifact / filename).exists():
-            raise ValueError(f"retained lineage {identifier!r} is incomplete: {filename}")
+            raise ValueError(
+                f"retained lineage {identifier!r} is incomplete: {filename}"
+            )
     return identifier, artifact, int(lineage.get("training_steps", 0))
 
 
@@ -1038,9 +1035,7 @@ def validate_experiment_semantics(
     code_changes: list[str],
     baseline: bool,
 ) -> None:
-    if PROTECTED_BENCHMARK_PATHS & {
-        path.replace("\\", "/") for path in code_changes
-    }:
+    if PROTECTED_BENCHMARK_PATHS & {path.replace("\\", "/") for path in code_changes}:
         raise ValueError(
             "the human-owned final benchmark cannot be changed by a research proposal"
         )
@@ -1067,7 +1062,9 @@ def validate_experiment_semantics(
         try:
             replicated_experiment = int(proposal["replication_of"])
         except (KeyError, TypeError, ValueError) as error:
-            raise ValueError("replication requires an exact experiment number") from error
+            raise ValueError(
+                "replication requires an exact experiment number"
+            ) from error
         if replicated_experiment < 1:
             raise ValueError("replication requires an exact experiment number")
 
@@ -1080,10 +1077,18 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         "previous_experiment_postmortem",
     } & set(proposal)
     if forbidden:
-        raise ValueError(f"training proposal contains lineage-only fields: {sorted(forbidden)}")
+        raise ValueError(
+            f"training proposal contains lineage-only fields: {sorted(forbidden)}"
+        )
     required = {
-        "kind", "family", "hypothesis", "change", "initialization",
-        "training_parent", "training_seed", "params",
+        "kind",
+        "family",
+        "hypothesis",
+        "change",
+        "initialization",
+        "training_parent",
+        "training_seed",
+        "params",
     }
     missing = sorted(field for field in required if field not in proposal)
     if missing:
@@ -1150,7 +1155,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     if pending is None:
         raise ValueError("there is no researcher decision awaiting resolution")
     if set(proposal) != {"previous_result_decision"}:
-        raise ValueError("a lineage proposal must contain only previous_result_decision")
+        raise ValueError(
+            "a lineage proposal must contain only previous_result_decision"
+        )
     decision = proposal.get("previous_result_decision")
     if not isinstance(decision, dict):
         raise TypeError(
@@ -1164,8 +1171,13 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     if not reason:
         raise ValueError("previous_result_decision requires a reason")
     allowed = {
-        "experiment", "continue_from", "reason", "code", "retain",
-        "remove_retained", "request_final_benchmark",
+        "experiment",
+        "continue_from",
+        "reason",
+        "code",
+        "retain",
+        "remove_retained",
+        "request_final_benchmark",
     }
     extra = set(decision) - allowed
     if extra:
@@ -1190,7 +1202,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
 
     code_decision = decision.get("code")
     if not isinstance(code_decision, dict):
-        raise TypeError("previous_result_decision requires a code decision with action and reason")
+        raise TypeError(
+            "previous_result_decision requires a code decision with action and reason"
+        )
     if set(code_decision) != {"action", "reason"}:
         raise ValueError("code decision contains unsupported fields")
     code_action = str(code_decision.get("action", "")).strip().lower()
@@ -1203,7 +1217,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     retained = list(state.get("retained_lineages", []))
     retained_by_id = {str(lineage.get("id")): lineage for lineage in retained}
     removal_ids = decision.get("remove_retained", [])
-    if not isinstance(removal_ids, list) or any(not str(identifier).strip() for identifier in removal_ids):
+    if not isinstance(removal_ids, list) or any(
+        not str(identifier).strip() for identifier in removal_ids
+    ):
         raise ValueError("remove_retained must be a list of retained lineage IDs")
     removal_ids = [str(identifier).strip() for identifier in removal_ids]
     if len(set(removal_ids)) != len(removal_ids):
@@ -1219,14 +1235,24 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     retention_plans: list[dict] = []
     for item in requested:
         if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
-            raise ValueError("each retained lineage requires only candidate, id, and reason")
+            raise ValueError(
+                "each retained lineage requires only candidate, id, and reason"
+            )
         candidate_name = str(item["candidate"]).strip()
         identifier = str(item["id"]).strip()
         retention_reason = str(item["reason"]).strip()
-        if not identifier or Path(identifier).name != identifier or identifier in {".", ".."}:
-            raise ValueError("retained lineage ID must be a stable file-name-safe identifier")
+        if (
+            not identifier
+            or Path(identifier).name != identifier
+            or identifier in {".", ".."}
+        ):
+            raise ValueError(
+                "retained lineage ID must be a stable file-name-safe identifier"
+            )
         if not retention_reason or candidate_name not in sources:
-            raise ValueError("retained lineages require an available candidate, id, and reason")
+            raise ValueError(
+                "retained lineages require an available candidate, id, and reason"
+            )
         if candidate_name == selected_name:
             raise ValueError("do not retain the lineage becoming active")
         if identifier in retained_ids or identifier in removal_ids:
@@ -1236,7 +1262,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         require_complete_artifact(source_artifact, f"retained lineage {identifier!r}")
         destination = RESEARCH_DIR / "checkpoints" / "retained" / identifier
         if destination.exists():
-            raise ValueError(f"retained lineage destination already exists: {identifier}")
+            raise ValueError(
+                f"retained lineage destination already exists: {identifier}"
+            )
         retention_plans.append(
             {
                 "source": source_artifact,
@@ -1258,8 +1286,13 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
     selected_fingerprint = artifact_fingerprint(selected_artifact)
-    if request_final and state.get("official_benchmark_artifact") == selected_fingerprint:
-        raise ValueError("the selected accepted artifact already received an official benchmark")
+    if (
+        request_final
+        and state.get("official_benchmark_artifact") == selected_fingerprint
+    ):
+        raise ValueError(
+            "the selected accepted artifact already received an official benchmark"
+        )
     return {
         "pending": pending,
         "decision": decision,
@@ -1270,7 +1303,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "code_action": code_action,
         "code_reason": code_reason,
         "code_plan": code_plan,
-        "retained": [lineage for lineage in retained if lineage["id"] not in removal_ids],
+        "retained": [
+            lineage for lineage in retained if lineage["id"] not in removal_ids
+        ],
         "retentions": retention_plans,
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
         "request_final_benchmark": request_final,
@@ -1291,7 +1326,8 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         state["accepted_metrics"] = selected.get("summary")
         state["accepted_parameters"] = pending["parameters"]
         state["accepted_training_steps"] = (
-            int(pending.get("parent_training_steps", 0)) + int(pending["training_budget_steps"])
+            int(pending.get("parent_training_steps", 0))
+            + int(pending["training_budget_steps"])
             if pending["initialization"] == "transfer"
             else int(pending["training_budget_steps"])
         )
@@ -1335,17 +1371,25 @@ def execute_pending_final_benchmark() -> int:
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     pending = state.get("pending_final_benchmark")
     if not isinstance(pending, dict):
-        raise TypeError("there is no accepted lineage awaiting final benchmark evaluation")
+        raise TypeError(
+            "there is no accepted lineage awaiting final benchmark evaluation"
+        )
     artifact = str(pending.get("artifact", "")).strip()
     if artifact != state.get("accepted_artifact"):
-        raise ValueError("pending final benchmark does not identify the accepted artifact")
+        raise ValueError(
+            "pending final benchmark does not identify the accepted artifact"
+        )
     accepted_artifact = ROOT / artifact
     require_complete_artifact(accepted_artifact, "pending final benchmark artifact")
     fingerprint = str(pending.get("fingerprint", "")).strip()
     if not fingerprint or artifact_fingerprint(accepted_artifact) != fingerprint:
-        raise ValueError("pending final benchmark artifact fingerprint does not match accepted lineage")
+        raise ValueError(
+            "pending final benchmark artifact fingerprint does not match accepted lineage"
+        )
     if state.get("official_benchmark_artifact") == fingerprint:
-        raise ValueError("the selected accepted artifact already received an official benchmark")
+        raise ValueError(
+            "the selected accepted artifact already received an official benchmark"
+        )
 
     official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
     state["official_metrics"] = official_metrics
@@ -1464,9 +1508,7 @@ def main() -> int:
         proposal, state, initialization
     )
 
-    announce(
-        f"[runner] experiment {index} | objective: see research/scenario.md"
-    )
+    announce(f"[runner] experiment {index} | objective: see research/scenario.md")
     announce(f"[runner] mode: {'baseline' if baseline else initialization}")
 
     result: dict[str, Any] = {
@@ -1512,7 +1554,9 @@ def main() -> int:
         if code_changes:
             announce("[checks] running research-surface checks")
             python_changes = [
-                path for path in code_changes if path.endswith(".py") and (ROOT / path).exists()
+                path
+                for path in code_changes
+                if path.endswith(".py") and (ROOT / path).exists()
             ]
             if python_changes:
                 run_module("ruff", "check", *python_changes)
@@ -1563,9 +1607,7 @@ def main() -> int:
                 announce(f"[recovery] reusing completed candidate from {reusable}")
                 copy_candidate_outputs(reusable, candidate_dir)
             else:
-                remaining_timesteps = max(
-                    effective_timesteps - completed_timesteps, 0
-                )
+                remaining_timesteps = max(effective_timesteps - completed_timesteps, 0)
                 if remaining_timesteps == 0:
                     announce(
                         "[recovery] interrupted training already reached its budget"
@@ -1605,17 +1647,15 @@ def main() -> int:
                 "kind": "candidate",
                 "path": path,
                 "timesteps": int(
-                    json.loads(
-                        (path / "artifact.json").read_text(encoding="utf-8")
-                    )["timesteps"]
+                    json.loads((path / "artifact.json").read_text(encoding="utf-8"))[
+                        "timesteps"
+                    ]
                 ),
                 "evaluations": [],
             }
             for path in candidate_directories(candidate_dir)
         ]
-        archived_candidates = archive_candidates(
-            index, contenders, effective_config
-        )
+        archived_candidates = archive_candidates(index, contenders, effective_config)
         verdict = "trained; awaiting researcher evaluation request"
 
         state.update(
@@ -1629,9 +1669,7 @@ def main() -> int:
                     "parameters": effective_config,
                     "initialization": initialization,
                     "training_budget_steps": effective_timesteps,
-                    "parent_training_steps": int(
-                        parent_training_steps
-                    ),
+                    "parent_training_steps": int(parent_training_steps),
                     "baseline": baseline,
                     "code_parent_commit": code_parent_commit,
                     "research_change_paths": code_changes

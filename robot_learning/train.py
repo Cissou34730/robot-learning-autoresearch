@@ -183,7 +183,9 @@ def main() -> None:
         last_replay = args.output_dir / "last_replay_buffer.pkl"
         if last_replay.exists():
             shutil.copyfile(last_replay, final_checkpoint / "replay_buffer.pkl")
-        shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
+        shutil.copyfile(
+            args.output_dir / "last_model.zip", args.output_dir / "model.zip"
+        )
         shutil.copyfile(
             args.output_dir / "last_vecnormalize.pkl",
             args.output_dir / "vecnormalize.pkl",
@@ -226,9 +228,7 @@ def main() -> None:
                 }
             )
         (args.output_dir / "candidate_manifest.json").write_text(
-            json.dumps(
-                {"schema_version": 1, "candidates": candidates}, indent=2
-            )
+            json.dumps({"schema_version": 1, "candidates": candidates}, indent=2)
             + "\n",
             encoding="utf-8",
         )

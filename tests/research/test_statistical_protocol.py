@@ -146,11 +146,10 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     )
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr(
-        "research.run_experiment.EVALUATION_REQUEST_PATH", request_path
-    )
+    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", baseline_path)
+
     def skip_result_recording(result):
         del result
 
@@ -169,9 +168,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
             raise KeyboardInterrupt
         return evaluation(seed, [True, False])
 
-    monkeypatch.setattr(
-        "research.run_experiment.evaluate_artifact", interrupt_second
-    )
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", interrupt_second)
     assert execute_pending_evaluations() == 130
     assert calls == [1000, 2000]
 
@@ -195,24 +192,66 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
 def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
-    state_path.write_text(json.dumps({
-        "schema_version": 2, "accepted_artifact": "accepted",
-        "pending_evaluation_request": {
-            "experiment": 4,
-            "candidates": [{"name": "checkpoint", "artifact": "archive/checkpoint", "timesteps": 100, "evaluations": []}],
-            "champion_available": False, "parameters": {}, "initialization": "fresh",
-            "training_budget_steps": 100, "parent_training_steps": 0, "baseline": True,
-            "result": {"index": 4, "change": "baseline", "hypothesis": "measure"},
-        },
-    }), encoding="utf-8")
-    request_path.write_text(json.dumps({"experiment": 4, "evaluations": [
-        {"candidate": "checkpoint", "episodes": 2, "seed": 1000, "label": "first"},
-        {"candidate": "checkpoint", "episodes": 2, "seed": 1000, "label": "renamed"},
-    ]}), encoding="utf-8")
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "pending_evaluation_request": {
+                    "experiment": 4,
+                    "candidates": [
+                        {
+                            "name": "checkpoint",
+                            "artifact": "archive/checkpoint",
+                            "timesteps": 100,
+                            "evaluations": [],
+                        }
+                    ],
+                    "champion_available": False,
+                    "parameters": {},
+                    "initialization": "fresh",
+                    "training_budget_steps": 100,
+                    "parent_training_steps": 0,
+                    "baseline": True,
+                    "result": {
+                        "index": 4,
+                        "change": "baseline",
+                        "hypothesis": "measure",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 4,
+                "evaluations": [
+                    {
+                        "candidate": "checkpoint",
+                        "episodes": 2,
+                        "seed": 1000,
+                        "label": "first",
+                    },
+                    {
+                        "candidate": "checkpoint",
+                        "episodes": 2,
+                        "seed": 1000,
+                        "label": "renamed",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    monkeypatch.setattr(
+        "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
+
     def skip_result_recording(result):
         del result
 
@@ -229,27 +268,48 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     assert execute_pending_evaluations() == 0
     assert calls == [1000]
     final_state = json.loads(state_path.read_text(encoding="utf-8"))
-    assert len(final_state["pending_researcher_decision"]["candidates"][0]["evaluations"]) == 1
+    assert (
+        len(final_state["pending_researcher_decision"]["candidates"][0]["evaluations"])
+        == 1
+    )
 
 
 def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_path):
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
-    state_path.write_text(json.dumps({
-        "schema_version": 2, "accepted_artifact": "accepted",
-        "pending_evaluation_request": {
-            "experiment": 4,
-            "candidates": [{"name": "checkpoint", "artifact": "archive/checkpoint", "timesteps": 100, "evaluations": []}],
-            "champion_available": False, "parameters": {}, "initialization": "fresh",
-            "training_budget_steps": 100, "parent_training_steps": 0,
-            "result": {"index": 4, "change": "measure", "hypothesis": "test"},
-        },
-    }), encoding="utf-8")
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "pending_evaluation_request": {
+                    "experiment": 4,
+                    "candidates": [
+                        {
+                            "name": "checkpoint",
+                            "artifact": "archive/checkpoint",
+                            "timesteps": 100,
+                            "evaluations": [],
+                        }
+                    ],
+                    "champion_available": False,
+                    "parameters": {},
+                    "initialization": "fresh",
+                    "training_budget_steps": 100,
+                    "parent_training_steps": 0,
+                    "result": {"index": 4, "change": "measure", "hypothesis": "test"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    monkeypatch.setattr(
+        "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
     monkeypatch.setattr("research.run_experiment.append_result", lambda result: None)
 
     calls: list[int] = []
@@ -260,20 +320,51 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
         return evaluation(seed, [True, False])
 
     monkeypatch.setattr("research.run_experiment.evaluate_artifact", record_evaluation)
-    request_path.write_text(json.dumps({"experiment": 4, "evaluations": [
-        {"candidate": "checkpoint", "episodes": 2, "seed": 1000},
-    ], "need_more_evidence": True}), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 4,
+                "evaluations": [
+                    {"candidate": "checkpoint", "episodes": 2, "seed": 1000},
+                ],
+                "need_more_evidence": True,
+            }
+        ),
+        encoding="utf-8",
+    )
 
     assert execute_pending_evaluations() == 0
     first_round = json.loads(state_path.read_text(encoding="utf-8"))
     assert calls == [1000]
     assert first_round["pending_researcher_decision"] is None
-    assert [item["seed"] for item in first_round["pending_evaluation_request"]["partial_evaluations"]] == [1000]
+    assert [
+        item["seed"]
+        for item in first_round["pending_evaluation_request"]["partial_evaluations"]
+    ] == [1000]
 
-    request_path.write_text(json.dumps({"experiment": 4, "evaluations": [
-        {"candidate": "checkpoint", "episodes": 2, "seed": 1000, "label": "reused A"},
-        {"candidate": "checkpoint", "episodes": 2, "seed": 2000, "label": "new B"},
-    ], "need_more_evidence": False}), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 4,
+                "evaluations": [
+                    {
+                        "candidate": "checkpoint",
+                        "episodes": 2,
+                        "seed": 1000,
+                        "label": "reused A",
+                    },
+                    {
+                        "candidate": "checkpoint",
+                        "episodes": 2,
+                        "seed": 2000,
+                        "label": "new B",
+                    },
+                ],
+                "need_more_evidence": False,
+            }
+        ),
+        encoding="utf-8",
+    )
 
     assert execute_pending_evaluations() == 0
     second_round = json.loads(state_path.read_text(encoding="utf-8"))
@@ -327,9 +418,7 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
     monkeypatch.setattr(
         "research.run_experiment.STATE_PATH", tmp_path / "research_state.json"
     )
-    monkeypatch.setattr(
-        "research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED"
-    )
+    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
     reached = apply_previous_result_decision(
         {
             "previous_result_decision": {
@@ -371,12 +460,15 @@ def test_experiment_card_records_exact_nested_parameter_changes():
 def test_declared_code_family_is_stable_across_numeric_variants():
     proposal = {"family": "reward.outside_boundary_penalty"}
 
-    assert experiment_family(
-        proposal,
-        "training",
-        [],
-        ["robot_learning/rewards/reach_reward.py"],
-    ) == "reward.outside_boundary_penalty"
+    assert (
+        experiment_family(
+            proposal,
+            "training",
+            [],
+            ["robot_learning/rewards/reach_reward.py"],
+        )
+        == "reward.outside_boundary_penalty"
+    )
 
 
 def _artifact(path):
@@ -433,7 +525,15 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     calls = []
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model",
-        lambda model: calls.append(model) or {"episodes": 200, "seed": 1000, "success_percent": 100.0, "goal_reached": True},
+        lambda model: (
+            calls.append(model)
+            or {
+                "episodes": 200,
+                "seed": 1000,
+                "success_percent": 100.0,
+                "goal_reached": True,
+            }
+        ),
     )
     assert not apply_previous_result_decision(request, state)
     assert calls == []
@@ -449,7 +549,9 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     assert (tmp_path / "GOAL_REACHED").exists()
 
 
-def test_pending_final_benchmark_survives_failure_and_failed_result(monkeypatch, tmp_path):
+def test_pending_final_benchmark_survives_failure_and_failed_result(
+    monkeypatch, tmp_path
+):
     _artifact(tmp_path / "archive" / "candidate")
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
@@ -465,16 +567,26 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(monkeypatch,
         del model
         raise RuntimeError("benchmark crashed")
 
-    monkeypatch.setattr("research.run_experiment.evaluate_final_model", failed_benchmark)
+    monkeypatch.setattr(
+        "research.run_experiment.evaluate_final_model", failed_benchmark
+    )
     with pytest.raises(RuntimeError, match="benchmark crashed"):
         execute_pending_final_benchmark()
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert persisted["pending_final_benchmark"]["fingerprint"] == state["pending_final_benchmark"]["fingerprint"]
+    assert (
+        persisted["pending_final_benchmark"]["fingerprint"]
+        == state["pending_final_benchmark"]["fingerprint"]
+    )
     assert persisted["official_metrics"] is None
 
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model",
-        lambda model: {"episodes": 200, "seed": 1000, "success_percent": 97.5, "goal_reached": False},
+        lambda model: {
+            "episodes": 200,
+            "seed": 1000,
+            "success_percent": 97.5,
+            "goal_reached": False,
+        },
     )
     assert execute_pending_final_benchmark() == 0
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
@@ -501,15 +613,43 @@ def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
     state = {
-        "schema_version": 2, "accepted_artifact": "accepted",
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
         "pending_evaluation_request": {
-            "experiment": 8, "candidates": [{"name": "candidate", "artifact": "archive/candidate", "timesteps": 1, "evaluations": []}],
-            "champion_available": False, "parameters": {}, "initialization": "fresh", "training_budget_steps": 1, "parent_training_steps": 0,
+            "experiment": 8,
+            "candidates": [
+                {
+                    "name": "candidate",
+                    "artifact": "archive/candidate",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
             "result": {"index": 8, "change": "measure", "hypothesis": "test"},
         },
     }
     state_path.write_text(json.dumps(state), encoding="utf-8")
-    request_path.write_text(json.dumps({"experiment": 8, "evaluations": [{"candidate": "candidate", "episodes": 200, "seed": 1000, "official_benchmark": True}]}), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "evaluations": [
+                    {
+                        "candidate": "candidate",
+                        "episodes": 200,
+                        "seed": 1000,
+                        "official_benchmark": True,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     with pytest.raises(ValueError, match="not valid"):
@@ -517,14 +657,17 @@ def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp
 
 
 def test_continuation_and_replication_allow_unchanged_methods():
-    validate_experiment_semantics(
-        {}, "continuation", "transfer", None, [], False
-    )
+    validate_experiment_semantics({}, "continuation", "transfer", None, [], False)
     with pytest.raises(ValueError, match="continuation requires transfer"):
         validate_experiment_semantics({}, "continuation", "fresh", None, [], False)
 
     validate_experiment_semantics(
-        {"training_seed": 19, "replication_of": 12}, "replication", "fresh", None, [], False
+        {"training_seed": 19, "replication_of": 12},
+        "replication",
+        "fresh",
+        None,
+        [],
+        False,
     )
     with pytest.raises(ValueError, match="explicit training_seed"):
         validate_experiment_semantics({}, "replication", "fresh", None, [], False)
@@ -542,9 +685,14 @@ def test_continuation_and_replication_allow_unchanged_methods():
 
 def test_training_proposal_has_no_postmortem_or_lineage_payload():
     proposal = {
-        "kind": "training", "family": "reward.hold", "hypothesis": "test",
-        "change": "test", "initialization": "transfer", "training_parent": "accepted",
-        "training_seed": 0, "params": {},
+        "kind": "training",
+        "family": "reward.hold",
+        "hypothesis": "test",
+        "change": "test",
+        "initialization": "transfer",
+        "training_parent": "accepted",
+        "training_seed": 0,
+        "params": {},
     }
     validate_training_proposal(proposal, baseline=False)
     proposal["previous_experiment_postmortem"] = {}
@@ -561,35 +709,58 @@ def test_champion_can_be_retained_before_replacement(monkeypatch, tmp_path):
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
-    state.update({
-        "accepted_artifact": "accepted", "accepted_training_steps": 55,
-        "accepted_parameters": {"algorithm": {"name": "ppo"}},
-    })
+    state.update(
+        {
+            "accepted_artifact": "accepted",
+            "accepted_training_steps": 55,
+            "accepted_parameters": {"algorithm": {"name": "ppo"}},
+        }
+    )
     state["pending_researcher_decision"]["champion_available"] = True
     decision = _lineage_decision()
-    decision["previous_result_decision"]["retain"] = [{
-        "candidate": "champion", "id": "pre-change-policy", "reason": "Useful contrast.",
-    }]
+    decision["previous_result_decision"]["retain"] = [
+        {
+            "candidate": "champion",
+            "id": "pre-change-policy",
+            "reason": "Useful contrast.",
+        }
+    ]
     assert not apply_previous_result_decision(decision, state)
     retained = state["retained_lineages"][0]
     assert retained["id"] == "pre-change-policy"
-    assert (tmp_path / retained["artifact"] / "model.zip").read_bytes() == champion.joinpath("model.zip").read_bytes()
+    assert (
+        tmp_path / retained["artifact"] / "model.zip"
+    ).read_bytes() == champion.joinpath("model.zip").read_bytes()
     assert (tmp_path / "accepted" / "model.zip").read_bytes() == challenger_model
     identifier, parent, steps = training_parent(
         {"training_parent": "pre-change-policy"}, state, "transfer"
     )
-    assert (identifier, parent, steps) == ("pre-change-policy", tmp_path / retained["artifact"], 55)
+    assert (identifier, parent, steps) == (
+        "pre-change-policy",
+        tmp_path / retained["artifact"],
+        55,
+    )
 
 
-def test_removing_retained_lineage_keeps_history_but_removes_artifact(monkeypatch, tmp_path):
+def test_removing_retained_lineage_keeps_history_but_removes_artifact(
+    monkeypatch, tmp_path
+):
     _artifact(tmp_path / "archive" / "candidate")
-    retained = _artifact(tmp_path / "research" / "checkpoints" / "retained" / "obsolete")
+    retained = _artifact(
+        tmp_path / "research" / "checkpoints" / "retained" / "obsolete"
+    )
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
-    state["retained_lineages"] = [{"id": "obsolete", "artifact": "research/checkpoints/retained/obsolete", "origin_experiment": 2}]
+    state["retained_lineages"] = [
+        {
+            "id": "obsolete",
+            "artifact": "research/checkpoints/retained/obsolete",
+            "origin_experiment": 2,
+        }
+    ]
     decision = _lineage_decision()
     decision["previous_result_decision"]["remove_retained"] = ["obsolete"]
     assert not apply_previous_result_decision(decision, state)
@@ -601,10 +772,18 @@ def test_removing_retained_lineage_keeps_history_but_removes_artifact(monkeypatc
 @pytest.mark.parametrize(
     "mutate",
     [
-        lambda decision: decision["previous_result_decision"].update({"continue_from": "missing"}),
-        lambda decision: decision["previous_result_decision"]["code"].update({"action": "revise"}),
-        lambda decision: decision["previous_result_decision"].update({"retain": [{"candidate": "missing", "id": "alternative", "reason": "bad"}]}),
-        lambda decision: decision["previous_result_decision"].update({"remove_retained": ["missing"]}),
+        lambda decision: decision["previous_result_decision"].update(
+            {"continue_from": "missing"}
+        ),
+        lambda decision: decision["previous_result_decision"]["code"].update(
+            {"action": "revise"}
+        ),
+        lambda decision: decision["previous_result_decision"].update(
+            {"retain": [{"candidate": "missing", "id": "alternative", "reason": "bad"}]}
+        ),
+        lambda decision: decision["previous_result_decision"].update(
+            {"remove_retained": ["missing"]}
+        ),
     ],
 )
 def test_invalid_lineage_decisions_mutate_nothing(monkeypatch, tmp_path, mutate):
@@ -636,9 +815,13 @@ def test_conflicting_retention_is_rejected_before_mutation(monkeypatch, tmp_path
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", accepted)
     monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
-    state["retained_lineages"] = [{"id": "alternative", "artifact": "old", "origin_experiment": 1}]
+    state["retained_lineages"] = [
+        {"id": "alternative", "artifact": "old", "origin_experiment": 1}
+    ]
     decision = _lineage_decision()
-    decision["previous_result_decision"]["retain"] = [{"candidate": "candidate", "id": "alternative", "reason": "bad"}]
+    decision["previous_result_decision"]["retain"] = [
+        {"candidate": "candidate", "id": "alternative", "reason": "bad"}
+    ]
     with pytest.raises(ValueError, match="do not retain|conflicting"):
         plan_previous_result_decision(decision, state)
     assert accepted.joinpath("model.zip").exists()

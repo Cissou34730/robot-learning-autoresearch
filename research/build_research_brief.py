@@ -104,8 +104,7 @@ def render_training_summary(log_text: str) -> str:
     ]
     for label, key in fields:
         lines.append(
-            f"| {label} | {_format_value(first, key)} | "
-            f"{_format_value(final, key)} |"
+            f"| {label} | {_format_value(first, key)} | {_format_value(final, key)} |"
         )
 
     lines.extend(
@@ -207,7 +206,10 @@ def _legacy_family(result: dict) -> str:
         (("sac",), "algorithm.name"),
         (("dwell reward",), "reward.DWELL_BONUS_PER_STEP"),
         (("completion bonus",), "reward.HOLD_COMPLETE_BONUS"),
-        (("closeness reward potential", "sharpen closeness"), "reward.CLOSENESS_LENGTH_SCALE"),
+        (
+            ("closeness reward potential", "sharpen closeness"),
+            "reward.CLOSENESS_LENGTH_SCALE",
+        ),
         (("closeness reward",), "reward.CLOSENESS_COEFFICIENT"),
         (("progress reward",), "reward.PROGRESS_COEFFICIENT"),
         (("action cost",), "reward.ACTION_COST_COEFFICIENT"),
@@ -237,9 +239,7 @@ def _change_details(result: dict) -> str:
     )
     if transitions:
         unique_transitions = list(dict.fromkeys(transitions))
-        return "; ".join(
-            f"{before} → {after}" for before, after in unique_transitions
-        )
+        return "; ".join(f"{before} → {after}" for before, after in unique_transitions)
     code_changes = result.get("code_changes") or []
     if code_changes:
         return f"{result.get('change', '-')}; files: {', '.join(code_changes)}"
@@ -343,11 +343,11 @@ def render_research_brief() -> str:
         else {}
     )
     official_metrics = state.get("official_metrics")
-    accepted_seed_count = accepted_metrics.get("seed_count") if accepted_metrics else None
+    accepted_seed_count = (
+        accepted_metrics.get("seed_count") if accepted_metrics else None
+    )
     accepted_seed_passes = (
-        accepted_metrics.get("seeds_passing_98_percent")
-        if accepted_metrics
-        else None
+        accepted_metrics.get("seeds_passing_98_percent") if accepted_metrics else None
     )
     if accepted_metrics and accepted_seed_count is None:
         accepted_seed_count = 1
@@ -472,7 +472,11 @@ def render_research_brief() -> str:
             f"- Accepted seeds passing 98%: "
             f"{accepted_seed_passes if accepted_seed_passes is not None else '-'}"
             f"/{accepted_seed_count if accepted_seed_count is not None else '-'}"
-            + (" (legacy single-seed measurement)" if accepted_metrics and "seed_count" not in accepted_metrics else "")
+            + (
+                " (legacy single-seed measurement)"
+                if accepted_metrics and "seed_count" not in accepted_metrics
+                else ""
+            )
         ),
         f"- Accepted failed episodes: {accepted_progress.get('failed_episodes', '-')}",
         (
@@ -486,12 +490,8 @@ def render_research_brief() -> str:
             f"- Accepted lineage training budget: "
             f"{int(state.get('accepted_training_steps', 0)):,} steps"
         ),
-        (
-            f"- Last experiment: {displayed_last_experiment}"
-        ),
-        (
-            f"- Last verdict: {displayed_last_verdict}"
-        ),
+        (f"- Last experiment: {displayed_last_experiment}"),
+        (f"- Last verdict: {displayed_last_verdict}"),
         *evaluation_lines,
         *decision_lines,
         "",
@@ -539,7 +539,9 @@ def render_research_brief() -> str:
             successes = []
             for replication_result in entries:
                 metrics = replication_result.get("candidate_metrics") or {}
-                success = metrics.get("pooled_success_percent", metrics.get("success_percent"))
+                success = metrics.get(
+                    "pooled_success_percent", metrics.get("success_percent")
+                )
                 if success is not None:
                     successes.append(float(success))
                 replication_details.append(
@@ -602,9 +604,7 @@ def render_research_brief() -> str:
     lines.extend(render_scenario_evidence(accepted_metrics))
 
     measured_challengers = (
-        (pending_decision or {}).get("candidates", [])
-        if pending_decision
-        else []
+        (pending_decision or {}).get("candidates", []) if pending_decision else []
     )
     if measured_challengers:
         lines.extend(["", "## Measured challenger diagnostics", ""])

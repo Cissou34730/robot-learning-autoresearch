@@ -90,9 +90,7 @@ def test_research_evaluation_preserves_current_metrics(monkeypatch):
         lambda path: None,
     )
 
-    result = evaluate_research_model(
-        Path("stub-model.zip"), episodes=2, seed=1000
-    )
+    result = evaluate_research_model(Path("stub-model.zip"), episodes=2, seed=1000)
 
     assert result.pop("model") == "stub-model.zip"
     traces = [
@@ -118,8 +116,12 @@ def test_final_benchmark_adapter_adds_an_explicit_goal_verdict(monkeypatch):
     def protected(success_percent):
         def evaluate(path, algorithm=None, progress_callback=None):
             del path, algorithm, progress_callback
-            return {"schema_version": 1, "episodes": 200, "seed": 1000,
-                    "success_percent": success_percent}
+            return {
+                "schema_version": 1,
+                "episodes": 200,
+                "seed": 1000,
+                "success_percent": success_percent,
+            }
 
         return evaluate
 
@@ -130,4 +132,3 @@ def test_final_benchmark_adapter_adds_an_explicit_goal_verdict(monkeypatch):
 
     monkeypatch.setattr(adapter, "_protected_evaluate_final_model", protected(97.9))
     assert adapter.evaluate_final_model(Path("stub-model.zip"))["goal_reached"] is False
-

@@ -18,9 +18,7 @@ def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
 
     def outcomes(evaluations: list[dict]) -> dict[tuple[int, int], bool]:
         return {
-            (int(evaluation["seed"]), int(episode["episode"])): bool(
-                episode["success"]
-            )
+            (int(evaluation["seed"]), int(episode["episode"])): bool(episode["success"])
             for evaluation in evaluations
             for episode in evaluation.get("episode_results", [])
         }

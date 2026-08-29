@@ -50,9 +50,7 @@ FORBIDDEN_MODULES = frozenset(
     }
 )
 
-GENERIC_CONFIG_SECTIONS = frozenset(
-    {"algorithm", "ppo", "sac", "policy", "training"}
-)
+GENERIC_CONFIG_SECTIONS = frozenset({"algorithm", "ppo", "sac", "policy", "training"})
 
 
 def imported_modules(path: Path) -> list[str]:
@@ -135,9 +133,9 @@ def test_runtime_configuration_carries_no_reward():
 
 
 def test_scenario_reward_is_code_not_configuration():
-    source = (
-        ROOT / "robot_learning" / "scenario" / "reward.py"
-    ).read_text(encoding="utf-8")
+    source = (ROOT / "robot_learning" / "scenario" / "reward.py").read_text(
+        encoding="utf-8"
+    )
 
     assert "current_params" not in source
     assert "load_experiment_config" not in source
@@ -168,4 +166,3 @@ def test_scenario_files_participate_in_normal_code_lineage(monkeypatch):
         "robot_learning/scenario/observations.py",
     ]
     assert plan["remove_created"] == []
-
