@@ -306,7 +306,12 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     def evaluate_after_commit(model):
         assert committed == [(3, "candidate")]
         assert model == tmp_path / "accepted" / "model.zip"
-        return {"episodes": 200, "seed": 1000, "success_percent": 100.0}
+        return {
+            "episodes": 200,
+            "seed": 1000,
+            "success_percent": 100.0,
+            "goal_reached": True,
+        }
 
     monkeypatch.setattr("research.run_experiment.evaluate_final_model", evaluate_after_commit)
     assert execute_pending_final_benchmark() == 0

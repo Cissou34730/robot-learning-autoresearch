@@ -68,9 +68,11 @@ def test_brief_includes_compact_measured_challenger_diagnostics(
         },
         "failure_diagnostics": [
             {
+                "episode_seed": 3001,
                 "best_window_inside_steps": 41,
                 "longest_consecutive_steps": 23,
                 "target_radius_cm": 12.0,
+                "target_angle_degrees": 5.0,
             }
         ],
     }
@@ -134,8 +136,8 @@ def test_brief_surfaces_directional_failure_diagnostics(monkeypatch, tmp_path):
             "required_steps": 100,
         },
         "failure_diagnostics": [
-            {"best_window_inside_steps": 30, "longest_consecutive_steps": hold, "target_radius_cm": 12.0, "target_angle_degrees": angle}
-            for angle, hold in [(-30.0, 10), (-10.0, 20), (10.0, 40), (30.0, 50)]
+            {"episode_seed": 3000 + index, "best_window_inside_steps": 30, "longest_consecutive_steps": hold, "target_radius_cm": 12.0, "target_angle_degrees": angle}
+            for index, (angle, hold) in enumerate([(-30.0, 10), (-10.0, 20), (10.0, 40), (30.0, 50)])
         ],
     }
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")

@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
-from robot_learning.rewards import reach_reward as reward_module
-from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
+from robot_learning.scenario import make_training_env
+from robot_learning.scenario import reward as reward_module
+from robot_learning.scenario.reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.train import parallel_ppo_params
 from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
@@ -11,14 +11,14 @@ from robot_learning.training.candidate_checkpoint_callback import (
 
 
 def test_observation_matches_declared_space():
-    env = TwoJointArmReachEnv()
+    env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
 
 
 def test_reward_encourages_progress():
-    assert reach_reward(0.10, 0.08, 0.03) > 0
-    assert reach_reward(0.08, 0.10, 0.03) < 0
+    assert reach_reward(0.10, 0.08, 0.03).total > 0
+    assert reach_reward(0.08, 0.10, 0.03).total < 0
 
 
 def test_hold_progress_reward_accelerates_and_pays_completion():
@@ -29,7 +29,7 @@ def test_hold_progress_reward_accelerates_and_pays_completion():
         held_steps=1,
         previous_held_steps=0,
         hold_steps_required=100,
-    )
+    ).total
     late = reach_reward(
         0.005,
         0.005,
@@ -37,7 +37,7 @@ def test_hold_progress_reward_accelerates_and_pays_completion():
         held_steps=99,
         previous_held_steps=98,
         hold_steps_required=100,
-    )
+    ).total
     done = reach_reward(
         0.005,
         0.005,
@@ -45,7 +45,7 @@ def test_hold_progress_reward_accelerates_and_pays_completion():
         held_steps=100,
         previous_held_steps=99,
         hold_steps_required=100,
-    )
+    ).total
     assert late > early > 0
     assert done - late == pytest.approx(
         HOLD_COMPLETE_BONUS
@@ -65,7 +65,7 @@ def test_losing_hold_progress_forfeits_half_accumulated_capital(monkeypatch):
         previous_held_steps=90,
         hold_steps_required=100,
         penalize_outside=True,
-    )
+    ).total
 
     expected_forfeit = -0.5 * reward_module.HOLD_PROGRESS_BONUS * 0.9**2
     assert reward == pytest.approx(expected_forfeit)
@@ -74,15 +74,32 @@ def test_losing_hold_progress_forfeits_half_accumulated_capital(monkeypatch):
 def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
-    just_outside = reach_reward(0.0105, 0.0105, 0.01, penalize_outside=True)
-    far_outside = reach_reward(0.10, 0.10, 0.01, penalize_outside=True)
+    just_outside = reach_reward(0.0105, 0.0105, 0.01, penalize_outside=True).total
+    far_outside = reach_reward(0.10, 0.10, 0.01, penalize_outside=True).total
 
     assert just_outside == pytest.approx(-0.025)
     assert far_outside == pytest.approx(-reward_module.OUTSIDE_BAND_PENALTY)
 
 
+def test_reward_components_are_free_form_and_sum_to_the_scalar():
+    result = reach_reward(
+        0.05,
+        0.04,
+        0.01,
+        action=np.full(2, 0.3),
+        held_steps=0,
+        previous_held_steps=5,
+        hold_steps_required=100,
+        penalize_outside=True,
+    )
+
+    assert isinstance(result.components, dict)
+    assert all(isinstance(value, float) for value in result.components.values())
+    assert sum(result.components.values()) == pytest.approx(result.total)
+
+
 def test_environment_keeps_outside_penalty_active_after_losing_hold(monkeypatch):
-    env = TwoJointArmReachEnv()
+    env = make_training_env()
     env.reset(seed=0)
     env._held_steps = 90
     env._previous_distance = 0.005
@@ -98,8 +115,8 @@ def test_environment_keeps_outside_penalty_active_after_losing_hold(monkeypatch)
 
 def test_action_cost_penalizes_large_actions(monkeypatch):
     monkeypatch.setattr(reward_module, "ACTION_COST_COEFFICIENT", 1.0)
-    gentle = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 0.1))
-    violent = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 1.0))
+    gentle = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 0.1)).total
+    violent = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 1.0)).total
     assert violent < gentle
 
 

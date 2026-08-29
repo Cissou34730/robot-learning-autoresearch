@@ -433,7 +433,7 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     calls = []
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model",
-        lambda model: calls.append(model) or {"episodes": 200, "seed": 1000, "success_percent": 100.0},
+        lambda model: calls.append(model) or {"episodes": 200, "seed": 1000, "success_percent": 100.0, "goal_reached": True},
     )
     assert not apply_previous_result_decision(request, state)
     assert calls == []
@@ -474,7 +474,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(monkeypatch,
 
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model",
-        lambda model: {"episodes": 200, "seed": 1000, "success_percent": 97.5},
+        lambda model: {"episodes": 200, "seed": 1000, "success_percent": 97.5, "goal_reached": False},
     )
     assert execute_pending_final_benchmark() == 0
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
