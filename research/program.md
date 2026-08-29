@@ -2,68 +2,29 @@
 
 You are the autonomous researcher for this project.
 
-Your job is to improve the learned behavior of a two-joint MuJoCo robot through evidence-driven reinforcement-learning research.
+Your job is to improve the learned behavior of this repository's robot through evidence-driven reinforcement-learning research.
 
 You own the scientific decisions. The runner executes them.
 
-## Objective
+## The current scientific problem
 
-The human-defined objective is fixed:
+This file defines the research protocol. It does not define the problem.
 
-* target sampled 6–20 cm from the robot;
-* end effector within 1 cm of the target;
-* remain continuously within tolerance for 2 seconds;
-* this currently corresponds to 100 control steps and is derived from control timing;
-* achieve at least 98% success over the fixed 200-episode official benchmark.
+`research/scenario.md` defines the current scenario: the objective, the protected task and physical definition, the researcher-mutable scenario code, and the scenario terminology used throughout this protocol.
 
-The objective defines the problem. Do not make the reported task easier by changing the robot, target distribution, tolerance, hold duration, success definition, or official benchmark.
+Read both files. Neither is sufficient alone.
 
-`robot_learning/benchmark/final_contract.py` is human-owned and must not be modified by research.
+The objective defines the problem. Do not make the reported task easier by changing the robot, the task distribution, the tolerance, the success definition, or the official benchmark.
 
 If the official problem definition or benchmark appears incorrect, stop and report the issue. Correcting the official problem requires a human decision.
 
-## Official robot and research environment
+## Official problem and research environment
 
 Separate the deployed robot/problem from the environment used to learn it.
 
-### Official robot and mechanics
-
-The official benchmark must preserve:
-
-* the robot XML asset referenced by `TWO_JOINT_ARM_XML_PATH`;
-* robot geometry and joints;
-* actuators and actuator limits;
-* action semantics and control limits;
-* MuJoCo timestep and official control timing;
-* official `frame_skip`;
-* official reset/initial-state semantics;
-* official target distribution;
-* official success tolerance;
-* official hold duration;
-* official episode horizon;
-* official success computation.
-
-These define the physical problem and are not research variables.
-
-### Research environment
+The official problem definition and its protected invariants are listed in `research/scenario.md`, together with what this scenario allows research to change.
 
 The training environment may evolve when scientifically justified.
-
-Research may change:
-
-* reward;
-* observations;
-* normalization;
-* exploration;
-* curriculum;
-* training target distribution;
-* training randomization;
-* wrappers;
-* learning algorithm;
-* optimizer;
-* policy architecture;
-* action representation, provided the resulting policy can still control the official robot correctly;
-* other training mechanisms that do not redefine the official task.
 
 A curriculum or easier training environment is valid. Claiming success on that easier environment is not.
 
@@ -125,6 +86,7 @@ Do not modify the runner to bypass this separation.
 Start with:
 
 * `research/program.md`
+* `research/scenario.md`
 * `research/brief.md`
 * `research/last_train_summary.md`
 * `research/current_params.json`
@@ -244,7 +206,7 @@ Examples include:
 
 Reaching and holding are distinct control problems.
 
-A policy that enters the 1 cm region frequently but cannot remain for 2 seconds has a different failure mechanism from one that rarely reaches the region.
+See `research/scenario.md` for how the current task decomposes and which failure mechanisms are distinguishable in it.
 
 Training reward is an optimization signal, not the objective.
 
@@ -252,9 +214,9 @@ An increasing episodic reward with stagnant task performance may indicate reward
 
 Training success from a stochastic policy is not equivalent to deterministic held-out behavior.
 
-Use hold-progress distributions rather than relying only on averages when the distribution matters.
+Use outcome distributions rather than relying only on averages when the distribution matters.
 
-Use target radius and direction when useful to detect geometric asymmetry.
+Scenario-specific diagnostic dimensions are listed in `research/scenario.md`.
 
 Do not turn temporary diagnostic thresholds or buckets into permanent scientific rules.
 
@@ -550,15 +512,15 @@ Example:
 ```json
 {
   "kind": "training",
-  "family": "reward.hold_stability",
-  "hypothesis": "the current exit punishment destabilizes otherwise useful near-target behavior",
-  "change": "reduce the hold-exit penalty",
+  "family": "ppo.learning_rate",
+  "hypothesis": "the current step size is too coarse for the final precision phase",
+  "change": "halve the PPO learning rate",
   "initialization": "transfer",
   "training_parent": "accepted",
   "training_seed": 0,
   "params": {
-    "reward": {
-      "HOLD_EXIT_FORFEIT_FRACTION": 0.1
+    "ppo": {
+      "learning_rate": 0.00015
     }
   }
 }
@@ -594,6 +556,8 @@ A transferred experiment may use:
 * an explicitly retained lineage ID.
 
 `params` is optional. Code-only or structural experiments are valid.
+
+`params` carries generic runtime configuration only: `algorithm`, `ppo`, `sac`, `policy`, `training`. Scenario science - reward, observations, task mechanics, evaluation - is code. Change the scenario source files listed in `research/scenario.md` and let code lineage record the exact implementation.
 
 Do not add artificial parameter changes simply to populate `params`.
 
@@ -642,7 +606,7 @@ Example:
 ```json
 {
   "kind": "replication",
-  "family": "reward.hold_stability",
+  "family": "ppo.learning_rate",
   "replication_of": 12,
   "hypothesis": "the improvement observed in experiment 12 is robust to training initialization",
   "change": "replicate experiment 12 with a different training seed",
@@ -706,7 +670,7 @@ The researcher cannot choose:
 
 Only the human-owned official benchmark may create `GOAL_REACHED`.
 
-Passing requires at least 98% success over the fixed 200 official episodes.
+The success criterion it enforces is defined in `research/scenario.md`.
 
 ## Official benchmark isolation
 

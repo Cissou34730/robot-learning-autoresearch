@@ -127,7 +127,7 @@ while ($true) {
             Write-Host "=== Researcher designing evaluations for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
                 "This is the complete evaluation-design task; do not wait for more input."
-                "Read research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+                "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
                 "Training is complete. Decide which saved candidates need evaluation and which episode counts, seeds, comparisons, or diagnostics are useful for this experiment."
                 "You may modify evaluation or diagnostic code when the hypothesis requires it, while preserving the human-defined objective."
                 "Write research/evaluation_request.json using the experiment number and an evaluations list."
@@ -139,7 +139,7 @@ while ($true) {
                 Write-Host "=== Evaluation request missing; retrying the same bounded task once ==="
                 $evaluationRetryPrompt = @(
                     "Complete the pending evaluation-design task now; this message is complete."
-                    "Read only research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+                    "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
                     "Do not ask for more input and do not propose a new training experiment."
                     "Choose the useful saved candidates, episode counts, and seeds, then write research/evaluation_request.json with the pending experiment number and an evaluations list."
                     "Do not run evaluation or training yourself."
@@ -193,7 +193,7 @@ while ($true) {
         Update-ResearchBrief
         $decisionPrompt = @(
             "This is the complete lineage-resolution task; do not wait for more input."
-            "Read research/program.md and research/brief.md."
+            "Read research/program.md, research/scenario.md, and research/brief.md."
             "Record the required postmortem and write research/proposal.json containing only previous_result_decision for the pending experiment."
             "Decide the measured model lineage, code lineage, and retained alternatives."
             "Do not create the next scientific mutation, evaluation request, or training proposal. Do not run the runner."
@@ -204,7 +204,7 @@ while ($true) {
             Write-Host "=== Lineage proposal or postmortem missing; retrying the same bounded task once ==="
             $decisionRetryPrompt = @(
                 "Complete the pending lineage-resolution task now; this message is complete."
-                "Read research/program.md and research/brief.md."
+                "Read research/program.md, research/scenario.md, and research/brief.md."
                 "Write the required Markdown postmortem entry for experiment $pendingExperiment in research/postmortems.md."
                 "Write research/proposal.json containing only previous_result_decision; do not create an N+1 training proposal or run the runner."
             ) -join " "
@@ -229,7 +229,7 @@ while ($true) {
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $researchPrompt = @(
         "This is the complete research task; do not wait for more input."
-        "Read research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+        "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
         "Treat these compact files as the default research context."
         "When they cannot discriminate the current hypothesis, inspect the relevant logs, artifacts, code, or a small local analysis before proposing another experiment."
         "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
@@ -249,7 +249,7 @@ while ($true) {
         $retryPrompt = @(
             "The previous researcher session ended before writing research/proposal.json."
             "Complete that same single research task; do not begin a second hypothesis and do not wait for more input."
-            "Read only research/program.md, research/brief.md, research/last_train_summary.md, research/current_params.json, and git status."
+            "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, research/current_params.json, and git status."
             "Use existing research edits, if any, only when they clearly belong to that unfinished experiment."
             "Write a valid research/proposal.json before exiting. Do not launch training or the runner."
         ) -join " "

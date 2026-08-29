@@ -18,13 +18,16 @@ uv run pytest                            # tests
 - `robot_learning/benchmark/final_contract.py`, `final_benchmark.py` - protected
   Human-owned final task semantics and evaluator
 - `robot_learning/benchmark/` - final task metric implementation
-- `robot_learning/environments/reach_env.py` - research-mutable training task
-  mechanics; frozen robot assets remain protected by benchmark tests
-- `robot_learning/training/observations.py` - research-mutable observations
-- `robot_learning/rewards/reach_reward.py` - reward structure (values live in JSON, see below)
+- `robot_learning/scenario/` - everything specific to the current research
+  problem: environment, observations, reward, evaluation, brief evidence, and a
+  thin adapter over the protected benchmark. Generic code imports only the four
+  functions re-exported by `robot_learning/scenario/__init__.py`.
 - `robot_learning/train.py`, `play.py` - CLIs
-- `research/current_params.json` - single source of truth for ALL tunable parameters
-- `research/program.md` - rules for autonomous research sessions (read before touching `research/`)
+- `research/current_params.json` - generic runtime training configuration
+  (algorithm, ppo, sac, policy, training). Reward and other scenario science
+  live in `robot_learning/scenario/` as code.
+- `research/program.md` - generic research protocol (read before touching `research/`)
+- `research/scenario.md` - the current scientific problem
 - `research/checkpoints/accepted/` - Git-versioned accepted policy
 - `models/candidates/` - disposable training candidates
 
