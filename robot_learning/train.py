@@ -1,4 +1,5 @@
 import argparse
+import copy
 import json
 import shutil
 from pathlib import Path
@@ -65,10 +66,27 @@ def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
     return result
 
 
+def effective_training_config(config: dict) -> dict:
+    """Describe the concrete runtime configuration used by this trainer."""
+    n_envs = int(config["training"]["n_envs"])
+    return {
+        "runtime_config": copy.deepcopy(config),
+        "n_envs": n_envs,
+        "model_parameters": parallel_ppo_params(config["ppo"], n_envs),
+        "policy": copy.deepcopy(config["policy"]),
+    }
+
+
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
-    n_envs = args.n_envs or int(config["training"]["n_envs"])
+    effective_config = effective_training_config(config)
+    n_envs = args.n_envs or effective_config["n_envs"]
+    if args.n_envs is not None:
+        effective_config["n_envs"] = n_envs
+        effective_config["model_parameters"] = parallel_ppo_params(
+            config["ppo"], n_envs
+        )
 
     args.output_dir.mkdir(parents=True, exist_ok=False)
     vec_env_cls = DummyVecEnv if n_envs == 1 else SubprocVecEnv
@@ -79,8 +97,8 @@ def main() -> None:
         vec_env_cls=vec_env_cls,
     )
 
-    params = parallel_ppo_params(config["ppo"], n_envs)
-    policy_kwargs = build_policy_kwargs(config["policy"])
+    params = effective_config["model_parameters"]
+    policy_kwargs = build_policy_kwargs(effective_config["policy"])
     if args.resume is not None:
         stats_path = args.resume.parent / "vecnormalize.pkl"
         if not stats_path.exists():
@@ -145,9 +163,7 @@ def main() -> None:
             "requested_timesteps": args.target_timesteps or args.timesteps,
             "completed": not interrupted,
             "resumed_from": str(args.resume) if args.resume else None,
-            "n_envs": n_envs,
-            "parameters": params,
-            "policy": config["policy"],
+            "effective_config": effective_config,
         }
         (args.output_dir / "artifact.json").write_text(
             json.dumps(artifact, indent=2, default=str) + "\n",

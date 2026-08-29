@@ -207,6 +207,19 @@ def test_protocol_no_longer_enumerates_the_configuration_surface():
     assert "`algorithm`, `ppo`, `sac`, `policy`, `training`" not in PROGRAM
 
 
+def test_protocol_example_is_a_minimal_structural_proposal():
+    proposal_example = PROGRAM.split("### Standard training proposal", 1)[1].split(
+        "Required:", 1
+    )[0]
+
+    assert '"initialization": "fresh"' in proposal_example
+    assert "training_parent" not in proposal_example
+    assert "training_seed" not in proposal_example
+    assert '"params"' not in proposal_example
+    for field in ("training_parent", "training_seed", "params"):
+        assert field in PROGRAM
+
+
 # --- scenario --------------------------------------------------------------
 
 

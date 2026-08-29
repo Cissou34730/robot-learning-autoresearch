@@ -22,6 +22,7 @@ from robot_learning.scenario import (
     render_training_progress_metric,
     summarize_research_evaluations,
 )
+from robot_learning.train import effective_training_config
 from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.progress import (
     latest_training_record,
@@ -1176,11 +1177,7 @@ def validate_reusable_candidate(
         if not (source / filename).exists():
             raise ValueError(f"reusable candidate is incomplete: {filename}")
     artifact = json.loads((source / "artifact.json").read_text(encoding="utf-8"))
-    algorithm = str(config["algorithm"]["name"]).lower()
-    n_envs = int(config["training"]["n_envs"])
-    expected_params = dict(config[algorithm])
-    if algorithm == "ppo":
-        expected_params["n_steps"] = int(expected_params["n_steps"]) // n_envs
+    expected_effective_config = effective_training_config(config)
     expected_resume = resume.resolve() if resume is not None else None
     actual_resume = (
         Path(artifact["resumed_from"]).resolve()
@@ -1188,15 +1185,13 @@ def validate_reusable_candidate(
         else None
     )
     checks = {
-        "algorithm": artifact.get("algorithm") == algorithm,
         "seed": artifact.get("seed") == seed,
         "requested timesteps": int(
             artifact.get("requested_timesteps", artifact.get("timesteps", -1))
         )
         == timesteps,
-        "n_envs": artifact.get("n_envs") == n_envs,
-        "parameters": artifact.get("parameters") == expected_params,
-        "policy": artifact.get("policy") == config["policy"],
+        "effective configuration": artifact.get("effective_config")
+        == expected_effective_config,
         "resume checkpoint": (
             not bool(artifact.get("completed", True))
             or actual_resume == expected_resume
@@ -1224,13 +1219,9 @@ def retained_lineage(state: dict, identifier: str) -> dict | None:
 def training_parent(
     proposal: dict, state: dict, initialization: str
 ) -> tuple[str, Path, int]:
-    identifier = str(proposal.get("training_parent", "accepted")).strip()
     if initialization != "transfer":
-        if identifier != "accepted":
-            raise ValueError(
-                "training_parent is only valid with transfer initialization"
-            )
         return "fresh", Path(), 0
+    identifier = str(proposal["training_parent"]).strip()
     if identifier == "accepted":
         return (
             "accepted",
@@ -1309,17 +1300,18 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         "hypothesis",
         "change",
         "initialization",
-        "training_parent",
-        "training_seed",
-        "params",
     }
     missing = sorted(field for field in required if field not in proposal)
     if missing:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     if not str(proposal["family"]).strip():
         raise ValueError("training proposal family must be non-empty")
-    if not str(proposal["training_parent"]).strip():
-        raise ValueError("training proposal training_parent must be non-empty")
+    initialization = str(proposal["initialization"]).lower()
+    if initialization == "transfer":
+        if not str(proposal.get("training_parent", "")).strip():
+            raise ValueError("transfer initialization requires training_parent")
+    elif initialization == "fresh" and "training_parent" in proposal:
+        raise ValueError("training_parent is only valid with transfer initialization")
 
 
 def remove_heavyweight_artifacts(artifact: Path) -> None:

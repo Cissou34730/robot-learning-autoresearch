@@ -553,14 +553,7 @@ The structure below is a shape, not a suggested experiment. Replace every placeh
   "family": "<hypothesis family>",
   "hypothesis": "<the mechanism you believe is limiting learning>",
   "change": "<the intervention that tests that mechanism>",
-  "initialization": "fresh",
-  "training_parent": "accepted",
-  "training_seed": 0,
-  "params": {
-    "<section>": {
-      "<setting>": "<value>"
-    }
-  }
+  "initialization": "fresh"
 }
 ```
 

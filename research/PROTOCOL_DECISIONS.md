@@ -620,4 +620,19 @@ superseded. It does not instruct the autonomous researcher and does not replace
   not active" and "`research/current_params.json` holds generic runtime knobs
   only: `algorithm`, `ppo`, `sac`, `policy`, `training`".
 
+## 2026-08-29 — Opaque effective configuration and minimal proposals
+
+- **Decision:** `robot_learning/train.py` owns the interpretation of the active
+  runtime configuration and writes its resolved `effective_config` into every
+  artifact. The runner obtains the expected value from the training
+  implementation and compares it only for equality; it does not reconstruct
+  PPO parameters, divide rollout steps, or interpret configuration sections.
+- **Decision:** An ordinary training proposal requires only `kind`, `family`,
+  `hypothesis`, `change`, and `initialization`. `training_parent` is required
+  only for transfer and rejected for fresh initialization. `training_seed` and
+  `params` remain optional; code-only and structural experiments remain valid.
+- **Reason:** The prior reusable-artifact check embedded the current PPO
+  configuration shape in the protected runner, and the proposal validator
+  contradicted the method-neutral protocol by forcing configuration fields.
+
 

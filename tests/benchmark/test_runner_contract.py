@@ -16,8 +16,10 @@ from research.run_experiment import (
     main,
     validate_experiment_semantics,
     validate_reusable_candidate,
+    validate_training_proposal,
 )
 from robot_learning.evaluate import write_progress
+from robot_learning.train import effective_training_config
 
 OFFICIAL_TASK_PATHS = (
     "research/run_experiment.py",
@@ -315,18 +317,23 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
     candidate.mkdir()
     (candidate / "model.zip").touch()
     (candidate / "vecnormalize.pkl").touch()
-    (candidate / "artifact.json").write_text(
-        '{"algorithm":"ppo","seed":0,"timesteps":1000,'
-        '"n_envs":1,"parameters":{"n_steps":1024},"policy":{},'
-        '"resumed_from":null}',
-        encoding="utf-8",
-    )
     config = {
         "algorithm": {"name": "ppo"},
         "training": {"n_envs": 1},
         "ppo": {"n_steps": 1024},
         "policy": {},
     }
+    (candidate / "artifact.json").write_text(
+        json.dumps(
+            {
+                "seed": 0,
+                "timesteps": 1000,
+                "effective_config": effective_training_config(config),
+                "resumed_from": None,
+            }
+        ),
+        encoding="utf-8",
+    )
 
     with pytest.raises(ValueError, match="timesteps"):
         validate_reusable_candidate(
@@ -343,19 +350,25 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
     candidate.mkdir()
     for filename in ("model.zip", "vecnormalize.pkl"):
         (candidate / filename).touch()
-    (candidate / "artifact.json").write_text(
-        '{"algorithm":"ppo","seed":0,"timesteps":50000,'
-        '"requested_timesteps":120000,"completed":false,'
-        '"n_envs":1,"parameters":{"n_steps":1024},"policy":{},'
-        '"resumed_from":"a prior recovery checkpoint"}',
-        encoding="utf-8",
-    )
     config = {
         "algorithm": {"name": "ppo"},
         "training": {"n_envs": 1},
         "ppo": {"n_steps": 1024},
         "policy": {},
     }
+    (candidate / "artifact.json").write_text(
+        json.dumps(
+            {
+                "seed": 0,
+                "timesteps": 50_000,
+                "requested_timesteps": 120_000,
+                "completed": False,
+                "effective_config": effective_training_config(config),
+                "resumed_from": "a prior recovery checkpoint",
+            }
+        ),
+        encoding="utf-8",
+    )
 
     validate_reusable_candidate(
         candidate,
@@ -364,6 +377,108 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
         resume=None,
         config=config,
     )
+
+
+def test_reusable_candidate_compares_effective_configuration_opaquely(tmp_path):
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    for filename in ("model.zip", "vecnormalize.pkl"):
+        (candidate / filename).touch()
+    config = {
+        "algorithm": {"name": "ppo"},
+        "training": {"n_envs": 1},
+        "ppo": {"n_steps": 1024},
+        "policy": {},
+    }
+    artifact = {
+        "seed": 0,
+        "timesteps": 120_000,
+        "requested_timesteps": 120_000,
+        "effective_config": effective_training_config(config),
+        "resumed_from": None,
+    }
+    (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
+
+    validate_reusable_candidate(
+        candidate, timesteps=120_000, seed=0, resume=None, config=config
+    )
+
+    artifact["effective_config"]["model_parameters"]["n_steps"] = 512
+    (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
+    with pytest.raises(ValueError, match="effective configuration"):
+        validate_reusable_candidate(
+            candidate, timesteps=120_000, seed=0, resume=None, config=config
+        )
+
+    artifact["effective_config"] = effective_training_config(config)
+    artifact["seed"] = 1
+    (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
+    with pytest.raises(ValueError, match="seed"):
+        validate_reusable_candidate(
+            candidate, timesteps=120_000, seed=0, resume=None, config=config
+        )
+
+
+def test_runner_does_not_interpret_effective_configuration():
+    source = (Path(__file__).parents[2] / "research" / "run_experiment.py").read_text(
+        encoding="utf-8"
+    )
+    validation = source.split("def validate_reusable_candidate", 1)[1].split(
+        "def retained_lineage", 1
+    )[0]
+
+    for forbidden in ("ppo", "n_steps", "policy", "parameters", "n_envs"):
+        assert forbidden not in validation
+
+
+def test_training_proposal_requires_only_its_scientific_shape():
+    proposal = {
+        "kind": "training",
+        "family": "observation.representation",
+        "hypothesis": "the observation hides information needed by the policy",
+        "change": "change the observation representation",
+        "initialization": "fresh",
+    }
+
+    validate_training_proposal(proposal, baseline=False)
+    validate_experiment_semantics(
+        proposal,
+        "training",
+        "fresh",
+        None,
+        ["robot_learning/scenario/observations.py"],
+        False,
+    )
+
+
+def test_transfer_proposal_requires_a_training_parent():
+    proposal = {
+        "kind": "training",
+        "family": "x",
+        "hypothesis": "x",
+        "change": "x",
+        "initialization": "transfer",
+    }
+
+    with pytest.raises(ValueError, match="requires training_parent"):
+        validate_training_proposal(proposal, baseline=False)
+
+    proposal["training_parent"] = "accepted"
+    validate_training_proposal(proposal, baseline=False)
+
+
+def test_fresh_proposal_rejects_a_training_parent():
+    proposal = {
+        "kind": "training",
+        "family": "x",
+        "hypothesis": "x",
+        "change": "x",
+        "initialization": "fresh",
+        "training_parent": "accepted",
+    }
+
+    with pytest.raises(ValueError, match="only valid with transfer"):
+        validate_training_proposal(proposal, baseline=False)
 
 
 def test_candidate_manifest_exposes_all_complete_artifacts(tmp_path):
