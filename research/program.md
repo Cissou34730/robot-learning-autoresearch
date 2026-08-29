@@ -19,7 +19,10 @@ cannot be measured correctly, or that the implementation is inconsistent with
 it, diagnose the problem explicitly. You may edit any code needed to correct or
 improve the experiment, including benchmark, evaluator, or runner code, provided
 the human objective itself remains unchanged. If changing the objective is
-necessary, stop and ask the human.
+necessary, stop and ask the human. The official benchmark contract is fixed:
+only a request marked `official_benchmark: true` with its fixed 200 episodes and
+seed 1000 may create `GOAL_REACHED`. Research evaluations are not an official
+result, even when they use the same episode count.
 
 ## Roles
 
@@ -112,6 +115,18 @@ request when existing measurements cannot test the hypothesis.
 
 There is no automatic tournament and no runner-defined notion of “best.”
 
+Use `need_more_evidence: true` when these measurements should be followed by
+another evaluation round before a lineage decision. The runner retains completed
+measurements and returns to this step. For a mechanically-derived paired
+statistic, request for example:
+
+```json
+"paired_comparisons": [{"candidate": "checkpoint-120000", "reference": "champion"}]
+```
+
+Both policies must have been evaluated on identical seed and episode pairs. The
+resulting exact p-value is evidence, never an automatic promotion rule.
+
 ### 3. Analysis and lineage decision
 
 After the requested measurements, analyze the result and record a concise
@@ -176,6 +191,12 @@ The proposal must state:
 - `previous_experiment_postmortem` after the first completed experiment;
 - `previous_result_decision` whenever the brief requires it.
 
+Use `kind: "continuation"` with `initialization: "transfer"` when the
+hypothesis is that the existing method has not converged. A continuation needs
+no artificial code or parameter mutation, but must still explain why more
+training is informative. Use `training_seed` for an explicit replication; do
+not generalize a method-level result from one training seed.
+
 Do not launch training or `run_research.ps1`. The runner executes the proposal
 after the research session exits using the human-defined compute budget.
 
@@ -192,8 +213,9 @@ Use only as much evaluation as the decision needs. Do not overinterpret one
 snapshot or tiny numerical differences, but do not run large repeated panels by
 default when they cannot change the conclusion. Negative results are evidence.
 
-Use the compact history to avoid repeating exhausted hypotheses. Read raw logs
-or archives only when a specific ambiguity requires them.
+Use the compact history to avoid repeating exhausted hypotheses. Use the brief
+by default; when it cannot discriminate a specific hypothesis, inspect relevant
+logs, artifacts, or code, or produce a small local analysis before training.
 
 ## Core rule
 

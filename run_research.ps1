@@ -176,8 +176,8 @@ while ($true) {
     $researchPrompt = @(
         "This is the complete research task; do not wait for more input."
         "Read research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
-        "Treat these compact files as the complete default research context."
-        "Do not read research/results.jsonl, research/EXPERIMENTS.md, research/postmortems.md, research/last_evaluation.json, research/run_experiment.py, or full logs unless the compact brief identifies one specific ambiguity that requires one of them."
+        "Treat these compact files as the default research context."
+        "When they cannot discriminate the current hypothesis, inspect the relevant logs, artifacts, code, or a small local analysis before proposing another experiment."
         "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
         "Do not launch training or the runner."
     ) -join " "

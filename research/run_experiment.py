@@ -20,6 +20,7 @@ from robot_learning.benchmark.spec import (
     HOLD_SECONDS,
     SUCCESS_THRESHOLD,
 )
+from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.research_config import (
     load_experiment_config,
     merge_param_overrides,
@@ -50,6 +51,7 @@ INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
 EVALUATION_SUMMARY_VERSION = 1
+OFFICIAL_BENCHMARK_LABEL = "official final benchmark"
 
 
 def announce(message: str) -> None:
@@ -363,6 +365,7 @@ def evaluate_artifact(
     label: str = "official evaluation",
     episodes: int = EVALUATION_EPISODES,
     output_path: Path | None = None,
+    official_benchmark: bool = False,
 ) -> dict:
     output_path = output_path or RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
@@ -387,6 +390,8 @@ def evaluate_artifact(
         "--progress-json",
         str(progress_path),
     ]
+    if official_benchmark:
+        command.append("--official-benchmark")
     announce(
         f"[evaluation] {label} | {episodes} episodes | seed {seed}"
     )
@@ -546,6 +551,42 @@ def summarize_evaluations(
     }
 
 
+def requested_paired_comparisons(
+    request: dict,
+    evaluations_by_candidate: dict[str, list[dict]],
+) -> list[dict]:
+    comparisons = request.get("paired_comparisons", [])
+    if not isinstance(comparisons, list):
+        raise TypeError("paired_comparisons must be a list")
+    results: list[dict] = []
+    for comparison in comparisons:
+        if not isinstance(comparison, dict):
+            raise TypeError("each paired comparison must be an object")
+        candidate_name = str(comparison.get("candidate", "")).strip()
+        reference_name = str(comparison.get("reference", "")).strip()
+        if candidate_name not in evaluations_by_candidate:
+            raise ValueError(f"unknown paired comparison candidate {candidate_name!r}")
+        if reference_name not in evaluations_by_candidate:
+            raise ValueError(f"unknown paired comparison reference {reference_name!r}")
+        try:
+            result = paired_comparison(
+                evaluations_by_candidate[candidate_name],
+                evaluations_by_candidate[reference_name],
+            )
+        except ValueError as error:
+            raise ValueError(
+                f"paired comparison {candidate_name!r} vs {reference_name!r}: {error}"
+            ) from error
+        results.append(
+            {
+                "candidate": candidate_name,
+                "reference": reference_name,
+                **result,
+            }
+        )
+    return results
+
+
 def candidate_directories(candidate_dir: Path) -> list[Path]:
     manifest_path = candidate_dir / "candidate_manifest.json"
     if not manifest_path.exists():
@@ -618,8 +659,6 @@ def execute_pending_evaluations() -> int:
         raise TypeError("evaluation request requires an evaluations list")
 
     candidates = pending["candidates"]
-    for candidate in candidates:
-        candidate["evaluations"] = []
     available = {item["name"]: item for item in candidates}
     if pending.get("champion_available"):
         available["champion"] = {
@@ -661,7 +700,21 @@ def execute_pending_evaluations() -> int:
             seed = int(spec.get("seed", EVALUATION_SEED))
             if episodes < 1:
                 raise ValueError("evaluation episodes must be positive")
-            label = str(spec.get("label", f"requested evaluation {number}: {name}"))
+            official_benchmark = bool(spec.get("official_benchmark", False))
+            if official_benchmark and (
+                episodes != EVALUATION_EPISODES or seed != EVALUATION_SEED
+            ):
+                raise ValueError(
+                    "official_benchmark requires the fixed official episode count and seed"
+                )
+            label = str(
+                spec.get(
+                    "label",
+                    OFFICIAL_BENCHMARK_LABEL
+                    if official_benchmark
+                    else f"requested evaluation {number}: {name}",
+                )
+            )
             key = request_key(name, episodes, seed, label)
             if key in completed_keys:
                 announce(f"[evaluation] already complete; reusing {label}")
@@ -675,6 +728,7 @@ def execute_pending_evaluations() -> int:
                 label=label,
                 episodes=episodes,
                 output_path=output_path,
+                official_benchmark=official_benchmark,
             )
             output_path.unlink(missing_ok=True)
             clean_metrics = metrics_without_artifact_path([metrics])[0]
@@ -685,6 +739,7 @@ def execute_pending_evaluations() -> int:
                     "episodes": episodes,
                     "seed": seed,
                     "label": label,
+                    "official_benchmark": official_benchmark,
                     "metrics": clean_metrics,
                 }
             )
@@ -715,6 +770,11 @@ def execute_pending_evaluations() -> int:
         else None
     )
 
+    comparison_inputs = {
+        name: contender.get("evaluations", [])
+        for name, contender in available.items()
+    }
+    comparisons = requested_paired_comparisons(request, comparison_inputs)
     result = pending["result"]
     result.update(
         {
@@ -723,6 +783,7 @@ def execute_pending_evaluations() -> int:
             "decision_pending": True,
             "candidates": candidates,
             "requested_evaluations": executed,
+            "paired_comparisons": comparisons,
         }
     )
     measured = [item for item in candidates if item.get("summary") is not None]
@@ -731,27 +792,42 @@ def execute_pending_evaluations() -> int:
         result["candidate_metrics"] = primary
         result["candidate_success_percent"] = primary["pooled_success_percent"]
 
-    state["pending_researcher_decision"] = {
+    researcher_context = {
         "experiment": experiment,
         "candidates": candidates,
         "champion_available": bool(pending.get("champion_available")),
         "champion_summary": champion_summary,
+        "champion_evaluations": champion_evaluations,
         "parameters": pending["parameters"],
         "initialization": pending["initialization"],
         "training_budget_steps": pending["training_budget_steps"],
         "parent_training_steps": pending["parent_training_steps"],
         "code_parent_commit": pending.get("code_parent_commit"),
     }
-    state["pending_evaluation_request"] = None
+    more_evidence = bool(request.get("need_more_evidence", False))
+    if more_evidence:
+        pending["evaluation_plan"] = None
+        pending["partial_evaluations"] = executed
+        state["pending_evaluation_request"] = pending
+        state["pending_researcher_decision"] = None
+        state["last_verdict"] = "measured; researcher requested another evaluation round"
+    else:
+        state["pending_researcher_decision"] = researcher_context
+        state["pending_evaluation_request"] = None
+        state["last_verdict"] = result["verdict"]
     state["last_experiment"] = experiment
-    state["last_verdict"] = result["verdict"]
     if pending.get("baseline"):
         BASELINE_PENDING_PATH.unlink(missing_ok=True)
     atomic_write_json(STATE_PATH, state)
-    append_result(result)
+    if not more_evidence:
+        append_result(result)
     EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
-    commit_result(experiment, str(result["change"]))
-    announce("[result] requested evaluations complete; researcher analysis required")
+    if not more_evidence:
+        commit_result(experiment, str(result["change"]))
+    announce(
+        "[result] requested evaluations complete; "
+        + ("another evaluation round requested" if more_evidence else "researcher analysis required")
+    )
     return 0
 
 
@@ -900,6 +976,7 @@ def validate_reusable_candidate(
     source: Path,
     *,
     timesteps: int,
+    seed: int,
     resume: Path | None,
     config: dict,
 ) -> None:
@@ -920,7 +997,7 @@ def validate_reusable_candidate(
     )
     checks = {
         "algorithm": artifact.get("algorithm") == algorithm,
-        "seed": artifact.get("seed") == TRAIN_SEED,
+        "seed": artifact.get("seed") == seed,
         "requested timesteps": int(
             artifact.get("requested_timesteps", artifact.get("timesteps", -1))
         )
@@ -1000,7 +1077,21 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     code_reason = str(code_decision.get("reason", "")).strip()
     if code_action not in {"keep", "revert", "revise"} or not code_reason:
         raise ValueError("code decision must be keep, revert, or revise with a reason")
-    state["official_metrics"] = selected_summary
+    official_metrics = None
+    selected_evaluations = (
+        selected.get("evaluations", [])
+        if selected_name != "champion"
+        else pending.get("champion_evaluations", [])
+    )
+    for evaluation in selected_evaluations:
+        if (
+            evaluation.get("official_benchmark", False)
+            and int(evaluation.get("episodes", 0)) == EVALUATION_EPISODES
+            and int(evaluation.get("seed", -1)) == EVALUATION_SEED
+        ):
+            official_metrics = evaluation
+            break
+    state["official_metrics"] = official_metrics
     state["last_lineage_decision"] = {
         "experiment": int(pending["experiment"]),
         "continue_from": selected_name,
@@ -1011,9 +1102,8 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {selected_name}"
     goal_reached = bool(
-        selected_summary
-        and int(selected_summary.get("episodes", 0)) >= EVALUATION_EPISODES
-        and float(selected_summary.get("pooled_success_percent", 0.0))
+        official_metrics
+        and float(official_metrics.get("success_percent", 0.0))
         >= FINAL_SUCCESS_PERCENT
     )
     if goal_reached:
@@ -1148,7 +1238,12 @@ def main() -> int:
         result["code_changes"] = code_changes
         if baseline and (parameter_overrides or code_changes):
             raise ValueError("baseline requires an unchanged research method")
-        if not baseline and not parameter_overrides and not code_changes:
+        if (
+            not baseline
+            and experiment_kind != "continuation"
+            and not parameter_overrides
+            and not code_changes
+        ):
             raise ValueError("experiment contains no research change")
         if initialization not in {"transfer", "fresh"}:
             raise ValueError("initialization must be transfer or fresh")
@@ -1192,6 +1287,8 @@ def main() -> int:
             int(state.get("accepted_training_steps", args.timesteps)),
         )
         result["training_budget_steps"] = effective_timesteps
+        training_seed = int(proposal.get("training_seed", TRAIN_SEED))
+        result["training_seed"] = training_seed
         announce(f"[training plan] {effective_timesteps:,} steps")
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
 
@@ -1204,6 +1301,7 @@ def main() -> int:
             validate_reusable_candidate(
                 reusable,
                 timesteps=effective_timesteps,
+                seed=training_seed,
                 resume=resume,
                 config=effective_config,
             )
@@ -1232,7 +1330,7 @@ def main() -> int:
                     train_candidate(
                         candidate_dir,
                         remaining_timesteps,
-                        TRAIN_SEED,
+                        training_seed,
                         reusable / "final_checkpoint" / "model.zip",
                         label=(
                             "resumed baseline training"
@@ -1247,7 +1345,7 @@ def main() -> int:
             train_candidate(
                 candidate_dir,
                 effective_timesteps,
-                TRAIN_SEED,
+                training_seed,
                 resume,
                 label="baseline training" if baseline else "candidate training",
             )

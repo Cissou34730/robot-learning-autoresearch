@@ -264,6 +264,35 @@ def _experiment_outcome(result: dict) -> str:
     return "; ".join(parts) or "no measured candidate result"
 
 
+def _failure_profile(metrics: dict | None) -> list[str]:
+    if not metrics:
+        return ["Not available yet."]
+    failures = metrics.get("failure_diagnostics", [])
+    episodes = int(metrics.get("episodes", 0))
+    if not episodes:
+        return ["Not available yet."]
+
+    def percent(count: int) -> str:
+        return f"{100 * count / episodes:.1f}%"
+
+    successes = episodes - len(failures)
+    lines = [
+        f"- Entered 1 cm at least once: {percent(sum(item['best_window_inside_steps'] > 0 for item in failures) + successes)}",
+        f"- Held at least 10 steps: {percent(sum(item['longest_consecutive_steps'] >= 10 for item in failures) + successes)}",
+        f"- Held at least 50 steps: {percent(sum(item['longest_consecutive_steps'] >= 50 for item in failures) + successes)}",
+        f"- Held at least 90 steps: {percent(sum(item['longest_consecutive_steps'] >= 90 for item in failures) + successes)}",
+        f"- Completed the required hold: {metrics.get('success_percent', 0):.1f}%",
+    ]
+    for label, low, high in (("6-10 cm", 6, 10), ("10-15 cm", 10, 15), ("15-20 cm", 15, 20)):
+        bucket = [item for item in failures if low <= item["target_radius_cm"] < high]
+        if bucket:
+            lines.append(
+                f"- Failures at {label}: {len(bucket)}; mean longest hold "
+                f"{sum(item['longest_consecutive_steps'] for item in bucket) / len(bucket):.1f}."
+            )
+    return lines
+
+
 def render_research_brief() -> str:
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
@@ -539,6 +568,8 @@ def render_research_brief() -> str:
         accepted_metrics.get("failure_diagnostics", []) if accepted_metrics else []
     )
     lines.extend(["", "## Observed failure diagnostics", ""])
+    lines.extend(_failure_profile(accepted_metrics))
+    lines.append("")
     if diagnostics:
         for item in diagnostics[:5]:
             lines.append(
@@ -567,12 +598,12 @@ def render_research_brief() -> str:
         [
             "## Context discipline",
             "",
-            "- Do not read the full training log; use `research/last_train_summary.md`.",
+            "- Use the brief by default; inspect relevant logs, artifacts, or code when a hypothesis cannot otherwise be discriminated.",
             (
                 "- Do not read full experiment or postmortem history unless the compact "
                 "evidence is insufficient for one specific decision."
             ),
-            "- One experiment should test one identifiable hypothesis.",
+            "- One experiment should test one identifiable hypothesis; a continuation may test whether more training changes the conclusion.",
             "- Record only 5-8 concise postmortem lines.",
         ]
     )

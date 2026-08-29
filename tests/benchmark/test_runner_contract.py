@@ -154,6 +154,7 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
         validate_reusable_candidate(
             candidate,
             timesteps=120_000,
+            seed=0,
             resume=None,
             config=config,
         )
@@ -181,6 +182,7 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
     validate_reusable_candidate(
         candidate,
         timesteps=120_000,
+        seed=0,
         resume=None,
         config=config,
     )

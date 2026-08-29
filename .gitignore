@@ -14,6 +14,7 @@ models/
 
 # Validated curriculum checkpoints live under research/checkpoints and are
 # intentionally versioned. Only disposable training candidates stay in models/.
+research/checkpoints/challengers/
 
 # Tooling caches
 .mypy_cache/

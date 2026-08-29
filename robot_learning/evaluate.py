@@ -14,7 +14,11 @@ from robot_learning.benchmark.metrics import (
 from robot_learning.benchmark.spec import (
     EVALUATION_EPISODES,
     EVALUATION_SEED,
+    FRAME_SKIP,
     HOLD_SECONDS,
+    MAX_EPISODE_STEPS,
+    SUCCESS_THRESHOLD,
+    TARGET_RADIUS_RANGE,
 )
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.training.algorithms import load_policy
@@ -29,7 +33,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=EVALUATION_SEED)
     parser.add_argument("--output-json", type=Path, default=None)
     parser.add_argument("--progress-json", type=Path, default=None)
+    parser.add_argument("--official-benchmark", action="store_true")
     return parser.parse_args()
+
+
+def assert_official_task_contract(env: TwoJointArmReachEnv) -> None:
+    if (
+        env.success_threshold != SUCCESS_THRESHOLD
+        or env.target_radius_range != TARGET_RADIUS_RANGE
+        or env.frame_skip != FRAME_SKIP
+        or env.max_episode_steps != MAX_EPISODE_STEPS
+    ):
+        raise ValueError("environment does not match the official benchmark contract")
 
 
 def evaluate_model(
@@ -38,9 +53,12 @@ def evaluate_model(
     seed: int = EVALUATION_SEED,
     algorithm: str | None = None,
     progress_callback: Callable[[int, int], None] | None = None,
+    official_benchmark: bool = False,
 ) -> dict:
     model = load_policy(model_path, algorithm)
     env = TwoJointArmReachEnv()
+    if official_benchmark:
+        assert_official_task_contract(env)
     normalize_obs = load_observation_normalizer(model_path)
     if normalize_obs is None:
         normalize_obs = lambda obs: obs
@@ -134,6 +152,7 @@ def main() -> None:
         seed=args.seed,
         algorithm=args.algorithm,
         progress_callback=report_progress,
+        official_benchmark=args.official_benchmark,
     )
     output = json.dumps(result, indent=2)
     if args.output_json is not None:
