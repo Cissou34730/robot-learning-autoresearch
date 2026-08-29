@@ -4,15 +4,15 @@ import pytest
 
 from research.run_experiment import (
     apply_previous_result_decision,
-    apply_retention_decisions,
     execute_pending_evaluations,
     experiment_family,
     parameter_change_records,
-    record_previous_postmortem,
+    plan_previous_result_decision,
     summarize_evaluations,
     training_budget,
     training_parent,
     validate_experiment_semantics,
+    validate_training_proposal,
 )
 from robot_learning.training.comparison import (
     exact_mcnemar_pvalue,
@@ -185,6 +185,37 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     assert candidate["summary"]["episodes"] == 4
 
 
+def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state_path.write_text(json.dumps({
+        "schema_version": 2, "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 4,
+            "candidates": [{"name": "checkpoint", "artifact": "archive/checkpoint", "timesteps": 100, "evaluations": []}],
+            "champion_available": False, "parameters": {}, "initialization": "fresh",
+            "training_budget_steps": 100, "parent_training_steps": 0, "baseline": True,
+            "result": {"index": 4, "change": "baseline", "hypothesis": "measure"},
+        },
+    }), encoding="utf-8")
+    request_path.write_text(json.dumps({"experiment": 4, "evaluations": [
+        {"candidate": "checkpoint", "episodes": 2, "seed": 1000, "label": "first"},
+        {"candidate": "checkpoint", "episodes": 2, "seed": 1000, "label": "renamed"},
+    ]}), encoding="utf-8")
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    monkeypatch.setattr("research.run_experiment.append_result", lambda _result: None)
+    calls = []
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", lambda _artifact, seed, **_kwargs: calls.append(seed) or evaluation(seed, [True, False]))
+
+    assert execute_pending_evaluations() == 0
+    assert calls == [1000]
+    final_state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert len(final_state["pending_researcher_decision"]["candidates"][0]["evaluations"]) == 1
+
+
 def test_pending_result_requires_an_explicit_researcher_decision():
     state = {
         "pending_researcher_decision": {
@@ -194,7 +225,7 @@ def test_pending_result_requires_an_explicit_researcher_decision():
         }
     }
 
-    with pytest.raises(TypeError, match="previous_result_decision"):
+    with pytest.raises(ValueError, match="previous_result_decision"):
         apply_previous_result_decision({}, state)
 
 
@@ -290,37 +321,8 @@ def test_declared_code_family_is_stable_across_numeric_variants():
     ) == "reward.outside_boundary_penalty"
 
 
-def test_previous_postmortem_is_required_and_recorded(monkeypatch, tmp_path):
-    results = tmp_path / "results.jsonl"
-    postmortems = tmp_path / "postmortems.md"
-    results.write_text(json.dumps({"index": 7}) + "\n", encoding="utf-8")
-    postmortems.write_text("# Research postmortems\n", encoding="utf-8")
-    monkeypatch.setattr("research.run_experiment.RESULTS_PATH", results)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path)
-
-    with pytest.raises(TypeError, match="previous_experiment_postmortem"):
-        record_previous_postmortem({}, baseline=False)
-
-    record_previous_postmortem(
-        {
-            "previous_experiment_postmortem": {
-                "experiment": 7,
-                "result": "No promotion.",
-                "behavior": "Candidate tied the champion.",
-                "learned": "Do not repeat the same optimizer change.",
-                "next_class": "Inspect failure geometry.",
-            }
-        },
-        baseline=False,
-    )
-
-    memory = postmortems.read_text(encoding="utf-8")
-    assert "## Experiment 7" in memory
-    assert "Inspect failure geometry" in memory
-
-
 def _artifact(path):
-    path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         (path / filename).write_bytes(b"artifact")
     return path
@@ -360,96 +362,62 @@ def _lineage_decision():
     }
 
 
-def test_only_explicit_official_measurement_can_reach_goal(monkeypatch, tmp_path):
+def test_final_benchmark_runs_only_after_lineage_selection(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
     monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
 
-    normal = evaluation(1000, [True] * 200)
-    normal["official_benchmark"] = False
-    state = _decision_state("archive/candidate", [normal])
+    state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     assert not apply_previous_result_decision(_lineage_decision(), state)
     assert state["official_metrics"] is None
     assert not (tmp_path / "GOAL_REACHED").exists()
 
-    assert (tmp_path / "archive" / "candidate" / "model.zip").exists()
-    official = evaluation(1000, [True] * 200)
-    official["official_benchmark"] = True
-    state = _decision_state("archive/candidate", [official])
-    assert apply_previous_result_decision(_lineage_decision(), state)
-    assert state["official_metrics"]["official_benchmark"] is True
+    _artifact(tmp_path / "archive" / "candidate")
+    state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
+    request = _lineage_decision()
+    request["previous_result_decision"]["request_final_benchmark"] = True
+    monkeypatch.setattr(
+        "research.run_experiment.evaluate_final_model",
+        lambda _model: {"episodes": 200, "seed": 1000, "success_percent": 100.0},
+    )
+    assert apply_previous_result_decision(request, state)
+    assert state["official_metrics"]["success_percent"] == 100.0
     assert (tmp_path / "GOAL_REACHED").exists()
 
 
-def test_official_provenance_survives_request_persistence_and_decision(
-    monkeypatch, tmp_path
-):
+def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["request_final_benchmark"] = True
+    fingerprint = plan_previous_result_decision(decision, state)["selected_fingerprint"]
+    state["official_benchmark_artifact"] = fingerprint
+
+    with pytest.raises(ValueError, match="already received"):
+        plan_previous_result_decision(decision, state)
+
+
+def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp_path):
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 2,
-                "accepted_artifact": "accepted",
-                "pending_evaluation_request": {
-                    "experiment": 8,
-                    "candidates": [
-                        {
-                            "name": "candidate",
-                            "artifact": "archive/candidate",
-                            "timesteps": 120_000,
-                            "evaluations": [],
-                        }
-                    ],
-                    "champion_available": False,
-                    "parameters": {},
-                    "initialization": "fresh",
-                    "training_budget_steps": 120_000,
-                    "parent_training_steps": 0,
-                    "result": {"index": 8, "change": "measure", "hypothesis": "test"},
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-    request_path.write_text(
-        json.dumps(
-            {
-                "experiment": 8,
-                "evaluations": [
-                    {
-                        "candidate": "candidate",
-                        "episodes": 200,
-                        "seed": 1000,
-                        "official_benchmark": True,
-                    }
-                ],
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    state = {
+        "schema_version": 2, "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8, "candidates": [{"name": "candidate", "artifact": "archive/candidate", "timesteps": 1, "evaluations": []}],
+            "champion_available": False, "parameters": {}, "initialization": "fresh", "training_budget_steps": 1, "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(json.dumps({"experiment": 8, "evaluations": [{"candidate": "candidate", "episodes": 200, "seed": 1000, "official_benchmark": True}]}), encoding="utf-8")
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.append_result", lambda _result: None)
-    monkeypatch.setattr(
-        "research.run_experiment.evaluate_artifact",
-        lambda *_args, **_kwargs: evaluation(1000, [True] * 200),
-    )
-
-    assert execute_pending_evaluations() == 0
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    measurement = persisted["pending_researcher_decision"]["candidates"][0]["evaluations"][0]
-    assert measurement["official_benchmark"] is True
-    assert apply_previous_result_decision(_lineage_decision(), persisted)
-    assert persisted["official_metrics"]["official_benchmark"] is True
+    with pytest.raises(ValueError, match="not valid"):
+        execute_pending_evaluations()
 
 
 def test_continuation_and_replication_allow_unchanged_methods():
@@ -460,7 +428,7 @@ def test_continuation_and_replication_allow_unchanged_methods():
         validate_experiment_semantics({}, "continuation", "fresh", None, [], False)
 
     validate_experiment_semantics(
-        {"training_seed": 19}, "replication", "fresh", None, [], False
+        {"training_seed": 19, "replication_of": "method-a"}, "replication", "fresh", None, [], False
     )
     with pytest.raises(ValueError, match="explicit training_seed"):
         validate_experiment_semantics({}, "replication", "fresh", None, [], False)
@@ -476,35 +444,108 @@ def test_continuation_and_replication_allow_unchanged_methods():
         )
 
 
-def test_retained_lineage_can_be_reused_and_removed(monkeypatch, tmp_path):
-    retained_artifact = _artifact(tmp_path / "archive" / "alternative")
-    state = {"retained_lineages": []}
-    pending = {
-        "experiment": 9,
-        "parameters": {"algorithm": {"name": "sac"}},
-        "candidates": [
-            {
-                "name": "alternative",
-                "artifact": "archive/alternative",
-                "timesteps": 77,
-            }
-        ],
+def test_training_proposal_has_no_postmortem_or_lineage_payload():
+    proposal = {
+        "kind": "training", "family": "reward.hold", "hypothesis": "test",
+        "change": "test", "initialization": "transfer", "training_parent": "accepted",
+        "training_seed": 0, "params": {},
     }
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    apply_retention_decisions(
-        {"retain": [{"candidate": "alternative", "id": "sac-alt", "reason": "Useful contrast."}]},
-        pending,
-        state,
-    )
-    identifier, parent, steps = training_parent(
-        {"training_parent": "sac-alt"}, state, "transfer"
-    )
-    assert (identifier, parent, steps) == ("sac-alt", retained_artifact, 77)
+    validate_training_proposal(proposal, baseline=False)
+    proposal["previous_experiment_postmortem"] = {}
+    with pytest.raises(ValueError, match="lineage-only"):
+        validate_training_proposal(proposal, baseline=False)
 
-    apply_retention_decisions({"remove_retained": ["sac-alt"]}, pending, state)
+
+def test_champion_can_be_retained_before_replacement(monkeypatch, tmp_path):
+    champion = _artifact(tmp_path / "accepted")
+    challenger = _artifact(tmp_path / "archive" / "candidate")
+    challenger_model = challenger.joinpath("model.zip").read_bytes()
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
+    state.update({
+        "accepted_artifact": "accepted", "accepted_training_steps": 55,
+        "accepted_parameters": {"algorithm": {"name": "ppo"}},
+    })
+    state["pending_researcher_decision"]["champion_available"] = True
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["retain"] = [{
+        "candidate": "champion", "id": "pre-change-policy", "reason": "Useful contrast.",
+    }]
+    assert not apply_previous_result_decision(decision, state)
+    retained = state["retained_lineages"][0]
+    assert retained["id"] == "pre-change-policy"
+    assert (tmp_path / retained["artifact"] / "model.zip").read_bytes() == champion.joinpath("model.zip").read_bytes()
+    assert (tmp_path / "accepted" / "model.zip").read_bytes() == challenger_model
+    identifier, parent, steps = training_parent(
+        {"training_parent": "pre-change-policy"}, state, "transfer"
+    )
+    assert (identifier, parent, steps) == ("pre-change-policy", tmp_path / retained["artifact"], 55)
+
+
+def test_removing_retained_lineage_keeps_history_but_removes_artifact(monkeypatch, tmp_path):
+    _artifact(tmp_path / "archive" / "candidate")
+    retained = _artifact(tmp_path / "research" / "checkpoints" / "retained" / "obsolete")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
+    state["retained_lineages"] = [{"id": "obsolete", "artifact": "research/checkpoints/retained/obsolete", "origin_experiment": 2}]
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["remove_retained"] = ["obsolete"]
+    assert not apply_previous_result_decision(decision, state)
     assert state["retained_lineages"] == []
-    assert (retained_artifact / "artifact.json").exists()
-    assert not (retained_artifact / "model.zip").exists()
+    assert retained.joinpath("artifact.json").exists()
+    assert not retained.joinpath("model.zip").exists()
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda decision: decision["previous_result_decision"].update({"continue_from": "missing"}),
+        lambda decision: decision["previous_result_decision"]["code"].update({"action": "revise"}),
+        lambda decision: decision["previous_result_decision"].update({"retain": [{"candidate": "missing", "id": "alternative", "reason": "bad"}]}),
+        lambda decision: decision["previous_result_decision"].update({"remove_retained": ["missing"]}),
+    ],
+)
+def test_invalid_lineage_decisions_mutate_nothing(monkeypatch, tmp_path, mutate):
+    candidate = _artifact(tmp_path / "archive" / "candidate")
+    accepted = _artifact(tmp_path / "accepted")
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", accepted)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
+    state["retained_lineages"] = []
+    before_state = json.dumps(state, sort_keys=True)
+    before_accepted = accepted.joinpath("model.zip").read_bytes()
+    before_candidate = candidate.joinpath("model.zip").read_bytes()
+    decision = _lineage_decision()
+    mutate(decision)
+    with pytest.raises((TypeError, ValueError)):
+        apply_previous_result_decision(decision, state)
+    assert json.dumps(state, sort_keys=True) == before_state
+    assert accepted.joinpath("model.zip").read_bytes() == before_accepted
+    assert candidate.joinpath("model.zip").read_bytes() == before_candidate
+
+
+def test_conflicting_retention_is_rejected_before_mutation(monkeypatch, tmp_path):
+    _artifact(tmp_path / "archive" / "candidate")
+    accepted = _artifact(tmp_path / "accepted")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", accepted)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
+    state["retained_lineages"] = [{"id": "alternative", "artifact": "old", "origin_experiment": 1}]
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["retain"] = [{"candidate": "candidate", "id": "alternative", "reason": "bad"}]
+    with pytest.raises(ValueError, match="do not retain|conflicting"):
+        plan_previous_result_decision(decision, state)
+    assert accepted.joinpath("model.zip").exists()
 
 
 def test_discarded_candidates_keep_history_but_lose_heavyweight_files(

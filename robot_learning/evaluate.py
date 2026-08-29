@@ -6,7 +6,10 @@ from pathlib import Path
 
 import numpy as np
 
-from robot_learning.benchmark import final_contract
+from robot_learning.benchmark.final_benchmark import (
+    evaluate_final_model,
+    official_environment,  # noqa: F401
+)
 from robot_learning.benchmark.metrics import (
     episode_hold_progress,
     milestone_steps,
@@ -34,26 +37,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def assert_official_task_contract(env: TwoJointArmReachEnv) -> None:
-    if (
-        env.success_threshold != final_contract.SUCCESS_THRESHOLD
-        or env.target_radius_range != final_contract.TARGET_RADIUS_RANGE
-        or env.frame_skip != final_contract.FRAME_SKIP
-        or env.max_episode_steps != final_contract.MAX_EPISODE_STEPS
-    ):
-        raise ValueError("environment does not match the official benchmark contract")
-
-
-def official_environment() -> TwoJointArmReachEnv:
-    return TwoJointArmReachEnv(
-        target_radius_range=final_contract.TARGET_RADIUS_RANGE,
-        success_threshold=final_contract.SUCCESS_THRESHOLD,
-        hold_seconds=final_contract.HOLD_SECONDS,
-        frame_skip=final_contract.FRAME_SKIP,
-        max_episode_steps=final_contract.MAX_EPISODE_STEPS,
-    )
-
-
 def evaluate_model(
     model_path: Path,
     episodes: int = EVALUATION_EPISODES,
@@ -62,23 +45,18 @@ def evaluate_model(
     progress_callback: Callable[[int, int], None] | None = None,
     official_benchmark: bool = False,
 ) -> dict:
-    model = load_policy(model_path, algorithm)
-    env = official_environment() if official_benchmark else TwoJointArmReachEnv()
     if official_benchmark:
-        assert_official_task_contract(env)
+        return evaluate_final_model(model_path, algorithm=algorithm, progress_callback=progress_callback)
+    model = load_policy(model_path, algorithm)
+    env = TwoJointArmReachEnv()
     normalize_obs = load_observation_normalizer(model_path)
-    if normalize_obs is None:
-        normalize_obs = lambda obs: obs
 
     successes = 0
     episode_progress: list[dict] = []
     final_distances: list[float] = []
     episode_results: list[dict] = []
     control_dt = env.model.opt.timestep * env.frame_skip
-    required_hold_steps = milestone_steps(
-        final_contract.HOLD_SECONDS if official_benchmark else HOLD_SECONDS,
-        control_dt,
-    )
+    required_hold_steps = milestone_steps(HOLD_SECONDS, control_dt)
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         target_x, target_y = (float(value) for value in env.data.mocap_pos[0][:2])
@@ -87,7 +65,8 @@ def evaluate_model(
         distances: list[float] = []
         done = False
         while not done:
-            action, _ = model.predict(normalize_obs(obs), deterministic=True)
+            normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
+            action, _ = model.predict(normalized_obs, deterministic=True)
             obs, _, terminated, truncated, info = env.step(action)
             distances.append(float(info["distance"]))
             done = terminated or truncated

@@ -39,6 +39,16 @@ function Save-ResearchMemory {
     }
 }
 
+function Test-LineageResearchMemory([int]$experiment) {
+    if (-not (Test-Path "research\proposal.json")) {
+        return $false
+    }
+    if (-not (Test-Path "research\postmortems.md")) {
+        return $false
+    }
+    return (Get-Content "research\postmortems.md" -Raw) -match "(?m)^## Experiment $experiment\b"
+}
+
 try {
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
@@ -178,8 +188,19 @@ while ($true) {
             "Do not create the next scientific mutation, evaluation request, or training proposal. Do not run the runner."
         ) -join " "
         opencode run --model $model --variant $reasoning $decisionPrompt
-        if (-not (Test-Path "research\proposal.json")) {
-            throw "Researcher ended without a lineage decision proposal."
+        $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
+        if (-not (Test-LineageResearchMemory $pendingExperiment)) {
+            Write-Host "=== Lineage proposal or postmortem missing; retrying the same bounded task once ==="
+            $decisionRetryPrompt = @(
+                "Complete the pending lineage-resolution task now; this message is complete."
+                "Read research/program.md and research/brief.md."
+                "Write the required Markdown postmortem entry for experiment $pendingExperiment in research/postmortems.md."
+                "Write research/proposal.json containing only previous_result_decision; do not create an N+1 training proposal or run the runner."
+            ) -join " "
+            opencode run --model $model --variant $reasoning $decisionRetryPrompt
+            if (-not (Test-LineageResearchMemory $pendingExperiment)) {
+                throw "Researcher ended twice without both a lineage proposal and postmortem for experiment $pendingExperiment."
+            }
         }
         uv run python research/run_experiment.py
         if ($LASTEXITCODE -ne 0) {

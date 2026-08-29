@@ -309,7 +309,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   diagnostics. The runner executes that request exactly. The fixed paired
   tournament is removed.
 - **Decision:** After measurement, the researcher chooses both the model lineage
-  and the code/configuration lineage (`keep`, `revert`, or `revise`). The runner
+  and the code/configuration lineage (`keep` or `revert`). The runner
   persists that explicit decision and performs no automatic promotion or rollback.
 - **Decision:** No path whitelist gives the runner scientific authority. The
   researcher may change training, benchmark, evaluator, comparison, and runner
@@ -335,8 +335,8 @@ superseded. It does not instruct the autonomous researcher and does not replace
   decision have been removed. Paired statistical helpers remain available only
   as optional tools for a researcher-designed comparison.
 - **Two explicit lineages:** The following proposal must choose a model parent and
-  record whether the experiment's code/configuration is kept, reverted, or
-  revised. The brief includes the exact pre-experiment Git commit so the code
+  record whether the experiment's code/configuration is kept or reverted. A
+  revision is a separate next experiment. The brief includes the exact pre-experiment Git commit so the code
   decision can be implemented without guessing.
 - **Interruption:** Each completed requested evaluation is persisted immediately.
   After `Ctrl-C`, the same plan resumes and skips measurements already completed.

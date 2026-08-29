@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from research.build_research_brief import (
     parse_training_records,
@@ -95,4 +96,32 @@ def test_brief_includes_compact_measured_challenger_diagnostics(
 
     assert "## Measured challenger diagnostics" in brief
     assert "**hold-focused**" in brief
-    assert "Mean longest failed hold: 23.0/100 steps." in brief
+    assert "Failed hold progress: median 23/100; upper quantile 23/100." in brief
+
+
+def test_brief_groups_replication_evidence(monkeypatch, tmp_path):
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("\n".join(json.dumps({
+        "index": index, "verdict": "measured", "change": "same method", "hypothesis": "check spread",
+        "family": "method", "replication_of": "method-v1", "training_seed": seed,
+        "candidate_metrics": {"success_percent": success},
+    }) for index, seed, success in [(1, 1, 40.0), (2, 2, 60.0)]) + "\n", encoding="utf-8")
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+
+    assert "## Replication Evidence" in brief
+    assert "seed 1" in brief and "seed 2" in brief
+    assert "40.00-60.00%" in brief
+
+
+def test_lineage_orchestration_requires_markdown_postmortem():
+    root = Path(__file__).resolve().parent.parent
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+    program = (root / "research" / "program.md").read_text(encoding="utf-8")
+
+    assert "Test-LineageResearchMemory" in script
+    assert "postmortems.md" in script
+    assert "previous_experiment_postmortem" not in program

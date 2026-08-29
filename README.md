@@ -2,9 +2,11 @@
 
 The human-defined goal is to reach a random target 6-20 cm away, remain within
 1 cm for 2 seconds, and achieve at least 98% success over 200 official
-evaluation episodes. The authoritative values live in
-`robot_learning/benchmark/final_contract.py`; routine research settings cannot
-redefine an official result.
+evaluation episodes. The authoritative values and execution live in
+`robot_learning/benchmark/final_contract.py` and
+`robot_learning/benchmark/final_benchmark.py`; routine research settings cannot
+redefine an official result. The training environment may evolve through research
+without changing the human-owned final benchmark.
 
 The researcher owns the scientific decisions: learning method, checkpoints to
 measure, evaluation plan, analysis, retained model lineages, and model/code

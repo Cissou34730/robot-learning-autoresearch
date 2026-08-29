@@ -150,7 +150,6 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
         "Result",
         "Observed behavior",
         "What was learned / do NOT retry",
-        "Recommended next experiment class",
     ]
     for section in sections[-count:]:
         title = section.splitlines()[0].removeprefix("## ").strip()
@@ -276,12 +275,26 @@ def _failure_profile(metrics: dict | None) -> list[str]:
         return f"{100 * count / episodes:.1f}%"
 
     successes = episodes - len(failures)
+    required = int(metrics["failed_episode_progress"]["required_steps"])
+    longest_holds = sorted(
+        int(item["longest_consecutive_steps"]) for item in failures
+    )
+    best_windows = sorted(int(item["best_window_inside_steps"]) for item in failures)
+
+    def quantile(values: list[int], fraction: float) -> int:
+        return values[round((len(values) - 1) * fraction)]
+
     lines = [
-        f"- Entered the target tolerance: {percent(sum(item['best_window_inside_steps'] > 0 for item in failures) + successes)}",
-        f"- Mean longest failed hold: {metrics['failed_episode_progress']['longest_consecutive_steps_mean']:.1f}/{metrics['failed_episode_progress']['required_steps']} steps.",
-        f"- Mean best failed hold window: {metrics['failed_episode_progress']['best_window_inside_steps_mean']:.1f}/{metrics['failed_episode_progress']['required_steps']} steps.",
+        f"- Entered the target tolerance: {percent(sum(item['best_window_inside_steps'] > 0 for item in failures) + successes)}.",
         f"- Completed the required hold: {metrics.get('success_percent', 0):.1f}%",
     ]
+    if longest_holds:
+        lines.extend(
+            [
+                f"- Failed hold progress: median {quantile(longest_holds, 0.5)}/{required}; upper quantile {quantile(longest_holds, 0.9)}/{required}.",
+                f"- Failed best-window progress: median {quantile(best_windows, 0.5)}/{required}; upper quantile {quantile(best_windows, 0.9)}/{required}.",
+            ]
+        )
     for label, low, high in (("6-10 cm", 6, 10), ("10-15 cm", 10, 15), ("15-20 cm", 15, 20)):
         bucket = [item for item in failures if low <= item["target_radius_cm"] < high]
         if bucket:
@@ -289,7 +302,30 @@ def _failure_profile(metrics: dict | None) -> list[str]:
                 f"- Failures at {label}: {len(bucket)}; mean longest hold "
                 f"{sum(item['longest_consecutive_steps'] for item in bucket) / len(bucket):.1f}."
             )
+    directional: dict[str, list[dict]] = {"left": [], "right": []}
+    for item in failures:
+        if "target_angle_degrees" in item:
+            directional["left" if float(item["target_angle_degrees"]) < 0 else "right"].append(item)
+    if len(failures) >= 4 and all(directional.values()):
+        lines.append(
+            "- Directional failures: "
+            + "; ".join(
+                f"{side} {len(items)} failures, median hold "
+                f"{quantile(sorted(int(item['longest_consecutive_steps']) for item in items), 0.5)}/{required}"
+                for side, items in directional.items()
+            )
+            + "."
+        )
     return lines
+
+
+def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
+    groups: dict[str, list[dict]] = {}
+    for result in results:
+        identity = str(result.get("replication_of", "")).strip()
+        if identity:
+            groups.setdefault(identity, []).append(result)
+    return [(identity, entries) for identity, entries in groups.items() if len(entries) > 1]
 
 
 def render_research_brief() -> str:
@@ -394,7 +430,7 @@ def render_research_brief() -> str:
             (
                 "The next proposal must include `previous_result_decision` with "
                 f"`experiment`, `continue_from` ({', '.join(choices)}), `reason`, "
-                "and a `code` decision (`keep`, `revert`, or `revise`) with its reason."
+                "and a `code` decision (`keep` or `revert`) with its reason."
             ),
             (
                 "The code/configuration parent before that experiment was commit "
@@ -436,7 +472,7 @@ def render_research_brief() -> str:
         displayed_last_verdict = state.get("last_verdict", "none")
     else:
         displayed_last_experiment = latest_result_index
-        displayed_last_verdict = latest_result["verdict"]
+        displayed_last_verdict = latest_result["verdict"] if latest_result else "none"
 
     lines = [
         "# Compact Research Brief",
@@ -520,6 +556,30 @@ def render_research_brief() -> str:
             )
         else:
             lines.append("| - | training.baseline | New baseline pending | - | - | - |")
+
+    replication_groups = _replication_groups(results)
+    if replication_groups:
+        lines.extend(["", "## Replication Evidence", ""])
+        for identity, entries in replication_groups:
+            replication_details: list[str] = []
+            successes = []
+            for entry in entries:
+                metrics = entry.get("candidate_metrics") or {}
+                success = metrics.get("pooled_success_percent", metrics.get("success_percent"))
+                if success is not None:
+                    successes.append(float(success))
+                replication_details.append(
+                    f"seed {entry.get('training_seed', '-')}: "
+                    f"{_experiment_outcome(entry)}"
+                )
+            spread = (
+                f" success range {min(successes):.2f}-{max(successes):.2f}%"
+                if successes
+                else ""
+            )
+            lines.append(
+                f"- `{identity}`:{spread}; " + "; ".join(replication_details) + "."
+            )
 
     lessons = _postmortem_lessons(postmortems)
     families: dict[str, dict[str, list[str] | str]] = {}

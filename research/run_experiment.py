@@ -1,6 +1,7 @@
 """Transactional autonomous-research runner for robot learning."""
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -13,13 +14,13 @@ import time
 from pathlib import Path
 
 from research.build_research_brief import write_training_summary
+from robot_learning.benchmark.final_benchmark import evaluate_final_model
 from robot_learning.benchmark.final_contract import (
-    EVALUATION_EPISODES,
-    EVALUATION_SEED,
     FINAL_SUCCESS_PERCENT,
     HOLD_SECONDS,
     SUCCESS_THRESHOLD,
 )
+from robot_learning.benchmark.spec import EVALUATION_EPISODES, EVALUATION_SEED
 from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.research_config import (
     load_experiment_config,
@@ -51,8 +52,10 @@ INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
 EVALUATION_SUMMARY_VERSION = 1
-OFFICIAL_BENCHMARK_LABEL = "official final benchmark"
-HUMAN_OBJECTIVE_PATH = "robot_learning/benchmark/final_contract.py"
+PROTECTED_BENCHMARK_PATHS = {
+    "robot_learning/benchmark/final_benchmark.py",
+    "robot_learning/benchmark/final_contract.py",
+}
 
 
 def announce(message: str) -> None:
@@ -329,42 +332,6 @@ def latest_recorded_experiment() -> int | None:
         if line.strip()
     ]
     return int(records[-1]["index"]) if records else None
-
-
-def record_previous_postmortem(proposal: dict, *, baseline: bool) -> None:
-    previous_index = latest_recorded_experiment()
-    if baseline or previous_index is None:
-        return
-    memory = proposal.get("previous_experiment_postmortem")
-    if not isinstance(memory, dict):
-        raise TypeError(
-            "proposal must include previous_experiment_postmortem for experiment "
-            f"{previous_index}"
-        )
-    if int(memory.get("experiment", -1)) != previous_index:
-        raise ValueError(
-            "previous_experiment_postmortem must describe experiment "
-            f"{previous_index}"
-        )
-    fields = {
-        "result": "Result",
-        "behavior": "Observed behavior",
-        "learned": "What was learned / do NOT retry",
-        "next_class": "Recommended next experiment class",
-    }
-    missing = [key for key in fields if not str(memory.get(key, "")).strip()]
-    if missing:
-        raise ValueError(f"postmortem fields are missing: {missing}")
-    path = RESEARCH_DIR / "postmortems.md"
-    text = path.read_text(encoding="utf-8") if path.exists() else "# Research postmortems\n"
-    if re.search(rf"^## Experiment {previous_index}\b", text, re.MULTILINE):
-        return
-    lines = ["", f"## Experiment {previous_index}", ""]
-    for key, label in fields.items():
-        value = " ".join(str(memory[key]).split())
-        lines.append(f"**{label}:** {value}")
-        lines.append("")
-    path.write_text(text.rstrip() + "\n" + "\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
 def evaluate_artifact(
@@ -644,13 +611,6 @@ def archive_candidates(
     return archived
 
 
-def measurement_with_provenance(metrics: dict, official_benchmark: bool) -> dict:
-    """Keep evaluation intent with the measurement, not only its request wrapper."""
-    measurement = dict(metrics)
-    measurement["official_benchmark"] = official_benchmark
-    return measurement
-
-
 def execute_pending_evaluations() -> int:
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     pending = state.get("pending_evaluation_request")
@@ -690,21 +650,16 @@ def execute_pending_evaluations() -> int:
     for item in executed:
         contender = available.get(item["candidate"])
         if contender is not None:
-            metrics = measurement_with_provenance(
-                item["metrics"], bool(item.get("official_benchmark", False))
-            )
-            item["metrics"] = metrics
-            contender.setdefault("evaluations", []).append(metrics)
+            contender.setdefault("evaluations", []).append(item["metrics"])
 
-    def request_key(name: str, episodes: int, seed: int, label: str) -> tuple:
-        return name, episodes, seed, label
+    def request_key(name: str, episodes: int, seed: int) -> tuple[str, int, int]:
+        return name, episodes, seed
 
     completed_keys = {
         request_key(
             item["candidate"],
             int(item["episodes"]),
             int(item["seed"]),
-            item["label"],
         )
         for item in executed
     }
@@ -712,6 +667,15 @@ def execute_pending_evaluations() -> int:
         for number, spec in enumerate(requested, start=1):
             if not isinstance(spec, dict):
                 raise TypeError("each requested evaluation must be an object")
+            missing = [
+                field
+                for field in ("candidate", "episodes", "seed")
+                if field not in spec
+            ]
+            if missing:
+                raise ValueError(f"evaluation is missing required fields: {missing}")
+            if "official_benchmark" in spec:
+                raise ValueError("official_benchmark is not valid in a research evaluation request")
             name = str(spec.get("candidate", "")).strip()
             contender = available.get(name)
             if contender is None:
@@ -719,26 +683,14 @@ def execute_pending_evaluations() -> int:
                     f"unknown evaluation candidate {name!r}; "
                     f"choose from {sorted(available)}"
                 )
-            episodes = int(spec.get("episodes", EVALUATION_EPISODES))
-            seed = int(spec.get("seed", EVALUATION_SEED))
+            episodes = int(spec["episodes"])
+            seed = int(spec["seed"])
             if episodes < 1:
                 raise ValueError("evaluation episodes must be positive")
-            official_benchmark = bool(spec.get("official_benchmark", False))
-            if official_benchmark and (
-                episodes != EVALUATION_EPISODES or seed != EVALUATION_SEED
-            ):
-                raise ValueError(
-                    "official_benchmark requires the fixed official episode count and seed"
-                )
             label = str(
-                spec.get(
-                    "label",
-                    OFFICIAL_BENCHMARK_LABEL
-                    if official_benchmark
-                    else f"requested evaluation {number}: {name}",
-                )
+                spec.get("label", f"requested evaluation {number}: {name}")
             )
-            key = request_key(name, episodes, seed, label)
+            key = request_key(name, episodes, seed)
             if key in completed_keys:
                 announce(f"[evaluation] already complete; reusing {label}")
                 continue
@@ -751,12 +703,9 @@ def execute_pending_evaluations() -> int:
                 label=label,
                 episodes=episodes,
                 output_path=output_path,
-                official_benchmark=official_benchmark,
             )
             output_path.unlink(missing_ok=True)
-            clean_metrics = measurement_with_provenance(
-                metrics_without_artifact_path([metrics])[0], official_benchmark
-            )
+            clean_metrics = metrics_without_artifact_path([metrics])[0]
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
@@ -764,7 +713,6 @@ def execute_pending_evaluations() -> int:
                     "episodes": episodes,
                     "seed": seed,
                     "label": label,
-                    "official_benchmark": official_benchmark,
                     "metrics": clean_metrics,
                 }
             )
@@ -1083,11 +1031,11 @@ def validate_experiment_semantics(
     code_changes: list[str],
     baseline: bool,
 ) -> None:
-    if HUMAN_OBJECTIVE_PATH in {
+    if PROTECTED_BENCHMARK_PATHS & {
         path.replace("\\", "/") for path in code_changes
     }:
         raise ValueError(
-            "the human-owned final benchmark contract cannot be changed by a research proposal"
+            "the human-owned final benchmark cannot be changed by a research proposal"
         )
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
@@ -1109,6 +1057,30 @@ def validate_experiment_semantics(
             raise ValueError("replication requires an explicit training_seed")
         if parameter_overrides or code_changes:
             raise ValueError("replication requires an unchanged learning method")
+        if not str(proposal.get("replication_of", "")).strip():
+            raise ValueError("replication requires a non-empty replication_of")
+
+
+def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
+    if baseline:
+        return
+    forbidden = {
+        "previous_result_decision",
+        "previous_experiment_postmortem",
+    } & set(proposal)
+    if forbidden:
+        raise ValueError(f"training proposal contains lineage-only fields: {sorted(forbidden)}")
+    required = {
+        "kind", "family", "hypothesis", "change", "initialization",
+        "training_parent", "training_seed", "params",
+    }
+    missing = sorted(field for field in required if field not in proposal)
+    if missing:
+        raise ValueError(f"training proposal is missing required fields: {missing}")
+    if not str(proposal["family"]).strip():
+        raise ValueError("training proposal family must be non-empty")
+    if not str(proposal["training_parent"]).strip():
+        raise ValueError("training proposal training_parent must be non-empty")
 
 
 def remove_heavyweight_artifacts(artifact: Path) -> None:
@@ -1116,85 +1088,58 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
         (artifact / filename).unlink(missing_ok=True)
 
 
-def apply_retention_decisions(decision: dict, pending: dict, state: dict) -> set[str]:
-    retained = list(state.get("retained_lineages", []))
-    retained_ids = {str(lineage.get("id")) for lineage in retained}
-    candidates = {item["name"]: item for item in pending["candidates"]}
-    preserved = {str(name) for name in decision.get("preserve_candidates", [])}
-    if not preserved <= candidates.keys():
-        raise ValueError("preserve_candidates must name measured experiment candidates")
-    for identifier in decision.get("remove_retained", []):
-        identifier = str(identifier)
-        lineage = retained_lineage({"retained_lineages": retained}, identifier)
-        if lineage is None:
-            raise ValueError(f"unknown retained lineage {identifier!r}")
-        remove_heavyweight_artifacts(ROOT / lineage["artifact"])
-        retained = [item for item in retained if item.get("id") != identifier]
-        retained_ids.remove(identifier)
-    requested = decision.get("retain", [])
-    if not isinstance(requested, list):
-        raise TypeError("retain must be a list")
-    for item in requested:
-        if not isinstance(item, dict):
-            raise TypeError("each retained lineage must be an object")
-        candidate_name = str(item.get("candidate", "")).strip()
-        identifier = str(item.get("id", candidate_name)).strip()
-        reason = str(item.get("reason", "")).strip()
-        candidate = candidates.get(candidate_name)
-        if candidate is None or not identifier or not reason:
-            raise ValueError("retained lineages require candidate, id, and reason")
-        if identifier in retained_ids:
-            raise ValueError(f"retained lineage id already exists: {identifier}")
-        retained.append(
-            {
-                "id": identifier,
-                "artifact": candidate["artifact"],
-                "origin_experiment": int(pending["experiment"]),
-                "candidate": candidate_name,
-                "reason": reason,
-                "parameters": pending["parameters"],
-                "training_steps": int(candidate["timesteps"]),
-            }
-        )
-        retained_ids.add(identifier)
-        preserved.add(candidate_name)
-    state["retained_lineages"] = retained
-    return preserved
+def require_complete_artifact(artifact: Path, description: str) -> None:
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        if not (artifact / filename).is_file():
+            raise ValueError(f"{description} is incomplete: {filename}")
 
 
-def apply_code_lineage_decision(pending: dict, action: str) -> None:
-    if action != "revert":
-        return
+def artifact_fingerprint(artifact: Path) -> str:
+    digest = hashlib.sha256()
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        digest.update((artifact / filename).read_bytes())
+    return digest.hexdigest()
+
+
+def plan_code_lineage_decision(pending: dict, action: str) -> dict:
+    if action == "keep":
+        return {"restore": [], "remove_created": []}
     parent = str(pending.get("code_parent_commit", "")).strip()
     paths = [str(path) for path in pending.get("research_change_paths", [])]
     if not parent or not paths:
-        return
+        return {"restore": [], "remove_created": []}
     restorable: list[str] = []
     created: list[Path] = []
     for path in paths:
+        candidate = (ROOT / path).resolve()
+        if ROOT.resolve() not in candidate.parents:
+            raise RuntimeError(f"unsafe research change path: {path}")
         exists_at_parent = git(
             "ls-tree", "-r", "--name-only", parent, "--", path
         ).strip()
         if exists_at_parent:
             restorable.append(path)
         else:
-            candidate = (ROOT / path).resolve()
-            if ROOT.resolve() not in candidate.parents:
-                raise RuntimeError(f"unsafe research change path: {path}")
             created.append(candidate)
-    if restorable:
-        git("restore", "--source", parent, "--", *restorable)
-    for created_path in created:
+    return {"restore": restorable, "remove_created": created}
+
+
+def apply_code_lineage_decision(plan: dict) -> None:
+    if plan["restore"]:
+        git("restore", "--source", plan["parent"], "--", *plan["restore"])
+    for created_path in plan["remove_created"]:
         if created_path.is_dir():
             shutil.rmtree(created_path)
         else:
             created_path.unlink(missing_ok=True)
 
 
-def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
+def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     pending = state.get("pending_researcher_decision")
     if pending is None:
-        return False
+        raise ValueError("there is no researcher decision awaiting resolution")
+    if set(proposal) != {"previous_result_decision"}:
+        raise ValueError("a lineage proposal must contain only previous_result_decision")
     decision = proposal.get("previous_result_decision")
     if not isinstance(decision, dict):
         raise TypeError(
@@ -1207,99 +1152,174 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     reason = str(decision.get("reason", "")).strip()
     if not reason:
         raise ValueError("previous_result_decision requires a reason")
-
-    selected_summary: dict | None = None
-    if selected_name == "champion":
-        artifact = ROOT / state["accepted_artifact"]
-        if not artifact.exists():
-            raise ValueError("there is no existing champion to continue from")
-        selected_summary = state.get("accepted_metrics")
-        selected_evaluations = pending.get("champion_evaluations", [])
-    else:
-        selected = next(
-            (
-                item
-                for item in pending["candidates"]
-                if item["name"] == selected_name
-            ),
-            None,
-        )
-        if selected is None:
-            choices = [item["name"] for item in pending["candidates"]]
-            if pending.get("champion_available"):
-                choices.append("champion")
-            raise ValueError(f"continue_from must be one of {choices}")
-        artifact = ROOT / selected["artifact"]
-        copy_artifact(artifact, ACCEPTED_DIR)
-        state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
-        selected_summary = selected.get("summary")
-        selected_evaluations = selected.get("evaluations", [])
-        state["accepted_metrics"] = selected_summary
-        state["accepted_parameters"] = pending["parameters"]
-        if pending["initialization"] == "transfer":
-            state["accepted_training_steps"] = int(
-                pending.get("parent_training_steps", 0)
-            ) + int(pending["training_budget_steps"])
-        else:
-            state["accepted_training_steps"] = int(pending["training_budget_steps"])
+    allowed = {
+        "experiment", "continue_from", "reason", "code", "retain",
+        "remove_retained", "request_final_benchmark",
+    }
+    extra = set(decision) - allowed
+    if extra:
+        raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
+    sources = {item["name"]: item for item in pending["candidates"]}
+    if pending.get("champion_available"):
+        sources["champion"] = {
+            "name": "champion",
+            "artifact": state["accepted_artifact"],
+            "timesteps": int(state.get("accepted_training_steps", 0)),
+            "summary": state.get("accepted_metrics"),
+            "evaluations": pending.get("champion_evaluations", []),
+            "parameters": state.get("accepted_parameters"),
+        }
+    if selected_name == "champion" and "champion" not in sources:
+        raise ValueError("there is no existing champion to continue from")
+    selected = sources.get(selected_name)
+    if selected is None:
+        raise ValueError(f"continue_from must be one of {sorted(sources)}")
+    selected_artifact = ROOT / selected["artifact"]
+    require_complete_artifact(selected_artifact, f"selected lineage {selected_name!r}")
 
     code_decision = decision.get("code")
     if not isinstance(code_decision, dict):
-        raise TypeError(
-            "previous_result_decision requires a code decision with action and reason"
-        )
+        raise TypeError("previous_result_decision requires a code decision with action and reason")
+    if set(code_decision) != {"action", "reason"}:
+        raise ValueError("code decision contains unsupported fields")
     code_action = str(code_decision.get("action", "")).strip().lower()
     code_reason = str(code_decision.get("reason", "")).strip()
-    if code_action not in {"keep", "revert", "revise"} or not code_reason:
-        raise ValueError("code decision must be keep, revert, or revise with a reason")
-    apply_code_lineage_decision(pending, code_action)
-    preserved = apply_retention_decisions(decision, pending, state)
-    official_metrics = None
-    for evaluation in selected_evaluations:
-        if (
-            evaluation.get("official_benchmark", False)
-            and int(evaluation.get("episodes", 0)) == EVALUATION_EPISODES
-            and int(evaluation.get("seed", -1)) == EVALUATION_SEED
-        ):
-            official_metrics = evaluation
-            break
-    state["official_metrics"] = official_metrics
+    if code_action not in {"keep", "revert"} or not code_reason:
+        raise ValueError("code decision must be keep or revert with a reason")
+    code_plan = plan_code_lineage_decision(pending, code_action)
+    code_plan["parent"] = str(pending.get("code_parent_commit", "")).strip()
+
+    retained = list(state.get("retained_lineages", []))
+    retained_by_id = {str(lineage.get("id")): lineage for lineage in retained}
+    removal_ids = decision.get("remove_retained", [])
+    if not isinstance(removal_ids, list) or any(not str(identifier).strip() for identifier in removal_ids):
+        raise ValueError("remove_retained must be a list of retained lineage IDs")
+    removal_ids = [str(identifier).strip() for identifier in removal_ids]
+    if len(set(removal_ids)) != len(removal_ids):
+        raise ValueError("remove_retained contains duplicate IDs")
+    missing = set(removal_ids) - set(retained_by_id)
+    if missing:
+        raise ValueError(f"unknown retained lineages: {sorted(missing)}")
+
+    requested = decision.get("retain", [])
+    if not isinstance(requested, list):
+        raise TypeError("retain must be a list")
+    retained_ids = set(retained_by_id)
+    retention_plans: list[dict] = []
+    for item in requested:
+        if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
+            raise ValueError("each retained lineage requires only candidate, id, and reason")
+        candidate_name = str(item["candidate"]).strip()
+        identifier = str(item["id"]).strip()
+        retention_reason = str(item["reason"]).strip()
+        if not identifier or Path(identifier).name != identifier or identifier in {".", ".."}:
+            raise ValueError("retained lineage ID must be a stable file-name-safe identifier")
+        if not retention_reason or candidate_name not in sources:
+            raise ValueError("retained lineages require an available candidate, id, and reason")
+        if candidate_name == selected_name:
+            raise ValueError("do not retain the lineage becoming active")
+        if identifier in retained_ids or identifier in removal_ids:
+            raise ValueError(f"conflicting retained lineage ID: {identifier}")
+        source = sources[candidate_name]
+        source_artifact = ROOT / source["artifact"]
+        require_complete_artifact(source_artifact, f"retained lineage {identifier!r}")
+        destination = RESEARCH_DIR / "checkpoints" / "retained" / identifier
+        if destination.exists():
+            raise ValueError(f"retained lineage destination already exists: {identifier}")
+        retention_plans.append(
+            {
+                "source": source_artifact,
+                "destination": destination,
+                "record": {
+                    "id": identifier,
+                    "artifact": str(destination.relative_to(ROOT)),
+                    "origin_experiment": int(pending["experiment"]),
+                    "candidate": candidate_name,
+                    "reason": retention_reason,
+                    "parameters": source.get("parameters", pending["parameters"]),
+                    "training_steps": int(source["timesteps"]),
+                },
+            }
+        )
+        retained_ids.add(identifier)
+
+    request_final = decision.get("request_final_benchmark", False)
+    if not isinstance(request_final, bool):
+        raise TypeError("request_final_benchmark must be true or false")
+    selected_fingerprint = artifact_fingerprint(selected_artifact)
+    if request_final and state.get("official_benchmark_artifact") == selected_fingerprint:
+        raise ValueError("the selected accepted artifact already received an official benchmark")
+    return {
+        "pending": pending,
+        "decision": decision,
+        "selected": selected,
+        "selected_name": selected_name,
+        "selected_artifact": selected_artifact,
+        "selected_fingerprint": selected_fingerprint,
+        "code_action": code_action,
+        "code_reason": code_reason,
+        "code_plan": code_plan,
+        "retained": [lineage for lineage in retained if lineage["id"] not in removal_ids],
+        "retentions": retention_plans,
+        "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
+        "request_final_benchmark": request_final,
+    }
+
+
+def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
+    plan = plan_previous_result_decision(proposal, state)
+    pending = plan["pending"]
+    selected = plan["selected"]
+    selected_name = plan["selected_name"]
+    # Copy alternatives first: a retained champion must survive replacement.
+    for retention in plan["retentions"]:
+        copy_artifact(retention["source"], retention["destination"])
+    if selected_name != "champion":
+        copy_artifact(plan["selected_artifact"], ACCEPTED_DIR)
+        state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
+        state["accepted_metrics"] = selected.get("summary")
+        state["accepted_parameters"] = pending["parameters"]
+        state["accepted_training_steps"] = (
+            int(pending.get("parent_training_steps", 0)) + int(pending["training_budget_steps"])
+            if pending["initialization"] == "transfer"
+            else int(pending["training_budget_steps"])
+        )
+        state["official_metrics"] = None
+    else:
+        state["accepted_metrics"] = selected.get("summary")
+    apply_code_lineage_decision(plan["code_plan"])
+    state["retained_lineages"] = plan["retained"] + [
+        retention["record"] for retention in plan["retentions"]
+    ]
     state["last_lineage_decision"] = {
         "experiment": int(pending["experiment"]),
         "continue_from": selected_name,
-        "reason": reason,
-        "code": {"action": code_action, "reason": code_reason},
+        "reason": plan["decision"]["reason"],
+        "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
         "code_parent_commit": pending.get("code_parent_commit"),
     }
-    selected_artifact = artifact.relative_to(ROOT).as_posix()
-    protected_artifacts = {
-        selected_artifact,
-        *(
-            Path(lineage["artifact"]).as_posix()
-            for lineage in state.get("retained_lineages", [])
-        ),
-    }
-    for candidate in pending["candidates"]:
-        if (
-            candidate["name"] not in preserved
-            and Path(candidate["artifact"]).as_posix() not in protected_artifacts
-        ):
-            remove_heavyweight_artifacts(ROOT / candidate["artifact"])
     state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {selected_name}"
-    goal_reached = bool(
-        official_metrics
-        and float(official_metrics.get("success_percent", 0.0))
-        >= FINAL_SUCCESS_PERCENT
-    )
-    if goal_reached:
-        GOAL_PATH.write_text(
-            f"Goal reached with {selected_name} from experiment {pending['experiment']}.\n",
-            encoding="utf-8",
-        )
     atomic_write_json(STATE_PATH, state)
+    # Retain compact challenger history while removing every duplicate reusable artifact.
+    for candidate in pending["candidates"]:
+        remove_heavyweight_artifacts(ROOT / candidate["artifact"])
+    for lineage in plan["removed_retained"]:
+        remove_heavyweight_artifacts(ROOT / lineage["artifact"])
+    goal_reached = False
+    if plan["request_final_benchmark"]:
+        official_metrics = evaluate_final_model(ACCEPTED_DIR / "model.zip")
+        state["official_metrics"] = official_metrics
+        state["official_benchmark_artifact"] = plan["selected_fingerprint"]
+        atomic_write_json(STATE_PATH, state)
+        goal_reached = float(official_metrics["success_percent"]) >= FINAL_SUCCESS_PERCENT
+        if goal_reached:
+            GOAL_PATH.write_text(
+                f"Goal reached with {selected_name} from experiment {pending['experiment']}.\n",
+                encoding="utf-8",
+            )
     announce(
-        f"[researcher decision] continuing from {selected_name}: {reason}"
+        f"[researcher decision] continuing from {selected_name}: {plan['decision']['reason']}"
     )
     return goal_reached
 
@@ -1386,6 +1406,7 @@ def main() -> int:
     if parameter_overrides is not None and not isinstance(parameter_overrides, dict):
         raise TypeError("proposal params must be an object")
     baseline = bool(proposal.get("baseline", False))
+    validate_training_proposal(proposal, baseline=baseline)
     initialization = str(proposal.get("initialization", "transfer")).lower()
     index = next_index()
     fresh_baseline = baseline and initialization == "fresh"
@@ -1435,7 +1456,6 @@ def main() -> int:
             baseline,
         )
 
-        record_previous_postmortem(proposal, baseline=baseline)
         if parameter_overrides:
             announce("[checks] validating proposed parameters")
             validate_param_overrides(parameter_overrides)
