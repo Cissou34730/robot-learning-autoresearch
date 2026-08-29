@@ -343,3 +343,18 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Validation:** The active tests verify the absence of a path whitelist, neutral
   candidate inventories, update-boundary checkpointing, researcher-owned lineage,
   and non-duplicating evaluation resume behavior.
+
+## 2026-08-29 — Explicit research reset command
+
+- **Decision:** `reset_research.ps1 -Force` starts a clean experimental scenario
+  without reverting the current implementation. It removes only active research
+  state, accepted/challenger checkpoints, disposable autoresearch candidates,
+  pending recovery/evaluation controls, and experiment history; it then creates a
+  fresh baseline marker.
+- **Preserved:** The robot, benchmark implementation, learning code, current
+  parameters, and this decision log remain unchanged.
+- **Safety:** The command refuses a dirty Git working tree and commits the blank
+  research state, so the next baseline starts from a clean, reproducible commit.
+- **Reason:** A clean reset is a normal research operation in this project and
+  should not require manually reconstructing a fragile collection of markers,
+  state files, models, and history.

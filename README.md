@@ -1,11 +1,12 @@
 # Robot Learning Autoresearch
 
-The fixed goal is to reach a random target within 1 cm and hold for 2 seconds.
-Every experiment tests one training hypothesis while the evaluator remains fixed.
-Transfer runs receive 120,000 steps; fresh policies receive the runner-owned
-cumulative budget already invested in the champion lineage so architecture and
-algorithm changes are not structurally handicapped.
-A candidate is promoted only by a significant paired improvement over the champion.
+The human-defined goal is to reach a random target within 1 cm and hold for 2
+seconds, with at least 98% success over 200 reported episodes.
+
+The researcher owns the scientific decisions: learning method, checkpoints to
+measure, evaluation plan, analysis, and model/code lineage. The runner only
+executes those decisions. It does not automatically rank candidates, run a
+tournament, or promote a model.
 
 Start the autonomous loop from PowerShell:
 
@@ -14,5 +15,15 @@ Start the autonomous loop from PowerShell:
 ```
 
 The first run after an infrastructure change is an automatic unchanged
-baseline. Validated checkpoints are small and versioned under
-`research/checkpoints/`; disposable candidates remain under `models/`.
+baseline. Training saves neutral checkpoints; the researcher subsequently asks
+for the measurements that are useful to interpret them.
+
+To discard all experimental history and model lineages while preserving the
+current code, benchmark, parameters, and decision log, run:
+
+```powershell
+.\reset_research.ps1 -Force
+```
+
+The reset refuses to run if the Git working tree is not clean and commits the
+new blank research state before preparing a fresh baseline.

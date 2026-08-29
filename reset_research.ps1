@@ -1,0 +1,115 @@
+[CmdletBinding()]
+param(
+    [switch]$Force
+)
+
+# Reset only the experimental state. It intentionally preserves the current
+# robot, benchmark implementation, learning code, parameters, and decision log.
+
+Set-Location $PSScriptRoot
+
+if (-not $Force) {
+    throw "This clears the active research history and model lineages. Run .\reset_research.ps1 -Force to confirm."
+}
+
+$dirty = git status --porcelain --untracked-files=all
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not inspect the Git working tree."
+}
+if ($dirty) {
+    throw "The working tree is not clean. Commit or resolve its changes before resetting research."
+}
+
+$workspaceRoot = (Resolve-Path -LiteralPath $PSScriptRoot).Path
+
+function Get-ResetPath([string]$relativePath) {
+    $path = [System.IO.Path]::GetFullPath((Join-Path $workspaceRoot $relativePath))
+    $prefix = $workspaceRoot + [System.IO.Path]::DirectorySeparatorChar
+    if (-not $path.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Unsafe reset path: $relativePath"
+    }
+    return $path
+}
+
+function Remove-ResetPath([string]$relativePath) {
+    $path = Get-ResetPath $relativePath
+    if (Test-Path -LiteralPath $path) {
+        Remove-Item -LiteralPath $path -Recurse -Force
+    }
+}
+
+Remove-ResetPath "models\candidates"
+Remove-ResetPath "research\checkpoints"
+
+@(
+    "research\GOAL_REACHED",
+    "research\RECOVERY_PENDING",
+    "research\RESTART_PENDING",
+    "research\proposal.json",
+    "research\evaluation_request.json",
+    "research\last_train.log",
+    "research\last_train_summary.md",
+    "research\last_evaluation.json",
+    "research\brief.md"
+) | ForEach-Object { Remove-ResetPath $_ }
+
+@{
+    schema_version = 2
+    accepted_artifact = "research\checkpoints\accepted"
+    accepted_metrics = $null
+    accepted_parameters = $null
+    accepted_training_steps = 0
+    last_experiment = 0
+    last_verdict = "baseline pending after research reset"
+    official_metrics = $null
+} | ConvertTo-Json | Set-Content -LiteralPath "research\research_state.json"
+
+@(
+    "# Experiment log",
+    "",
+    "| # | Date | Change | Hypothesis | Candidate success | Seeds passed | Verdict |",
+    "|---:|---|---|---|---:|---:|---|"
+) | Set-Content -LiteralPath "research\EXPERIMENTS.md"
+
+@("# Research postmortems", "", "No experiments recorded.") |
+    Set-Content -LiteralPath "research\postmortems.md"
+@("# Research archive", "", "No archived experiments.") |
+    Set-Content -LiteralPath "research\archive.md"
+Set-Content -LiteralPath "research\results.jsonl" -Value $null
+Set-Content -LiteralPath "research\BASELINE_PENDING" -Value "Fresh baseline pending after explicit research reset."
+
+$resetPaths = @(
+    "research\EXPERIMENTS.md",
+    "research\results.jsonl",
+    "research\postmortems.md",
+    "research\archive.md",
+    "research\research_state.json",
+    "research\BASELINE_PENDING",
+    "research\GOAL_REACHED",
+    "research\checkpoints"
+)
+$stageable = @()
+foreach ($relativePath in $resetPaths) {
+    if ((Test-Path -LiteralPath $relativePath) -or (git ls-files -- $relativePath)) {
+        $stageable += $relativePath
+    }
+}
+if ($stageable.Count -gt 0) {
+    git add -A -- $stageable
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not stage the reset state."
+    }
+}
+git diff --cached --quiet
+if ($LASTEXITCODE -eq 1) {
+    git commit -m "reset research experiment state"
+    if ($LASTEXITCODE -ne 0) {
+        throw "The reset state was prepared but could not be committed."
+    }
+}
+elseif ($LASTEXITCODE -ne 0) {
+    throw "Could not inspect the staged reset state."
+}
+
+Write-Host "=== Research state reset ==="
+Write-Host "The current code and parameters were preserved. A fresh baseline is pending."
