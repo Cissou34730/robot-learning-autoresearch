@@ -8,7 +8,6 @@ import numpy as np
 
 from robot_learning.benchmark.final_benchmark import (
     evaluate_final_model,
-    official_environment,  # noqa: F401
 )
 from robot_learning.benchmark.metrics import (
     episode_hold_progress,

@@ -48,6 +48,7 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict]:
+        del options
         super().reset(seed=seed)
         mujoco.mj_resetData(self.model, self.data)
         self.data.qpos[:] = 0.0

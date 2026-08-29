@@ -3,6 +3,7 @@ import hashlib
 import numpy as np
 import pytest
 
+from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.benchmark.metrics import (
     achieved_goal,
     episode_hold_progress,
@@ -17,7 +18,6 @@ from robot_learning.benchmark.spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
-from robot_learning.evaluate import official_environment
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 

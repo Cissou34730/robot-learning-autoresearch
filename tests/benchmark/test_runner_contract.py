@@ -20,11 +20,11 @@ from robot_learning.evaluate import write_progress
 def test_research_surface_has_no_file_whitelist(monkeypatch):
     monkeypatch.setattr(
         "research.run_experiment.status_paths",
-        lambda _paths: [
+        lambda paths: [
             "robot_learning/benchmark/spec.py",
             "robot_learning/evaluate.py",
             "research/run_experiment.py",
-        ],
+        ] if paths else [],
     )
 
     assert assert_research_surface() == [
@@ -37,7 +37,7 @@ def test_research_surface_has_no_file_whitelist(monkeypatch):
 def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     monkeypatch.setattr(
         "research.run_experiment.status_paths",
-        lambda _paths: ["research/current_params.json"],
+        lambda paths: ["research/current_params.json"] if paths else [],
     )
 
     assert assert_research_surface() == ["research/current_params.json"]
@@ -67,7 +67,8 @@ def test_evaluation_progress_is_best_effort(monkeypatch, tmp_path):
         "total": 200,
     }
 
-    def deny_write(_path, *_args, **_kwargs):
+    def deny_write(path, *args, **kwargs):
+        del path, args, kwargs
         raise PermissionError("simulated Windows reader lock")
 
     monkeypatch.setattr(Path, "write_text", deny_write)
@@ -276,10 +277,18 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    monkeypatch.setattr("research.run_experiment.commit_lineage_decision", lambda *_args: None)
+    def skip_lineage_commit(*args):
+        del args
+
+    monkeypatch.setattr("research.run_experiment.commit_lineage_decision", skip_lineage_commit)
+
+    def fail_if_training_starts(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("next experiment trained too early")
+
     monkeypatch.setattr(
         "research.run_experiment.train_candidate",
-        lambda *_args, **_kwargs: pytest.fail("next experiment trained too early"),
+        fail_if_training_starts,
     )
     monkeypatch.setattr("sys.argv", ["run_experiment.py"])
 

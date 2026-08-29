@@ -150,14 +150,19 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     )
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", baseline_path)
-    monkeypatch.setattr("research.run_experiment.append_result", lambda _result: None)
-    monkeypatch.setattr(
-        "research.run_experiment.commit_result", lambda _index, _change: None
-    )
+    def skip_result_recording(result):
+        del result
+
+    def skip_result_commit(index, change):
+        del index, change
+
+    monkeypatch.setattr("research.run_experiment.append_result", skip_result_recording)
+    monkeypatch.setattr("research.run_experiment.commit_result", skip_result_commit)
 
     calls: list[int] = []
 
-    def interrupt_second(_artifact, seed, **_kwargs):
+    def interrupt_second(artifact, seed, **kwargs):
+        del artifact, kwargs
         calls.append(seed)
         if len(calls) == 2:
             raise KeyboardInterrupt
@@ -172,7 +177,8 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     request_path.unlink()
     resumed_calls: list[int] = []
 
-    def finish(_artifact, seed, **_kwargs):
+    def finish(artifact, seed, **kwargs):
+        del artifact, kwargs
         resumed_calls.append(seed)
         return evaluation(seed, [True, True])
 
@@ -206,9 +212,18 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
-    monkeypatch.setattr("research.run_experiment.append_result", lambda _result: None)
+    def skip_result_recording(result):
+        del result
+
+    monkeypatch.setattr("research.run_experiment.append_result", skip_result_recording)
     calls = []
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", lambda _artifact, seed, **_kwargs: calls.append(seed) or evaluation(seed, [True, False]))
+
+    def record_evaluation(artifact, seed, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        return evaluation(seed, [True, False])
+
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", record_evaluation)
 
     assert execute_pending_evaluations() == 0
     assert calls == [1000]
@@ -263,15 +278,6 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
     monkeypatch.setattr(
         "research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED"
     )
-    monkeypatch.setattr(
-        "research.run_experiment.evaluate_artifact",
-        lambda *_args, **_kwargs: {
-            "seed": 1000,
-            "episodes": 200,
-            "success_percent": 50.0,
-        },
-    )
-
     reached = apply_previous_result_decision(
         {
             "previous_result_decision": {
@@ -380,7 +386,9 @@ def test_final_benchmark_runs_only_after_lineage_selection(monkeypatch, tmp_path
     request["previous_result_decision"]["request_final_benchmark"] = True
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model",
-        lambda _model: {"episodes": 200, "seed": 1000, "success_percent": 100.0},
+        lambda model: {"episodes": 200, "seed": 1000, "success_percent": 100.0}
+        if model
+        else {},
     )
     assert apply_previous_result_decision(request, state)
     assert state["official_metrics"]["success_percent"] == 100.0

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import platform
 import re
 import shutil
 import signal
@@ -75,11 +76,16 @@ def format_duration(seconds: float) -> str:
 
 def training_budget(
     standard_timesteps: int,
-    initialization: str,
-    baseline: bool,
-    accepted_training_steps: int,
+    _initialization: str,
+    _baseline: bool,
+    _accepted_training_steps: int,
 ) -> int:
+    del _initialization, _baseline, _accepted_training_steps
     return standard_timesteps
+
+
+def running_on_windows() -> bool:
+    return platform.system() == "Windows"
 
 
 def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
@@ -93,7 +99,7 @@ def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | Non
 
 
 def process_group_options() -> dict:
-    if os.name == "nt":
+    if running_on_windows():
         return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
     return {"start_new_session": True}
 
@@ -101,7 +107,7 @@ def process_group_options() -> dict:
 def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
     if process.poll() is not None:
         return
-    if os.name == "nt":
+    if running_on_windows():
         if graceful:
             try:
                 process.send_signal(signal.CTRL_BREAK_EVENT)

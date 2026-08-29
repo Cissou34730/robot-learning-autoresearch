@@ -129,17 +129,6 @@ def write_training_summary() -> Path:
     return TRAIN_SUMMARY_PATH
 
 
-def _experiment_rows(text: str) -> list[list[str]]:
-    rows: list[list[str]] = []
-    for line in text.splitlines():
-        if not re.match(r"^\|\s*\d+\s*\|", line):
-            continue
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if len(cells) >= 8:
-            rows.append(cells)
-    return rows
-
-
 def _postmortem_memory(text: str, count: int = 3) -> list[str]:
     sections = re.split(r"(?=^## Experiment \d+\b)", text, flags=re.MULTILINE)
     sections = [
