@@ -1,10 +1,10 @@
 """Generic runtime configuration for training and research orchestration.
 
-`research/current_params.json` holds generic runtime knobs only: algorithm
-selection, PPO/SAC hyper-parameters, policy architecture and training
-orchestration. Scenario science - reward, observations, task mechanics,
-evaluation semantics - lives in `robot_learning/scenario/` and is versioned as
-ordinary research code through the existing Git code lineage.
+`research/current_params.json` is the effective configuration of the currently
+active training method, not a catalog of available methods or interventions.
+It holds runtime knobs only. Scenario science - reward, observations, task
+mechanics, evaluation semantics - lives in `robot_learning/scenario/` and is
+versioned as ordinary research code through the existing Git code lineage.
 
 The research-evaluation defaults below are generic orchestration settings shared
 by the runner and the evaluation CLI: how many episodes to run and from which

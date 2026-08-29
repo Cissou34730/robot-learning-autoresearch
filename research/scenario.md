@@ -52,8 +52,8 @@ These are ordinary research code files. Changing them is a normal research
 change recorded by the existing Git code lineage.
 
 Reward coefficients are **not** in `research/current_params.json`. That file
-holds generic runtime configuration only (`algorithm`, `ppo`, `sac`, `policy`,
-`training`). To change the reward, change `robot_learning/scenario/reward.py`.
+holds the runtime configuration of the currently active training method. To
+change the reward, change `robot_learning/scenario/reward.py`.
 
 Research may change:
 

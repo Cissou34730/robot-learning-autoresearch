@@ -42,7 +42,10 @@ RESEARCHER_OWNED_PATHS = (
     "robot_learning/train.py",
     "robot_learning/evaluate.py",
     "robot_learning/training/algorithms.py",
+    "robot_learning/training/research_config.py",
+    "research/current_params.json",
     "research/build_research_brief.py",
+    "pyproject.toml",
 )
 
 

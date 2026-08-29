@@ -578,4 +578,46 @@ superseded. It does not instruct the autonomous researcher and does not replace
   adversarial behavior. A security framework would add substantial machinery
   without changing the outcome for the failure mode we actually have.
 
+## 2026-08-29 — PPO is the current implementation, not the research space
+
+- **Decision:** The built-in training implementation is PPO only.
+  `robot_learning/train.py` constructs and trains PPO directly; the algorithm
+  registry, the `--algorithm` switch, the resume-time algorithm check and the
+  SAC replay-buffer save/load/copy paths are removed.
+  `robot_learning/training/algorithms.py` keeps only `load_policy`, because the
+  protected benchmark imports it.
+- **Decision:** `research/current_params.json` means the effective configuration
+  of the currently active training method. The dormant `sac` block is removed
+  and no dormant configuration for a hypothetical future algorithm replaces it.
+- **Decision:** The configuration is no longer pushed into the researcher's
+  default context. New-experiment, retry and evaluation-design prompts read
+  `program.md`, `scenario.md`, `brief.md` and `last_train_summary.md`; the brief
+  states `Current learning method: PPO` instead of embedding the full parameter
+  set. The researcher inspects `current_params.json` when a diagnosed mechanism
+  makes a setting relevant.
+- **Decision:** `program.md` states that the current implementation is a starting
+  point, that the researcher may replace the learning method, that the
+  implemented algorithms are not the considerable set, that an algorithm change
+  requires a diagnosed mechanism, and that exposed configuration is not a menu of
+  interventions. The canonical training-proposal example is now a neutral
+  structural shape, and `params` is defined as optional overrides to the active
+  runtime configuration rather than an `algorithm/ppo/sac/...` enumeration.
+- **Decision:** Baseline protocol wording is algorithm-neutral (`Fresh
+  baseline`); the baseline still trains PPO because PPO is the current
+  implementation.
+- **Explicitly not done:** no algorithm catalog, capability registry, plugin
+  interface, generic SB3 factory, replay abstraction or cross-method
+  configuration schema. Stable-Baselines3 and the installed environment already
+  form a discoverable capability surface.
+- **Boundary unchanged:** `robot_learning/train.py`, `robot_learning/training/*`,
+  `research/current_params.json` and `pyproject.toml` remain researcher-owned. A
+  future algorithm replacement is an ordinary scientific mutation, not a human
+  framework-extension step.
+- **Reason:** Pre-exposing SAC and a full hyperparameter list biased the
+  researcher towards easy mutations before diagnosis. Removing that bias must not
+  create the reverse bias of locking PPO in.
+- **Supersedes:** "SAC parameters remain available to the researcher, but SAC is
+  not active" and "`research/current_params.json` holds generic runtime knobs
+  only: `algorithm`, `ppo`, `sac`, `policy`, `training`".
+
 

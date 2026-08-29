@@ -23,8 +23,8 @@ uv run pytest                            # tests
   thin adapter over the protected benchmark. Generic code imports only the four
   functions re-exported by `robot_learning/scenario/__init__.py`.
 - `robot_learning/train.py`, `play.py` - CLIs
-- `research/current_params.json` - generic runtime training configuration
-  (algorithm, ppo, sac, policy, training). Reward and other scenario science
+- `research/current_params.json` - runtime configuration of the currently
+  active training method. Reward and other scenario science
   live in `robot_learning/scenario/` as code.
 - `research/program.md` - generic research protocol (read before touching `research/`)
 - `research/scenario.md` - the current scientific problem
