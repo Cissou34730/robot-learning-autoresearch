@@ -635,4 +635,17 @@ superseded. It does not instruct the autonomous researcher and does not replace
   configuration shape in the protected runner, and the proposal validator
   contradicted the method-neutral protocol by forcing configuration fields.
 
+## 2026-08-29 — Remove migration-only numerical goldens
+
+- **Decision:** Remove `tests/research/scenario_goldens.json` and its numerical
+  scenario-regression test. They were temporary evidence that the scenario
+  extraction was bit-identical, not a permanent contract for researcher-owned
+  reward, observations, environment or evaluation code.
+- **Decision:** Keep the functional reward tests and express their expectations
+  through the active reward coefficients instead of the superseded initial
+  coefficient values.
+- **Reason:** Exact snapshots of researcher-mutable outputs made intentional
+  reward experiments fail against historical values. Protected task invariants
+  and behavioral properties remain covered by their dedicated tests.
+
 

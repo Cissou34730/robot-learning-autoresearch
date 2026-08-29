@@ -46,7 +46,7 @@ def test_reward_encourages_progress():
     assert reach_reward(0.08, 0.10, 0.03).total < 0
 
 
-def test_hold_progress_reward_accelerates_and_pays_completion():
+def test_linear_hold_progress_reward_pays_completion():
     early = reach_reward(
         0.005,
         0.005,
@@ -71,13 +71,12 @@ def test_hold_progress_reward_accelerates_and_pays_completion():
         previous_held_steps=99,
         hold_steps_required=100,
     ).total
-    assert late > early > 0
-    assert done - late == pytest.approx(
-        HOLD_COMPLETE_BONUS + reward_module.HOLD_PROGRESS_BONUS * 2 / 10_000
-    )
+    assert early == pytest.approx(late)
+    assert early > 0
+    assert done - late == pytest.approx(HOLD_COMPLETE_BONUS)
 
 
-def test_losing_hold_progress_forfeits_half_accumulated_capital(monkeypatch):
+def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "OUTSIDE_BAND_PENALTY", 0.0)
@@ -91,7 +90,11 @@ def test_losing_hold_progress_forfeits_half_accumulated_capital(monkeypatch):
         penalize_outside=True,
     ).total
 
-    expected_forfeit = -0.5 * reward_module.HOLD_PROGRESS_BONUS * 0.9**2
+    expected_forfeit = -(
+        reward_module.HOLD_EXIT_FORFEIT_FRACTION
+        * reward_module.HOLD_PROGRESS_BONUS
+        * 0.9**reward_module.HOLD_PROGRESS_EXPONENT
+    )
     assert reward == pytest.approx(expected_forfeit)
 
 
@@ -101,7 +104,9 @@ def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
     just_outside = reach_reward(0.0105, 0.0105, 0.01, penalize_outside=True).total
     far_outside = reach_reward(0.10, 0.10, 0.01, penalize_outside=True).total
 
-    assert just_outside == pytest.approx(-0.025)
+    assert just_outside == pytest.approx(
+        -reward_module.OUTSIDE_BAND_PENALTY * 0.0005 / reward_module.OUTSIDE_BAND_WIDTH
+    )
     assert far_outside == pytest.approx(-reward_module.OUTSIDE_BAND_PENALTY)
 
 
@@ -127,13 +132,20 @@ def test_environment_keeps_outside_penalty_active_after_losing_hold(monkeypatch)
     env.reset(seed=0)
     env._held_steps = 90
     env._previous_distance = 0.005
+    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(env, "_distance_to_target", lambda: 0.0101)
 
     _, exit_reward, _, _, _ = env.step(np.zeros(2))
     _, continued_outside_reward, _, _, _ = env.step(np.zeros(2))
 
-    assert exit_reward < -20.0
-    assert continued_outside_reward < 0.0
+    expected_penalty = -(
+        reward_module.OUTSIDE_BAND_PENALTY
+        * 0.0001
+        / reward_module.OUTSIDE_BAND_WIDTH
+    )
+    assert exit_reward == pytest.approx(expected_penalty)
+    assert continued_outside_reward == pytest.approx(expected_penalty)
     assert env._outside_after_hold is True
 
 
