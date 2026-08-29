@@ -61,7 +61,7 @@ $ephemeralPaths = @(
 )
 $ephemeralPaths | ForEach-Object { Remove-ResetPath $_ }
 
-@{
+[ordered]@{
     schema_version = 2
     accepted_artifact = "research\checkpoints\accepted"
     accepted_metrics = $null

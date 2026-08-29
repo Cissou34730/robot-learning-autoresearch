@@ -366,6 +366,8 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Failure behavior:** If the commit succeeds but the push fails, execution
   stops and reports that the local commit has not been published.
 - **Reset correction:** Every file removed by `reset_research.ps1`, including
-  transient proposal and evaluation controls, is included in the reset commit.
+  transient proposal and evaluation controls, is included in the reset commit;
+  reset-state JSON is written in deterministic order so repeated resets are
+  idempotent.
 - **Reason:** The remote repository is now part of the persistence contract; a
   successful local commit alone is no longer considered a completed operation.
