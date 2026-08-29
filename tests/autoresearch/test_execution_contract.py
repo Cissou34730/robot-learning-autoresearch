@@ -88,16 +88,24 @@ def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
 # --- protected test domains ------------------------------------------------
 
 
-def worktree_changes(monkeypatch, *porcelain_lines: str) -> list[str]:
+def renamed(origin: str, destination: str) -> tuple[str, str]:
+    """A staged rename as `-z` reports it: destination first, origin after."""
+    return (f"R  {destination}", origin)
+
+
+def worktree_changes(monkeypatch, *entries: str | tuple[str, ...]) -> list[str]:
+    fields: list[str] = []
+    for entry in entries:
+        fields.extend((entry,) if isinstance(entry, str) else entry)
     monkeypatch.setattr(
         "research.run_experiment.git",
-        lambda *args: "".join(f"{line}\n" for line in porcelain_lines),
+        lambda *args: "".join(f"{field}\0" for field in fields),
     )
     return assert_research_surface()
 
 
-def validate_worktree(monkeypatch, *porcelain_lines: str) -> list[str]:
-    changes = worktree_changes(monkeypatch, *porcelain_lines)
+def validate_worktree(monkeypatch, *entries: str | tuple[str, ...]) -> list[str]:
+    changes = worktree_changes(monkeypatch, *entries)
     validate_experiment_semantics({}, "training", "transfer", None, changes, False)
     return changes
 
@@ -118,12 +126,81 @@ def test_deleting_a_protected_test_is_rejected(monkeypatch, protected_path):
         validate_worktree(monkeypatch, f" D {protected_path}")
 
 
+def test_status_reports_both_sides_of_a_rename(monkeypatch):
+    assert worktree_changes(
+        monkeypatch,
+        renamed("tests/scenario/test_reward.py", "tests/scenario/test_shaping.py"),
+    ) == ["tests/scenario/test_reward.py", "tests/scenario/test_shaping.py"]
+
+
+def test_status_keeps_unquoted_paths_containing_spaces(monkeypatch):
+    assert worktree_changes(monkeypatch, " M research/a note.md") == [
+        "research/a note.md"
+    ]
+
+
 def test_renaming_a_protected_test_is_rejected(monkeypatch):
     with pytest.raises(ValueError, match="human-owned .* tests"):
         validate_worktree(
             monkeypatch,
-            "R  tests/benchmark/test_task_contract.py -> tests/benchmark/renamed.py",
+            renamed(
+                "tests/benchmark/test_task_contract.py",
+                "tests/benchmark/renamed.py",
+            ),
         )
+
+
+@pytest.mark.parametrize(
+    ("origin", "destination"),
+    [
+        (
+            "tests/training/test_active_learning_method.py",
+            "tests/autoresearch/test_smuggled_rule.py",
+        ),
+        (
+            "tests/scenario/test_reward.py",
+            "tests/benchmark/test_smuggled_contract.py",
+        ),
+    ],
+)
+def test_renaming_a_researcher_test_into_a_protected_domain_is_rejected(
+    monkeypatch, origin, destination
+):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, renamed(origin, destination))
+
+
+@pytest.mark.parametrize(
+    ("origin", "destination"),
+    [
+        (
+            "tests/autoresearch/test_execution_contract.py",
+            "tests/training/test_execution_contract.py",
+        ),
+        (
+            "tests/benchmark/test_task_contract.py",
+            "tests/scenario/test_task_contract.py",
+        ),
+    ],
+)
+def test_renaming_a_protected_test_out_of_its_domain_is_rejected(
+    monkeypatch, origin, destination
+):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, renamed(origin, destination))
+
+
+def test_renaming_between_researcher_owned_domains_is_allowed(monkeypatch):
+    assert validate_worktree(
+        monkeypatch,
+        renamed(
+            "tests/scenario/test_reward.py",
+            "tests/training/test_reward_shaping.py",
+        ),
+    ) == [
+        "tests/scenario/test_reward.py",
+        "tests/training/test_reward_shaping.py",
+    ]
 
 
 def test_creating_a_new_protected_test_is_rejected(monkeypatch):
@@ -200,6 +277,32 @@ def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
     assert plan["remove_created"] == [(root / created).resolve()]
 
 
+def test_renamed_researcher_tests_travel_with_the_code_lineage(monkeypatch):
+    from research import run_experiment
+
+    root = Path(__file__).resolve().parents[2]
+    origin = "tests/scenario/test_reward.py"
+    destination = "tests/scenario/test_shaping.py"
+
+    def tracked_at_parent(*args: str) -> str:
+        path = args[-1]
+        return "" if path == destination else f"{path}\n"
+
+    monkeypatch.setattr(run_experiment, "ROOT", root)
+    monkeypatch.setattr(run_experiment, "git", tracked_at_parent)
+
+    plan = run_experiment.plan_code_lineage_decision(
+        {
+            "code_parent_commit": "abc123",
+            "research_change_paths": [origin, destination],
+        },
+        "revert",
+    )
+
+    assert plan["restore"] == [origin]
+    assert plan["remove_created"] == [(root / destination).resolve()]
+
+
 # --- validation timing -----------------------------------------------------
 
 
@@ -218,6 +321,91 @@ def test_parameter_only_experiment_skips_the_test_suites():
     assert not requires_full_validation(
         ["research\\current_params.json"], fresh_baseline=False
     )
+
+
+def test_active_configuration_is_resolved_through_the_trainer():
+    from research import run_experiment
+
+    config, effective = active_effective_config()
+
+    assert run_experiment.validate_active_configuration() == effective
+    assert config == load_experiment_config()
+
+
+def test_incomplete_active_configuration_is_rejected(monkeypatch):
+    from research import run_experiment
+
+    monkeypatch.setattr(
+        run_experiment, "load_experiment_config", lambda: {"training": {}}
+    )
+
+    with pytest.raises(RuntimeError, match="active training configuration is invalid"):
+        run_experiment.validate_active_configuration()
+
+
+def test_parameter_only_experiment_still_validates_the_configuration(
+    monkeypatch, tmp_path
+):
+    from research import run_experiment
+
+    accepted = tmp_path / "accepted"
+    accepted.mkdir()
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        (accepted / filename).write_bytes(b"artifact")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "EXPERIMENTS.md").write_text("header\n", encoding="utf-8")
+    (tmp_path / "proposal.json").write_text(
+        json.dumps(
+            {
+                "kind": "training",
+                "family": "method.rollout_steps",
+                "hypothesis": "a longer rollout stabilizes the update",
+                "change": "lengthen the rollout",
+                "initialization": "transfer",
+                "training_parent": "accepted",
+                "params": {"training": {"n_envs": 1}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(run_experiment, "ROOT", tmp_path)
+    monkeypatch.setattr(run_experiment, "ACCEPTED_DIR", accepted)
+    monkeypatch.setattr(run_experiment, "STATE_PATH", tmp_path / "research_state.json")
+    monkeypatch.setattr(run_experiment, "PROPOSAL_PATH", tmp_path / "proposal.json")
+    monkeypatch.setattr(run_experiment, "LOG_PATH", tmp_path / "EXPERIMENTS.md")
+    monkeypatch.setattr(run_experiment, "RESULTS_PATH", tmp_path / "results.jsonl")
+    monkeypatch.setattr(run_experiment, "CANDIDATE_ROOT", tmp_path / "candidates")
+    monkeypatch.setattr(run_experiment, "git", lambda *args: "")
+    monkeypatch.setattr(run_experiment, "announce", lambda message: None)
+    monkeypatch.setattr(run_experiment, "load_experiment_config", dict)
+    monkeypatch.setattr(run_experiment, "write_experiment_config", lambda config: None)
+    monkeypatch.setattr(
+        run_experiment,
+        "run_module",
+        lambda *args, **kwargs: pytest.fail("a parameter-only experiment ran pytest"),
+    )
+    monkeypatch.setattr(
+        run_experiment,
+        "train_candidate",
+        lambda *args, **kwargs: pytest.fail("training started on an invalid config"),
+    )
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+
+    assert run_experiment.main() == 1
+
+    recorded = json.loads(
+        (tmp_path / "results.jsonl").read_text(encoding="utf-8").strip()
+    )
+    assert "active training configuration is invalid" in recorded["error"]
 
 
 @pytest.mark.parametrize(

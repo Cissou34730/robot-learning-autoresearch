@@ -513,8 +513,26 @@ def load_state(
 
 
 def status_paths(paths: tuple[str, ...]) -> list[str]:
-    output = git("status", "--porcelain", "--untracked-files=all", "--", *paths)
-    return [line[3:].strip().strip('"') for line in output.splitlines() if line]
+    """Every path Git reports as changed, including both sides of a rename."""
+    output = git(
+        "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", *paths
+    )
+    fields = [field for field in output.split("\0") if field]
+    changed: list[str] = []
+    index = 0
+    while index < len(fields):
+        entry = fields[index]
+        index += 1
+        code, destination = entry[:2], entry[3:].strip()
+        # `-z` reverses rename/copy entries: the origin follows in its own field.
+        if code[:1] in {"R", "C"} and index < len(fields):
+            origin = fields[index].strip()
+            index += 1
+            if origin:
+                changed.append(origin)
+        if destination:
+            changed.append(destination)
+    return changed
 
 
 def assert_research_surface() -> list[str]:
@@ -590,8 +608,16 @@ def validate_dependency_metadata() -> None:
     run_command("uv", "lock", "--check")
 
 
-def validate_active_configuration() -> None:
-    validate_param_overrides(load_experiment_config())
+def validate_active_configuration() -> dict:
+    """Resolve the active configuration through the trainer's own view of it."""
+    config = load_experiment_config()
+    validate_param_overrides(config)
+    try:
+        return effective_training_config(config)
+    except (KeyError, TypeError, ValueError) as error:
+        raise RuntimeError(
+            f"the active training configuration is invalid: {error}"
+        ) from error
 
 
 def dependency_metadata_changed(changed_paths: list[str]) -> bool:
@@ -1855,9 +1881,10 @@ def main() -> int:
         if code_changes:
             announce("[checks] validating changed files")
             validate_changed_sources(code_changes)
+        announce("[checks] resolving the effective training configuration")
+        validate_active_configuration()
         if requires_full_validation(code_changes, fresh_baseline=fresh_baseline):
             announce("[checks] running research-surface checks")
-            validate_active_configuration()
             if fresh_baseline or dependency_metadata_changed(code_changes):
                 validate_dependency_metadata()
             run_module(
