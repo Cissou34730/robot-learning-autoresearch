@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TypedDict
 
 from robot_learning.scenario import render_scenario_evidence
+from robot_learning.training.progress import parse_training_records
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -27,39 +28,6 @@ def _compact(text: str, limit: int) -> str:
     if len(text) <= limit:
         return text
     return text[: limit - 1].rstrip() + "…"
-
-
-def parse_training_records(text: str) -> list[dict[str, float]]:
-    records: list[dict[str, float]] = []
-    current: dict[str, float] = {}
-    section = ""
-
-    for line in text.splitlines():
-        section_match = re.match(r"\|\s+(rollout|time|train)/\s+\|", line)
-        if section_match:
-            next_section = section_match.group(1)
-            if next_section == "rollout" and "total_timesteps" in current:
-                records.append(current)
-                current = {}
-            section = next_section
-            continue
-
-        value_match = re.match(
-            r"\|\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+\|\s+"
-            r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?)\s+\|",
-            line,
-            flags=re.IGNORECASE,
-        )
-        if value_match and section:
-            key = value_match.group(1)
-            try:
-                current[key] = float(value_match.group(2))
-            except ValueError:
-                continue
-
-    if current:
-        records.append(current)
-    return records
 
 
 def _format_value(record: dict[str, float], key: str) -> str:
@@ -203,7 +171,6 @@ def _legacy_family(result: dict) -> str:
         (("relu", "activation"), "policy.activation"),
         (("action standard deviation",), "policy.log_std_init"),
         (("parallel",), "training.n_envs"),
-        (("sac",), "algorithm.name"),
         (("dwell reward",), "reward.DWELL_BONUS_PER_STEP"),
         (("completion bonus",), "reward.HOLD_COMPLETE_BONUS"),
         (
@@ -315,6 +282,8 @@ def render_research_brief() -> str:
         else ""
     )
     params = json.loads(params_path.read_text(encoding="utf-8"))
+    declared_method = params.get("algorithm", {}).get("name")
+    current_method = str(declared_method).upper() if declared_method else "unspecified"
     state = (
         json.loads(state_path.read_text(encoding="utf-8"))
         if state_path.exists()
@@ -379,8 +348,9 @@ def render_research_brief() -> str:
                 (
                     "Decide which candidates need measurement, with which episode "
                     "counts, seeds, labels, and diagnostics. Write "
-                    "`research/evaluation_request.json` and exit. There is no "
-                    "automatic tournament."
+                    "`research/evaluation_request.json` with the scientific "
+                    "`question`, the `reason` this plan is sufficient, and the "
+                    "evaluations, then exit. There is no automatic tournament."
                 ),
             ]
         )
@@ -483,14 +453,9 @@ def render_research_brief() -> str:
         ),
         (f"- Last experiment: {displayed_last_experiment}"),
         (f"- Last verdict: {displayed_last_verdict}"),
+        f"- Current learning method: {current_method}",
         *evaluation_lines,
         *decision_lines,
-        "",
-        "## Current parameters",
-        "",
-        "```json",
-        json.dumps(params, indent=2),
-        "```",
         "",
         "## Recent experiment cards",
         "",
@@ -639,6 +604,11 @@ def render_research_brief() -> str:
             "## Context discipline",
             "",
             "- Use the brief by default; inspect relevant logs, artifacts, or code when a hypothesis cannot otherwise be discriminated.",
+            (
+                "- `research/current_params.json` holds the active method's "
+                "configuration. Read it when a diagnosed mechanism makes a specific "
+                "setting relevant, not to look for something to change."
+            ),
             (
                 "- Do not read full experiment or postmortem history unless the compact "
                 "evidence is insufficient for one specific decision."

@@ -4,6 +4,24 @@ The generic brief builder inserts the returned Markdown block without knowing
 what any of it means.
 """
 
+from collections.abc import Mapping
+
+
+def render_training_progress_metric(metrics: Mapping[str, float]) -> str | None:
+    """Render the single scenario training signal the generic console may show.
+
+    The runner appends the returned fragment verbatim and never learns what it
+    measures; another scenario returns its own phrase or nothing at all.
+    """
+    value = metrics.get("success_rate")
+    if value is None:
+        return None
+    try:
+        rate = float(value)
+    except (TypeError, ValueError):
+        return None
+    return f"success {100 * rate:.0f}%"
+
 
 def render_scenario_evidence(metrics: dict | None) -> list[str]:
     if not metrics:

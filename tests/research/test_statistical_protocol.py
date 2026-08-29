@@ -128,6 +128,8 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
         json.dumps(
             {
                 "experiment": 4,
+                "question": "Is the baseline stable across two seed panels?",
+                "reason": "Two panels bound seed variance before any comparison.",
                 "evaluations": [
                     {
                         "candidate": "checkpoint-100",
@@ -229,6 +231,8 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
         json.dumps(
             {
                 "experiment": 4,
+                "question": "Does relabelling a panel change the measurement?",
+                "reason": "One panel is enough to check measurement identity.",
                 "evaluations": [
                     {
                         "candidate": "checkpoint",
@@ -326,6 +330,8 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
         json.dumps(
             {
                 "experiment": 4,
+                "question": "Is one panel enough to judge the candidate?",
+                "reason": "Start narrow and widen only if the evidence is unclear.",
                 "evaluations": [
                     {"candidate": "checkpoint", "episodes": 2, "seed": 1000},
                 ],
@@ -348,6 +354,8 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
         json.dumps(
             {
                 "experiment": 4,
+                "question": "Does a second seed panel confirm the first?",
+                "reason": "The first round was too narrow to decide.",
                 "evaluations": [
                     {
                         "candidate": "checkpoint",
@@ -640,6 +648,8 @@ def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp
         json.dumps(
             {
                 "experiment": 8,
+                "question": "Can the official benchmark decide this lineage?",
+                "reason": "It must not; the request has to be rejected.",
                 "evaluations": [
                     {
                         "candidate": "candidate",

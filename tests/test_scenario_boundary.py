@@ -24,6 +24,7 @@ SCENARIO_BOUNDARY = (
     "make_training_env",
     "make_training_viewer_callback",
     "render_scenario_evidence",
+    "render_training_progress_metric",
     "summarize_research_evaluations",
     "watch_scenario_policy",
 )
@@ -64,6 +65,7 @@ GENERIC_CORE_MODULES = (
     "robot_learning/training/candidate_checkpoint_callback.py",
     "robot_learning/training/comparison.py",
     "robot_learning/training/normalization.py",
+    "robot_learning/training/progress.py",
     "robot_learning/training/research_config.py",
     "research/run_experiment.py",
     "research/build_research_brief.py",
@@ -83,7 +85,7 @@ FORBIDDEN_MODULES = frozenset(
     }
 )
 
-GENERIC_CONFIG_SECTIONS = frozenset({"algorithm", "ppo", "sac", "policy", "training"})
+GENERIC_CONFIG_SECTIONS = frozenset({"algorithm", "ppo", "policy", "training"})
 
 
 def imported_modules(path: Path) -> list[str]:
@@ -197,6 +199,45 @@ def test_historical_reward_families_remain_resolvable():
         _legacy_family({"change": "reduce the action cost"})
         == "reward.ACTION_COST_COEFFICIENT"
     )
+
+
+def test_live_training_metric_is_owned_by_the_scenario():
+    assert scenario.render_training_progress_metric({"success_rate": 0.61}) == (
+        "success 61%"
+    )
+    assert scenario.render_training_progress_metric({"ep_rew_mean": -6.9}) is None
+
+
+def test_runner_reads_the_live_training_metric_only_through_the_boundary():
+    source = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
+
+    assert "render_training_progress_metric" in source
+    assert "success_rate" not in source
+
+
+def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
+    from research import run_experiment
+
+    monkeypatch.setattr(
+        run_experiment,
+        "render_training_progress_metric",
+        lambda metrics: "completion 74%",
+    )
+
+    assert run_experiment.training_progress_suffix({"ep_rew_mean": -6.9}) == (
+        " | reward -6.9 | completion 74%"
+    )
+
+
+def test_researcher_runtime_output_is_never_parsed():
+    script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+    runner = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
+
+    assert "opencode run --model $model --variant $reasoning" in script
+    assert "--format json" not in script
+    for forbidden in ("ConvertFrom-Json $opencode", "Select-String", "Tee-Object"):
+        assert forbidden not in script
+    assert "opencode" not in runner
 
 
 def test_compatibility_reexports_alias_the_scenario_implementation():

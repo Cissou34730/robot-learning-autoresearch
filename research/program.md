@@ -30,6 +30,18 @@ A curriculum or easier training environment is valid. Claiming success on that e
 
 Policy-specific preprocessing and normalization belong to the learned artifact and may be used during official evaluation when required to execute that policy. They must not redefine the official physics or objective.
 
+## The current training implementation
+
+The repository contains one concrete implementation of the learning method. It is a starting point, not part of the problem definition and not a restriction on the research space.
+
+You may modify or replace the learning algorithm, optimizer, policy implementation, training implementation, dependencies, configuration, initialization strategy, exploration strategy, artifact handling, and related researcher-owned code when scientific evidence justifies doing so.
+
+The set of learning algorithms currently implemented in the repository is not the set of algorithms you are allowed to consider. Inspect the installed libraries and source code when a diagnosis makes another method relevant.
+
+A change of learning algorithm must follow from a diagnosed mechanism that the alternative method is expected to address. Poor performance alone is not sufficient evidence that a different algorithm is needed.
+
+Exposed configuration describes the current method and must not be treated as a menu of preferred interventions. Hyperparameter, architecture, optimizer, exploration, initialization, or algorithm changes must follow from a diagnosed mechanism that the change is expected to address.
+
 ## Ownership
 
 ### Human
@@ -106,11 +118,12 @@ Start with:
 * `research/scenario.md`
 * `research/brief.md`
 * `research/last_train_summary.md`
-* `research/current_params.json`
 
 Use this compact context first.
 
-Inspect additional source code, raw logs, checkpoints, traces, artifacts, episode data, or older history only when they can resolve a current scientific uncertainty.
+Inspect additional source code, runtime configuration, raw logs, checkpoints, traces, artifacts, episode data, or older history only when they can resolve a current scientific uncertainty.
+
+`research/current_params.json` is the effective configuration of the currently active training method. Read it when a diagnosed mechanism makes a specific setting relevant, not to look for something easy to change.
 
 Do not infer a mechanism from summary metrics when evidence already available in the repository can test it directly.
 
@@ -130,6 +143,8 @@ Determine:
 Bad performance is not a diagnosis.
 
 A parameter value is not a hypothesis. State the mechanism you believe is limiting learning.
+
+An available configuration knob is not a hypothesis either. Availability is not evidence.
 
 Before accepting your preferred explanation, consider the strongest plausible alternative explanation.
 
@@ -263,7 +278,7 @@ Do not repeatedly revisit an exhausted hypothesis family unless new evidence ide
 
 ## 1. Baseline
 
-When the runner indicates that a baseline is pending, it trains the unchanged baseline.
+When the runner indicates that a baseline is pending, it trains the repository's current unchanged learning method from fresh initialization.
 
 No researcher proposal is required.
 
@@ -284,6 +299,8 @@ Example:
 ```json
 {
   "experiment": 7,
+  "question": "Did the longer-range shaping improve target acquisition versus the accepted champion without degrading stability?",
+  "reason": "A matched candidate/champion panel directly tests the hypothesis, so no checkpoint sweep or additional diagnostics are justified yet.",
   "evaluations": [
     {
       "candidate": "checkpoint-120000",
@@ -305,6 +322,8 @@ Example:
 Required:
 
 * `experiment`;
+* `question` — the concise scientific question these measurements answer;
+* `reason` — why this plan is useful and sufficient;
 * `evaluations`;
 * for each evaluation:
 
@@ -317,6 +336,8 @@ Optional:
 * `label`;
 * `paired_comparisons`;
 * `need_more_evidence`.
+
+`question` and `reason` are your scientific statements. The runner displays them before executing the plan and never rewrites or judges them.
 
 Candidate names must come from the brief.
 
@@ -524,20 +545,20 @@ The baseline is runner-controlled and is not a researcher experiment kind.
 
 ### Standard training proposal
 
-Example:
+The structure below is a shape, not a suggested experiment. Replace every placeholder with the mechanism your evidence identified.
 
 ```json
 {
   "kind": "training",
-  "family": "ppo.learning_rate",
-  "hypothesis": "the current step size is too coarse for the final precision phase",
-  "change": "halve the PPO learning rate",
-  "initialization": "transfer",
+  "family": "<hypothesis family>",
+  "hypothesis": "<the mechanism you believe is limiting learning>",
+  "change": "<the intervention that tests that mechanism>",
+  "initialization": "fresh",
   "training_parent": "accepted",
   "training_seed": 0,
   "params": {
-    "ppo": {
-      "learning_rate": 0.00015
+    "<section>": {
+      "<setting>": "<value>"
     }
   }
 }
@@ -572,9 +593,11 @@ A transferred experiment may use:
 * `accepted`;
 * an explicitly retained lineage ID.
 
-`params` is optional. Code-only or structural experiments are valid.
+`params` carries optional overrides to the currently active runtime configuration, whose current structure lives in `research/current_params.json`. It is not required: code-only and structural experiments are valid, and many mechanisms cannot be expressed as a configuration value at all.
 
-`params` carries generic runtime configuration only: `algorithm`, `ppo`, `sac`, `policy`, `training`. Scenario science - reward, observations, task mechanics, evaluation - is code. Change the scenario source files listed in `research/scenario.md` and let code lineage record the exact implementation.
+That structure describes the current training method. It is not a permanent cross-method schema, and it may change when you change the learning method.
+
+Scenario science - reward, observations, task mechanics, evaluation - is code. Change the scenario source files listed in `research/scenario.md` and let code lineage record the exact implementation.
 
 Do not add artificial parameter changes simply to populate `params`.
 
@@ -623,7 +646,7 @@ Example:
 ```json
 {
   "kind": "replication",
-  "family": "ppo.learning_rate",
+  "family": "<the family of experiment 12>",
   "replication_of": 12,
   "hypothesis": "the improvement observed in experiment 12 is robust to training initialization",
   "change": "replicate experiment 12 with a different training seed",

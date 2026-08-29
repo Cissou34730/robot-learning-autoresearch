@@ -124,13 +124,14 @@ while ($true) {
         $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
         if (-not $evaluationPlanExists) {
             Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
-            Write-Host "=== Researcher designing evaluations for experiment $($researchState.pending_evaluation_request.experiment) ==="
+            Write-Host "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
                 "This is the complete evaluation-design task; do not wait for more input."
-                "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+                "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
                 "Training is complete. Decide which saved candidates need evaluation and which episode counts, seeds, comparisons, or diagnostics are useful for this experiment."
                 "You may modify evaluation or diagnostic code when the hypothesis requires it, while preserving the human-defined objective."
-                "Write research/evaluation_request.json using the experiment number and an evaluations list."
+                "Write research/evaluation_request.json using the experiment number, a question, a reason, and an evaluations list."
+                "question states the concise scientific question these evaluations answer; reason states why this plan is useful and sufficient. Both are required and must be non-empty."
                 "Each evaluation names candidate, episodes, seed, and a concise label."
                 "Use only the evidence needed for the scientific decision. Do not start training, evaluation, or a new experiment."
             ) -join " "
@@ -139,9 +140,9 @@ while ($true) {
                 Write-Host "=== Evaluation request missing; retrying the same bounded task once ==="
                 $evaluationRetryPrompt = @(
                     "Complete the pending evaluation-design task now; this message is complete."
-                    "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+                    "Read only research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
                     "Do not ask for more input and do not propose a new training experiment."
-                    "Choose the useful saved candidates, episode counts, and seeds, then write research/evaluation_request.json with the pending experiment number and an evaluations list."
+                    "Choose the useful saved candidates, episode counts, and seeds, then write research/evaluation_request.json with the pending experiment number, a non-empty question, a non-empty reason, and an evaluations list."
                     "Do not run evaluation or training yourself."
                 ) -join " "
                 opencode run --model $model --variant $reasoning $evaluationRetryPrompt
@@ -170,7 +171,7 @@ while ($true) {
         Write-Host "=== Running fresh baseline training ==="
         @{
             baseline = $true
-            change = "Fresh PPO baseline"
+            change = "Fresh baseline"
             hypothesis = "Establish the initial baseline for the human-defined objective."
             class = "baseline"
             initialization = "fresh"
@@ -191,6 +192,7 @@ while ($true) {
 
     if ($null -ne $researchState.pending_researcher_decision) {
         Update-ResearchBrief
+        Write-Host "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
             "This is the complete lineage-resolution task; do not wait for more input."
             "Read research/program.md, research/scenario.md, and research/brief.md."
@@ -224,14 +226,14 @@ while ($true) {
 
     Update-ResearchBrief
 
-    Write-Host "=== New experiment at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
+    Write-Host "=== Researcher forming next hypothesis at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $researchPrompt = @(
         "This is the complete research task; do not wait for more input."
-        "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+        "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
         "Treat these compact files as the default research context."
-        "When they cannot discriminate the current hypothesis, inspect the relevant logs, artifacts, code, or a small local analysis before proposing another experiment."
+        "When they cannot discriminate the current hypothesis, inspect the relevant logs, artifacts, code, configuration, or a small local analysis before proposing another experiment."
         "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
         "Do not launch training or the runner."
     ) -join " "
@@ -249,7 +251,7 @@ while ($true) {
         $retryPrompt = @(
             "The previous researcher session ended before writing research/proposal.json."
             "Complete that same single research task; do not begin a second hypothesis and do not wait for more input."
-            "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, research/current_params.json, and git status."
+            "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and git status."
             "Use existing research edits, if any, only when they clearly belong to that unfinished experiment."
             "Write a valid research/proposal.json before exiting. Do not launch training or the runner."
         ) -join " "

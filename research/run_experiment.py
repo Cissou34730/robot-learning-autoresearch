@@ -18,9 +18,15 @@ from typing import Any
 from research.build_research_brief import write_training_summary
 from robot_learning.scenario import (
     evaluate_final_model,
+    render_scenario_evidence,
+    render_training_progress_metric,
     summarize_research_evaluations,
 )
 from robot_learning.training.comparison import paired_comparison
+from robot_learning.training.progress import (
+    latest_training_record,
+    parse_training_records,
+)
 from robot_learning.training.research_config import (
     RESEARCH_EVALUATION_EPISODES,
     RESEARCH_EVALUATION_SEED,
@@ -84,6 +90,264 @@ def format_duration(seconds: float) -> str:
     return f"{seconds}s"
 
 
+# The runner formats facts the researcher already decided or the tools already
+# measured. It never adds a scientific conclusion of its own.
+
+
+def experiment_change_lines(result: dict) -> list[str]:
+    changes = result.get("parameter_changes") or []
+    if changes:
+        return [
+            f"{item['path']}: {item.get('before')} → {item.get('after')}"
+            for item in changes
+        ]
+    return [str(result.get("change", "")).strip() or "-"]
+
+
+def render_experiment_card(result: dict) -> str:
+    budget = result.get("training_budget_steps")
+    return "\n".join(
+        [
+            f"=== Research hypothesis · Experiment {result['index']} ===",
+            "",
+            "Hypothesis",
+            str(result.get("hypothesis", "")).strip() or "-",
+            "",
+            "Experiment",
+            *experiment_change_lines(result),
+            "",
+            f"Family : {result.get('family', '-')}",
+            f"Parent : {result.get('training_parent', '-')}",
+            f"Init   : {result.get('initialization', '-')}",
+            f"Seed   : {result.get('training_seed', '-')}",
+            f"Budget : {int(budget):,} steps" if budget else "Budget : -",
+        ]
+    )
+
+
+def training_progress_suffix(record: dict[str, float] | None) -> str:
+    """Append the rolling reward and the single scenario-owned live metric."""
+    if not record:
+        return ""
+    parts: list[str] = []
+    reward = record.get("ep_rew_mean")
+    if reward is not None:
+        parts.append(f"reward {float(reward):g}")
+    scenario_fragment = render_training_progress_metric(record)
+    if scenario_fragment:
+        parts.append(scenario_fragment)
+    return "".join(f" | {part}" for part in parts)
+
+
+def _metric_transition(
+    first: dict[str, float],
+    final: dict[str, float],
+    key: str,
+) -> tuple[str, str] | None:
+    before, after = first.get(key), final.get(key)
+    if before is None or after is None:
+        return None
+    return f"{float(before):g}", f"{float(after):g}"
+
+
+def _scenario_transition(
+    first: dict[str, float],
+    final: dict[str, float],
+) -> tuple[str, str, str] | None:
+    before = render_training_progress_metric(first)
+    after = render_training_progress_metric(final)
+    if not before or not after:
+        return None
+    before_label, _, before_value = before.partition(" ")
+    after_label, _, after_value = after.partition(" ")
+    if before_value and before_label == after_label:
+        return before_label.capitalize(), before_value, after_value
+    return "Scenario", before, after
+
+
+def training_dynamics_rows(records: list[dict[str, float]]) -> list[str]:
+    if not records:
+        return []
+    first, final = records[0], records[-1]
+    rows: list[tuple[str, str, str]] = []
+    reward = _metric_transition(first, final, "ep_rew_mean")
+    if reward is not None:
+        rows.append(("Reward mean", *reward))
+    scenario = _scenario_transition(first, final)
+    if scenario is not None:
+        rows.append(scenario)
+    for label, key in (
+        ("Episode length", "ep_len_mean"),
+        ("Policy std", "std"),
+        ("Explained variance", "explained_variance"),
+    ):
+        transition = _metric_transition(first, final, key)
+        if transition is not None:
+            rows.append((label, *transition))
+    if not rows:
+        return []
+    label_width = max(len(label) for label, _, _ in rows)
+    value_width = max(len(before) for _, before, _ in rows)
+    return [
+        f"  {label:<{label_width}}  {before:>{value_width}} → {after}"
+        for label, before, after in rows
+    ]
+
+
+def render_training_summary_card(
+    result: dict,
+    *,
+    records: list[dict[str, float]],
+    completed_steps: int,
+    elapsed_seconds: float,
+    candidate_names: list[str],
+) -> str:
+    budget = result.get("training_budget_steps")
+    lines = [
+        f"=== Training summary · Experiment {result['index']} ===",
+        "",
+        f"Hypothesis : {str(result.get('hypothesis', '')).strip() or '-'}",
+        f"Change     : {'; '.join(experiment_change_lines(result))}",
+        f"Family     : {result.get('family', '-')}",
+        f"Parent     : {result.get('training_parent', '-')}",
+        f"Init       : {result.get('initialization', '-')}",
+        f"Seed       : {result.get('training_seed', '-')}",
+        f"Budget     : {int(budget):,} steps" if budget else "Budget     : -",
+        (
+            f"Completed  : {completed_steps:,} steps in "
+            f"{format_duration(elapsed_seconds)}"
+        ),
+    ]
+    dynamics = training_dynamics_rows(records)
+    if dynamics:
+        lines.extend(["", "Training dynamics", *dynamics])
+    lines.extend(["", "Candidates"])
+    lines.extend(f"  {name}" for name in candidate_names)
+    lines.extend(["", "Next", "  Researcher evaluation design"])
+    return "\n".join(lines)
+
+
+def evaluation_plan_rows(request: dict) -> list[tuple[str, str]]:
+    rows: list[tuple[str, str]] = []
+    for spec in request.get("evaluations") or []:
+        if not isinstance(spec, dict):
+            continue
+        name = str(spec.get("label") or spec.get("candidate", "")).strip() or "-"
+        try:
+            detail = f"{int(spec['episodes'])} episodes · seed {int(spec['seed'])}"
+        except (KeyError, TypeError, ValueError):
+            detail = "episodes and seed pending validation"
+        rows.append((name, detail))
+    for comparison in request.get("paired_comparisons") or []:
+        if not isinstance(comparison, dict):
+            continue
+        candidate = comparison.get("candidate", "?")
+        reference = comparison.get("reference", "?")
+        rows.append(("paired comparison", f"{candidate} vs {reference}"))
+    return rows
+
+
+def render_evaluation_plan(request: dict, experiment: int) -> str:
+    lines = [f"=== Evaluation design · Experiment {experiment} ===", ""]
+    question = str(request.get("question", "")).strip()
+    if question:
+        lines.extend(["Question", question, ""])
+    rows = evaluation_plan_rows(request)
+    if rows:
+        width = max(len(name) for name, _ in rows)
+        lines.append("Plan")
+        lines.extend(f"  {name:<{width}}   {detail}" for name, detail in rows)
+    reason = str(request.get("reason", "")).strip()
+    if reason:
+        lines.extend(["", "Reason", reason])
+    return "\n".join(lines)
+
+
+def summary_headline(summary: dict) -> str:
+    success = summary.get("pooled_success_percent", summary.get("success_percent"))
+    episodes = int(summary.get("episodes", 0))
+    if success is None:
+        return f"{episodes} episodes"
+    return f"success {float(success):.1f}% · {episodes} episodes"
+
+
+def render_evidence_card(
+    experiment: int,
+    candidates: list[dict],
+    champion_summary: dict | None,
+    comparisons: list[dict],
+    next_phase: str,
+) -> str:
+    lines = [f"=== Evidence · Experiment {experiment} ===", ""]
+    measured = [item for item in candidates if item.get("summary") is not None]
+    if measured:
+        width = max(len(str(item["name"])) for item in measured)
+        lines.append("Candidate")
+        lines.extend(
+            f"  {item['name']!s:<{width}}   {summary_headline(item['summary'])}"
+            for item in measured
+        )
+        lines.append("")
+    if champion_summary is not None:
+        lines.extend(["Champion", f"  {summary_headline(champion_summary)}", ""])
+    for comparison in comparisons:
+        delta = float(comparison["success_delta_percent"])
+        lines.extend(
+            [
+                "Paired comparison",
+                f"  {comparison['candidate']} vs {comparison['reference']}",
+                f"  delta {delta:+.1f} pp",
+                "",
+            ]
+        )
+    if measured:
+        evidence = render_scenario_evidence(measured[0]["summary"])
+        lines.append("Scenario evidence")
+        lines.extend(f"  {line}" if line else "" for line in evidence)
+        lines.append("")
+    lines.extend(["Next", f"  {next_phase}"])
+    return "\n".join(lines)
+
+
+def render_decision_card(plan: dict) -> str:
+    pending = plan["pending"]
+    retained = [
+        f"  {retention['record']['id']} (from {retention['record']['candidate']})"
+        for retention in plan["retentions"]
+    ]
+    lines = [
+        f"=== Research decision · Experiment {int(pending['experiment'])} ===",
+        "",
+        "Continue from",
+        plan["selected_name"],
+        "",
+        "Reason",
+        str(plan["decision"]["reason"]).strip(),
+        "",
+        "Code",
+        plan["code_action"],
+        "",
+        "Retained alternatives",
+        *(retained or ["  none"]),
+    ]
+    if plan["removed_retained"]:
+        lines.extend(
+            [
+                "",
+                "Removed retained alternatives",
+                *(f"  {lineage['id']}" for lineage in plan["removed_retained"]),
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "Final benchmark",
+            "requested" if plan["request_final_benchmark"] else "not requested",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def training_budget(
     standard_timesteps: int,
     _initialization: str,
@@ -98,14 +362,21 @@ def running_on_windows() -> bool:
     return platform.system() == "Windows"
 
 
-def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
+def read_training_log(log_path: Path, after_offset: int = 0) -> str:
     if not log_path.exists():
-        return None
+        return ""
     with log_path.open(encoding="utf-8", errors="replace") as handle:
         handle.seek(after_offset)
-        text = handle.read()
+        return handle.read()
+
+
+def latest_step_count(text: str) -> int | None:
     matches = re.findall(r"\|\s+total_timesteps\s+\|\s+(\d+)\s+\|", text)
     return int(matches[-1]) if matches else None
+
+
+def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
+    return latest_step_count(read_training_log(log_path, after_offset))
 
 
 def process_group_options() -> dict:
@@ -380,7 +651,6 @@ def evaluate_artifact(
     ]
     if official_benchmark:
         command.append("--official-benchmark")
-    announce(f"[evaluation] {label} | {episodes} episodes | seed {seed}")
     started = time.monotonic()
     last_progress_at = started
     completed_episodes = 0
@@ -420,9 +690,10 @@ def evaluate_artifact(
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
                     announce(
-                        f"[evaluation] {label} still running "
-                        f"| {completed_episodes}/{episodes} episodes "
-                        f"({format_duration(time.monotonic() - started)} elapsed)"
+                        f"[eval] {label:<20} "
+                        f"| {completed_episodes:>4} / {episodes} "
+                        f"| {100 * completed_episodes // episodes:>3}% "
+                        f"| {format_duration(time.monotonic() - started)}"
                     )
                     if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
                         stop_process(process, graceful=False)
@@ -452,10 +723,10 @@ def evaluate_artifact(
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
     announce(
-        f"[evaluation] {label} complete in "
-        f"{format_duration(time.monotonic() - started)} | "
-        f"success: {metrics['success_percent']:.1f}% over "
-        f"{int(metrics['episodes'])} episodes"
+        f"[eval] {label:<20} "
+        f"| {int(metrics['episodes']):>4} / {episodes} | 100% "
+        f"| {format_duration(time.monotonic() - started)} "
+        f"| success {metrics['success_percent']:.1f}%"
     )
     return metrics
 
@@ -545,6 +816,14 @@ def archive_candidates(
     return archived
 
 
+def validate_evaluation_request(request: dict) -> None:
+    """Require the researcher's scientific framing on a newly written request."""
+    for field in ("question", "reason"):
+        value = request.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"evaluation request requires a non-empty {field}")
+
+
 def execute_pending_evaluations() -> int:
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     pending = state.get("pending_evaluation_request")
@@ -552,6 +831,7 @@ def execute_pending_evaluations() -> int:
         raise TypeError("there is no trained experiment awaiting evaluation")
     if EVALUATION_REQUEST_PATH.exists():
         request = json.loads(EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        validate_evaluation_request(request)
         pending["evaluation_plan"] = request
         pending.setdefault("partial_evaluations", [])
         atomic_write_json(STATE_PATH, state)
@@ -566,6 +846,7 @@ def execute_pending_evaluations() -> int:
     requested = request.get("evaluations")
     if not isinstance(requested, list):
         raise TypeError("evaluation request requires an evaluations list")
+    announce("\n" + render_evaluation_plan(request, experiment) + "\n")
 
     candidates = pending["candidates"]
     available = {item["name"]: item for item in candidates}
@@ -729,12 +1010,19 @@ def execute_pending_evaluations() -> int:
     EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
     if not more_evidence:
         append_result(result)
+    next_phase = (
+        "Researcher evaluation design"
+        if more_evidence
+        else "Researcher lineage decision"
+    )
     announce(
-        "[result] requested evaluations complete; "
-        + (
-            "another evaluation round requested"
-            if more_evidence
-            else "researcher analysis required"
+        "\n"
+        + render_evidence_card(
+            experiment,
+            candidates,
+            champion_summary,
+            comparisons,
+            next_phase,
         )
     )
     return 0
@@ -755,7 +1043,7 @@ def train_candidate(
     label: str = "candidate training",
     continue_timesteps: bool = False,
     target_timesteps: int | None = None,
-) -> None:
+) -> float:
     command = [
         sys.executable,
         "-m",
@@ -797,7 +1085,9 @@ def train_candidate(
                 except subprocess.TimeoutExpired:
                     pass
                 elapsed = time.monotonic() - started
-                steps = latest_training_steps(train_log, after_offset=progress_offset)
+                log_text = read_training_log(train_log, progress_offset)
+                record = latest_training_record(log_text)
+                steps = latest_step_count(log_text)
                 if steps is None:
                     announce(f"[train] starting ({format_duration(elapsed)} elapsed)")
                 else:
@@ -817,9 +1107,10 @@ def train_candidate(
                         else 0
                     )
                     announce(
-                        f"[train] {steps:,} / {progress_target:,} steps "
-                        f"({progress:.0f}%) | {format_duration(elapsed)} elapsed | "
+                        f"[train] {steps:,} / {progress_target:,} "
+                        f"({progress:.0f}%) | {format_duration(elapsed)} | "
                         f"ETA ~{format_duration(eta)}"
+                        + training_progress_suffix(record)
                     )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
@@ -841,9 +1132,7 @@ def train_candidate(
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         if not (output_dir / filename).exists():
             raise RuntimeError(f"training output is incomplete: {filename}")
-    announce(
-        f"[train] {label} complete in {format_duration(time.monotonic() - started)}"
-    )
+    return time.monotonic() - started
 
 
 def copy_artifact(source: Path, destination: Path) -> None:
@@ -1295,9 +1584,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
             "fingerprint": plan["selected_fingerprint"],
         }
         atomic_write_json(STATE_PATH, state)
-    announce(
-        f"[researcher decision] continuing from {selected_name}: {plan['decision']['reason']}"
-    )
+    announce("\n" + render_decision_card(plan) + "\n")
     return False
 
 
@@ -1438,12 +1725,10 @@ def main() -> int:
     code_changes: list[str] = []
     preserve_proposal = False
     reused_candidate: Path | None = None
+    training_elapsed = 0.0
     parent_name, parent_artifact, parent_training_steps = training_parent(
         proposal, state, initialization
     )
-
-    announce(f"[runner] experiment {index} | objective: see research/scenario.md")
-    announce(f"[runner] mode: {'baseline' if baseline else initialization}")
 
     result: dict[str, Any] = {
         "schema_version": 1,
@@ -1517,7 +1802,7 @@ def main() -> int:
             result["replication_of"] = str(
                 proposal.get("replication_of", proposal.get("family", ""))
             ).strip()
-        announce(f"[training plan] {effective_timesteps:,} steps")
+        announce("\n" + render_experiment_card(result) + "\n")
         resume = parent_artifact / "model.zip" if initialization == "transfer" else None
 
         if candidate_dir.exists():
@@ -1553,7 +1838,7 @@ def main() -> int:
                         f"{effective_timesteps:,} steps"
                     )
                     created_candidate_dirs.append(candidate_dir)
-                    train_candidate(
+                    training_elapsed = train_candidate(
                         candidate_dir,
                         remaining_timesteps,
                         training_seed,
@@ -1568,7 +1853,7 @@ def main() -> int:
                     )
         else:
             created_candidate_dirs.append(candidate_dir)
-            train_candidate(
+            training_elapsed = train_candidate(
                 candidate_dir,
                 effective_timesteps,
                 training_seed,
@@ -1591,6 +1876,28 @@ def main() -> int:
         ]
         archived_candidates = archive_candidates(index, contenders, effective_config)
         verdict = "trained; awaiting researcher evaluation request"
+        records = parse_training_records(
+            read_training_log(RESEARCH_DIR / "last_train.log")
+        )
+        completed_steps = max(
+            (int(candidate["timesteps"]) for candidate in archived_candidates),
+            default=0,
+        )
+        if records and "total_timesteps" in records[-1]:
+            completed_steps = int(records[-1]["total_timesteps"])
+        announce(
+            "\n"
+            + render_training_summary_card(
+                result,
+                records=records,
+                completed_steps=completed_steps,
+                elapsed_seconds=training_elapsed,
+                candidate_names=[
+                    str(candidate["name"]) for candidate in archived_candidates
+                ],
+            )
+            + "\n"
+        )
 
         state.update(
             {
@@ -1617,7 +1924,6 @@ def main() -> int:
             RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         RESTART_PENDING_PATH.unlink(missing_ok=True)
         atomic_write_json(STATE_PATH, state)
-        announce(f"[result] {verdict}")
     except KeyboardInterrupt:
         recovery_dir = CANDIDATE_ROOT / f"recovery-experiment-{index}"
         recoverable = all(
@@ -1659,7 +1965,7 @@ def main() -> int:
         result["verdict"] = "invalid; researcher changes preserved"
         append_result(result)
         atomic_write_json(STATE_PATH, state)
-        print("SUMMARY: " + json.dumps(result))
+        announce(f"[error] experiment {index} invalid: {result['error']}")
         return 1
     finally:
         if not preserve_proposal:
@@ -1677,7 +1983,6 @@ def main() -> int:
         ):
             remove_candidate_dir(reused_candidate)
 
-    print("SUMMARY: " + json.dumps(result))
     return 0
 
 
