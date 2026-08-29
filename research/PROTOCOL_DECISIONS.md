@@ -8,6 +8,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-08-28 — Fixed final benchmark, flexible training target
 
+- **Status:** Clarified later on 2026-08-28: the human objective is invariant,
+  but its implementation files are not protected from research changes.
+
 - **Decision:** The reported task remains 1 cm for 2 seconds, currently 100
   consecutive control steps, over 200 fixed evaluation episodes.
 - **Reason:** Every candidate needs one stable definition of success.
@@ -115,13 +118,24 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-08-28 — Development checkpoint cadence
 
+- **Status:** Superseded later on 2026-08-28 by neutral checkpoint production
+  and researcher-designed evaluation.
+
 - **Decision:** Request a checkpoint evaluation every 20,000 training steps,
   executed only after a completed optimizer update/rollout.
 - **Reason:** A checkpoint must represent a completed PPO update. If `n_steps`
   changes, the actual checkpoint is the first completed boundary after the
   nominal threshold (for example 20,480 with `n_steps=1,024`).
 
+- **Current replacement:** Training now saves neutral candidates at the first
+  completed learning-update boundary after each researcher-configurable
+  checkpoint interval. It performs no evaluation or ranking. The researcher
+  decides later which saved candidates warrant measurement.
+
 ## 2026-08-28 — Use 200 development episodes
+
+- **Status:** Superseded later on 2026-08-28. The researcher chooses development
+  evaluation volume; 200 episodes remains part of the human's reported result.
 
 - **Decision:** Evaluate every development checkpoint on the same 200 episodes.
 - **Reason:** With 50 episodes, one success changes the score by 2 percentage
@@ -131,6 +145,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Supersedes:** The earlier choice of 50 development episodes.
 
 ## 2026-08-28 — Retain three checkpoint finalists
+
+- **Status:** Superseded later on 2026-08-28 by retaining the neutral checkpoint
+  inventory and letting the researcher decide what to measure and retain.
 
 - **Decision:** Keep three checkpoints from a completed training run, including
   their normalization and optimizer state.
@@ -145,6 +162,8 @@ superseded. It does not instruct the autonomous researcher and does not replace
   saved in the temporary pool. It is not yet declared the winner.
 
 ## 2026-08-28 — Final paired tournament
+
+- **Status:** Superseded later on 2026-08-28. There is no automatic tournament.
 
 - **Decision:** After training, compare the three finalists and the accepted
   champion on identical episodes: 200 episodes on each of three seeds, extended
@@ -183,6 +202,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
   experiment whenever no noise floor existed.
 
 ## 2026-08-28 — Researcher controls the learning method
+
+- **Status:** Expanded later on 2026-08-28 to include evaluation, runner code,
+  candidate decisions, and both model and code lineages.
 
 - **Decision:** The researcher may change coherent training code and tunable
   parameters, including reward, observations, PPO/SAC choice, neural-network
@@ -232,6 +254,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-08-28 — Version accepted artifacts and preserve negative evidence
 
+- **Status:** Clarified later on 2026-08-28: the accepted model is chosen by the
+  researcher; the runner archives candidates without ranking them.
+
 - **Decision:** Keep the accepted policy artifact and research state under Git;
   candidate training directories remain disposable. Archive the best challenger
   from every completed experiment and retain concise negative results.
@@ -266,3 +291,24 @@ superseded. It does not instruct the autonomous researcher and does not replace
   measurement implementation may evolve while tests preserve the objective.
 - **Reason:** Scientific freedom must exist in executable code, not only in the
   wording of `program.md`.
+
+## 2026-08-28 — Researcher owns evaluation and both lineages
+
+- **Decision:** Training produces a neutral inventory of periodic checkpoints.
+  It performs no development ranking and does not retain an automatic top three.
+- **Decision:** After training, the researcher chooses which candidates or
+  champion to evaluate, with which episode counts, seeds, comparisons, and
+  diagnostics. The runner executes that request exactly. The fixed paired
+  tournament is removed.
+- **Decision:** After measurement, the researcher chooses both the model lineage
+  and the code/configuration lineage (`keep`, `revert`, or `revise`). The runner
+  persists that explicit decision and performs no automatic promotion or rollback.
+- **Decision:** No path whitelist gives the runner scientific authority. The
+  researcher may change training, benchmark, evaluator, comparison, and runner
+  implementation when evidence requires it. The human-defined objective and
+  compute budget remain invariant unless the human explicitly changes them.
+- **Reason:** The runner is an execution mechanism, not a second researcher.
+  Selection and measurement design are part of the scientific method and must
+  remain with the researcher.
+- **Interruption:** Training and requested evaluation plans remain resumable after
+  `Ctrl-C`; completed requested measurements are reused rather than repeated.

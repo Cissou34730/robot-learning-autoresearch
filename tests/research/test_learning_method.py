@@ -5,9 +5,8 @@ from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.rewards import reach_reward as reward_module
 from robot_learning.rewards.reach_reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.train import parallel_ppo_params
-from robot_learning.training.selection_callback import (
-    SelectionCallback,
-    select_top_finalists,
+from robot_learning.training.candidate_checkpoint_callback import (
+    CandidateCheckpointCallback,
 )
 
 
@@ -118,85 +117,28 @@ def test_parallel_env_count_must_be_valid():
         parallel_ppo_params({"n_steps": 1024}, n_envs=0)
 
 
-def test_selection_waits_for_a_completed_rollout_update(monkeypatch, tmp_path):
-    callback = SelectionCallback(
-        output_dir=tmp_path,
-        eval_every_steps=20_000,
-        episodes=50,
-        top_k=3,
-    )
-    evaluations: list[int] = []
-    def record_evaluation():
-        evaluations.append(callback.num_timesteps)
-        callback.last_evaluation_steps = callback.num_timesteps
+def test_candidate_checkpoint_waits_for_a_completed_update(monkeypatch, tmp_path):
+    callback = CandidateCheckpointCallback(output_dir=tmp_path, every_steps=20_000)
+    checkpoints: list[int] = []
 
-    monkeypatch.setattr(callback, "_evaluate_and_save", record_evaluation)
-    monkeypatch.setattr(callback, "_finalize_selection", lambda: None)
+    def record_checkpoint():
+        checkpoints.append(callback.num_timesteps)
+        callback.last_checkpoint_steps = callback.num_timesteps
+
+    monkeypatch.setattr(callback, "_save", record_checkpoint)
 
     callback.num_timesteps = 20_000
     assert callback._on_step()
-    assert evaluations == []
+    assert checkpoints == []
 
     callback.num_timesteps = 21_504
     callback._on_rollout_start()
-    assert evaluations == [21_504]
-    assert callback.next_evaluation == 40_000
+    assert checkpoints == [21_504]
+    assert callback.next_checkpoint == 40_000
 
     callback._on_training_end()
-    assert evaluations == [21_504]
+    assert checkpoints == [21_504]
 
     callback.num_timesteps = 24_576
     callback._on_training_end()
-    assert evaluations == [21_504, 24_576]
-
-
-def test_selection_retains_exactly_the_three_best_checkpoints():
-    entries = [
-        {"rank": [score, 0, 0, 0], "timesteps": score, "path": str(score)}
-        for score in (1, 4, 2, 5, 3)
-    ]
-
-    selected = select_top_finalists(entries, top_k=3)
-
-    assert [item["rank"][0] for item in selected] == [5, 4, 3]
-
-
-def test_equivalent_checkpoints_are_spread_over_training_time():
-    entries = [
-        {
-            "rank": [98, 2, 2, -21 + step / 100_000],
-            "timesteps": step,
-            "path": str(step),
-            "paired_vs_reference": {
-                "net_wins": 0,
-                "exact_p_value": 1.0,
-            },
-        }
-        for step in (20_000, 40_000, 60_000, 80_000, 100_000, 120_000)
-    ]
-
-    selected = select_top_finalists(entries, top_k=3)
-
-    assert [item["timesteps"] for item in selected] == [20_000, 60_000, 120_000]
-
-
-def test_meaningfully_better_checkpoint_precedes_equivalent_ones():
-    equivalent = [
-        {
-            "rank": [98, 2, 2, -21],
-            "timesteps": step,
-            "path": str(step),
-            "paired_vs_reference": {"net_wins": 0, "exact_p_value": 1.0},
-        }
-        for step in (20_000, 60_000, 120_000)
-    ]
-    better = {
-        "rank": [99, 50, 90, -1],
-        "timesteps": 80_000,
-        "path": "better",
-        "paired_vs_reference": {"net_wins": 8, "exact_p_value": 0.01},
-    }
-
-    selected = select_top_finalists([*equivalent, better], top_k=3)
-
-    assert selected[0] is better
+    assert checkpoints == [21_504, 24_576]

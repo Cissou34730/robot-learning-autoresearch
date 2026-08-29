@@ -1,4 +1,4 @@
-"""Paired statistics shared by development selection and final tournaments."""
+"""Paired statistics available for researcher-designed comparisons."""
 
 import math
 

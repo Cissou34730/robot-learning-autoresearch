@@ -4,11 +4,11 @@ import pytest
 
 from research.run_experiment import (
     apply_previous_result_decision,
+    execute_pending_evaluations,
     experiment_family,
     parameter_change_records,
     record_previous_postmortem,
-    summarize_noise_floor,
-    summarize_tournament,
+    summarize_evaluations,
     training_budget,
 )
 from robot_learning.training.comparison import (
@@ -59,8 +59,8 @@ def test_paired_comparison_uses_identical_episode_outcomes():
     assert comparison["exact_p_value"] == pytest.approx(0.03125)
 
 
-def test_tournament_summary_keeps_failed_target_diagnostics():
-    summary = summarize_tournament([evaluation(3000, [True, False])])
+def test_evaluation_summary_keeps_failed_target_diagnostics():
+    summary = summarize_evaluations([evaluation(3000, [True, False])])
 
     assert summary["failure_diagnostics"] == [
         {
@@ -81,17 +81,97 @@ def test_exact_p_value_is_one_without_discordant_episodes():
     assert exact_mcnemar_pvalue(0, 0) == 1.0
 
 
-def test_noise_floor_comes_from_independent_training_replicates():
-    floor = summarize_noise_floor(
-        [
-            {"training_seed": 0, "summary": {"pooled_success_percent": 97.0}},
-            {"training_seed": 1, "summary": {"pooled_success_percent": 98.0}},
-            {"training_seed": 2, "summary": {"pooled_success_percent": 99.0}},
-        ]
+def test_requested_evaluations_resume_without_repeating_completed_work(
+    monkeypatch, tmp_path
+):
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    baseline_path = tmp_path / "BASELINE_PENDING"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 4,
+            "candidates": [
+                {
+                    "name": "checkpoint-100",
+                    "artifact": "archive/checkpoint-100",
+                    "timesteps": 100,
+                    "evaluations": [],
+                }
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 100,
+            "parent_training_steps": 0,
+            "baseline": True,
+            "result": {"index": 4, "change": "baseline", "hypothesis": "measure"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 4,
+                "evaluations": [
+                    {
+                        "candidate": "checkpoint-100",
+                        "episodes": 2,
+                        "seed": 1000,
+                        "label": "first panel",
+                    },
+                    {
+                        "candidate": "checkpoint-100",
+                        "episodes": 2,
+                        "seed": 2000,
+                        "label": "second panel",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr(
+        "research.run_experiment.EVALUATION_REQUEST_PATH", request_path
+    )
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", baseline_path)
+    monkeypatch.setattr("research.run_experiment.append_result", lambda _result: None)
+    monkeypatch.setattr(
+        "research.run_experiment.commit_result", lambda _index, _change: None
     )
 
-    assert floor["pooled_success_range_pp"] == 2.0
-    assert floor["pooled_success_std_pp"] == 1.0
+    calls: list[int] = []
+
+    def interrupt_second(_artifact, seed, **_kwargs):
+        calls.append(seed)
+        if len(calls) == 2:
+            raise KeyboardInterrupt
+        return evaluation(seed, [True, False])
+
+    monkeypatch.setattr(
+        "research.run_experiment.evaluate_artifact", interrupt_second
+    )
+    assert execute_pending_evaluations() == 130
+    assert calls == [1000, 2000]
+
+    request_path.unlink()
+    resumed_calls: list[int] = []
+
+    def finish(_artifact, seed, **_kwargs):
+        resumed_calls.append(seed)
+        return evaluation(seed, [True, True])
+
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", finish)
+    assert execute_pending_evaluations() == 0
+    assert resumed_calls == [2000]
+    final_state = json.loads(state_path.read_text(encoding="utf-8"))
+    candidate = final_state["pending_researcher_decision"]["candidates"][0]
+    assert len(candidate["evaluations"]) == 2
+    assert candidate["summary"]["episodes"] == 4
 
 
 def test_pending_result_requires_an_explicit_researcher_decision():
@@ -114,7 +194,7 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
     candidate.mkdir(parents=True)
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         (candidate / filename).write_bytes(b"artifact")
-    summary = summarize_tournament([evaluation(3000, [True, False])])
+    summary = summarize_evaluations([evaluation(3000, [True, False])])
     state = {
         "accepted_artifact": "accepted",
         "accepted_training_steps": 0,
@@ -156,6 +236,10 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
                 "experiment": 7,
                 "continue_from": "candidate-2",
                 "reason": "It is the most useful measured lineage.",
+                "code": {
+                    "action": "keep",
+                    "reason": "The learning change remains the useful parent.",
+                },
             }
         },
         state,
@@ -168,9 +252,9 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
     assert state["pending_researcher_decision"] is None
 
 
-def test_fresh_challenger_receives_runner_owned_compute_matching():
+def test_runner_uses_the_human_defined_budget_for_all_initializations():
     assert training_budget(120_000, "transfer", False, 720_000) == 120_000
-    assert training_budget(120_000, "fresh", False, 720_000) == 720_000
+    assert training_budget(120_000, "fresh", False, 720_000) == 120_000
     assert training_budget(120_000, "fresh", True, 720_000) == 120_000
 
 

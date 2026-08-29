@@ -3,12 +3,8 @@
   "accepted_metrics": null,
   "accepted_parameters": null,
   "accepted_training_steps": 0,
-  "current_stage": 0,
   "last_experiment": 0,
-  "last_metrics": null,
   "last_verdict": "baseline pending",
-  "noise_floor": null,
   "official_metrics": null,
-  "schema_version": 2,
-  "selection_method_version": 4
+  "schema_version": 2
 }

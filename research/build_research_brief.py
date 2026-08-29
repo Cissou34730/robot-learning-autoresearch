@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import re
-from collections import Counter
 from pathlib import Path
 
 from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
@@ -255,57 +254,14 @@ def _change_details(result: dict) -> str:
 def _experiment_outcome(result: dict) -> str:
     candidate = result.get("candidate_metrics") or {}
     success = candidate.get("pooled_success_percent", candidate.get("success_percent"))
-    paired = None
-    for contender in result.get("tournament", []):
-        if contender.get("kind") == "candidate":
-            paired = contender.get("paired_vs_champion")
-            break
     parts = []
     if success is not None:
         parts.append(f"success {float(success):.2f}%")
-    if paired:
-        parts.append(
-            f"paired wins {paired.get('candidate_wins', '-')}/"
-            f"{paired.get('reference_wins', '-')}, "
-            f"p={paired.get('exact_p_value', '-')}"
-        )
-    if result.get("noise_floor"):
-        parts.append(
-            f"noise range {result['noise_floor']['pooled_success_range_pp']:.3f} pp"
-        )
+    if result.get("requested_evaluations"):
+        parts.append(f"{len(result['requested_evaluations'])} requested measurements")
     if result.get("error"):
         parts.append(_compact(str(result["error"]), 120))
     return "; ".join(parts) or "no measured candidate result"
-
-
-def _calibration_failure_diagnostics(results: list[dict]) -> list[dict]:
-    calibration = next(
-        (
-            result
-            for result in reversed(results)
-            if result.get("calibration_archive") and result.get("status") == "ok"
-        ),
-        None,
-    )
-    if calibration is None:
-        return []
-    path = ROOT / calibration["calibration_archive"] / "calibration.json"
-    if not path.exists():
-        return []
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    diagnostics = [
-        item
-        for replicate in payload.get("replicates", [])
-        for item in replicate.get("summary", {}).get("failure_diagnostics", [])
-    ]
-    counts = Counter(item["episode_seed"] for item in diagnostics)
-    representative = {}
-    for item in diagnostics:
-        representative.setdefault(item["episode_seed"], item)
-    return [
-        {**representative[seed], "replicate_failures": count}
-        for seed, count in counts.most_common(5)
-    ]
 
 
 def render_research_brief() -> str:
@@ -347,16 +303,6 @@ def render_research_brief() -> str:
         if accepted_metrics is not None
         else {}
     )
-    noise_floor = state.get("noise_floor")
-    if noise_floor is None:
-        noise_floor_status = (
-            "not calibrated; the researcher decides when calibration is useful"
-        )
-    else:
-        noise_floor_status = (
-            f"std {noise_floor['pooled_success_std_pp']:.3f} pp; "
-            f"range {noise_floor['pooled_success_range_pp']:.3f} pp"
-        )
     official_metrics = state.get("official_metrics")
     accepted_seed_count = accepted_metrics.get("seed_count") if accepted_metrics else None
     accepted_seed_passes = (
@@ -369,6 +315,38 @@ def render_research_brief() -> str:
         accepted_seed_passes = int(
             float(accepted_metrics.get("success_percent", 0)) >= 98.0
         )
+    pending_evaluation = state.get("pending_evaluation_request")
+    evaluation_lines: list[str] = []
+    if pending_evaluation:
+        evaluation_lines = [
+            "",
+            "## Evaluation design required",
+            "",
+            (
+                f"Experiment {pending_evaluation['experiment']} finished training. "
+                "The runner saved checkpoints but made no ranking or selection."
+            ),
+            "Available candidates:",
+        ]
+        for candidate in pending_evaluation["candidates"]:
+            evaluation_lines.append(
+                f"- `{candidate['name']}` — {int(candidate['timesteps']):,} steps; "
+                f"artifact `{candidate['artifact']}`."
+            )
+        if pending_evaluation.get("champion_available"):
+            evaluation_lines.append("- `champion` — current accepted model lineage.")
+        evaluation_lines.extend(
+            [
+                "",
+                (
+                    "Decide which candidates need measurement, with which episode "
+                    "counts, seeds, labels, and diagnostics. Write "
+                    "`research/evaluation_request.json` and exit. There is no "
+                    "automatic tournament."
+                ),
+            ]
+        )
+
     pending_decision = state.get("pending_researcher_decision")
     decision_lines: list[str] = []
     if pending_decision:
@@ -385,19 +363,40 @@ def render_research_brief() -> str:
             ),
             (
                 "The next proposal must include `previous_result_decision` with "
-                f"`experiment`, `continue_from` ({', '.join(choices)}), and `reason`."
+                f"`experiment`, `continue_from` ({', '.join(choices)}), `reason`, "
+                "and a `code` decision (`keep`, `revert`, or `revise`) with its reason."
+            ),
+            (
+                "The code/configuration parent before that experiment was commit "
+                f"`{pending_decision.get('code_parent_commit', 'unknown')}`."
             ),
         ]
         for candidate in pending_decision["candidates"]:
-            summary = candidate["summary"]
-            progress = summary["failed_episode_progress"]
+            summary = candidate.get("summary")
+            if summary is None:
+                decision_lines.append(
+                    f"- {candidate['name']}: not measured by the requested plan."
+                )
+            else:
+                progress = summary["failed_episode_progress"]
+                decision_lines.append(
+                    f"- {candidate['name']}: pooled success "
+                    f"{summary['pooled_success_percent']:.2f}%; "
+                    f"{summary['episodes']} episodes over {summary['seed_count']} "
+                    f"seed(s); failed hold "
+                    f"{progress['longest_consecutive_steps_mean']:.1f}/"
+                    f"{progress['required_steps']}."
+                )
+        champion_summary = pending_decision.get("champion_summary")
+        if champion_summary is not None:
+            champion_progress = champion_summary["failed_episode_progress"]
             decision_lines.append(
-                f"- {candidate['name']}: pooled success "
-                f"{summary['pooled_success_percent']:.2f}%; "
-                f"seeds passing 98% {summary['seeds_passing_98_percent']}/"
-                f"{summary['seed_count']}; failed hold "
-                f"{progress['longest_consecutive_steps_mean']:.1f}/"
-                f"{progress['required_steps']}."
+                f"- champion: pooled success "
+                f"{champion_summary['pooled_success_percent']:.2f}%; "
+                f"{champion_summary['episodes']} episodes over "
+                f"{champion_summary['seed_count']} seed(s); failed hold "
+                f"{champion_progress['longest_consecutive_steps_mean']:.1f}/"
+                f"{champion_progress['required_steps']}."
             )
 
     lines = [
@@ -419,7 +418,6 @@ def render_research_brief() -> str:
         "## Current status",
         "",
         f"- Evaluation target: {100 * SUCCESS_THRESHOLD:g} cm / {HOLD_SECONDS:g} s",
-        f"- Selection method: v{state.get('selection_method_version', 1)}",
         f"- Accepted success: {accepted_status}",
         (
             f"- Accepted seeds passing 98%: "
@@ -428,12 +426,11 @@ def render_research_brief() -> str:
             + (" (legacy single-seed measurement)" if accepted_metrics and "seed_count" not in accepted_metrics else "")
         ),
         f"- Accepted failed episodes: {accepted_progress.get('failed_episodes', '-')}",
-        f"- Training-seed noise floor: {noise_floor_status}",
         (
-            "- Fixed reported benchmark: pending v3 evaluation"
+            "- Reported result: pending"
             if official_metrics is None
-            else f"- Fixed reported benchmark: {official_metrics['success_percent']:.1f}% "
-            f"on seed {official_metrics['seed']}"
+            else f"- Reported result: "
+            f"{official_metrics.get('pooled_success_percent', official_metrics.get('success_percent', 0)):.1f}%"
         ),
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         (
@@ -448,6 +445,7 @@ def render_research_brief() -> str:
             f"- Last verdict: "
             f"{latest_result['verdict'] if latest_result else state.get('last_verdict', 'none')}"
         ),
+        *evaluation_lines,
         *decision_lines,
         "",
         "## Current parameters",
@@ -524,24 +522,15 @@ def render_research_brief() -> str:
     diagnostics = (
         accepted_metrics.get("failure_diagnostics", []) if accepted_metrics else []
     )
-    calibration_diagnostics = False
-    if not diagnostics:
-        diagnostics = _calibration_failure_diagnostics(results)
-        calibration_diagnostics = bool(diagnostics)
     lines.extend(["", "## Observed failure diagnostics", ""])
     if diagnostics:
         for item in diagnostics[:5]:
-            recurrence = (
-                f", failed in {item['replicate_failures']}/3 unchanged training replicates"
-                if calibration_diagnostics
-                else ""
-            )
             lines.append(
                 f"- seed {item['episode_seed']}: radius "
                 f"{item['target_radius_cm']:.2f} cm, angle "
                 f"{item['target_angle_degrees']:.1f}°, longest hold "
                 f"{item['longest_consecutive_steps']}/100, best window "
-                f"{item['best_window_inside_steps']}/100{recurrence}."
+                f"{item['best_window_inside_steps']}/100."
             )
     else:
         lines.append("Not available yet.")
@@ -567,7 +556,7 @@ def render_research_brief() -> str:
                 "- Do not read full experiment or postmortem history unless the compact "
                 "evidence is insufficient for one specific decision."
             ),
-            "- One experiment, one hypothesis, no subagents.",
+            "- One experiment should test one identifiable hypothesis.",
             "- Record only 5-8 concise postmortem lines.",
         ]
     )

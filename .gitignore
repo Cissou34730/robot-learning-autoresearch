@@ -23,5 +23,6 @@ research/last_evaluation.json
 research/RECOVERY_PENDING
 research/RESTART_PENDING
 research/brief.md
+research/evaluation_request.json
 .pytest-run-temp/
 .pytest-reset-temp/

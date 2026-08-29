@@ -4,14 +4,15 @@ import shutil
 from pathlib import Path
 
 import torch
-from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.training.algorithms import algorithm_class, artifact_algorithm
+from robot_learning.training.candidate_checkpoint_callback import (
+    CandidateCheckpointCallback,
+)
 from robot_learning.training.research_config import load_experiment_config
-from robot_learning.training.selection_callback import SelectionCallback
 from robot_learning.training.viewer_callback import LiveViewerCallback
 
 ACTIVATION_FUNCTIONS = {
@@ -31,7 +32,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-timesteps", type=int, default=None)
     parser.add_argument("--algorithm", choices=("ppo", "sac"), default=None)
     parser.add_argument("--n-envs", type=int, default=None)
-    parser.add_argument("--selection-reference-json", type=Path, default=None)
     parser.add_argument("--view", action="store_true")
     parser.add_argument("--speed", type=float, default=1.0)
     return parser.parse_args()
@@ -128,20 +128,10 @@ def main() -> None:
 
     training = config["training"]
     callbacks = [
-        CheckpointCallback(
-            save_freq=max(int(training["checkpoint_every_steps"]) // n_envs, 1),
-            save_path=str(args.output_dir / "checkpoints"),
-            name_prefix="reach",
-            save_vecnormalize=True,
-            save_replay_buffer=True,
-        ),
-        SelectionCallback(
+        CandidateCheckpointCallback(
             output_dir=args.output_dir,
-            eval_every_steps=int(training["selection_eval_every_steps"]),
-            episodes=int(training["selection_eval_episodes"]),
-            top_k=int(training["selection_top_k"]),
-            reference_metrics_path=args.selection_reference_json,
-        ),
+            every_steps=int(training["checkpoint_every_steps"]),
+        )
     ]
     if args.view:
         callbacks.append(LiveViewerCallback(speed=args.speed))
@@ -193,32 +183,55 @@ def main() -> None:
         last_replay = args.output_dir / "last_replay_buffer.pkl"
         if last_replay.exists():
             shutil.copyfile(last_replay, final_checkpoint / "replay_buffer.pkl")
-        manifest_path = args.output_dir / "selection_manifest.json"
-        if manifest_path.exists():
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            selected_dir = args.output_dir / manifest["finalists"][0]["path"]
-            for finalist in manifest["finalists"]:
-                finalist_dir = args.output_dir / finalist["path"]
-                (finalist_dir / "artifact.json").write_text(
-                    json.dumps(artifact, indent=2, default=str) + "\n",
-                    encoding="utf-8",
-                )
-            shutil.copyfile(selected_dir / "model.zip", args.output_dir / "model.zip")
-            shutil.copyfile(
-                selected_dir / "vecnormalize.pkl",
-                args.output_dir / "vecnormalize.pkl",
+        shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
+        shutil.copyfile(
+            args.output_dir / "last_vecnormalize.pkl",
+            args.output_dir / "vecnormalize.pkl",
+        )
+        if last_replay.exists():
+            shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
+
+        candidates: list[dict] = []
+        pool_dir = args.output_dir / "candidate_pool"
+        for candidate_dir in sorted(pool_dir.glob("checkpoint-*")):
+            try:
+                steps = int(candidate_dir.name.removeprefix("checkpoint-"))
+            except ValueError:
+                continue
+            if not all(
+                (candidate_dir / filename).exists()
+                for filename in ("model.zip", "vecnormalize.pkl")
+            ):
+                continue
+            candidate_artifact = {**artifact, "timesteps": steps, "completed": True}
+            (candidate_dir / "artifact.json").write_text(
+                json.dumps(candidate_artifact, indent=2, default=str) + "\n",
+                encoding="utf-8",
             )
-            selected_replay = selected_dir / "replay_buffer.pkl"
-            if selected_replay.exists():
-                shutil.copyfile(selected_replay, args.output_dir / "replay_buffer.pkl")
-        else:
-            shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
-            shutil.copyfile(
-                args.output_dir / "last_vecnormalize.pkl",
-                args.output_dir / "vecnormalize.pkl",
+            candidates.append(
+                {
+                    "name": f"checkpoint-{steps}",
+                    "timesteps": steps,
+                    "path": candidate_dir.relative_to(args.output_dir).as_posix(),
+                }
             )
-            if last_replay.exists():
-                shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
+
+        final_steps = int(model.num_timesteps)
+        if not any(item["timesteps"] == final_steps for item in candidates):
+            candidates.append(
+                {
+                    "name": "final",
+                    "timesteps": final_steps,
+                    "path": "final_checkpoint",
+                }
+            )
+        (args.output_dir / "candidate_manifest.json").write_text(
+            json.dumps(
+                {"schema_version": 1, "candidates": candidates}, indent=2
+            )
+            + "\n",
+            encoding="utf-8",
+        )
         print(f"ARTIFACT_DIR: {args.output_dir.resolve()}")
 
 

@@ -6,7 +6,6 @@ import os
 import re
 import shutil
 import signal
-import statistics
 import subprocess
 import sys
 import tempfile
@@ -21,7 +20,6 @@ from robot_learning.benchmark.spec import (
     HOLD_SECONDS,
     SUCCESS_THRESHOLD,
 )
-from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.research_config import (
     load_experiment_config,
     merge_param_overrides,
@@ -34,6 +32,7 @@ RESEARCH_DIR = ROOT / "research"
 LOG_PATH = RESEARCH_DIR / "EXPERIMENTS.md"
 RESULTS_PATH = RESEARCH_DIR / "results.jsonl"
 PROPOSAL_PATH = RESEARCH_DIR / "proposal.json"
+EVALUATION_REQUEST_PATH = RESEARCH_DIR / "evaluation_request.json"
 STATE_PATH = RESEARCH_DIR / "research_state.json"
 BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
 RECOVERY_PENDING_PATH = RESEARCH_DIR / "RECOVERY_PENDING"
@@ -42,39 +41,15 @@ GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
 
-MUTABLE_CODE_PATHS = ("robot_learning", "tests/research")
-MUTABLE_PATHS = (
-    "robot_learning",
-    "research",
-    "tests",
-    "pyproject.toml",
-    "uv.lock",
-)
-IMMUTABLE_PATHS = (
-    "robot_learning/benchmark/spec.py",
-    "robot_learning/environments/reach_env.py",
-    "robot_learning/evaluate.py",
-    "robot_learning/robots",
-    "research/run_experiment.py",
-    "run_research.ps1",
-    "tests/benchmark/test_task_contract.py",
-)
-
 TIMESTEPS = 120_000
 TRAIN_SEED = 0
-CALIBRATION_TRAIN_SEEDS = (0, 1, 2)
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
-SELECTION_METHOD_VERSION = 4
-# Development selection uses seed 2000 and the immutable reported benchmark uses
-# EVALUATION_SEED (1000). Tournament data must be disjoint from both.
-TOURNAMENT_SEEDS = (3000, 5000, 7000)
-PAIRED_SIGNIFICANCE_LEVEL = 0.05
-SELECTION_SEED = 2000
+EVALUATION_SUMMARY_VERSION = 1
 
 
 def announce(message: str) -> None:
@@ -98,18 +73,7 @@ def training_budget(
     baseline: bool,
     accepted_training_steps: int,
 ) -> int:
-    if initialization == "fresh" and not baseline:
-        return max(standard_timesteps, accepted_training_steps)
     return standard_timesteps
-
-
-def comparison_label(entry: dict) -> str:
-    comparison = entry.get("paired_vs_reference")
-    if comparison is None:
-        return "time-diverse"
-    if comparison["exact_p_value"] > PAIRED_SIGNIFICANCE_LEVEL:
-        return "equivalent"
-    return "better" if comparison["net_wins"] > 0 else "worse"
 
 
 def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
@@ -235,31 +199,16 @@ def status_paths(paths: tuple[str, ...]) -> list[str]:
     return [line[3:].strip().strip('"') for line in output.splitlines() if line]
 
 
-def path_is_within(path: str, roots: tuple[str, ...]) -> bool:
-    normalized = path.replace("\\", "/")
-    return any(
-        normalized == root or normalized.startswith(root.rstrip("/") + "/")
-        for root in roots
-    )
-
-
 def assert_research_surface() -> list[str]:
     changed = status_paths((".",))
-    allowed_control = {"research/proposal.json"}
-    protected = [path for path in changed if path_is_within(path, IMMUTABLE_PATHS)]
-    if protected:
-        raise ValueError(f"changes alter the fixed objective or runner: {protected}")
-    unexpected = [
-        path
-        for path in changed
-        if path not in allowed_control and not path_is_within(path, MUTABLE_PATHS)
-    ]
-    if unexpected:
-        raise ValueError(f"changes outside the research surface: {unexpected}")
+    control_files = {
+        "research/proposal.json",
+        "research/evaluation_request.json",
+    }
     return [
         path
         for path in changed
-        if path not in allowed_control and path_is_within(path, MUTABLE_PATHS)
+        if path.replace("\\", "/") not in control_files
     ]
 
 
@@ -516,12 +465,12 @@ def evaluate_artifact(
     return metrics
 
 
-def summarize_tournament(
+def summarize_evaluations(
     evaluations: list[dict],
-    selection_method_version: int = SELECTION_METHOD_VERSION,
+    summary_version: int = EVALUATION_SUMMARY_VERSION,
 ) -> dict:
     if not evaluations:
-        raise ValueError("a tournament summary requires at least one evaluation")
+        raise ValueError("an evaluation summary requires at least one evaluation")
     total_episodes = sum(int(item["episodes"]) for item in evaluations)
     total_successes = sum(
         float(item["success_percent"]) * int(item["episodes"]) / 100
@@ -565,7 +514,7 @@ def summarize_tournament(
     pooled_success = 100 * total_successes / total_episodes
     return {
         "schema_version": 1,
-        "selection_method_version": selection_method_version,
+        "evaluation_summary_version": summary_version,
         "episodes": total_episodes,
         "seed_count": len(evaluations),
         "seed_success_percent": seed_success,
@@ -592,78 +541,25 @@ def summarize_tournament(
     }
 
 
-def summarize_noise_floor(replicates: list[dict]) -> dict:
-    scores = [float(item["summary"]["pooled_success_percent"]) for item in replicates]
-    if len(scores) < 2:
-        raise ValueError("noise calibration requires at least two training replicates")
-    return {
-        "training_seeds": [int(item["training_seed"]) for item in replicates],
-        "pooled_success_percent": scores,
-        "pooled_success_mean_percent": statistics.mean(scores),
-        "pooled_success_std_pp": statistics.stdev(scores),
-        "pooled_success_range_pp": max(scores) - min(scores),
-    }
-
-
-def finalist_directories(candidate_dir: Path) -> list[Path]:
-    manifest_path = candidate_dir / "selection_manifest.json"
+def candidate_directories(candidate_dir: Path) -> list[Path]:
+    manifest_path = candidate_dir / "candidate_manifest.json"
     if not manifest_path.exists():
-        return [candidate_dir]
+        return [candidate_dir / "final_checkpoint"]
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    finalists = [candidate_dir / item["path"] for item in manifest["finalists"]]
-    if not finalists:
-        raise RuntimeError("training must produce at least one finalist")
-    for finalist in finalists:
+    candidates = [candidate_dir / item["path"] for item in manifest["candidates"]]
+    if not candidates:
+        raise RuntimeError("training must produce at least one candidate")
+    for candidate in candidates:
         for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-            if not (finalist / filename).exists():
-                raise RuntimeError(f"finalist is incomplete: {finalist / filename}")
-    return finalists
-
-
-def evaluate_tournament(
-    contenders: list[dict],
-    selection_method_version: int,
-) -> list[dict]:
-    seeds = list(TOURNAMENT_SEEDS)
-
-    def evaluate_missing(active_seeds: list[int]) -> None:
-        for contender in contenders:
-            completed = {item["seed"] for item in contender["evaluations"]}
-            for seed in active_seeds:
-                if seed not in completed:
-                    contender["evaluations"].append(
-                        evaluate_artifact(
-                            contender["path"],
-                            seed,
-                            label=f"tournament {contender['name']} seed {seed}",
-                        )
-                    )
-            contender["summary"] = summarize_tournament(
-                contender["evaluations"], selection_method_version
-            )
-
-    def attach_pairing() -> None:
-        champion = next(
-            (item for item in contenders if item["kind"] == "champion"), None
-        )
-        if champion is None:
-            return
-        for contender in contenders:
-            if contender["kind"] == "candidate":
-                contender["paired_vs_champion"] = paired_comparison(
-                    contender["evaluations"], champion["evaluations"]
-                )
-
-    evaluate_missing(seeds)
-    attach_pairing()
-    return contenders
+            if not (candidate / filename).exists():
+                raise RuntimeError(f"candidate is incomplete: {candidate / filename}")
+    return candidates
 
 
 def archive_candidates(
     index: int,
     contenders: list[dict],
     config: dict,
-    tournament: list[dict],
 ) -> list[dict]:
     destination = RESEARCH_DIR / "checkpoints" / "challengers" / f"experiment-{index}"
     if destination.exists():
@@ -679,53 +575,179 @@ def archive_candidates(
             {
                 "name": contender["name"],
                 "artifact": str(artifact.relative_to(ROOT)),
-                "summary": contender["summary"],
+                "timesteps": int(contender["timesteps"]),
+                "evaluations": [],
             }
         )
     atomic_write_json(destination / "parameters.json", config)
     atomic_write_json(
-        destination / "evaluation.json",
+        destination / "inventory.json",
         {
             "schema_version": 1,
             "candidates": archived,
-            "contenders": [
-                {
-                    "name": item["name"],
-                    "kind": item["kind"],
-                    "summary": item["summary"],
-                    "paired_vs_champion": item.get("paired_vs_champion"),
-                }
-                for item in tournament
-            ],
         },
     )
     return archived
 
 
-def archive_calibration(index: int, replicates: list[dict], noise_floor: dict) -> Path:
-    destination = RESEARCH_DIR / "checkpoints" / "calibrations" / f"experiment-{index}"
-    if destination.exists():
-        raise RuntimeError(f"calibration archive already exists: {destination}")
-    destination.mkdir(parents=True)
-    for replicate in replicates:
-        copy_artifact(
-            replicate["path"], destination / f"seed-{replicate['training_seed']}"
+def execute_pending_evaluations() -> int:
+    state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    pending = state.get("pending_evaluation_request")
+    if not isinstance(pending, dict):
+        raise TypeError("there is no trained experiment awaiting evaluation")
+    if EVALUATION_REQUEST_PATH.exists():
+        request = json.loads(EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        pending["evaluation_plan"] = request
+        pending.setdefault("partial_evaluations", [])
+        atomic_write_json(STATE_PATH, state)
+    else:
+        request = pending.get("evaluation_plan")
+        if not isinstance(request, dict):
+            print("ERROR: research/evaluation_request.json not found.")
+            return 1
+    experiment = int(pending["experiment"])
+    if int(request.get("experiment", -1)) != experiment:
+        raise ValueError("evaluation request references the wrong experiment")
+    requested = request.get("evaluations")
+    if not isinstance(requested, list):
+        raise TypeError("evaluation request requires an evaluations list")
+
+    candidates = pending["candidates"]
+    for candidate in candidates:
+        candidate["evaluations"] = []
+    available = {item["name"]: item for item in candidates}
+    if pending.get("champion_available"):
+        available["champion"] = {
+            "name": "champion",
+            "artifact": state["accepted_artifact"],
+            "evaluations": [],
+        }
+
+    executed: list[dict] = list(pending.get("partial_evaluations", []))
+    for item in executed:
+        contender = available.get(item["candidate"])
+        if contender is not None:
+            contender.setdefault("evaluations", []).append(item["metrics"])
+
+    def request_key(name: str, episodes: int, seed: int, label: str) -> tuple:
+        return name, episodes, seed, label
+
+    completed_keys = {
+        request_key(
+            item["candidate"],
+            int(item["episodes"]),
+            int(item["seed"]),
+            item["label"],
         )
-    atomic_write_json(
-        destination / "calibration.json",
-        {
-            "schema_version": 1,
-            "noise_floor": noise_floor,
-            "replicates": [
+        for item in executed
+    }
+    try:
+        for number, spec in enumerate(requested, start=1):
+            if not isinstance(spec, dict):
+                raise TypeError("each requested evaluation must be an object")
+            name = str(spec.get("candidate", "")).strip()
+            contender = available.get(name)
+            if contender is None:
+                raise ValueError(
+                    f"unknown evaluation candidate {name!r}; "
+                    f"choose from {sorted(available)}"
+                )
+            episodes = int(spec.get("episodes", EVALUATION_EPISODES))
+            seed = int(spec.get("seed", EVALUATION_SEED))
+            if episodes < 1:
+                raise ValueError("evaluation episodes must be positive")
+            label = str(spec.get("label", f"requested evaluation {number}: {name}"))
+            key = request_key(name, episodes, seed, label)
+            if key in completed_keys:
+                announce(f"[evaluation] already complete; reusing {label}")
+                continue
+            output_path = CANDIDATE_ROOT / (
+                f"evaluation-experiment-{experiment}-{number}.json"
+            )
+            metrics = evaluate_artifact(
+                ROOT / contender["artifact"],
+                seed,
+                label=label,
+                episodes=episodes,
+                output_path=output_path,
+            )
+            output_path.unlink(missing_ok=True)
+            clean_metrics = metrics_without_artifact_path([metrics])[0]
+            contender.setdefault("evaluations", []).append(clean_metrics)
+            executed.append(
                 {
-                    "training_seed": item["training_seed"],
-                    "summary": item["summary"],
+                    "candidate": name,
+                    "episodes": episodes,
+                    "seed": seed,
+                    "label": label,
+                    "metrics": clean_metrics,
                 }
-                for item in replicates
-            ],
-        },
+            )
+            completed_keys.add(key)
+            pending["partial_evaluations"] = executed
+            atomic_write_json(STATE_PATH, state)
+    except KeyboardInterrupt:
+        announce(
+            "[runner] Evaluation request paused. Completed measurements remain "
+            "recorded in the pending request."
+        )
+        pending["partial_evaluations"] = executed
+        atomic_write_json(STATE_PATH, state)
+        return 130
+
+    for candidate in candidates:
+        evaluations = candidate.get("evaluations", [])
+        candidate["summary"] = (
+            summarize_evaluations(evaluations)
+            if evaluations
+            else None
+        )
+
+    champion_evaluations = available.get("champion", {}).get("evaluations", [])
+    champion_summary = (
+        summarize_evaluations(champion_evaluations)
+        if champion_evaluations
+        else None
     )
-    return destination
+
+    result = pending["result"]
+    result.update(
+        {
+            "status": "ok",
+            "verdict": "measured as requested; awaiting researcher analysis",
+            "decision_pending": True,
+            "candidates": candidates,
+            "requested_evaluations": executed,
+        }
+    )
+    measured = [item for item in candidates if item.get("summary") is not None]
+    if measured:
+        primary = measured[0]["summary"]
+        result["candidate_metrics"] = primary
+        result["candidate_success_percent"] = primary["pooled_success_percent"]
+
+    state["pending_researcher_decision"] = {
+        "experiment": experiment,
+        "candidates": candidates,
+        "champion_available": bool(pending.get("champion_available")),
+        "champion_summary": champion_summary,
+        "parameters": pending["parameters"],
+        "initialization": pending["initialization"],
+        "training_budget_steps": pending["training_budget_steps"],
+        "parent_training_steps": pending["parent_training_steps"],
+        "code_parent_commit": pending.get("code_parent_commit"),
+    }
+    state["pending_evaluation_request"] = None
+    state["last_experiment"] = experiment
+    state["last_verdict"] = result["verdict"]
+    if pending.get("baseline"):
+        BASELINE_PENDING_PATH.unlink(missing_ok=True)
+    atomic_write_json(STATE_PATH, state)
+    append_result(result)
+    EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
+    commit_result(experiment, str(result["change"]))
+    announce("[result] requested evaluations complete; researcher analysis required")
+    return 0
 
 
 def metrics_without_artifact_path(evaluations: list[dict]) -> list[dict]:
@@ -740,7 +762,6 @@ def train_candidate(
     timesteps: int,
     seed: int,
     resume: Path | None,
-    selection_reference_path: Path | None = None,
     label: str = "candidate training",
     continue_timesteps: bool = False,
     target_timesteps: int | None = None,
@@ -762,10 +783,6 @@ def train_candidate(
         command.append("--continue-timesteps")
     if target_timesteps is not None:
         command.extend(["--target-timesteps", str(target_timesteps)])
-    if selection_reference_path is not None:
-        command.extend(
-            ["--selection-reference-json", str(selection_reference_path)]
-        )
     train_log = RESEARCH_DIR / "last_train.log"
     started = time.monotonic()
     announce(
@@ -783,7 +800,6 @@ def train_candidate(
             text=True,
             **process_group_options(),
         )
-        last_selection: tuple | None = None
         last_steps: int | None = None
         last_progress_at = started
         try:
@@ -821,32 +837,6 @@ def train_candidate(
                         f"({progress:.0f}%) | {format_duration(elapsed)} elapsed | "
                         f"ETA ~{format_duration(eta)}"
                     )
-                selection_path = output_dir / "selection_update.json"
-                if selection_path.exists():
-                    selection = json.loads(selection_path.read_text(encoding="utf-8"))
-                    selection_metrics = selection["metrics"]
-                    failure_progress = selection_metrics["failed_episode_progress"]
-                    paired = selection.get("paired_vs_reference")
-                    current_selection = (
-                        int(selection["timesteps"]),
-                        str(selection["status"]),
-                        float(selection_metrics["success_percent"]),
-                        int(failure_progress["failed_episodes"]),
-                        int(paired["candidate_wins"]) if paired else 0,
-                        int(paired["reference_wins"]) if paired else 0,
-                        float(paired["exact_p_value"]) if paired else 1.0,
-                    )
-                    if current_selection != last_selection:
-                        announce(
-                            f"[selection] {current_selection[0]:,} steps | "
-                            f"{current_selection[1]} | "
-                            f"success: {current_selection[2]:.1f}% | "
-                            f"failures: {current_selection[3]} | "
-                            f"paired wins candidate/reference: "
-                            f"{current_selection[4]}/{current_selection[5]} | "
-                            f"p={current_selection[6]:.3f}"
-                        )
-                        last_selection = current_selection
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
                     announce("[train] no progress for 30 minutes; stopping.")
@@ -867,14 +857,6 @@ def train_candidate(
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         if not (output_dir / filename).exists():
             raise RuntimeError(f"training output is incomplete: {filename}")
-    manifest_path = output_dir / "selection_manifest.json"
-    if manifest_path.exists():
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        finalists = ", ".join(
-            f"{item['timesteps']:,} ({comparison_label(item)})"
-            for item in manifest["finalists"]
-        )
-        announce(f"[selection] final tournament checkpoints: {finalists}")
     announce(
         f"[train] {label} complete in {format_duration(time.monotonic() - started)}"
     )
@@ -894,13 +876,18 @@ def copy_artifact(source: Path, destination: Path) -> None:
 
 def copy_candidate_outputs(source: Path, destination: Path) -> None:
     copy_artifact(source, destination)
-    manifest_path = source / "selection_manifest.json"
+    final_checkpoint = source / "final_checkpoint"
+    if final_checkpoint.exists():
+        copy_artifact(final_checkpoint, destination / "final_checkpoint")
+    manifest_path = source / "candidate_manifest.json"
     if not manifest_path.exists():
         return
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    shutil.copyfile(manifest_path, destination / "selection_manifest.json")
-    for finalist in manifest["finalists"]:
-        relative = Path(finalist["path"])
+    shutil.copyfile(manifest_path, destination / "candidate_manifest.json")
+    for candidate in manifest["candidates"]:
+        relative = Path(candidate["path"])
+        if relative == Path("final_checkpoint"):
+            continue
         shutil.copytree(source / relative, destination / relative)
 
 
@@ -971,6 +958,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         artifact = ROOT / state["accepted_artifact"]
         if not artifact.exists():
             raise ValueError("there is no existing champion to continue from")
+        selected_summary = state.get("accepted_metrics")
     else:
         selected = next(
             (
@@ -988,7 +976,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         artifact = ROOT / selected["artifact"]
         copy_artifact(artifact, ACCEPTED_DIR)
         state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
-        selected_summary = selected["summary"]
+        selected_summary = selected.get("summary")
         state["accepted_metrics"] = selected_summary
         state["accepted_parameters"] = pending["parameters"]
         if pending["initialization"] == "transfer":
@@ -998,22 +986,30 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         else:
             state["accepted_training_steps"] = int(pending["training_budget_steps"])
 
-    official_metrics = evaluate_artifact(
-        artifact, EVALUATION_SEED, label="researcher-selected lineage benchmark"
-    )
-    state["official_metrics"] = metrics_without_artifact_path([official_metrics])[0]
+    code_decision = decision.get("code")
+    if not isinstance(code_decision, dict):
+        raise TypeError(
+            "previous_result_decision requires a code decision with action and reason"
+        )
+    code_action = str(code_decision.get("action", "")).strip().lower()
+    code_reason = str(code_decision.get("reason", "")).strip()
+    if code_action not in {"keep", "revert", "revise"} or not code_reason:
+        raise ValueError("code decision must be keep, revert, or revise with a reason")
+    state["official_metrics"] = selected_summary
     state["last_lineage_decision"] = {
         "experiment": int(pending["experiment"]),
         "continue_from": selected_name,
         "reason": reason,
+        "code": {"action": code_action, "reason": code_reason},
+        "code_parent_commit": pending.get("code_parent_commit"),
     }
     state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {selected_name}"
     goal_reached = bool(
         selected_summary
-        and selected_summary["seeds_passing_98_percent"]
-        == selected_summary["seed_count"]
-        and official_metrics["success_percent"] >= FINAL_SUCCESS_PERCENT
+        and int(selected_summary.get("episodes", 0)) >= EVALUATION_EPISODES
+        and float(selected_summary.get("pooled_success_percent", 0.0))
+        >= FINAL_SUCCESS_PERCENT
     )
     if goal_reached:
         GOAL_PATH.write_text(
@@ -1028,19 +1024,18 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
 
 
 def commit_result(index: int, change: str) -> None:
+    control_files = {
+        "research/proposal.json",
+        "research/evaluation_request.json",
+    }
     paths = [
-        "research/EXPERIMENTS.md",
-        "research/results.jsonl",
-        "research/research_state.json",
-        "research/current_params.json",
-        "research/postmortems.md",
-        "research/checkpoints",
+        path
+        for path in status_paths((".",))
+        if path.replace("\\", "/") not in control_files
     ]
-    if BASELINE_PENDING_PATH.exists() or git("ls-files", "research/BASELINE_PENDING").strip():
-        paths.append("research/BASELINE_PENDING")
-    paths.extend(MUTABLE_PATHS)
     stage_existing_or_tracked(paths)
-    git("reset", "--", "research/proposal.json")
+    for control_file in control_files:
+        git("reset", "--", control_file)
     if not git("diff", "--cached", "--name-only").strip():
         return
     git("commit", "-m", f"exp {index}: {change}")
@@ -1071,7 +1066,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     parser.add_argument("--reuse-candidate", type=Path, default=None)
+    parser.add_argument("--evaluate-pending", action="store_true")
     args = parser.parse_args()
+    if args.evaluate_pending:
+        return execute_pending_evaluations()
     if not PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
         return 1
@@ -1088,7 +1086,7 @@ def main() -> int:
     raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     decision_pending = raw_state.get("pending_researcher_decision") is not None
     state = load_state(
-        allow_unmeasured=baseline or decision_pending,
+        allow_unmeasured=True,
         allow_missing_artifact=fresh_baseline or decision_pending,
     )
     if decision_pending:
@@ -1105,7 +1103,7 @@ def main() -> int:
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
-    selection_reference_path: Path | None = None
+    code_parent_commit = git("rev-parse", "HEAD").strip()
     code_changes: list[str] = []
     preserve_proposal = False
     reused_candidate: Path | None = None
@@ -1132,29 +1130,12 @@ def main() -> int:
     try:
         code_changes = assert_research_surface()
         result["code_changes"] = code_changes
-        if experiment_kind not in {"training", "method", "calibration"}:
-            raise ValueError("experiment kind must be training, method, or calibration")
-        if baseline and experiment_kind != "training":
-            raise ValueError("a baseline must be a training experiment")
-        if experiment_kind == "calibration" and (parameter_overrides or code_changes):
-            raise ValueError("A/A calibration requires an unchanged training recipe")
         if baseline and (parameter_overrides or code_changes):
             raise ValueError("baseline requires an unchanged research method")
-        if (
-            not baseline
-            and experiment_kind != "calibration"
-            and not parameter_overrides
-            and not code_changes
-        ):
+        if not baseline and not parameter_overrides and not code_changes:
             raise ValueError("experiment contains no research change")
         if initialization not in {"transfer", "fresh"}:
             raise ValueError("initialization must be transfer or fresh")
-        if (
-            initialization == "transfer"
-            and parameter_overrides
-            and parameter_overrides.get("policy")
-        ):
-            raise ValueError("policy architecture changes require fresh initialization")
 
         record_previous_postmortem(proposal, baseline=baseline)
         if parameter_overrides:
@@ -1174,7 +1155,11 @@ def main() -> int:
         )
         if code_changes:
             announce("[checks] running research-surface checks")
-            run_module("ruff", "check", *MUTABLE_CODE_PATHS)
+            python_changes = [
+                path for path in code_changes if path.endswith(".py") and (ROOT / path).exists()
+            ]
+            if python_changes:
+                run_module("ruff", "check", *python_changes)
             run_module(
                 "pytest",
                 "-q",
@@ -1182,14 +1167,6 @@ def main() -> int:
                 str(ROOT / ".pytest-run-temp"),
             )
             announce("[checks] passed")
-
-        accepted_metrics = state.get("accepted_metrics")
-        if accepted_metrics is None and not fresh_baseline:
-            accepted_metrics = evaluate_artifact(
-                accepted_dir, label="accepted-policy baseline"
-            )
-            state["accepted_metrics"] = accepted_metrics
-            state["accepted_parameters"] = previous_config
 
         effective_config = load_experiment_config()
         effective_timesteps = training_budget(
@@ -1199,88 +1176,8 @@ def main() -> int:
             int(state.get("accepted_training_steps", args.timesteps)),
         )
         result["training_budget_steps"] = effective_timesteps
-        if initialization == "fresh" and not fresh_baseline:
-            announce(
-                "[training plan] fresh initialization receives the fixed "
-                f"compute-matched budget: {effective_timesteps:,} steps"
-            )
-        else:
-            announce(f"[training plan] {effective_timesteps:,} steps")
+        announce(f"[training plan] {effective_timesteps:,} steps")
         resume = accepted_dir / "model.zip" if initialization == "transfer" else None
-        if not fresh_baseline:
-            selection_reference_path = (
-                CANDIDATE_ROOT / f"selection-reference-experiment-{index}.json"
-            )
-            selection_reference_path.unlink(missing_ok=True)
-            evaluate_artifact(
-                accepted_dir,
-                SELECTION_SEED,
-                label="development-panel champion reference",
-                episodes=int(effective_config["training"]["selection_eval_episodes"]),
-                output_path=selection_reference_path,
-            )
-
-        if experiment_kind == "calibration":
-            if initialization != "transfer":
-                raise ValueError("A/A calibration must start each replicate from the champion")
-            replicates: list[dict] = []
-            for training_seed in CALIBRATION_TRAIN_SEEDS:
-                replicate_dir = CANDIDATE_ROOT / (
-                    f"experiment-{index}-calibration-seed-{training_seed}"
-                )
-                if replicate_dir.exists():
-                    remove_candidate_dir(replicate_dir)
-                created_candidate_dirs.append(replicate_dir)
-                train_candidate(
-                    replicate_dir,
-                    effective_timesteps,
-                    training_seed,
-                    resume,
-                    selection_reference_path,
-                    label=f"A/A replicate {training_seed + 1}/{len(CALIBRATION_TRAIN_SEEDS)}",
-                )
-                replicates.append(
-                    {
-                        "name": f"training-seed-{training_seed}",
-                        "kind": "calibration",
-                        "training_seed": training_seed,
-                        "path": replicate_dir / "final_checkpoint",
-                        "evaluations": [],
-                    }
-                )
-            calibration_tournament = evaluate_tournament(
-                replicates,
-                int(state.get("selection_method_version", SELECTION_METHOD_VERSION)),
-            )
-            noise_floor = summarize_noise_floor(calibration_tournament)
-            calibration_archive = archive_calibration(
-                index, calibration_tournament, noise_floor
-            )
-            verdict = "calibration recorded"
-            state.update(
-                {
-                    "noise_floor": noise_floor,
-                    "last_experiment": index,
-                    "last_verdict": verdict,
-                }
-            )
-            result.update(
-                {
-                    "status": "ok",
-                    "verdict": verdict,
-                    "noise_floor": noise_floor,
-                    "calibration_archive": str(calibration_archive.relative_to(ROOT)),
-                }
-            )
-            atomic_write_json(STATE_PATH, state)
-            append_result(result)
-            commit_result(index, change)
-            announce(
-                "[calibration] training-seed noise floor: "
-                f"std {noise_floor['pooled_success_std_pp']:.3f} pp | "
-                f"range {noise_floor['pooled_success_range_pp']:.3f} pp"
-            )
-            return 0
 
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
@@ -1321,7 +1218,6 @@ def main() -> int:
                         remaining_timesteps,
                         TRAIN_SEED,
                         reusable / "final_checkpoint" / "model.zip",
-                        selection_reference_path,
                         label=(
                             "resumed baseline training"
                             if baseline
@@ -1337,67 +1233,32 @@ def main() -> int:
                 effective_timesteps,
                 TRAIN_SEED,
                 resume,
-                selection_reference_path,
                 label="baseline training" if baseline else "candidate training",
-            )
-        runtime_benchmark_changes = status_paths(IMMUTABLE_PATHS)
-        if runtime_benchmark_changes:
-            raise RuntimeError(
-                "training modified protected benchmark files: "
-                f"{runtime_benchmark_changes}"
             )
         contenders = [
             {
-                "name": f"candidate-{number}",
+                "name": path.name,
                 "kind": "candidate",
                 "path": path,
+                "timesteps": int(
+                    json.loads(
+                        (path / "artifact.json").read_text(encoding="utf-8")
+                    )["timesteps"]
+                ),
                 "evaluations": [],
             }
-            for number, path in enumerate(finalist_directories(candidate_dir), start=1)
-        ]
-        if not fresh_baseline:
-            contenders.append(
-                {
-                    "name": "champion",
-                    "kind": "champion",
-                    "path": accepted_dir,
-                    "evaluations": [],
-                }
-            )
-        selection_method_version = int(
-            state.get("selection_method_version", SELECTION_METHOD_VERSION)
-        )
-        noise_floor_pp = float(
-            (state.get("noise_floor") or {}).get("pooled_success_std_pp", 0.0)
-        )
-        tournament = evaluate_tournament(contenders, selection_method_version)
-        candidate_contenders = [
-            item for item in tournament if item["kind"] == "candidate"
+            for path in candidate_directories(candidate_dir)
         ]
         archived_candidates = archive_candidates(
-            index, candidate_contenders, effective_config, tournament
+            index, contenders, effective_config
         )
-        primary_candidate = archived_candidates[0]
-        verdict = "measured; awaiting researcher decision"
-
-        tournament_result = [
-            {
-                "name": item["name"],
-                "kind": item["kind"],
-                "summary": item["summary"],
-                "paired_vs_champion": item.get("paired_vs_champion"),
-                "evaluations": metrics_without_artifact_path(item["evaluations"]),
-            }
-            for item in tournament
-        ]
+        verdict = "trained; awaiting researcher evaluation request"
 
         state.update(
             {
-                "selection_method_version": selection_method_version,
                 "last_experiment": index,
                 "last_verdict": verdict,
-                "last_metrics": primary_candidate["summary"],
-                "pending_researcher_decision": {
+                "pending_evaluation_request": {
                     "experiment": index,
                     "candidates": archived_candidates,
                     "champion_available": not fresh_baseline,
@@ -1407,35 +1268,17 @@ def main() -> int:
                     "parent_training_steps": int(
                         state.get("accepted_training_steps", 0)
                     ),
+                    "baseline": baseline,
+                    "code_parent_commit": code_parent_commit,
+                    "result": result,
                 },
             }
         )
-        result.update(
-            {
-                "status": "ok",
-                "verdict": verdict,
-                "decision_pending": True,
-                "selection_method_version": selection_method_version,
-                "candidate_metrics": primary_candidate["summary"],
-                "candidate_success_percent": primary_candidate["summary"][
-                    "pooled_success_percent"
-                ],
-                "candidate_seeds_passed": (
-                    f"{primary_candidate['summary']['seeds_passing_98_percent']}/"
-                    f"{primary_candidate['summary']['seed_count']}"
-                ),
-                "candidates": archived_candidates,
-                "noise_floor_pp": noise_floor_pp,
-                "tournament": tournament_result,
-            }
-        )
-        if baseline:
-            BASELINE_PENDING_PATH.unlink(missing_ok=True)
+        result.update({"status": "trained", "verdict": verdict})
         if args.reuse_candidate is not None:
             RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         RESTART_PENDING_PATH.unlink(missing_ok=True)
         atomic_write_json(STATE_PATH, state)
-        append_result(result)
         commit_result(index, change)
         announce(f"[result] {verdict}")
     except KeyboardInterrupt:
@@ -1491,8 +1334,6 @@ def main() -> int:
                 remove_candidate_dir(cleanup_target)
             except OSError as cleanup_error:
                 announce(f"[runner] WARNING: candidate cleanup failed: {cleanup_error}")
-        if selection_reference_path is not None:
-            selection_reference_path.unlink(missing_ok=True)
         if (
             reused_candidate is not None
             and not RECOVERY_PENDING_PATH.exists()

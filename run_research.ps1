@@ -28,27 +28,20 @@ function Save-ResearchMemory {
     }
 }
 
-function Assert-BenchmarkIntegrity {
-    $protected = @(
-        "robot_learning/benchmark/spec.py",
-        "robot_learning/environments/reach_env.py",
-        "robot_learning/evaluate.py",
-        "robot_learning/robots",
-        "research/run_experiment.py",
-        "run_research.ps1",
-        "tests/benchmark/test_task_contract.py"
-    )
-    $changes = git status --porcelain --untracked-files=all -- $protected
-    if ($changes) {
-        throw "The researcher modified protected benchmark files. Nothing was run.`n$changes"
-    }
-}
-
 try {
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
         Write-Host "GOAL REACHED - research loop finished."
         break
+    }
+
+    $model = "github-copilot/gpt-5.6-luna"
+    $reasoning = "medium"
+    if ($env:RESEARCH_MODEL) {
+        $model = $env:RESEARCH_MODEL
+    }
+    if ($env:RESEARCH_REASONING) {
+        $reasoning = $env:RESEARCH_REASONING
     }
 
     if (Test-Path "research\RECOVERY_PENDING") {
@@ -93,12 +86,51 @@ while ($true) {
         continue
     }
 
+    $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    if ($null -ne $researchState.pending_evaluation_request) {
+        Update-ResearchBrief
+        $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
+        if (-not $evaluationPlanExists) {
+            Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
+            Write-Host "=== Researcher designing evaluations for experiment $($researchState.pending_evaluation_request.experiment) ==="
+        $evaluationPrompt = @"
+Read research/program.md, research/brief.md, research/last_train_summary.md, and
+research/current_params.json. Training is complete. Decide which saved candidates
+need evaluation and which episode counts, seeds, comparisons, or diagnostics are
+useful for this experiment. You may modify evaluation or diagnostic code when the
+hypothesis requires it, but preserve the human-defined objective. Write
+research/evaluation_request.json using the experiment number and an `evaluations`
+list. Each evaluation names `candidate`, `episodes`, `seed`, and a concise `label`.
+Use only the evidence needed for the scientific decision. Do not start training,
+evaluation, or a new experiment.
+"@
+            opencode run --model $model --variant $reasoning $evaluationPrompt
+            if (-not (Test-Path "research\evaluation_request.json")) {
+                throw "Researcher ended without creating research/evaluation_request.json."
+            }
+        }
+        else {
+            Write-Host "=== Resuming the researcher's evaluation plan ==="
+        }
+        uv run python research/run_experiment.py --evaluate-pending
+        if ($LASTEXITCODE -eq 130) {
+            Write-Host "=== Requested evaluation paused; completed measurements were saved ==="
+            break
+        }
+        if ($LASTEXITCODE -ne 0) {
+            throw "Requested evaluation failed."
+        }
+        Update-ResearchBrief
+        Write-Host "=== Requested evaluations complete ==="
+        continue
+    }
+
     if (Test-Path "research\BASELINE_PENDING") {
-        Write-Host "=== Running fresh final-goal baseline ==="
+        Write-Host "=== Running fresh baseline training ==="
         @{
             baseline = $true
             change = "Fresh PPO baseline"
-            hypothesis = "Establish the initial fixed-evaluator baseline."
+            hypothesis = "Establish the initial baseline for the human-defined objective."
             class = "baseline"
             initialization = "fresh"
         } | ConvertTo-Json | Set-Content "research\proposal.json"
@@ -112,20 +144,11 @@ while ($true) {
             throw "Baseline failed. The research loop stopped instead of silently continuing."
         }
         Update-ResearchBrief
-        Write-Host "=== Baseline complete ==="
+        Write-Host "=== Baseline training complete; researcher evaluation comes next ==="
         continue
     }
 
     Update-ResearchBrief
-
-    $model = "github-copilot/gpt-5.6-luna"
-    $reasoning = "medium"
-    if ($env:RESEARCH_MODEL) {
-        $model = $env:RESEARCH_MODEL
-    }
-    if ($env:RESEARCH_REASONING) {
-        $reasoning = $env:RESEARCH_REASONING
-    }
 
     Write-Host "=== New experiment at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
@@ -143,7 +166,6 @@ write research/proposal.json before exiting. Do not launch training or the runne
 
     Update-ResearchBrief
     Save-ResearchMemory
-    Assert-BenchmarkIntegrity
     if (-not (Test-Path "research\proposal.json")) {
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {
@@ -162,7 +184,6 @@ valid research/proposal.json before exiting. Do not launch training or the runne
         opencode run --model $model --variant $reasoning $retryPrompt
         Update-ResearchBrief
         Save-ResearchMemory
-        Assert-BenchmarkIntegrity
 
         if (-not (Test-Path "research\proposal.json")) {
             $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count

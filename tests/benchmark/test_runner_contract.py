@@ -3,12 +3,9 @@ import json
 import pytest
 
 from research.run_experiment import (
-    IMMUTABLE_PATHS,
-    MUTABLE_CODE_PATHS,
-    MUTABLE_PATHS,
     append_result,
     assert_research_surface,
-    finalist_directories,
+    candidate_directories,
     format_duration,
     latest_training_steps,
     load_state,
@@ -16,27 +13,21 @@ from research.run_experiment import (
 )
 
 
-def test_research_and_benchmark_surfaces_are_disjoint():
-    assert set(IMMUTABLE_PATHS).isdisjoint(MUTABLE_PATHS)
-    assert "robot_learning/environments/reach_env.py" in IMMUTABLE_PATHS
-    assert "robot_learning/evaluate.py" in IMMUTABLE_PATHS
-    assert "robot_learning/benchmark/spec.py" in IMMUTABLE_PATHS
-    assert "tests/benchmark/test_task_contract.py" in IMMUTABLE_PATHS
-    assert "tests" in MUTABLE_PATHS
-    assert "research" in MUTABLE_PATHS
-    assert "research/current_params.json" not in MUTABLE_CODE_PATHS
-
-
-def test_fixed_objective_change_is_rejected_even_under_broad_code_surface(
-    monkeypatch,
-):
+def test_research_surface_has_no_file_whitelist(monkeypatch):
     monkeypatch.setattr(
         "research.run_experiment.status_paths",
-        lambda _paths: ["robot_learning/benchmark/spec.py"],
+        lambda _paths: [
+            "robot_learning/benchmark/spec.py",
+            "robot_learning/evaluate.py",
+            "research/run_experiment.py",
+        ],
     )
 
-    with pytest.raises(ValueError, match="fixed objective"):
-        assert_research_surface()
+    assert assert_research_surface() == [
+        "robot_learning/benchmark/spec.py",
+        "robot_learning/evaluate.py",
+        "research/run_experiment.py",
+    ]
 
 
 def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
@@ -162,7 +153,7 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
     )
 
 
-def test_finalist_manifest_exposes_three_complete_artifacts(tmp_path):
+def test_candidate_manifest_exposes_all_complete_artifacts(tmp_path):
     finalists = []
     for number in range(3):
         relative = f"finalists/checkpoint-{number}"
@@ -171,16 +162,16 @@ def test_finalist_manifest_exposes_three_complete_artifacts(tmp_path):
         for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
             (artifact_dir / filename).touch()
         finalists.append({"path": relative})
-    (tmp_path / "selection_manifest.json").write_text(
-        json.dumps({"finalists": finalists}), encoding="utf-8"
+    (tmp_path / "candidate_manifest.json").write_text(
+        json.dumps({"candidates": finalists}), encoding="utf-8"
     )
 
-    assert finalist_directories(tmp_path) == [
+    assert candidate_directories(tmp_path) == [
         tmp_path / item["path"] for item in finalists
     ]
 
 
-def test_researcher_may_submit_more_than_three_finalists(tmp_path):
+def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
     finalists = []
     for number in range(5):
         relative = f"finalists/checkpoint-{number}"
@@ -189,8 +180,8 @@ def test_researcher_may_submit_more_than_three_finalists(tmp_path):
         for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
             (artifact_dir / filename).touch()
         finalists.append({"path": relative})
-    (tmp_path / "selection_manifest.json").write_text(
-        json.dumps({"finalists": finalists}), encoding="utf-8"
+    (tmp_path / "candidate_manifest.json").write_text(
+        json.dumps({"candidates": finalists}), encoding="utf-8"
     )
 
-    assert len(finalist_directories(tmp_path)) == 5
+    assert len(candidate_directories(tmp_path)) == 5
