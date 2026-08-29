@@ -1,10 +1,10 @@
 {
-  "official_metrics": null,
-  "accepted_training_steps": 0,
-  "last_experiment": 0,
-  "accepted_metrics": null,
-  "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_parameters": null,
   "schema_version": 2,
-  "last_verdict": "baseline pending after research reset"
+  "last_verdict": "baseline pending after research reset",
+  "official_metrics": null,
+  "accepted_metrics": null,
+  "accepted_parameters": null,
+  "accepted_training_steps": 0,
+  "accepted_artifact": "research\\checkpoints\\accepted",
+  "last_experiment": 0
 }
