@@ -20,11 +20,22 @@ function Update-ResearchBrief {
     }
 }
 
+function Push-CurrentCommit {
+    git push origin HEAD
+    if ($LASTEXITCODE -ne 0) {
+        throw "The commit was created locally but could not be pushed to origin."
+    }
+}
+
 function Save-ResearchMemory {
     git add -- research/postmortems.md
     git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {
         git commit -m "record research postmortem"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Could not commit the research postmortem."
+        }
+        Push-CurrentCommit
     }
 }
 

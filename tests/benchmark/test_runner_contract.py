@@ -7,6 +7,7 @@ from research.run_experiment import (
     append_result,
     assert_research_surface,
     candidate_directories,
+    commit_and_push,
     format_duration,
     latest_training_steps,
     load_state,
@@ -70,6 +71,21 @@ def test_evaluation_progress_is_best_effort(monkeypatch, tmp_path):
 
     monkeypatch.setattr(Path, "write_text", deny_write)
     assert not write_progress(progress, 81, 200)
+
+
+def test_automatic_commit_is_immediately_pushed(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        "research.run_experiment.git",
+        lambda *args: calls.append(args) or "",
+    )
+
+    commit_and_push("record result")
+
+    assert calls == [
+        ("commit", "-m", "record result"),
+        ("push", "origin", "HEAD"),
+    ]
 
 
 def test_fresh_baseline_can_start_without_an_accepted_artifact(

@@ -358,3 +358,14 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Reason:** A clean reset is a normal research operation in this project and
   should not require manually reconstructing a fragile collection of markers,
   state files, models, and history.
+
+## 2026-08-29 — Publish every automatic commit
+
+- **Decision:** Every commit created by the reset script, research loop, or
+  experiment runner is immediately pushed to `origin` on the current branch.
+- **Failure behavior:** If the commit succeeds but the push fails, execution
+  stops and reports that the local commit has not been published.
+- **Reset correction:** Every file removed by `reset_research.ps1`, including
+  transient proposal and evaluation controls, is included in the reset commit.
+- **Reason:** The remote repository is now part of the persistence contract; a
+  successful local commit alone is no longer considered a completed operation.

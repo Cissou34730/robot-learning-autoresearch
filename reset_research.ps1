@@ -8,6 +8,13 @@ param(
 
 Set-Location $PSScriptRoot
 
+function Push-CurrentCommit {
+    git push origin HEAD
+    if ($LASTEXITCODE -ne 0) {
+        throw "The reset commit was created locally but could not be pushed to origin."
+    }
+}
+
 if (-not $Force) {
     throw "This clears the active research history and model lineages. Run .\reset_research.ps1 -Force to confirm."
 }
@@ -41,7 +48,7 @@ function Remove-ResetPath([string]$relativePath) {
 Remove-ResetPath "models\candidates"
 Remove-ResetPath "research\checkpoints"
 
-@(
+$ephemeralPaths = @(
     "research\GOAL_REACHED",
     "research\RECOVERY_PENDING",
     "research\RESTART_PENDING",
@@ -51,7 +58,8 @@ Remove-ResetPath "research\checkpoints"
     "research\last_train_summary.md",
     "research\last_evaluation.json",
     "research\brief.md"
-) | ForEach-Object { Remove-ResetPath $_ }
+)
+$ephemeralPaths | ForEach-Object { Remove-ResetPath $_ }
 
 @{
     schema_version = 2
@@ -85,9 +93,8 @@ $resetPaths = @(
     "research\archive.md",
     "research\research_state.json",
     "research\BASELINE_PENDING",
-    "research\GOAL_REACHED",
     "research\checkpoints"
-)
+) + $ephemeralPaths
 $stageable = @()
 foreach ($relativePath in $resetPaths) {
     if ((Test-Path -LiteralPath $relativePath) -or (git ls-files -- $relativePath)) {
@@ -106,9 +113,18 @@ if ($LASTEXITCODE -eq 1) {
     if ($LASTEXITCODE -ne 0) {
         throw "The reset state was prepared but could not be committed."
     }
+    Push-CurrentCommit
 }
 elseif ($LASTEXITCODE -ne 0) {
     throw "Could not inspect the staged reset state."
+}
+
+$remainingChanges = git status --porcelain --untracked-files=all
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not verify the Git working tree after the reset."
+}
+if ($remainingChanges) {
+    throw "Research state was reset, but the Git working tree is not clean."
 }
 
 Write-Host "=== Research state reset ==="

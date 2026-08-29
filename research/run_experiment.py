@@ -1043,7 +1043,7 @@ def commit_result(index: int, change: str) -> None:
         git("reset", "--", control_file)
     if not git("diff", "--cached", "--name-only").strip():
         return
-    git("commit", "-m", f"exp {index}: {change}")
+    commit_and_push(f"exp {index}: {change}")
 
 
 def commit_lineage_decision(experiment: int, selected: str) -> None:
@@ -1054,7 +1054,18 @@ def commit_lineage_decision(experiment: int, selected: str) -> None:
     ]
     stage_existing_or_tracked(paths)
     if git("diff", "--cached", "--name-only").strip():
-        git("commit", "-m", f"select experiment {experiment} lineage: {selected}")
+        commit_and_push(f"select experiment {experiment} lineage: {selected}")
+
+
+def commit_and_push(message: str) -> None:
+    git("commit", "-m", message)
+    try:
+        git("push", "origin", "HEAD")
+    except RuntimeError as error:
+        raise RuntimeError(
+            "commit created locally but push to origin failed; "
+            "the research loop stopped to avoid unpublished history"
+        ) from error
 
 
 def stage_existing_or_tracked(paths: list[str]) -> None:
