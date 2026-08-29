@@ -299,6 +299,8 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 - **Status:** Clarified later on 2026-08-28: implementation files are not
   protected. Only the human-defined objective and budget are authoritative.
+  **Revised on 2026-08-29:** the benchmark, the official robot and the
+  enforcement mechanism are protected from research proposals.
 
 - **Decision:** Explain the role of important files without instructing the
   researcher that learning changes must fit a narrow per-file whitelist.
@@ -310,6 +312,10 @@ superseded. It does not instruct the autonomous researcher and does not replace
   wording of `program.md`.
 
 ## 2026-08-28 — Researcher owns evaluation and both lineages
+
+- **Status:** Partially revised on 2026-08-29. The researcher still owns
+  evaluation design and both lineages, but may no longer change the benchmark,
+  the official robot, or `research/run_experiment.py`.
 
 - **Decision:** Training produces a neutral inventory of periodic checkpoints.
   It performs no development ranking and does not retain an automatic top three.
@@ -519,4 +525,36 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Reason:** Only the protected human-owned benchmark may declare the research
   objective reached. Generic orchestration may transport that boolean; mutable
   research code must not be able to manufacture it.
+
+## 2026-08-29 — The runner enforces the protocol and is not researcher-owned
+
+- **Decision:** `research/run_experiment.py` is protected from research
+  proposals, together with the import-routing files that resolve the protected
+  benchmark and robot: the `__init__.py` of `robot_learning`,
+  `robot_learning/benchmark`, `robot_learning/robots` and
+  `robot_learning/scenario`.
+- **Ownership model:**
+  - the researcher owns scientific choices and their implementation;
+  - the runner owns mechanical execution and enforcement of the human-defined
+    research protocol;
+  - the researcher cannot modify the enforcement mechanism during a run.
+- **Reason:** The runner validates protected paths, controls the final-benchmark
+  lifecycle, verifies the accepted artifact and writes `GOAL_REACHED`. If the
+  researcher can edit it, every other protection is advisory rather than
+  enforceable. Protecting it does not give the runner scientific authority: it
+  still chooses no hypothesis, no candidate, no lineage and no significance.
+- **Scope:** A package `__init__.py` is protected only when it resolves a
+  protected module. There is no recursive protection, package scanning,
+  permission framework or sandbox.
+- **Supersedes:** "The researcher may edit their implementation — including
+  robot, environment, benchmark, evaluator, tests, or runner" and "No path
+  whitelist gives the runner scientific authority. The researcher may change
+  training, benchmark, evaluator, comparison, and runner implementation."
+  Reward, observations, training environment, evaluation, diagnostics, brief,
+  rendering, `train.py`, `evaluate.py` and the training helpers remain freely
+  researcher-owned.
+- **Residual:** The check executes from the working-tree runner, so protection
+  is enforced at proposal validation and recorded in Git lineage rather than by
+  a sandbox. Strengthening this further was rejected as a security framework.
+
 

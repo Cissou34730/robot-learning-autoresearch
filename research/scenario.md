@@ -72,15 +72,19 @@ Research may change:
 * other training mechanisms that do not redefine the official task.
 
 `robot_learning/benchmark/` holds the protected task definition and the official
-evaluator. A research proposal is rejected if it changes any file on the path
-that can declare the objective reached, or the official robot it measures:
+evaluator. A research proposal is rejected if it changes any file on the trust
+path between the runner and the human-owned benchmark, the official robot it
+measures, or the mechanism that enforces this protocol:
 
+* `research/run_experiment.py`;
 * `robot_learning/benchmark/final_contract.py`;
 * `robot_learning/benchmark/final_benchmark.py`;
 * `robot_learning/scenario/final_benchmark.py`;
-* `robot_learning/scenario/__init__.py`;
 * `robot_learning/robots/two_joint_arm.py`;
-* `robot_learning/robots/two_joint_arm.xml`.
+* `robot_learning/robots/two_joint_arm.xml`;
+* the `__init__.py` of `robot_learning`, `robot_learning/benchmark`,
+  `robot_learning/robots` and `robot_learning/scenario`, because they resolve
+  those imports.
 
 ## Terminology
 

@@ -20,12 +20,16 @@ from research.run_experiment import (
 from robot_learning.evaluate import write_progress
 
 OFFICIAL_TASK_PATHS = (
-    "robot_learning/benchmark/final_contract.py",
+    "research/run_experiment.py",
+    "robot_learning/__init__.py",
+    "robot_learning/benchmark/__init__.py",
     "robot_learning/benchmark/final_benchmark.py",
-    "robot_learning/scenario/final_benchmark.py",
-    "robot_learning/scenario/__init__.py",
+    "robot_learning/benchmark/final_contract.py",
+    "robot_learning/robots/__init__.py",
     "robot_learning/robots/two_joint_arm.py",
     "robot_learning/robots/two_joint_arm.xml",
+    "robot_learning/scenario/__init__.py",
+    "robot_learning/scenario/final_benchmark.py",
 )
 
 RESEARCHER_OWNED_PATHS = (
@@ -36,12 +40,36 @@ RESEARCHER_OWNED_PATHS = (
     "robot_learning/scenario/brief.py",
     "robot_learning/scenario/viewer.py",
     "robot_learning/train.py",
-    "research/run_experiment.py",
+    "robot_learning/evaluate.py",
+    "robot_learning/training/algorithms.py",
+    "research/build_research_brief.py",
 )
 
 
 def test_protected_surface_covers_the_whole_goal_reached_path():
     assert PROTECTED_BENCHMARK_PATHS == set(OFFICIAL_TASK_PATHS)
+
+
+def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
+    from robot_learning.benchmark import final_benchmark, final_contract
+    from robot_learning.robots import two_joint_arm
+    from robot_learning.scenario import final_benchmark as adapter
+
+    packages: set[str] = set()
+    for module in (adapter, final_benchmark, final_contract, two_joint_arm):
+        parts = module.__name__.split(".")[:-1]
+        for depth in range(1, len(parts) + 1):
+            packages.add(".".join(parts[:depth]))
+
+    assert packages == {
+        "robot_learning",
+        "robot_learning.benchmark",
+        "robot_learning.robots",
+        "robot_learning.scenario",
+    }
+    for package in packages:
+        init_path = f"{package.replace('.', '/')}/__init__.py"
+        assert init_path in PROTECTED_BENCHMARK_PATHS, init_path
 
 
 @pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
@@ -85,6 +113,18 @@ def test_protected_task_files_exist_at_their_protected_paths():
 
     for protected_path in OFFICIAL_TASK_PATHS:
         assert (root / protected_path).is_file(), protected_path
+
+
+def test_researcher_cannot_change_the_enforcement_mechanism():
+    with pytest.raises(ValueError, match="human-owned final benchmark"):
+        validate_experiment_semantics(
+            {},
+            "training",
+            "transfer",
+            {"ppo": {"n_steps": 2048}},
+            ["robot_learning/scenario/reward.py", "research/run_experiment.py"],
+            False,
+        )
 
 
 def _pending_final_benchmark_state(monkeypatch, tmp_path):
