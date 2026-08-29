@@ -110,6 +110,35 @@ This validation is a protocol guardrail, not a security boundary. It exists to s
 
 If you believe a protected file is genuinely wrong, stop and report it. Correcting the human-owned surface is a human decision.
 
+### Testing contract
+
+Tests are organized by repository domain. The runner executes them; it never authors or modifies them.
+
+Human-owned and immutable for the duration of a campaign:
+
+* `tests/benchmark/` — the official task, the official robot, the benchmark contract and the final goal verdict;
+* `tests/autoresearch/` — the generic autonomous-research harness: proposal and evaluation validation, execution lifecycle, persistence, lineage, protected paths, the scenario boundary, presentation, and the generic training-artifact contract.
+
+A proposal that creates, modifies, renames or deletes a file under either prefix is rejected before training. Those tests are also method-neutral: they never depend on a particular learning method, so replacing it never requires changing them.
+
+Yours:
+
+* `tests/scenario/` — training environment, reward, observations, curriculum, research evaluation;
+* `tests/training/` — the currently active learning method and its runtime configuration.
+
+They are ordinary research code. They appear in the experiment's code changes and follow the same code lineage as the implementation they validate: kept when you keep the code, reverted when you revert it.
+
+A structural experiment should update or add its own tests when the mechanism it changes is no longer described correctly. A parameter-only experiment requires no test change; do not invent one.
+
+Tests verify that an experiment implements its stated mechanism correctly. They never decide whether the science succeeded. A correct implementation with a negative measured result is a valid experiment.
+
+Validation timing:
+
+* a fresh campaign baseline is fully validated before training, even when the worktree carries no uncommitted change;
+* an experiment with code changes — including changes to your own tests — is fully validated before training;
+* a parameter-only experiment validates the proposal and the effective configuration only;
+* a continuation, an evaluation or a lineage decision without code changes reruns nothing.
+
 ## Working context
 
 Start with:

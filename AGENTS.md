@@ -30,10 +30,40 @@ uv run pytest                            # tests
 - `research/scenario.md` - the current scientific problem
 - `research/checkpoints/accepted/` - Git-versioned accepted policy
 - `models/candidates/` - disposable training candidates
+- `tests/benchmark/` - immutable official-task tests: the objective, the official
+  robot, the benchmark contract and the final goal verdict
+- `tests/autoresearch/` - immutable generic AutoResearch harness tests: proposal
+  and evaluation validation, execution lifecycle, persistence, lineage,
+  protected paths, scenario boundary, console and brief presentation, and the
+  generic training-artifact contract
+- `tests/scenario/` - researcher-owned scenario tests: environment, reward,
+  observations, curriculum, research evaluation
+- `tests/training/` - researcher-owned learning-method tests: they describe the
+  currently active method and evolve with it
 
 ## Conventions
 
 - Training is headless; rendering only in play/viewer paths.
 - Do not run repo-wide lint/format passes; format only files you touched.
-- Immutable benchmark tests live in `tests/benchmark/`; research-method tests
-  live in `tests/research/`.
+- Tests are organized by repository domain. During a research campaign the
+  researcher may modify only `tests/scenario/` and `tests/training/`;
+  `tests/benchmark/` and `tests/autoresearch/` are human-owned and the runner
+  rejects any proposal that creates, modifies, renames or deletes a file under
+  them.
+- Researcher-owned tests are ordinary research code: they travel with the
+  experiment's `code_changes` and its Git code lineage.
+- `tests/benchmark/` and `tests/autoresearch/` must stay method-neutral: they
+  never import or assert against a concrete RL algorithm class.
+- Validation timing, enforced by `research/run_experiment.py`:
+  - fresh campaign baseline - complete validation before training, even with an
+    unchanged worktree;
+  - experiment with code changes (including researcher-owned tests) - complete
+    validation before training;
+  - parameter-only experiment - proposal and effective configuration only, no
+    pytest;
+  - continuation, evaluation or lineage decision without code changes - no test
+    suites.
+- Complete validation is: syntax check plus `ruff check` on changed Python
+  files, JSON parse of changed `.json` files, a non-mutating `uv lock --check`
+  when dependency metadata changed, then
+  `pytest -q tests/benchmark tests/autoresearch tests/scenario tests/training`.

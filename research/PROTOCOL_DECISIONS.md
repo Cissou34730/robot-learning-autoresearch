@@ -649,3 +649,43 @@ superseded. It does not instruct the autonomous researcher and does not replace
   and behavioral properties remain covered by their dedicated tests.
 
 
+## 2026-08-29 - Tests organized by repository domain
+
+- **Decision:** Tests live in four directories that mirror the repository's own
+  responsibilities instead of generic `system`/`research` labels:
+  `tests/benchmark/` (official task), `tests/autoresearch/` (generic harness),
+  `tests/scenario/` (current research problem) and `tests/training/` (currently
+  active learning method). `tests/research/` and the root-level test files are
+  removed.
+- **Decision:** `tests/benchmark/` and `tests/autoresearch/` are human-owned and
+  immutable during a campaign. `research/run_experiment.py` rejects a proposal
+  that creates, modifies, renames or deletes any file under those two prefixes.
+  The check is prefix-based and normalizes Windows separators, so it covers
+  files that do not exist yet.
+- **Decision:** `tests/scenario/` and `tests/training/` are researcher-owned.
+  They are ordinary research code: they appear in `code_changes` and are kept or
+  reverted with the experiment's Git code lineage, never independently.
+- **Decision:** Validation timing depends on the situation. A fresh campaign
+  baseline is fully validated before training even with an unchanged worktree;
+  an experiment with code changes is fully validated before training; a
+  parameter-only experiment validates the proposal and effective configuration
+  only; a continuation, evaluation or lineage decision without code changes
+  reruns nothing.
+- **Decision:** Complete validation is a syntax check plus `ruff check` on the
+  changed Python files, a JSON parse of changed `.json` documents (`.jsonl`
+  files are not JSON documents), a non-mutating `uv lock --check` when
+  dependency metadata changed, then
+  `pytest -q tests/benchmark tests/autoresearch tests/scenario tests/training`.
+  The runner never rewrites the lockfile, installs dependencies, or reformats
+  the repository.
+- **Decision:** Method-specific choices are not immutable test contracts. The
+  human-owned tests no longer assert that the learning method is PPO, that
+  another algorithm is rejected, that replay state cannot exist, or that the
+  training package may never be restructured. The generic artifact contract is
+  now a black-box smoke test of the training CLI and `load_policy()`.
+- **Reason:** The previous layout mixed harness, benchmark, scenario and
+  method concerns, and froze the current algorithm inside protected tests. That
+  made a legitimate algorithm replacement look like a protocol violation.
+- **Boundary unchanged:** No test framework, plugin architecture, algorithm
+  registry or capability layer was introduced. The runner still only executes
+  checks; it never authors or modifies tests or learning code.

@@ -74,6 +74,21 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/scenario/__init__.py",
     "robot_learning/scenario/final_benchmark.py",
 }
+# Human-owned test domains. Prefix-based so that creating, renaming or deleting
+# a file underneath them is rejected just like modifying an existing one.
+PROTECTED_TEST_PREFIXES = (
+    "tests/benchmark/",
+    "tests/autoresearch/",
+)
+VALIDATED_TEST_PATHS = (
+    "tests/benchmark",
+    "tests/autoresearch",
+    "tests/scenario",
+    "tests/training",
+)
+# Editing these carries no source change, so the test suites stay untouched.
+PARAMETER_ONLY_PATHS = {"research/current_params.json"}
+DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
 
 
 def announce(message: str) -> None:
@@ -527,6 +542,72 @@ def run_module(module: str, *args: str, timeout: int | None = None) -> str:
             f"{module} failed:\n{result.stdout[-2000:]}\n{result.stderr[-2000:]}"
         )
     return result.stdout
+
+
+def run_command(*command: str, timeout: int | None = None) -> str:
+    result = subprocess.run(
+        list(command),
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"{' '.join(command)} failed:\n"
+            f"{result.stdout[-2000:]}\n{result.stderr[-2000:]}"
+        )
+    return result.stdout
+
+
+def validate_changed_sources(changed_paths: list[str]) -> None:
+    python_changes: list[str] = []
+    for path in changed_paths:
+        absolute = ROOT / path
+        if not absolute.is_file():
+            continue
+        if path.endswith(".py"):
+            try:
+                compile(absolute.read_text(encoding="utf-8"), path, "exec")
+            except SyntaxError as error:
+                message = f"{path} has invalid Python syntax: {error}"
+                raise RuntimeError(message) from error
+            python_changes.append(path)
+        elif path.endswith(".json"):
+            try:
+                json.loads(absolute.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as error:
+                raise RuntimeError(f"{path} is not valid JSON: {error}") from error
+    if python_changes:
+        run_module("ruff", "check", *python_changes)
+
+
+def validate_dependency_metadata() -> None:
+    """Check the lockfile against the project metadata without rewriting it."""
+    run_command("uv", "lock", "--check")
+
+
+def validate_active_configuration() -> None:
+    validate_param_overrides(load_experiment_config())
+
+
+def dependency_metadata_changed(changed_paths: list[str]) -> bool:
+    return any(
+        path.replace("\\", "/") in DEPENDENCY_METADATA_PATHS for path in changed_paths
+    )
+
+
+def requires_full_validation(changed_paths: list[str], *, fresh_baseline: bool) -> bool:
+    """A fresh campaign baseline is validated before it consumes training compute,
+    even when the committed worktree carries no research change."""
+    if fresh_baseline:
+        return True
+    return any(
+        path.replace("\\", "/") not in PARAMETER_ONLY_PATHS for path in changed_paths
+    )
 
 
 def next_index() -> int:
@@ -1248,10 +1329,19 @@ def validate_experiment_semantics(
     code_changes: list[str],
     baseline: bool,
 ) -> None:
-    if PROTECTED_BENCHMARK_PATHS & {path.replace("\\", "/") for path in code_changes}:
+    normalized = [path.replace("\\", "/") for path in code_changes]
+    if PROTECTED_BENCHMARK_PATHS & set(normalized):
         raise ValueError(
             "the human-owned final benchmark, official robot and research "
             "protocol enforcement cannot be changed by a research proposal"
+        )
+    protected_tests = sorted(
+        path for path in normalized if path.startswith(PROTECTED_TEST_PREFIXES)
+    )
+    if protected_tests:
+        raise ValueError(
+            "the human-owned benchmark and AutoResearch tests cannot be changed "
+            f"by a research proposal: {protected_tests}"
         )
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
@@ -1763,17 +1853,17 @@ def main() -> int:
             code_changes,
         )
         if code_changes:
+            announce("[checks] validating changed files")
+            validate_changed_sources(code_changes)
+        if requires_full_validation(code_changes, fresh_baseline=fresh_baseline):
             announce("[checks] running research-surface checks")
-            python_changes = [
-                path
-                for path in code_changes
-                if path.endswith(".py") and (ROOT / path).exists()
-            ]
-            if python_changes:
-                run_module("ruff", "check", *python_changes)
+            validate_active_configuration()
+            if fresh_baseline or dependency_metadata_changed(code_changes):
+                validate_dependency_metadata()
             run_module(
                 "pytest",
                 "-q",
+                *VALIDATED_TEST_PATHS,
                 "--basetemp",
                 str(ROOT / ".pytest-run-temp"),
             )

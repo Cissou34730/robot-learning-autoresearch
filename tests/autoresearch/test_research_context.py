@@ -192,7 +192,7 @@ def test_brief_surfaces_directional_failure_diagnostics(monkeypatch, tmp_path):
 
 
 def test_lineage_orchestration_requires_markdown_postmortem():
-    root = Path(__file__).resolve().parent.parent
+    root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
     program = (root / "research" / "program.md").read_text(encoding="utf-8")
 

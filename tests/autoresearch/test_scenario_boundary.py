@@ -1,11 +1,13 @@
 """Architecture guards for the static scenario boundary.
 
 The generic AutoResearch core must depend on `robot_learning.scenario` and
-nothing else that is specific to the current research problem.
+nothing else that is specific to the current research problem. These guards are
+human-owned and stay independent of whichever learning method is active.
 """
 
 import ast
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -16,7 +18,7 @@ from robot_learning.scenario import summarize_research_evaluations
 from robot_learning.training import research_config
 from robot_learning.training.research_config import load_experiment_config
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 
 SCENARIO_BOUNDARY = (
     "evaluate_final_model",
@@ -85,7 +87,12 @@ FORBIDDEN_MODULES = frozenset(
     }
 )
 
-GENERIC_CONFIG_SECTIONS = frozenset({"algorithm", "ppo", "policy", "training"})
+# Only used to assert that generic surfaces name *no* learning algorithm.
+KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
+
+
+def mentions(text: str, word: str) -> bool:
+    return re.search(rf"\b{word}\b", text, flags=re.IGNORECASE) is not None
 
 
 def imported_modules(path: Path) -> list[str]:
@@ -407,7 +414,6 @@ def test_training_environment_carries_no_official_task_enforcement():
 def test_runtime_configuration_carries_no_reward():
     config = load_experiment_config()
     assert "reward" not in config
-    assert set(config) <= GENERIC_CONFIG_SECTIONS
 
     persisted = json.loads(
         (ROOT / "research" / "current_params.json").read_text(encoding="utf-8")
@@ -423,6 +429,17 @@ def test_scenario_reward_is_code_not_configuration():
     assert "current_params" not in source
     assert "load_experiment_config" not in source
     assert "research_config" not in source
+
+
+def test_scenario_definition_stays_algorithm_independent():
+    scenario_text = (ROOT / "research" / "scenario.md").read_text(encoding="utf-8")
+
+    for algorithm_name in KNOWN_ALGORITHM_NAMES:
+        assert not mentions(scenario_text, algorithm_name), algorithm_name
+    for path in (ROOT / "robot_learning" / "scenario").glob("*.py"):
+        source = path.read_text(encoding="utf-8")
+        for algorithm_name in KNOWN_ALGORITHM_NAMES:
+            assert not mentions(source, algorithm_name), path.name
 
 
 def test_scenario_files_participate_in_normal_code_lineage(monkeypatch):

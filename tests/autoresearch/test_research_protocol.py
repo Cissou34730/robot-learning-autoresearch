@@ -1,4 +1,13 @@
+"""The generic research protocol: evidence, statistics, lineage and neutrality.
+
+These tests are human-owned and immutable during a campaign. They describe how
+the harness collects evidence and resolves lineage, never which learning method
+produced it.
+"""
+
 import json
+import re
+from pathlib import Path
 
 import pytest
 
@@ -21,6 +30,17 @@ from robot_learning.training.comparison import (
     exact_mcnemar_pvalue,
     paired_comparison,
 )
+
+ROOT = Path(__file__).resolve().parents[2]
+PROGRAM = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
+LOOP = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+
+# Only used to assert that the protocol names *no* learning algorithm.
+KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
+
+
+def mentions(text: str, word: str) -> bool:
+    return re.search(rf"\b{word}\b", text, flags=re.IGNORECASE) is not None
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
@@ -418,7 +438,7 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
                 }
             ],
             "champion_available": False,
-            "parameters": {"algorithm": {"name": "ppo"}},
+            "parameters": {"algorithm": {"name": "active-method"}},
             "initialization": "fresh",
             "training_budget_steps": 120_000,
         },
@@ -458,13 +478,13 @@ def test_runner_uses_the_human_defined_budget_for_all_initializations():
 
 
 def test_experiment_card_records_exact_nested_parameter_changes():
-    previous = {"ppo": {"n_steps": 4096, "learning_rate": 5e-5}}
-    overrides = {"ppo": {"n_steps": 16384}}
+    previous = {"method": {"rollout_steps": 4096, "learning_rate": 5e-5}}
+    overrides = {"method": {"rollout_steps": 16384}}
 
     changes = parameter_change_records(previous, overrides)
 
-    assert changes == [{"path": "ppo.n_steps", "before": 4096, "after": 16384}]
-    assert experiment_family({}, "training", changes, []) == "ppo.n_steps"
+    assert changes == [{"path": "method.rollout_steps", "before": 4096, "after": 16384}]
+    assert experiment_family({}, "training", changes, []) == "method.rollout_steps"
 
 
 def test_declared_code_family_is_stable_across_numeric_variants():
@@ -504,7 +524,7 @@ def _decision_state(candidate_artifact, measurements):
                 }
             ],
             "champion_available": False,
-            "parameters": {"algorithm": {"name": "ppo"}},
+            "parameters": {"algorithm": {"name": "active-method"}},
             "initialization": "fresh",
             "training_budget_steps": 120_000,
         },
@@ -689,7 +709,7 @@ def test_continuation_and_replication_allow_unchanged_methods():
             {},
             "training",
             "transfer",
-            {"ppo": {"n_steps": 2048}},
+            {"training": {"n_envs": 2}},
             ["robot_learning/benchmark/final_contract.py"],
             False,
         )
@@ -725,7 +745,7 @@ def test_champion_can_be_retained_before_replacement(monkeypatch, tmp_path):
         {
             "accepted_artifact": "accepted",
             "accepted_training_steps": 55,
-            "accepted_parameters": {"algorithm": {"name": "ppo"}},
+            "accepted_parameters": {"algorithm": {"name": "active-method"}},
         }
     )
     state["pending_researcher_decision"]["champion_available"] = True
@@ -865,3 +885,71 @@ def test_discarded_candidates_keep_history_but_lose_heavyweight_files(
     assert not (discarded / "model.zip").exists()
     assert not (discarded / "vecnormalize.pkl").exists()
     assert not (discarded / "replay_buffer.pkl").exists()
+
+
+# --- method neutrality of the protocol -------------------------------------
+
+
+def test_protocol_treats_the_implementation_as_a_starting_point():
+    for statement in (
+        "It is a starting point, not part of the problem definition",
+        "modify or replace the learning algorithm",
+        "is not the set of algorithms you are allowed to consider",
+    ):
+        assert statement in PROGRAM
+
+
+def test_protocol_requires_a_mechanism_before_changing_method():
+    assert "Poor performance alone is not sufficient evidence" in PROGRAM
+    assert "must not be treated as a menu of preferred interventions" in PROGRAM
+
+
+def test_protocol_offers_no_alternative_algorithm_menu():
+    for algorithm_name in KNOWN_ALGORITHM_NAMES:
+        assert not mentions(PROGRAM, algorithm_name), algorithm_name
+
+
+def test_protocol_does_not_enumerate_the_configuration_surface():
+    assert "overrides to the currently active runtime configuration" in PROGRAM
+    assert "`algorithm`" not in PROGRAM
+
+
+def test_protocol_example_is_a_minimal_structural_proposal():
+    proposal_example = PROGRAM.split("### Standard training proposal", 1)[1].split(
+        "Required:", 1
+    )[0]
+
+    assert '"initialization": "fresh"' in proposal_example
+    assert "training_parent" not in proposal_example
+    assert "training_seed" not in proposal_example
+    assert '"params"' not in proposal_example
+    for field in ("training_parent", "training_seed", "params"):
+        assert field in PROGRAM
+
+
+def test_baseline_protocol_wording_is_algorithm_neutral():
+    assert 'change = "Fresh baseline"' in LOOP
+    for algorithm_name in KNOWN_ALGORITHM_NAMES:
+        assert not mentions(LOOP, algorithm_name), algorithm_name
+    assert "trains the repository's current unchanged learning method" in PROGRAM
+
+
+def test_no_researcher_prompt_forces_the_configuration_into_context():
+    assert "research/current_params.json" not in LOOP
+    for expected in (
+        "research/program.md",
+        "research/scenario.md",
+        "research/brief.md",
+        "research/last_train_summary.md",
+    ):
+        assert expected in LOOP
+
+
+def test_protocol_default_context_excludes_the_configuration():
+    context_block = PROGRAM.split("## Working context", 1)[1].split("##", 1)[0]
+    start_with = context_block.split("Start with:", 1)[1].split("Use this", 1)[0]
+
+    assert "`research/current_params.json`" not in start_with
+    assert "`research/last_train_summary.md`" in start_with
+    # It stays available on demand, just not pushed into every session.
+    assert "`research/current_params.json`" in context_block

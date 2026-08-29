@@ -5,7 +5,10 @@ import json
 import pytest
 
 from research import run_experiment
-from research.build_research_brief import render_training_summary
+from research.build_research_brief import (
+    render_research_brief,
+    render_training_summary,
+)
 from research.run_experiment import (
     render_decision_card,
     render_evaluation_plan,
@@ -438,3 +441,34 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
     assert run_experiment.execute_pending_evaluations() == 0
     assert "=== Evaluation design · Experiment 2 ===" in printed[0]
     assert "=== Evidence · Experiment 2 ===" in printed[-1]
+
+
+def test_brief_names_the_active_method_without_dumping_its_configuration(
+    monkeypatch, tmp_path
+):
+    (tmp_path / "current_params.json").write_text(
+        json.dumps(
+            {
+                "algorithm": {"name": "active-method"},
+                "active-method": {
+                    "learning_rate": 0.0003,
+                    "exploration_bonus": 0.01,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+    monkeypatch.setattr(
+        "research.build_research_brief.TRAIN_SUMMARY_PATH", tmp_path / "absent.md"
+    )
+
+    brief = render_research_brief()
+
+    assert "Current learning method: ACTIVE-METHOD" in brief
+    assert "## Current parameters" not in brief
+    assert "learning_rate" not in brief
+    assert "exploration_bonus" not in brief

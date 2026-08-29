@@ -86,6 +86,29 @@ measures, or the mechanism that enforces this protocol:
   `robot_learning/robots` and `robot_learning/scenario`, because they resolve
   those imports.
 
+## Scenario verification
+
+`tests/benchmark/` verifies the official problem: the frozen robot asset, the
+final task contract, the fixed hold metric and the goal verdict. It is
+protected, like the benchmark code it covers, and a research proposal that
+touches it is rejected.
+
+`tests/scenario/` verifies the researcher-mutable scenario in
+`robot_learning/scenario/`: training environment mechanics, reward behavior and
+component attribution, observation validity, curriculum behavior and research
+evaluation diagnostics. It belongs to you.
+
+The distinction follows the code. Protected benchmark behavior — the tolerance,
+the required hold, the target distribution and the pass criterion of the
+official evaluation — is fixed for the whole campaign and its tests must keep
+passing unchanged. Training-scenario behavior is deliberately mutable: a
+scenario experiment that changes the reward, the observation or the training
+task should update `tests/scenario/` in the same change, and those test edits
+travel with the experiment's code lineage.
+
+Do not encode a historical numerical snapshot of mutable scenario output as a
+test expectation. Express expectations through the active implementation.
+
 ## Terminology
 
 * **reach** — moving the end effector toward the sampled target;

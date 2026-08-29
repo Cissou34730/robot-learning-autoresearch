@@ -1,196 +1,58 @@
+"""Human-owned tests of the generic AutoResearch execution machinery.
+
+The runner executes and records researcher decisions. These tests describe its
+lifecycle, persistence, protected surfaces and validation timing. They stay
+method-neutral: they never name or import a concrete learning algorithm.
+"""
+
 import json
 from pathlib import Path
 
 import pytest
 
 from research.run_experiment import (
-    PROTECTED_BENCHMARK_PATHS,
+    PROTECTED_TEST_PREFIXES,
     append_result,
     assert_research_surface,
     candidate_directories,
     commit_and_push,
-    execute_pending_final_benchmark,
+    dependency_metadata_changed,
     format_duration,
     latest_training_steps,
     load_state,
     main,
+    requires_full_validation,
+    validate_changed_sources,
     validate_experiment_semantics,
     validate_reusable_candidate,
     validate_training_proposal,
 )
 from robot_learning.evaluate import write_progress
 from robot_learning.train import effective_training_config
+from robot_learning.training.research_config import load_experiment_config
 
-OFFICIAL_TASK_PATHS = (
-    "research/run_experiment.py",
-    "robot_learning/__init__.py",
-    "robot_learning/benchmark/__init__.py",
-    "robot_learning/benchmark/final_benchmark.py",
-    "robot_learning/benchmark/final_contract.py",
-    "robot_learning/robots/__init__.py",
-    "robot_learning/robots/two_joint_arm.py",
-    "robot_learning/robots/two_joint_arm.xml",
-    "robot_learning/scenario/__init__.py",
-    "robot_learning/scenario/final_benchmark.py",
+PROTECTED_TEST_PATHS = (
+    "tests/benchmark/test_task_contract.py",
+    "tests/benchmark/test_benchmark_trust_path.py",
+    "tests/autoresearch/test_execution_contract.py",
+    "tests/autoresearch/test_research_protocol.py",
 )
 
-RESEARCHER_OWNED_PATHS = (
-    "robot_learning/scenario/reward.py",
-    "robot_learning/scenario/observations.py",
-    "robot_learning/scenario/environment.py",
-    "robot_learning/scenario/evaluation.py",
-    "robot_learning/scenario/brief.py",
-    "robot_learning/scenario/viewer.py",
-    "robot_learning/train.py",
-    "robot_learning/evaluate.py",
-    "robot_learning/training/algorithms.py",
-    "robot_learning/training/research_config.py",
-    "research/current_params.json",
-    "research/build_research_brief.py",
-    "pyproject.toml",
+RESEARCHER_OWNED_TEST_PATHS = (
+    "tests/scenario/test_reward.py",
+    "tests/scenario/test_environment.py",
+    "tests/training/test_active_learning_method.py",
+    "tests/training/test_checkpointing.py",
 )
 
 
-def test_protected_surface_covers_the_whole_goal_reached_path():
-    assert PROTECTED_BENCHMARK_PATHS == set(OFFICIAL_TASK_PATHS)
+def active_effective_config() -> tuple[dict, dict]:
+    """The current runtime configuration and the trainer's resolved view of it."""
+    config = load_experiment_config()
+    return config, effective_training_config(config)
 
 
-def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
-    from robot_learning.benchmark import final_benchmark, final_contract
-    from robot_learning.robots import two_joint_arm
-    from robot_learning.scenario import final_benchmark as adapter
-
-    packages: set[str] = set()
-    for module in (adapter, final_benchmark, final_contract, two_joint_arm):
-        parts = module.__name__.split(".")[:-1]
-        for depth in range(1, len(parts) + 1):
-            packages.add(".".join(parts[:depth]))
-
-    assert packages == {
-        "robot_learning",
-        "robot_learning.benchmark",
-        "robot_learning.robots",
-        "robot_learning.scenario",
-    }
-    for package in packages:
-        init_path = f"{package.replace('.', '/')}/__init__.py"
-        assert init_path in PROTECTED_BENCHMARK_PATHS, init_path
-
-
-@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
-def test_research_proposal_cannot_change_the_official_task(protected_path):
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
-        validate_experiment_semantics(
-            {}, "training", "transfer", None, [protected_path], False
-        )
-
-
-@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
-def test_official_task_protection_ignores_path_separator(protected_path):
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
-        validate_experiment_semantics(
-            {},
-            "training",
-            "transfer",
-            None,
-            [protected_path.replace("/", "\\")],
-            False,
-        )
-
-
-@pytest.mark.parametrize("research_path", RESEARCHER_OWNED_PATHS)
-def test_researcher_owned_files_remain_changeable(research_path):
-    validate_experiment_semantics(
-        {}, "training", "transfer", None, [research_path], False
-    )
-
-
-def test_scenario_adapter_cannot_bypass_the_protected_benchmark():
-    from robot_learning.benchmark import final_benchmark as protected
-    from robot_learning.scenario import final_benchmark as adapter
-
-    assert adapter._protected_evaluate_final_model is protected.evaluate_final_model
-    assert adapter.FINAL_SUCCESS_PERCENT == 98.0
-
-
-def test_protected_task_files_exist_at_their_protected_paths():
-    root = Path(__file__).resolve().parent.parent.parent
-
-    for protected_path in OFFICIAL_TASK_PATHS:
-        assert (root / protected_path).is_file(), protected_path
-
-
-def test_researcher_cannot_change_the_enforcement_mechanism():
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
-        validate_experiment_semantics(
-            {},
-            "training",
-            "transfer",
-            {"ppo": {"n_steps": 2048}},
-            ["robot_learning/scenario/reward.py", "research/run_experiment.py"],
-            False,
-        )
-
-
-def _pending_final_benchmark_state(monkeypatch, tmp_path):
-    from research.run_experiment import artifact_fingerprint
-
-    accepted = tmp_path / "accepted"
-    accepted.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (accepted / filename).write_bytes(b"artifact")
-    state_path = tmp_path / "state.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 2,
-                "accepted_artifact": "accepted",
-                "accepted_metrics": None,
-                "official_metrics": None,
-                "pending_final_benchmark": {
-                    "experiment": 9,
-                    "selected": "candidate",
-                    "artifact": "accepted",
-                    "fingerprint": artifact_fingerprint(accepted),
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    return state_path
-
-
-@pytest.mark.parametrize(
-    ("official_success_percent", "goal_reached"), [(98.0, True), (97.9, False)]
-)
-def test_goal_reached_follows_only_the_protected_benchmark(
-    monkeypatch, tmp_path, official_success_percent, goal_reached
-):
-    state_path = _pending_final_benchmark_state(monkeypatch, tmp_path)
-
-    def protected_benchmark(model_path, algorithm=None, progress_callback=None):
-        del model_path, algorithm, progress_callback
-        return {
-            "schema_version": 1,
-            "episodes": 200,
-            "seed": 1000,
-            "success_percent": official_success_percent,
-        }
-
-    # Only the protected evaluator is stubbed: the real adapter derives the verdict.
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark._protected_evaluate_final_model",
-        protected_benchmark,
-    )
-
-    assert execute_pending_final_benchmark() == 0
-
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert persisted["official_metrics"]["goal_reached"] is goal_reached
-    assert (tmp_path / "GOAL_REACHED").exists() is goal_reached
+# --- research surface ------------------------------------------------------
 
 
 def test_research_surface_has_no_file_whitelist(monkeypatch):
@@ -221,6 +83,231 @@ def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     )
 
     assert assert_research_surface() == ["research/current_params.json"]
+
+
+# --- protected test domains ------------------------------------------------
+
+
+def worktree_changes(monkeypatch, *porcelain_lines: str) -> list[str]:
+    monkeypatch.setattr(
+        "research.run_experiment.git",
+        lambda *args: "".join(f"{line}\n" for line in porcelain_lines),
+    )
+    return assert_research_surface()
+
+
+def validate_worktree(monkeypatch, *porcelain_lines: str) -> list[str]:
+    changes = worktree_changes(monkeypatch, *porcelain_lines)
+    validate_experiment_semantics({}, "training", "transfer", None, changes, False)
+    return changes
+
+
+def test_protected_test_directories_are_prefix_based():
+    assert PROTECTED_TEST_PREFIXES == ("tests/benchmark/", "tests/autoresearch/")
+
+
+@pytest.mark.parametrize("protected_path", PROTECTED_TEST_PATHS)
+def test_modifying_a_protected_test_is_rejected(monkeypatch, protected_path):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, f" M {protected_path}")
+
+
+@pytest.mark.parametrize("protected_path", PROTECTED_TEST_PATHS)
+def test_deleting_a_protected_test_is_rejected(monkeypatch, protected_path):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, f" D {protected_path}")
+
+
+def test_renaming_a_protected_test_is_rejected(monkeypatch):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(
+            monkeypatch,
+            "R  tests/benchmark/test_task_contract.py -> tests/benchmark/renamed.py",
+        )
+
+
+def test_creating_a_new_protected_test_is_rejected(monkeypatch):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, "?? tests/autoresearch/test_invented_rule.py")
+
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, "?? tests/benchmark/test_invented_rule.py")
+
+
+def test_protected_test_protection_ignores_path_separator(monkeypatch):
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, "?? tests\\autoresearch\\test_invented.py")
+
+    with pytest.raises(ValueError, match="human-owned .* tests"):
+        validate_worktree(monkeypatch, " M tests\\benchmark\\test_task_contract.py")
+
+
+@pytest.mark.parametrize("research_test_path", RESEARCHER_OWNED_TEST_PATHS)
+def test_researcher_owned_tests_remain_changeable(monkeypatch, research_test_path):
+    assert validate_worktree(monkeypatch, f" M {research_test_path}") == [
+        research_test_path
+    ]
+    assert validate_worktree(monkeypatch, f"?? {research_test_path}") == [
+        research_test_path
+    ]
+    assert validate_worktree(monkeypatch, f" D {research_test_path}") == [
+        research_test_path
+    ]
+
+
+def test_researcher_owned_tests_are_ordinary_code_changes(monkeypatch):
+    changes = validate_worktree(
+        monkeypatch,
+        " M robot_learning/scenario/reward.py",
+        " M tests/scenario/test_reward.py",
+    )
+
+    assert changes == [
+        "robot_learning/scenario/reward.py",
+        "tests/scenario/test_reward.py",
+    ]
+
+
+def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
+    from research import run_experiment
+
+    root = Path(__file__).resolve().parents[2]
+    created = "tests/training/test_invented_by_this_experiment.py"
+
+    def tracked_at_parent(*args: str) -> str:
+        path = args[-1]
+        return "" if path == created else f"{path}\n"
+
+    monkeypatch.setattr(run_experiment, "ROOT", root)
+    monkeypatch.setattr(run_experiment, "git", tracked_at_parent)
+
+    plan = run_experiment.plan_code_lineage_decision(
+        {
+            "code_parent_commit": "abc123",
+            "research_change_paths": [
+                "robot_learning/scenario/reward.py",
+                "tests/scenario/test_reward.py",
+                created,
+            ],
+        },
+        "revert",
+    )
+
+    assert plan["restore"] == [
+        "robot_learning/scenario/reward.py",
+        "tests/scenario/test_reward.py",
+    ]
+    assert plan["remove_created"] == [(root / created).resolve()]
+
+
+# --- validation timing -----------------------------------------------------
+
+
+def test_fresh_campaign_baseline_is_validated_without_worktree_changes():
+    assert requires_full_validation([], fresh_baseline=True)
+
+
+def test_unchanged_continuation_or_evaluation_skips_the_test_suites():
+    assert not requires_full_validation([], fresh_baseline=False)
+
+
+def test_parameter_only_experiment_skips_the_test_suites():
+    assert not requires_full_validation(
+        ["research/current_params.json"], fresh_baseline=False
+    )
+    assert not requires_full_validation(
+        ["research\\current_params.json"], fresh_baseline=False
+    )
+
+
+@pytest.mark.parametrize(
+    "changed_path",
+    [
+        "robot_learning/scenario/reward.py",
+        "robot_learning/train.py",
+        "tests/scenario/test_reward.py",
+        "tests/training/test_active_learning_method.py",
+        "pyproject.toml",
+        "uv.lock",
+    ],
+)
+def test_code_changing_experiment_is_fully_validated(changed_path):
+    assert requires_full_validation([changed_path], fresh_baseline=False)
+
+
+def test_dependency_metadata_is_only_checked_when_it_changes():
+    assert dependency_metadata_changed(["pyproject.toml"])
+    assert dependency_metadata_changed(["uv.lock"])
+    assert not dependency_metadata_changed(["robot_learning/train.py"])
+
+
+def test_changed_python_files_are_syntax_checked(monkeypatch, tmp_path):
+    (tmp_path / "broken.py").write_text("def broken(:\n", encoding="utf-8")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.run_experiment.run_module",
+        lambda *args, **kwargs: pytest.fail("linting ran on unparsable source"),
+    )
+
+    with pytest.raises(RuntimeError, match="broken.py"):
+        validate_changed_sources(["broken.py"])
+
+
+def test_changed_json_files_must_parse(monkeypatch, tmp_path):
+    (tmp_path / "good.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "broken.json").write_text("{", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text(
+        '{"index": 1}\n{"index": 2}\n', encoding="utf-8"
+    )
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+
+    validate_changed_sources(["good.json", "results.jsonl"])
+    with pytest.raises(RuntimeError, match="broken.json"):
+        validate_changed_sources(["broken.json"])
+
+
+def test_changed_python_files_are_linted_individually(monkeypatch, tmp_path):
+    (tmp_path / "clean.py").write_text("VALUE = 1\n", encoding="utf-8")
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        "research.run_experiment.run_module",
+        lambda *args, **kwargs: calls.append(args) or "",
+    )
+
+    validate_changed_sources(["clean.py", "notes.md", "absent.py"])
+
+    assert calls == [("ruff", "check", "clean.py")]
+
+
+def test_dependency_check_never_rewrites_the_lockfile(monkeypatch):
+    from research import run_experiment
+
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        run_experiment, "run_command", lambda *args, **kwargs: calls.append(args) or ""
+    )
+
+    run_experiment.validate_dependency_metadata()
+
+    assert calls == [("uv", "lock", "--check")]
+
+
+def test_validated_test_paths_are_the_four_repository_domains():
+    from research import run_experiment
+
+    assert run_experiment.VALIDATED_TEST_PATHS == (
+        "tests/benchmark",
+        "tests/autoresearch",
+        "tests/scenario",
+        "tests/training",
+    )
+    root = Path(__file__).resolve().parents[2]
+    for relative in run_experiment.VALIDATED_TEST_PATHS:
+        assert (root / relative).is_dir(), relative
+
+
+# --- execution lifecycle ---------------------------------------------------
 
 
 def test_training_progress_reads_latest_complete_snapshot(tmp_path):
@@ -312,23 +399,21 @@ def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
     assert "safe / table" in log_path.read_text(encoding="utf-8")
 
 
+# --- artifact reuse --------------------------------------------------------
+
+
 def test_reusable_candidate_must_match_experiment(tmp_path):
     candidate = tmp_path / "candidate"
     candidate.mkdir()
     (candidate / "model.zip").touch()
     (candidate / "vecnormalize.pkl").touch()
-    config = {
-        "algorithm": {"name": "ppo"},
-        "training": {"n_envs": 1},
-        "ppo": {"n_steps": 1024},
-        "policy": {},
-    }
+    config, effective = active_effective_config()
     (candidate / "artifact.json").write_text(
         json.dumps(
             {
                 "seed": 0,
                 "timesteps": 1000,
-                "effective_config": effective_training_config(config),
+                "effective_config": effective,
                 "resumed_from": None,
             }
         ),
@@ -350,12 +435,7 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
     candidate.mkdir()
     for filename in ("model.zip", "vecnormalize.pkl"):
         (candidate / filename).touch()
-    config = {
-        "algorithm": {"name": "ppo"},
-        "training": {"n_envs": 1},
-        "ppo": {"n_steps": 1024},
-        "policy": {},
-    }
+    config, effective = active_effective_config()
     (candidate / "artifact.json").write_text(
         json.dumps(
             {
@@ -363,7 +443,7 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
                 "timesteps": 50_000,
                 "requested_timesteps": 120_000,
                 "completed": False,
-                "effective_config": effective_training_config(config),
+                "effective_config": effective,
                 "resumed_from": "a prior recovery checkpoint",
             }
         ),
@@ -384,17 +464,12 @@ def test_reusable_candidate_compares_effective_configuration_opaquely(tmp_path):
     candidate.mkdir()
     for filename in ("model.zip", "vecnormalize.pkl"):
         (candidate / filename).touch()
-    config = {
-        "algorithm": {"name": "ppo"},
-        "training": {"n_envs": 1},
-        "ppo": {"n_steps": 1024},
-        "policy": {},
-    }
+    config, effective = active_effective_config()
     artifact = {
         "seed": 0,
         "timesteps": 120_000,
         "requested_timesteps": 120_000,
-        "effective_config": effective_training_config(config),
+        "effective_config": effective,
         "resumed_from": None,
     }
     (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
@@ -403,14 +478,15 @@ def test_reusable_candidate_compares_effective_configuration_opaquely(tmp_path):
         candidate, timesteps=120_000, seed=0, resume=None, config=config
     )
 
-    artifact["effective_config"]["model_parameters"]["n_steps"] = 512
+    # The runner only compares the trainer's own description for equality.
+    artifact["effective_config"] = {"a different training configuration": True}
     (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
     with pytest.raises(ValueError, match="effective configuration"):
         validate_reusable_candidate(
             candidate, timesteps=120_000, seed=0, resume=None, config=config
         )
 
-    artifact["effective_config"] = effective_training_config(config)
+    artifact["effective_config"] = effective
     artifact["seed"] = 1
     (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
     with pytest.raises(ValueError, match="seed"):
@@ -429,6 +505,9 @@ def test_runner_does_not_interpret_effective_configuration():
 
     for forbidden in ("ppo", "n_steps", "policy", "parameters", "n_envs"):
         assert forbidden not in validation
+
+
+# --- proposal validation ---------------------------------------------------
 
 
 def test_training_proposal_requires_only_its_scientific_shape():
@@ -481,6 +560,9 @@ def test_fresh_proposal_rejects_a_training_parent():
         validate_training_proposal(proposal, baseline=False)
 
 
+# --- candidate manifest ----------------------------------------------------
+
+
 def test_candidate_manifest_exposes_all_complete_artifacts(tmp_path):
     finalists = []
     for number in range(3):
@@ -513,6 +595,9 @@ def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
     )
 
     assert len(candidate_directories(tmp_path)) == 5
+
+
+# --- lineage ---------------------------------------------------------------
 
 
 def test_lineage_resolution_finishes_before_next_experiment_training(
@@ -608,4 +693,6 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     monkeypatch.setattr(
         "research.run_experiment.evaluate_final_model", evaluate_after_commit
     )
+    from research.run_experiment import execute_pending_final_benchmark
+
     assert execute_pending_final_benchmark() == 0
