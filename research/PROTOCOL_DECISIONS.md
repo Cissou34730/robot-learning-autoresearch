@@ -258,8 +258,10 @@ superseded. It does not instruct the autonomous researcher and does not replace
   researcher; the runner archives candidates without ranking them.
 
 - **Decision:** Keep the accepted policy artifact and research state under Git;
-  candidate training directories remain disposable. Archive the best challenger
-  from every completed experiment and retain concise negative results.
+  candidate training directories remain disposable. Archive the neutral
+  checkpoint inventory from every completed experiment and retain concise
+  negative results. No checkpoint is called the "best challenger" before the
+  researcher has requested and interpreted the relevant measurements.
 - **Reason:** Models are small and local, so Git gives a recoverable lineage and
   prevents a later training run from silently erasing a previously accepted
   model or repeating a failed idea.
@@ -269,12 +271,14 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Decision:** The researcher controls checkpoint timing, metrics, ranking,
   number of finalists, candidate submission, and which candidate or prior
   champion becomes the lineage for subsequent work.
-- **Runner role:** Allocate compute, execute, measure the fixed objective, and
-  persist every submitted candidate and its evidence. Do not promote, retain,
-  or roll back scientific work automatically.
-- **Workflow:** An experiment ends with measured candidates and a pending
-  researcher decision. The next proposal records `continue_from` and its
-  rationale before defining the next experiment.
+- **Runner role:** Execute the human/researcher-defined training and evaluation
+  plan, save artifacts and raw measurements, and persist explicit decisions. It
+  does not allocate the budget, select candidates, promote, retain, or roll back
+  scientific work automatically.
+- **Workflow:** Training ends with an unevaluated checkpoint inventory. The
+  researcher first requests useful measurements, then interprets them and records
+  `continue_from` plus separate model- and code-lineage rationales before defining
+  the next experiment.
 - **Reason:** Candidate selection and temporary regressions are part of the
   research method. A fixed automatic promotion rule can discard a lineage that
   is scientifically useful for curriculum or longer-term learning.
@@ -284,11 +288,15 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-08-28 — Project map is descriptive, not a code whitelist
 
+- **Status:** Clarified later on 2026-08-28: implementation files are not
+  protected. Only the human-defined objective and budget are authoritative.
+
 - **Decision:** Explain the role of important files without instructing the
   researcher that learning changes must fit a narrow per-file whitelist.
-- **Invariant:** The objective definition, robot identity, corrected task
-  geometry, and mechanical runner remain protected. Other learning and
-  measurement implementation may evolve while tests preserve the objective.
+- **Invariant:** The human-defined objective and budget remain fixed unless the
+  human changes them. The researcher may edit their implementation—including
+  robot, environment, benchmark, evaluator, tests, or runner—to correct or
+  improve the experiment without silently changing that objective.
 - **Reason:** Scientific freedom must exist in executable code, not only in the
   wording of `program.md`.
 
@@ -312,3 +320,26 @@ superseded. It does not instruct the autonomous researcher and does not replace
   remain with the researcher.
 - **Interruption:** Training and requested evaluation plans remain resumable after
   `Ctrl-C`; completed requested measurements are reused rather than repeated.
+
+## 2026-08-29 — Implemented researcher-directed experiment cycle
+
+- **Checkpoint production:** `robot_learning.train` saves a neutral candidate at
+  the first completed learning-update boundary after each configured checkpoint
+  interval, plus the final state when needed. It performs no evaluation, ranking,
+  top-three retention, or deletion based on model quality.
+- **Evaluation request:** After training, the compact brief exposes all saved
+  candidate names and the current champion when one exists. The researcher writes
+  `research/evaluation_request.json` with the candidates, episode counts, seeds,
+  and labels it wants measured. The runner executes only that plan.
+- **No tournament:** The automatic paired tournament and its automatic candidate
+  decision have been removed. Paired statistical helpers remain available only
+  as optional tools for a researcher-designed comparison.
+- **Two explicit lineages:** The following proposal must choose a model parent and
+  record whether the experiment's code/configuration is kept, reverted, or
+  revised. The brief includes the exact pre-experiment Git commit so the code
+  decision can be implemented without guessing.
+- **Interruption:** Each completed requested evaluation is persisted immediately.
+  After `Ctrl-C`, the same plan resumes and skips measurements already completed.
+- **Validation:** The active tests verify the absence of a path whitelist, neutral
+  candidate inventories, update-boundary checkpointing, researcher-owned lineage,
+  and non-duplicating evaluation resume behavior.
