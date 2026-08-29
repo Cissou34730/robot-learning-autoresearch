@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from research.run_experiment import (
+    PROTECTED_BENCHMARK_PATHS,
     append_result,
     assert_research_surface,
     candidate_directories,
@@ -13,9 +14,138 @@ from research.run_experiment import (
     latest_training_steps,
     load_state,
     main,
+    validate_experiment_semantics,
     validate_reusable_candidate,
 )
 from robot_learning.evaluate import write_progress
+
+OFFICIAL_TASK_PATHS = (
+    "robot_learning/benchmark/final_contract.py",
+    "robot_learning/benchmark/final_benchmark.py",
+    "robot_learning/scenario/final_benchmark.py",
+    "robot_learning/scenario/__init__.py",
+    "robot_learning/robots/two_joint_arm.py",
+    "robot_learning/robots/two_joint_arm.xml",
+)
+
+RESEARCHER_OWNED_PATHS = (
+    "robot_learning/scenario/reward.py",
+    "robot_learning/scenario/observations.py",
+    "robot_learning/scenario/environment.py",
+    "robot_learning/scenario/evaluation.py",
+    "robot_learning/scenario/brief.py",
+    "robot_learning/scenario/viewer.py",
+    "robot_learning/train.py",
+    "research/run_experiment.py",
+)
+
+
+def test_protected_surface_covers_the_whole_goal_reached_path():
+    assert PROTECTED_BENCHMARK_PATHS == set(OFFICIAL_TASK_PATHS)
+
+
+@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
+def test_research_proposal_cannot_change_the_official_task(protected_path):
+    with pytest.raises(ValueError, match="human-owned final benchmark"):
+        validate_experiment_semantics(
+            {}, "training", "transfer", None, [protected_path], False
+        )
+
+
+@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
+def test_official_task_protection_ignores_path_separator(protected_path):
+    with pytest.raises(ValueError, match="human-owned final benchmark"):
+        validate_experiment_semantics(
+            {},
+            "training",
+            "transfer",
+            None,
+            [protected_path.replace("/", "\\")],
+            False,
+        )
+
+
+@pytest.mark.parametrize("research_path", RESEARCHER_OWNED_PATHS)
+def test_researcher_owned_files_remain_changeable(research_path):
+    validate_experiment_semantics(
+        {}, "training", "transfer", None, [research_path], False
+    )
+
+
+def test_scenario_adapter_cannot_bypass_the_protected_benchmark():
+    from robot_learning.benchmark import final_benchmark as protected
+    from robot_learning.scenario import final_benchmark as adapter
+
+    assert adapter._protected_evaluate_final_model is protected.evaluate_final_model
+    assert adapter.FINAL_SUCCESS_PERCENT == 98.0
+
+
+def test_protected_task_files_exist_at_their_protected_paths():
+    root = Path(__file__).resolve().parent.parent.parent
+
+    for protected_path in OFFICIAL_TASK_PATHS:
+        assert (root / protected_path).is_file(), protected_path
+
+
+def _pending_final_benchmark_state(monkeypatch, tmp_path):
+    from research.run_experiment import artifact_fingerprint
+
+    accepted = tmp_path / "accepted"
+    accepted.mkdir()
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        (accepted / filename).write_bytes(b"artifact")
+    state_path = tmp_path / "state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
+                "official_metrics": None,
+                "pending_final_benchmark": {
+                    "experiment": 9,
+                    "selected": "candidate",
+                    "artifact": "accepted",
+                    "fingerprint": artifact_fingerprint(accepted),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    return state_path
+
+
+@pytest.mark.parametrize(
+    ("official_success_percent", "goal_reached"), [(98.0, True), (97.9, False)]
+)
+def test_goal_reached_follows_only_the_protected_benchmark(
+    monkeypatch, tmp_path, official_success_percent, goal_reached
+):
+    state_path = _pending_final_benchmark_state(monkeypatch, tmp_path)
+
+    def protected_benchmark(model_path, algorithm=None, progress_callback=None):
+        del model_path, algorithm, progress_callback
+        return {
+            "schema_version": 1,
+            "episodes": 200,
+            "seed": 1000,
+            "success_percent": official_success_percent,
+        }
+
+    # Only the protected evaluator is stubbed: the real adapter derives the verdict.
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark._protected_evaluate_final_model",
+        protected_benchmark,
+    )
+
+    assert execute_pending_final_benchmark() == 0
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["official_metrics"]["goal_reached"] is goal_reached
+    assert (tmp_path / "GOAL_REACHED").exists() is goal_reached
 
 
 def test_research_surface_has_no_file_whitelist(monkeypatch):

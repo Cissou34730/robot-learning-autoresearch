@@ -43,8 +43,10 @@ The scenario lives in `robot_learning/scenario/`:
 * `reward.py` — the complete reward, including its coefficients;
 * `evaluation.py` — research evaluation, its diagnostics and its summary;
 * `brief.py` — how measured evidence is rendered into the brief;
-* `viewer.py` — MuJoCo live training view and trained-policy playback;
-* `final_benchmark.py` — thin adapter over the protected benchmark.
+* `viewer.py` — MuJoCo live training view and trained-policy playback.
+
+`final_benchmark.py` also lives in that package but is **not** researcher-mutable:
+it is the adapter that declares the objective reached, so it is human-owned.
 
 These are ordinary research code files. Changing them is a normal research
 change recorded by the existing Git code lineage.
@@ -70,8 +72,15 @@ Research may change:
 * other training mechanisms that do not redefine the official task.
 
 `robot_learning/benchmark/` holds the protected task definition and the official
-evaluator. Research proposals may not change `final_contract.py` or
-`final_benchmark.py`.
+evaluator. A research proposal is rejected if it changes any file on the path
+that can declare the objective reached, or the official robot it measures:
+
+* `robot_learning/benchmark/final_contract.py`;
+* `robot_learning/benchmark/final_benchmark.py`;
+* `robot_learning/scenario/final_benchmark.py`;
+* `robot_learning/scenario/__init__.py`;
+* `robot_learning/robots/two_joint_arm.py`;
+* `robot_learning/robots/two_joint_arm.xml`.
 
 ## Terminology
 

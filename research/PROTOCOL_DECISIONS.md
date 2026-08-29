@@ -494,3 +494,29 @@ superseded. It does not instruct the autonomous researcher and does not replace
   in `robot_learning/training/research_config.py`, then briefly in
   `robot_learning/scenario/environment.py`.
 
+## 2026-08-29 — The whole GOAL_REACHED path is human-owned
+
+- **Problem:** After the scenario separation, the completion path ran through
+  `robot_learning/scenario/final_benchmark.py`, which converts the protected
+  result into `goal_reached`. That file was ordinary research code, so a
+  proposal could have returned `goal_reached = True` without passing the
+  human-owned benchmark.
+- **Decision:** The protected surface now covers every file that can declare the
+  objective reached or redefine the robot it is measured on:
+  `benchmark/final_contract.py`, `benchmark/final_benchmark.py`,
+  `scenario/final_benchmark.py`, `scenario/__init__.py`,
+  `robots/two_joint_arm.py` and `robots/two_joint_arm.xml`.
+  `scenario/__init__.py` is included because it is the module from which the
+  runner imports `evaluate_final_model`.
+- **Mechanism:** The existing research-surface validation is unchanged; only its
+  explicit path set grew. No registry, manifest, permission system or ownership
+  framework was introduced.
+- **Scope:** These files are human-owned for the duration of one research
+  problem, not immutable forever. A human setting up a new scenario may replace
+  the benchmark, the robot and the task contract deliberately.
+- **Unaffected:** Reward, observations, training environment, evaluation,
+  diagnostics, brief evidence and rendering remain freely researcher-owned.
+- **Reason:** Only the protected human-owned benchmark may declare the research
+  objective reached. Generic orchestration may transport that boolean; mutable
+  research code must not be able to manufacture it.
+

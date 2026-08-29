@@ -52,9 +52,15 @@ STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
+# Human-owned for the duration of this research problem: every file on the path
+# that can declare the objective reached, plus the official robot it measures.
 PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/benchmark/final_benchmark.py",
     "robot_learning/benchmark/final_contract.py",
+    "robot_learning/scenario/final_benchmark.py",
+    "robot_learning/scenario/__init__.py",
+    "robot_learning/robots/two_joint_arm.py",
+    "robot_learning/robots/two_joint_arm.xml",
 }
 
 
@@ -959,7 +965,8 @@ def validate_experiment_semantics(
 ) -> None:
     if PROTECTED_BENCHMARK_PATHS & {path.replace("\\", "/") for path in code_changes}:
         raise ValueError(
-            "the human-owned final benchmark cannot be changed by a research proposal"
+            "the human-owned final benchmark and official robot cannot be "
+            "changed by a research proposal"
         )
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
