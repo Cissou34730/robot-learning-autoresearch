@@ -326,9 +326,11 @@ def render_research_brief() -> str:
                 f"Experiment {pending_evaluation['experiment']} finished training. "
                 "The runner saved checkpoints but made no ranking or selection."
             ),
-            "Available candidates:",
+            f"Available candidates ({len(pending_evaluation['candidates'])}):",
         ]
-        for candidate in pending_evaluation["candidates"]:
+        for candidate in sorted(
+            pending_evaluation["candidates"], key=lambda item: int(item["timesteps"])
+        ):
             evaluation_lines.append(
                 f"- `{candidate['name']}` — {int(candidate['timesteps']):,} steps; "
                 f"artifact `{candidate['artifact']}`."
@@ -399,6 +401,15 @@ def render_research_brief() -> str:
                 f"{champion_progress['required_steps']}."
             )
 
+    state_last_index = int(state.get("last_experiment", 0))
+    latest_result_index = int(latest_result["index"]) if latest_result else 0
+    if state_last_index >= latest_result_index:
+        displayed_last_experiment = state_last_index or "none"
+        displayed_last_verdict = state.get("last_verdict", "none")
+    else:
+        displayed_last_experiment = latest_result_index
+        displayed_last_verdict = latest_result["verdict"]
+
     lines = [
         "# Compact Research Brief",
         "",
@@ -438,12 +449,10 @@ def render_research_brief() -> str:
             f"{int(state.get('accepted_training_steps', 0)):,} steps"
         ),
         (
-            f"- Last experiment: "
-            f"{latest_result['index'] if latest_result else state.get('last_experiment', 'none')}"
+            f"- Last experiment: {displayed_last_experiment}"
         ),
         (
-            f"- Last verdict: "
-            f"{latest_result['verdict'] if latest_result else state.get('last_verdict', 'none')}"
+            f"- Last verdict: {displayed_last_verdict}"
         ),
         *evaluation_lines,
         *decision_lines,

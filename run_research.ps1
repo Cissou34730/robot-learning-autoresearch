@@ -93,20 +93,29 @@ while ($true) {
         if (-not $evaluationPlanExists) {
             Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
             Write-Host "=== Researcher designing evaluations for experiment $($researchState.pending_evaluation_request.experiment) ==="
-        $evaluationPrompt = @"
-Read research/program.md, research/brief.md, research/last_train_summary.md, and
-research/current_params.json. Training is complete. Decide which saved candidates
-need evaluation and which episode counts, seeds, comparisons, or diagnostics are
-useful for this experiment. You may modify evaluation or diagnostic code when the
-hypothesis requires it, but preserve the human-defined objective. Write
-research/evaluation_request.json using the experiment number and an `evaluations`
-list. Each evaluation names `candidate`, `episodes`, `seed`, and a concise `label`.
-Use only the evidence needed for the scientific decision. Do not start training,
-evaluation, or a new experiment.
-"@
+            $evaluationPrompt = @(
+                "This is the complete evaluation-design task; do not wait for more input."
+                "Read research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+                "Training is complete. Decide which saved candidates need evaluation and which episode counts, seeds, comparisons, or diagnostics are useful for this experiment."
+                "You may modify evaluation or diagnostic code when the hypothesis requires it, while preserving the human-defined objective."
+                "Write research/evaluation_request.json using the experiment number and an evaluations list."
+                "Each evaluation names candidate, episodes, seed, and a concise label."
+                "Use only the evidence needed for the scientific decision. Do not start training, evaluation, or a new experiment."
+            ) -join " "
             opencode run --model $model --variant $reasoning $evaluationPrompt
             if (-not (Test-Path "research\evaluation_request.json")) {
-                throw "Researcher ended without creating research/evaluation_request.json."
+                Write-Host "=== Evaluation request missing; retrying the same bounded task once ==="
+                $evaluationRetryPrompt = @(
+                    "Complete the pending evaluation-design task now; this message is complete."
+                    "Read only research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+                    "Do not ask for more input and do not propose a new training experiment."
+                    "Choose the useful saved candidates, episode counts, and seeds, then write research/evaluation_request.json with the pending experiment number and an evaluations list."
+                    "Do not run evaluation or training yourself."
+                ) -join " "
+                opencode run --model $model --variant $reasoning $evaluationRetryPrompt
+                if (-not (Test-Path "research\evaluation_request.json")) {
+                    throw "Researcher ended twice without creating research/evaluation_request.json."
+                }
             }
         }
         else {
@@ -153,15 +162,14 @@ evaluation, or a new experiment.
     Write-Host "=== New experiment at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
-    $researchPrompt = @"
-Read research/program.md, research/brief.md, research/last_train_summary.md, and
-research/current_params.json. Treat these compact files as the complete default
-research context. Do not read research/results.jsonl, research/EXPERIMENTS.md,
-research/postmortems.md, research/last_evaluation.json, research/run_experiment.py,
-or full logs unless the compact brief identifies one specific ambiguity that
-requires one of them. Prepare exactly one protocol-compliant experiment and
-write research/proposal.json before exiting. Do not launch training or the runner.
-"@
+    $researchPrompt = @(
+        "This is the complete research task; do not wait for more input."
+        "Read research/program.md, research/brief.md, research/last_train_summary.md, and research/current_params.json."
+        "Treat these compact files as the complete default research context."
+        "Do not read research/results.jsonl, research/EXPERIMENTS.md, research/postmortems.md, research/last_evaluation.json, research/run_experiment.py, or full logs unless the compact brief identifies one specific ambiguity that requires one of them."
+        "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
+        "Do not launch training or the runner."
+    ) -join " "
     opencode run --model $model --variant $reasoning $researchPrompt
 
     Update-ResearchBrief
@@ -173,14 +181,13 @@ write research/proposal.json before exiting. Do not launch training or the runne
             continue
         }
         Write-Host "=== Researcher ended without a proposal; retrying once with bounded context ==="
-        $retryPrompt = @"
-The previous researcher session ended before writing research/proposal.json.
-Complete that same single research task; do not begin a second hypothesis.
-Read only research/program.md, research/brief.md, research/last_train_summary.md,
-research/current_params.json, and git status. Use existing research-surface edits,
-if any, only when they clearly belong to that unfinished experiment. Write a
-valid research/proposal.json before exiting. Do not launch training or the runner.
-"@
+        $retryPrompt = @(
+            "The previous researcher session ended before writing research/proposal.json."
+            "Complete that same single research task; do not begin a second hypothesis and do not wait for more input."
+            "Read only research/program.md, research/brief.md, research/last_train_summary.md, research/current_params.json, and git status."
+            "Use existing research edits, if any, only when they clearly belong to that unfinished experiment."
+            "Write a valid research/proposal.json before exiting. Do not launch training or the runner."
+        ) -join " "
         opencode run --model $model --variant $reasoning $retryPrompt
         Update-ResearchBrief
         Save-ResearchMemory
