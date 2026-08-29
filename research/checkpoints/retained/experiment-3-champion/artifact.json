@@ -2,10 +2,10 @@
   "schema_version": 1,
   "algorithm": "ppo",
   "seed": 0,
-  "timesteps": 120832,
+  "timesteps": 60416,
   "requested_timesteps": 120000,
   "completed": true,
-  "resumed_from": "C:\\Users\\cyril.beurier\\code\\robot-learning-autoresearch\\research\\checkpoints\\accepted\\model.zip",
+  "resumed_from": null,
   "n_envs": 1,
   "parameters": {
     "n_steps": 1024,
