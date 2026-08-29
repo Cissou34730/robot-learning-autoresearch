@@ -1,0 +1,149 @@
+{
+  "candidates": [
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-100352",
+      "evaluations": [],
+      "name": "checkpoint-100352",
+      "timesteps": 100352
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-10240",
+      "evaluations": [],
+      "name": "checkpoint-10240",
+      "timesteps": 10240
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-105472",
+      "evaluations": [],
+      "name": "checkpoint-105472",
+      "timesteps": 105472
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-110592",
+      "evaluations": [],
+      "name": "checkpoint-110592",
+      "timesteps": 110592
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-115712",
+      "evaluations": [],
+      "name": "checkpoint-115712",
+      "timesteps": 115712
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-120832",
+      "evaluations": [],
+      "name": "checkpoint-120832",
+      "timesteps": 120832
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-15360",
+      "evaluations": [],
+      "name": "checkpoint-15360",
+      "timesteps": 15360
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-20480",
+      "evaluations": [],
+      "name": "checkpoint-20480",
+      "timesteps": 20480
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-25600",
+      "evaluations": [],
+      "name": "checkpoint-25600",
+      "timesteps": 25600
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-30720",
+      "evaluations": [],
+      "name": "checkpoint-30720",
+      "timesteps": 30720
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-35840",
+      "evaluations": [],
+      "name": "checkpoint-35840",
+      "timesteps": 35840
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-40960",
+      "evaluations": [],
+      "name": "checkpoint-40960",
+      "timesteps": 40960
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-45056",
+      "evaluations": [],
+      "name": "checkpoint-45056",
+      "timesteps": 45056
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-50176",
+      "evaluations": [],
+      "name": "checkpoint-50176",
+      "timesteps": 50176
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-5120",
+      "evaluations": [],
+      "name": "checkpoint-5120",
+      "timesteps": 5120
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-55296",
+      "evaluations": [],
+      "name": "checkpoint-55296",
+      "timesteps": 55296
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-60416",
+      "evaluations": [],
+      "name": "checkpoint-60416",
+      "timesteps": 60416
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-65536",
+      "evaluations": [],
+      "name": "checkpoint-65536",
+      "timesteps": 65536
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-70656",
+      "evaluations": [],
+      "name": "checkpoint-70656",
+      "timesteps": 70656
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-75776",
+      "evaluations": [],
+      "name": "checkpoint-75776",
+      "timesteps": 75776
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-80896",
+      "evaluations": [],
+      "name": "checkpoint-80896",
+      "timesteps": 80896
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-86016",
+      "evaluations": [],
+      "name": "checkpoint-86016",
+      "timesteps": 86016
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-90112",
+      "evaluations": [],
+      "name": "checkpoint-90112",
+      "timesteps": 90112
+    },
+    {
+      "artifact": "research\\checkpoints\\challengers\\experiment-2\\checkpoint-95232",
+      "evaluations": [],
+      "name": "checkpoint-95232",
+      "timesteps": 95232
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,47 @@
+{
+  "algorithm": {
+    "name": "ppo"
+  },
+  "policy": {
+    "activation": "tanh",
+    "net_arch": [
+      64,
+      64
+    ]
+  },
+  "ppo": {
+    "batch_size": 64,
+    "ent_coef": 0.01,
+    "gae_lambda": 0.95,
+    "gamma": 0.99,
+    "learning_rate": 0.0003,
+    "n_steps": 1024
+  },
+  "reward": {
+    "ACTION_COST_COEFFICIENT": 0.05,
+    "CLOSENESS_COEFFICIENT": 4.0,
+    "CLOSENESS_LENGTH_SCALE": 0.05,
+    "HOLD_COMPLETE_BONUS": 50.0,
+    "HOLD_EXIT_FORFEIT_FRACTION": 0.5,
+    "HOLD_PROGRESS_BONUS": 50.0,
+    "HOLD_PROGRESS_EXPONENT": 2.0,
+    "OUTSIDE_BAND_PENALTY": 0.5,
+    "OUTSIDE_BAND_WIDTH": 0.01,
+    "PROGRESS_COEFFICIENT": 10.0
+  },
+  "sac": {
+    "batch_size": 256,
+    "buffer_size": 120000,
+    "ent_coef": "auto",
+    "gamma": 0.99,
+    "gradient_steps": 1,
+    "learning_rate": 0.0003,
+    "learning_starts": 1000,
+    "tau": 0.005,
+    "train_freq": 1
+  },
+  "training": {
+    "checkpoint_every_steps": 5000,
+    "n_envs": 1
+  }
+}
