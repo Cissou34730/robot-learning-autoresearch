@@ -11,7 +11,11 @@ import mujoco
 import numpy as np
 import pytest
 
-from robot_learning.scenario import evaluate_research_model, make_training_env
+from robot_learning.scenario import (
+    evaluate_research_model,
+    make_training_env,
+    summarize_research_evaluations,
+)
 from robot_learning.scenario.evaluation import evaluate_research_model as _evaluation
 from robot_learning.scenario.observations import reach_observation
 from robot_learning.scenario.reward import reach_reward
@@ -108,6 +112,24 @@ def test_research_evaluation_preserves_current_metrics(monkeypatch):
 
 def test_the_boundary_exposes_the_scenario_implementation():
     assert evaluate_research_model is _evaluation
+
+
+def test_evaluation_summary_is_unchanged_after_delegation():
+    summary = summarize_research_evaluations(GOLDENS["evaluation_summary_inputs"])
+
+    assert summary == GOLDENS["evaluation_summary"]
+
+
+def test_evaluation_summary_drops_heavy_traces_and_ranks_worst_first():
+    summary = summarize_research_evaluations(GOLDENS["evaluation_summary_inputs"])
+
+    assert all(
+        "distance_trace_cm" not in item for item in summary["failure_diagnostics"]
+    )
+    holds = [
+        item["longest_consecutive_steps"] for item in summary["failure_diagnostics"]
+    ]
+    assert holds == sorted(holds)
 
 
 def test_final_benchmark_adapter_adds_an_explicit_goal_verdict(monkeypatch):

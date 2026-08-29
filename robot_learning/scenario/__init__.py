@@ -11,7 +11,10 @@ redesigning the runner, training, lineage, or benchmark lifecycle.
 
 from robot_learning.scenario.brief import render_scenario_evidence
 from robot_learning.scenario.environment import make_training_env
-from robot_learning.scenario.evaluation import evaluate_research_model
+from robot_learning.scenario.evaluation import (
+    evaluate_research_model,
+    summarize_research_evaluations,
+)
 from robot_learning.scenario.final_benchmark import evaluate_final_model
 
 __all__ = [
@@ -19,4 +22,5 @@ __all__ = [
     "evaluate_research_model",
     "make_training_env",
     "render_scenario_evidence",
+    "summarize_research_evaluations",
 ]

@@ -9,11 +9,13 @@ from research.run_experiment import (
     experiment_family,
     parameter_change_records,
     plan_previous_result_decision,
-    summarize_evaluations,
     training_budget,
     training_parent,
     validate_experiment_semantics,
     validate_training_proposal,
+)
+from robot_learning.scenario import (
+    summarize_research_evaluations as summarize_evaluations,
 )
 from robot_learning.training.comparison import (
     exact_mcnemar_pvalue,

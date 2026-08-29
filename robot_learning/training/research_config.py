@@ -7,8 +7,9 @@ evaluation semantics - lives in `robot_learning/scenario/` and is versioned as
 ordinary research code through the existing Git code lineage.
 
 The research-evaluation defaults below are generic orchestration settings shared
-by the runner and the evaluation CLI. Official benchmark parameters remain owned
-by the protected scenario benchmark.
+by the runner and the evaluation CLI: how many episodes to run and from which
+seed. What counts as success is a scenario contract and lives behind
+`robot_learning.scenario`, never here.
 """
 
 import copy
@@ -20,7 +21,6 @@ CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
 
 RESEARCH_EVALUATION_EPISODES = 200
 RESEARCH_EVALUATION_SEED = 1000
-RESEARCH_SUCCESS_TARGET_PERCENT = 98.0
 
 
 def validate_param_overrides(overrides: dict) -> None:

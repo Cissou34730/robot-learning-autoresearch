@@ -349,11 +349,6 @@ def render_research_brief() -> str:
     accepted_seed_passes = (
         accepted_metrics.get("seeds_passing_98_percent") if accepted_metrics else None
     )
-    if accepted_metrics and accepted_seed_count is None:
-        accepted_seed_count = 1
-        accepted_seed_passes = int(
-            float(accepted_metrics.get("success_percent", 0)) >= 98.0
-        )
     pending_evaluation = state.get("pending_evaluation_request")
     evaluation_lines: list[str] = []
     if pending_evaluation:

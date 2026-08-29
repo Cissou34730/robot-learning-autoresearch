@@ -10,7 +10,10 @@ from pathlib import Path
 
 import pytest
 
+from research.build_research_brief import render_research_brief
 from robot_learning import scenario
+from robot_learning.scenario import summarize_research_evaluations
+from robot_learning.training import research_config
 from robot_learning.training.research_config import load_experiment_config
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -20,6 +23,17 @@ SCENARIO_BOUNDARY = (
     "evaluate_research_model",
     "make_training_env",
     "render_scenario_evidence",
+    "summarize_research_evaluations",
+)
+
+SCENARIO_EVALUATION_FIELDS = (
+    "failed_episode_progress",
+    "longest_consecutive_steps",
+    "best_window_inside_steps",
+    "best_window_excess_cm",
+    "distance_trace_cm",
+    "target_radius_cm",
+    "target_angle_degrees",
 )
 
 GENERIC_CORE_MODULES = (
@@ -119,6 +133,115 @@ def test_scenario_document_defines_the_current_problem():
     for scenario_fact in ("6–20 cm", "1 cm", "2 seconds", "98%"):
         assert scenario_fact in scenario_text
         assert scenario_fact not in program_text
+
+
+def test_runner_does_not_interpret_scenario_evaluation_fields():
+    source = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
+
+    for field in SCENARIO_EVALUATION_FIELDS:
+        assert field not in source, f"run_experiment.py interprets {field}"
+
+
+def test_scenario_owns_the_evaluation_summary():
+    runner_source = (ROOT / "research" / "run_experiment.py").read_text(
+        encoding="utf-8"
+    )
+    scenario_source = (
+        ROOT / "robot_learning" / "scenario" / "evaluation.py"
+    ).read_text(encoding="utf-8")
+
+    assert "summarize_research_evaluations" in runner_source
+    assert "def summarize_research_evaluations" in scenario_source
+    assert "def summarize_evaluations" not in runner_source
+
+
+def test_task_success_threshold_is_not_generic_configuration():
+    config_source = (
+        ROOT / "robot_learning" / "training" / "research_config.py"
+    ).read_text(encoding="utf-8")
+    runner_source = (ROOT / "research" / "run_experiment.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "98" not in config_source
+    assert "SUCCESS_TARGET" not in config_source
+    assert "98" not in runner_source
+    assert not hasattr(research_config, "RESEARCH_SUCCESS_TARGET_PERCENT")
+
+
+def test_scenario_owns_the_current_success_target():
+    from robot_learning.benchmark import final_contract
+    from robot_learning.scenario import evaluation as scenario_evaluation
+
+    assert scenario_evaluation.FINAL_SUCCESS_PERCENT == 98.0
+    assert final_contract.FINAL_SUCCESS_PERCENT == 98.0
+
+    summary = summarize_research_evaluations(
+        [
+            {
+                "episodes": 1,
+                "seed": 1,
+                "success_percent": 98.0,
+                "failed_episode_progress": {
+                    "failed_episodes": 0,
+                    "longest_consecutive_steps_mean": 100.0,
+                    "best_window_inside_steps_mean": 100.0,
+                    "best_window_excess_cm_mean": 0.0,
+                    "required_steps": 100,
+                },
+                "episode_results": [],
+            },
+            {
+                "episodes": 1,
+                "seed": 2,
+                "success_percent": 97.9,
+                "failed_episode_progress": {
+                    "failed_episodes": 0,
+                    "longest_consecutive_steps_mean": 100.0,
+                    "best_window_inside_steps_mean": 100.0,
+                    "best_window_excess_cm_mean": 0.0,
+                    "required_steps": 100,
+                },
+                "episode_results": [],
+            },
+        ]
+    )
+
+    assert summary["seeds_passing_98_percent"] == 1
+
+
+def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(
+            {
+                "accepted_artifact": "accepted",
+                "accepted_metrics": {
+                    "episodes": 400,
+                    "seed_count": 2,
+                    "seeds_passing_98_percent": 2,
+                    "success_percent": 99.0,
+                    "pooled_success_percent": 99.0,
+                    "failed_episode_progress": {
+                        "failed_episodes": 4,
+                        "longest_consecutive_steps_mean": 91.0,
+                        "best_window_inside_steps_mean": 95.0,
+                        "best_window_excess_cm_mean": 0.1,
+                        "required_steps": 100,
+                    },
+                    "failure_diagnostics": [],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+
+    assert "Accepted seeds passing 98%: 2/2" in brief
 
 
 def test_runtime_configuration_carries_no_reward():

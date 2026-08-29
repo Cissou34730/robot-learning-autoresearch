@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from robot_learning.benchmark.final_contract import FINAL_SUCCESS_PERCENT
 from robot_learning.benchmark.metrics import (
     episode_hold_progress,
     milestone_steps,
@@ -19,6 +20,9 @@ from robot_learning.benchmark.spec import HOLD_SECONDS
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
+
+# Bumped when the meaning of a scenario evaluation summary changes.
+RESEARCH_EVALUATION_SUMMARY_VERSION = 1
 
 
 def evaluate_research_model(
@@ -93,4 +97,84 @@ def evaluate_research_model(
             "median": float(np.median(final_distances) * 100),
             "worst": float(np.max(final_distances) * 100),
         },
+    }
+
+
+def summarize_research_evaluations(
+    evaluations: list[dict],
+    summary_version: int = RESEARCH_EVALUATION_SUMMARY_VERSION,
+) -> dict:
+    """Pool several scenario evaluations into the compact summary the runner stores.
+
+    The runner treats the result as opaque apart from episode counts, seeds and
+    success percentages; every hold/tolerance field below is scenario semantics.
+    """
+    if not evaluations:
+        raise ValueError("an evaluation summary requires at least one evaluation")
+    total_episodes = sum(int(item["episodes"]) for item in evaluations)
+    total_successes = sum(
+        float(item["success_percent"]) * int(item["episodes"]) / 100
+        for item in evaluations
+    )
+    total_failures = sum(
+        int(item["failed_episode_progress"]["failed_episodes"]) for item in evaluations
+    )
+    required = int(evaluations[0]["failed_episode_progress"]["required_steps"])
+
+    def failure_weighted_mean(field: str, perfect: float) -> float:
+        if not total_failures:
+            return perfect
+        return (
+            sum(
+                float(item["failed_episode_progress"][field])
+                * int(item["failed_episode_progress"]["failed_episodes"])
+                for item in evaluations
+            )
+            / total_failures
+        )
+
+    seed_success = {
+        str(item["seed"]): float(item["success_percent"]) for item in evaluations
+    }
+    failed_diagnostics = [
+        {key: value for key, value in episode.items() if key != "distance_trace_cm"}
+        for evaluation in evaluations
+        for episode in evaluation.get("episode_results", [])
+        if not episode["success"]
+    ]
+    failed_diagnostics.sort(
+        key=lambda item: (
+            item["longest_consecutive_steps"],
+            item["best_window_inside_steps"],
+            -item["best_window_excess_cm"],
+        )
+    )
+    pooled_success = 100 * total_successes / total_episodes
+    return {
+        "schema_version": 1,
+        "evaluation_summary_version": summary_version,
+        "episodes": total_episodes,
+        "seed_count": len(evaluations),
+        "seed_success_percent": seed_success,
+        # Historical field name; the threshold is the scenario success contract.
+        "seeds_passing_98_percent": sum(
+            success >= FINAL_SUCCESS_PERCENT for success in seed_success.values()
+        ),
+        "worst_seed_success_percent": min(seed_success.values()),
+        "pooled_success_percent": pooled_success,
+        "success_percent": pooled_success,
+        "failed_episode_progress": {
+            "failed_episodes": total_failures,
+            "longest_consecutive_steps_mean": failure_weighted_mean(
+                "longest_consecutive_steps_mean", float(required)
+            ),
+            "best_window_inside_steps_mean": failure_weighted_mean(
+                "best_window_inside_steps_mean", float(required)
+            ),
+            "best_window_excess_cm_mean": failure_weighted_mean(
+                "best_window_excess_cm_mean", 0.0
+            ),
+            "required_steps": required,
+        },
+        "failure_diagnostics": failed_diagnostics,
     }

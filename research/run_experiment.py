@@ -16,12 +16,14 @@ from pathlib import Path
 from typing import Any
 
 from research.build_research_brief import write_training_summary
-from robot_learning.scenario import evaluate_final_model
+from robot_learning.scenario import (
+    evaluate_final_model,
+    summarize_research_evaluations,
+)
 from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.research_config import (
     RESEARCH_EVALUATION_EPISODES,
     RESEARCH_EVALUATION_SEED,
-    RESEARCH_SUCCESS_TARGET_PERCENT,
     load_experiment_config,
     merge_param_overrides,
     validate_param_overrides,
@@ -50,7 +52,6 @@ STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
-EVALUATION_SUMMARY_VERSION = 1
 PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/benchmark/final_benchmark.py",
     "robot_learning/benchmark/final_contract.py",
@@ -442,91 +443,10 @@ def evaluate_artifact(
     announce(
         f"[evaluation] {label} complete in "
         f"{format_duration(time.monotonic() - started)} | "
-        f"success: {metrics['success_percent']:.1f}% | "
-        f"failed episodes: {metrics['failed_episode_progress']['failed_episodes']} | "
-        f"failed progress: "
-        f"{metrics['failed_episode_progress']['longest_consecutive_steps_mean']:.1f}/"
-        f"{metrics['failed_episode_progress']['required_steps']} | "
-        f"best window: "
-        f"{metrics['failed_episode_progress']['best_window_inside_steps_mean']:.1f}/"
-        f"{metrics['failed_episode_progress']['required_steps']}"
+        f"success: {metrics['success_percent']:.1f}% over "
+        f"{int(metrics['episodes'])} episodes"
     )
     return metrics
-
-
-def summarize_evaluations(
-    evaluations: list[dict],
-    summary_version: int = EVALUATION_SUMMARY_VERSION,
-) -> dict:
-    if not evaluations:
-        raise ValueError("an evaluation summary requires at least one evaluation")
-    total_episodes = sum(int(item["episodes"]) for item in evaluations)
-    total_successes = sum(
-        float(item["success_percent"]) * int(item["episodes"]) / 100
-        for item in evaluations
-    )
-    total_failures = sum(
-        int(item["failed_episode_progress"]["failed_episodes"]) for item in evaluations
-    )
-    required = int(evaluations[0]["failed_episode_progress"]["required_steps"])
-
-    def failure_weighted_mean(field: str, perfect: float) -> float:
-        if not total_failures:
-            return perfect
-        return (
-            sum(
-                float(item["failed_episode_progress"][field])
-                * int(item["failed_episode_progress"]["failed_episodes"])
-                for item in evaluations
-            )
-            / total_failures
-        )
-
-    seed_success = {
-        str(item["seed"]): float(item["success_percent"]) for item in evaluations
-    }
-    failed_diagnostics = [
-        {key: value for key, value in episode.items() if key != "distance_trace_cm"}
-        for evaluation in evaluations
-        for episode in evaluation.get("episode_results", [])
-        if not episode["success"]
-    ]
-    failed_diagnostics.sort(
-        key=lambda item: (
-            item["longest_consecutive_steps"],
-            item["best_window_inside_steps"],
-            -item["best_window_excess_cm"],
-        )
-    )
-    pooled_success = 100 * total_successes / total_episodes
-    return {
-        "schema_version": 1,
-        "evaluation_summary_version": summary_version,
-        "episodes": total_episodes,
-        "seed_count": len(evaluations),
-        "seed_success_percent": seed_success,
-        "seeds_passing_98_percent": sum(
-            success >= RESEARCH_SUCCESS_TARGET_PERCENT
-            for success in seed_success.values()
-        ),
-        "worst_seed_success_percent": min(seed_success.values()),
-        "pooled_success_percent": pooled_success,
-        "success_percent": pooled_success,
-        "failed_episode_progress": {
-            "failed_episodes": total_failures,
-            "longest_consecutive_steps_mean": failure_weighted_mean(
-                "longest_consecutive_steps_mean", float(required)
-            ),
-            "best_window_inside_steps_mean": failure_weighted_mean(
-                "best_window_inside_steps_mean", float(required)
-            ),
-            "best_window_excess_cm_mean": failure_weighted_mean(
-                "best_window_excess_cm_mean", 0.0
-            ),
-            "required_steps": required,
-        },
-        "failure_diagnostics": failed_diagnostics,
-    }
 
 
 def requested_paired_comparisons(
@@ -734,12 +654,14 @@ def execute_pending_evaluations() -> int:
     for candidate in candidates:
         evaluations = candidate.get("evaluations", [])
         candidate["summary"] = (
-            summarize_evaluations(evaluations) if evaluations else None
+            summarize_research_evaluations(evaluations) if evaluations else None
         )
 
     champion_evaluations = available.get("champion", {}).get("evaluations", [])
     champion_summary = (
-        summarize_evaluations(champion_evaluations) if champion_evaluations else None
+        summarize_research_evaluations(champion_evaluations)
+        if champion_evaluations
+        else None
     )
 
     comparison_inputs = {
