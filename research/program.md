@@ -14,7 +14,7 @@ This file defines the research protocol. It does not define the problem.
 
 Read both files. Neither is sufficient alone.
 
-The objective defines the problem. Do not make the reported task easier by changing the robot, the task distribution, the tolerance, the success definition, or the official benchmark.
+The objective defines the problem. Do not make the reported task easier by changing the robot, the task distribution, the success definition, or the official benchmark.
 
 If the official problem definition or benchmark appears incorrect, stop and report the issue. Correcting the official problem requires a human decision.
 
@@ -126,10 +126,10 @@ Examples include:
 
 * reward-component attribution;
 * action magnitude or saturation;
-* target-entry frequency;
-* hold-duration distribution;
-* distance trajectories;
-* directional or geometric failure patterns;
+* success-region entry frequency;
+* success-condition duration distribution;
+* task-error trajectories;
+* geometric or directional failure patterns;
 * value/policy dynamics;
 * normalization behavior.
 
@@ -169,9 +169,9 @@ First distinguish a learning failure from a task or simulation failure.
 
 When observed behavior appears impossible or inconsistent, inspect:
 
-* physical reachability;
+* task feasibility;
 * coordinate systems;
-* target geometry;
+* problem geometry;
 * units and scale;
 * control timestep;
 * action mapping;
@@ -186,11 +186,11 @@ For a valid environment, distinguish among different behavioral failures.
 
 Examples include:
 
-* failure to reach the target region;
+* failure to enter the success region;
 * slow approach;
 * poor final precision;
-* entering tolerance but failing to remain there;
-* oscillation near the target;
+* entering the success region but failing to remain there;
+* oscillation near the success region;
 * repeated overshoot;
 * action saturation;
 * excessive control suppression;
@@ -204,7 +204,7 @@ Examples include:
 * algorithm or optimizer limitations;
 * training-seed sensitivity.
 
-Reaching and holding are distinct control problems.
+Task acquisition and stability may be distinct control problems.
 
 See `research/scenario.md` for how the current task decomposes and which failure mechanisms are distinguishable in it.
 
@@ -272,7 +272,7 @@ Example:
       "candidate": "checkpoint-120000",
       "episodes": 50,
       "seed": 2000,
-      "label": "hold-stability evaluation"
+      "label": "stability evaluation"
     }
   ],
   "paired_comparisons": [
@@ -663,7 +663,7 @@ The researcher cannot choose:
 
 * official seed;
 * official episode count;
-* official target distribution;
+* official task distribution;
 * official robot mechanics;
 * success definition;
 * official evaluator semantics.
@@ -711,7 +711,7 @@ Do not declare success from:
 * training success;
 * a research evaluation;
 * an intermediate checkpoint;
-* a favorable subset of targets;
+* a favorable subset of evaluation episodes;
 * a favorable training seed.
 
 Only the official benchmark defines completion.

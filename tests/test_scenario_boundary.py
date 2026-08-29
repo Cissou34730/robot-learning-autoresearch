@@ -36,6 +36,24 @@ SCENARIO_EVALUATION_FIELDS = (
     "distance_trace_cm",
     "target_radius_cm",
     "target_angle_degrees",
+    "required_steps",
+)
+
+SCENARIO_WORDING = (
+    "physical reachability",
+    "reach the target",
+    "reaching and holding",
+    "hold-duration",
+    "hold-stability",
+    "target-entry",
+    "target geometry",
+    "target distribution",
+    "near the target",
+    "subset of targets",
+    "tolerance",
+    "end effector",
+    "two-joint",
+    "mujoco",
 )
 
 GENERIC_CORE_MODULES = (
@@ -72,6 +90,17 @@ def imported_modules(path: Path) -> list[str]:
     tree = ast.parse(path.read_text(encoding="utf-8"))
     modules: list[str] = []
     for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            modules.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            modules.append(node.module)
+    return modules
+
+
+def module_level_imports(path: Path) -> list[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    modules: list[str] = []
+    for node in tree.body:
         if isinstance(node, ast.Import):
             modules.extend(alias.name for alias in node.names)
         elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
@@ -144,11 +173,65 @@ def test_scenario_document_defines_the_current_problem():
         assert scenario_fact not in program_text
 
 
-def test_runner_does_not_interpret_scenario_evaluation_fields():
-    source = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
+def test_protocol_uses_scenario_independent_wording():
+    program_text = (
+        (ROOT / "research" / "program.md").read_text(encoding="utf-8").lower()
+    )
+
+    for wording in SCENARIO_WORDING:
+        assert wording not in program_text, f"program.md still says {wording!r}"
+
+
+def test_historical_reward_families_remain_resolvable():
+    from research.build_research_brief import _legacy_family
+
+    assert (
+        _legacy_family({"change": "increase the closeness reward"})
+        == "reward.CLOSENESS_COEFFICIENT"
+    )
+    assert (
+        _legacy_family({"change": "raise the completion bonus"})
+        == "reward.HOLD_COMPLETE_BONUS"
+    )
+    assert (
+        _legacy_family({"change": "reduce the action cost"})
+        == "reward.ACTION_COST_COEFFICIENT"
+    )
+
+
+def test_compatibility_reexports_alias_the_scenario_implementation():
+    from robot_learning.environments.reach_env import TwoJointArmReachEnv
+    from robot_learning.rewards.reach_reward import reach_reward
+    from robot_learning.scenario import environment, observations, reward
+    from robot_learning.training.observations import (
+        OBSERVATION_SIZE,
+        reach_observation,
+    )
+
+    assert TwoJointArmReachEnv is environment.TwoJointArmReachEnv
+    assert reach_reward is reward.reach_reward
+    assert reach_observation is observations.reach_observation
+    assert OBSERVATION_SIZE == observations.OBSERVATION_SIZE
+
+
+def test_normalization_keeps_its_scenario_import_lazy():
+    normalization = ROOT / "robot_learning" / "training" / "normalization.py"
+    scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
+
+    # The scenario depends on this helper, so a module-level import would cycle.
+    assert "robot_learning.training.normalization" in module_level_imports(
+        scenario_evaluation
+    )
+    assert "robot_learning.scenario" not in module_level_imports(normalization)
+    assert "robot_learning.scenario" in imported_modules(normalization)
+
+
+@pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
+def test_generic_core_does_not_interpret_scenario_evaluation_fields(relative_path):
+    source = (ROOT / relative_path).read_text(encoding="utf-8")
 
     for field in SCENARIO_EVALUATION_FIELDS:
-        assert field not in source, f"run_experiment.py interprets {field}"
+        assert field not in source, f"{relative_path} interprets {field}"
 
 
 def test_scenario_owns_the_evaluation_summary():
@@ -251,6 +334,7 @@ def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
     brief = render_research_brief()
 
     assert "Accepted seeds passing 98%: 2/2" in brief
+    assert "Accepted failed episodes: 4" in brief
 
 
 def test_scenario_owns_rendering():

@@ -337,11 +337,13 @@ def render_research_brief() -> str:
     accepted_status = (
         f"{accepted_score:g}%" if accepted_score is not None else "baseline pending"
     )
-    accepted_progress = (
-        accepted_metrics.get("failed_episode_progress", {})
-        if accepted_metrics is not None
-        else {}
-    )
+    accepted_failures: int | str = "-"
+    if accepted_metrics is not None and accepted_score is not None:
+        accepted_failures = round(
+            int(accepted_metrics.get("episodes", 0))
+            * (100 - float(accepted_score))
+            / 100
+        )
     official_metrics = state.get("official_metrics")
     accepted_seed_count = (
         accepted_metrics.get("seed_count") if accepted_metrics else None
@@ -414,25 +416,19 @@ def render_research_brief() -> str:
                     f"- {candidate['name']}: not measured by the requested plan."
                 )
             else:
-                progress = summary["failed_episode_progress"]
                 decision_lines.append(
                     f"- {candidate['name']}: pooled success "
                     f"{summary['pooled_success_percent']:.2f}%; "
                     f"{summary['episodes']} episodes over {summary['seed_count']} "
-                    f"seed(s); failed-episode progress "
-                    f"{progress['longest_consecutive_steps_mean']:.1f}/"
-                    f"{progress['required_steps']}."
+                    f"seed(s)."
                 )
         champion_summary = pending_decision.get("champion_summary")
         if champion_summary is not None:
-            champion_progress = champion_summary["failed_episode_progress"]
             decision_lines.append(
                 f"- champion: pooled success "
                 f"{champion_summary['pooled_success_percent']:.2f}%; "
                 f"{champion_summary['episodes']} episodes over "
-                f"{champion_summary['seed_count']} seed(s); failed-episode progress "
-                f"{champion_progress['longest_consecutive_steps_mean']:.1f}/"
-                f"{champion_progress['required_steps']}."
+                f"{champion_summary['seed_count']} seed(s)."
             )
 
     state_last_index = int(state.get("last_experiment", 0))
@@ -473,7 +469,7 @@ def render_research_brief() -> str:
                 else ""
             )
         ),
-        f"- Accepted failed episodes: {accepted_progress.get('failed_episodes', '-')}",
+        f"- Accepted failed episodes: {accepted_failures}",
         (
             "- Reported result: pending"
             if official_metrics is None
@@ -609,6 +605,11 @@ def render_research_brief() -> str:
                 continue
             lines.append(f"**{candidate['name']}**")
             lines.extend(render_scenario_evidence(summary))
+            lines.append("")
+        measured_champion = (pending_decision or {}).get("champion_summary")
+        if measured_champion is not None:
+            lines.append("**champion**")
+            lines.extend(render_scenario_evidence(measured_champion))
             lines.append("")
 
     retained = state.get("retained_lineages", [])
