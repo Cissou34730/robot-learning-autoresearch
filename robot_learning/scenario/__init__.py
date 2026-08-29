@@ -16,11 +16,17 @@ from robot_learning.scenario.evaluation import (
     summarize_research_evaluations,
 )
 from robot_learning.scenario.final_benchmark import evaluate_final_model
+from robot_learning.scenario.viewer import (
+    make_training_viewer_callback,
+    watch_scenario_policy,
+)
 
 __all__ = [
     "evaluate_final_model",
     "evaluate_research_model",
     "make_training_env",
+    "make_training_viewer_callback",
     "render_scenario_evidence",
     "summarize_research_evaluations",
+    "watch_scenario_policy",
 ]

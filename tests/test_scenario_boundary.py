@@ -22,8 +22,10 @@ SCENARIO_BOUNDARY = (
     "evaluate_final_model",
     "evaluate_research_model",
     "make_training_env",
+    "make_training_viewer_callback",
     "render_scenario_evidence",
     "summarize_research_evaluations",
+    "watch_scenario_policy",
 )
 
 SCENARIO_EVALUATION_FIELDS = (
@@ -45,7 +47,6 @@ GENERIC_CORE_MODULES = (
     "robot_learning/training/comparison.py",
     "robot_learning/training/normalization.py",
     "robot_learning/training/research_config.py",
-    "robot_learning/training/viewer_callback.py",
     "research/run_experiment.py",
     "research/build_research_brief.py",
 )
@@ -96,6 +97,14 @@ def test_generic_core_has_no_scenario_specific_imports(relative_path):
         )
         assert not module.startswith("robot_learning.scenario."), (
             f"{relative_path} reaches past the scenario boundary via {module}"
+        )
+
+
+@pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
+def test_generic_core_has_no_physics_engine_imports(relative_path):
+    for module in imported_modules(ROOT / relative_path):
+        assert module != "mujoco" and not module.startswith("mujoco."), (
+            f"{relative_path} depends on the scenario physics engine via {module}"
         )
 
 
@@ -242,6 +251,21 @@ def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
     brief = render_research_brief()
 
     assert "Accepted seeds passing 98%: 2/2" in brief
+
+
+def test_scenario_owns_rendering():
+    assert not (ROOT / "robot_learning" / "training" / "viewer_callback.py").exists()
+
+    play_source = (ROOT / "robot_learning" / "play.py").read_text(encoding="utf-8")
+    train_source = (ROOT / "robot_learning" / "train.py").read_text(encoding="utf-8")
+    viewer_source = (ROOT / "robot_learning" / "scenario" / "viewer.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "viewer.launch_passive" not in play_source
+    assert "viewer.launch_passive" not in train_source
+    assert "viewer.launch_passive" in viewer_source
+    assert scenario.make_training_viewer_callback(speed=2.0).speed == 2.0
 
 
 def test_runtime_configuration_carries_no_reward():

@@ -41,8 +41,9 @@ The scenario lives in `robot_learning/scenario/`:
 * `environment.py` — training task mechanics and `make_training_env()`;
 * `observations.py` — the observation the policy receives;
 * `reward.py` — the complete reward, including its coefficients;
-* `evaluation.py` — research evaluation and its diagnostics;
+* `evaluation.py` — research evaluation, its diagnostics and its summary;
 * `brief.py` — how measured evidence is rendered into the brief;
+* `viewer.py` — MuJoCo live training view and trained-policy playback;
 * `final_benchmark.py` — thin adapter over the protected benchmark.
 
 These are ordinary research code files. Changing them is a normal research

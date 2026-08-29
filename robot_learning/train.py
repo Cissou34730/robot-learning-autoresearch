@@ -7,13 +7,12 @@ import torch
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
-from robot_learning.scenario import make_training_env
+from robot_learning.scenario import make_training_env, make_training_viewer_callback
 from robot_learning.training.algorithms import algorithm_class, artifact_algorithm
 from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
 )
 from robot_learning.training.research_config import load_experiment_config
-from robot_learning.training.viewer_callback import LiveViewerCallback
 
 ACTIVATION_FUNCTIONS = {
     "tanh": torch.nn.Tanh,
@@ -134,7 +133,7 @@ def main() -> None:
         )
     ]
     if args.view:
-        callbacks.append(LiveViewerCallback(speed=args.speed))
+        callbacks.append(make_training_viewer_callback(speed=args.speed))
 
     interrupted = False
     try:
