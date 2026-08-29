@@ -168,6 +168,28 @@ while ($true) {
         continue
     }
 
+    if ($null -ne $researchState.pending_researcher_decision) {
+        Update-ResearchBrief
+        $decisionPrompt = @(
+            "This is the complete lineage-resolution task; do not wait for more input."
+            "Read research/program.md and research/brief.md."
+            "Record the required postmortem and write research/proposal.json containing only previous_result_decision for the pending experiment."
+            "Decide the measured model lineage, code lineage, retained alternatives, and any preserved candidate artifacts."
+            "Do not create the next scientific mutation, evaluation request, or training proposal. Do not run the runner."
+        ) -join " "
+        opencode run --model $model --variant $reasoning $decisionPrompt
+        if (-not (Test-Path "research\proposal.json")) {
+            throw "Researcher ended without a lineage decision proposal."
+        }
+        uv run python research/run_experiment.py
+        if ($LASTEXITCODE -ne 0) {
+            throw "Lineage decision could not be finalized."
+        }
+        Update-ResearchBrief
+        Write-Host "=== Lineage decision finalized; requesting next hypothesis ==="
+        continue
+    }
+
     Update-ResearchBrief
 
     Write-Host "=== New experiment at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="

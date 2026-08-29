@@ -15,7 +15,9 @@ uv run pytest                            # tests
 
 ## Layout
 
-- `robot_learning/benchmark/` - immutable final task and metric
+- `robot_learning/benchmark/final_contract.py` - Human-owned final objective;
+  official evaluation reads it independently from research task defaults
+- `robot_learning/benchmark/` - final task metric implementation
 - `robot_learning/environments/reach_env.py` - immutable physics/task mechanics
 - `robot_learning/training/observations.py` - research-mutable observations
 - `robot_learning/rewards/reach_reward.py` - reward structure (values live in JSON, see below)

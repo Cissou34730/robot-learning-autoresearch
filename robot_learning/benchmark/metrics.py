@@ -7,23 +7,31 @@ def milestone_steps(hold_seconds: float, control_dt: float) -> int:
     return max(round(hold_seconds / control_dt), 1)
 
 
-def maximum_consecutive_hold_steps(distances: list[float]) -> int:
+def maximum_consecutive_hold_steps(
+    distances: list[float], success_threshold: float = SUCCESS_THRESHOLD
+) -> int:
     streak = 0
     maximum = 0
     for distance in distances:
-        streak = streak + 1 if distance <= SUCCESS_THRESHOLD else 0
+        streak = streak + 1 if distance <= success_threshold else 0
         maximum = max(maximum, streak)
     return maximum
 
 
-def episode_hold_progress(distances: list[float], required: int) -> dict:
+def episode_hold_progress(
+    distances: list[float],
+    required: int,
+    success_threshold: float = SUCCESS_THRESHOLD,
+) -> dict:
     """Measure progress toward one complete hold without rewarding extra centering."""
     if required < 1:
         raise ValueError("required hold steps must be positive")
     if not distances:
         raise ValueError("an episode must contain at least one distance")
 
-    longest = min(maximum_consecutive_hold_steps(distances), required)
+    longest = min(
+        maximum_consecutive_hold_steps(distances, success_threshold), required
+    )
     if len(distances) < required:
         windows = [distances]
     else:
@@ -35,9 +43,9 @@ def episode_hold_progress(distances: list[float], required: int) -> dict:
     best_inside = -1
     best_excess_cm = float("inf")
     for window in windows:
-        inside = sum(distance <= SUCCESS_THRESHOLD for distance in window)
+        inside = sum(distance <= success_threshold for distance in window)
         excess_cm = 100 * sum(
-            max(distance - SUCCESS_THRESHOLD, 0.0) for distance in window
+            max(distance - success_threshold, 0.0) for distance in window
         )
         if (inside, -excess_cm) > (best_inside, -best_excess_cm):
             best_inside = inside

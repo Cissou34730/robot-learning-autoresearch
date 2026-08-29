@@ -1,12 +1,16 @@
 # Robot Learning Autoresearch
 
-The human-defined goal is to reach a random target within 1 cm and hold for 2
-seconds, with at least 98% success over 200 reported episodes.
+The human-defined goal is to reach a random target 6-20 cm away, remain within
+1 cm for 2 seconds, and achieve at least 98% success over 200 official
+evaluation episodes. The authoritative values live in
+`robot_learning/benchmark/final_contract.py`; routine research settings cannot
+redefine an official result.
 
 The researcher owns the scientific decisions: learning method, checkpoints to
-measure, evaluation plan, analysis, and model/code lineage. The runner only
-executes those decisions. It does not automatically rank candidates, run a
-tournament, or promote a model.
+measure, evaluation plan, analysis, retained model lineages, and model/code
+lineage. The runner only executes and records those decisions. It does not
+automatically rank candidates, run a tournament, promote a model, or apply a
+statistical gate.
 
 Start the autonomous loop from PowerShell:
 

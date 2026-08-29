@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 
 from research.build_research_brief import write_training_summary
-from robot_learning.benchmark.spec import (
+from robot_learning.benchmark.final_contract import (
     EVALUATION_EPISODES,
     EVALUATION_SEED,
     FINAL_SUCCESS_PERCENT,
@@ -52,6 +52,7 @@ EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
 EVALUATION_SUMMARY_VERSION = 1
 OFFICIAL_BENCHMARK_LABEL = "official final benchmark"
+HUMAN_OBJECTIVE_PATH = "robot_learning/benchmark/final_contract.py"
 
 
 def announce(message: str) -> None:
@@ -169,7 +170,14 @@ def atomic_write_json(path: Path, value: dict) -> None:
     temporary.write_text(
         json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    temporary.replace(path)
+    for attempt in range(20):
+        try:
+            temporary.replace(path)
+            return
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.05)
 
 
 def load_state(
@@ -636,6 +644,13 @@ def archive_candidates(
     return archived
 
 
+def measurement_with_provenance(metrics: dict, official_benchmark: bool) -> dict:
+    """Keep evaluation intent with the measurement, not only its request wrapper."""
+    measurement = dict(metrics)
+    measurement["official_benchmark"] = official_benchmark
+    return measurement
+
+
 def execute_pending_evaluations() -> int:
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     pending = state.get("pending_evaluation_request")
@@ -668,10 +683,18 @@ def execute_pending_evaluations() -> int:
         }
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
+    # The persisted measurement ledger is the sole source of truth across
+    # successive rounds and interrupted resumes.
+    for contender in candidates:
+        contender["evaluations"] = []
     for item in executed:
         contender = available.get(item["candidate"])
         if contender is not None:
-            contender.setdefault("evaluations", []).append(item["metrics"])
+            metrics = measurement_with_provenance(
+                item["metrics"], bool(item.get("official_benchmark", False))
+            )
+            item["metrics"] = metrics
+            contender.setdefault("evaluations", []).append(metrics)
 
     def request_key(name: str, episodes: int, seed: int, label: str) -> tuple:
         return name, episodes, seed, label
@@ -731,7 +754,9 @@ def execute_pending_evaluations() -> int:
                 official_benchmark=official_benchmark,
             )
             output_path.unlink(missing_ok=True)
-            clean_metrics = metrics_without_artifact_path([metrics])[0]
+            clean_metrics = measurement_with_provenance(
+                metrics_without_artifact_path([metrics])[0], official_benchmark
+            )
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
@@ -803,6 +828,7 @@ def execute_pending_evaluations() -> int:
         "training_budget_steps": pending["training_budget_steps"],
         "parent_training_steps": pending["parent_training_steps"],
         "code_parent_commit": pending.get("code_parent_commit"),
+        "research_change_paths": pending.get("research_change_paths", []),
     }
     more_evidence = bool(request.get("need_more_evidence", False))
     if more_evidence:
@@ -819,11 +845,9 @@ def execute_pending_evaluations() -> int:
     if pending.get("baseline"):
         BASELINE_PENDING_PATH.unlink(missing_ok=True)
     atomic_write_json(STATE_PATH, state)
-    if not more_evidence:
-        append_result(result)
     EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
     if not more_evidence:
-        commit_result(experiment, str(result["change"]))
+        append_result(result)
     announce(
         "[result] requested evaluations complete; "
         + ("another evaluation round requested" if more_evidence else "researcher analysis required")
@@ -1018,6 +1042,155 @@ def validate_reusable_candidate(
         )
 
 
+def retained_lineage(state: dict, identifier: str) -> dict | None:
+    return next(
+        (
+            lineage
+            for lineage in state.get("retained_lineages", [])
+            if lineage.get("id") == identifier
+        ),
+        None,
+    )
+
+
+def training_parent(proposal: dict, state: dict, initialization: str) -> tuple[str, Path, int]:
+    identifier = str(proposal.get("training_parent", "accepted")).strip()
+    if initialization != "transfer":
+        if identifier != "accepted":
+            raise ValueError("training_parent is only valid with transfer initialization")
+        return "fresh", Path(), 0
+    if identifier == "accepted":
+        return (
+            "accepted",
+            ROOT / state["accepted_artifact"],
+            int(state.get("accepted_training_steps", 0)),
+        )
+    lineage = retained_lineage(state, identifier)
+    if lineage is None:
+        raise ValueError(f"unknown retained training parent {identifier!r}")
+    artifact = ROOT / lineage["artifact"]
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        if not (artifact / filename).exists():
+            raise ValueError(f"retained lineage {identifier!r} is incomplete: {filename}")
+    return identifier, artifact, int(lineage.get("training_steps", 0))
+
+
+def validate_experiment_semantics(
+    proposal: dict,
+    experiment_kind: str,
+    initialization: str,
+    parameter_overrides: dict | None,
+    code_changes: list[str],
+    baseline: bool,
+) -> None:
+    if HUMAN_OBJECTIVE_PATH in {
+        path.replace("\\", "/") for path in code_changes
+    }:
+        raise ValueError(
+            "the human-owned final benchmark contract cannot be changed by a research proposal"
+        )
+    if baseline and (parameter_overrides or code_changes):
+        raise ValueError("baseline requires an unchanged research method")
+    if (
+        not baseline
+        and experiment_kind not in {"continuation", "replication"}
+        and not parameter_overrides
+        and not code_changes
+    ):
+        raise ValueError("experiment contains no research change")
+    if initialization not in {"transfer", "fresh"}:
+        raise ValueError("initialization must be transfer or fresh")
+    if experiment_kind == "continuation" and initialization != "transfer":
+        raise ValueError("continuation requires transfer initialization")
+    if experiment_kind == "replication":
+        if initialization != "fresh":
+            raise ValueError("replication requires fresh initialization")
+        if "training_seed" not in proposal:
+            raise ValueError("replication requires an explicit training_seed")
+        if parameter_overrides or code_changes:
+            raise ValueError("replication requires an unchanged learning method")
+
+
+def remove_heavyweight_artifacts(artifact: Path) -> None:
+    for filename in ("model.zip", "vecnormalize.pkl", "replay_buffer.pkl"):
+        (artifact / filename).unlink(missing_ok=True)
+
+
+def apply_retention_decisions(decision: dict, pending: dict, state: dict) -> set[str]:
+    retained = list(state.get("retained_lineages", []))
+    retained_ids = {str(lineage.get("id")) for lineage in retained}
+    candidates = {item["name"]: item for item in pending["candidates"]}
+    preserved = {str(name) for name in decision.get("preserve_candidates", [])}
+    if not preserved <= candidates.keys():
+        raise ValueError("preserve_candidates must name measured experiment candidates")
+    for identifier in decision.get("remove_retained", []):
+        identifier = str(identifier)
+        lineage = retained_lineage({"retained_lineages": retained}, identifier)
+        if lineage is None:
+            raise ValueError(f"unknown retained lineage {identifier!r}")
+        remove_heavyweight_artifacts(ROOT / lineage["artifact"])
+        retained = [item for item in retained if item.get("id") != identifier]
+        retained_ids.remove(identifier)
+    requested = decision.get("retain", [])
+    if not isinstance(requested, list):
+        raise TypeError("retain must be a list")
+    for item in requested:
+        if not isinstance(item, dict):
+            raise TypeError("each retained lineage must be an object")
+        candidate_name = str(item.get("candidate", "")).strip()
+        identifier = str(item.get("id", candidate_name)).strip()
+        reason = str(item.get("reason", "")).strip()
+        candidate = candidates.get(candidate_name)
+        if candidate is None or not identifier or not reason:
+            raise ValueError("retained lineages require candidate, id, and reason")
+        if identifier in retained_ids:
+            raise ValueError(f"retained lineage id already exists: {identifier}")
+        retained.append(
+            {
+                "id": identifier,
+                "artifact": candidate["artifact"],
+                "origin_experiment": int(pending["experiment"]),
+                "candidate": candidate_name,
+                "reason": reason,
+                "parameters": pending["parameters"],
+                "training_steps": int(candidate["timesteps"]),
+            }
+        )
+        retained_ids.add(identifier)
+        preserved.add(candidate_name)
+    state["retained_lineages"] = retained
+    return preserved
+
+
+def apply_code_lineage_decision(pending: dict, action: str) -> None:
+    if action != "revert":
+        return
+    parent = str(pending.get("code_parent_commit", "")).strip()
+    paths = [str(path) for path in pending.get("research_change_paths", [])]
+    if not parent or not paths:
+        return
+    restorable: list[str] = []
+    created: list[Path] = []
+    for path in paths:
+        exists_at_parent = git(
+            "ls-tree", "-r", "--name-only", parent, "--", path
+        ).strip()
+        if exists_at_parent:
+            restorable.append(path)
+        else:
+            candidate = (ROOT / path).resolve()
+            if ROOT.resolve() not in candidate.parents:
+                raise RuntimeError(f"unsafe research change path: {path}")
+            created.append(candidate)
+    if restorable:
+        git("restore", "--source", parent, "--", *restorable)
+    for created_path in created:
+        if created_path.is_dir():
+            shutil.rmtree(created_path)
+        else:
+            created_path.unlink(missing_ok=True)
+
+
 def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     pending = state.get("pending_researcher_decision")
     if pending is None:
@@ -1041,6 +1214,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         if not artifact.exists():
             raise ValueError("there is no existing champion to continue from")
         selected_summary = state.get("accepted_metrics")
+        selected_evaluations = pending.get("champion_evaluations", [])
     else:
         selected = next(
             (
@@ -1059,6 +1233,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         copy_artifact(artifact, ACCEPTED_DIR)
         state["accepted_artifact"] = str(ACCEPTED_DIR.relative_to(ROOT))
         selected_summary = selected.get("summary")
+        selected_evaluations = selected.get("evaluations", [])
         state["accepted_metrics"] = selected_summary
         state["accepted_parameters"] = pending["parameters"]
         if pending["initialization"] == "transfer":
@@ -1077,12 +1252,9 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     code_reason = str(code_decision.get("reason", "")).strip()
     if code_action not in {"keep", "revert", "revise"} or not code_reason:
         raise ValueError("code decision must be keep, revert, or revise with a reason")
+    apply_code_lineage_decision(pending, code_action)
+    preserved = apply_retention_decisions(decision, pending, state)
     official_metrics = None
-    selected_evaluations = (
-        selected.get("evaluations", [])
-        if selected_name != "champion"
-        else pending.get("champion_evaluations", [])
-    )
     for evaluation in selected_evaluations:
         if (
             evaluation.get("official_benchmark", False)
@@ -1099,6 +1271,20 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         "code": {"action": code_action, "reason": code_reason},
         "code_parent_commit": pending.get("code_parent_commit"),
     }
+    selected_artifact = artifact.relative_to(ROOT).as_posix()
+    protected_artifacts = {
+        selected_artifact,
+        *(
+            Path(lineage["artifact"]).as_posix()
+            for lineage in state.get("retained_lineages", [])
+        ),
+    }
+    for candidate in pending["candidates"]:
+        if (
+            candidate["name"] not in preserved
+            and Path(candidate["artifact"]).as_posix() not in protected_artifacts
+        ):
+            remove_heavyweight_artifacts(ROOT / candidate["artifact"])
     state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {selected_name}"
     goal_reached = bool(
@@ -1137,10 +1323,11 @@ def commit_result(index: int, change: str) -> None:
 
 
 def commit_lineage_decision(experiment: int, selected: str) -> None:
+    control_files = {"research/proposal.json", "research/evaluation_request.json"}
     paths = [
-        "research/research_state.json",
-        "research/checkpoints/accepted",
-        "research/GOAL_REACHED",
+        path
+        for path in status_paths((".",))
+        if path.replace("\\", "/") not in control_files
     ]
     stage_existing_or_tracked(paths)
     if git("diff", "--cached", "--name-only").strip():
@@ -1181,31 +1368,31 @@ def main() -> int:
         return 1
 
     proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
+    raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    decision_pending = raw_state.get("pending_researcher_decision") is not None
+    if decision_pending:
+        state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
+        apply_previous_result_decision(proposal, state)
+        pending_experiment = int(raw_state["pending_researcher_decision"]["experiment"])
+        selected_lineage = str(proposal["previous_result_decision"]["continue_from"])
+        commit_lineage_decision(pending_experiment, selected_lineage)
+        PROPOSAL_PATH.unlink(missing_ok=True)
+        return 0
+
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
     experiment_kind = str(proposal.get("kind", "training")).lower()
     parameter_overrides = proposal.get("params")
+    if parameter_overrides is not None and not isinstance(parameter_overrides, dict):
+        raise TypeError("proposal params must be an object")
     baseline = bool(proposal.get("baseline", False))
     initialization = str(proposal.get("initialization", "transfer")).lower()
     index = next_index()
     fresh_baseline = baseline and initialization == "fresh"
-    raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    decision_pending = raw_state.get("pending_researcher_decision") is not None
     state = load_state(
         allow_unmeasured=True,
-        allow_missing_artifact=fresh_baseline or decision_pending,
+        allow_missing_artifact=fresh_baseline,
     )
-    if decision_pending:
-        goal_reached = apply_previous_result_decision(proposal, state)
-        pending_experiment = int(raw_state["pending_researcher_decision"]["experiment"])
-        selected_lineage = str(
-            proposal["previous_result_decision"]["continue_from"]
-        )
-        commit_lineage_decision(pending_experiment, selected_lineage)
-        if goal_reached:
-            PROPOSAL_PATH.unlink(missing_ok=True)
-            return 0
-    accepted_dir = ROOT / state["accepted_artifact"]
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
@@ -1213,6 +1400,9 @@ def main() -> int:
     code_changes: list[str] = []
     preserve_proposal = False
     reused_candidate: Path | None = None
+    parent_name, parent_artifact, parent_training_steps = training_parent(
+        proposal, state, initialization
+    )
 
     announce(
         f"[runner] experiment {index} | goal: reach "
@@ -1236,17 +1426,14 @@ def main() -> int:
     try:
         code_changes = assert_research_surface()
         result["code_changes"] = code_changes
-        if baseline and (parameter_overrides or code_changes):
-            raise ValueError("baseline requires an unchanged research method")
-        if (
-            not baseline
-            and experiment_kind != "continuation"
-            and not parameter_overrides
-            and not code_changes
-        ):
-            raise ValueError("experiment contains no research change")
-        if initialization not in {"transfer", "fresh"}:
-            raise ValueError("initialization must be transfer or fresh")
+        validate_experiment_semantics(
+            proposal,
+            experiment_kind,
+            initialization,
+            parameter_overrides,
+            code_changes,
+            baseline,
+        )
 
         record_previous_postmortem(proposal, baseline=baseline)
         if parameter_overrides:
@@ -1289,8 +1476,13 @@ def main() -> int:
         result["training_budget_steps"] = effective_timesteps
         training_seed = int(proposal.get("training_seed", TRAIN_SEED))
         result["training_seed"] = training_seed
+        result["training_parent"] = parent_name
+        if experiment_kind == "replication":
+            result["replication_of"] = str(
+                proposal.get("replication_of", proposal.get("family", ""))
+            ).strip()
         announce(f"[training plan] {effective_timesteps:,} steps")
-        resume = accepted_dir / "model.zip" if initialization == "transfer" else None
+        resume = parent_artifact / "model.zip" if initialization == "transfer" else None
 
         if candidate_dir.exists():
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
@@ -1380,10 +1572,12 @@ def main() -> int:
                     "initialization": initialization,
                     "training_budget_steps": effective_timesteps,
                     "parent_training_steps": int(
-                        state.get("accepted_training_steps", 0)
+                        parent_training_steps
                     ),
                     "baseline": baseline,
                     "code_parent_commit": code_parent_commit,
+                    "research_change_paths": code_changes
+                    + (["research/current_params.json"] if parameter_overrides else []),
                     "result": result,
                 },
             }
@@ -1393,7 +1587,6 @@ def main() -> int:
             RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         RESTART_PENDING_PATH.unlink(missing_ok=True)
         atomic_write_json(STATE_PATH, state)
-        commit_result(index, change)
         announce(f"[result] {verdict}")
     except KeyboardInterrupt:
         recovery_dir = CANDIDATE_ROOT / f"recovery-experiment-{index}"
@@ -1436,7 +1629,6 @@ def main() -> int:
         result["verdict"] = "invalid; researcher changes preserved"
         append_result(result)
         atomic_write_json(STATE_PATH, state)
-        commit_result(index, change)
         print("SUMMARY: " + json.dumps(result))
         return 1
     finally:

@@ -2212,7 +2212,7 @@
         "target_radius_cm": 15.194900919198941
       }
     ],
-    "pooled_success_percent": 0.0,
+        "retained_lineages": [],
     "schema_version": 1,
     "seed_count": 1,
     "seed_success_percent": {

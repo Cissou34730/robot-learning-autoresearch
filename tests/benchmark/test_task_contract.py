@@ -17,6 +17,7 @@ from robot_learning.benchmark.spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.evaluate import official_environment
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 
@@ -33,6 +34,17 @@ def test_final_task_contract_is_fixed():
     assert env.target_radius_range == TARGET_RADIUS_RANGE
     assert env.frame_skip == FRAME_SKIP
     assert env.max_episode_steps == MAX_EPISODE_STEPS
+
+
+def test_official_environment_uses_final_contract_not_research_defaults(monkeypatch):
+    monkeypatch.setattr("robot_learning.benchmark.spec.HOLD_SECONDS", 0.5)
+    monkeypatch.setattr("robot_learning.benchmark.spec.SUCCESS_THRESHOLD", 0.2)
+
+    env = official_environment()
+    control_dt = env.model.opt.timestep * env.frame_skip
+
+    assert env.success_threshold == pytest.approx(0.01)
+    assert env.hold_steps_required == round(2.0 / control_dt)
 
 
 def test_seed_produces_reproducible_fixed_distribution():

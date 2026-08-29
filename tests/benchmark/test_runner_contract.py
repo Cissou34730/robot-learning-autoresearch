@@ -11,6 +11,7 @@ from research.run_experiment import (
     format_duration,
     latest_training_steps,
     load_state,
+    main,
     validate_reusable_candidate,
 )
 from robot_learning.evaluate import write_progress
@@ -220,3 +221,68 @@ def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
     )
 
     assert len(candidate_directories(tmp_path)) == 5
+
+
+def test_lineage_resolution_finishes_before_next_experiment_training(
+    monkeypatch, tmp_path
+):
+    candidate = tmp_path / "archive" / "candidate"
+    candidate.mkdir(parents=True)
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        (candidate / filename).write_bytes(b"artifact")
+    state_path = tmp_path / "state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
+                "pending_researcher_decision": {
+                    "experiment": 3,
+                    "candidates": [
+                        {
+                            "name": "candidate",
+                            "artifact": "archive/candidate",
+                            "timesteps": 10,
+                            "evaluations": [],
+                            "summary": None,
+                        }
+                    ],
+                    "champion_available": False,
+                    "parameters": {},
+                    "initialization": "fresh",
+                    "training_budget_steps": 10,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    proposal_path = tmp_path / "proposal.json"
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "previous_result_decision": {
+                    "experiment": 3,
+                    "continue_from": "candidate",
+                    "reason": "Selected measured lineage.",
+                    "code": {"action": "keep", "reason": "Keep this parent."},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.run_experiment.commit_lineage_decision", lambda *_args: None)
+    monkeypatch.setattr(
+        "research.run_experiment.train_candidate",
+        lambda *_args, **_kwargs: pytest.fail("next experiment trained too early"),
+    )
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+
+    assert main() == 0
+    assert not proposal_path.exists()
+    assert json.loads(state_path.read_text(encoding="utf-8"))["pending_researcher_decision"] is None

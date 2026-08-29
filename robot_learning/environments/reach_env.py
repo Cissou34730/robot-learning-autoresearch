@@ -19,18 +19,26 @@ from robot_learning.training.observations import OBSERVATION_SIZE, reach_observa
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        target_radius_range: tuple[float, float] = TARGET_RADIUS_RANGE,
+        success_threshold: float = SUCCESS_THRESHOLD,
+        hold_seconds: float = HOLD_SECONDS,
+        frame_skip: int = FRAME_SKIP,
+        max_episode_steps: int = MAX_EPISODE_STEPS,
+    ) -> None:
         super().__init__()
-        self.max_episode_steps = MAX_EPISODE_STEPS
-        self.frame_skip = FRAME_SKIP
-        self.target_radius_range = TARGET_RADIUS_RANGE
+        self.max_episode_steps = max_episode_steps
+        self.frame_skip = frame_skip
+        self.target_radius_range = target_radius_range
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
 
-        self.success_threshold = SUCCESS_THRESHOLD
+        self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
-        self.hold_steps_required = round(HOLD_SECONDS / control_dt)
+        self.hold_steps_required = round(hold_seconds / control_dt)
 
         n_joints = 2
         self.observation_space = gym.spaces.Box(

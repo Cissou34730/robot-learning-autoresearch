@@ -19,10 +19,14 @@ cannot be measured correctly, or that the implementation is inconsistent with
 it, diagnose the problem explicitly. You may edit any code needed to correct or
 improve the experiment, including benchmark, evaluator, or runner code, provided
 the human objective itself remains unchanged. If changing the objective is
-necessary, stop and ask the human. The official benchmark contract is fixed:
+necessary, stop and ask the human. The human-owned official benchmark contract
+is `robot_learning/benchmark/final_contract.py`; official evaluation reads it
+independently from research-side task defaults. The official benchmark is fixed:
 only a request marked `official_benchmark: true` with its fixed 200 episodes and
 seed 1000 may create `GOAL_REACHED`. Research evaluations are not an official
 result, even when they use the same episode count.
+Routine research proposals may not modify that human-owned contract. A human
+objective change is an explicit constraint change outside the experiment loop.
 
 ## Roles
 
@@ -137,7 +141,10 @@ postmortem:
 - what was learned;
 - which hypothesis class should be investigated next.
 
-Then decide both lineages:
+Then decide both lineages in a dedicated lineage-resolution proposal. This is a
+separate transaction from the next hypothesis: once the runner finalizes the
+decision and commits a clean code parent, you will be invoked again to create
+only the next scientific mutation.
 
 - **model lineage** — which measured candidate or existing `champion` becomes
   the starting policy;
@@ -160,11 +167,18 @@ The next proposal records the decision as:
 }
 ```
 
-Allowed code actions are `keep`, `revert`, and `revise`. Make the corresponding
-code/configuration edits yourself before writing the next proposal. The brief
-provides the exact code parent commit from before the experiment so the change
-can be inspected or reverted without guessing. The runner records and executes
-the decision; it does not choose it.
+Allowed code actions are `keep`, `revert`, and `revise`. For `revert`, the runner
+restores only the recorded experiment learning paths to the recorded code parent.
+For `keep` or `revise`, make any revision before submitting the decision. The
+runner records and executes that explicit decision; it does not choose it.
+
+Use `retain` to preserve an alternative measured candidate as a named model
+lineage, `remove_retained` to discard one later, and `training_parent` in a
+future transferred proposal to resume from it. Retention is never automatic.
+Use `preserve_candidates` when a non-retained candidate's heavyweight artifacts
+should remain available. Other discarded candidates retain compact metadata,
+measurements, and diagnostics but may have model, normalization, and replay
+buffer files removed.
 
 ### 4. Next hypothesis and training proposal
 
@@ -194,8 +208,11 @@ The proposal must state:
 Use `kind: "continuation"` with `initialization: "transfer"` when the
 hypothesis is that the existing method has not converged. A continuation needs
 no artificial code or parameter mutation, but must still explain why more
-training is informative. Use `training_seed` for an explicit replication; do
-not generalize a method-level result from one training seed.
+training is informative. Use `kind: "replication"` with `initialization:
+"fresh"`, an explicit `training_seed`, and no method mutation to rerun the
+same method from another training seed. Set `replication_of` to the family or
+method identity being replicated; the runner records it but never launches
+additional seeds automatically.
 
 Do not launch training or `run_research.ps1`. The runner executes the proposal
 after the research session exits using the human-defined compute budget.

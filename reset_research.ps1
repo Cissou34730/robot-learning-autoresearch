@@ -67,6 +67,7 @@ $ephemeralPaths | ForEach-Object { Remove-ResetPath $_ }
     accepted_metrics = $null
     accepted_parameters = $null
     accepted_training_steps = 0
+    retained_lineages = @()
     last_experiment = 0
     last_verdict = "baseline pending after research reset"
     official_metrics = $null

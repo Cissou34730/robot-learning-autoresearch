@@ -277,10 +277,9 @@ def _failure_profile(metrics: dict | None) -> list[str]:
 
     successes = episodes - len(failures)
     lines = [
-        f"- Entered 1 cm at least once: {percent(sum(item['best_window_inside_steps'] > 0 for item in failures) + successes)}",
-        f"- Held at least 10 steps: {percent(sum(item['longest_consecutive_steps'] >= 10 for item in failures) + successes)}",
-        f"- Held at least 50 steps: {percent(sum(item['longest_consecutive_steps'] >= 50 for item in failures) + successes)}",
-        f"- Held at least 90 steps: {percent(sum(item['longest_consecutive_steps'] >= 90 for item in failures) + successes)}",
+        f"- Entered the target tolerance: {percent(sum(item['best_window_inside_steps'] > 0 for item in failures) + successes)}",
+        f"- Mean longest failed hold: {metrics['failed_episode_progress']['longest_consecutive_steps_mean']:.1f}/{metrics['failed_episode_progress']['required_steps']} steps.",
+        f"- Mean best failed hold window: {metrics['failed_episode_progress']['best_window_inside_steps_mean']:.1f}/{metrics['failed_episode_progress']['required_steps']} steps.",
         f"- Completed the required hold: {metrics.get('success_percent', 0):.1f}%",
     ]
     for label, low, high in (("6-10 cm", 6, 10), ("10-15 cm", 10, 15), ("15-20 cm", 15, 20)):
@@ -581,6 +580,31 @@ def render_research_brief() -> str:
             )
     else:
         lines.append("Not available yet.")
+
+    measured_challengers = (
+        (pending_decision or {}).get("candidates", [])
+        if pending_decision
+        else []
+    )
+    if measured_challengers:
+        lines.extend(["", "## Measured challenger diagnostics", ""])
+        for candidate in measured_challengers:
+            summary = candidate.get("summary")
+            if summary is None:
+                continue
+            lines.append(f"**{candidate['name']}**")
+            lines.extend(_failure_profile(summary))
+            lines.append("")
+
+    retained = state.get("retained_lineages", [])
+    if retained:
+        lines.extend(["## Retained alternative lineages", ""])
+        for lineage in retained:
+            lines.append(
+                f"- `{lineage['id']}`: {lineage['candidate']} from experiment "
+                f"{lineage['origin_experiment']}; {lineage['reason']}."
+            )
+        lines.append("")
 
     lines.extend(["", "## Recent scientific memory", ""])
     memories = _postmortem_memory(postmortems)
