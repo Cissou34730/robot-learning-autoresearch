@@ -352,6 +352,17 @@ def test_scenario_owns_rendering():
     assert scenario.make_training_viewer_callback(speed=2.0).speed == 2.0
 
 
+def test_training_environment_carries_no_official_task_enforcement():
+    from robot_learning.scenario import environment
+
+    assert not hasattr(environment, "assert_immutable_invariants")
+
+    source = (ROOT / "robot_learning" / "scenario" / "environment.py").read_text(
+        encoding="utf-8"
+    )
+    assert "final_contract" not in source
+
+
 def test_runtime_configuration_carries_no_reward():
     config = load_experiment_config()
     assert "reward" not in config

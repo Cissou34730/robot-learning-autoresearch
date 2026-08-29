@@ -1,8 +1,11 @@
 import numpy as np
 import pytest
 
+from robot_learning.benchmark import final_contract
+from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario import make_training_env
 from robot_learning.scenario import reward as reward_module
+from robot_learning.scenario.environment import TwoJointArmReachEnv
 from robot_learning.scenario.reward import HOLD_COMPLETE_BONUS, reach_reward
 from robot_learning.train import parallel_ppo_params
 from robot_learning.training.candidate_checkpoint_callback import (
@@ -14,6 +17,28 @@ def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_training_environment_may_diverge_from_the_official_task():
+    curriculum = TwoJointArmReachEnv(
+        target_radius_range=(0.06, 0.10),
+        success_threshold=0.03,
+        hold_seconds=0.5,
+        max_episode_steps=200,
+    )
+    obs, _ = curriculum.reset(seed=0)
+    curriculum.step(np.zeros(2))
+    radius = float(np.linalg.norm(curriculum.data.mocap_pos[0][:2]))
+
+    assert curriculum.observation_space.contains(obs)
+    assert radius <= 0.10 < final_contract.TARGET_RADIUS_RANGE[1]
+    assert curriculum.success_threshold != final_contract.SUCCESS_THRESHOLD
+    assert curriculum.max_episode_steps != final_contract.MAX_EPISODE_STEPS
+
+    official = official_environment()
+    assert official.success_threshold == final_contract.SUCCESS_THRESHOLD
+    assert official.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+    assert official.max_episode_steps == final_contract.MAX_EPISODE_STEPS
 
 
 def test_reward_encourages_progress():

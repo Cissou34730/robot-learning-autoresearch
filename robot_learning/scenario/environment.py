@@ -3,6 +3,10 @@
 Generic training code only calls `make_training_env()`; every mechanic below
 (MuJoCo model, target sampling, success and hold semantics, observations,
 reward) belongs to this scenario and may be replaced wholesale.
+
+The benchmark constants are training defaults, not a contract: research may
+train on a different distribution, tolerance or horizon. The human-defined task
+is enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
 from typing import Any, ClassVar
@@ -157,13 +161,3 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
     return TwoJointArmReachEnv()
-
-
-def assert_immutable_invariants(env: TwoJointArmReachEnv) -> None:
-    """Machine-enforced task boundary: research may not weaken these properties."""
-    control_dt = env.model.opt.timestep * env.frame_skip
-    assert env.success_threshold == SUCCESS_THRESHOLD
-    assert env.hold_steps_required == round(HOLD_SECONDS / control_dt)
-    assert env.target_radius_range == TARGET_RADIUS_RANGE
-    assert env.max_episode_steps == MAX_EPISODE_STEPS
-    assert env.frame_skip == FRAME_SKIP

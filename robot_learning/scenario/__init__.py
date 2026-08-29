@@ -2,7 +2,8 @@
 
 This package is the single, static boundary between the generic AutoResearch
 machinery and everything specific to the current research problem. Generic code
-imports these four functions and nothing else below this package.
+imports only the functions explicitly exported here and never reaches into
+scenario submodules.
 
 Replacing the research problem means replacing this package (and, when the task
 itself changes, the protected benchmark and physics assets). It must not require

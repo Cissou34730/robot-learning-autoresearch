@@ -3,6 +3,7 @@ import hashlib
 import numpy as np
 import pytest
 
+from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.benchmark.metrics import (
     achieved_goal,
@@ -10,14 +11,6 @@ from robot_learning.benchmark.metrics import (
     maximum_consecutive_hold_steps,
     summarize_hold_progress,
 )
-from robot_learning.benchmark.spec import (
-    FRAME_SKIP,
-    HOLD_SECONDS,
-    MAX_EPISODE_STEPS,
-    SUCCESS_THRESHOLD,
-    TARGET_RADIUS_RANGE,
-)
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 
@@ -27,13 +20,16 @@ def test_robot_physics_asset_is_frozen():
 
 
 def test_final_task_contract_is_fixed():
-    env = TwoJointArmReachEnv()
-    assert env.success_threshold == pytest.approx(SUCCESS_THRESHOLD)
+    env = official_environment()
     control_dt = env.model.opt.timestep * env.frame_skip
-    assert env.hold_steps_required == round(HOLD_SECONDS / control_dt)
-    assert env.target_radius_range == TARGET_RADIUS_RANGE
-    assert env.frame_skip == FRAME_SKIP
-    assert env.max_episode_steps == MAX_EPISODE_STEPS
+    assert env.success_threshold == pytest.approx(final_contract.SUCCESS_THRESHOLD)
+    assert env.hold_steps_required == round(final_contract.HOLD_SECONDS / control_dt)
+    assert env.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+    assert env.frame_skip == final_contract.FRAME_SKIP
+    assert env.max_episode_steps == final_contract.MAX_EPISODE_STEPS
+    assert final_contract.FINAL_SUCCESS_PERCENT == 98.0
+    assert final_contract.EVALUATION_EPISODES == 200
+    assert final_contract.EVALUATION_SEED == 1000
 
 
 def test_official_environment_uses_final_contract_not_research_defaults(monkeypatch):
@@ -48,23 +44,24 @@ def test_official_environment_uses_final_contract_not_research_defaults(monkeypa
 
 
 def test_seed_produces_reproducible_fixed_distribution():
-    env_a, env_b = TwoJointArmReachEnv(), TwoJointArmReachEnv()
+    env_a, env_b = official_environment(), official_environment()
     env_a.reset(seed=42)
     env_b.reset(seed=42)
     assert np.allclose(env_a.data.mocap_pos[0], env_b.data.mocap_pos[0])
     radius = float(np.linalg.norm(env_a.data.mocap_pos[0][:2]))
-    assert TARGET_RADIUS_RANGE[0] <= radius <= TARGET_RADIUS_RANGE[1]
+    low, high = final_contract.TARGET_RADIUS_RANGE
+    assert low <= radius <= high
 
 
 def test_final_hold_requires_100_consecutive_steps():
-    env = TwoJointArmReachEnv()
+    env = official_environment()
     env.reset(seed=0)
+    assert env.hold_steps_required == 100
     env.data.mocap_pos[0] = env.data.site("end_effector").xpos.copy()
     for step in range(100):
-        _, _, terminated, truncated, info = env.step(np.zeros(2))
+        _, _, terminated, truncated, _ = env.step(np.zeros(2))
         assert not truncated
         assert terminated is (step == 99)
-    assert info["held_steps"] == 100
 
 
 def test_fixed_metric_requires_the_complete_hold():
