@@ -81,6 +81,23 @@ It does not:
 
 Do not modify the runner to bypass this separation.
 
+### Protected human-owned files
+
+Some files are human-owned for the duration of one research problem. You must not modify:
+
+* the protocol enforcement mechanism, `research/run_experiment.py`;
+* the official benchmark contract and its implementation;
+* the official robot definition and its physical asset;
+* the import-routing package files that resolve those modules.
+
+`research/scenario.md` lists the exact paths for the current scenario.
+
+The runner validates this surface: a proposal that changes any of those files is rejected before training. Everything else — reward, observations, training environment, curriculum, evaluation, diagnostics, brief evidence, rendering, training and evaluation entry points — remains yours to change.
+
+This validation is a protocol guardrail, not a security boundary. It exists to stop an accidental or casual modification of the human-owned surface during ordinary research. The loop assumes a cooperative researcher that follows this protocol. Resistance to a deliberately hostile agent with arbitrary write access to the repository is explicitly out of scope: that would require an external trust boundary, which this project does not have and does not attempt to build.
+
+If you believe a protected file is genuinely wrong, stop and report it. Correcting the human-owned surface is a human decision.
+
 ## Working context
 
 Start with:

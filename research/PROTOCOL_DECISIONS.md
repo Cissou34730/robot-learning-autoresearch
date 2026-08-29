@@ -553,8 +553,29 @@ superseded. It does not instruct the autonomous researcher and does not replace
   Reward, observations, training environment, evaluation, diagnostics, brief,
   rendering, `train.py`, `evaluate.py` and the training helpers remain freely
   researcher-owned.
-- **Residual:** The check executes from the working-tree runner, so protection
-  is enforced at proposal validation and recorded in Git lineage rather than by
-  a sandbox. Strengthening this further was rejected as a security framework.
+- **Residual:** See the 2026-08-29 trust-model decision below.
+
+## 2026-08-29 — Cooperative-agent trust model for protected paths
+
+- **Assumption:** The research loop assumes a cooperative researcher agent that
+  follows the documented protocol.
+- **Decision:** `PROTECTED_BENCHMARK_PATHS` is a protocol guardrail against
+  accidental or ordinary research modifications of the human-owned surface:
+  protocol enforcement, official benchmark, official robot, and the trusted
+  import-routing files. The existing research-surface validation enforces this
+  during normal protocol-compliant research, and every violation is recorded in
+  Git lineage.
+- **Out of scope:** Resistance to a deliberately hostile agent with arbitrary
+  repository write access. The check runs from the working tree it protects, so
+  a rogue agent could edit the checker itself. Closing that gap requires an
+  external trust boundary.
+- **Decision:** Do not add an external integrity check, sandbox, filesystem
+  permissions, signature verification, or any other security mechanism. This
+  limitation is accepted and documented rather than mitigated.
+- **Documentation:** `research/program.md` states the protected surface and this
+  assumption to the researcher; `research/scenario.md` lists the exact paths.
+- **Reason:** The threat model is researcher error and protocol drift, not
+  adversarial behavior. A security framework would add substantial machinery
+  without changing the outcome for the failure mode we actually have.
 
 
