@@ -1,12 +1,14 @@
-"""Single source of truth for experiment parameters.
+"""Generic runtime configuration for training and research orchestration.
 
-All tunable parameters live in `research/current_params.json`. Nothing else in
-the codebase may define parameter defaults: this module loads and validates the
-file, and every consumer (training, evaluation, runner) reads it through here.
+`research/current_params.json` holds generic runtime knobs only: algorithm
+selection, PPO/SAC hyper-parameters, policy architecture and training
+orchestration. Scenario science - reward, observations, task mechanics,
+evaluation semantics - lives in `robot_learning/scenario/` and is versioned as
+ordinary research code through the existing Git code lineage.
 
-Machine-enforced boundaries live in IMMUTABLE_INVARIANTS and
-assert_immutable_invariants(): these properties define the task and may never
-be modified by experiments.
+The research-evaluation defaults below are generic orchestration settings shared
+by the runner and the evaluation CLI. Official benchmark parameters remain owned
+by the protected scenario benchmark.
 """
 
 import copy
@@ -15,6 +17,11 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
+
+RESEARCH_EVALUATION_EPISODES = 200
+RESEARCH_EVALUATION_SEED = 1000
+RESEARCH_SUCCESS_TARGET_PERCENT = 98.0
+
 
 def validate_param_overrides(overrides: dict) -> None:
     if not isinstance(overrides, dict):
@@ -34,8 +41,8 @@ def merge_param_overrides(current: dict, overrides: dict) -> dict:
 def load_experiment_config() -> dict:
     if not CONFIG_PATH.exists():
         raise FileNotFoundError(
-            f"{CONFIG_PATH} is missing - it is the single source of truth for "
-            "experiment parameters and must exist."
+            f"{CONFIG_PATH} is missing - it is the runtime training configuration "
+            "and must exist."
         )
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     validate_param_overrides(config)
@@ -45,20 +52,3 @@ def load_experiment_config() -> dict:
 def write_experiment_config(config: dict) -> None:
     validate_param_overrides(config)
     CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
-
-
-def assert_immutable_invariants(env) -> None:
-    from robot_learning.benchmark.spec import (
-        FRAME_SKIP,
-        HOLD_SECONDS,
-        MAX_EPISODE_STEPS,
-        SUCCESS_THRESHOLD,
-        TARGET_RADIUS_RANGE,
-    )
-
-    control_dt = env.model.opt.timestep * env.frame_skip
-    assert env.success_threshold == SUCCESS_THRESHOLD
-    assert env.hold_steps_required == round(HOLD_SECONDS / control_dt)
-    assert env.target_radius_range == TARGET_RADIUS_RANGE
-    assert env.max_episode_steps == MAX_EPISODE_STEPS
-    assert env.frame_skip == FRAME_SKIP

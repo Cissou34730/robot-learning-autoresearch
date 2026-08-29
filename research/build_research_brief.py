@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import TypedDict
 
-from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
+from robot_learning.scenario import render_scenario_evidence
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -259,62 +259,6 @@ def _experiment_outcome(result: dict) -> str:
     return "; ".join(parts) or "no measured candidate result"
 
 
-def _failure_profile(metrics: dict | None) -> list[str]:
-    if not metrics:
-        return ["Not available yet."]
-    failures = metrics.get("failure_diagnostics", [])
-    episodes = int(metrics.get("episodes", 0))
-    if not episodes:
-        return ["Not available yet."]
-
-    def percent(count: int) -> str:
-        return f"{100 * count / episodes:.1f}%"
-
-    successes = episodes - len(failures)
-    required = int(metrics["failed_episode_progress"]["required_steps"])
-    longest_holds = sorted(
-        int(item["longest_consecutive_steps"]) for item in failures
-    )
-    best_windows = sorted(int(item["best_window_inside_steps"]) for item in failures)
-
-    def quantile(values: list[int], fraction: float) -> int:
-        return values[round((len(values) - 1) * fraction)]
-
-    lines = [
-        f"- Entered the target tolerance: {percent(sum(item['best_window_inside_steps'] > 0 for item in failures) + successes)}.",
-        f"- Completed the required hold: {metrics.get('success_percent', 0):.1f}%",
-    ]
-    if longest_holds:
-        lines.extend(
-            [
-                f"- Failed hold progress: median {quantile(longest_holds, 0.5)}/{required}; upper quantile {quantile(longest_holds, 0.9)}/{required}.",
-                f"- Failed best-window progress: median {quantile(best_windows, 0.5)}/{required}; upper quantile {quantile(best_windows, 0.9)}/{required}.",
-            ]
-        )
-    for label, low, high in (("6-10 cm", 6, 10), ("10-15 cm", 10, 15), ("15-20 cm", 15, 20)):
-        bucket = [item for item in failures if low <= item["target_radius_cm"] < high]
-        if bucket:
-            lines.append(
-                f"- Failures at {label}: {len(bucket)}; mean longest hold "
-                f"{sum(item['longest_consecutive_steps'] for item in bucket) / len(bucket):.1f}."
-            )
-    directional: dict[str, list[dict]] = {"left": [], "right": []}
-    for item in failures:
-        if "target_angle_degrees" in item:
-            directional["left" if float(item["target_angle_degrees"]) < 0 else "right"].append(item)
-    if len(failures) >= 4 and all(directional.values()):
-        lines.append(
-            "- Directional failures: "
-            + "; ".join(
-                f"{side} {len(items)} failures, median hold "
-                f"{quantile(sorted(int(item['longest_consecutive_steps']) for item in items), 0.5)}/{required}"
-                for side, items in directional.items()
-            )
-            + "."
-        )
-    return lines
-
-
 def _replicated_experiment_index(result: dict) -> int | None:
     raw_value = result.get("replication_of")
     if raw_value is None:
@@ -480,7 +424,7 @@ def render_research_brief() -> str:
                     f"- {candidate['name']}: pooled success "
                     f"{summary['pooled_success_percent']:.2f}%; "
                     f"{summary['episodes']} episodes over {summary['seed_count']} "
-                    f"seed(s); failed hold "
+                    f"seed(s); failed-episode progress "
                     f"{progress['longest_consecutive_steps_mean']:.1f}/"
                     f"{progress['required_steps']}."
                 )
@@ -491,7 +435,7 @@ def render_research_brief() -> str:
                 f"- champion: pooled success "
                 f"{champion_summary['pooled_success_percent']:.2f}%; "
                 f"{champion_summary['episodes']} episodes over "
-                f"{champion_summary['seed_count']} seed(s); failed hold "
+                f"{champion_summary['seed_count']} seed(s); failed-episode progress "
                 f"{champion_progress['longest_consecutive_steps_mean']:.1f}/"
                 f"{champion_progress['required_steps']}."
             )
@@ -516,14 +460,13 @@ def render_research_brief() -> str:
         "## Immutable goal",
         "",
         (
-            "Reach a random target 6–20 cm away, remain within 1.0 cm for 100 "
-            "consecutive control steps (2.0 s), and achieve at least 98% over the "
-            "fixed 200-episode evaluation."
+            "The current scientific problem, its protected task definition, and its "
+            "terminology are defined in `research/scenario.md`. Read it together "
+            "with `research/program.md`."
         ),
         "",
         "## Current status",
         "",
-        f"- Evaluation target: {100 * SUCCESS_THRESHOLD:g} cm / {HOLD_SECONDS:g} s",
         f"- Accepted success: {accepted_status}",
         (
             f"- Accepted seeds passing 98%: "
@@ -655,23 +598,8 @@ def render_research_brief() -> str:
     else:
         lines.append("| None yet | - | - | - |")
 
-    diagnostics = (
-        accepted_metrics.get("failure_diagnostics", []) if accepted_metrics else []
-    )
     lines.extend(["", "## Observed failure diagnostics", ""])
-    lines.extend(_failure_profile(accepted_metrics))
-    lines.append("")
-    if diagnostics:
-        for item in diagnostics[:5]:
-            lines.append(
-                f"- seed {item['episode_seed']}: radius "
-                f"{item['target_radius_cm']:.2f} cm, angle "
-                f"{item['target_angle_degrees']:.1f}°, longest hold "
-                f"{item['longest_consecutive_steps']}/100, best window "
-                f"{item['best_window_inside_steps']}/100."
-            )
-    else:
-        lines.append("Not available yet.")
+    lines.extend(render_scenario_evidence(accepted_metrics))
 
     measured_challengers = (
         (pending_decision or {}).get("candidates", [])
@@ -685,7 +613,7 @@ def render_research_brief() -> str:
             if summary is None:
                 continue
             lines.append(f"**{candidate['name']}**")
-            lines.extend(_failure_profile(summary))
+            lines.extend(render_scenario_evidence(summary))
             lines.append("")
 
     retained = state.get("retained_lineages", [])

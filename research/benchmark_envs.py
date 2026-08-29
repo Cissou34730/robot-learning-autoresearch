@@ -7,13 +7,13 @@ import numpy as np
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.scenario import make_training_env
 
 
 def measure(n_envs: int, transitions: int = 4000) -> dict:
     vec_type = DummyVecEnv if n_envs == 1 else SubprocVecEnv
     env = make_vec_env(
-        TwoJointArmReachEnv,
+        make_training_env,
         n_envs=n_envs,
         seed=0,
         vec_env_cls=vec_type,

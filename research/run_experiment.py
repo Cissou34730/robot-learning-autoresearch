@@ -16,15 +16,12 @@ from pathlib import Path
 from typing import Any
 
 from research.build_research_brief import write_training_summary
-from robot_learning.benchmark.final_benchmark import evaluate_final_model
-from robot_learning.benchmark.final_contract import (
-    FINAL_SUCCESS_PERCENT,
-    HOLD_SECONDS,
-    SUCCESS_THRESHOLD,
-)
-from robot_learning.benchmark.spec import EVALUATION_EPISODES, EVALUATION_SEED
+from robot_learning.scenario import evaluate_final_model
 from robot_learning.training.comparison import paired_comparison
 from robot_learning.training.research_config import (
+    RESEARCH_EVALUATION_EPISODES,
+    RESEARCH_EVALUATION_SEED,
+    RESEARCH_SUCCESS_TARGET_PERCENT,
     load_experiment_config,
     merge_param_overrides,
     validate_param_overrides,
@@ -345,9 +342,9 @@ def latest_recorded_experiment() -> int | None:
 
 def evaluate_artifact(
     artifact_dir: Path,
-    seed: int = EVALUATION_SEED,
+    seed: int = RESEARCH_EVALUATION_SEED,
     label: str = "official evaluation",
-    episodes: int = EVALUATION_EPISODES,
+    episodes: int = RESEARCH_EVALUATION_EPISODES,
     output_path: Path | None = None,
     official_benchmark: bool = False,
 ) -> dict:
@@ -449,7 +446,7 @@ def evaluate_artifact(
         f"{format_duration(time.monotonic() - started)} | "
         f"success: {metrics['success_percent']:.1f}% | "
         f"failed episodes: {metrics['failed_episode_progress']['failed_episodes']} | "
-        f"failed hold: "
+        f"failed progress: "
         f"{metrics['failed_episode_progress']['longest_consecutive_steps_mean']:.1f}/"
         f"{metrics['failed_episode_progress']['required_steps']} | "
         f"best window: "
@@ -513,7 +510,8 @@ def summarize_evaluations(
         "seed_count": len(evaluations),
         "seed_success_percent": seed_success,
         "seeds_passing_98_percent": sum(
-            success >= FINAL_SUCCESS_PERCENT for success in seed_success.values()
+            success >= RESEARCH_SUCCESS_TARGET_PERCENT
+            for success in seed_success.values()
         ),
         "worst_seed_success_percent": min(seed_success.values()),
         "pooled_success_percent": pooled_success,
@@ -1354,7 +1352,7 @@ def execute_pending_final_benchmark() -> int:
     state["official_benchmark_artifact"] = fingerprint
     state["pending_final_benchmark"] = None
     atomic_write_json(STATE_PATH, state)
-    if float(official_metrics["success_percent"]) >= FINAL_SUCCESS_PERCENT:
+    if bool(official_metrics["goal_reached"]):
         GOAL_PATH.write_text(
             f"Goal reached with {pending['selected']} from experiment {pending['experiment']}.\n",
             encoding="utf-8",
@@ -1467,8 +1465,7 @@ def main() -> int:
     )
 
     announce(
-        f"[runner] experiment {index} | goal: reach "
-        f"{SUCCESS_THRESHOLD * 100:.1f} cm and hold {HOLD_SECONDS:.2f} s"
+        f"[runner] experiment {index} | objective: see research/scenario.md"
     )
     announce(f"[runner] mode: {'baseline' if baseline else initialization}")
 

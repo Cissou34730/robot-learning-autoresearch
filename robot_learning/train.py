@@ -7,7 +7,7 @@ import torch
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.scenario import make_training_env
 from robot_learning.training.algorithms import algorithm_class, artifact_algorithm
 from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
@@ -79,7 +79,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=False)
     vec_env_cls = DummyVecEnv if n_envs == 1 else SubprocVecEnv
     venv = make_vec_env(
-        TwoJointArmReachEnv,
+        make_training_env,
         n_envs=n_envs,
         seed=args.seed,
         vec_env_cls=vec_env_cls,

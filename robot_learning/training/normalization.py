@@ -3,8 +3,6 @@ from pathlib import Path
 import numpy as np
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
-
 
 class ObservationNormalizer:
     def __init__(self, mean: np.ndarray, var: np.ndarray, epsilon: float, clip: float):
@@ -33,7 +31,10 @@ def load_observation_normalizer(model_path: Path) -> ObservationNormalizer | Non
     stats_path = find_stats_path(model_path)
     if stats_path is None:
         return None
-    dummy_venv = DummyVecEnv([lambda: TwoJointArmReachEnv()])
+    # Imported here so the scenario package can depend on this generic helper.
+    from robot_learning.scenario import make_training_env
+
+    dummy_venv = DummyVecEnv([make_training_env])
     vec_normalize = VecNormalize.load(str(stats_path), dummy_venv)
     return ObservationNormalizer(
         mean=np.array(vec_normalize.obs_rms.mean),

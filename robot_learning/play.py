@@ -5,7 +5,7 @@ from pathlib import Path
 import mujoco
 import mujoco.viewer
 
-from robot_learning.environments.reach_env import TwoJointArmReachEnv
+from robot_learning.scenario import make_training_env
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
 
@@ -26,7 +26,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    env = TwoJointArmReachEnv()
+    env = make_training_env()
     model = load_policy(args.model)
     normalize_obs = load_observation_normalizer(args.model)
     if normalize_obs is None:
