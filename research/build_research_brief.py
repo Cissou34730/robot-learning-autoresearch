@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from typing import TypedDict
 
 from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
 
@@ -13,6 +14,12 @@ RESEARCH_DIR = ROOT / "research"
 TRAIN_LOG_PATH = RESEARCH_DIR / "last_train.log"
 TRAIN_SUMMARY_PATH = RESEARCH_DIR / "last_train_summary.md"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
+
+
+class FamilySummary(TypedDict):
+    experiments: list[str]
+    changes: list[str]
+    lesson: str
 
 
 def _compact(text: str, limit: int) -> str:
@@ -571,7 +578,7 @@ def render_research_brief() -> str:
             )
 
     lessons = _postmortem_lessons(postmortems)
-    families: dict[str, dict[str, list[str] | str]] = {}
+    families: dict[str, FamilySummary] = {}
     for result in results:
         family = _legacy_family(result)
         entry = families.setdefault(

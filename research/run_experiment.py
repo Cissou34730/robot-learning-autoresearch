@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from typing import Any
 
 from research.build_research_brief import write_training_summary
 from robot_learning.benchmark.final_benchmark import evaluate_final_model
@@ -127,12 +128,14 @@ def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
             process.wait()
         return
     if graceful:
-        try:
-            os.killpg(process.pid, signal.SIGINT)
-            process.wait(timeout=INTERRUPT_GRACE_SECONDS)
-            return
-        except (OSError, subprocess.TimeoutExpired):
-            pass
+        kill_process_group = getattr(os, "killpg", None)
+        if kill_process_group is not None:
+            try:
+                kill_process_group(process.pid, signal.SIGINT)
+                process.wait(timeout=INTERRUPT_GRACE_SECONDS)
+                return
+            except (OSError, subprocess.TimeoutExpired):
+                pass
     process.terminate()
     try:
         process.wait(timeout=10)
@@ -1437,7 +1440,7 @@ def main() -> int:
     )
     announce(f"[runner] mode: {'baseline' if baseline else initialization}")
 
-    result = {
+    result: dict[str, Any] = {
         "schema_version": 1,
         "index": index,
         "change": change,

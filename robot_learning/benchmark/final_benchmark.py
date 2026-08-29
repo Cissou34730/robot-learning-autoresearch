@@ -119,7 +119,7 @@ def evaluate_final_model(
     """Evaluate one artifact with the fixed final contract only."""
     model = load_policy(model_path, algorithm)
     env = official_environment()
-    normalize_obs = load_observation_normalizer(model_path) or (lambda obs: obs)
+    normalize_obs = load_observation_normalizer(model_path)
     control_dt = env.model.opt.timestep * final_contract.FRAME_SKIP
     required_steps = max(round(final_contract.HOLD_SECONDS / control_dt), 1)
     successes = 0
@@ -130,7 +130,8 @@ def evaluate_final_model(
         distances: list[float] = []
         done = False
         while not done:
-            action, _ = model.predict(normalize_obs(obs), deterministic=True)
+            normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
+            action, _ = model.predict(normalized_obs, deterministic=True)
             obs, _, terminated, truncated, info = env.step(action)
             distances.append(float(info["distance"]))
             done = terminated or truncated
