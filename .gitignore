@@ -37,6 +37,7 @@ coverage.xml
 htmlcov/
 .pytest-run-*/
 .pytest-*-temp/
+.pytest-*/
 
 # Transient research runner controls and generated summaries
 research/last_train.log
