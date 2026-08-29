@@ -4,7 +4,7 @@ This file records the structural choices made with the human about the
 simulation, learning setup, reward, researcher freedom, and experiment
 selection protocol. It records both active decisions and the choices they
 superseded. It does not instruct the autonomous researcher and does not replace
-`research/program.md` or `research/current_params.json`.
+`research/program.md`, `research/scenario.md` or `research/current_params.json`.
 
 ## 2026-08-28 — Fixed final benchmark, flexible training target
 
@@ -98,6 +98,10 @@ superseded. It does not instruct the autonomous researcher and does not replace
   fixed at 1 cm / 100 steps.
 
 ## 2026-08-28 — Current progressive hold reward
+
+- **Status:** Relocated on 2026-08-29. The reward is now code in
+  `robot_learning/scenario/reward.py`; its coefficients left
+  `research/current_params.json` with unchanged numerical values.
 
 - **Decision:** Keep the original approach and centering terms as differences
   of potentials, plus an action-energy cost:
@@ -204,7 +208,8 @@ superseded. It does not instruct the autonomous researcher and does not replace
 ## 2026-08-28 — Researcher controls the learning method
 
 - **Status:** Expanded later on 2026-08-28 to include evaluation, runner code,
-  candidate decisions, and both model and code lineages.
+  candidate decisions, and both model and code lineages. Given an explicit code
+  location on 2026-08-29: the researcher-owned science is `robot_learning/scenario/`.
 
 - **Decision:** The researcher may change coherent training code and tunable
   parameters, including reward, observations, PPO/SAC choice, neural-network
@@ -236,6 +241,10 @@ superseded. It does not instruct the autonomous researcher and does not replace
   200-episode evaluation after 33 minutes 20 seconds.
 
 ## 2026-08-28 — Keep Luna as the default researcher model
+
+- **Status:** Clarified on 2026-08-29. The researcher *instructions* are now
+  model-agnostic; only the loop's default `$model` value names a provider, and it
+  remains overridable through `RESEARCH_MODEL`.
 
 - **Decision:** Keep `github-copilot/gpt-5.6-luna` with medium reasoning as the
   default research model, while preserving environment-variable overrides.
@@ -371,3 +380,117 @@ superseded. It does not instruct the autonomous researcher and does not replace
   idempotent.
 - **Reason:** The remote repository is now part of the persistence contract; a
   successful local commit alone is no longer considered a completed operation.
+
+## 2026-08-29 — Separate the current scenario from the AutoResearch core
+
+- **Decision:** All science specific to the current problem lives in
+  `robot_learning/scenario/`: `environment.py`, `observations.py`, `reward.py`,
+  `evaluation.py`, `brief.py`, `viewer.py`, and a thin `final_benchmark.py`
+  adapter over the protected benchmark. Generic code imports only the functions
+  re-exported by `robot_learning/scenario/__init__.py` and never reaches into a
+  scenario submodule.
+- **Boundary:** `robot_learning/train.py`, `robot_learning/evaluate.py`,
+  `robot_learning/play.py`, the generic training helpers/callbacks,
+  `robot_learning/training/research_config.py`, `research/run_experiment.py` and
+  `research/build_research_brief.py` contain no import of the reach environment,
+  reward, observations, robot assets or benchmark modules, and no import of
+  MuJoCo. An architecture test parses each of these modules and fails if such a
+  dependency reappears.
+- **Explicitly not done:** no scenario selection, loader, registry, plugin
+  system, dependency injection, generic robot/physics abstraction, reward DSL, or
+  universal metric schema. This repository remains one repository, one scenario.
+- **Reason:** Replacing the robot or the task should require replacing the
+  scenario package, the protected benchmark, the physics assets and
+  `research/scenario.md` — not redesigning the experiment runner, training
+  lifecycle, checkpointing, lineage, recovery or final-benchmark lifecycle.
+- **Compatibility:** `robot_learning/environments/reach_env.py`,
+  `robot_learning/rewards/reach_reward.py` and
+  `robot_learning/training/observations.py` remain as thin re-exports of the
+  single authoritative implementation.
+- **Equivalence:** The migration is structural only. Bit-exact regression
+  goldens captured before the move cover the seeded reset target, observations,
+  five environment transitions, every reward case, the research evaluation
+  result and the pooled evaluation summary.
+
+## 2026-08-29 — The reward is research code, not runtime configuration
+
+- **Decision:** `research/current_params.json` holds generic runtime knobs only:
+  `algorithm`, `ppo`, `sac`, `policy`, `training`. The `reward` section was
+  removed and its ten coefficients moved, unchanged, into
+  `robot_learning/scenario/reward.py`.
+- **Decision:** The reward returns a scalar `total` plus a free-form
+  `components` mapping. No generic module validates reward component names,
+  their number, or the mathematical form of the reward.
+- **Consequence:** A reward change is now a code change recorded by the existing
+  Git code lineage, not a `params` override. Proposals no longer accept
+  `params.reward.*`.
+- **Reason:** The researcher must be able to replace the entire reward function,
+  not only tune a predefined coefficient list. Configuration validation was
+  silently freezing the reward structure.
+- **Supersedes:** `current_params.json` as the single source of truth for all
+  scientific parameters, and the `apply_reward_overrides` whitelist.
+
+## 2026-08-29 — Split the protocol from the current problem
+
+- **Decision:** `research/program.md` contains reusable autonomous-research
+  methodology only. `research/scenario.md` contains the current problem: the
+  objective, protected robot mechanics, researcher-mutable scenario files,
+  terminology, and scenario-specific diagnosis.
+- **Decision:** Every researcher phase that reads `research/program.md` also
+  reads `research/scenario.md`. A test enforces this on `run_research.ps1`.
+- **Decision:** `program.md` uses scenario-independent wording (task feasibility,
+  success region, task acquisition and stability). No task number — distance,
+  tolerance, hold duration, episode count or success percentage — appears in it.
+- **Reason:** `program.md` should stay usable almost unchanged if this
+  repository is copied for another RL problem.
+
+## 2026-08-29 — Success semantics and evaluation summary belong to the scenario
+
+- **Decision:** The generic core does not define the task success percentage.
+  The threshold is read inside `robot_learning/scenario/evaluation.py` from the
+  human-owned `robot_learning/benchmark/final_contract.py`.
+- **Decision:** Pooling several evaluations into a summary is a scenario
+  operation (`summarize_research_evaluations`). `research/run_experiment.py`
+  no longer interprets `failed_episode_progress`, hold progress, best-window
+  fields, distance traces or target geometry; the same applies to
+  `research/build_research_brief.py`.
+- **Decision:** The final benchmark returns an explicit `goal_reached` boolean.
+  The runner acts on that boolean and never on a percentage.
+- **Compatibility:** The persisted field name `seeds_passing_98_percent` and the
+  historical `reward.*` family labels are preserved. They are non-executable
+  strings and do not affect current scientific behavior.
+- **Reason:** A future scenario may have no concept of reaching, tolerance entry
+  or hold duration. If the runner depends on those fields, replacing the
+  scenario still means modifying the AutoResearch engine.
+
+## 2026-08-29 — Rendering is a scenario concern
+
+- **Decision:** The live training viewer and the trained-policy playback loop
+  live in `robot_learning/scenario/viewer.py` and are reached through
+  `make_training_viewer_callback` and `watch_scenario_policy`.
+  `robot_learning/training/viewer_callback.py` was removed and
+  `robot_learning/play.py` is now a thin CLI.
+- **Decision:** The windowing stack is imported lazily, so headless runs of the
+  runner, the brief builder and training never load it.
+- **Reason:** Rendering is physics-engine specific. Keeping it in the generic
+  training helpers would force a non-MuJoCo scenario to rewrite core modules.
+
+## 2026-08-29 — Protection belongs to the benchmark, not the training environment
+
+- **Decision:** Remove `assert_immutable_invariants()`. The training environment
+  is no longer required to match the official target distribution, success
+  threshold, hold duration, control timing or episode horizon.
+- **Decision:** The official task is enforced only where success is measured:
+  the protected `final_contract.py` / `final_benchmark.py`, the frozen robot
+  asset hash, and the benchmark tests, which now assert the contract against
+  `official_environment()` rather than the training environment.
+- **Reason:** Training and benchmark have different owners. Forcing the training
+  environment to reproduce the official configuration would make curriculum,
+  staged difficulty and altered randomization impossible, re-freezing part of
+  the researcher-owned scenario. The researcher may train on an easier, harder
+  or differently randomized environment and is still judged against the
+  unchanged official benchmark.
+- **Supersedes:** The training-environment invariant assertions previously held
+  in `robot_learning/training/research_config.py`, then briefly in
+  `robot_learning/scenario/environment.py`.
+
