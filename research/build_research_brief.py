@@ -484,7 +484,14 @@ def render_research_brief() -> str:
             f"{outcome} | {verdict} |"
         )
     if not results:
-        lines.append("| - | training.baseline | New baseline pending | - | - | - |")
+        if pending_evaluation:
+            lines.append(
+                f"| {pending_evaluation['experiment']} | training.baseline | "
+                "Fresh baseline trained | fresh / 120,000 steps | "
+                "awaiting researcher-designed evaluation | trained |"
+            )
+        else:
+            lines.append("| - | training.baseline | New baseline pending | - | - | - |")
 
     lessons = _postmortem_lessons(postmortems)
     families: dict[str, dict[str, list[str] | str]] = {}
