@@ -52,13 +52,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.hold_steps_required = round(hold_seconds / control_dt)
 
         n_joints = 2
-        self.observation_space: gym.spaces.Box = gym.spaces.Box(
+        self.observation_space = gym.spaces.Box(
             low=-np.inf,
             high=np.inf,
             shape=(OBSERVATION_SIZE,),
             dtype=np.float32,
         )
-        self.action_space: gym.spaces.Box = gym.spaces.Box(
+        self.action_space = gym.spaces.Box(
             low=-1.0, high=1.0, shape=(n_joints,), dtype=np.float32
         )
 
@@ -161,6 +161,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
-def make_training_env() -> TwoJointArmReachEnv:
+def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
     return TwoJointArmReachEnv()
