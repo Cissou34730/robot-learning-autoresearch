@@ -139,6 +139,11 @@ return to research instead of tuning against its protected panel.
 
 ### Standard training proposal
 
+The new-hypothesis phase is incomplete until you have finished the relevant
+inspection, chosen one falsifiable hypothesis and its corresponding intervention,
+made any research edits that intervention requires, and written the proposal. An
+announced investigation, open question or preliminary diagnosis is not completion.
+
 Make your code or configuration changes, then write `research/proposal.json`:
 
 ```json

@@ -872,3 +872,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
   schemas or infer scientific content.
 - **Boundary unchanged:** No phase, proposal type, recovery path, evaluation
   mechanism, lineage rule or training behavior was added or changed.
+- **Protocol clarification:** Announcing an investigation, open question or
+  preliminary diagnosis does not complete the new-hypothesis phase. The
+  Researcher must finish the relevant inspection, choose a falsifiable
+  hypothesis and corresponding intervention, make any required research edits,
+  and write the proposal before exiting. This is a completion criterion, not a
+  prescribed scientific method.

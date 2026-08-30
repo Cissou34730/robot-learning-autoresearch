@@ -54,6 +54,8 @@ def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
     assert "The previous experiment and its lineage decision are already closed." in LOOP
     assert "Do not write previous_result_decision." in LOOP
     assert "proposal valid for the current phase" in LOOP
+    assert "preliminary diagnosis is not completion" in PROGRAM
+    assert "chosen one falsifiable hypothesis and its corresponding intervention" in PROGRAM
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
