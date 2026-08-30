@@ -1613,33 +1613,29 @@ def validate_experiment_semantics(
         and not code_changes
     ):
         raise ValueError("experiment contains no research change")
-    if initialization not in {"transfer", "fresh"}:
-        raise ValueError("initialization must be transfer or fresh")
-    if experiment_kind == "continuation" and initialization != "transfer":
-        raise ValueError("continuation requires transfer initialization")
-    if experiment_kind == "replication":
-        if initialization != "fresh":
-            raise ValueError("replication requires fresh initialization")
-        if "training_seed" not in proposal:
-            raise ValueError("replication requires an explicit training_seed")
-        if parameter_overrides or code_changes:
-            raise ValueError("replication requires an unchanged learning method")
-        try:
-            replicated_experiment = int(proposal["replication_of"])
-        except (KeyError, TypeError, ValueError) as error:
-            raise ValueError(
-                "replication requires an exact experiment number"
-            ) from error
-        if replicated_experiment < 1:
-            raise ValueError("replication requires an exact experiment number")
+    if experiment_kind == "replication" and (parameter_overrides or code_changes):
+        raise ValueError("replication requires an unchanged learning method")
 
 
 def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
+    def require_nonempty_string(field: str, description: str) -> None:
+        value = proposal.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{description} must be a non-empty string")
+
     if baseline:
+        # A baseline is its own runner-generated contract, never a training kind.
+        if "kind" in proposal:
+            raise ValueError("baseline proposal must not declare kind")
         required = {"change", "hypothesis", "initialization"}
         missing = sorted(field for field in required if field not in proposal)
         if missing:
             raise ValueError(f"baseline proposal is missing required fields: {missing}")
+        require_nonempty_string("hypothesis", "baseline proposal hypothesis")
+        require_nonempty_string("change", "baseline proposal change")
+        initialization = proposal["initialization"]
+        if initialization not in {"transfer", "fresh"}:
+            raise ValueError("initialization must be transfer or fresh")
         return
     forbidden = {
         "previous_result_decision",
@@ -1659,16 +1655,42 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
     missing = sorted(field for field in required if field not in proposal)
     if missing:
         raise ValueError(f"training proposal is missing required fields: {missing}")
-    if not str(proposal["family"]).strip():
-        raise ValueError("training proposal family must be non-empty")
+    require_nonempty_string("family", "training proposal family")
+    require_nonempty_string("hypothesis", "training proposal hypothesis")
+    require_nonempty_string("change", "training proposal change")
+    kind = proposal["kind"]
+    if kind not in {"training", "continuation", "replication"}:
+        raise ValueError(
+            "training proposal kind must be training, continuation or replication"
+        )
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
-    initialization = str(proposal["initialization"]).lower()
+    initialization = proposal["initialization"]
+    if initialization not in {"transfer", "fresh"}:
+        raise ValueError("initialization must be transfer or fresh")
     if initialization == "transfer":
-        if not str(proposal.get("training_parent", "")).strip():
+        if (
+            not isinstance(proposal.get("training_parent"), str)
+            or not proposal["training_parent"].strip()
+        ):
             raise ValueError("transfer initialization requires training_parent")
-    elif initialization == "fresh" and "training_parent" in proposal:
+    elif "training_parent" in proposal:
         raise ValueError("training_parent is only valid with transfer initialization")
+    if kind == "continuation" and initialization != "transfer":
+        raise ValueError("continuation requires transfer initialization")
+    if kind == "replication":
+        if initialization != "fresh":
+            raise ValueError("replication requires fresh initialization")
+        if "training_seed" not in proposal:
+            raise ValueError("replication requires an explicit training_seed")
+        try:
+            replicated_experiment = int(proposal["replication_of"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                "replication requires an exact experiment number"
+            ) from error
+        if replicated_experiment < 1:
+            raise ValueError("replication requires an exact experiment number")
 
 
 def remove_heavyweight_artifacts(artifact: Path) -> None:

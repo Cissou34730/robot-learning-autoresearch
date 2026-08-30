@@ -851,9 +851,112 @@ def test_fresh_proposal_rejects_a_training_parent():
         validate_training_proposal(proposal, baseline=False)
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("family", "   "),
+        ("hypothesis", ""),
+        ("change", "\t"),
+    ],
+)
+def test_training_proposal_rejects_empty_scientific_text(field, value):
+    proposal = _training_proposal()
+    proposal[field] = value
+
+    with pytest.raises(ValueError, match="non-empty string"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize("initialization", ["resume", "FRESH", 7, None])
+def test_training_proposal_rejects_unknown_initialization(initialization):
+    proposal = _training_proposal()
+    proposal["initialization"] = initialization
+
+    with pytest.raises(ValueError, match="initialization must be transfer or fresh"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+def test_training_proposal_rejects_unknown_kind():
+    proposal = _training_proposal()
+    proposal["kind"] = "banana"
+
+    with pytest.raises(ValueError, match="kind must be training"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+def test_training_proposal_accepts_the_valid_training_kinds():
+    validate_training_proposal(_training_proposal(), baseline=False)
+
+    transfer = _training_proposal()
+    transfer.update(initialization="transfer", training_parent="accepted")
+    validate_training_proposal(transfer, baseline=False)
+
+    continuation = dict(transfer, kind="continuation")
+    validate_training_proposal(continuation, baseline=False)
+
+    replication = dict(
+        _training_proposal(),
+        kind="replication",
+        training_seed=19,
+        replication_of=12,
+    )
+    validate_training_proposal(replication, baseline=False)
+
+
 def test_baseline_proposal_requires_fields_consumed_by_execution():
     with pytest.raises(ValueError, match="baseline proposal is missing"):
         validate_training_proposal({"baseline": True}, baseline=True)
+
+
+@pytest.mark.parametrize(("field", "value"), [("hypothesis", ""), ("change", " ")])
+def test_baseline_proposal_rejects_empty_required_text(field, value):
+    proposal = {
+        "baseline": True,
+        "hypothesis": "measure the starting method",
+        "change": "run the unchanged starting method",
+        "initialization": "fresh",
+    }
+    proposal[field] = value
+
+    with pytest.raises(ValueError, match="non-empty string"):
+        validate_training_proposal(proposal, baseline=True)
+
+
+def test_baseline_proposal_accepts_nonempty_required_text():
+    validate_training_proposal(
+        {
+            "baseline": True,
+            "hypothesis": "measure the starting method",
+            "change": "run the unchanged starting method",
+            "initialization": "fresh",
+        },
+        baseline=True,
+    )
+
+
+def _baseline_proposal() -> dict:
+    """The shape run_research.ps1 generates for a pending baseline."""
+    return {
+        "baseline": True,
+        "change": "Fresh baseline",
+        "hypothesis": "Establish the initial baseline for the human-defined objective.",
+        "class": "baseline",
+        "initialization": "fresh",
+    }
+
+
+@pytest.mark.parametrize(
+    "kind", ["training", "continuation", "replication", "banana", None]
+)
+def test_baseline_proposal_must_not_declare_a_kind(kind):
+    proposal = dict(_baseline_proposal(), kind=kind)
+
+    with pytest.raises(ValueError, match="baseline proposal must not declare kind"):
+        validate_training_proposal(proposal, baseline=True)
+
+
+def test_runner_generated_baseline_remains_valid():
+    validate_training_proposal(_baseline_proposal(), baseline=True)
 
 
 def _training_proposal() -> dict:
@@ -894,6 +997,76 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
     )
     monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+
+    assert check_proposal() == 0
+    assert "PROPOSAL_VALID: training" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("initialization", "resume", "initialization must be transfer or fresh"),
+        ("kind", "banana", "kind must be training"),
+        ("hypothesis", "", "hypothesis must be a non-empty string"),
+    ],
+)
+def test_proposal_preflight_rejects_static_training_contract_errors(
+    monkeypatch, tmp_path, capsys, field, value, message
+):
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    proposal = _training_proposal()
+    proposal[field] = value
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
+    state_path.write_text(
+        json.dumps(
+            {
+                "pending_evaluation_request": None,
+                "pending_researcher_decision": None,
+                "pending_final_benchmark": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+
+    assert check_proposal() == 1
+    assert message in capsys.readouterr().out
+
+
+def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
+    state_path.write_text(
+        json.dumps(
+            {
+                "pending_evaluation_request": None,
+                "pending_researcher_decision": None,
+                "pending_final_benchmark": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+
+
+@pytest.mark.parametrize("kind", ["training", "replication", "banana"])
+def test_proposal_preflight_rejects_a_baseline_declaring_a_kind(
+    monkeypatch, tmp_path, capsys, kind
+):
+    _write_preflight_files(monkeypatch, tmp_path, dict(_baseline_proposal(), kind=kind))
+
+    assert check_proposal() == 1
+    assert "baseline proposal must not declare kind" in capsys.readouterr().out
+
+
+def test_proposal_preflight_accepts_the_runner_generated_baseline(
+    monkeypatch, tmp_path, capsys
+):
+    _write_preflight_files(monkeypatch, tmp_path, _baseline_proposal())
 
     assert check_proposal() == 0
     assert "PROPOSAL_VALID: training" in capsys.readouterr().out

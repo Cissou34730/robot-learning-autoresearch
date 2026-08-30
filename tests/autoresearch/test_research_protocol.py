@@ -51,11 +51,16 @@ def mentions(text: str, word: str) -> bool:
 
 def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
     assert "--check-proposal" in LOOP
-    assert "The previous experiment and its lineage decision are already closed." in LOOP
+    assert (
+        "The previous experiment and its lineage decision are already closed." in LOOP
+    )
     assert "Do not write previous_result_decision." in LOOP
     assert "proposal valid for the current phase" in LOOP
     assert "preliminary diagnosis is not completion" in PROGRAM
-    assert "chosen one falsifiable hypothesis and its corresponding intervention" in PROGRAM
+    assert (
+        "chosen one falsifiable hypothesis and its corresponding intervention"
+        in PROGRAM
+    )
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
@@ -1179,8 +1184,15 @@ def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp
 
 def test_continuation_and_replication_allow_unchanged_methods():
     validate_experiment_semantics({}, "continuation", "transfer", None, [], False)
+    invalid_continuation = {
+        "kind": "continuation",
+        "family": "x",
+        "hypothesis": "x",
+        "change": "x",
+        "initialization": "fresh",
+    }
     with pytest.raises(ValueError, match="continuation requires transfer"):
-        validate_experiment_semantics({}, "continuation", "fresh", None, [], False)
+        validate_training_proposal(invalid_continuation, baseline=False)
 
     validate_experiment_semantics(
         {"training_seed": 19, "replication_of": 12},
@@ -1190,8 +1202,16 @@ def test_continuation_and_replication_allow_unchanged_methods():
         [],
         False,
     )
+    invalid_replication = {
+        "kind": "replication",
+        "family": "x",
+        "hypothesis": "x",
+        "change": "x",
+        "initialization": "fresh",
+        "replication_of": 12,
+    }
     with pytest.raises(ValueError, match="explicit training_seed"):
-        validate_experiment_semantics({}, "replication", "fresh", None, [], False)
+        validate_training_proposal(invalid_replication, baseline=False)
 
     with pytest.raises(ValueError, match="human-owned final benchmark"):
         validate_experiment_semantics(
