@@ -878,3 +878,20 @@ superseded. It does not instruct the autonomous researcher and does not replace
   hypothesis and corresponding intervention, make any required research edits,
   and write the proposal before exiting. This is a completion criterion, not a
   prescribed scientific method.
+
+## 2026-08-30 - PowerShell prompts are phase adapters, not a second protocol
+
+- **Decision:** `research/program.md` and `research/scenario.md` remain the
+  durable scientific and scenario instructions. Each PowerShell prompt carries
+  only the current phase, context to read, expected deliverable and operational
+  prohibitions needed to return control to the launcher.
+- **Decision:** The Researcher never invokes `research/run_experiment.py`.
+  PowerShell validates and executes researcher deliverables after the model
+  session exits. If `results.jsonl` changes during a new-hypothesis session, the
+  loop stops instead of treating the unauthorized execution as normal progress.
+- **Decision:** A lineage retry receives the exact available validation failure:
+  missing proposal or postmortem, missing experiment section, invalid evidence
+  attestation, or phase/schema rejection. The retry remains limited to the same
+  phase and the existing single retry.
+- **Boundary unchanged:** No research phase, state transition, evaluation
+  capability, lineage rule, recovery behavior or training behavior changed.

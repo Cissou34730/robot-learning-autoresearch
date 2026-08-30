@@ -57,18 +57,32 @@ function Save-ResearchMemory {
 }
 
 function Test-LineageResearchMemory([int]$experiment) {
+    $script:LineageValidationFeedback = ""
     if (-not (Test-Path "research\proposal.json")) {
+        $script:LineageValidationFeedback = "research/proposal.json was not created"
         return $false
     }
     if (-not (Test-Path "research\postmortems.md")) {
+        $script:LineageValidationFeedback = "research/postmortems.md was not created"
         return $false
     }
     if (-not ((Get-Content "research\postmortems.md" -Raw) -match "(?m)^## Experiment $experiment\b")) {
+        $script:LineageValidationFeedback = "research/postmortems.md has no entry for experiment $experiment"
         return $false
     }
     # The decision must name existing detailed evidence of this experiment.
-    uv run python research/run_experiment.py --check-lineage-evidence $experiment | Out-Host
-    return ($LASTEXITCODE -eq 0)
+    $validationOutput = @(
+        uv run python research/run_experiment.py --check-lineage-evidence $experiment 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $validationOutput | ForEach-Object { Write-Host $_ }
+    $script:LineageValidationFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0 -and -not $script:LineageValidationFeedback) {
+        $script:LineageValidationFeedback = "lineage evidence validation failed"
+    }
+    return ($validationExitCode -eq 0)
 }
 
 function Test-ResearchProposal {
@@ -154,26 +168,19 @@ while ($true) {
             Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
             Write-Host "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
-                "This is the complete evaluation-design task; do not wait for more input."
+                "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
                 "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
-                "Training is complete. Decide what evidence is necessary to understand this experiment, not merely which panels to rerun."
-                "When useful you may inspect existing evidence, code, logs and artifacts, run a lightweight local analysis, change researcher-owned evaluation or instrumentation code, and request new measurements of already-saved policies. None of this is required every time."
-                "Write research/evaluation_request.json using the experiment number, a question, a reason, and at least one measurement."
-                "question states the concise scientific question these evaluations answer; reason states why this plan is useful and sufficient. Both are required and must be non-empty."
-                "You may request researcher-owned evaluations, human-owned task_reference_evaluations, or both, as described in the research program."
-                "Each researcher-owned evaluation names candidate, episodes, seed, and a concise label. Each task-reference evaluation names only a candidate."
-                "Use only the evidence needed for the scientific decision. Do not start training, evaluation, or a new experiment."
+                "Expected deliverable: research/evaluation_request.json for the current experiment, as defined by the protocol."
+                "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
             opencode run --model $model --variant $reasoning $evaluationPrompt
             if (-not (Test-Path "research\evaluation_request.json")) {
                 Write-Host "=== Evaluation request missing; retrying the same bounded task once ==="
                 $evaluationRetryPrompt = @(
-                    "Complete the pending evaluation-design task now; this message is complete."
+                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The phase remains open because research/evaluation_request.json was not produced. This is the complete task; do not wait for more input."
                     "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
-                    "Do not ask for more input and do not propose a new training experiment."
-                    "You may still inspect existing evidence, analyse it locally, and change researcher-owned evaluation or instrumentation code before completing the plan."
-                    "Then write research/evaluation_request.json with the pending experiment number, a non-empty question, a non-empty reason, and at least one measurement: researcher-owned evaluations naming candidate, episodes and seed, task_reference_evaluations naming only a candidate, or both."
-                    "Do not run evaluation or training yourself."
+                    "Expected deliverable: complete research/evaluation_request.json according to the protocol."
+                    "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
                 opencode run --model $model --variant $reasoning $evaluationRetryPrompt
                 if (-not (Test-Path "research\evaluation_request.json")) {
@@ -224,37 +231,45 @@ while ($true) {
         Update-ResearchBrief
         Write-Host "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
-            "This is the complete lineage-resolution task; do not wait for more input."
+            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. This is the complete task; do not wait for more input."
             "Read research/program.md, research/scenario.md, and research/brief.md."
-            "Before concluding, open the detailed evaluation artifacts the brief lists for this experiment and read them; run a lightweight local analysis when it helps. Historical artifacts from other experiments are optional."
-            "Only then record the required postmortem for the pending experiment in research/postmortems.md, under '## Experiment <n>' with '**Result:**', '**Observed behavior:**', '**Interpretation:**' and '**Evidence inspected:**'."
-            "'Evidence inspected' must list the repository-relative paths of the detailed evaluation artifacts of this experiment that your decision relies on; the runner rejects the decision otherwise."
-            "Then write research/proposal.json containing only previous_result_decision for the pending experiment."
-            "Decide the measured model lineage, code lineage, and retained alternatives."
-            "Do not create the next scientific mutation, evaluation request, or training proposal. Do not run the runner."
+            "Read the detailed evaluation artifacts referenced for this experiment in the brief."
+            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json defined by the protocol."
+            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
         opencode run --model $model --variant $reasoning $decisionPrompt
         $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
         $lineageReady = Test-LineageResearchMemory $pendingExperiment
         if ($lineageReady) {
             $lineageReady = Test-ResearchProposal
+            if (-not $lineageReady) {
+                $lineageProblem = $script:ProposalValidationFeedback
+            }
+        }
+        else {
+            $lineageProblem = $script:LineageValidationFeedback
         }
         if (-not $lineageReady) {
-            Write-Host "=== Lineage proposal or postmortem missing; retrying the same bounded task once ==="
+            Write-Host "=== Lineage deliverable invalid; retrying the same bounded task once ==="
             $decisionRetryPrompt = @(
-                "Complete the pending lineage-resolution task now; this message is complete."
+                "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
                 "Read research/program.md, research/scenario.md, and research/brief.md."
-                "Open and read the detailed evaluation artifacts the brief lists for experiment $pendingExperiment before concluding; this step is required."
-                "Write the required Markdown postmortem entry for experiment $pendingExperiment in research/postmortems.md, under '## Experiment $pendingExperiment' with '**Result:**', '**Observed behavior:**', '**Interpretation:**' and '**Evidence inspected:**' listing the repository-relative artifact paths your decision relies on."
-                "Write research/proposal.json containing only previous_result_decision; do not create an N+1 training proposal or run the runner."
+                "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json according to the protocol."
+                "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
             opencode run --model $model --variant $reasoning $decisionRetryPrompt
             $lineageReady = Test-LineageResearchMemory $pendingExperiment
             if ($lineageReady) {
                 $lineageReady = Test-ResearchProposal
+                if (-not $lineageReady) {
+                    $lineageProblem = $script:ProposalValidationFeedback
+                }
+            }
+            else {
+                $lineageProblem = $script:LineageValidationFeedback
             }
             if (-not $lineageReady) {
-                throw "Researcher ended twice without a valid lineage proposal and postmortem for experiment $pendingExperiment."
+                throw "Researcher ended twice without valid lineage deliverables for experiment $pendingExperiment. Last validation error: $lineageProblem"
             }
         }
         uv run python research/run_experiment.py
@@ -273,16 +288,17 @@ while ($true) {
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $nextExperiment = [int]$researchState.last_experiment + 1
     $researchPrompt = @(
-        "This is the complete research task; do not wait for more input."
-        "The previous experiment and its lineage decision are closed. No evaluation or lineage decision is pending."
-        "The current phase is new hypothesis: prepare the standard training proposal for experiment $nextExperiment, without previous_result_decision."
+        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
         "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
-        "Treat these compact files as a starting point, not the complete scientific evidence."
-        "Before proposing another training experiment you may inspect existing detailed evaluation artifacts, code, logs and configuration, and run a lightweight local analysis. Do none of this when the available evidence already answers the question."
-        "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
-        "Do not launch training or the runner."
+        "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, as defined by the protocol."
+        "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
     opencode run --model $model --variant $reasoning $researchPrompt
+
+    $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
+    if ($resultCountAfter -gt $resultCountBefore) {
+        throw "The researcher executed an experiment during the new-hypothesis phase. The loop stopped without attempting a retry or another execution; restart it to continue from the persisted state."
+    }
 
     Update-ResearchBrief
     Save-ResearchMemory
@@ -291,11 +307,6 @@ while ($true) {
         $proposalValid = Test-ResearchProposal
     }
     if (-not $proposalValid) {
-        $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
-        if ($resultCountAfter -gt $resultCountBefore) {
-            Write-Host "=== Experiment was already executed during the research session ==="
-            continue
-        }
         $proposalProblem = if (Test-Path "research\proposal.json") {
             $script:ProposalValidationFeedback
         }
@@ -304,24 +315,23 @@ while ($true) {
         }
         Write-Host "=== Research proposal missing or invalid; retrying once with bounded context ==="
         $retryPrompt = @(
-            "The previous experiment and its lineage decision are already closed. No evaluation request or lineage decision is pending."
-            "The current phase is new hypothesis. Complete the standard training proposal for experiment $nextExperiment; do not wait for more input."
-            "Do not write previous_result_decision."
-            "The previous output failed protocol validation: $proposalProblem"
-            "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and git status."
-            "Use existing research edits, if any, only when they clearly belong to that unfinished experiment."
-            "Write a valid research/proposal.json before exiting. Do not launch training or the runner."
+            "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
+            "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and inspect the relevant repository state."
+            "Preserve valid researcher-owned edits that belong to this unfinished experiment."
+            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment according to the protocol."
+            "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
         opencode run --model $model --variant $reasoning $retryPrompt
+
+        $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
+        if ($resultCountAfter -gt $resultCountBefore) {
+            throw "The researcher executed an experiment during the new-hypothesis retry. The loop stopped without attempting another execution; restart it to continue from the persisted state."
+        }
+
         Update-ResearchBrief
         Save-ResearchMemory
 
         if (-not (Test-Path "research\proposal.json")) {
-            $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
-            if ($resultCountAfter -gt $resultCountBefore) {
-                Write-Host "=== Experiment was already executed during the research session ==="
-                continue
-            }
             throw "Researcher ended twice without creating research/proposal.json. The loop stopped safely."
         }
         if (-not (Test-ResearchProposal)) {

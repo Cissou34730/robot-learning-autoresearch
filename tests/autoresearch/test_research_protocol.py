@@ -51,10 +51,9 @@ def mentions(text: str, word: str) -> bool:
 
 def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
     assert "--check-proposal" in LOOP
-    assert (
-        "The previous experiment and its lineage decision are already closed." in LOOP
-    )
-    assert "Do not write previous_result_decision." in LOOP
+    assert "Current phase: prepare experiment $nextExperiment" in LOOP
+    assert "write a lineage decision" in LOOP
+    assert "failed validation: $proposalProblem" in LOOP
     assert "proposal valid for the current phase" in LOOP
     assert "preliminary diagnosis is not completion" in PROGRAM
     assert (

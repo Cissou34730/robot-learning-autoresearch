@@ -292,7 +292,18 @@ def test_research_runtime_preflight_runs_before_any_researcher_session():
 def test_lineage_retry_gate_requires_attested_evidence():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
+    program = (root / "research" / "program.md").read_text(encoding="utf-8")
 
     assert "--check-lineage-evidence" in script
-    for prompt_fragment in ("Evidence inspected",):
-        assert script.count(prompt_fragment) >= 3
+    assert "LineageValidationFeedback" in script
+    assert "failed validation: $lineageProblem" in script
+    assert "Evidence inspected" in program
+
+
+def test_researcher_prompts_leave_execution_to_the_launcher():
+    root = Path(__file__).resolve().parents[2]
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+
+    assert script.count("invoke research/run_experiment.py") == 6
+    assert "Experiment was already executed during the research session" not in script
+    assert "The researcher executed an experiment during the new-hypothesis" in script
