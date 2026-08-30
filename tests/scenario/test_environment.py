@@ -42,6 +42,17 @@ def test_training_environment_may_diverge_from_the_official_task():
     assert official.max_episode_steps == final_contract.MAX_EPISODE_STEPS
 
 
+def test_training_target_sampling_emphasizes_outer_workspace():
+    env = TwoJointArmReachEnv()
+    radii = []
+    for seed in range(256):
+        env.reset(seed=seed)
+        radii.append(float(np.linalg.norm(env.data.mocap_pos[0][:2])))
+
+    midpoint = sum(env.target_radius_range) / 2.0
+    assert np.mean(radii) > midpoint
+
+
 def test_environment_keeps_outside_penalty_active_after_losing_hold(monkeypatch):
     env = make_training_env()
     env.reset(seed=0)

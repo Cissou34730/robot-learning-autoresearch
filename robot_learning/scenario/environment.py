@@ -77,10 +77,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
-        radius = float(
-            self.np_random.uniform(
-                self.target_radius_range[0], self.target_radius_range[1]
-            )
+        radius_fraction = float(self.np_random.uniform()) ** 0.5
+        radius = self.target_radius_range[0] + radius_fraction * (
+            self.target_radius_range[1] - self.target_radius_range[0]
         )
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.

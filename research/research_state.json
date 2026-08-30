@@ -1,19 +1,19 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-105472-200ep-seed1000-02bb2e760e90.json"
+    "research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed1000-0709faf8a915.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 66.5,
+    "pooled_success_percent": 97.0,
     "schema_version": 3,
     "seed_count": 1,
     "seed_success_percent": {
-      "1000": 66.5
+      "1000": 97.0
     },
-    "success_percent": 66.5,
-    "worst_seed_success_percent": 66.5
+    "success_percent": 97.0,
+    "worst_seed_success_percent": 97.0
   },
   "accepted_parameters": {
     "algorithm": {
@@ -40,18 +40,18 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_experiment": 1,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 1 was a fresh unchanged baseline with no research code changes; retain the current code lineage."
+      "reason": "Keep the Experiment 2 code lineage because its outer-workspace sampling change produced the measured improvement and is the intervention supported by the detailed diagnostics."
     },
-    "code_parent_commit": "a6c0c31c775b741776c399a35d5c8013b2685058",
-    "continue_from": "checkpoint-105472",
-    "experiment": 1,
-    "reason": "Select the 66.5% checkpoint-105472 model lineage: it is the highest measured candidate and has the strongest descriptive performance on the difficult 14-17 cm band, while all candidates fail the 17-20 cm band. The result is well below the 98% objective, so no final benchmark is requested."
+    "code_parent_commit": "8941d8a8c27d9760ffc5605e02b75454e3eaa764",
+    "continue_from": "checkpoint-120832",
+    "experiment": 2,
+    "reason": "Select Experiment 2 checkpoint-120832 as the active model lineage: it reaches 97.0% research success versus 40.5% for the incumbent champion and resolves the outer-workspace failure mechanism, although it remains below the 98% objective and is not an official benchmark result."
   },
-  "last_verdict": "researcher selected checkpoint-105472",
+  "last_verdict": "researcher selected checkpoint-120832",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
