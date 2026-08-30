@@ -300,6 +300,14 @@ def test_lineage_retry_gate_requires_attested_evidence():
     assert "Evidence inspected" in program
 
 
+def test_researcher_retries_continue_the_interrupted_opencode_session():
+    root = Path(__file__).resolve().parents[2]
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+
+    assert script.count("opencode run --continue --model $model") == 3
+    assert "OpenCode-specific workaround" in script
+
+
 def test_researcher_prompts_leave_execution_to_the_launcher():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")

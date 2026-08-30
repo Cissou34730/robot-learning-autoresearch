@@ -182,7 +182,9 @@ while ($true) {
                     "Expected deliverable: complete research/evaluation_request.json according to the protocol."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
-                opencode run --model $model --variant $reasoning $evaluationRetryPrompt
+                # OpenCode-specific workaround: a headless run may return after a
+                # tool-call batch without scheduling the next agent turn.
+                opencode run --continue --model $model --variant $reasoning $evaluationRetryPrompt
                 if (-not (Test-Path "research\evaluation_request.json")) {
                     throw "Researcher ended twice without creating research/evaluation_request.json."
                 }
@@ -257,7 +259,9 @@ while ($true) {
                 "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json according to the protocol."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
-            opencode run --model $model --variant $reasoning $decisionRetryPrompt
+            # OpenCode-specific workaround: continue the interrupted Researcher
+            # session instead of restarting its phase analysis from scratch.
+            opencode run --continue --model $model --variant $reasoning $decisionRetryPrompt
             $lineageReady = Test-LineageResearchMemory $pendingExperiment
             if ($lineageReady) {
                 $lineageReady = Test-ResearchProposal
@@ -323,7 +327,9 @@ while ($true) {
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
-        opencode run --model $model --variant $reasoning $retryPrompt
+        # OpenCode-specific workaround: continue the interrupted Researcher
+        # session so it can finish the required proposal after its tool calls.
+        opencode run --continue --model $model --variant $reasoning $retryPrompt
 
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {
