@@ -88,9 +88,11 @@ and resolve its lineage. There is no measurement-only phase between experiments.
 Replace every placeholder with the required JSON type. `experiment`, `question`,
 `reason` and `evaluations` — each with `candidate`, positive `episodes` and
 `seed` — are required; the rest is optional. `champion` is valid when exposed by
-the brief. `need_more_evidence` preserves completed measurements for one more
-round. `paired_comparisons` may request candidate/reference comparisons when
-that method answers the stated question.
+the brief. `need_more_evidence` preserves completed measurements and opens
+another research-evaluation round within the current experiment. This may be
+repeated until the Researcher has sufficient evidence to resolve the experiment.
+`paired_comparisons` may request candidate/reference comparisons when that method
+answers the stated question.
 
 Do not spend training budget merely to obtain information available through
 inspection, local analysis, instrumentation or re-evaluation during this phase.

@@ -71,6 +71,21 @@ function Test-LineageResearchMemory([int]$experiment) {
     return ($LASTEXITCODE -eq 0)
 }
 
+function Test-ResearchProposal {
+    $validationOutput = @(
+        uv run python research/run_experiment.py --check-proposal 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $script:ProposalValidationFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0) {
+        Write-Host $script:ProposalValidationFeedback
+        return $false
+    }
+    return $true
+}
+
 try {
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
@@ -219,7 +234,11 @@ while ($true) {
         ) -join " "
         opencode run --model $model --variant $reasoning $decisionPrompt
         $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
-        if (-not (Test-LineageResearchMemory $pendingExperiment)) {
+        $lineageReady = Test-LineageResearchMemory $pendingExperiment
+        if ($lineageReady) {
+            $lineageReady = Test-ResearchProposal
+        }
+        if (-not $lineageReady) {
             Write-Host "=== Lineage proposal or postmortem missing; retrying the same bounded task once ==="
             $decisionRetryPrompt = @(
                 "Complete the pending lineage-resolution task now; this message is complete."
@@ -229,8 +248,12 @@ while ($true) {
                 "Write research/proposal.json containing only previous_result_decision; do not create an N+1 training proposal or run the runner."
             ) -join " "
             opencode run --model $model --variant $reasoning $decisionRetryPrompt
-            if (-not (Test-LineageResearchMemory $pendingExperiment)) {
-                throw "Researcher ended twice without both a lineage proposal and postmortem for experiment $pendingExperiment."
+            $lineageReady = Test-LineageResearchMemory $pendingExperiment
+            if ($lineageReady) {
+                $lineageReady = Test-ResearchProposal
+            }
+            if (-not $lineageReady) {
+                throw "Researcher ended twice without a valid lineage proposal and postmortem for experiment $pendingExperiment."
             }
         }
         uv run python research/run_experiment.py
@@ -247,8 +270,11 @@ while ($true) {
     Write-Host "=== Researcher forming next hypothesis at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
+    $nextExperiment = [int]$researchState.last_experiment + 1
     $researchPrompt = @(
         "This is the complete research task; do not wait for more input."
+        "The previous experiment and its lineage decision are closed. No evaluation or lineage decision is pending."
+        "The current phase is new hypothesis: prepare the standard training proposal for experiment $nextExperiment, without previous_result_decision."
         "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
         "Treat these compact files as a starting point, not the complete scientific evidence."
         "Before proposing another training experiment you may inspect existing detailed evaluation artifacts, code, logs and configuration, and run a lightweight local analysis. Do none of this when the available evidence already answers the question."
@@ -259,16 +285,28 @@ while ($true) {
 
     Update-ResearchBrief
     Save-ResearchMemory
-    if (-not (Test-Path "research\proposal.json")) {
+    $proposalValid = $false
+    if (Test-Path "research\proposal.json") {
+        $proposalValid = Test-ResearchProposal
+    }
+    if (-not $proposalValid) {
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {
             Write-Host "=== Experiment was already executed during the research session ==="
             continue
         }
-        Write-Host "=== Researcher ended without a proposal; retrying once with bounded context ==="
+        $proposalProblem = if (Test-Path "research\proposal.json") {
+            $script:ProposalValidationFeedback
+        }
+        else {
+            "research/proposal.json was not created"
+        }
+        Write-Host "=== Research proposal missing or invalid; retrying once with bounded context ==="
         $retryPrompt = @(
-            "The previous researcher session ended before writing research/proposal.json."
-            "Complete that same single research task; do not begin a second hypothesis and do not wait for more input."
+            "The previous experiment and its lineage decision are already closed. No evaluation request or lineage decision is pending."
+            "The current phase is new hypothesis. Complete the standard training proposal for experiment $nextExperiment; do not wait for more input."
+            "Do not write previous_result_decision."
+            "The previous output failed protocol validation: $proposalProblem"
             "Read only research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and git status."
             "Use existing research edits, if any, only when they clearly belong to that unfinished experiment."
             "Write a valid research/proposal.json before exiting. Do not launch training or the runner."
@@ -284,6 +322,9 @@ while ($true) {
                 continue
             }
             throw "Researcher ended twice without creating research/proposal.json. The loop stopped safely."
+        }
+        if (-not (Test-ResearchProposal)) {
+            throw "Researcher ended twice without a proposal valid for the current phase. The loop stopped safely: $script:ProposalValidationFeedback"
         }
     }
     uv run python research/run_experiment.py

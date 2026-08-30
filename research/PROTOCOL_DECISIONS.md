@@ -847,3 +847,28 @@ superseded. It does not instruct the autonomous researcher and does not replace
   `research_evidence` channel plus the researcher-owned evaluation code.
 - **Known tradeoff:** `research/evaluations/` grows monotonically. This is
   accepted for now and recorded as an operational concern, not a defect.
+
+## 2026-08-30 - Phase-aware proposal validation at the orchestration boundary
+
+- **Incident:** Experiment 1 and its lineage decision were already closed. A
+  new-hypothesis session produced no proposal, then its ambiguous retry wrote a
+  redundant `previous_result_decision`. The loop checked only that
+  `proposal.json` existed, and the runner accessed training-only fields before
+  validating the proposal, causing a `KeyError`.
+- **Decision:** Persisted lifecycle state determines the accepted proposal
+  contract before any contract-specific field is read. A pending lineage
+  decision accepts only a lineage proposal; an open new-experiment phase accepts
+  only a training proposal. Evaluation and final-benchmark phases reject a
+  research proposal.
+- **Decision:** `research/run_experiment.py --check-proposal` is the single,
+  non-mutating proposal preflight. It uses the same phase and schema validation
+  as execution and returns a short protocol-level result.
+- **Decision:** The PowerShell loop validates researcher output, not merely file
+  existence. Missing or invalid output receives one bounded retry containing the
+  current phase, next experiment number and concise validation feedback. A
+  second invalid result stops before training or state mutation.
+- **Reason:** Proposal validity is an execution contract, so Python owns it.
+  PowerShell only orchestrates the check and retry; it does not duplicate JSON
+  schemas or infer scientific content.
+- **Boundary unchanged:** No phase, proposal type, recovery path, evaluation
+  mechanism, lineage rule or training behavior was added or changed.

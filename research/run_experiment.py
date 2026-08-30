@@ -1477,6 +1477,10 @@ def validate_experiment_semantics(
 
 def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
     if baseline:
+        required = {"change", "hypothesis", "initialization"}
+        missing = sorted(field for field in required if field not in proposal)
+        if missing:
+            raise ValueError(f"baseline proposal is missing required fields: {missing}")
         return
     forbidden = {
         "previous_result_decision",
@@ -1498,6 +1502,8 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     if not str(proposal["family"]).strip():
         raise ValueError("training proposal family must be non-empty")
+    if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
+        raise TypeError("proposal params must be an object")
     initialization = str(proposal["initialization"]).lower()
     if initialization == "transfer":
         if not str(proposal.get("training_parent", "")).strip():
@@ -1877,6 +1883,61 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     }
 
 
+def validate_proposal_phase(proposal: dict, state: dict) -> str:
+    """Return the proposal contract expected by the persisted lifecycle state."""
+    if not isinstance(proposal, dict):
+        raise TypeError("proposal.json must contain a JSON object")
+    if state.get("pending_final_benchmark") is not None:
+        raise ValueError(
+            "the final benchmark is pending; no research proposal is accepted"
+        )
+    if state.get("pending_evaluation_request") is not None:
+        raise ValueError(
+            "research evaluation is pending; use evaluation_request.json, not "
+            "proposal.json"
+        )
+    if state.get("pending_researcher_decision") is not None:
+        if set(proposal) != {"previous_result_decision"}:
+            raise ValueError(
+                "the current phase requires a lineage proposal containing only "
+                "previous_result_decision"
+            )
+        return "lineage"
+    if "previous_result_decision" in proposal:
+        raise ValueError(
+            "the previous experiment lineage is already resolved; the current "
+            "phase requires a new training proposal without previous_result_decision"
+        )
+    baseline = bool(proposal.get("baseline", False))
+    validate_training_proposal(proposal, baseline=baseline)
+    return "training"
+
+
+def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
+    """Fully validate a proposal for its phase without mutating repository state."""
+    contract = validate_proposal_phase(proposal, raw_state)
+    if contract == "lineage":
+        state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
+        plan_previous_result_decision(proposal, state)
+    return contract
+
+
+def check_proposal() -> int:
+    """Non-mutating orchestration preflight for researcher-produced proposals."""
+    if not PROPOSAL_PATH.exists():
+        print("PROPOSAL_INVALID: research/proposal.json was not created")
+        return 1
+    try:
+        proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
+        raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        contract = validate_proposal_against_state(proposal, raw_state)
+    except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as error:
+        print(f"PROPOSAL_INVALID: {error}")
+        return 1
+    print(f"PROPOSAL_VALID: {contract}")
+    return 0
+
+
 def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     plan = plan_previous_result_decision(proposal, state)
     pending = plan["pending"]
@@ -2029,7 +2090,10 @@ def main() -> int:
     parser.add_argument("--evaluate-pending", action="store_true")
     parser.add_argument("--evaluate-pending-final", action="store_true")
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
+    parser.add_argument("--check-proposal", action="store_true")
     args = parser.parse_args()
+    if args.check_proposal:
+        return check_proposal()
     if args.check_lineage_evidence is not None:
         return check_lineage_evidence(args.check_lineage_evidence)
     if args.evaluate_pending_final:
@@ -2040,10 +2104,14 @@ def main() -> int:
         print("ERROR: research/proposal.json not found.")
         return 1
 
-    proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
-    raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    decision_pending = raw_state.get("pending_researcher_decision") is not None
-    if decision_pending:
+    try:
+        proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
+        raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        proposal_contract = validate_proposal_against_state(proposal, raw_state)
+    except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as error:
+        print(f"ERROR: invalid proposal for current phase: {error}")
+        return 1
+    if proposal_contract == "lineage":
         state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
         apply_previous_result_decision(proposal, state)
         pending_experiment = int(raw_state["pending_researcher_decision"]["experiment"])
@@ -2056,10 +2124,7 @@ def main() -> int:
     hypothesis = str(proposal["hypothesis"]).strip()
     experiment_kind = str(proposal.get("kind", "training")).lower()
     parameter_overrides = proposal.get("params")
-    if parameter_overrides is not None and not isinstance(parameter_overrides, dict):
-        raise TypeError("proposal params must be an object")
     baseline = bool(proposal.get("baseline", False))
-    validate_training_proposal(proposal, baseline=baseline)
     initialization = str(proposal.get("initialization", "transfer")).lower()
     index = next_index()
     fresh_baseline = baseline and initialization == "fresh"

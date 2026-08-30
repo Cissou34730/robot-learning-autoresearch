@@ -49,6 +49,13 @@ def mentions(text: str, word: str) -> bool:
     return re.search(rf"\b{word}\b", text, flags=re.IGNORECASE) is not None
 
 
+def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
+    assert "--check-proposal" in LOOP
+    assert "The previous experiment and its lineage decision are already closed." in LOOP
+    assert "Do not write previous_result_decision." in LOOP
+    assert "proposal valid for the current phase" in LOOP
+
+
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
     return {
         "episodes": len(outcomes),

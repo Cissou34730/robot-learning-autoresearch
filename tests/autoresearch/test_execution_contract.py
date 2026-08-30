@@ -15,6 +15,7 @@ from research.run_experiment import (
     append_result,
     assert_research_surface,
     candidate_directories,
+    check_proposal,
     commit_and_push,
     dependency_metadata_changed,
     format_duration,
@@ -24,6 +25,7 @@ from research.run_experiment import (
     requires_full_validation,
     validate_changed_sources,
     validate_experiment_semantics,
+    validate_proposal_phase,
     validate_reusable_candidate,
     validate_training_proposal,
 )
@@ -746,6 +748,119 @@ def test_fresh_proposal_rejects_a_training_parent():
 
     with pytest.raises(ValueError, match="only valid with transfer"):
         validate_training_proposal(proposal, baseline=False)
+
+
+def test_baseline_proposal_requires_fields_consumed_by_execution():
+    with pytest.raises(ValueError, match="baseline proposal is missing"):
+        validate_training_proposal({"baseline": True}, baseline=True)
+
+
+def _training_proposal() -> dict:
+    return {
+        "kind": "training",
+        "family": "observation.representation",
+        "hypothesis": "the current representation limits learning",
+        "change": "change the observation representation",
+        "initialization": "fresh",
+    }
+
+
+def test_current_phase_accepts_a_training_proposal_when_no_decision_is_pending():
+    state = {
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_final_benchmark": None,
+    }
+
+    assert validate_proposal_phase(_training_proposal(), state) == "training"
+
+
+def test_proposal_preflight_accepts_a_valid_training_proposal(
+    monkeypatch, tmp_path, capsys
+):
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    proposal_path.write_text(json.dumps(_training_proposal()), encoding="utf-8")
+    state_path.write_text(
+        json.dumps(
+            {
+                "pending_evaluation_request": None,
+                "pending_researcher_decision": None,
+                "pending_final_benchmark": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+
+    assert check_proposal() == 0
+    assert "PROPOSAL_VALID: training" in capsys.readouterr().out
+
+
+def test_current_phase_rejects_redundant_lineage_before_training_fields():
+    state = {
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_final_benchmark": None,
+    }
+    residue = {"previous_result_decision": {"experiment": 1}}
+
+    with pytest.raises(ValueError, match="lineage is already resolved"):
+        validate_proposal_phase(residue, state)
+
+
+def test_lineage_phase_accepts_only_the_lineage_proposal_shape():
+    state = {"pending_researcher_decision": {"experiment": 1}}
+
+    assert (
+        validate_proposal_phase(
+            {"previous_result_decision": {"experiment": 1}}, state
+        )
+        == "lineage"
+    )
+    with pytest.raises(ValueError, match="requires a lineage proposal"):
+        validate_proposal_phase(_training_proposal(), state)
+
+
+def test_proposal_preflight_rejects_incident_residue_without_mutation(
+    monkeypatch, tmp_path, capsys
+):
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    accepted = tmp_path / "accepted" / "model.zip"
+    accepted.parent.mkdir()
+    accepted.write_bytes(b"accepted-lineage")
+    proposal_path.write_text(
+        json.dumps({"previous_result_decision": {"experiment": 1}}),
+        encoding="utf-8",
+    )
+    state = {
+        "last_experiment": 1,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_final_benchmark": None,
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    original_state = state_path.read_bytes()
+    original_proposal = proposal_path.read_bytes()
+    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+
+    assert check_proposal() == 1
+    assert "lineage is already resolved" in capsys.readouterr().out
+
+    def fail_if_training_starts(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("training started for a phase-incompatible proposal")
+
+    monkeypatch.setattr("research.run_experiment.train_candidate", fail_if_training_starts)
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+    assert main() == 1
+    assert "invalid proposal for current phase" in capsys.readouterr().out
+    assert state_path.read_bytes() == original_state
+    assert proposal_path.read_bytes() == original_proposal
+    assert accepted.read_bytes() == b"accepted-lineage"
 
 
 # --- candidate manifest ----------------------------------------------------
