@@ -1,61 +1,11 @@
 {
+  "schema_version": 2,
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_evaluations": [
-    "models/candidates/evaluation-experiment-2-checkpoint-95232-100ep-seed2000.json"
-  ],
-  "accepted_metrics": {
-    "episodes": 100,
-    "evaluation_summary_version": 2,
-    "pooled_success_percent": 58.0,
-    "schema_version": 2,
-    "seed_count": 1,
-    "seed_success_percent": {
-      "2000": 58.0
-    },
-    "seeds_passing_98_percent": 0,
-    "success_percent": 58.0,
-    "worst_seed_success_percent": 58.0
-  },
-  "accepted_parameters": {
-    "algorithm": {
-      "name": "ppo"
-    },
-    "policy": {
-      "activation": "tanh",
-      "net_arch": [
-        64,
-        64
-      ]
-    },
-    "ppo": {
-      "batch_size": 64,
-      "ent_coef": 0.01,
-      "gae_lambda": 0.95,
-      "gamma": 0.99,
-      "learning_rate": 0.0003,
-      "n_steps": 1024
-    },
-    "training": {
-      "checkpoint_every_steps": 5000,
-      "n_envs": 1
-    }
-  },
-  "accepted_training_steps": 240000,
-  "last_experiment": 2,
-  "last_lineage_decision": {
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 2 continued the accepted PPO method without code or configuration changes, so there is no mutation to revert and the unchanged code lineage remains valid."
-    },
-    "code_parent_commit": "9efdabe4f2cfeffbba615ded1954088e8459bef3",
-    "continue_from": "checkpoint-95232",
-    "experiment": 2,
-    "reason": "checkpoint-95232 is the later of the two best measured Experiment 2 checkpoints at 58% success on the matched 100-episode panel. The final checkpoint-120832 regressed to 57%, so the later tied-best model is the most useful active lineage even though it remains far below the 98% objective."
-  },
-  "last_verdict": "researcher selected checkpoint-95232",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_researcher_decision": null,
+  "accepted_metrics": null,
+  "accepted_parameters": null,
+  "accepted_training_steps": 0,
   "retained_lineages": [],
-  "schema_version": 2
+  "last_experiment": 0,
+  "last_verdict": "baseline pending after research reset",
+  "official_metrics": null
 }
