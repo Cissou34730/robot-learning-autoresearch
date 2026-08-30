@@ -1,11 +1,61 @@
 {
-  "schema_version": 2,
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_metrics": null,
-  "accepted_parameters": null,
-  "accepted_training_steps": 0,
+  "accepted_evaluations": [
+    "models/candidates/evaluation-experiment-1-checkpoint-120832-100ep-seed2000.json"
+  ],
+  "accepted_metrics": {
+    "episodes": 100,
+    "evaluation_summary_version": 2,
+    "pooled_success_percent": 57.0,
+    "schema_version": 2,
+    "seed_count": 1,
+    "seed_success_percent": {
+      "2000": 57.0
+    },
+    "seeds_passing_98_percent": 0,
+    "success_percent": 57.0,
+    "worst_seed_success_percent": 57.0
+  },
+  "accepted_parameters": {
+    "algorithm": {
+      "name": "ppo"
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    },
+    "ppo": {
+      "batch_size": 64,
+      "ent_coef": 0.01,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0003,
+      "n_steps": 1024
+    },
+    "training": {
+      "checkpoint_every_steps": 5000,
+      "n_envs": 1
+    }
+  },
+  "accepted_training_steps": 120000,
+  "last_experiment": 1,
+  "last_lineage_decision": {
+    "code": {
+      "action": "keep",
+      "reason": "Experiment 1 was the unchanged fresh baseline, so its code lineage is the repository baseline and contains no mutation to revert."
+    },
+    "code_parent_commit": "d1723e579b36dc894c3273ad7fbe663d88d63a58",
+    "continue_from": "checkpoint-120832",
+    "experiment": 1,
+    "reason": "checkpoint-120832 is the best measured baseline model at 57% success on the matched 100-episode panel, narrowly exceeding checkpoint-95232 at 56% and outperforming checkpoint-60416 at 48% and checkpoint-25600 at 33%. It is still below the 98% objective, so this resolves the active model lineage without requesting the official benchmark."
+  },
+  "last_verdict": "researcher selected checkpoint-120832",
+  "official_metrics": null,
+  "pending_evaluation_request": null,
+  "pending_researcher_decision": null,
   "retained_lineages": [],
-  "last_experiment": 0,
-  "last_verdict": "baseline pending after research reset",
-  "official_metrics": null
+  "schema_version": 2
 }
