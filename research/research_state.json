@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed1000-0709faf8a915.json"
+    "research/evaluations/evaluation-experiment-4-champion-200ep-seed2000-ed676b79d068.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -40,20 +40,26 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_experiment": 2,
+  "last_experiment": 4,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Keep the Experiment 2 code lineage because its outer-workspace sampling change produced the measured improvement and is the intervention supported by the detailed diagnostics."
+      "action": "revert",
+      "reason": "The hold-exit forfeiture reward change did not improve hold stability and degraded the measured policy; restore the Experiment 4 code paths to the recorded parent commit 84a049da39028a85677502f8fcf7d8d21e59e69f."
     },
-    "code_parent_commit": "8941d8a8c27d9760ffc5605e02b75454e3eaa764",
-    "continue_from": "checkpoint-120832",
-    "experiment": 2,
-    "reason": "Select Experiment 2 checkpoint-120832 as the active model lineage: it reaches 97.0% research success versus 40.5% for the incumbent champion and resolves the outer-workspace failure mechanism, although it remains below the 98% objective and is not an official benchmark result."
+    "code_parent_commit": "84a049da39028a85677502f8fcf7d8d21e59e69f",
+    "continue_from": "champion",
+    "experiment": 4,
+    "reason": "Reject Experiment 4 checkpoint-120832: it reached 86.5% research success versus 96.0% for the incumbent and lost all 19 discordant paired episodes. The independent task-reference panel also measured the challenger at 79.0% versus 98.5% for the champion, so the incumbent remains the active lineage and is the only candidate with independent evidence supporting a final benchmark request."
   },
-  "last_verdict": "researcher selected checkpoint-120832",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
+  "pending_final_benchmark": {
+    "artifact": "research\\checkpoints\\accepted",
+    "experiment": 4,
+    "fingerprint": "6f2b7e75b2c411776964779f716b4af653088d86eccf16eb661235221cd3e472",
+    "selected": "champion"
+  },
   "pending_researcher_decision": null,
   "retained_lineages": [
     {
