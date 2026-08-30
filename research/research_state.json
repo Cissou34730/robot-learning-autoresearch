@@ -1,20 +1,20 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "models/candidates/evaluation-experiment-1-checkpoint-120832-100ep-seed2000.json"
+    "models/candidates/evaluation-experiment-2-checkpoint-95232-100ep-seed2000.json"
   ],
   "accepted_metrics": {
     "episodes": 100,
     "evaluation_summary_version": 2,
-    "pooled_success_percent": 57.0,
+    "pooled_success_percent": 58.0,
     "schema_version": 2,
     "seed_count": 1,
     "seed_success_percent": {
-      "2000": 57.0
+      "2000": 58.0
     },
     "seeds_passing_98_percent": 0,
-    "success_percent": 57.0,
-    "worst_seed_success_percent": 57.0
+    "success_percent": 58.0,
+    "worst_seed_success_percent": 58.0
   },
   "accepted_parameters": {
     "algorithm": {
@@ -40,19 +40,19 @@
       "n_envs": 1
     }
   },
-  "accepted_training_steps": 120000,
-  "last_experiment": 1,
+  "accepted_training_steps": 240000,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 1 was the unchanged fresh baseline, so its code lineage is the repository baseline and contains no mutation to revert."
+      "reason": "Experiment 2 continued the accepted PPO method without code or configuration changes, so there is no mutation to revert and the unchanged code lineage remains valid."
     },
-    "code_parent_commit": "d1723e579b36dc894c3273ad7fbe663d88d63a58",
-    "continue_from": "checkpoint-120832",
-    "experiment": 1,
-    "reason": "checkpoint-120832 is the best measured baseline model at 57% success on the matched 100-episode panel, narrowly exceeding checkpoint-95232 at 56% and outperforming checkpoint-60416 at 48% and checkpoint-25600 at 33%. It is still below the 98% objective, so this resolves the active model lineage without requesting the official benchmark."
+    "code_parent_commit": "9efdabe4f2cfeffbba615ded1954088e8459bef3",
+    "continue_from": "checkpoint-95232",
+    "experiment": 2,
+    "reason": "checkpoint-95232 is the later of the two best measured Experiment 2 checkpoints at 58% success on the matched 100-episode panel. The final checkpoint-120832 regressed to 57%, so the later tied-best model is the most useful active lineage even though it remains far below the 98% objective."
   },
-  "last_verdict": "researcher selected checkpoint-120832",
+  "last_verdict": "researcher selected checkpoint-95232",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
