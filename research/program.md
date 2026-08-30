@@ -152,20 +152,26 @@ Make your code or configuration changes, then write `research/proposal.json`:
   "family": "<hypothesis family>",
   "hypothesis": "<the mechanism you believe is limiting learning>",
   "change": "<the intervention that tests it>",
-  "initialization": "fresh"
+  "initialization": "<fresh|transfer>"
 }
 ```
 
 Required: `kind`, `family`, `hypothesis`, `change` and `initialization`.
-`initialization` is `fresh` or `transfer`, and `transfer` requires a
+`initialization` is `fresh` or `transfer`; `transfer` requires a
 `training_parent`. `training_seed` and `params` are optional; code-only
 experiments are valid. Keep `family` stable across variants of one mechanism.
 
-Other kinds: `continuation` trains the unchanged method further and requires
-`transfer` with a `training_parent`; `replication` reruns the experiment named
-by `replication_of` under a different explicit `training_seed` and requires
-`fresh` with no other change. A `training` proposal with neither code changes
-nor `params` is an empty experiment and is rejected.
+The two initializations are equally standard and neither is a default. `fresh`
+tests whether the intervention can learn the task from zero, independently of
+the currently accepted learned state; `transfer` tests whether it improves an
+existing useful lineage. Choose the one that best tests the stated hypothesis.
+
+Other kinds constrain initialization by their own semantics: `continuation`
+trains the unchanged method further and therefore requires `transfer` with a
+`training_parent`; `replication` reruns the experiment named by `replication_of`
+under a different explicit `training_seed` and therefore requires `fresh` with no
+other change. A `training` proposal with neither code changes nor `params` is an
+empty experiment and is rejected.
 
 ## Tests
 

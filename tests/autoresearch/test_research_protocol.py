@@ -1528,7 +1528,9 @@ def test_protocol_example_is_a_minimal_structural_proposal():
         "Required:", 1
     )[0]
 
-    assert '"initialization": "fresh"' in proposal_example
+    assert '"initialization": "<fresh|transfer>"' in proposal_example
+    assert '"initialization": "fresh"' not in proposal_example
+    assert '"initialization": "transfer"' not in proposal_example
     assert "training_parent" not in proposal_example
     assert "training_seed" not in proposal_example
     assert '"params"' not in proposal_example

@@ -1,8 +1,31 @@
 # AGENTS.md
 
+Repository operational contract: environment and tooling, commands, layout,
+ownership boundaries and working conventions.
+
+The authoritative scientific protocol lives in `research/program.md`. When you
+act as the Researcher, follow it there; this file neither restates nor overrides
+it.
+
 Virtual robotics RL playground (MuJoCo + Gymnasium + Stable-Baselines3, CPU-first).
-Core loop: robot -> environment -> reward -> PPO training -> saved policy -> viewer.
+Code pipeline: robot -> environment -> reward -> training -> saved policy -> viewer.
+Stable-Baselines3 PPO is the currently implemented learning method, not a fixed
+part of the architecture; the Researcher may replace it.
 Readability and tunability beat performance. Never hard-code movement logic.
+
+## Python environment
+
+This repository is managed with `uv`. All project Python execution goes through
+`uv run` — project commands, tests, lightweight research analysis, diagnostics
+and temporary analysis scripts alike. Never invoke system `python`, `python3`,
+`pytest` or `ruff` directly, and never call the interpreter inside `.venv`.
+
+```bash
+uv run python <script>
+uv run python -m <module>
+uv run pytest ...
+uv run ruff ...
+```
 
 ## Commands
 
@@ -26,7 +49,8 @@ uv run pytest                            # tests
 - `research/current_params.json` - runtime configuration of the currently
   active training method. Reward and other scenario science
   live in `robot_learning/scenario/` as code.
-- `research/program.md` - generic research protocol (read before touching `research/`)
+- `research/program.md` - authoritative research protocol (read before touching
+  `research/`)
 - `research/scenario.md` - the current scientific problem
 - `research/checkpoints/accepted/` - Git-versioned accepted policy
 - `models/candidates/` - disposable training candidates
