@@ -52,14 +52,21 @@
     "reason": "Reject Experiment 4 checkpoint-120832: it reached 86.5% research success versus 96.0% for the incumbent and lost all 19 discordant paired episodes. The independent task-reference panel also measured the challenger at 79.0% versus 98.5% for the champion, so the incumbent remains the active lineage and is the only candidate with independent evidence supporting a final benchmark request."
   },
   "last_verdict": "researcher selected champion",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research\\checkpoints\\accepted",
-    "experiment": 4,
-    "fingerprint": "6f2b7e75b2c411776964779f716b4af653088d86eccf16eb661235221cd3e472",
-    "selected": "champion"
+  "official_benchmark_artifact": "6f2b7e75b2c411776964779f716b4af653088d86eccf16eb661235221cd3e472",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.3624874454850317,
+      "median": 0.3102478492994713,
+      "worst": 2.198362903736464
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "retained_lineages": [
     {
