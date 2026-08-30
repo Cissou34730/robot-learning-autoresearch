@@ -23,22 +23,6 @@ BASELINE_EPISODE_FIELDS = {
     "truncated",
 }
 
-# Predefined behavioral diagnostics the default evaluator no longer preselects.
-REMOVED_PREDEFINED_DIAGNOSTICS = (
-    "aggregate_metrics",
-    "metrics",
-    "actions",
-    "reward_components",
-    "held_steps",
-    "distance",
-    "target_radius_cm",
-    "target_angle_degrees",
-    "failed_episode_progress",
-    "failure_diagnostics",
-    "distance_trace_cm",
-)
-
-
 class ZeroPolicy:
     def predict(self, observation, deterministic=False):
         del observation, deterministic
@@ -121,17 +105,20 @@ def test_evaluation_exposes_only_the_minimal_baseline(stub_policy):
     assert episode["steps"] > 0
     assert episode["terminated"] is False
     assert episode["truncated"] is True
-    assert result["research_evidence"] == {}
-
-
-@pytest.mark.parametrize("field", REMOVED_PREDEFINED_DIAGNOSTICS)
-def test_evaluation_emits_no_predefined_diagnostics(stub_policy, field):
-    result = scenario_evaluation.evaluate_research_model(
-        stub_policy, episodes=1, seed=5
-    )
-
-    assert field not in result
-    assert field not in result["episode_results"][0]
+    diagnostics = result["research_evidence"]["episode_diagnostics"][0]
+    assert diagnostics["episode_seed"] == 11
+    assert 6.0 <= diagnostics["target_radius_cm"] <= 20.0
+    assert -180.0 <= diagnostics["target_angle_degrees"] <= 180.0
+    assert diagnostics["min_distance_cm"] >= 0.0
+    assert diagnostics["final_distance_cm"] >= 0.0
+    assert diagnostics["first_reach_step"] is None
+    assert diagnostics["max_held_steps"] == 0
+    assert diagnostics["in_tolerance_steps"] == 0
+    assert diagnostics["hold_interruptions"] == 0
+    assert result["research_evidence"]["units"] == {
+        "distance": "cm",
+        "time": "control_steps",
+    }
 
 
 @pytest.mark.parametrize(

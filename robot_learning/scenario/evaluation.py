@@ -13,6 +13,8 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
+import numpy as np
+
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
@@ -37,19 +39,40 @@ def evaluate_research_model(
     normalize_obs = load_observation_normalizer(model_path)
 
     episode_results: list[dict] = []
+    episode_diagnostics: list[dict] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
+        target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
         reward_total = 0.0
         steps = 0
         success = False
         terminated = False
         truncated = False
+        min_distance_cm = float("inf")
+        final_distance_cm = float("nan")
+        first_reach_step: int | None = None
+        max_held_steps = 0
+        in_tolerance_steps = 0
+        hold_interruptions = 0
+        was_in_tolerance = False
         while not (terminated or truncated):
             normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
             action, _ = model.predict(normalized_obs, deterministic=True)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
+            distance_cm = 100.0 * float(info["distance"])
+            held_steps = int(info.get("held_steps", 0))
+            min_distance_cm = min(min_distance_cm, distance_cm)
+            final_distance_cm = distance_cm
+            max_held_steps = max(max_held_steps, held_steps)
+            if held_steps > 0:
+                in_tolerance_steps += 1
+                if first_reach_step is None:
+                    first_reach_step = steps
+            elif was_in_tolerance:
+                hold_interruptions += 1
+            was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -65,6 +88,24 @@ def evaluate_research_model(
                 "truncated": bool(truncated),
             }
         )
+        episode_diagnostics.append(
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "target_radius_cm": float(
+                    np.hypot(target_position[0], target_position[1]) * 100.0
+                ),
+                "target_angle_degrees": float(
+                    np.degrees(np.arctan2(target_position[1], target_position[0]))
+                ),
+                "min_distance_cm": min_distance_cm,
+                "final_distance_cm": final_distance_cm,
+                "first_reach_step": first_reach_step,
+                "max_held_steps": max_held_steps,
+                "in_tolerance_steps": in_tolerance_steps,
+                "hold_interruptions": hold_interruptions,
+            }
+        )
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
@@ -77,9 +118,12 @@ def evaluate_research_model(
         "official_benchmark": False,
         "success_percent": 100 * successes / episodes,
         "episode_results": episode_results,
-        # Researcher-owned evidence for the current question. Empty until this
-        # module is instrumented; the generic core never reads inside it.
-        "research_evidence": {},
+        # Researcher-owned evidence for distinguishing reach failures from hold
+        # failures and checking whether performance varies by target geometry.
+        "research_evidence": {
+            "episode_diagnostics": episode_diagnostics,
+            "units": {"distance": "cm", "time": "control_steps"},
+        },
     }
 
 
