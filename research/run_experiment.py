@@ -1633,9 +1633,9 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError(f"baseline proposal is missing required fields: {missing}")
         require_nonempty_string("hypothesis", "baseline proposal hypothesis")
         require_nonempty_string("change", "baseline proposal change")
-        initialization = proposal["initialization"]
-        if initialization not in {"transfer", "fresh"}:
-            raise ValueError("initialization must be transfer or fresh")
+        # A baseline measures the unchanged method from zero, never a lineage.
+        if proposal["initialization"] != "fresh":
+            raise ValueError("baseline proposal requires fresh initialization")
         return
     forbidden = {
         "previous_result_decision",

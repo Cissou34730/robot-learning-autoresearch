@@ -1072,6 +1072,20 @@ def test_proposal_preflight_accepts_the_runner_generated_baseline(
     assert "PROPOSAL_VALID: training" in capsys.readouterr().out
 
 
+@pytest.mark.parametrize("initialization", ["transfer", "resume", ""])
+def test_proposal_preflight_rejects_a_baseline_that_is_not_fresh(
+    monkeypatch, tmp_path, capsys, initialization
+):
+    _write_preflight_files(
+        monkeypatch,
+        tmp_path,
+        dict(_baseline_proposal(), initialization=initialization),
+    )
+
+    assert check_proposal() == 1
+    assert "baseline proposal requires fresh initialization" in capsys.readouterr().out
+
+
 def test_current_phase_rejects_redundant_lineage_before_training_fields():
     state = {
         "pending_evaluation_request": None,
