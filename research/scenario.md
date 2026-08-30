@@ -1,80 +1,36 @@
-# Current Scenario: two-joint arm reach-and-hold
+# Current scenario: two-joint arm reach-and-hold
 
-This file defines the scientific problem studied by this repository.
-`research/program.md` defines the research protocol. Read both.
+The scientific problem studied by this repository. `research/program.md` defines
+the research protocol; read both.
 
 ## Objective
 
-The human-defined objective is fixed:
+Fixed by the human:
 
-* target sampled 6–20 cm from the robot;
+* target sampled 6–20 cm from the robot base;
 * end effector within 1 cm of the target;
-* remain continuously within tolerance for 2 seconds;
-* this currently corresponds to 100 control steps and is derived from control timing;
-* achieve at least 98% success over the fixed 200-episode official benchmark.
+* held continuously within tolerance for 2 seconds — currently 100 control
+  steps, derived from the official control timing;
+* at least 98% success over the fixed 200-episode official benchmark.
 
-`robot_learning/benchmark/final_contract.py` is human-owned and must not be modified by research.
+Only the human-owned official benchmark may declare the objective reached.
 
-## Official robot and mechanics
+## Protected official task
 
-The official benchmark must preserve:
+The official task fixes:
 
-* the robot XML asset referenced by `TWO_JOINT_ARM_XML_PATH`;
-* robot geometry and joints;
-* actuators and actuator limits;
+* the robot asset referenced by `TWO_JOINT_ARM_XML_PATH`, its geometry, joints,
+  actuators and actuator limits;
 * action semantics and control limits;
-* MuJoCo timestep and official control timing;
-* official `frame_skip`;
-* official reset/initial-state semantics;
-* official target distribution;
-* official success tolerance;
-* official hold duration;
-* official episode horizon;
-* official success computation.
+* the MuJoCo timestep, `frame_skip` and official control timing;
+* reset and initial-state semantics;
+* the target distribution, success tolerance, hold duration, episode horizon and
+  success computation.
 
 These define the physical problem and are not research variables.
 
-## Researcher-mutable scenario code
-
-The scenario lives in `robot_learning/scenario/`:
-
-* `environment.py` — training task mechanics and `make_training_env()`;
-* `observations.py` — the observation the policy receives;
-* `reward.py` — the complete reward, including its coefficients;
-* `evaluation.py` — research evaluation, its diagnostics and its summary;
-* `brief.py` — how measured evidence is rendered into the brief;
-* `viewer.py` — MuJoCo live training view and trained-policy playback.
-
-`final_benchmark.py` also lives in that package but is **not** researcher-mutable:
-it is the adapter that declares the objective reached, so it is human-owned.
-
-These are ordinary research code files. Changing them is a normal research
-change recorded by the existing Git code lineage.
-
-Reward coefficients are **not** in `research/current_params.json`. That file
-holds the runtime configuration of the currently active training method. To
-change the reward, change `robot_learning/scenario/reward.py`.
-
-Research may change:
-
-* reward;
-* observations;
-* normalization;
-* exploration;
-* curriculum;
-* training target distribution;
-* training randomization;
-* wrappers;
-* learning algorithm;
-* optimizer;
-* policy architecture;
-* action representation, provided the resulting policy can still control the official robot correctly;
-* other training mechanisms that do not redefine the official task.
-
-`robot_learning/benchmark/` holds the protected task definition and the official
-evaluator. A research proposal is rejected if it changes any file on the trust
-path between the runner and the human-owned benchmark, the official robot it
-measures, or the mechanism that enforces this protocol:
+A proposal is rejected if it changes any file on the trust path between the
+runner and the protected task:
 
 * `research/run_experiment.py`;
 * `robot_learning/benchmark/final_contract.py`;
@@ -83,55 +39,51 @@ measures, or the mechanism that enforces this protocol:
 * `robot_learning/robots/two_joint_arm.py`;
 * `robot_learning/robots/two_joint_arm.xml`;
 * the `__init__.py` of `robot_learning`, `robot_learning/benchmark`,
-  `robot_learning/robots` and `robot_learning/scenario`, because they resolve
-  those imports.
+  `robot_learning/robots` and `robot_learning/scenario`, which resolve those
+  imports;
+* anything under `tests/benchmark/`, which verifies the frozen robot, the task
+  contract, the hold metric and the goal verdict;
+* anything under `tests/autoresearch/`, which verifies the generic research
+  protocol and protected boundary.
 
-## Scenario verification
+## Training and research environment
 
-`tests/benchmark/` verifies the official problem: the frozen robot asset, the
-final task contract, the fixed hold metric and the goal verdict. It is
-protected, like the benchmark code it covers, and a research proposal that
-touches it is rejected.
+The official task is what is measured; the environment used to learn it is
+yours. Research may change the reward, observations, normalization, exploration,
+curriculum, training target distribution and randomization, wrappers, learning
+algorithm, optimizer, architecture, and the action representation as long as the
+resulting policy still controls the official robot correctly.
 
-`tests/scenario/` verifies the researcher-mutable scenario in
-`robot_learning/scenario/`: training environment mechanics, reward behavior and
-component attribution, observation validity, curriculum behavior and research
-evaluation diagnostics. It belongs to you.
+A curriculum or an easier training environment is legitimate. Reporting success
+on it is not.
 
-The distinction follows the code. Protected benchmark behavior — the tolerance,
-the required hold, the target distribution and the pass criterion of the
-official evaluation — is fixed for the whole campaign and its tests must keep
-passing unchanged. Training-scenario behavior is deliberately mutable: a
-scenario experiment that changes the reward, the observation or the training
-task should update `tests/scenario/` in the same change, and those test edits
-travel with the experiment's code lineage.
+Policy-specific preprocessing and normalization belong to the learned artifact
+and may run during official evaluation when the policy needs them. They must not
+redefine the official physics or objective.
 
-Do not encode a historical numerical snapshot of mutable scenario output as a
-test expectation. Express expectations through the active implementation.
+## Scenario code
+
+`robot_learning/scenario/` is researcher-owned except the protected
+`final_benchmark.py` and `__init__.py`:
+
+* `environment.py` — training task mechanics and `make_training_env()`;
+* `observations.py` — the observation the policy receives;
+* `reward.py` — the complete reward, including its coefficients;
+* `evaluation.py` — research evaluation, its diagnostics and its summary;
+* `progress.py` — the scenario phrase shown in the live training console;
+* `viewer.py` — MuJoCo live training view and trained-policy playback.
+
+Reward coefficients are not in `research/current_params.json`; to change the
+reward, change `reward.py`.
+
+`tests/scenario/` covers this surface and belongs to you. A change to the
+reward, the observation or the training task should update it in the same
+experiment. Do not freeze a numerical snapshot of mutable scenario output as a
+test expectation; express expectations through the active implementation.
 
 ## Terminology
 
 * **reach** — moving the end effector toward the sampled target;
 * **hold** — remaining continuously inside the 1 cm tolerance;
-* **hold progress** — the longest unbroken run of in-tolerance control steps in an episode;
-* **best window** — the most task-aligned window of the required hold length;
 * **target radius** — distance of the sampled target from the robot base;
-* **target direction** — angle of the sampled target, used to detect geometric asymmetry.
-
-## Scenario-specific diagnosis
-
-Reaching and holding are distinct control problems.
-
-A policy that enters the 1 cm region frequently but cannot remain for 2 seconds
-has a different failure mechanism from one that rarely reaches the region.
-
-Use hold-progress distributions rather than relying only on averages when the
-distribution matters.
-
-Use target radius and direction when useful to detect geometric asymmetry.
-
-## Official benchmark success criterion
-
-Passing requires at least 98% success over the fixed 200 official episodes.
-
-Only the human-owned official benchmark may declare the goal reached.
+* **target direction** — angle of the sampled target.
