@@ -643,11 +643,26 @@ superseded. It does not instruct the autonomous researcher and does not replace
   and `evaluation_request.json` still overrides it. No module restates that
   numeric value; a boundary test enforces this. Research evaluation stays
   independent of `final_contract.EVALUATION_EPISODES`, which is unchanged.
-- **Decision:** Evaluation JSON artifacts are no longer deleted after being
-  measured. The runner records each one as `evaluation_artifact` and the brief
-  prints the actual episode count, seed, score and path. This is what makes the
-  compact context navigable to the detailed data rather than a substitute for
-  it. `models/candidates/` therefore accumulates evaluation JSON files.
+- **Decision:** Evaluation JSON artifacts are no longer deleted immediately
+  after being measured. Each one is named per measured panel
+  (`evaluation-experiment-<n>-<candidate>-<episodes>ep-seed<seed>.json`), so
+  repeated evaluation rounds for one experiment never overwrite each other, and
+  the runner records it as `evaluation_artifact`. The brief prints the actual
+  episode count, seed, score and path. This is what makes the compact context
+  navigable to the detailed data rather than a substitute for it.
+- **Decision:** Evaluation artifact lifetime equals lineage evidence lifetime.
+  `apply_previous_result_decision()` — the existing candidate/lineage
+  housekeeping — keeps the panels of the selected lineage
+  (`state["accepted_evaluations"]`) and of every retained lineage
+  (`evaluation_artifacts` on the retention record), and removes the panels of
+  candidates and retained lineages the researcher discarded. Nothing survives
+  in state or in `brief.md` advertising a removed path. No second pruning
+  mechanism and no retention subsystem were added.
+- **Decision:** Research evaluation reads the scenario's explicit
+  `info["is_success"]` outcome. `success`, `terminated` and `truncated` are
+  recorded independently, because another scenario may terminate on failure,
+  falling or leaving bounds. Success semantics stay scenario-owned and are never
+  inferred from Gymnasium termination.
 - **Schema:** Research evaluation is schema 4, the evaluation summary is
   schema 2. Existing `research_state.json` and `results.jsonl` entries keep
   their old schema and are not migrated; the brief reads only generic keys from

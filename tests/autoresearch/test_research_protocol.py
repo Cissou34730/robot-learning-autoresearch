@@ -13,6 +13,7 @@ import pytest
 
 from research.run_experiment import (
     apply_previous_result_decision,
+    evaluation_artifact_name,
     execute_pending_evaluations,
     execute_pending_final_benchmark,
     experiment_family,
@@ -753,6 +754,95 @@ def test_champion_can_be_retained_before_replacement(monkeypatch, tmp_path):
         tmp_path / retained["artifact"],
         55,
     )
+
+
+def _measured(tmp_path, name, artifacts):
+    """One completed evaluation panel plus the JSON artifact it produced."""
+    relative = f"models/candidates/evaluation-experiment-8-{name}-2ep-seed44.json"
+    (artifacts / Path(relative).name).write_text("{}", encoding="utf-8")
+    record = evaluation(44, [True, False])
+    record["evaluation_artifact"] = relative
+    return [record]
+
+
+def _evaluation_lifecycle_state(monkeypatch, tmp_path):
+    _artifact(tmp_path / "archive" / "candidate")
+    _artifact(tmp_path / "archive" / "runner-up")
+    artifacts = tmp_path / "models" / "candidates"
+    artifacts.mkdir(parents=True)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", artifacts)
+
+    state = _decision_state(
+        "archive/candidate", _measured(tmp_path, "candidate", artifacts)
+    )
+    runner_up = _measured(tmp_path, "runner-up", artifacts)
+    state["pending_researcher_decision"]["candidates"].append(
+        {
+            "name": "runner-up",
+            "artifact": "archive/runner-up",
+            "timesteps": 120_000,
+            "evaluations": runner_up,
+            "summary": summarize_evaluations(runner_up),
+        }
+    )
+    return state, artifacts
+
+
+def test_evaluation_artifacts_are_named_per_measured_panel():
+    first = evaluation_artifact_name(8, "checkpoint-120832", 200, 1000)
+    second = evaluation_artifact_name(8, "checkpoint-120832", 200, 2000)
+
+    assert first != second
+    assert first == evaluation_artifact_name(8, "checkpoint-120832", 200, 1000)
+
+
+def test_discarded_candidate_loses_its_evaluation_evidence(monkeypatch, tmp_path):
+    state, artifacts = _evaluation_lifecycle_state(monkeypatch, tmp_path)
+
+    assert not apply_previous_result_decision(_lineage_decision(), state)
+
+    assert (artifacts / "evaluation-experiment-8-candidate-2ep-seed44.json").exists()
+    assert not (
+        artifacts / "evaluation-experiment-8-runner-up-2ep-seed44.json"
+    ).exists()
+    assert state["accepted_evaluations"] == [
+        "models/candidates/evaluation-experiment-8-candidate-2ep-seed44.json"
+    ]
+    assert state["pending_researcher_decision"] is None
+
+
+def test_retained_lineage_keeps_its_evaluation_evidence(monkeypatch, tmp_path):
+    state, artifacts = _evaluation_lifecycle_state(monkeypatch, tmp_path)
+    obsolete = "models/candidates/evaluation-experiment-2-obsolete-2ep-seed44.json"
+    (artifacts / Path(obsolete).name).write_text("{}", encoding="utf-8")
+    _artifact(tmp_path / "research" / "checkpoints" / "retained" / "obsolete")
+    state["retained_lineages"] = [
+        {
+            "id": "obsolete",
+            "artifact": "research/checkpoints/retained/obsolete",
+            "origin_experiment": 2,
+            "evaluation_artifacts": [obsolete],
+        }
+    ]
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["retain"] = [
+        {"candidate": "runner-up", "id": "alternative", "reason": "Useful contrast."}
+    ]
+    decision["previous_result_decision"]["remove_retained"] = ["obsolete"]
+
+    assert not apply_previous_result_decision(decision, state)
+
+    retained = state["retained_lineages"][0]
+    assert retained["id"] == "alternative"
+    assert retained["evaluation_artifacts"] == [
+        "models/candidates/evaluation-experiment-8-runner-up-2ep-seed44.json"
+    ]
+    assert (artifacts / "evaluation-experiment-8-runner-up-2ep-seed44.json").exists()
+    assert not (artifacts / Path(obsolete).name).exists()
 
 
 def test_removing_retained_lineage_keeps_history_but_removes_artifact(

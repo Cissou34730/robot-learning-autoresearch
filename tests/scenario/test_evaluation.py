@@ -4,6 +4,8 @@ The scenario owns which signals are observed and how they are mechanically
 aggregated. Changing those observations is a normal research change.
 """
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 
@@ -15,6 +17,30 @@ class ZeroPolicy:
     def predict(self, observation, deterministic=False):
         del observation, deterministic
         return np.zeros(2), None
+
+
+class ScriptedEnv:
+    """Reports a scenario outcome independently of Gymnasium termination."""
+
+    def __init__(self, is_success: bool, terminated: bool, truncated: bool):
+        self.is_success = is_success
+        self.terminated = terminated
+        self.truncated = truncated
+        self.data = SimpleNamespace(mocap_pos=[[0.1, 0.0, 0.0]])
+
+    def reset(self, seed=None):
+        del seed
+        return np.zeros(2), {}
+
+    def step(self, action):
+        del action
+        info = {
+            "distance": 0.5,
+            "held_steps": 0,
+            "is_success": self.is_success,
+            "reward_components": {"progress": 1.0},
+        }
+        return np.zeros(2), 1.0, self.terminated, self.truncated, info
 
 
 @pytest.fixture
@@ -118,6 +144,35 @@ def test_evaluation_emits_no_hold_diagnostics(stub_policy):
     assert "failed_episode_progress" not in result
     assert "failure_diagnostics" not in result
     assert "distance_trace_cm" not in result["episode_results"][0]
+
+
+@pytest.mark.parametrize(
+    ("is_success", "terminated", "truncated"),
+    [
+        # Terminating for a non-success reason is not a task outcome.
+        (False, True, False),
+        # Succeeding without terminating is still a task outcome.
+        (True, False, True),
+    ],
+)
+def test_success_is_read_from_the_scenario_signal_not_termination(
+    stub_policy, monkeypatch, is_success, terminated, truncated
+):
+    monkeypatch.setattr(
+        scenario_evaluation,
+        "make_training_env",
+        lambda: ScriptedEnv(is_success, terminated, truncated),
+    )
+
+    result = scenario_evaluation.evaluate_research_model(
+        stub_policy, episodes=1, seed=0
+    )
+    episode = result["episode_results"][0]
+
+    assert episode["success"] is is_success
+    assert episode["terminated"] is terminated
+    assert episode["truncated"] is truncated
+    assert result["success_percent"] == (100.0 if is_success else 0.0)
 
 
 def test_evaluation_aggregates_mechanically(stub_policy):

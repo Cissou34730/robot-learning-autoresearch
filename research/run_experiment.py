@@ -1011,8 +1011,8 @@ def execute_pending_evaluations() -> int:
             if key in completed_keys:
                 announce(f"[evaluation] already complete; reusing {label}")
                 continue
-            output_path = CANDIDATE_ROOT / (
-                f"evaluation-experiment-{experiment}-{number}.json"
+            output_path = CANDIDATE_ROOT / evaluation_artifact_name(
+                experiment, name, episodes, seed
             )
             metrics = evaluate_artifact(
                 ROOT / contender["artifact"],
@@ -1433,6 +1433,35 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
         (artifact / filename).unlink(missing_ok=True)
 
 
+def evaluation_artifact_name(
+    experiment: int, candidate: str, episodes: int, seed: int
+) -> str:
+    """One stable file per measured panel, so repeated rounds never collide."""
+    label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    return f"evaluation-experiment-{experiment}-{label}-{episodes}ep-seed{seed}.json"
+
+
+def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
+    return [
+        str(item["evaluation_artifact"])
+        for item in evaluations or []
+        if item.get("evaluation_artifact")
+    ]
+
+
+def discard_evaluation_artifacts(paths: list[str], keep: set[str]) -> None:
+    """Detailed evidence lives exactly as long as the lineage it describes."""
+    for relative in dict.fromkeys(paths):
+        if relative in keep:
+            continue
+        resolved = (ROOT / relative).resolve()
+        if resolved.parent != CANDIDATE_ROOT.resolve():
+            raise RuntimeError(
+                f"refusing to remove non-candidate evaluation: {resolved}"
+            )
+        resolved.unlink(missing_ok=True)
+
+
 def require_complete_artifact(artifact: Path, description: str) -> None:
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         if not (artifact / filename).is_file():
@@ -1606,6 +1635,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
                     "reason": retention_reason,
                     "parameters": source.get("parameters", pending["parameters"]),
                     "training_steps": int(source["timesteps"]),
+                    "evaluation_artifacts": evaluation_artifact_paths(
+                        source.get("evaluations")
+                    ),
                 },
             }
         )
@@ -1663,6 +1695,10 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         state["official_metrics"] = None
     else:
         state["accepted_metrics"] = selected.get("summary")
+    superseded_evaluations = list(state.get("accepted_evaluations", []))
+    state["accepted_evaluations"] = evaluation_artifact_paths(
+        selected.get("evaluations")
+    )
     apply_code_lineage_decision(plan["code_plan"])
     state["retained_lineages"] = plan["retained"] + [
         retention["record"] for retention in plan["retentions"]
@@ -1682,6 +1718,20 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         remove_heavyweight_artifacts(ROOT / candidate["artifact"])
     for lineage in plan["removed_retained"]:
         remove_heavyweight_artifacts(ROOT / lineage["artifact"])
+    kept_evaluations = set(state["accepted_evaluations"])
+    for lineage in state["retained_lineages"]:
+        kept_evaluations.update(lineage.get("evaluation_artifacts", []))
+    discarded_evaluations = list(superseded_evaluations)
+    for candidate in pending["candidates"]:
+        discarded_evaluations.extend(
+            evaluation_artifact_paths(candidate.get("evaluations"))
+        )
+    discarded_evaluations.extend(
+        evaluation_artifact_paths(pending.get("champion_evaluations"))
+    )
+    for lineage in plan["removed_retained"]:
+        discarded_evaluations.extend(lineage.get("evaluation_artifacts", []))
+    discard_evaluation_artifacts(discarded_evaluations, kept_evaluations)
     if plan["request_final_benchmark"]:
         state["pending_final_benchmark"] = {
             "experiment": int(pending["experiment"]),

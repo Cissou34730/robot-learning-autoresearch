@@ -405,6 +405,13 @@ def render_research_brief() -> str:
         ),
         f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
         (
+            "- Accepted evaluation detail: "
+            + (
+                ", ".join(f"`{path}`" for path in state.get("accepted_evaluations", []))
+                or "-"
+            )
+        ),
+        (
             f"- Accepted lineage training budget: "
             f"{int(state.get('accepted_training_steps', 0)):,} steps"
         ),

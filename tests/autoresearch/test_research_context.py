@@ -68,6 +68,9 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
         json.dumps(
             {
                 "accepted_artifact": "accepted",
+                "accepted_evaluations": [
+                    "models/candidates/evaluation-experiment-3-champion-4ep-seed1000.json"
+                ],
                 "pending_researcher_decision": {
                     "experiment": 4,
                     "candidates": [
@@ -100,6 +103,10 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
     assert "hold-focused: pooled success 50.00%" in brief
     assert "4 episodes, seed 3000, success 50.00%" in brief
     assert "models/candidates/evaluation-experiment-4-1.json" in brief
+    assert (
+        "Accepted evaluation detail: "
+        "`models/candidates/evaluation-experiment-3-champion-4ep-seed1000.json`"
+    ) in brief
     assert "Measured challenger diagnostics" not in brief
     assert "Observed failure diagnostics" not in brief
 

@@ -124,6 +124,7 @@ def evaluate_research_model(
         reward_components: dict[str, float] = {}
         reward_total = 0.0
         steps = 0
+        success = False
         terminated = False
         truncated = False
         while not (terminated or truncated):
@@ -133,6 +134,8 @@ def evaluate_research_model(
             steps += 1
             reward_total += float(reward)
             actions.append(np.ravel(np.asarray(action, dtype=float)))
+            if "is_success" in info:
+                success = bool(info["is_success"])
             for name in OBSERVED_STEP_SIGNALS:
                 series[name].append(float(info[name]))
             for name, value in info.get("reward_components", {}).items():
@@ -144,7 +147,8 @@ def evaluate_research_model(
             {
                 "episode": episode,
                 "episode_seed": seed + episode,
-                "success": bool(terminated),
+                # Scenario task outcome, not Gymnasium termination.
+                "success": success,
                 "steps": steps,
                 "terminated": bool(terminated),
                 "truncated": bool(truncated),
