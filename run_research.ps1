@@ -1,5 +1,13 @@
 # Token-efficient autonomous robot-learning loop.
 
+param(
+    [ValidateNotNullOrEmpty()]
+    [string]$Model = "github-copilot/gpt-5.6-luna",
+
+    [ValidateSet("low", "medium", "high", "xhigh", "max")]
+    [string]$Reasoning = "high"
+)
+
 Set-Location $PSScriptRoot
 
 $createdNew = $false
@@ -68,15 +76,6 @@ while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
         Write-Host "GOAL REACHED - research loop finished."
         break
-    }
-
-    $model = "github-copilot/gpt-5.6-luna"
-    $reasoning = "medium"
-    if ($env:RESEARCH_MODEL) {
-        $model = $env:RESEARCH_MODEL
-    }
-    if ($env:RESEARCH_REASONING) {
-        $reasoning = $env:RESEARCH_REASONING
     }
 
     if (Test-Path "research\RECOVERY_PENDING") {
@@ -252,7 +251,7 @@ while ($true) {
         "This is the complete research task; do not wait for more input."
         "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
         "Treat these compact files as a starting point, not the complete scientific evidence."
-        "Before proposing another training experiment you may inspect the detailed evaluation artifacts, code, logs and configuration, run a lightweight local analysis, change researcher-owned instrumentation, and obtain additional measurements of existing saved policies. Do none of this when the available evidence already answers the question."
+        "Before proposing another training experiment you may inspect existing detailed evaluation artifacts, code, logs and configuration, and run a lightweight local analysis. Do none of this when the available evidence already answers the question."
         "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
         "Do not launch training or the runner."
     ) -join " "

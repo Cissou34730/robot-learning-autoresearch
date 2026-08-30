@@ -15,7 +15,7 @@ Fixed by the human:
 
 Only the human-owned official benchmark may declare the objective reached.
 
-## Protected official task
+## Protected boundary
 
 The official task fixes:
 
@@ -69,7 +69,7 @@ redefine the official physics or objective.
 * `environment.py` — training task mechanics and `make_training_env()`;
 * `observations.py` — the observation the policy receives;
 * `reward.py` — the complete reward, including its coefficients;
-* `evaluation.py` — research evaluation, its diagnostics and its summary;
+* `evaluation.py` — research evaluation and researcher-owned scientific instrumentation;
 * `progress.py` — the scenario phrase shown in the live training console;
 * `viewer.py` — MuJoCo live training view and trained-policy playback.
 
@@ -80,10 +80,3 @@ reward, change `reward.py`.
 reward, the observation or the training task should update it in the same
 experiment. Do not freeze a numerical snapshot of mutable scenario output as a
 test expectation; express expectations through the active implementation.
-
-## Terminology
-
-* **reach** — moving the end effector toward the sampled target;
-* **hold** — remaining continuously inside the 1 cm tolerance;
-* **target radius** — distance of the sampled target from the robot base;
-* **target direction** — angle of the sampled target.

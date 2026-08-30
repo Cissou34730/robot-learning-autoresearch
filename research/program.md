@@ -52,11 +52,11 @@ A pending baseline trains the repository's current unchanged learning method.
 
 ### Scientific decision
 
-Inspect the relevant measurement artifacts before deciding. Treat prior
-postmortems as contestable interpretations, not facts. State one falsifiable
-hypothesis, an alternative explanation, and the evidence that would support or
-weaken each; obtain existing or lightweight evidence when it can decide the
-important uncertainty before requesting training.
+Inspect relevant artifacts, code, logs and completed measurements before
+deciding. Treat prior postmortems as contestable interpretations, not facts.
+State one falsifiable hypothesis, a plausible alternative, and the evidence that
+would distinguish them. Use inspection and lightweight local analysis when they
+can resolve the uncertainty without training.
 
 ### Research evaluation
 
@@ -66,6 +66,14 @@ factual baseline plus whatever additional evidence you choose to record, and you
 may rewrite what it records. Detailed measurements are kept as durable
 evaluation artifacts; the brief points at them.
 
+This iterative measurement capability exists during the research-evaluation
+phase of the current experiment. Set `need_more_evidence: true` on an exploratory
+round when its result may require refinement; after that round, inspect its
+artifacts, modify researcher-owned instrumentation if needed, and request the
+next measurements of the available candidate or champion policies. Set it to
+false for the round intended to complete the evidence, then close the experiment
+and resolve its lineage. There is no measurement-only phase between experiments.
+
 `research/brief.md` lists the available candidates. Write
 `research/evaluation_request.json`:
 
@@ -74,17 +82,22 @@ evaluation artifacts; the brief points at them.
  "question": "<what these measurements decide>",
  "reason": "<why this plan is useful and sufficient>",
  "evaluations": [{"candidate": "<name from the brief>", "episodes": "<positive integer>", "seed": "<integer>", "label": "<optional>"}],
- "paired_comparisons": [{"candidate": "<name>", "reference": "<name>"}],
  "need_more_evidence": false}
 ```
 
 Replace every placeholder with the required JSON type. `experiment`, `question`,
 `reason` and `evaluations` — each with `candidate`, positive `episodes` and
 `seed` — are required; the rest is optional. `champion` is valid when exposed by
-the brief. `need_more_evidence` preserves completed measurements for one more round.
+the brief. `need_more_evidence` preserves completed measurements for one more
+round. `paired_comparisons` may request candidate/reference comparisons when
+that method answers the stated question.
 
-Research evaluation produces evidence and never declares success. The official
-benchmark is not reachable from here and must not be used to select a lineage.
+Do not spend training budget merely to obtain information available through
+inspection, local analysis, instrumentation or re-evaluation during this phase.
+
+Research evaluation produces evidence and never declares success. It cannot run
+the official benchmark; request that benchmark through the lineage decision and
+never use its protected panel to select a lineage.
 
 ### Close the experiment
 
@@ -146,17 +159,6 @@ Other kinds: `continuation` trains the unchanged method further and requires
 by `replication_of` under a different explicit `training_seed` and requires
 `fresh` with no other change. A `training` proposal with neither code changes
 nor `params` is an empty experiment and is rejected.
-
-## Investigation without training
-
-Inspect code, logs, artifacts and completed measurements, run lightweight local
-analysis, and change your own evaluation and instrumentation code without
-proposing training. Re-measuring an already-saved policy under new
-instrumentation is a research evaluation, not a new experiment: no training run
-is needed to obtain more evidence. Do not spend training budget on an
-uncertainty you could reasonably settle with existing evidence, local analysis,
-instrumentation or re-evaluation; train only when the next step needs a new
-policy.
 
 ## Tests
 
