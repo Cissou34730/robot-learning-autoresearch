@@ -41,6 +41,9 @@ RESEARCH_DIR = ROOT / "research"
 LOG_PATH = RESEARCH_DIR / "EXPERIMENTS.md"
 RESULTS_PATH = RESEARCH_DIR / "results.jsonl"
 PROPOSAL_PATH = RESEARCH_DIR / "proposal.json"
+POSTMORTEM_PATH = RESEARCH_DIR / "postmortems.md"
+# The one line a lineage decision must carry to name the evidence it relied on.
+EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 EVALUATION_REQUEST_PATH = RESEARCH_DIR / "evaluation_request.json"
 STATE_PATH = RESEARCH_DIR / "research_state.json"
 BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
@@ -49,6 +52,9 @@ RESTART_PENDING_PATH = RESEARCH_DIR / "RESTART_PENDING"
 GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
 ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
+# Completed measurements are research history: they outlive the checkpoints they
+# describe, so they live outside the disposable candidate tree.
+EVALUATION_DIR = RESEARCH_DIR / "evaluations"
 
 TIMESTEPS = 120_000
 TRAIN_SEED = 0
@@ -88,6 +94,28 @@ VALIDATED_TEST_PATHS = (
 # Editing these carries no source change, so the test suites stay untouched.
 PARAMETER_ONLY_PATHS = {"research/current_params.json"}
 DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
+# The researcher-owned surface that materially defines what a research
+# measurement means. The whole scenario package is scanned so new instrumentation
+# modules or data files count without registering them here.
+EVALUATION_SEMANTICS_ROOT = "robot_learning/scenario"
+# Scenario files that only affect what a human sees, never how a saved policy is
+# measured, so editing them must not invalidate completed measurements.
+PRESENTATION_ONLY_PATHS = {
+    "robot_learning/scenario/progress.py",
+    "robot_learning/scenario/viewer.py",
+}
+# The only files outside the scenario package that change how an already-trained
+# policy is replayed, observed and turned into a research measurement.
+EVALUATION_RUNTIME_PATHS = (
+    "robot_learning/evaluate.py",
+    "robot_learning/training/algorithms.py",
+    "robot_learning/training/normalization.py",
+)
+GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
+GENERATED_DIRECTORY_NAMES = {"__pycache__"}
+# Detailed evidence belongs to the evaluation artifact, not to the compact
+# history or the protocol state.
+DETAILED_EVIDENCE_FIELDS = ("episode_results", "research_evidence")
 
 
 def announce(message: str) -> None:
@@ -693,9 +721,59 @@ def experiment_family(
     return experiment_kind
 
 
+def evaluation_reference(evaluation: dict) -> dict:
+    """Everything except the detail the evaluation artifact already holds."""
+    return {
+        key: value
+        for key, value in evaluation.items()
+        if key not in DETAILED_EVIDENCE_FIELDS
+    }
+
+
+def measurement_record(metrics: dict) -> dict:
+    """State keeps the episode outcomes paired comparison needs, nothing more.
+
+    Researcher-defined evidence stays in the artifact so the protocol state
+    never becomes a second, opaque evidence store.
+    """
+    return {
+        key: value
+        for key, value in metrics.items()
+        if key not in ("model", "research_evidence")
+    }
+
+
+def compact_result_record(result: dict) -> dict:
+    """History keeps identity, score and artifact references, never the evidence."""
+    record = dict(result)
+    candidates = record.get("candidates")
+    if isinstance(candidates, list):
+        record["candidates"] = [
+            {
+                **candidate,
+                "evaluations": [
+                    evaluation_reference(item)
+                    for item in candidate.get("evaluations") or []
+                ],
+            }
+            if isinstance(candidate, dict)
+            else candidate
+            for candidate in candidates
+        ]
+    requested = record.get("requested_evaluations")
+    if isinstance(requested, list):
+        record["requested_evaluations"] = [
+            {**item, "metrics": evaluation_reference(item.get("metrics") or {})}
+            if isinstance(item, dict)
+            else item
+            for item in requested
+        ]
+    return record
+
+
 def append_result(result: dict) -> None:
     with RESULTS_PATH.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(result, sort_keys=True) + "\n")
+        handle.write(json.dumps(compact_result_record(result), sort_keys=True) + "\n")
 
     def cell(value: object) -> str:
         return " ".join(str(value).replace("|", "/").split())
@@ -960,6 +1038,7 @@ def execute_pending_evaluations() -> int:
         }
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
+    semantics = evaluation_semantics_fingerprint()
     # The persisted measurement ledger is the sole source of truth across
     # successive rounds and interrupted resumes.
     for contender in candidates:
@@ -969,14 +1048,17 @@ def execute_pending_evaluations() -> int:
         if contender is not None:
             contender.setdefault("evaluations", []).append(item["metrics"])
 
-    def request_key(name: str, episodes: int, seed: int) -> tuple[str, int, int]:
-        return name, episodes, seed
+    def request_key(
+        name: str, episodes: int, seed: int, fingerprint: str
+    ) -> tuple[str, int, int, str]:
+        return name, episodes, seed, fingerprint
 
     completed_keys = {
         request_key(
             item["candidate"],
             int(item["episodes"]),
             int(item["seed"]),
+            str(item.get("evaluation_semantics", "")),
         )
         for item in executed
     }
@@ -1007,12 +1089,13 @@ def execute_pending_evaluations() -> int:
             if episodes < 1:
                 raise ValueError("evaluation episodes must be positive")
             label = str(spec.get("label", f"requested evaluation {number}: {name}"))
-            key = request_key(name, episodes, seed)
+            key = request_key(name, episodes, seed, semantics)
             if key in completed_keys:
                 announce(f"[evaluation] already complete; reusing {label}")
                 continue
-            output_path = CANDIDATE_ROOT / evaluation_artifact_name(
-                experiment, name, episodes, seed
+            EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
+            output_path = EVALUATION_DIR / evaluation_artifact_name(
+                experiment, name, episodes, seed, semantics
             )
             metrics = evaluate_artifact(
                 ROOT / contender["artifact"],
@@ -1021,12 +1104,13 @@ def execute_pending_evaluations() -> int:
                 episodes=episodes,
                 output_path=output_path,
             )
-            clean_metrics = metrics_without_artifact_path([metrics])[0]
-            # The detailed measurements stay on disk; the researcher inspects
-            # them when the compact context cannot discriminate hypotheses.
+            # The artifact keeps the detail, including whatever researcher-owned
+            # evidence the scenario emitted; state keeps only a reference to it.
+            clean_metrics = measurement_record(metrics)
             clean_metrics["evaluation_artifact"] = output_path.relative_to(
                 ROOT
             ).as_posix()
+            clean_metrics["evaluation_semantics"] = semantics
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
@@ -1034,6 +1118,7 @@ def execute_pending_evaluations() -> int:
                     "episodes": episodes,
                     "seed": seed,
                     "label": label,
+                    "evaluation_semantics": semantics,
                     "metrics": clean_metrics,
                 }
             )
@@ -1132,13 +1217,6 @@ def execute_pending_evaluations() -> int:
         )
     )
     return 0
-
-
-def metrics_without_artifact_path(evaluations: list[dict]) -> list[dict]:
-    return [
-        {key: value for key, value in evaluation.items() if key != "model"}
-        for evaluation in evaluations
-    ]
 
 
 def train_candidate(
@@ -1434,11 +1512,60 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
 
 
 def evaluation_artifact_name(
-    experiment: int, candidate: str, episodes: int, seed: int
+    experiment: int, candidate: str, episodes: int, seed: int, semantics: str
 ) -> str:
     """One stable file per measured panel, so repeated rounds never collide."""
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
-    return f"evaluation-experiment-{experiment}-{label}-{episodes}ep-seed{seed}.json"
+    return (
+        f"evaluation-experiment-{experiment}-{label}-"
+        f"{episodes}ep-seed{seed}-{semantics}.json"
+    )
+
+
+def is_generated_path(relative_parts: tuple[str, ...]) -> bool:
+    """Tool caches and scratch files are not researcher-owned measurement state."""
+    *directories, name = relative_parts
+    if any(
+        part in GENERATED_DIRECTORY_NAMES or part.startswith(".")
+        for part in directories
+    ):
+        return True
+    return name.startswith(".") or name.endswith(GENERATED_FILE_SUFFIXES)
+
+
+def evaluation_semantics_paths() -> list[str]:
+    """Every researcher-owned file that can change how a saved policy is measured.
+
+    Any file type counts, so researcher-authored instrumentation modules and
+    measurement data files are covered without a registry.
+    """
+    included = [
+        relative for relative in EVALUATION_RUNTIME_PATHS if (ROOT / relative).is_file()
+    ]
+    root = ROOT / EVALUATION_SEMANTICS_ROOT
+    if not root.is_dir():
+        return sorted(included)
+    for source in root.rglob("*"):
+        if not source.is_file() or is_generated_path(source.relative_to(root).parts):
+            continue
+        relative = source.relative_to(ROOT).as_posix()
+        if relative in PROTECTED_BENCHMARK_PATHS or relative in PRESENTATION_ONLY_PATHS:
+            continue
+        included.append(relative)
+    return sorted(included)
+
+
+def evaluation_semantics_fingerprint() -> str:
+    """Identify the researcher-owned state that defines what a measurement means.
+
+    Paths are hashed with their contents so an added, renamed or deleted file
+    changes measurement identity just like an edited one.
+    """
+    digest = hashlib.sha256()
+    for relative in evaluation_semantics_paths():
+        digest.update(relative.encode("utf-8"))
+        digest.update((ROOT / relative).read_bytes())
+    return digest.hexdigest()[:12]
 
 
 def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
@@ -1449,17 +1576,91 @@ def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
     ]
 
 
-def discard_evaluation_artifacts(paths: list[str], keep: set[str]) -> None:
-    """Detailed evidence lives exactly as long as the lineage it describes."""
-    for relative in dict.fromkeys(paths):
-        if relative in keep:
+def pending_evaluation_artifacts(pending: dict) -> list[str]:
+    """Every detailed artifact measured for the experiment being resolved."""
+    paths: list[str] = []
+    for candidate in pending.get("candidates") or []:
+        if isinstance(candidate, dict):
+            paths.extend(evaluation_artifact_paths(candidate.get("evaluations")))
+    paths.extend(evaluation_artifact_paths(pending.get("champion_evaluations")))
+    return list(dict.fromkeys(paths))
+
+
+def postmortem_section(experiment: int) -> str:
+    """The postmortem entry for one experiment, or an empty string."""
+    if not POSTMORTEM_PATH.exists():
+        return ""
+    match = re.search(
+        rf"^## Experiment {experiment}\b.*?(?=^## Experiment \d|\Z)",
+        POSTMORTEM_PATH.read_text(encoding="utf-8"),
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    return match.group(0) if match else ""
+
+
+def attested_evidence_paths(section: str) -> list[str]:
+    """Artifact paths the researcher recorded as the basis for the decision."""
+    paths: list[str] = []
+    for line in section.splitlines():
+        cleaned = line.replace("*", "").strip().lstrip("-").strip()
+        if not cleaned.lower().startswith(EVIDENCE_ATTESTATION_LABEL.lower()):
             continue
-        resolved = (ROOT / relative).resolve()
-        if resolved.parent != CANDIDATE_ROOT.resolve():
-            raise RuntimeError(
-                f"refusing to remove non-candidate evaluation: {resolved}"
-            )
-        resolved.unlink(missing_ok=True)
+        _, _, listed = cleaned.partition(":")
+        paths.extend(
+            token.strip("`\"',;()[] ")
+            for token in re.split(r"[\s,]+", listed)
+            if token.strip("`\"',;()[] ")
+        )
+    return list(dict.fromkeys(paths))
+
+
+def validate_postmortem_evidence(experiment: int, measured: list[str]) -> None:
+    """Require the decision to name existing evidence of this experiment.
+
+    This shows only that the researcher session identified real artifacts of the
+    experiment it is resolving; it cannot show that they were understood.
+    """
+    section = postmortem_section(experiment)
+    if not section.strip():
+        raise ValueError(f"postmortems.md has no entry for experiment {experiment}")
+    attested = attested_evidence_paths(section)
+    if not attested:
+        raise ValueError(
+            f"the experiment {experiment} postmortem needs an "
+            f"'{EVIDENCE_ATTESTATION_LABEL}:' line listing the detailed "
+            "evaluation artifacts the decision relied on"
+        )
+    owned = {path.replace("\\", "/") for path in measured}
+    matched = [path for path in attested if path.replace("\\", "/") in owned]
+    if not matched:
+        raise ValueError(
+            f"{EVIDENCE_ATTESTATION_LABEL} must name at least one detailed "
+            f"evaluation artifact measured for experiment {experiment}: "
+            f"{sorted(owned)}"
+        )
+    missing = sorted(path for path in matched if not (ROOT / path).is_file())
+    if missing:
+        raise ValueError(f"attested evaluation artifacts do not exist: {missing}")
+
+
+def check_lineage_evidence(experiment: int) -> int:
+    """Preflight for the loop: is the pending lineage decision attested yet?"""
+    state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    pending = state.get("pending_researcher_decision")
+    if not isinstance(pending, dict) or int(pending.get("experiment", -1)) != (
+        experiment
+    ):
+        print(f"ERROR: experiment {experiment} is not awaiting a lineage decision.")
+        return 1
+    measured = pending_evaluation_artifacts(pending)
+    if not measured:
+        return 0
+    try:
+        validate_postmortem_evidence(experiment, measured)
+    except ValueError as error:
+        print(f"ERROR: {error}")
+        return 1
+    return 0
 
 
 def require_complete_artifact(artifact: Path, description: str) -> None:
@@ -1524,6 +1725,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         )
     if int(decision.get("experiment", -1)) != int(pending["experiment"]):
         raise ValueError("previous_result_decision references the wrong experiment")
+    measured_evidence = pending_evaluation_artifacts(pending)
+    if measured_evidence:
+        validate_postmortem_evidence(int(pending["experiment"]), measured_evidence)
     selected_name = str(decision.get("continue_from", "")).strip()
     reason = str(decision.get("reason", "")).strip()
     if not reason:
@@ -1695,7 +1899,6 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         state["official_metrics"] = None
     else:
         state["accepted_metrics"] = selected.get("summary")
-    superseded_evaluations = list(state.get("accepted_evaluations", []))
     state["accepted_evaluations"] = evaluation_artifact_paths(
         selected.get("evaluations")
     )
@@ -1718,20 +1921,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         remove_heavyweight_artifacts(ROOT / candidate["artifact"])
     for lineage in plan["removed_retained"]:
         remove_heavyweight_artifacts(ROOT / lineage["artifact"])
-    kept_evaluations = set(state["accepted_evaluations"])
-    for lineage in state["retained_lineages"]:
-        kept_evaluations.update(lineage.get("evaluation_artifacts", []))
-    discarded_evaluations = list(superseded_evaluations)
-    for candidate in pending["candidates"]:
-        discarded_evaluations.extend(
-            evaluation_artifact_paths(candidate.get("evaluations"))
-        )
-    discarded_evaluations.extend(
-        evaluation_artifact_paths(pending.get("champion_evaluations"))
-    )
-    for lineage in plan["removed_retained"]:
-        discarded_evaluations.extend(lineage.get("evaluation_artifacts", []))
-    discard_evaluation_artifacts(discarded_evaluations, kept_evaluations)
+    # Completed evaluations are research history and survive their checkpoints.
     if plan["request_final_benchmark"]:
         state["pending_final_benchmark"] = {
             "experiment": int(pending["experiment"]),
@@ -1838,7 +2028,10 @@ def main() -> int:
     parser.add_argument("--reuse-candidate", type=Path, default=None)
     parser.add_argument("--evaluate-pending", action="store_true")
     parser.add_argument("--evaluate-pending-final", action="store_true")
+    parser.add_argument("--check-lineage-evidence", type=int, default=None)
     args = parser.parse_args()
+    if args.check_lineage_evidence is not None:
+        return check_lineage_evidence(args.check_lineage_evidence)
     if args.evaluate_pending_final:
         return execute_pending_final_benchmark()
     if args.evaluate_pending:

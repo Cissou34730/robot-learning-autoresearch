@@ -775,3 +775,75 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Boundary unchanged:** No test framework, plugin architecture, algorithm
   registry or capability layer was introduced. The runner still only executes
   checks; it never authors or modifies tests or learning code.
+
+## 2026-08-30 - Minimal baseline evaluation and an opaque researcher evidence channel
+
+- **Supersedes:** the 2026-08-30 "The harness provides observability, not
+  diagnosis" baseline-observability set. That decision removed the harness's
+  *interpretation* but kept a predefined list of behavioral signals the harness
+  chose to record for every measurement. Selecting those signals in advance is
+  itself a scientific decision, so it now belongs to the Researcher. The earlier
+  entry stays as history; its baseline set is no longer the contract.
+- **Decision:** Default research evaluation records a minimal factual baseline
+  only: per episode the index, its seed, the scenario success outcome,
+  `reward_total`, `steps`, `terminated` and `truncated`; per panel `episodes`,
+  `seed` and `success_percent`. It preselects no behavioral diagnostic. Anything
+  else is a scientific choice the Researcher makes and instruments.
+- **Decision:** The detailed research evaluation result carries a top-level
+  `research_evidence` field. It is an opaque researcher-defined channel with no
+  schema, no canonical names and no required contents; the unchanged evaluator
+  returns an empty one. Generic code may recognise the channel in order to store
+  it in the artifact and keep it out of compact state and history. It must never
+  read, rename, aggregate, rank or otherwise depend on anything inside it.
+- **Decision:** `robot_learning/scenario/evaluation.py` is the Researcher's
+  scientific instrumentation, not a fixed evaluator. Changing what it measures
+  is ordinary research and needs no generic-harness change.
+- **Decision:** The detailed evaluation artifact is the authoritative record of
+  one completed measurement. Artifacts live in `research/evaluations/`, are
+  Git-versioned, and survive the checkpoints they describe: a discarded model may
+  be deleted, its completed measurements may not. `research_state.json` keeps
+  only the mechanics it needs, `results.jsonl` is a compact index of experiment
+  identity, score and artifact references, and `research/brief.md` is compact
+  context that points at artifacts instead of reproducing them.
+- **Decision:** Measurement identity is candidate, episodes, seed and an
+  evaluation-semantics fingerprint, so re-instrumenting and re-measuring the same
+  saved policy produces a new fact rather than reusing a stale artifact. The
+  fingerprint hashes paths and contents of the researcher-owned scenario surface,
+  discovered automatically, plus a small explicit list of the current
+  non-scenario files on the saved-policy evaluation path. Protected files and
+  presentation-only code are excluded. `evaluation_request.json` is unchanged and
+  the Researcher never manages the fingerprint.
+- **Decision:** The Researcher decides whether the available evidence is
+  sufficient. Inspecting code, logs and artifacts, running lightweight local
+  analysis, changing researcher-owned instrumentation and re-evaluating an
+  already-saved policy are all available without a new training experiment.
+  Training budget is for questions that genuinely need a new policy.
+- **Decision:** A lineage decision must name the current experiment evidence it
+  relied on: the postmortem carries an `Evidence inspected` line listing existing
+  detailed artifacts of that experiment, and the Runner rejects the decision
+  otherwise. This shows only that real evidence was identified; it cannot show
+  that it was understood.
+- **Decision:** Postmortems are previous researcher interpretations, not harness
+  truth. New entries use `Result`, `Observed behavior`, `Interpretation` and
+  `Evidence inspected`; prescriptive wording is gone from active guidance. The
+  brief still reads historical headings and falls back to the raw section rather
+  than dropping an entry it cannot label.
+- **Decision:** The default compact context is deliberately minimal. The
+  training summary reports progress, reward and training success only; no
+  diagnostic of the current learning method appears before the Researcher has
+  decided it matters. The raw training log stays on disk for explicit inspection.
+- **Decision:** Historical `results.jsonl` records and historical decisions in
+  this file may describe superseded schemas and diagnostics. They are research
+  history and remain unmodified. They do not define the current evaluation
+  contract; current detailed evidence is whatever the referenced evaluation
+  artifacts contain.
+- **Reason:** A harness that chooses in advance which behavioral metrics matter
+  has already framed the scientific question. Transporting evidence faithfully
+  while leaving its definition to the Researcher is the narrower and more honest
+  role for the Runner.
+- **Not done:** no metric or signal registry, instrumentation DSL, telemetry
+  service, trace collector, storage layer, artifact pruning, import-graph
+  analysis or plugin system. The only generic extension point is the
+  `research_evidence` channel plus the researcher-owned evaluation code.
+- **Known tradeoff:** `research/evaluations/` grows monotonically. This is
+  accepted for now and recorded as an operational concern, not a defect.

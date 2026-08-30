@@ -1,5 +1,6 @@
 {
  "mypy-type-checker.args": [
     "--exclude", ".*"
-  ] 
+  ],
+  "mypy-type-checker.ignorePatterns": ["**/*.py"]
 }

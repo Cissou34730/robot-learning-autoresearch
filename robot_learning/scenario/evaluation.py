@@ -1,103 +1,24 @@
 """Scenario-owned research evaluation.
 
 This module runs a model over the deterministic evaluation panel it is asked
-for, records the observable signals this scenario chooses to expose, and
-mechanically aggregates them. It draws no scientific conclusion: interpreting
-the numbers is the researcher's job.
+for and records the minimal factual outcome of every episode. It draws no
+scientific conclusion and preselects no behavioral metric.
 
-Which signals are captured is ordinary research code. Adding, removing or
-replacing them requires no change to the generic AutoResearch core.
+Anything else the current research question needs goes into `research_evidence`,
+an opaque channel owned by the researcher. Filling, replacing or emptying it is
+ordinary research code and requires no change to the generic AutoResearch core,
+which never interprets its contents.
 """
 
-import math
 from collections.abc import Callable
 from pathlib import Path
 
-import numpy as np
-
-from robot_learning.benchmark.final_contract import FINAL_SUCCESS_PERCENT
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 2
-
-# Per-step `info` keys this scenario currently observes during evaluation.
-OBSERVED_STEP_SIGNALS = ("distance", "held_steps")
-
-
-def _series_statistics(values: list[float]) -> dict:
-    series = np.asarray(values, dtype=float)
-    return {
-        "count": int(series.size),
-        "mean": float(series.mean()),
-        "std": float(series.std()),
-        "min": float(series.min()),
-        "max": float(series.max()),
-        "final": float(series[-1]),
-    }
-
-
-def _distribution(values: list[float]) -> dict:
-    series = np.asarray(values, dtype=float)
-    return {
-        "mean": float(series.mean()),
-        "std": float(series.std()),
-        "min": float(series.min()),
-        "max": float(series.max()),
-    }
-
-
-def _action_statistics(actions: list[np.ndarray]) -> dict:
-    recorded = np.asarray(actions, dtype=float)
-    return {
-        f"action_{dimension}": _distribution(list(column))
-        for dimension, column in enumerate(recorded.T)
-    }
-
-
-def _aggregate_episodes(episode_results: list[dict]) -> dict:
-    def over_episodes(read: Callable[[dict], float]) -> dict:
-        return _distribution([read(episode) for episode in episode_results])
-
-    def names_of(section: str) -> list[str]:
-        return sorted(
-            {name for episode in episode_results for name in episode[section]}
-        )
-
-    return {
-        "steps": over_episodes(lambda episode: episode["steps"]),
-        "reward_total": over_episodes(lambda episode: episode["reward_total"]),
-        "reward_components": {
-            name: over_episodes(
-                lambda episode, name=name: episode["reward_components"].get(name, 0.0)
-            )
-            for name in names_of("reward_components")
-        },
-        "metrics": {
-            name: {
-                statistic: over_episodes(
-                    lambda episode, name=name, statistic=statistic: episode["metrics"][
-                        name
-                    ][statistic]
-                )
-                for statistic in ("mean", "std", "min", "max", "final")
-            }
-            for name in names_of("metrics")
-        },
-        "actions": {
-            name: {
-                statistic: over_episodes(
-                    lambda episode, name=name, statistic=statistic: episode["actions"][
-                        name
-                    ][statistic]
-                )
-                for statistic in ("mean", "std", "min", "max")
-            }
-            for name in names_of("actions")
-        },
-    }
+RESEARCH_EVALUATION_SUMMARY_VERSION = 3
 
 
 def evaluate_research_model(
@@ -118,10 +39,6 @@ def evaluate_research_model(
     episode_results: list[dict] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
-        target_x, target_y = (float(value) for value in env.data.mocap_pos[0][:2])
-        series: dict[str, list[float]] = {name: [] for name in OBSERVED_STEP_SIGNALS}
-        actions: list[np.ndarray] = []
-        reward_components: dict[str, float] = {}
         reward_total = 0.0
         steps = 0
         success = False
@@ -133,15 +50,8 @@ def evaluate_research_model(
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            actions.append(np.ravel(np.asarray(action, dtype=float)))
             if "is_success" in info:
                 success = bool(info["is_success"])
-            for name in OBSERVED_STEP_SIGNALS:
-                series[name].append(float(info[name]))
-            for name, value in info.get("reward_components", {}).items():
-                reward_components[name] = reward_components.get(name, 0.0) + float(
-                    value
-                )
 
         episode_results.append(
             {
@@ -149,17 +59,10 @@ def evaluate_research_model(
                 "episode_seed": seed + episode,
                 # Scenario task outcome, not Gymnasium termination.
                 "success": success,
+                "reward_total": reward_total,
                 "steps": steps,
                 "terminated": bool(terminated),
                 "truncated": bool(truncated),
-                "target_radius_cm": 100 * math.hypot(target_x, target_y),
-                "target_angle_degrees": math.degrees(math.atan2(target_y, target_x)),
-                "reward_total": reward_total,
-                "reward_components": reward_components,
-                "metrics": {
-                    name: _series_statistics(values) for name, values in series.items()
-                },
-                "actions": _action_statistics(actions),
             }
         )
         if progress_callback is not None:
@@ -167,14 +70,16 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 4,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
         "official_benchmark": False,
         "success_percent": 100 * successes / episodes,
-        "aggregate_metrics": _aggregate_episodes(episode_results),
         "episode_results": episode_results,
+        # Researcher-owned evidence for the current question. Empty until this
+        # module is instrumented; the generic core never reads inside it.
+        "research_evidence": {},
     }
 
 
@@ -199,15 +104,11 @@ def summarize_research_evaluations(
     }
     pooled_success = 100 * total_successes / total_episodes
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "evaluation_summary_version": summary_version,
         "episodes": total_episodes,
         "seed_count": len(evaluations),
         "seed_success_percent": seed_success,
-        # Historical field name; the threshold is the scenario success contract.
-        "seeds_passing_98_percent": sum(
-            success >= FINAL_SUCCESS_PERCENT for success in seed_success.values()
-        ),
         "worst_seed_success_percent": min(seed_success.values()),
         "pooled_success_percent": pooled_success,
         "success_percent": pooled_success,

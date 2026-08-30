@@ -41,14 +41,12 @@ def render_training_summary(log_text: str) -> str:
 
     first = records[0]
     final = records[-1]
+    # Deliberately generic: the default context states progress and outcome, and
+    # preselects no diagnostic of the learning method. The raw log stays on disk.
     fields = [
         ("Steps", "total_timesteps"),
         ("Success", "success_rate"),
-        ("Episode length", "ep_len_mean"),
         ("Reward", "ep_rew_mean"),
-        ("Policy std", "std"),
-        ("Explained variance", "explained_variance"),
-        ("Value loss", "value_loss"),
     ]
 
     lines = [
@@ -79,7 +77,11 @@ def render_training_summary(log_text: str) -> str:
                 "- Snapshot maxima are intentionally omitted because selecting the "
                 "maximum of a noisy rolling series creates a false peak."
             ),
-            f"- Final policy std: {_format_value(final, 'std')}.",
+            (
+                "- This summary is intentionally minimal. Inspect "
+                "`research/last_train.log` when a specific learning signal "
+                "matters to the question you are asking."
+            ),
         ]
     )
 
@@ -101,22 +103,44 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
         section.strip() for section in sections if section.startswith("## Experiment")
     ]
     memories: list[str] = []
+    # Each rendered label accepts every heading past and present entries use, so
+    # historical postmortems stay readable without being rewritten.
     labels = [
-        "Result",
-        "Observed behavior",
-        "What was learned / do NOT retry",
+        ("Result", ("Result",)),
+        ("Observed behavior", ("Observed behavior",)),
+        (
+            "Interpretation",
+            (
+                "Interpretation",
+                "Interpretation / what was learned",
+                "What was learned",
+                "What was learned / do NOT retry",
+            ),
+        ),
+        ("Evidence inspected", ("Evidence inspected",)),
     ]
+    # Losing the narrative sections would erase the entry, so an unfamiliar
+    # heading falls back to the raw section instead of being dropped.
+    narrative = {"Result", "Observed behavior", "Interpretation"}
     for section in sections[-count:]:
         title = section.splitlines()[0].removeprefix("## ").strip()
         parts = [f"**{_compact(title, 180)}**"]
-        for label in labels:
-            match = re.search(
-                rf"\*\*{re.escape(label)}:\*\*\s*(.+?)(?=\n\s*\n|\n\*\*|\Z)",
-                section,
-                flags=re.DOTALL,
-            )
-            if match:
-                parts.append(f"{label}: {_compact(match.group(1), 420)}")
+        recognized: set[str] = set()
+        for display, headings in labels:
+            for heading in headings:
+                match = re.search(
+                    rf"\*\*{re.escape(heading)}:\*\*\s*(.+?)(?=\n\s*\n|\n\*\*|\Z)",
+                    section,
+                    flags=re.DOTALL,
+                )
+                if match:
+                    parts.append(f"{display}: {_compact(match.group(1), 420)}")
+                    recognized.add(display)
+                    break
+        if not recognized & narrative:
+            body = "\n".join(section.splitlines()[1:]).strip()
+            if body:
+                parts.insert(1, _compact(body, 420))
         memories.append("\n".join(parts))
     return memories
 
@@ -255,19 +279,9 @@ def render_research_brief() -> str:
     accepted_status = (
         f"{accepted_score:g}%" if accepted_score is not None else "baseline pending"
     )
-    accepted_failures: int | str = "-"
-    if accepted_metrics is not None and accepted_score is not None:
-        accepted_failures = round(
-            int(accepted_metrics.get("episodes", 0))
-            * (100 - float(accepted_score))
-            / 100
-        )
     official_metrics = state.get("official_metrics")
     accepted_seed_count = (
         accepted_metrics.get("seed_count") if accepted_metrics else None
-    )
-    accepted_seed_passes = (
-        accepted_metrics.get("seeds_passing_98_percent") if accepted_metrics else None
     )
     pending_evaluation = state.get("pending_evaluation_request")
     evaluation_lines: list[str] = []
@@ -295,8 +309,11 @@ def render_research_brief() -> str:
             [
                 "",
                 (
-                    "Decide which candidates need measurement, with which episode "
-                    "counts, seeds, labels, and diagnostics. Write "
+                    "Decide what evidence this experiment needs. You may inspect "
+                    "existing evidence, run a small local analysis, and change "
+                    "researcher-owned evaluation or instrumentation code before "
+                    "deciding which candidates to measure, with which episode "
+                    "counts, seeds and labels. Write "
                     "`research/evaluation_request.json` with the scientific "
                     "`question`, the `reason` this plan is sufficient, and the "
                     "evaluations, then exit. There is no automatic tournament."
@@ -326,6 +343,11 @@ def render_research_brief() -> str:
             (
                 "The code/configuration parent before that experiment was commit "
                 f"`{pending_decision.get('code_parent_commit', 'unknown')}`."
+            ),
+            (
+                "Open the detailed evaluation artifacts listed below before "
+                "writing the postmortem or choosing a lineage. They hold the "
+                "full record of each measurement."
             ),
         ]
         for candidate in pending_decision["candidates"]:
@@ -387,16 +409,14 @@ def render_research_brief() -> str:
         "",
         f"- Accepted success: {accepted_status}",
         (
-            f"- Accepted seeds passing 98%: "
-            f"{accepted_seed_passes if accepted_seed_passes is not None else '-'}"
-            f"/{accepted_seed_count if accepted_seed_count is not None else '-'}"
+            f"- Accepted seed panels: "
+            f"{accepted_seed_count if accepted_seed_count is not None else '-'}"
             + (
                 " (legacy single-seed measurement)"
                 if accepted_metrics and "seed_count" not in accepted_metrics
                 else ""
             )
         ),
-        f"- Accepted failed episodes: {accepted_failures}",
         (
             "- Reported result: pending"
             if official_metrics is None
@@ -487,9 +507,19 @@ def render_research_brief() -> str:
             )
         lines.append("")
 
-    lines.extend(["", "## Recent scientific memory", ""])
+    lines.extend(["", "## Prior researcher interpretations", ""])
     memories = _postmortem_memory(postmortems)
     if memories:
+        lines.extend(
+            [
+                (
+                    "Written by earlier researcher sessions. They interpret "
+                    "measured evidence and may be reconsidered when evidence "
+                    "warrants it."
+                ),
+                "",
+            ]
+        )
         for memory in memories:
             lines.extend([memory, ""])
     else:
@@ -504,6 +534,11 @@ def render_research_brief() -> str:
             "## Context discipline",
             "",
             "- Use the brief by default; inspect relevant logs, artifacts, or code when a hypothesis cannot otherwise be discriminated.",
+            (
+                "- Referenced evaluation artifacts hold the full record of each "
+                "measurement, including researcher-defined evidence when the "
+                "scenario evaluation emitted any."
+            ),
             (
                 "- `research/current_params.json` holds the active method's "
                 "configuration. Read it when a diagnosed mechanism makes a specific "

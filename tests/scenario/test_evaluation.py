@@ -1,7 +1,8 @@
 """Researcher-owned tests for the scenario research evaluation.
 
-The scenario owns which signals are observed and how they are mechanically
-aggregated. Changing those observations is a normal research change.
+The scenario owns a minimal factual baseline plus `research_evidence`, an opaque
+channel it may fill with anything. Changing what that channel carries is a
+normal research change.
 """
 
 from types import SimpleNamespace
@@ -11,6 +12,31 @@ import pytest
 
 from robot_learning.scenario import evaluation as scenario_evaluation
 from robot_learning.scenario import summarize_research_evaluations
+
+BASELINE_EPISODE_FIELDS = {
+    "episode",
+    "episode_seed",
+    "success",
+    "reward_total",
+    "steps",
+    "terminated",
+    "truncated",
+}
+
+# Predefined behavioral diagnostics the default evaluator no longer preselects.
+REMOVED_PREDEFINED_DIAGNOSTICS = (
+    "aggregate_metrics",
+    "metrics",
+    "actions",
+    "reward_components",
+    "held_steps",
+    "distance",
+    "target_radius_cm",
+    "target_angle_degrees",
+    "failed_episode_progress",
+    "failure_diagnostics",
+    "distance_trace_cm",
+)
 
 
 class ZeroPolicy:
@@ -64,18 +90,14 @@ def evaluation(seed: int, outcomes: list[bool]) -> dict:
                 "episode": episode,
                 "episode_seed": seed + episode,
                 "success": outcome,
+                "reward_total": 1.0,
                 "steps": 100,
                 "terminated": outcome,
                 "truncated": not outcome,
-                "target_radius_cm": 10.0,
-                "target_angle_degrees": 0.0,
-                "reward_total": 1.0,
-                "reward_components": {"progress": 1.0},
-                "metrics": {},
-                "actions": {},
             }
             for episode, outcome in enumerate(outcomes)
         ],
+        "research_evidence": {},
     }
 
 
@@ -89,61 +111,27 @@ def test_evaluation_respects_the_requested_panel(stub_policy):
     assert [episode["episode_seed"] for episode in result["episode_results"]] == [7, 8]
 
 
-def test_evaluation_keeps_per_episode_observations(stub_policy):
+def test_evaluation_exposes_only_the_minimal_baseline(stub_policy):
     result = scenario_evaluation.evaluate_research_model(
         stub_policy, episodes=1, seed=11
     )
     episode = result["episode_results"][0]
 
+    assert set(episode) == BASELINE_EPISODE_FIELDS
     assert episode["steps"] > 0
     assert episode["terminated"] is False
     assert episode["truncated"] is True
-    assert episode["target_radius_cm"] > 0
-    assert set(episode["metrics"]) == set(scenario_evaluation.OBSERVED_STEP_SIGNALS)
-    assert set(episode["metrics"]["distance"]) == {
-        "count",
-        "mean",
-        "std",
-        "min",
-        "max",
-        "final",
-    }
-    assert episode["metrics"]["distance"]["count"] == episode["steps"]
-    assert set(episode["actions"]) == {"action_0", "action_1"}
+    assert result["research_evidence"] == {}
 
 
-def test_evaluation_sums_whatever_reward_components_exist(stub_policy, monkeypatch):
-    from robot_learning.scenario import environment as environment_module
-    from robot_learning.scenario.reward import RewardResult
-
-    monkeypatch.setattr(
-        environment_module,
-        "reach_reward",
-        lambda *args, **kwargs: RewardResult(
-            total=0.5, components={"invented_term": 0.25}
-        ),
-    )
-
-    result = scenario_evaluation.evaluate_research_model(
-        stub_policy, episodes=1, seed=3
-    )
-    episode = result["episode_results"][0]
-
-    assert episode["reward_components"] == {
-        "invented_term": pytest.approx(0.25 * episode["steps"])
-    }
-    assert episode["reward_total"] == pytest.approx(0.5 * episode["steps"])
-    assert set(result["aggregate_metrics"]["reward_components"]) == {"invented_term"}
-
-
-def test_evaluation_emits_no_hold_diagnostics(stub_policy):
+@pytest.mark.parametrize("field", REMOVED_PREDEFINED_DIAGNOSTICS)
+def test_evaluation_emits_no_predefined_diagnostics(stub_policy, field):
     result = scenario_evaluation.evaluate_research_model(
         stub_policy, episodes=1, seed=5
     )
 
-    assert "failed_episode_progress" not in result
-    assert "failure_diagnostics" not in result
-    assert "distance_trace_cm" not in result["episode_results"][0]
+    assert field not in result
+    assert field not in result["episode_results"][0]
 
 
 @pytest.mark.parametrize(
@@ -175,18 +163,6 @@ def test_success_is_read_from_the_scenario_signal_not_termination(
     assert result["success_percent"] == (100.0 if is_success else 0.0)
 
 
-def test_evaluation_aggregates_mechanically(stub_policy):
-    result = scenario_evaluation.evaluate_research_model(
-        stub_policy, episodes=2, seed=5
-    )
-    aggregate = result["aggregate_metrics"]
-
-    assert set(aggregate["steps"]) == {"mean", "std", "min", "max"}
-    assert set(aggregate["metrics"]) == set(scenario_evaluation.OBSERVED_STEP_SIGNALS)
-    assert set(aggregate["actions"]) == {"action_0", "action_1"}
-    assert result["success_percent"] == 0.0
-
-
 def test_evaluation_summary_pools_the_actual_panel_sizes():
     summary = summarize_research_evaluations(
         [evaluation(3000, [True, False]), evaluation(4000, [True, True, True, True])]
@@ -197,6 +173,13 @@ def test_evaluation_summary_pools_the_actual_panel_sizes():
     assert summary["pooled_success_percent"] == pytest.approx(100 * 5 / 6)
     assert summary["worst_seed_success_percent"] == pytest.approx(50.0)
     assert summary["seed_success_percent"] == {"3000": 50.0, "4000": 100.0}
+
+
+def test_research_evaluation_does_not_depend_on_the_final_threshold():
+    summary = summarize_research_evaluations([evaluation(3000, [True, True])])
+
+    assert "seeds_passing_98_percent" not in summary
+    assert not hasattr(scenario_evaluation, "FINAL_SUCCESS_PERCENT")
 
 
 def test_evaluation_summary_does_not_rebuild_scenario_diagnosis():

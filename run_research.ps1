@@ -13,6 +13,15 @@ if (-not $createdNew) {
     throw "Another robot autoresearch loop is already running."
 }
 
+function Assert-ResearchRuntime {
+    uv run python -c "import robot_learning.train; import research.run_experiment" | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw "The research runtime is internally inconsistent: robot_learning.train and research.run_experiment could not both be imported. No researcher session, training, evaluation or lineage decision was started."
+    }
+}
+
+Assert-ResearchRuntime
+
 function Update-ResearchBrief {
     uv run python research/build_research_brief.py
     if ($LASTEXITCODE -ne 0) {
@@ -46,7 +55,12 @@ function Test-LineageResearchMemory([int]$experiment) {
     if (-not (Test-Path "research\postmortems.md")) {
         return $false
     }
-    return (Get-Content "research\postmortems.md" -Raw) -match "(?m)^## Experiment $experiment\b"
+    if (-not ((Get-Content "research\postmortems.md" -Raw) -match "(?m)^## Experiment $experiment\b")) {
+        return $false
+    }
+    # The decision must name existing detailed evidence of this experiment.
+    uv run python research/run_experiment.py --check-lineage-evidence $experiment | Out-Host
+    return ($LASTEXITCODE -eq 0)
 }
 
 try {
@@ -128,8 +142,8 @@ while ($true) {
             $evaluationPrompt = @(
                 "This is the complete evaluation-design task; do not wait for more input."
                 "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
-                "Training is complete. Decide which saved candidates need evaluation and which episode counts, seeds, comparisons, or diagnostics are useful for this experiment."
-                "You may modify evaluation or diagnostic code when the hypothesis requires it, while preserving the human-defined objective."
+                "Training is complete. Decide what evidence is necessary to understand this experiment, not merely which panels to rerun."
+                "When useful you may inspect existing evidence, code, logs and artifacts, run a lightweight local analysis, change researcher-owned evaluation or instrumentation code, and request new measurements of already-saved policies. None of this is required every time."
                 "Write research/evaluation_request.json using the experiment number, a question, a reason, and an evaluations list."
                 "question states the concise scientific question these evaluations answer; reason states why this plan is useful and sufficient. Both are required and must be non-empty."
                 "Each evaluation names candidate, episodes, seed, and a concise label."
@@ -140,9 +154,10 @@ while ($true) {
                 Write-Host "=== Evaluation request missing; retrying the same bounded task once ==="
                 $evaluationRetryPrompt = @(
                     "Complete the pending evaluation-design task now; this message is complete."
-                    "Read only research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
+                    "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
                     "Do not ask for more input and do not propose a new training experiment."
-                    "Choose the useful saved candidates, episode counts, and seeds, then write research/evaluation_request.json with the pending experiment number, a non-empty question, a non-empty reason, and an evaluations list."
+                    "You may still inspect existing evidence, analyse it locally, and change researcher-owned evaluation or instrumentation code before completing the plan."
+                    "Then write research/evaluation_request.json with the pending experiment number, a non-empty question, a non-empty reason, and an evaluations list naming candidate, episodes and seed."
                     "Do not run evaluation or training yourself."
                 ) -join " "
                 opencode run --model $model --variant $reasoning $evaluationRetryPrompt
@@ -196,7 +211,10 @@ while ($true) {
         $decisionPrompt = @(
             "This is the complete lineage-resolution task; do not wait for more input."
             "Read research/program.md, research/scenario.md, and research/brief.md."
-            "Record the required postmortem and write research/proposal.json containing only previous_result_decision for the pending experiment."
+            "Before concluding, open the detailed evaluation artifacts the brief lists for this experiment and read them; run a lightweight local analysis when it helps. Historical artifacts from other experiments are optional."
+            "Only then record the required postmortem for the pending experiment in research/postmortems.md, under '## Experiment <n>' with '**Result:**', '**Observed behavior:**', '**Interpretation:**' and '**Evidence inspected:**'."
+            "'Evidence inspected' must list the repository-relative paths of the detailed evaluation artifacts of this experiment that your decision relies on; the runner rejects the decision otherwise."
+            "Then write research/proposal.json containing only previous_result_decision for the pending experiment."
             "Decide the measured model lineage, code lineage, and retained alternatives."
             "Do not create the next scientific mutation, evaluation request, or training proposal. Do not run the runner."
         ) -join " "
@@ -207,7 +225,8 @@ while ($true) {
             $decisionRetryPrompt = @(
                 "Complete the pending lineage-resolution task now; this message is complete."
                 "Read research/program.md, research/scenario.md, and research/brief.md."
-                "Write the required Markdown postmortem entry for experiment $pendingExperiment in research/postmortems.md."
+                "Open and read the detailed evaluation artifacts the brief lists for experiment $pendingExperiment before concluding; this step is required."
+                "Write the required Markdown postmortem entry for experiment $pendingExperiment in research/postmortems.md, under '## Experiment $pendingExperiment' with '**Result:**', '**Observed behavior:**', '**Interpretation:**' and '**Evidence inspected:**' listing the repository-relative artifact paths your decision relies on."
                 "Write research/proposal.json containing only previous_result_decision; do not create an N+1 training proposal or run the runner."
             ) -join " "
             opencode run --model $model --variant $reasoning $decisionRetryPrompt
@@ -232,8 +251,8 @@ while ($true) {
     $researchPrompt = @(
         "This is the complete research task; do not wait for more input."
         "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
-        "Treat these compact files as the default research context."
-        "When they cannot discriminate the current hypothesis, inspect the relevant logs, artifacts, code, configuration, or a small local analysis before proposing another experiment."
+        "Treat these compact files as a starting point, not the complete scientific evidence."
+        "Before proposing another training experiment you may inspect the detailed evaluation artifacts, code, logs and configuration, run a lightweight local analysis, change researcher-owned instrumentation, and obtain additional measurements of existing saved policies. Do none of this when the available evidence already answers the question."
         "Prepare exactly one protocol-compliant experiment and write research/proposal.json before exiting."
         "Do not launch training or the runner."
     ) -join " "

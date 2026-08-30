@@ -83,7 +83,6 @@ def test_extraction_left_the_markdown_summary_semantics_unchanged():
 
     assert "| Reward | -42.1 | -6.9 |" in summary
     assert "| Success | 0.18 | 0.61 |" in summary
-    assert "Final policy std: 0.46" in summary
     assert "models/candidates/experiment-2/model.zip" in summary
 
 
@@ -380,6 +379,7 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
     monkeypatch.setattr(run_experiment, "STATE_PATH", state_path)
     monkeypatch.setattr(run_experiment, "EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr(run_experiment, "CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr(run_experiment, "EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
         run_experiment, "BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )

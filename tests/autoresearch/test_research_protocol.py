@@ -13,10 +13,15 @@ import pytest
 
 from research.run_experiment import (
     apply_previous_result_decision,
+    check_lineage_evidence,
+    compact_result_record,
     evaluation_artifact_name,
+    evaluation_semantics_fingerprint,
+    evaluation_semantics_paths,
     execute_pending_evaluations,
     execute_pending_final_benchmark,
     experiment_family,
+    measurement_record,
     parameter_change_records,
     plan_previous_result_decision,
     training_budget,
@@ -154,6 +159,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", baseline_path)
 
     def skip_result_recording(result):
@@ -255,7 +261,9 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     )
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
         "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
@@ -315,6 +323,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
     monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
     monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
         "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
@@ -386,6 +395,337 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
     assert candidate["summary"]["episodes"] == 4
 
 
+def _single_panel_evaluation_fixture(monkeypatch, tmp_path):
+    """A pending experiment with one candidate and one requested panel."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    evaluations_dir = tmp_path / "research" / "evaluations"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "pending_evaluation_request": {
+                    "experiment": 9,
+                    "candidates": [
+                        {
+                            "name": "checkpoint",
+                            "artifact": "archive/checkpoint",
+                            "timesteps": 100,
+                            "evaluations": [],
+                        }
+                    ],
+                    "champion_available": False,
+                    "parameters": {},
+                    "initialization": "fresh",
+                    "training_budget_steps": 100,
+                    "parent_training_steps": 0,
+                    "result": {
+                        "index": 9,
+                        "change": "instrumented",
+                        "hypothesis": "measure",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 9,
+                "question": "What does the saved policy actually do?",
+                "reason": "One panel under the current instrumentation.",
+                "evaluations": [
+                    {"candidate": "checkpoint", "episodes": 2, "seed": 1000}
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", evaluations_dir)
+    monkeypatch.setattr(
+        "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
+    return state_path, request_path, evaluations_dir
+
+
+def _recording_evaluator(monkeypatch, payload_for):
+    """Stand in for the evaluator subprocess: write the artifact, return it."""
+    calls: list[int] = []
+
+    def evaluate(artifact, seed, output_path=None, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        payload = payload_for(seed)
+        if output_path is not None:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", evaluate)
+    return calls
+
+
+# Deliberately meaningless: the runner must never learn what these mean.
+ARBITRARY_EVIDENCE = {
+    "zorble_index": {"quux": [1, 2, 3], "frobnitz": {"nested": [{"deep": True}]}},
+    "wibble": 4.25,
+    "flumps": ["a", "b"],
+}
+
+
+def test_researcher_evidence_reaches_the_artifact_and_stays_out_of_state(
+    monkeypatch, tmp_path
+):
+    state_path, _, evaluations_dir = _single_panel_evaluation_fixture(
+        monkeypatch, tmp_path
+    )
+    recorded: list[dict] = []
+    monkeypatch.setattr("research.run_experiment.append_result", recorded.append)
+
+    def payload(seed):
+        measurement = evaluation(seed, [True, False])
+        measurement["research_evidence"] = ARBITRARY_EVIDENCE
+        return measurement
+
+    _recording_evaluator(monkeypatch, payload)
+
+    assert execute_pending_evaluations() == 0
+
+    artifacts = sorted(evaluations_dir.glob("*.json"))
+    assert len(artifacts) == 1
+    stored = json.loads(artifacts[0].read_text(encoding="utf-8"))
+    assert stored["research_evidence"] == ARBITRARY_EVIDENCE
+
+    final_state = json.loads(state_path.read_text(encoding="utf-8"))
+    candidate = final_state["pending_researcher_decision"]["candidates"][0]
+    measurement = candidate["evaluations"][0]
+    assert "research_evidence" not in measurement
+    assert measurement["evaluation_artifact"] == (
+        artifacts[0].relative_to(tmp_path).as_posix()
+    )
+    # Paired comparison still needs episode outcomes; the evidence blob does not.
+    assert [item["episode"] for item in measurement["episode_results"]] == [0, 1]
+    assert "research_evidence" not in json.dumps(final_state)
+
+
+def test_recorded_history_keeps_references_not_detailed_evidence(monkeypatch, tmp_path):
+    _single_panel_evaluation_fixture(monkeypatch, tmp_path)
+    recorded: list[dict] = []
+    monkeypatch.setattr(
+        "research.run_experiment.append_result",
+        lambda result: recorded.append(compact_result_record(result)),
+    )
+
+    def payload(seed):
+        measurement = evaluation(seed, [True, False])
+        measurement["research_evidence"] = ARBITRARY_EVIDENCE
+        return measurement
+
+    _recording_evaluator(monkeypatch, payload)
+
+    assert execute_pending_evaluations() == 0
+
+    history = recorded[0]
+    serialized = json.dumps(history)
+    assert "research_evidence" not in serialized
+    assert "episode_results" not in serialized
+    assert "zorble_index" not in serialized
+    measurement = history["candidates"][0]["evaluations"][0]
+    assert measurement["evaluation_artifact"].endswith(".json")
+    assert measurement["success_percent"] == 50.0
+
+
+def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_path):
+    _, request_path, evaluations_dir = _single_panel_evaluation_fixture(
+        monkeypatch, tmp_path
+    )
+    monkeypatch.setattr("research.run_experiment.append_result", lambda result: None)
+    calls = _recording_evaluator(monkeypatch, lambda seed: evaluation(seed, [True]))
+
+    def request_same_panel(more_evidence: bool) -> None:
+        request_path.write_text(
+            json.dumps(
+                {
+                    "experiment": 9,
+                    "question": "What does this panel show now?",
+                    "reason": "Measurement identity is what is under test.",
+                    "evaluations": [
+                        {"candidate": "checkpoint", "episodes": 2, "seed": 1000}
+                    ],
+                    "need_more_evidence": more_evidence,
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    monkeypatch.setattr(
+        "research.run_experiment.evaluation_semantics_fingerprint", lambda: "before"
+    )
+    request_same_panel(True)
+    assert execute_pending_evaluations() == 0
+    assert calls == [1000]
+
+    # Unchanged semantics: the completed identical measurement is reused.
+    request_same_panel(True)
+    assert execute_pending_evaluations() == 0
+    assert calls == [1000]
+
+    # Re-instrumented: the same candidate, episodes and seed is a new fact.
+    monkeypatch.setattr(
+        "research.run_experiment.evaluation_semantics_fingerprint", lambda: "after"
+    )
+    request_same_panel(False)
+    assert execute_pending_evaluations() == 0
+    assert calls == [1000, 1000]
+    assert len(sorted(evaluations_dir.glob("*.json"))) == 2
+
+
+def _semantics_tree(tmp_path):
+    """A miniature repository holding the measurement-relevant surface."""
+    scenario = tmp_path / "robot_learning" / "scenario"
+    scenario.mkdir(parents=True)
+    for name in (
+        "__init__.py",
+        "environment.py",
+        "evaluation.py",
+        "final_benchmark.py",
+        "observations.py",
+        "progress.py",
+        "reward.py",
+        "viewer.py",
+    ):
+        (scenario / name).write_text("original\n", encoding="utf-8")
+    training = tmp_path / "robot_learning" / "training"
+    training.mkdir(parents=True)
+    for name in ("algorithms.py", "normalization.py"):
+        (training / name).write_text("original\n", encoding="utf-8")
+    (tmp_path / "robot_learning" / "evaluate.py").write_text(
+        "original\n", encoding="utf-8"
+    )
+    research = tmp_path / "research"
+    research.mkdir(parents=True)
+    (research / "build_research_brief.py").write_text("original\n", encoding="utf-8")
+    (tmp_path / "run_research.ps1").write_text("original\n", encoding="utf-8")
+    return scenario
+
+
+def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
+    monkeypatch, tmp_path
+):
+    scenario = _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+
+    assert evaluation_semantics_paths() == [
+        "robot_learning/evaluate.py",
+        "robot_learning/scenario/environment.py",
+        "robot_learning/scenario/evaluation.py",
+        "robot_learning/scenario/observations.py",
+        "robot_learning/scenario/reward.py",
+        "robot_learning/training/algorithms.py",
+        "robot_learning/training/normalization.py",
+    ]
+
+    original = evaluation_semantics_fingerprint()
+    assert original == evaluation_semantics_fingerprint()
+
+    # Editing an existing researcher-owned module changes measurement identity.
+    (scenario / "evaluation.py").write_text("instrumented\n", encoding="utf-8")
+    edited = evaluation_semantics_fingerprint()
+    assert edited != original
+
+    # So does adding one, even before anything imports it.
+    (scenario / "instrumentation.py").write_text("probe\n", encoding="utf-8")
+    extended = evaluation_semantics_fingerprint()
+    assert extended != edited
+
+    # Renaming it changes identity even though the contents are unchanged.
+    (scenario / "instrumentation.py").rename(scenario / "analysis.py")
+    assert evaluation_semantics_fingerprint() != extended
+
+    # Removing it returns to the previous identity.
+    (scenario / "analysis.py").unlink()
+    assert evaluation_semantics_fingerprint() == edited
+
+    # Researcher-owned measurement data counts as much as researcher-owned code.
+    config = scenario / "measurement_config.json"
+    config.write_text('{"window": 1}', encoding="utf-8")
+    with_data = evaluation_semantics_fingerprint()
+    assert with_data != edited
+    config.write_text('{"window": 2}', encoding="utf-8")
+    assert evaluation_semantics_fingerprint() != with_data
+
+
+@pytest.mark.parametrize(
+    "relative",
+    [
+        "robot_learning/evaluate.py",
+        "robot_learning/training/algorithms.py",
+        "robot_learning/training/normalization.py",
+    ],
+)
+def test_non_scenario_evaluation_dependencies_change_measurement_identity(
+    monkeypatch, tmp_path, relative
+):
+    _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+
+    original = evaluation_semantics_fingerprint()
+    (tmp_path / relative).write_text("changed\n", encoding="utf-8")
+
+    assert evaluation_semantics_fingerprint() != original
+
+
+def test_presentation_and_generated_files_stay_out_of_measurement_identity(
+    monkeypatch, tmp_path
+):
+    scenario = _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+
+    original = evaluation_semantics_fingerprint()
+
+    # Presentation-only scenario code never changes what was measured.
+    for name in ("progress.py", "viewer.py"):
+        (scenario / name).write_text("restyled\n", encoding="utf-8")
+    assert evaluation_semantics_fingerprint() == original
+
+    # Neither do the loop or the compact-context builder.
+    (tmp_path / "research" / "build_research_brief.py").write_text(
+        "restyled\n", encoding="utf-8"
+    )
+    (tmp_path / "run_research.ps1").write_text("restyled\n", encoding="utf-8")
+    assert evaluation_semantics_fingerprint() == original
+
+    # Neither do build or scratch products under the scenario package.
+    cache = scenario / "__pycache__"
+    cache.mkdir()
+    (cache / "evaluation.cpython-313.pyc").write_bytes(b"\x00compiled")
+    tool_cache = scenario / ".mypy_cache" / "3.13"
+    tool_cache.mkdir(parents=True)
+    (tool_cache / "evaluation.data.json").write_text("{}", encoding="utf-8")
+    (scenario / "evaluation.py.tmp").write_text("scratch\n", encoding="utf-8")
+    (scenario / ".DS_Store").write_bytes(b"junk")
+    assert evaluation_semantics_fingerprint() == original
+
+
+def test_protected_scenario_files_stay_out_of_measurement_identity(
+    monkeypatch, tmp_path
+):
+    scenario = _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+
+    original = evaluation_semantics_fingerprint()
+    for name in ("__init__.py", "final_benchmark.py"):
+        (scenario / name).write_text("changed\n", encoding="utf-8")
+
+    assert evaluation_semantics_fingerprint() == original
+
+
 def test_pending_result_requires_an_explicit_researcher_decision():
     state = {
         "pending_researcher_decision": {
@@ -397,6 +737,164 @@ def test_pending_result_requires_an_explicit_researcher_decision():
 
     with pytest.raises(ValueError, match="previous_result_decision"):
         apply_previous_result_decision({}, state)
+
+
+def _attested_lineage_state(monkeypatch, tmp_path):
+    """A pending decision whose experiment produced one detailed artifact."""
+    _artifact(tmp_path / "archive" / "candidate")
+    artifacts = tmp_path / "research" / "evaluations"
+    artifacts.mkdir(parents=True)
+    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", artifacts)
+    state = _decision_state(
+        "archive/candidate", _measured(tmp_path, "candidate", artifacts)
+    )
+    return (
+        state,
+        "research/evaluations/evaluation-experiment-8-candidate-2ep-seed44-ab.json",
+    )
+
+
+def test_lineage_decision_requires_attested_current_experiment_evidence(
+    monkeypatch, tmp_path
+):
+    state, artifact = _attested_lineage_state(monkeypatch, tmp_path)
+    _attest(monkeypatch, tmp_path, 8, [artifact])
+
+    assert not apply_previous_result_decision(_lineage_decision(), state)
+
+
+@pytest.mark.parametrize(
+    ("paths", "label", "message"),
+    [
+        # No attestation line at all.
+        ([], "Notes", "Evidence inspected"),
+        # Names an artifact that was never written.
+        (
+            ["research/evaluations/evaluation-experiment-8-ghost-2ep-seed44-ab.json"],
+            "Evidence inspected",
+            "at least one detailed evaluation artifact",
+        ),
+        # Names a real artifact belonging to a different experiment.
+        (
+            ["research/evaluations/evaluation-experiment-2-other-2ep-seed44-ab.json"],
+            "Evidence inspected",
+            "at least one detailed evaluation artifact",
+        ),
+    ],
+)
+def test_unattested_lineage_decision_is_rejected(
+    monkeypatch, tmp_path, paths, label, message
+):
+    state, _ = _attested_lineage_state(monkeypatch, tmp_path)
+    (
+        tmp_path
+        / "research"
+        / "evaluations"
+        / "evaluation-experiment-2-other-2ep-seed44-ab.json"
+    ).write_text("{}", encoding="utf-8")
+    _attest(monkeypatch, tmp_path, 8, paths or ["none"], label=label)
+
+    with pytest.raises(ValueError, match=message):
+        apply_previous_result_decision(_lineage_decision(), state)
+
+
+def test_attested_artifact_must_exist_on_disk(monkeypatch, tmp_path):
+    state, artifact = _attested_lineage_state(monkeypatch, tmp_path)
+    _attest(monkeypatch, tmp_path, 8, [artifact])
+    (tmp_path / artifact).unlink()
+
+    with pytest.raises(ValueError, match="do not exist"):
+        apply_previous_result_decision(_lineage_decision(), state)
+
+
+def test_lineage_evidence_preflight_matches_the_runner_decision(monkeypatch, tmp_path):
+    state, artifact = _attested_lineage_state(monkeypatch, tmp_path)
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    _attest(monkeypatch, tmp_path, 8, ["research/evaluations/absent.json"])
+    assert check_lineage_evidence(8) == 1
+
+    _attest(monkeypatch, tmp_path, 8, [artifact])
+    assert check_lineage_evidence(8) == 0
+    # A lineage decision is only checkable for the experiment actually pending.
+    assert check_lineage_evidence(9) == 1
+
+
+class UninspectableEvidence:
+    """Fails loudly if generic code looks inside the researcher's channel."""
+
+    def __getattr__(self, name):
+        raise AssertionError(f"generic code read research_evidence.{name}")
+
+    def __getitem__(self, key):
+        raise AssertionError(f"generic code read research_evidence[{key!r}]")
+
+    def __iter__(self):
+        raise AssertionError("generic code iterated research_evidence")
+
+    def __len__(self):
+        raise AssertionError("generic code sized research_evidence")
+
+
+def test_generic_compaction_never_inspects_the_evidence_channel():
+    opaque = UninspectableEvidence()
+    metrics = {
+        "episodes": 2,
+        "seed": 44,
+        "success_percent": 50.0,
+        "model": "models/candidates/x/model.zip",
+        "episode_results": [{"episode": 0, "success": True}],
+        "research_evidence": opaque,
+    }
+
+    state_record = measurement_record(metrics)
+    assert "research_evidence" not in state_record
+    assert state_record["episode_results"] == metrics["episode_results"]
+    json.dumps(state_record, sort_keys=True)
+
+    history = compact_result_record(
+        {
+            "index": 4,
+            "candidates": [{"name": "c", "evaluations": [dict(metrics)]}],
+            "requested_evaluations": [{"candidate": "c", "metrics": dict(metrics)}],
+        }
+    )
+    serialized = json.dumps(history, sort_keys=True)
+    assert "research_evidence" not in serialized
+    assert "episode_results" not in serialized
+
+
+def test_opaque_evidence_survives_the_whole_execution_path(monkeypatch, tmp_path):
+    state_path, _, _ = _single_panel_evaluation_fixture(monkeypatch, tmp_path)
+    recorded: list[dict] = []
+    monkeypatch.setattr(
+        "research.run_experiment.append_result",
+        lambda result: recorded.append(compact_result_record(result)),
+    )
+
+    def payload(seed):
+        measurement = evaluation(seed, [True, False])
+        measurement["research_evidence"] = UninspectableEvidence()
+        return measurement
+
+    def evaluate(artifact, seed, output_path=None, **kwargs):
+        del artifact, kwargs
+        if output_path is not None:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text("{}", encoding="utf-8")
+        return payload(seed)
+
+    monkeypatch.setattr("research.run_experiment.evaluate_artifact", evaluate)
+
+    # Any generic read of the channel would raise before this returns.
+    assert execute_pending_evaluations() == 0
+    assert "research_evidence" not in state_path.read_text(encoding="utf-8")
+    assert "research_evidence" not in json.dumps(recorded[0], sort_keys=True)
 
 
 def test_researcher_can_select_an_archived_candidate_as_next_lineage(
@@ -758,23 +1256,47 @@ def test_champion_can_be_retained_before_replacement(monkeypatch, tmp_path):
 
 def _measured(tmp_path, name, artifacts):
     """One completed evaluation panel plus the JSON artifact it produced."""
-    relative = f"models/candidates/evaluation-experiment-8-{name}-2ep-seed44.json"
+    relative = f"research/evaluations/evaluation-experiment-8-{name}-2ep-seed44-ab.json"
     (artifacts / Path(relative).name).write_text("{}", encoding="utf-8")
     record = evaluation(44, [True, False])
     record["evaluation_artifact"] = relative
     return [record]
 
 
+def _attest(monkeypatch, tmp_path, experiment, paths, label="Evidence inspected"):
+    """Write the postmortem a lineage decision must carry to be accepted."""
+    postmortem = tmp_path / "postmortems.md"
+    postmortem.write_text(
+        f"## Experiment {experiment} - measured\n\n"
+        "**Result:** measured.\n\n"
+        "**Observed behavior:** recorded.\n\n"
+        "**Interpretation:** the candidate is the useful parent.\n\n"
+        f"**{label}:** " + ", ".join(f"`{path}`" for path in paths) + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.run_experiment.POSTMORTEM_PATH", postmortem)
+    return postmortem
+
+
 def _evaluation_lifecycle_state(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
     _artifact(tmp_path / "archive" / "runner-up")
-    artifacts = tmp_path / "models" / "candidates"
+    artifacts = tmp_path / "research" / "evaluations"
     artifacts.mkdir(parents=True)
     monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
     monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
     monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", artifacts)
+    monkeypatch.setattr(
+        "research.run_experiment.CANDIDATE_ROOT", tmp_path / "models" / "candidates"
+    )
+    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", artifacts)
+    _attest(
+        monkeypatch,
+        tmp_path,
+        8,
+        ["research/evaluations/evaluation-experiment-8-candidate-2ep-seed44-ab.json"],
+    )
 
     state = _decision_state(
         "archive/candidate", _measured(tmp_path, "candidate", artifacts)
@@ -793,31 +1315,37 @@ def _evaluation_lifecycle_state(monkeypatch, tmp_path):
 
 
 def test_evaluation_artifacts_are_named_per_measured_panel():
-    first = evaluation_artifact_name(8, "checkpoint-120832", 200, 1000)
-    second = evaluation_artifact_name(8, "checkpoint-120832", 200, 2000)
+    first = evaluation_artifact_name(8, "checkpoint-120832", 200, 1000, "aaaa")
+    second = evaluation_artifact_name(8, "checkpoint-120832", 200, 2000, "aaaa")
+    reinstrumented = evaluation_artifact_name(8, "checkpoint-120832", 200, 1000, "bbbb")
 
     assert first != second
-    assert first == evaluation_artifact_name(8, "checkpoint-120832", 200, 1000)
+    assert first != reinstrumented
+    assert first == evaluation_artifact_name(8, "checkpoint-120832", 200, 1000, "aaaa")
 
 
-def test_discarded_candidate_loses_its_evaluation_evidence(monkeypatch, tmp_path):
+def test_discarded_candidate_keeps_its_completed_evaluation_evidence(
+    monkeypatch, tmp_path
+):
     state, artifacts = _evaluation_lifecycle_state(monkeypatch, tmp_path)
 
     assert not apply_previous_result_decision(_lineage_decision(), state)
 
-    assert (artifacts / "evaluation-experiment-8-candidate-2ep-seed44.json").exists()
-    assert not (
-        artifacts / "evaluation-experiment-8-runner-up-2ep-seed44.json"
-    ).exists()
+    # The runner-up checkpoint is discarded; its completed measurement is not.
+    assert not (tmp_path / "archive" / "runner-up" / "model.zip").exists()
+    assert (artifacts / "evaluation-experiment-8-candidate-2ep-seed44-ab.json").exists()
+    assert (artifacts / "evaluation-experiment-8-runner-up-2ep-seed44-ab.json").exists()
     assert state["accepted_evaluations"] == [
-        "models/candidates/evaluation-experiment-8-candidate-2ep-seed44.json"
+        "research/evaluations/evaluation-experiment-8-candidate-2ep-seed44-ab.json"
     ]
     assert state["pending_researcher_decision"] is None
 
 
 def test_retained_lineage_keeps_its_evaluation_evidence(monkeypatch, tmp_path):
     state, artifacts = _evaluation_lifecycle_state(monkeypatch, tmp_path)
-    obsolete = "models/candidates/evaluation-experiment-2-obsolete-2ep-seed44.json"
+    obsolete = (
+        "research/evaluations/evaluation-experiment-2-obsolete-2ep-seed44-ab.json"
+    )
     (artifacts / Path(obsolete).name).write_text("{}", encoding="utf-8")
     _artifact(tmp_path / "research" / "checkpoints" / "retained" / "obsolete")
     state["retained_lineages"] = [
@@ -839,10 +1367,11 @@ def test_retained_lineage_keeps_its_evaluation_evidence(monkeypatch, tmp_path):
     retained = state["retained_lineages"][0]
     assert retained["id"] == "alternative"
     assert retained["evaluation_artifacts"] == [
-        "models/candidates/evaluation-experiment-8-runner-up-2ep-seed44.json"
+        "research/evaluations/evaluation-experiment-8-runner-up-2ep-seed44-ab.json"
     ]
-    assert (artifacts / "evaluation-experiment-8-runner-up-2ep-seed44.json").exists()
-    assert not (artifacts / Path(obsolete).name).exists()
+    assert (artifacts / "evaluation-experiment-8-runner-up-2ep-seed44-ab.json").exists()
+    # Removing a retained lineage drops its checkpoint, never its measurements.
+    assert (artifacts / Path(obsolete).name).exists()
 
 
 def test_removing_retained_lineage_keeps_history_but_removes_artifact(

@@ -42,14 +42,22 @@ def test_training_log_parser_groups_metric_snapshots():
     assert records[1]["std"] == 0.5
 
 
-def test_training_summary_keeps_decision_relevant_metrics():
+def test_default_training_summary_stays_minimal_and_method_neutral():
     summary = render_training_summary(SAMPLE_LOG)
 
     assert "Peak-success snapshot" not in summary
     assert "stochastic training policy" in summary
     assert "false peak" in summary
-    assert "Final policy std: 0.5" in summary
     assert "models/reach-example/model.zip" in summary
+    # Progress and outcome only; no diagnostic of the current learning method.
+    for preselected in (
+        "Policy std",
+        "Explained variance",
+        "Value loss",
+        "Episode length",
+    ):
+        assert preselected not in summary
+    assert "research/last_train.log" in summary
 
 
 def test_brief_reports_the_measured_score_and_points_at_the_detail(
@@ -69,7 +77,7 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
             {
                 "accepted_artifact": "accepted",
                 "accepted_evaluations": [
-                    "models/candidates/evaluation-experiment-3-champion-4ep-seed1000.json"
+                    "research/evaluations/evaluation-experiment-3-champion-4ep-seed1000-ab.json"
                 ],
                 "pending_researcher_decision": {
                     "experiment": 4,
@@ -83,7 +91,7 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
                                     "seed": 3000,
                                     "success_percent": 50.0,
                                     "evaluation_artifact": (
-                                        "models/candidates/"
+                                        "research/evaluations/"
                                         "evaluation-experiment-4-1.json"
                                     ),
                                 }
@@ -102,11 +110,12 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
 
     assert "hold-focused: pooled success 50.00%" in brief
     assert "4 episodes, seed 3000, success 50.00%" in brief
-    assert "models/candidates/evaluation-experiment-4-1.json" in brief
+    assert "research/evaluations/evaluation-experiment-4-1.json" in brief
     assert (
         "Accepted evaluation detail: "
-        "`models/candidates/evaluation-experiment-3-champion-4ep-seed1000.json`"
+        "`research/evaluations/evaluation-experiment-3-champion-4ep-seed1000-ab.json`"
     ) in brief
+    assert "Open the detailed evaluation artifacts listed below" in brief
     assert "Measured challenger diagnostics" not in brief
     assert "Observed failure diagnostics" not in brief
 
@@ -191,3 +200,99 @@ def test_lineage_orchestration_requires_markdown_postmortem():
     assert "preserved candidate artifacts" not in script
     assert "preserve_candidates" not in script
     assert "previous_experiment_postmortem" not in program
+
+
+def test_postmortems_are_presented_as_contestable_interpretations(
+    monkeypatch, tmp_path
+):
+    root = Path(__file__).resolve().parents[2]
+    for source in (root / "run_research.ps1", root / "research" / "program.md"):
+        text = source.read_text(encoding="utf-8").lower()
+        assert "do not retry" not in text
+        assert "be retried" not in text
+
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text(
+        "## Experiment 1 - legacy entry\n\n"
+        "**Result:** legacy result.\n\n"
+        "**Observed behavior:** legacy behavior.\n\n"
+        "**What was learned / do NOT retry:** legacy conclusion.\n\n"
+        "## Experiment 2 - neutral entry\n\n"
+        "**Result:** neutral result.\n\n"
+        "**Observed behavior:** neutral behavior.\n\n"
+        "**Interpretation:** neutral conclusion.\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+    monkeypatch.setattr(
+        "research.build_research_brief.TRAIN_SUMMARY_PATH", tmp_path / "absent.md"
+    )
+
+    brief = render_research_brief()
+
+    assert "## Prior researcher interpretations" in brief
+    assert "may be reconsidered when evidence" in brief
+    # Both heading generations are readable and both render neutrally.
+    assert "Interpretation: legacy conclusion." in brief
+    assert "Interpretation: neutral conclusion." in brief
+    assert "do NOT retry" not in brief
+
+
+def test_unfamiliar_postmortem_heading_does_not_erase_the_experiment(
+    monkeypatch, tmp_path
+):
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text(
+        "## Experiment 3 - unfamiliar layout\n\n"
+        "**Takeaway:** the arm stalls once the target moves outward.\n\n"
+        "**Evidence inspected:** `research/evaluations/e3.json`\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+    monkeypatch.setattr(
+        "research.build_research_brief.TRAIN_SUMMARY_PATH", tmp_path / "absent.md"
+    )
+
+    brief = render_research_brief()
+
+    assert "Experiment 3 - unfamiliar layout" in brief
+    assert "the arm stalls once the target moves outward" in brief
+    assert "Evidence inspected: `research/evaluations/e3.json`" in brief
+
+
+def test_research_runtime_preflight_runs_before_any_researcher_session():
+    root = Path(__file__).resolve().parents[2]
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+    lines = script.splitlines()
+
+    guard = next(
+        index
+        for index, line in enumerate(lines)
+        if line.strip() == "Assert-ResearchRuntime"
+    )
+    first_session = next(
+        index for index, line in enumerate(lines) if "opencode run" in line
+    )
+    first_runner = next(
+        index
+        for index, line in enumerate(lines)
+        if "uv run python research/run_experiment.py" in line
+    )
+
+    assert "import robot_learning.train; import research.run_experiment" in script
+    assert guard < first_session
+    assert guard < first_runner
+    assert "internally inconsistent" in script
+
+
+def test_lineage_retry_gate_requires_attested_evidence():
+    root = Path(__file__).resolve().parents[2]
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+
+    assert "--check-lineage-evidence" in script
+    for prompt_fragment in ("Evidence inspected",):
+        assert script.count(prompt_fragment) >= 3

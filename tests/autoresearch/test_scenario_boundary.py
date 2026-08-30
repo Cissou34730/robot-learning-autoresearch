@@ -339,12 +339,16 @@ def test_task_success_threshold_is_not_generic_configuration():
     assert not hasattr(research_config, "RESEARCH_SUCCESS_TARGET_PERCENT")
 
 
-def test_scenario_owns_the_current_success_target():
+def test_ordinary_research_evaluation_ignores_the_final_threshold():
     from robot_learning.benchmark import final_contract
     from robot_learning.scenario import evaluation as scenario_evaluation
 
-    assert scenario_evaluation.FINAL_SUCCESS_PERCENT == 98.0
     assert final_contract.FINAL_SUCCESS_PERCENT == 98.0
+    assert not hasattr(scenario_evaluation, "FINAL_SUCCESS_PERCENT")
+    for module in imported_modules(
+        ROOT / "robot_learning" / "scenario" / "evaluation.py"
+    ):
+        assert not module.startswith("robot_learning.benchmark"), module
 
     summary = summarize_research_evaluations(
         [
@@ -353,10 +357,11 @@ def test_scenario_owns_the_current_success_target():
         ]
     )
 
-    assert summary["seeds_passing_98_percent"] == 1
+    assert "seeds_passing_98_percent" not in summary
+    assert summary["worst_seed_success_percent"] == 97.9
 
 
-def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
+def test_compact_context_states_no_final_threshold(monkeypatch, tmp_path):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
@@ -367,7 +372,6 @@ def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
                 "accepted_metrics": {
                     "episodes": 400,
                     "seed_count": 2,
-                    "seeds_passing_98_percent": 2,
                     "success_percent": 99.0,
                     "pooled_success_percent": 99.0,
                 },
@@ -379,8 +383,11 @@ def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
 
     brief = render_research_brief()
 
-    assert "Accepted seeds passing 98%: 2/2" in brief
-    assert "Accepted failed episodes: 4" in brief
+    assert "Accepted seed panels: 2" in brief
+    assert "Accepted success: 99%" in brief
+    assert "seeds passing" not in brief.lower()
+    # The compact context reports the measured result, not a derived failure count.
+    assert "failed episodes" not in brief.lower()
 
 
 def test_scenario_owns_rendering():

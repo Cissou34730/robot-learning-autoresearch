@@ -1,18 +1,23 @@
 import argparse
+import copy
 import json
 import shutil
 from pathlib import Path
 
 import torch
+from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 from robot_learning.scenario import make_training_env, make_training_viewer_callback
-from robot_learning.training.algorithms import algorithm_class, artifact_algorithm
 from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
 )
 from robot_learning.training.research_config import load_experiment_config
+
+# The current learning method. Replacing it is a normal research change.
+ALGORITHM_NAME = "ppo"
 
 ACTIVATION_FUNCTIONS = {
     "tanh": torch.nn.Tanh,
@@ -29,7 +34,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", type=Path, default=None)
     parser.add_argument("--continue-timesteps", action="store_true")
     parser.add_argument("--target-timesteps", type=int, default=None)
-    parser.add_argument("--algorithm", choices=("ppo", "sac"), default=None)
     parser.add_argument("--n-envs", type=int, default=None)
     parser.add_argument("--view", action="store_true")
     parser.add_argument("--speed", type=float, default=1.0)
@@ -62,18 +66,27 @@ def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
     return result
 
 
+def effective_training_config(config: dict) -> dict:
+    """Describe the concrete runtime configuration used by this trainer."""
+    n_envs = int(config["training"]["n_envs"])
+    return {
+        "runtime_config": copy.deepcopy(config),
+        "n_envs": n_envs,
+        "model_parameters": parallel_ppo_params(config["ppo"], n_envs),
+        "policy": copy.deepcopy(config["policy"]),
+    }
+
+
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
-    algorithm = args.algorithm or str(config["algorithm"]["name"]).lower()
-    n_envs = args.n_envs or int(config["training"]["n_envs"])
-    if args.resume is not None:
-        resume_algorithm = artifact_algorithm(args.resume)
-        if resume_algorithm != algorithm:
-            raise SystemExit(
-                f"cannot resume {resume_algorithm} checkpoint as {algorithm}; "
-                "use fresh initialization for an algorithm change"
-            )
+    effective_config = effective_training_config(config)
+    n_envs = args.n_envs or effective_config["n_envs"]
+    if args.n_envs is not None:
+        effective_config["n_envs"] = n_envs
+        effective_config["model_parameters"] = parallel_ppo_params(
+            config["ppo"], n_envs
+        )
 
     args.output_dir.mkdir(parents=True, exist_ok=False)
     vec_env_cls = DummyVecEnv if n_envs == 1 else SubprocVecEnv
@@ -84,10 +97,8 @@ def main() -> None:
         vec_env_cls=vec_env_cls,
     )
 
-    params = dict(config[algorithm])
-    if algorithm == "ppo":
-        params = parallel_ppo_params(params, n_envs)
-    policy_kwargs = build_policy_kwargs(config["policy"])
+    params = effective_config["model_parameters"]
+    policy_kwargs = build_policy_kwargs(effective_config["policy"])
     if args.resume is not None:
         stats_path = args.resume.parent / "vecnormalize.pkl"
         if not stats_path.exists():
@@ -101,21 +112,17 @@ def main() -> None:
             gamma=float(params["gamma"]),
         )
 
-    algorithm_type = algorithm_class(algorithm)
     tensorboard_log = str(args.output_dir / "tensorboard")
     if args.resume is not None:
-        model = algorithm_type.load(
+        model = PPO.load(
             args.resume,
             env=venv,
             seed=args.seed,
             tensorboard_log=tensorboard_log,
             **params,
         )
-        replay_path = args.resume.parent / "replay_buffer.pkl"
-        if algorithm == "sac" and replay_path.exists():
-            model.load_replay_buffer(replay_path)
     else:
-        model = algorithm_type(
+        model = PPO(
             "MlpPolicy",
             venv,
             seed=args.seed,
@@ -126,7 +133,7 @@ def main() -> None:
         )
 
     training = config["training"]
-    callbacks = [
+    callbacks: list[BaseCallback] = [
         CandidateCheckpointCallback(
             output_dir=args.output_dir,
             every_steps=int(training["checkpoint_every_steps"]),
@@ -147,20 +154,16 @@ def main() -> None:
         print("\nTraining interrupted - saving the best available policy.")
     finally:
         model.save(args.output_dir / "last_model")
-        if hasattr(model, "save_replay_buffer"):
-            model.save_replay_buffer(args.output_dir / "last_replay_buffer.pkl")
         venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
         artifact = {
             "schema_version": 1,
-            "algorithm": algorithm,
+            "algorithm": ALGORITHM_NAME,
             "seed": args.seed,
             "timesteps": int(model.num_timesteps),
             "requested_timesteps": args.target_timesteps or args.timesteps,
             "completed": not interrupted,
             "resumed_from": str(args.resume) if args.resume else None,
-            "n_envs": n_envs,
-            "parameters": params,
-            "policy": config["policy"],
+            "effective_config": effective_config,
         }
         (args.output_dir / "artifact.json").write_text(
             json.dumps(artifact, indent=2, default=str) + "\n",
@@ -179,9 +182,6 @@ def main() -> None:
             json.dumps(artifact, indent=2, default=str) + "\n",
             encoding="utf-8",
         )
-        last_replay = args.output_dir / "last_replay_buffer.pkl"
-        if last_replay.exists():
-            shutil.copyfile(last_replay, final_checkpoint / "replay_buffer.pkl")
         shutil.copyfile(
             args.output_dir / "last_model.zip", args.output_dir / "model.zip"
         )
@@ -189,8 +189,6 @@ def main() -> None:
             args.output_dir / "last_vecnormalize.pkl",
             args.output_dir / "vecnormalize.pkl",
         )
-        if last_replay.exists():
-            shutil.copyfile(last_replay, args.output_dir / "replay_buffer.pkl")
 
         candidates: list[dict] = []
         pool_dir = args.output_dir / "candidate_pool"

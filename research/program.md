@@ -38,6 +38,11 @@ Start with:
 Use this context first, then inspect relevant measurement artifacts. Read
 `research/current_params.json` only when the diagnosed mechanism makes it useful.
 
+`research/results.jsonl` is an index of past experiments and older entries may
+use superseded record schemas. It is research history, not the current
+evaluation contract: current detailed evidence is whatever the referenced
+evaluation artifacts contain.
+
 ## Research cycle
 
 train → research evaluation → close the experiment → next experiment
@@ -54,6 +59,12 @@ weaken each; obtain existing or lightweight evidence when it can decide the
 important uncertainty before requesting training.
 
 ### Research evaluation
+
+You decide whether the available evidence is sufficient. The scenario research
+evaluator is your instrumentation, not a fixed evaluator: it emits a small
+factual baseline plus whatever additional evidence you choose to record, and you
+may rewrite what it records. Detailed measurements are kept as durable
+evaluation artifacts; the brief points at them.
 
 `research/brief.md` lists the available candidates. Write
 `research/evaluation_request.json`:
@@ -77,9 +88,14 @@ benchmark is not reachable from here and must not be used to select a lineage.
 
 ### Close the experiment
 
-Append a concise durable entry to `research/postmortems.md` — the result, the
-observed behavior, and what was learned or should not be retried — then write a
-lineage-only `research/proposal.json`:
+Read the detailed evaluation artifacts of this experiment before concluding.
+Append a concise durable entry to `research/postmortems.md` under
+`## Experiment <n>`, with `**Result:**`, `**Observed behavior:**`,
+`**Interpretation:**` — your reading of the evidence, which a later session may
+revisit — and `**Evidence inspected:**`, the repository-relative paths of the
+detailed evaluation artifacts your decision relies on. The runner rejects a
+lineage decision whose postmortem names no existing artifact of this
+experiment. Then write a lineage-only `research/proposal.json`:
 
 ```json
 {"previous_result_decision": {
@@ -133,9 +149,14 @@ nor `params` is an empty experiment and is rejected.
 
 ## Investigation without training
 
-Inspect code, logs, artifacts and data, run lightweight analysis, and change
-your instrumentation without proposing training. Request new policy measurements
-through research evaluation; train only when the next step needs a new policy.
+Inspect code, logs, artifacts and completed measurements, run lightweight local
+analysis, and change your own evaluation and instrumentation code without
+proposing training. Re-measuring an already-saved policy under new
+instrumentation is a research evaluation, not a new experiment: no training run
+is needed to obtain more evidence. Do not spend training budget on an
+uncertainty you could reasonably settle with existing evidence, local analysis,
+instrumentation or re-evaluation; train only when the next step needs a new
+policy.
 
 ## Tests
 
