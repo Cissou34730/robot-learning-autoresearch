@@ -1,79 +1,151 @@
 """Researcher-owned tests for the scenario research evaluation.
 
-The scenario owns which diagnostics survive into the summary that the brief and
-the runner present. Changing those diagnostics is a normal research change.
+The scenario owns which signals are observed and how they are mechanically
+aggregated. Changing those observations is a normal research change.
 """
 
+import numpy as np
 import pytest
 
-from robot_learning.scenario import (
-    render_scenario_evidence,
-    summarize_research_evaluations,
-)
+from robot_learning.scenario import evaluation as scenario_evaluation
+from robot_learning.scenario import summarize_research_evaluations
+
+
+class ZeroPolicy:
+    def predict(self, observation, deterministic=False):
+        del observation, deterministic
+        return np.zeros(2), None
+
+
+@pytest.fixture
+def stub_policy(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        scenario_evaluation, "load_policy", lambda path, algorithm: ZeroPolicy()
+    )
+    monkeypatch.setattr(
+        scenario_evaluation, "load_observation_normalizer", lambda path: None
+    )
+    return tmp_path / "model.zip"
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
-    failures = outcomes.count(False)
     return {
         "episodes": len(outcomes),
         "seed": seed,
         "success_percent": 100 * sum(outcomes) / len(outcomes),
-        "failed_episode_progress": {
-            "failed_episodes": failures,
-            "longest_consecutive_steps_mean": 99.0 if failures else 100.0,
-            "best_window_inside_steps_mean": 99.0 if failures else 100.0,
-            "best_window_excess_cm_mean": 0.01 if failures else 0.0,
-            "required_steps": 100,
-        },
         "episode_results": [
             {
                 "episode": episode,
                 "episode_seed": seed + episode,
                 "success": outcome,
+                "steps": 100,
+                "terminated": outcome,
+                "truncated": not outcome,
                 "target_radius_cm": 10.0,
                 "target_angle_degrees": 0.0,
-                "longest_consecutive_steps": 100 if outcome else 99,
-                "best_window_inside_steps": 100 if outcome else 99,
-                "best_window_excess_cm": 0.0 if outcome else 0.01,
-                "final_distance_cm": 0.5,
+                "reward_total": 1.0,
+                "reward_components": {"progress": 1.0},
+                "metrics": {},
+                "actions": {},
             }
             for episode, outcome in enumerate(outcomes)
         ],
     }
 
 
-def test_evaluation_summary_keeps_failed_target_diagnostics():
+def test_evaluation_respects_the_requested_panel(stub_policy):
+    result = scenario_evaluation.evaluate_research_model(
+        stub_policy, episodes=2, seed=7
+    )
+
+    assert result["episodes"] == 2
+    assert result["seed"] == 7
+    assert [episode["episode_seed"] for episode in result["episode_results"]] == [7, 8]
+
+
+def test_evaluation_keeps_per_episode_observations(stub_policy):
+    result = scenario_evaluation.evaluate_research_model(
+        stub_policy, episodes=1, seed=11
+    )
+    episode = result["episode_results"][0]
+
+    assert episode["steps"] > 0
+    assert episode["terminated"] is False
+    assert episode["truncated"] is True
+    assert episode["target_radius_cm"] > 0
+    assert set(episode["metrics"]) == set(scenario_evaluation.OBSERVED_STEP_SIGNALS)
+    assert set(episode["metrics"]["distance"]) == {
+        "count",
+        "mean",
+        "std",
+        "min",
+        "max",
+        "final",
+    }
+    assert episode["metrics"]["distance"]["count"] == episode["steps"]
+    assert set(episode["actions"]) == {"action_0", "action_1"}
+
+
+def test_evaluation_sums_whatever_reward_components_exist(stub_policy, monkeypatch):
+    from robot_learning.scenario import environment as environment_module
+    from robot_learning.scenario.reward import RewardResult
+
+    monkeypatch.setattr(
+        environment_module,
+        "reach_reward",
+        lambda *args, **kwargs: RewardResult(
+            total=0.5, components={"invented_term": 0.25}
+        ),
+    )
+
+    result = scenario_evaluation.evaluate_research_model(
+        stub_policy, episodes=1, seed=3
+    )
+    episode = result["episode_results"][0]
+
+    assert episode["reward_components"] == {
+        "invented_term": pytest.approx(0.25 * episode["steps"])
+    }
+    assert episode["reward_total"] == pytest.approx(0.5 * episode["steps"])
+    assert set(result["aggregate_metrics"]["reward_components"]) == {"invented_term"}
+
+
+def test_evaluation_emits_no_hold_diagnostics(stub_policy):
+    result = scenario_evaluation.evaluate_research_model(
+        stub_policy, episodes=1, seed=5
+    )
+
+    assert "failed_episode_progress" not in result
+    assert "failure_diagnostics" not in result
+    assert "distance_trace_cm" not in result["episode_results"][0]
+
+
+def test_evaluation_aggregates_mechanically(stub_policy):
+    result = scenario_evaluation.evaluate_research_model(
+        stub_policy, episodes=2, seed=5
+    )
+    aggregate = result["aggregate_metrics"]
+
+    assert set(aggregate["steps"]) == {"mean", "std", "min", "max"}
+    assert set(aggregate["metrics"]) == set(scenario_evaluation.OBSERVED_STEP_SIGNALS)
+    assert set(aggregate["actions"]) == {"action_0", "action_1"}
+    assert result["success_percent"] == 0.0
+
+
+def test_evaluation_summary_pools_the_actual_panel_sizes():
+    summary = summarize_research_evaluations(
+        [evaluation(3000, [True, False]), evaluation(4000, [True, True, True, True])]
+    )
+
+    assert summary["episodes"] == 6
+    assert summary["seed_count"] == 2
+    assert summary["pooled_success_percent"] == pytest.approx(100 * 5 / 6)
+    assert summary["worst_seed_success_percent"] == pytest.approx(50.0)
+    assert summary["seed_success_percent"] == {"3000": 50.0, "4000": 100.0}
+
+
+def test_evaluation_summary_does_not_rebuild_scenario_diagnosis():
     summary = summarize_research_evaluations([evaluation(3000, [True, False])])
 
-    assert summary["failure_diagnostics"] == [
-        {
-            "episode": 1,
-            "episode_seed": 3001,
-            "success": False,
-            "target_radius_cm": 10.0,
-            "target_angle_degrees": 0.0,
-            "longest_consecutive_steps": 99,
-            "best_window_inside_steps": 99,
-            "best_window_excess_cm": 0.01,
-            "final_distance_cm": 0.5,
-        }
-    ]
-
-
-def test_evaluation_summary_pools_seed_panels():
-    summary = summarize_research_evaluations(
-        [evaluation(3000, [True, False]), evaluation(4000, [True, True])]
-    )
-
-    assert summary["episodes"] == 4
-    assert summary["seed_count"] == 2
-    assert summary["pooled_success_percent"] == pytest.approx(75.0)
-
-
-def test_scenario_evidence_is_rendered_from_the_summary():
-    evidence = render_scenario_evidence(
-        summarize_research_evaluations([evaluation(3000, [True, False])])
-    )
-
-    assert evidence
-    assert all(isinstance(line, str) for line in evidence)
+    for removed in ("failure_diagnostics", "failed_episode_progress"):
+        assert removed not in summary

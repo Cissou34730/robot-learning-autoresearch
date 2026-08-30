@@ -52,27 +52,14 @@ def test_training_summary_keeps_decision_relevant_metrics():
     assert "models/reach-example/model.zip" in summary
 
 
-def test_brief_includes_compact_measured_challenger_diagnostics(monkeypatch, tmp_path):
+def test_brief_reports_the_measured_score_and_points_at_the_detail(
+    monkeypatch, tmp_path
+):
     summary = {
         "episodes": 4,
         "success_percent": 50.0,
         "pooled_success_percent": 50.0,
         "seed_count": 1,
-        "failed_episode_progress": {
-            "failed_episodes": 2,
-            "longest_consecutive_steps_mean": 23.0,
-            "best_window_inside_steps_mean": 41.0,
-            "required_steps": 100,
-        },
-        "failure_diagnostics": [
-            {
-                "episode_seed": 3001,
-                "best_window_inside_steps": 41,
-                "longest_consecutive_steps": 23,
-                "target_radius_cm": 12.0,
-                "target_angle_degrees": 5.0,
-            }
-        ],
     }
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
@@ -83,7 +70,23 @@ def test_brief_includes_compact_measured_challenger_diagnostics(monkeypatch, tmp
                 "accepted_artifact": "accepted",
                 "pending_researcher_decision": {
                     "experiment": 4,
-                    "candidates": [{"name": "hold-focused", "summary": summary}],
+                    "candidates": [
+                        {
+                            "name": "hold-focused",
+                            "summary": summary,
+                            "evaluations": [
+                                {
+                                    "episodes": 4,
+                                    "seed": 3000,
+                                    "success_percent": 50.0,
+                                    "evaluation_artifact": (
+                                        "models/candidates/"
+                                        "evaluation-experiment-4-1.json"
+                                    ),
+                                }
+                            ],
+                        }
+                    ],
                     "champion_available": False,
                 },
             }
@@ -94,9 +97,11 @@ def test_brief_includes_compact_measured_challenger_diagnostics(monkeypatch, tmp
 
     brief = render_research_brief()
 
-    assert "## Measured challenger diagnostics" in brief
-    assert "**hold-focused**" in brief
-    assert "Failed hold progress: median 23/100; upper quantile 23/100." in brief
+    assert "hold-focused: pooled success 50.00%" in brief
+    assert "4 episodes, seed 3000, success 50.00%" in brief
+    assert "models/candidates/evaluation-experiment-4-1.json" in brief
+    assert "Measured challenger diagnostics" not in brief
+    assert "Observed failure diagnostics" not in brief
 
 
 def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
@@ -140,55 +145,33 @@ def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
     assert "40.00-60.00%" in brief
 
 
-def test_brief_surfaces_directional_failure_diagnostics(monkeypatch, tmp_path):
-    summary = {
-        "episodes": 4,
-        "success_percent": 0.0,
-        "pooled_success_percent": 0.0,
-        "seed_count": 1,
-        "failed_episode_progress": {
-            "failed_episodes": 4,
-            "longest_consecutive_steps_mean": 20.0,
-            "best_window_inside_steps_mean": 30.0,
-            "required_steps": 100,
-        },
-        "failure_diagnostics": [
-            {
-                "episode_seed": 3000 + index,
-                "best_window_inside_steps": 30,
-                "longest_consecutive_steps": hold,
-                "target_radius_cm": 12.0,
-                "target_angle_degrees": angle,
-            }
-            for index, (angle, hold) in enumerate(
-                [(-30.0, 10), (-10.0, 20), (10.0, 40), (30.0, 50)]
-            )
-        ],
-    }
+def test_brief_keeps_the_declared_family_without_deriving_a_taxonomy(
+    monkeypatch, tmp_path
+):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
-    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(
+    (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text(
         json.dumps(
             {
-                "accepted_artifact": "accepted",
-                "pending_researcher_decision": {
-                    "experiment": 4,
-                    "candidates": [{"name": "challenger", "summary": summary}],
-                    "champion_available": False,
-                },
+                "index": 3,
+                "verdict": "measured",
+                "change": "increase the closeness reward",
+                "hypothesis": "shaping",
+                "family": "declared-family",
+                "candidate_metrics": {"success_percent": 40.0},
             }
-        ),
+        )
+        + "\n",
         encoding="utf-8",
     )
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
 
-    assert (
-        "Directional failures: left 2 failures, median hold 10/100; right 2 failures, median hold 40/100."
-        in brief
-    )
+    assert "declared-family" in brief
+    assert "## Tested hypothesis families" not in brief
+    assert "reward.CLOSENESS_COEFFICIENT" not in brief
 
 
 def test_lineage_orchestration_requires_markdown_postmortem():

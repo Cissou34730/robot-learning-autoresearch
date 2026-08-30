@@ -10,16 +10,13 @@ itself changes, the protected benchmark and physics assets). It must not require
 redesigning the runner, training, lineage, or benchmark lifecycle.
 """
 
-from robot_learning.scenario.brief import (
-    render_scenario_evidence,
-    render_training_progress_metric,
-)
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.scenario.evaluation import (
     evaluate_research_model,
     summarize_research_evaluations,
 )
 from robot_learning.scenario.final_benchmark import evaluate_final_model
+from robot_learning.scenario.progress import render_training_progress_metric
 from robot_learning.scenario.viewer import (
     make_training_viewer_callback,
     watch_scenario_policy,
@@ -30,7 +27,6 @@ __all__ = [
     "evaluate_research_model",
     "make_training_env",
     "make_training_viewer_callback",
-    "render_scenario_evidence",
     "render_training_progress_metric",
     "summarize_research_evaluations",
     "watch_scenario_policy",

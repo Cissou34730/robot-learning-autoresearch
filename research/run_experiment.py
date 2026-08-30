@@ -18,7 +18,6 @@ from typing import Any
 from research.build_research_brief import write_training_summary
 from robot_learning.scenario import (
     evaluate_final_model,
-    render_scenario_evidence,
     render_training_progress_metric,
     summarize_research_evaluations,
 )
@@ -316,11 +315,6 @@ def render_evidence_card(
                 "",
             ]
         )
-    if measured:
-        evidence = render_scenario_evidence(measured[0]["summary"])
-        lines.append("Scenario evidence")
-        lines.extend(f"  {line}" if line else "" for line in evidence)
-        lines.append("")
     lines.extend(["Next", f"  {next_phase}"])
     return "\n".join(lines)
 
@@ -1027,8 +1021,12 @@ def execute_pending_evaluations() -> int:
                 episodes=episodes,
                 output_path=output_path,
             )
-            output_path.unlink(missing_ok=True)
             clean_metrics = metrics_without_artifact_path([metrics])[0]
+            # The detailed measurements stay on disk; the researcher inspects
+            # them when the compact context cannot discriminate hypotheses.
+            clean_metrics["evaluation_artifact"] = output_path.relative_to(
+                ROOT
+            ).as_posix()
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {

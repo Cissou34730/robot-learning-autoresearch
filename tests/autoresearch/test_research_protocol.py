@@ -44,29 +44,17 @@ def mentions(text: str, word: str) -> bool:
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
-    failures = outcomes.count(False)
     return {
         "episodes": len(outcomes),
         "seed": seed,
         "success_percent": 100 * sum(outcomes) / len(outcomes),
-        "failed_episode_progress": {
-            "failed_episodes": failures,
-            "longest_consecutive_steps_mean": 99.0 if failures else 100.0,
-            "best_window_inside_steps_mean": 99.0 if failures else 100.0,
-            "best_window_excess_cm_mean": 0.01 if failures else 0.0,
-            "required_steps": 100,
-        },
         "episode_results": [
             {
                 "episode": episode,
                 "episode_seed": seed + episode,
                 "success": outcome,
-                "target_radius_cm": 10.0,
-                "target_angle_degrees": 0.0,
-                "longest_consecutive_steps": 100 if outcome else 99,
-                "best_window_inside_steps": 100 if outcome else 99,
-                "best_window_excess_cm": 0.0 if outcome else 0.01,
-                "final_distance_cm": 0.5,
+                "steps": 100,
+                "reward_total": 1.0,
             }
             for episode, outcome in enumerate(outcomes)
         ],
@@ -93,22 +81,15 @@ def test_paired_comparison_rejects_incompatible_episode_panels():
         )
 
 
-def test_evaluation_summary_keeps_failed_target_diagnostics():
-    summary = summarize_evaluations([evaluation(3000, [True, False])])
+def test_evaluation_summary_consolidates_the_actual_panels():
+    summary = summarize_evaluations(
+        [evaluation(3000, [True, False]), evaluation(4000, [True] * 8)]
+    )
 
-    assert summary["failure_diagnostics"] == [
-        {
-            "episode": 1,
-            "episode_seed": 3001,
-            "success": False,
-            "target_radius_cm": 10.0,
-            "target_angle_degrees": 0.0,
-            "longest_consecutive_steps": 99,
-            "best_window_inside_steps": 99,
-            "best_window_excess_cm": 0.01,
-            "final_distance_cm": 0.5,
-        }
-    ]
+    assert summary["episodes"] == 10
+    assert summary["seed_count"] == 2
+    assert summary["pooled_success_percent"] == pytest.approx(90.0)
+    assert "failure_diagnostics" not in summary
 
 
 def test_exact_p_value_is_one_without_discordant_episodes():

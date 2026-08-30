@@ -84,13 +84,3 @@ def summarize_hold_progress(episodes: list[dict], required: int) -> dict:
         "best_window_excess_cm_mean": float(excess),
         "required_steps": required,
     }
-
-
-def evaluation_rank(metrics: dict) -> tuple[float, float, float, float]:
-    progress = metrics["failed_episode_progress"]
-    return (
-        float(metrics["success_percent"]),
-        float(progress["longest_consecutive_steps_mean"]),
-        float(progress["best_window_inside_steps_mean"]),
-        -float(progress["best_window_excess_cm_mean"]),
-    )

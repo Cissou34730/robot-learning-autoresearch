@@ -255,23 +255,9 @@ def test_evaluation_plan_survives_a_recovered_request_without_framing():
 def measured_summary(success: float) -> dict:
     return {
         "episodes": 200,
+        "seed_count": 1,
         "pooled_success_percent": success,
         "success_percent": success,
-        "failed_episode_progress": {
-            "failed_episodes": 1,
-            "longest_consecutive_steps_mean": 23.0,
-            "best_window_inside_steps_mean": 41.0,
-            "required_steps": 100,
-        },
-        "failure_diagnostics": [
-            {
-                "episode_seed": 2001,
-                "longest_consecutive_steps": 23,
-                "best_window_inside_steps": 41,
-                "target_radius_cm": 12.0,
-                "target_angle_degrees": 5.0,
-            }
-        ],
     }
 
 
@@ -295,17 +281,10 @@ def test_evidence_card_reports_only_measured_facts():
     assert "Champion\n  success 59.0% · 200 episodes" in card
     assert "checkpoint-120832 vs champion" in card
     assert "delta +5.0 pp" in card
-    assert "Scenario evidence" in card
     assert "Next\n  Researcher lineage decision" in card
 
 
-def test_evidence_card_keeps_scenario_detail_behind_the_boundary(monkeypatch):
-    monkeypatch.setattr(
-        run_experiment,
-        "render_scenario_evidence",
-        lambda summary: ["completion 74% of runs"],
-    )
-
+def test_evidence_card_adds_no_scenario_interpretation():
     card = render_evidence_card(
         2,
         [{"name": "checkpoint", "summary": measured_summary(64.0)}],
@@ -314,7 +293,7 @@ def test_evidence_card_keeps_scenario_detail_behind_the_boundary(monkeypatch):
         "Researcher evaluation design",
     )
 
-    assert "Scenario evidence\n  completion 74% of runs" in card
+    assert "Scenario evidence" not in card
     assert "Champion" not in card
     assert "Paired comparison" not in card
 
@@ -415,25 +394,9 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
             "episodes": 2,
             "seed": seed,
             "success_percent": 50.0,
-            "failed_episode_progress": {
-                "failed_episodes": 1,
-                "longest_consecutive_steps_mean": 23.0,
-                "best_window_inside_steps_mean": 41.0,
-                "best_window_excess_cm_mean": 0.01,
-                "required_steps": 100,
-            },
             "episode_results": [
                 {"episode": 0, "episode_seed": seed, "success": True},
-                {
-                    "episode": 1,
-                    "episode_seed": seed + 1,
-                    "success": False,
-                    "longest_consecutive_steps": 23,
-                    "best_window_inside_steps": 41,
-                    "best_window_excess_cm": 0.01,
-                    "target_radius_cm": 12.0,
-                    "target_angle_degrees": 5.0,
-                },
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
             ],
         },
     )

@@ -595,6 +595,77 @@ superseded. It does not instruct the autonomous researcher and does not replace
   states `Current learning method: PPO` instead of embedding the full parameter
   set. The researcher inspects `current_params.json` when a diagnosed mechanism
   makes a setting relevant.
+
+## 2026-08-30 — The harness provides observability, not diagnosis
+
+- **Problem:** The harness had accumulated scientific steering. The brief
+  derived hypothesis families from historical experiment text and imposed that
+  taxonomy on the researcher; `robot_learning/scenario/brief.py` rendered
+  failure buckets, hold quantiles, distance classes and directional summaries;
+  the evaluation pipeline compressed every episode into one hold-oriented
+  explanation of failure. The researcher was reading conclusions the harness had
+  already drawn instead of measurements.
+- **Decision:** Hypothesis-family history is removed from
+  `research/build_research_brief.py`. `_legacy_family()`, the family summary
+  table and the postmortem-lesson extraction that fed it are deleted. The
+  `family` field stays in the experiment protocol and the brief prints the value
+  the researcher declared; the harness derives nothing from it.
+- **Decision:** `robot_learning/scenario/brief.py` is deleted.
+  `render_scenario_evidence()` is removed everywhere, including from the
+  runner's evidence card. `render_training_progress_metric()` moves unchanged to
+  `robot_learning/scenario/progress.py`; it is still the single scenario-owned
+  live console metric. `research/brief.md` is now the only brief in the
+  repository.
+- **Decision:** `robot_learning/scenario/evaluation.py` executes the requested
+  panel, records the observable signals this scenario chooses, and aggregates
+  them mechanically. It draws no conclusion. `failed_episode_progress`,
+  `failure_diagnostics`, `distance_trace_cm`, hold-progress ranking and the
+  best-window fields leave the research path entirely. The hold helpers in
+  `robot_learning/benchmark/metrics.py` remain for the human-owned benchmark
+  tests; only the unused `evaluation_rank()`, which read
+  `failed_episode_progress`, is deleted.
+- **Baseline observability:** per episode — index, seed, success, steps,
+  terminated/truncated, target radius and angle, `reward_total`, every dynamic
+  reward component summed, descriptive statistics for each observed step signal
+  (`distance`, `held_steps`) and per-dimension action statistics; per panel —
+  `success_percent` plus mechanical aggregates of the same quantities. This set
+  is researcher-owned and not protected: changing it is ordinary research.
+- **Decision:** Reward attribution reaches evaluation through
+  `info["reward_components"]`. The mapping stays arbitrary, generic code never
+  names a component, and the RL algorithm still receives only `reward.total`.
+- **Decision:** `summarize_research_evaluations()` only consolidates completed
+  panels for one model: total episodes, panel count, success by seed, pooled and
+  worst-seed success. It uses each result's own `episodes` value and never
+  assumes the standard panel size. Detailed measurements stay in the individual
+  evaluation artifacts and are not duplicated into the summary.
+- **Decision:** The standard research panel remains `RESEARCH_EVALUATION_EPISODES`
+  / `RESEARCH_EVALUATION_SEED` in `robot_learning/training/research_config.py`,
+  and `evaluation_request.json` still overrides it. No module restates that
+  numeric value; a boundary test enforces this. Research evaluation stays
+  independent of `final_contract.EVALUATION_EPISODES`, which is unchanged.
+- **Decision:** Evaluation JSON artifacts are no longer deleted after being
+  measured. The runner records each one as `evaluation_artifact` and the brief
+  prints the actual episode count, seed, score and path. This is what makes the
+  compact context navigable to the detailed data rather than a substitute for
+  it. `models/candidates/` therefore accumulates evaluation JSON files.
+- **Schema:** Research evaluation is schema 4, the evaluation summary is
+  schema 2. Existing `research_state.json` and `results.jsonl` entries keep
+  their old schema and are not migrated; the brief reads only generic keys from
+  them, so mixed-schema history renders correctly.
+- **Removed without replacement:** `final_distance_cm`. The equivalent value is
+  the `final` statistic of the `distance` signal.
+- **Reason:** The Karpathy/AutoResearch split is that the harness executes and
+  records experiments and the researcher analyzes them. Diagnostic compression
+  in the harness both hides evidence and pre-commits the researcher to one
+  explanation of failure. Richer factual measurements with no interpretation
+  restore the boundary.
+- **Not done:** no metric registry, telemetry service, plugin framework,
+  diagnostic DSL, query API or generic scenario framework. Genericity comes from
+  the stable scenario boundary; `scenario/evaluation.py` is deliberately
+  specific to the current reach task.
+- **Supersedes:** the 2026-08-29 statement that the scenario owns "diagnostics"
+  and "brief evidence" rendering. The scenario still owns what is *observed*; it
+  no longer renders interpretation for the harness to present.
 - **Decision:** `program.md` states that the current implementation is a starting
   point, that the researcher may replace the learning method, that the
   implemented algorithms are not the considerable set, that an algorithm change

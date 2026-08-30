@@ -5,9 +5,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import TypedDict
 
-from robot_learning.scenario import render_scenario_evidence
 from robot_learning.training.progress import parse_training_records
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -15,12 +13,6 @@ RESEARCH_DIR = ROOT / "research"
 TRAIN_LOG_PATH = RESEARCH_DIR / "last_train.log"
 TRAIN_SUMMARY_PATH = RESEARCH_DIR / "last_train_summary.md"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
-
-
-class FamilySummary(TypedDict):
-    experiments: list[str]
-    changes: list[str]
-    lesson: str
 
 
 def _compact(text: str, limit: int) -> str:
@@ -129,65 +121,22 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
     return memories
 
 
-def _postmortem_lessons(text: str) -> dict[int, str]:
-    lessons: dict[int, str] = {}
-    sections = re.split(r"(?=^## Experiment \d+\b)", text, flags=re.MULTILINE)
-    for section in sections:
-        title = re.match(r"^## Experiment (\d+)\b", section)
-        learned = re.search(
-            r"\*\*What was learned / do NOT retry:\*\*\s*(.+?)"
-            r"(?=\n\s*\n|\n\*\*|\Z)",
-            section,
-            flags=re.DOTALL,
+def _evaluation_panel_lines(evaluations: list[dict]) -> list[str]:
+    """Point at the detailed measurements without interpreting any of them."""
+    lines: list[str] = []
+    for evaluation in evaluations:
+        success = evaluation.get("success_percent")
+        detail = (
+            f"  - {int(evaluation['episodes'])} episodes, seed "
+            f"{evaluation.get('seed', '-')}"
         )
-        if title and learned:
-            lessons[int(title.group(1))] = _compact(learned.group(1), 240)
-    return lessons
-
-
-def _legacy_family(result: dict) -> str:
-    if result.get("family") and result["family"] not in {
-        "training",
-        "method",
-        "calibration",
-    }:
-        return str(result["family"])
-    if result.get("kind") == "calibration":
-        return "research.training_seed_calibration"
-    change = str(result.get("change", "")).lower()
-    families = [
-        (("rollout length",), "ppo.n_steps"),
-        (("learning rate",), "ppo.learning_rate"),
-        (("entropy",), "ppo.ent_coef"),
-        (("gae",), "ppo.gae_lambda"),
-        (("minibatch", "batch size"), "ppo.batch_size"),
-        (("optimization epochs", "update epochs"), "ppo.n_epochs"),
-        (("gradient clipping",), "ppo.max_grad_norm"),
-        (("value-function loss", "value function loss"), "ppo.vf_coef"),
-        (("clipping range",), "ppo.clip_range"),
-        (("discount factor",), "ppo.gamma"),
-        (("target kl",), "ppo.target_kl"),
-        (("policy network", "network"), "policy.net_arch"),
-        (("relu", "activation"), "policy.activation"),
-        (("action standard deviation",), "policy.log_std_init"),
-        (("parallel",), "training.n_envs"),
-        (("dwell reward",), "reward.DWELL_BONUS_PER_STEP"),
-        (("completion bonus",), "reward.HOLD_COMPLETE_BONUS"),
-        (
-            ("closeness reward potential", "sharpen closeness"),
-            "reward.CLOSENESS_LENGTH_SCALE",
-        ),
-        (("closeness reward",), "reward.CLOSENESS_COEFFICIENT"),
-        (("progress reward",), "reward.PROGRESS_COEFFICIENT"),
-        (("action cost",), "reward.ACTION_COST_COEFFICIENT"),
-        (("selection evaluation episodes",), "training.selection_eval_episodes"),
-        (("checkpoint selection frequency",), "training.selection_eval_every_steps"),
-        (("baseline",), "training.baseline"),
-    ]
-    for terms, family in families:
-        if any(term in change for term in terms):
-            return family
-    return _compact(str(result.get("change", result.get("kind", "unknown"))), 80)
+        if success is not None:
+            detail += f", success {float(success):.2f}%"
+        artifact = evaluation.get("evaluation_artifact")
+        if artifact:
+            detail += f"; detail `{artifact}`"
+        lines.append(detail)
+    return lines
 
 
 def _change_details(result: dict) -> str:
@@ -392,6 +341,9 @@ def render_research_brief() -> str:
                     f"{summary['episodes']} episodes over {summary['seed_count']} "
                     f"seed(s)."
                 )
+                decision_lines.extend(
+                    _evaluation_panel_lines(candidate.get("evaluations", []))
+                )
         champion_summary = pending_decision.get("champion_summary")
         if champion_summary is not None:
             decision_lines.append(
@@ -399,6 +351,11 @@ def render_research_brief() -> str:
                 f"{champion_summary['pooled_success_percent']:.2f}%; "
                 f"{champion_summary['episodes']} episodes over "
                 f"{champion_summary['seed_count']} seed(s)."
+            )
+            decision_lines.extend(
+                _evaluation_panel_lines(
+                    pending_decision.get("champion_evaluations", [])
+                )
             )
 
     state_last_index = int(state.get("last_experiment", 0))
@@ -464,7 +421,7 @@ def render_research_brief() -> str:
     ]
 
     for result in results[-5:]:
-        family = _legacy_family(result).replace("|", "/")
+        family = str(result.get("family", "-")).replace("|", "/")
         details = _compact(_change_details(result), 220).replace("|", "/")
         initialization = result.get("initialization", "-")
         budget = result.get("training_budget_steps")
@@ -512,70 +469,6 @@ def render_research_brief() -> str:
             lines.append(
                 f"- `{identity}`:{spread}; " + "; ".join(replication_details) + "."
             )
-
-    lessons = _postmortem_lessons(postmortems)
-    families: dict[str, FamilySummary] = {}
-    for result in results:
-        family = _legacy_family(result)
-        family_summary: FamilySummary | None = families.get(family)
-        if family_summary is None:
-            family_summary = {"experiments": [], "changes": [], "lesson": "-"}
-            families[family] = family_summary
-        experiment_label = f"#{result['index']} {result['verdict']}"
-        family_summary["experiments"].append(experiment_label)
-        details = _change_details(result)
-        if details not in family_summary["changes"]:
-            family_summary["changes"].append(details)
-        result_index = _result_index(result)
-        if result_index in lessons:
-            family_summary["lesson"] = lessons[result_index]
-
-    lines.extend(
-        [
-            "",
-            "## Tested hypothesis families",
-            "",
-            (
-                "A different numeric value is not a new hypothesis family. Revisit a "
-                "family only when new evidence identifies a materially different mechanism."
-            ),
-            "",
-            "| Family | Experiments and verdicts | Changes tested | Latest conclusion |",
-            "|---|---|---|---|",
-        ]
-    )
-    if families:
-        for family, family_summary in families.items():
-            experiments = _compact("; ".join(family_summary["experiments"]), 280)
-            changes = _compact("; ".join(family_summary["changes"]), 320)
-            lesson = _compact(str(family_summary["lesson"]), 240)
-            lines.append(
-                f"| {family.replace('|', '/')} | {experiments.replace('|', '/')} | "
-                f"{changes.replace('|', '/')} | {lesson.replace('|', '/')} |"
-            )
-    else:
-        lines.append("| None yet | - | - | - |")
-
-    lines.extend(["", "## Observed failure diagnostics", ""])
-    lines.extend(render_scenario_evidence(accepted_metrics))
-
-    measured_challengers = (
-        (pending_decision or {}).get("candidates", []) if pending_decision else []
-    )
-    if measured_challengers:
-        lines.extend(["", "## Measured challenger diagnostics", ""])
-        for candidate in measured_challengers:
-            summary = candidate.get("summary")
-            if summary is None:
-                continue
-            lines.append(f"**{candidate['name']}**")
-            lines.extend(render_scenario_evidence(summary))
-            lines.append("")
-        measured_champion = (pending_decision or {}).get("champion_summary")
-        if measured_champion is not None:
-            lines.append("**champion**")
-            lines.extend(render_scenario_evidence(measured_champion))
-            lines.append("")
 
     retained = state.get("retained_lineages", [])
     if retained:

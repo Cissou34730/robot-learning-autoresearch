@@ -1,7 +1,12 @@
 """Scenario-owned research evaluation.
 
-Everything about what is measured and what the numbers mean belongs here. The
-generic CLI and runner only move the returned dictionary around.
+This module runs a model over the deterministic evaluation panel it is asked
+for, records the observable signals this scenario chooses to expose, and
+mechanically aggregates them. It draws no scientific conclusion: interpreting
+the numbers is the researcher's job.
+
+Which signals are captured is ordinary research code. Adding, removing or
+replacing them requires no change to the generic AutoResearch core.
 """
 
 import math
@@ -11,18 +16,88 @@ from pathlib import Path
 import numpy as np
 
 from robot_learning.benchmark.final_contract import FINAL_SUCCESS_PERCENT
-from robot_learning.benchmark.metrics import (
-    episode_hold_progress,
-    milestone_steps,
-    summarize_hold_progress,
-)
-from robot_learning.benchmark.spec import HOLD_SECONDS
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 1
+RESEARCH_EVALUATION_SUMMARY_VERSION = 2
+
+# Per-step `info` keys this scenario currently observes during evaluation.
+OBSERVED_STEP_SIGNALS = ("distance", "held_steps")
+
+
+def _series_statistics(values: list[float]) -> dict:
+    series = np.asarray(values, dtype=float)
+    return {
+        "count": int(series.size),
+        "mean": float(series.mean()),
+        "std": float(series.std()),
+        "min": float(series.min()),
+        "max": float(series.max()),
+        "final": float(series[-1]),
+    }
+
+
+def _distribution(values: list[float]) -> dict:
+    series = np.asarray(values, dtype=float)
+    return {
+        "mean": float(series.mean()),
+        "std": float(series.std()),
+        "min": float(series.min()),
+        "max": float(series.max()),
+    }
+
+
+def _action_statistics(actions: list[np.ndarray]) -> dict:
+    recorded = np.asarray(actions, dtype=float)
+    return {
+        f"action_{dimension}": _distribution(list(column))
+        for dimension, column in enumerate(recorded.T)
+    }
+
+
+def _aggregate_episodes(episode_results: list[dict]) -> dict:
+    def over_episodes(read: Callable[[dict], float]) -> dict:
+        return _distribution([read(episode) for episode in episode_results])
+
+    def names_of(section: str) -> list[str]:
+        return sorted(
+            {name for episode in episode_results for name in episode[section]}
+        )
+
+    return {
+        "steps": over_episodes(lambda episode: episode["steps"]),
+        "reward_total": over_episodes(lambda episode: episode["reward_total"]),
+        "reward_components": {
+            name: over_episodes(
+                lambda episode, name=name: episode["reward_components"].get(name, 0.0)
+            )
+            for name in names_of("reward_components")
+        },
+        "metrics": {
+            name: {
+                statistic: over_episodes(
+                    lambda episode, name=name, statistic=statistic: episode["metrics"][
+                        name
+                    ][statistic]
+                )
+                for statistic in ("mean", "std", "min", "max", "final")
+            }
+            for name in names_of("metrics")
+        },
+        "actions": {
+            name: {
+                statistic: over_episodes(
+                    lambda episode, name=name, statistic=statistic: episode["actions"][
+                        name
+                    ][statistic]
+                )
+                for statistic in ("mean", "std", "min", "max")
+            }
+            for name in names_of("actions")
+        },
+    }
 
 
 def evaluate_research_model(
@@ -33,70 +108,69 @@ def evaluate_research_model(
     algorithm: str | None = None,
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> dict:
+    """Measure one model over the requested deterministic evaluation panel."""
+    if episodes < 1:
+        raise ValueError("an evaluation panel requires at least one episode")
     model = load_policy(model_path, algorithm)
     env = make_training_env()
     normalize_obs = load_observation_normalizer(model_path)
 
-    successes = 0
-    episode_progress: list[dict] = []
-    final_distances: list[float] = []
     episode_results: list[dict] = []
-    control_dt = env.model.opt.timestep * env.frame_skip
-    required_hold_steps = milestone_steps(HOLD_SECONDS, control_dt)
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         target_x, target_y = (float(value) for value in env.data.mocap_pos[0][:2])
-        target_radius_cm = 100 * math.hypot(target_x, target_y)
-        target_angle_degrees = math.degrees(math.atan2(target_y, target_x))
-        distances: list[float] = []
-        done = False
-        while not done:
+        series: dict[str, list[float]] = {name: [] for name in OBSERVED_STEP_SIGNALS}
+        actions: list[np.ndarray] = []
+        reward_components: dict[str, float] = {}
+        reward_total = 0.0
+        steps = 0
+        terminated = False
+        truncated = False
+        while not (terminated or truncated):
             normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
             action, _ = model.predict(normalized_obs, deterministic=True)
-            obs, _, terminated, truncated, info = env.step(action)
-            distances.append(float(info["distance"]))
-            done = terminated or truncated
-        progress = episode_hold_progress(
-            distances, required_hold_steps, env.success_threshold
+            obs, reward, terminated, truncated, info = env.step(action)
+            steps += 1
+            reward_total += float(reward)
+            actions.append(np.ravel(np.asarray(action, dtype=float)))
+            for name in OBSERVED_STEP_SIGNALS:
+                series[name].append(float(info[name]))
+            for name, value in info.get("reward_components", {}).items():
+                reward_components[name] = reward_components.get(name, 0.0) + float(
+                    value
+                )
+
+        episode_results.append(
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "success": bool(terminated),
+                "steps": steps,
+                "terminated": bool(terminated),
+                "truncated": bool(truncated),
+                "target_radius_cm": 100 * math.hypot(target_x, target_y),
+                "target_angle_degrees": math.degrees(math.atan2(target_y, target_x)),
+                "reward_total": reward_total,
+                "reward_components": reward_components,
+                "metrics": {
+                    name: _series_statistics(values) for name, values in series.items()
+                },
+                "actions": _action_statistics(actions),
+            }
         )
-        successes += progress["success"]
-        episode_progress.append(progress)
-        final_distances.append(distances[-1])
-        episode_result = {
-            "episode": episode,
-            "episode_seed": seed + episode,
-            "success": bool(progress["success"]),
-            "target_radius_cm": target_radius_cm,
-            "target_angle_degrees": target_angle_degrees,
-            "longest_consecutive_steps": progress["longest_consecutive_steps"],
-            "best_window_inside_steps": progress["best_window_inside_steps"],
-            "best_window_excess_cm": progress["best_window_excess_cm"],
-            "final_distance_cm": 100 * distances[-1],
-        }
-        if not progress["success"]:
-            episode_result["distance_trace_cm"] = [
-                100 * distance for distance in distances
-            ]
-        episode_results.append(episode_result)
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
+    successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
         "official_benchmark": False,
         "success_percent": 100 * successes / episodes,
-        "failed_episode_progress": summarize_hold_progress(
-            episode_progress, required_hold_steps
-        ),
+        "aggregate_metrics": _aggregate_episodes(episode_results),
         "episode_results": episode_results,
-        "final_distance_cm": {
-            "mean": float(np.mean(final_distances) * 100),
-            "median": float(np.median(final_distances) * 100),
-            "worst": float(np.max(final_distances) * 100),
-        },
     }
 
 
@@ -104,10 +178,10 @@ def summarize_research_evaluations(
     evaluations: list[dict],
     summary_version: int = RESEARCH_EVALUATION_SUMMARY_VERSION,
 ) -> dict:
-    """Pool several scenario evaluations into the compact summary the runner stores.
+    """Consolidate several completed evaluation panels for the same model.
 
-    The runner treats the result as opaque apart from episode counts, seeds and
-    success percentages; every hold/tolerance field below is scenario semantics.
+    Only the primary task outcome is pooled here; the detailed measurements stay
+    in each evaluation artifact and are not duplicated into this summary.
     """
     if not evaluations:
         raise ValueError("an evaluation summary requires at least one evaluation")
@@ -116,42 +190,12 @@ def summarize_research_evaluations(
         float(item["success_percent"]) * int(item["episodes"]) / 100
         for item in evaluations
     )
-    total_failures = sum(
-        int(item["failed_episode_progress"]["failed_episodes"]) for item in evaluations
-    )
-    required = int(evaluations[0]["failed_episode_progress"]["required_steps"])
-
-    def failure_weighted_mean(field: str, perfect: float) -> float:
-        if not total_failures:
-            return perfect
-        return (
-            sum(
-                float(item["failed_episode_progress"][field])
-                * int(item["failed_episode_progress"]["failed_episodes"])
-                for item in evaluations
-            )
-            / total_failures
-        )
-
     seed_success = {
         str(item["seed"]): float(item["success_percent"]) for item in evaluations
     }
-    failed_diagnostics = [
-        {key: value for key, value in episode.items() if key != "distance_trace_cm"}
-        for evaluation in evaluations
-        for episode in evaluation.get("episode_results", [])
-        if not episode["success"]
-    ]
-    failed_diagnostics.sort(
-        key=lambda item: (
-            item["longest_consecutive_steps"],
-            item["best_window_inside_steps"],
-            -item["best_window_excess_cm"],
-        )
-    )
     pooled_success = 100 * total_successes / total_episodes
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "evaluation_summary_version": summary_version,
         "episodes": total_episodes,
         "seed_count": len(evaluations),
@@ -163,18 +207,4 @@ def summarize_research_evaluations(
         "worst_seed_success_percent": min(seed_success.values()),
         "pooled_success_percent": pooled_success,
         "success_percent": pooled_success,
-        "failed_episode_progress": {
-            "failed_episodes": total_failures,
-            "longest_consecutive_steps_mean": failure_weighted_mean(
-                "longest_consecutive_steps_mean", float(required)
-            ),
-            "best_window_inside_steps_mean": failure_weighted_mean(
-                "best_window_inside_steps_mean", float(required)
-            ),
-            "best_window_excess_cm_mean": failure_weighted_mean(
-                "best_window_excess_cm_mean", 0.0
-            ),
-            "required_steps": required,
-        },
-        "failure_diagnostics": failed_diagnostics,
     }

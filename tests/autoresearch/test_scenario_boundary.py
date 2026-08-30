@@ -25,7 +25,6 @@ SCENARIO_BOUNDARY = (
     "evaluate_research_model",
     "make_training_env",
     "make_training_viewer_callback",
-    "render_scenario_evidence",
     "render_training_progress_metric",
     "summarize_research_evaluations",
     "watch_scenario_policy",
@@ -33,6 +32,7 @@ SCENARIO_BOUNDARY = (
 
 SCENARIO_EVALUATION_FIELDS = (
     "failed_episode_progress",
+    "failure_diagnostics",
     "longest_consecutive_steps",
     "best_window_inside_steps",
     "best_window_excess_cm",
@@ -40,6 +40,22 @@ SCENARIO_EVALUATION_FIELDS = (
     "target_radius_cm",
     "target_angle_degrees",
     "required_steps",
+    "reward_components",
+    "held_steps",
+    # Current reward component names; none of them is a generic contract.
+    "closeness",
+    "hold_progress",
+    "outside_band",
+    "hold_complete",
+    "action_cost",
+)
+
+# Every place a standard research evaluation panel could be re-declared.
+RESEARCH_EVALUATION_PANEL_MODULES = (
+    "robot_learning/evaluate.py",
+    "robot_learning/scenario/evaluation.py",
+    "research/run_experiment.py",
+    "research/build_research_brief.py",
 )
 
 SCENARIO_WORDING = (
@@ -158,7 +174,8 @@ def test_generic_core_may_only_use_the_scenario_package():
     assert "robot_learning/train.py" in users
     assert "robot_learning/evaluate.py" in users
     assert "research/run_experiment.py" in users
-    assert "research/build_research_brief.py" in users
+    # The compact-context builder needs no scenario code at all.
+    assert "research/build_research_brief.py" not in users
 
 
 def test_researcher_context_always_includes_both_protocol_and_scenario():
@@ -191,21 +208,34 @@ def test_protocol_uses_scenario_independent_wording():
         assert wording not in program_text, f"program.md still says {wording!r}"
 
 
-def test_historical_reward_families_remain_resolvable():
-    from research.build_research_brief import _legacy_family
+def test_the_repository_has_a_single_research_brief():
+    assert not (ROOT / "robot_learning" / "scenario" / "brief.py").exists()
+    assert (ROOT / "robot_learning" / "scenario" / "progress.py").exists()
 
-    assert (
-        _legacy_family({"change": "increase the closeness reward"})
-        == "reward.CLOSENESS_COEFFICIENT"
-    )
-    assert (
-        _legacy_family({"change": "raise the completion bonus"})
-        == "reward.HOLD_COMPLETE_BONUS"
-    )
-    assert (
-        _legacy_family({"change": "reduce the action cost"})
-        == "reward.ACTION_COST_COEFFICIENT"
-    )
+
+def test_research_evaluation_panel_is_a_single_orchestration_setting():
+    literal = re.compile(rf"\b{research_config.RESEARCH_EVALUATION_EPISODES}\b")
+    for relative_path in RESEARCH_EVALUATION_PANEL_MODULES:
+        source = (ROOT / relative_path).read_text(encoding="utf-8")
+        assert not literal.search(source), (
+            f"{relative_path} duplicates the standard evaluation panel size"
+        )
+
+    assert "default=RESEARCH_EVALUATION_EPISODES" in (
+        ROOT / "robot_learning" / "evaluate.py"
+    ).read_text(encoding="utf-8")
+    assert "episodes: int = RESEARCH_EVALUATION_EPISODES" in (
+        ROOT / "research" / "run_experiment.py"
+    ).read_text(encoding="utf-8")
+
+
+def test_the_brief_imposes_no_hypothesis_taxonomy():
+    import research.build_research_brief as brief_builder
+
+    assert not hasattr(brief_builder, "_legacy_family")
+    source = (ROOT / "research" / "build_research_brief.py").read_text(encoding="utf-8")
+    assert "Tested hypothesis families" not in source
+    assert "failure diagnostics" not in source.lower()
 
 
 def test_live_training_metric_is_owned_by_the_scenario():
@@ -318,32 +348,8 @@ def test_scenario_owns_the_current_success_target():
 
     summary = summarize_research_evaluations(
         [
-            {
-                "episodes": 1,
-                "seed": 1,
-                "success_percent": 98.0,
-                "failed_episode_progress": {
-                    "failed_episodes": 0,
-                    "longest_consecutive_steps_mean": 100.0,
-                    "best_window_inside_steps_mean": 100.0,
-                    "best_window_excess_cm_mean": 0.0,
-                    "required_steps": 100,
-                },
-                "episode_results": [],
-            },
-            {
-                "episodes": 1,
-                "seed": 2,
-                "success_percent": 97.9,
-                "failed_episode_progress": {
-                    "failed_episodes": 0,
-                    "longest_consecutive_steps_mean": 100.0,
-                    "best_window_inside_steps_mean": 100.0,
-                    "best_window_excess_cm_mean": 0.0,
-                    "required_steps": 100,
-                },
-                "episode_results": [],
-            },
+            {"episodes": 1, "seed": 1, "success_percent": 98.0},
+            {"episodes": 1, "seed": 2, "success_percent": 97.9},
         ]
     )
 
@@ -364,14 +370,6 @@ def test_persisted_seed_pass_field_stays_readable(monkeypatch, tmp_path):
                     "seeds_passing_98_percent": 2,
                     "success_percent": 99.0,
                     "pooled_success_percent": 99.0,
-                    "failed_episode_progress": {
-                        "failed_episodes": 4,
-                        "longest_consecutive_steps_mean": 91.0,
-                        "best_window_inside_steps_mean": 95.0,
-                        "best_window_excess_cm_mean": 0.1,
-                        "required_steps": 100,
-                    },
-                    "failure_diagnostics": [],
                 },
             }
         ),
