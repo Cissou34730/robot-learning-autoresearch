@@ -291,6 +291,7 @@ while ($true) {
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
         "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
         "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, as defined by the protocol."
+        "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
     opencode run --model $model --variant $reasoning $researchPrompt
@@ -319,6 +320,7 @@ while ($true) {
             "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and inspect the relevant repository state."
             "Preserve valid researcher-owned edits that belong to this unfinished experiment."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment according to the protocol."
+            "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
         opencode run --model $model --variant $reasoning $retryPrompt
