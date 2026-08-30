@@ -14,7 +14,16 @@ from robot_learning.benchmark import final_contract
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
-from robot_learning.training.observations import OBSERVATION_SIZE, reach_observation
+
+
+def _policy_observation_contract() -> tuple[int, Callable[[Any], np.ndarray]]:
+    """Resolved on use: the scenario package imports the verdict built here."""
+    from robot_learning.training.observations import (
+        OBSERVATION_SIZE,
+        reach_observation,
+    )
+
+    return OBSERVATION_SIZE, reach_observation
 
 
 class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -22,6 +31,7 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def __init__(self) -> None:
         super().__init__()
+        observation_size, self._reach_observation = _policy_observation_contract()
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
         self.success_threshold = final_contract.SUCCESS_THRESHOLD
@@ -33,7 +43,7 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
             round(final_contract.HOLD_SECONDS / control_dt), 1
         )
         self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(OBSERVATION_SIZE,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(observation_size,), dtype=np.float32
         )
         self.action_space = gym.spaces.Box(
             low=-1.0, high=1.0, shape=(2,), dtype=np.float32
@@ -68,7 +78,7 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         mujoco.mj_forward(self.model, self.data)
         self._step_count = 0
         self._held_steps = 0
-        return reach_observation(self.data), {}
+        return self._reach_observation(self.data), {}
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
         self.data.ctrl[:] = np.clip(action, -1.0, 1.0)
@@ -80,7 +90,7 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         )
         self._step_count += 1
         return (
-            reach_observation(self.data),
+            self._reach_observation(self.data),
             0.0,
             self._held_steps >= self.hold_steps_required,
             self._step_count >= self.max_episode_steps,

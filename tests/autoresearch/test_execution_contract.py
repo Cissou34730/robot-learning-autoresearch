@@ -22,12 +22,12 @@ from research.run_experiment import (
     latest_training_steps,
     load_state,
     main,
-    requires_full_validation,
     validate_changed_sources,
     validate_experiment_semantics,
     validate_proposal_phase,
     validate_reusable_candidate,
     validate_training_proposal,
+    validation_test_paths,
 )
 from robot_learning.evaluate import write_progress
 from robot_learning.train import effective_training_config
@@ -307,21 +307,37 @@ def test_renamed_researcher_tests_travel_with_the_code_lineage(monkeypatch):
 
 # --- validation timing -----------------------------------------------------
 
+ALL_SUITES = (
+    "tests/benchmark",
+    "tests/autoresearch",
+    "tests/scenario",
+    "tests/training",
+)
+RESEARCHER_SUITES = ("tests/autoresearch", "tests/scenario", "tests/training")
 
-def test_fresh_campaign_baseline_is_validated_without_worktree_changes():
-    assert requires_full_validation([], fresh_baseline=True)
+
+def test_fresh_campaign_baseline_runs_every_suite():
+    assert validation_test_paths([], fresh_baseline=True) == ALL_SUITES
+    assert (
+        validation_test_paths(
+            ["robot_learning/scenario/reward.py"], fresh_baseline=True
+        )
+        == ALL_SUITES
+    )
 
 
 def test_unchanged_continuation_or_evaluation_skips_the_test_suites():
-    assert not requires_full_validation([], fresh_baseline=False)
+    assert validation_test_paths([], fresh_baseline=False) == ()
 
 
 def test_parameter_only_experiment_skips_the_test_suites():
-    assert not requires_full_validation(
-        ["research/current_params.json"], fresh_baseline=False
+    assert (
+        validation_test_paths(["research/current_params.json"], fresh_baseline=False)
+        == ()
     )
-    assert not requires_full_validation(
-        ["research\\current_params.json"], fresh_baseline=False
+    assert (
+        validation_test_paths(["research\\current_params.json"], fresh_baseline=False)
+        == ()
     )
 
 
@@ -411,18 +427,67 @@ def test_parameter_only_experiment_still_validates_the_configuration(
 
 
 @pytest.mark.parametrize(
-    "changed_path",
+    "changed_paths",
     [
-        "robot_learning/scenario/reward.py",
-        "robot_learning/train.py",
-        "tests/scenario/test_reward.py",
-        "tests/training/test_active_learning_method.py",
-        "pyproject.toml",
-        "uv.lock",
+        ["robot_learning/scenario/reward.py"],
+        ["robot_learning/scenario/observations.py"],
+        ["robot_learning/training/algorithms.py"],
+        ["robot_learning/train.py"],
+        ["robot_learning/evaluate.py"],
+        ["robot_learning/play.py"],
+        ["tests/scenario/test_reward.py"],
+        ["tests/training/test_active_learning_method.py"],
+        ["robot_learning\\scenario\\reward.py"],
+        # Mixed researcher-owned surfaces, and researcher code beside a
+        # parameter-only edit, stay a researcher-only change.
+        [
+            "robot_learning/scenario/environment.py",
+            "robot_learning/training/normalization.py",
+            "tests/scenario/test_environment.py",
+            "tests/training/test_checkpointing.py",
+        ],
+        ["robot_learning/scenario/reward.py", "research/current_params.json"],
     ],
 )
-def test_code_changing_experiment_is_fully_validated(changed_path):
-    assert requires_full_validation([changed_path], fresh_baseline=False)
+def test_researcher_owned_change_skips_only_the_frozen_task_suite(changed_paths):
+    assert (
+        validation_test_paths(changed_paths, fresh_baseline=False) == RESEARCHER_SUITES
+    )
+
+
+@pytest.mark.parametrize(
+    "changed_path",
+    [
+        # Unclassified paths are validated completely rather than assumed mutable.
+        "research/build_research_brief.py",
+        "run_research.ps1",
+        "research/program.md",
+        "robot_learning/environments/reach_env.py",
+        "robot_learning/rewards/reach_reward.py",
+        "robot_learning/benchmark/metrics.py",
+        "pyproject.toml",
+        "uv.lock",
+        "main.py",
+        # Protected paths never become researcher-owned by sharing a prefix.
+        "robot_learning/scenario/__init__.py",
+        "robot_learning/scenario/final_benchmark.py",
+        "robot_learning/scenario/task_reference.py",
+        "tests/benchmark/test_task_contract.py",
+        "tests/autoresearch/test_execution_contract.py",
+    ],
+)
+def test_change_outside_the_researcher_surface_runs_every_suite(changed_path):
+    assert validation_test_paths([changed_path], fresh_baseline=False) == ALL_SUITES
+
+
+def test_one_unclassified_path_pulls_the_whole_experiment_to_full_validation():
+    assert (
+        validation_test_paths(
+            ["robot_learning/scenario/reward.py", "research/build_research_brief.py"],
+            fresh_baseline=False,
+        )
+        == ALL_SUITES
+    )
 
 
 def test_dependency_metadata_is_only_checked_when_it_changes():
@@ -492,9 +557,45 @@ def test_validated_test_paths_are_the_four_repository_domains():
         "tests/scenario",
         "tests/training",
     )
+    assert run_experiment.RESEARCHER_VALIDATED_TEST_PATHS == (
+        "tests/autoresearch",
+        "tests/scenario",
+        "tests/training",
+    )
     root = Path(__file__).resolve().parents[2]
     for relative in run_experiment.VALIDATED_TEST_PATHS:
         assert (root / relative).is_dir(), relative
+
+
+def test_researcher_owned_surface_is_declared_positively_and_exists():
+    from research import run_experiment
+
+    root = Path(__file__).resolve().parents[2]
+    for prefix in run_experiment.RESEARCHER_OWNED_PREFIXES:
+        assert (root / prefix).is_dir(), prefix
+    for relative in run_experiment.RESEARCHER_OWNED_PATHS:
+        assert (root / relative).is_file(), relative
+
+
+def test_protected_paths_are_never_researcher_owned():
+    from research import run_experiment
+
+    for relative in run_experiment.PROTECTED_BENCHMARK_PATHS:
+        assert not run_experiment.is_researcher_owned(relative), relative
+    for prefix in run_experiment.PROTECTED_TEST_PREFIXES:
+        assert not run_experiment.is_researcher_owned(f"{prefix}test_anything.py")
+
+
+def test_a_proposal_touching_protected_tests_is_rejected_before_selection():
+    for relative in (
+        "tests/benchmark/test_task_contract.py",
+        "tests/autoresearch/test_execution_contract.py",
+        "tests/benchmark/test_newly_invented.py",
+    ):
+        with pytest.raises(ValueError, match="cannot be changed"):
+            validate_experiment_semantics(
+                {}, "training", "transfer", None, [relative], False
+            )
 
 
 # --- execution lifecycle ---------------------------------------------------
@@ -814,9 +915,7 @@ def test_lineage_phase_accepts_only_the_lineage_proposal_shape():
     state = {"pending_researcher_decision": {"experiment": 1}}
 
     assert (
-        validate_proposal_phase(
-            {"previous_result_decision": {"experiment": 1}}, state
-        )
+        validate_proposal_phase({"previous_result_decision": {"experiment": 1}}, state)
         == "lineage"
     )
     with pytest.raises(ValueError, match="requires a lineage proposal"):
@@ -854,7 +953,9 @@ def test_proposal_preflight_rejects_incident_residue_without_mutation(
         del args, kwargs
         pytest.fail("training started for a phase-incompatible proposal")
 
-    monkeypatch.setattr("research.run_experiment.train_candidate", fail_if_training_starts)
+    monkeypatch.setattr(
+        "research.run_experiment.train_candidate", fail_if_training_starts
+    )
     monkeypatch.setattr("sys.argv", ["run_experiment.py"])
     assert main() == 1
     assert "invalid proposal for current phase" in capsys.readouterr().out

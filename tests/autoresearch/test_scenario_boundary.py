@@ -8,6 +8,8 @@ human-owned and stay independent of whichever learning method is active.
 import ast
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -109,6 +111,16 @@ FORBIDDEN_MODULES = frozenset(
 
 # Only used to assert that generic surfaces name *no* learning algorithm.
 KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
+
+# The scenario package and the protected benchmark import each other through the
+# shared observation contract; each must be a valid first import.
+IMPORT_CYCLE_ENTRY_POINTS = (
+    "robot_learning.benchmark.final_benchmark",
+    "robot_learning.benchmark.reference_evaluation",
+    "robot_learning.scenario",
+    "robot_learning.scenario.final_benchmark",
+    "robot_learning.training.observations",
+)
 
 
 def mentions(text: str, word: str) -> bool:
@@ -307,6 +319,22 @@ def test_normalization_never_reaches_for_the_scenario():
     assert "robot_learning.scenario" not in imported_modules(normalization)
     # Rebuilding policy preprocessing must not construct the training environment.
     assert "make_training_env" not in normalization.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("module_name", IMPORT_CYCLE_ENTRY_POINTS)
+def test_scenario_and_benchmark_import_in_any_order(module_name):
+    """A fresh interpreter, so no suite may depend on pytest collection order."""
+    completed = subprocess.run(
+        [sys.executable, "-c", f"import {module_name}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr[-2000:]
 
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)

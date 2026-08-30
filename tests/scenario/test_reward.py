@@ -81,6 +81,35 @@ def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
     assert far_outside == pytest.approx(-reward_module.OUTSIDE_BAND_PENALTY)
 
 
+def test_outside_penalty_is_steady_while_the_lost_hold_stays_outside(monkeypatch):
+    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    expected = -(
+        reward_module.OUTSIDE_BAND_PENALTY * 0.0001 / reward_module.OUTSIDE_BAND_WIDTH
+    )
+    exiting = reach_reward(
+        0.005,
+        0.0101,
+        0.01,
+        held_steps=0,
+        previous_held_steps=0,
+        hold_steps_required=100,
+        penalize_outside=True,
+    ).total
+    still_outside = reach_reward(
+        0.0101,
+        0.0101,
+        0.01,
+        held_steps=0,
+        previous_held_steps=0,
+        hold_steps_required=100,
+        penalize_outside=True,
+    ).total
+
+    assert exiting == pytest.approx(expected)
+    assert still_outside == pytest.approx(expected)
+
+
 def test_reward_components_are_free_form_and_sum_to_the_scalar():
     result = reach_reward(
         0.05,

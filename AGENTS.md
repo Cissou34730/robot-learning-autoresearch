@@ -77,21 +77,40 @@ uv run pytest                            # tests
   researcher may modify only `tests/scenario/` and `tests/training/`;
   `tests/benchmark/` and `tests/autoresearch/` are human-owned and the runner
   rejects any proposal that creates, modifies, renames or deletes a file under
-  them.
+  them, before any suite is selected or run.
+- `tests/benchmark/` freezes the human-owned task and its verdict.
+  `tests/autoresearch/` freezes the architecture and protocol contract that
+  researcher-owned code must keep satisfying — scenario boundary, evaluation
+  opacity, training-artifact compatibility, execution lifecycle.
+  `tests/scenario/` and `tests/training/` are the executable specification of
+  the current scientific implementation and are expected to change with it.
+- Each test asserts the behaviour its own domain owns: environment tests assert
+  environment contracts, reward tests assert reward semantics, evaluation tests
+  assert research-evaluation behaviour, training tests assert the active
+  learning method. A cross-component assertion is only justified when it states
+  a deliberate integration contract.
 - Researcher-owned tests are ordinary research code: they travel with the
   experiment's `code_changes` and its Git code lineage.
 - `tests/benchmark/` and `tests/autoresearch/` must stay method-neutral: they
   never import or assert against a concrete RL algorithm class.
 - Validation timing, enforced by `research/run_experiment.py`:
-  - fresh campaign baseline - complete validation before training, even with an
-    unchanged worktree;
-  - experiment with code changes (including researcher-owned tests) - complete
-    validation before training;
+  - fresh campaign baseline - complete validation over all four suites before
+    training, even with an unchanged worktree;
+  - experiment whose changes all fall inside the researcher-owned surface
+    (`RESEARCHER_OWNED_PREFIXES` / `RESEARCHER_OWNED_PATHS`) - complete
+    validation before training, minus `tests/benchmark`: a researcher change
+    cannot reach the frozen task, and every other suite still guards code the
+    experiment may have rewritten;
+  - any change outside that surface, including unclassified paths - complete
+    validation over all four suites;
   - parameter-only experiment - proposal and effective configuration only, no
     pytest;
   - continuation, evaluation or lineage decision without code changes - no test
     suites.
+- The researcher-owned surface is declared positively, never as
+  "everything unprotected": an unfamiliar path is validated completely rather
+  than assumed mutable, and protected-path rejection runs first so a protected
+  file never becomes researcher-owned by sharing a prefix.
 - Complete validation is: syntax check plus `ruff check` on changed Python
   files, JSON parse of changed `.json` files, a non-mutating `uv lock --check`
-  when dependency metadata changed, then
-  `pytest -q tests/benchmark tests/autoresearch tests/scenario tests/training`.
+  when dependency metadata changed, then `pytest -q` over the selected suites.

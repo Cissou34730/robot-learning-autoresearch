@@ -96,6 +96,27 @@ VALIDATED_TEST_PATHS = (
     "tests/scenario",
     "tests/training",
 )
+# A researcher code change cannot alter the frozen task, so `tests/benchmark`
+# adds nothing; every other suite still guards code the researcher may rewrite.
+RESEARCHER_VALIDATED_TEST_PATHS = (
+    "tests/autoresearch",
+    "tests/scenario",
+    "tests/training",
+)
+# The researcher-owned scientific surface, stated positively. Anything absent
+# here is unclassified and validated completely, so a new or unfamiliar path is
+# never assumed mutable.
+RESEARCHER_OWNED_PREFIXES = (
+    "robot_learning/scenario/",
+    "robot_learning/training/",
+    "tests/scenario/",
+    "tests/training/",
+)
+RESEARCHER_OWNED_PATHS = {
+    "robot_learning/evaluate.py",
+    "robot_learning/play.py",
+    "robot_learning/train.py",
+}
 # Editing these carries no source change, so the test suites stay untouched.
 PARAMETER_ONLY_PATHS = {"research/current_params.json"}
 DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
@@ -672,14 +693,37 @@ def dependency_metadata_changed(changed_paths: list[str]) -> bool:
     )
 
 
-def requires_full_validation(changed_paths: list[str], *, fresh_baseline: bool) -> bool:
-    """A fresh campaign baseline is validated before it consumes training compute,
-    even when the committed worktree carries no research change."""
-    if fresh_baseline:
-        return True
-    return any(
-        path.replace("\\", "/") not in PARAMETER_ONLY_PATHS for path in changed_paths
+def is_researcher_owned(path: str) -> bool:
+    """Protected paths lose first, so sharing a researcher prefix never frees them."""
+    relative = path.replace("\\", "/")
+    if relative in PROTECTED_BENCHMARK_PATHS:
+        return False
+    if relative.startswith(PROTECTED_TEST_PREFIXES):
+        return False
+    return relative in RESEARCHER_OWNED_PATHS or relative.startswith(
+        RESEARCHER_OWNED_PREFIXES
     )
+
+
+def validation_test_paths(
+    changed_paths: list[str], *, fresh_baseline: bool
+) -> tuple[str, ...]:
+    """A fresh campaign baseline is validated completely before it consumes
+    training compute, even when the committed worktree carries no research
+    change. Afterwards the suites follow ownership: a change confined to the
+    researcher's own scientific surface skips only the frozen task tests."""
+    if fresh_baseline:
+        return VALIDATED_TEST_PATHS
+    sources = [
+        path
+        for path in changed_paths
+        if path.replace("\\", "/") not in PARAMETER_ONLY_PATHS
+    ]
+    if not sources:
+        return ()
+    if all(is_researcher_owned(path) for path in sources):
+        return RESEARCHER_VALIDATED_TEST_PATHS
+    return VALIDATED_TEST_PATHS
 
 
 def next_index() -> int:
@@ -2323,14 +2367,17 @@ def main() -> int:
             validate_changed_sources(code_changes)
         announce("[checks] resolving the effective training configuration")
         validate_active_configuration()
-        if requires_full_validation(code_changes, fresh_baseline=fresh_baseline):
+        selected_tests = validation_test_paths(
+            code_changes, fresh_baseline=fresh_baseline
+        )
+        if selected_tests:
             announce("[checks] running research-surface checks")
             if fresh_baseline or dependency_metadata_changed(code_changes):
                 validate_dependency_metadata()
             run_module(
                 "pytest",
                 "-q",
-                *VALIDATED_TEST_PATHS,
+                *selected_tests,
                 "--basetemp",
                 str(ROOT / ".pytest-run-temp"),
             )

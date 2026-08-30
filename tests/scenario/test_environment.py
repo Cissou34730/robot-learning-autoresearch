@@ -9,6 +9,7 @@ import pytest
 
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
+from robot_learning.scenario import environment as environment_module
 from robot_learning.scenario import make_training_env
 from robot_learning.scenario import reward as reward_module
 from robot_learning.scenario.environment import TwoJointArmReachEnv
@@ -53,21 +54,31 @@ def test_training_target_sampling_emphasizes_outer_workspace():
     assert np.mean(radii) > midpoint
 
 
-def test_environment_keeps_outside_penalty_active_after_losing_hold(monkeypatch):
+def test_environment_latches_the_outside_penalty_after_losing_hold(monkeypatch):
+    """Integration contract only: the reward formula itself lives in test_reward."""
     env = make_training_env()
     env.reset(seed=0)
     env._held_steps = 90
     env._previous_distance = 0.005
-    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
-    monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(env, "_distance_to_target", lambda: 0.0101)
+    penalize_outside: list[bool] = []
+    produced: list[object] = []
+    original_reward = reward_module.reach_reward
 
-    _, exit_reward, _, _, _ = env.step(np.zeros(2))
-    _, continued_outside_reward, _, _, _ = env.step(np.zeros(2))
+    def record(*args, **kwargs):
+        penalize_outside.append(bool(kwargs["penalize_outside"]))
+        result = original_reward(*args, **kwargs)
+        produced.append(result)
+        return result
 
-    expected_penalty = -(
-        reward_module.OUTSIDE_BAND_PENALTY * 0.0001 / reward_module.OUTSIDE_BAND_WIDTH
-    )
-    assert exit_reward == pytest.approx(expected_penalty)
-    assert continued_outside_reward == pytest.approx(expected_penalty)
+    monkeypatch.setattr(environment_module, "reach_reward", record)
+
+    _, exit_reward, _, _, exit_info = env.step(np.zeros(2))
+    _, continued_reward, _, _, continued_info = env.step(np.zeros(2))
+
+    assert penalize_outside == [True, True]
     assert env._outside_after_hold is True
+    assert exit_reward == pytest.approx(produced[0].total)
+    assert continued_reward == pytest.approx(produced[1].total)
+    assert exit_info["reward_components"] == produced[0].components
+    assert continued_info["reward_components"] == produced[1].components
