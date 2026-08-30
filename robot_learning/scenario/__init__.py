@@ -17,6 +17,10 @@ from robot_learning.scenario.evaluation import (
 )
 from robot_learning.scenario.final_benchmark import evaluate_final_model
 from robot_learning.scenario.progress import render_training_progress_metric
+from robot_learning.scenario.task_reference import (
+    evaluate_task_reference_model,
+    task_reference_panel,
+)
 from robot_learning.scenario.viewer import (
     make_training_viewer_callback,
     watch_scenario_policy,
@@ -25,9 +29,11 @@ from robot_learning.scenario.viewer import (
 __all__ = [
     "evaluate_final_model",
     "evaluate_research_model",
+    "evaluate_task_reference_model",
     "make_training_env",
     "make_training_viewer_callback",
     "render_training_progress_metric",
     "summarize_research_evaluations",
+    "task_reference_panel",
     "watch_scenario_policy",
 ]

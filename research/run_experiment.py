@@ -20,6 +20,7 @@ from robot_learning.scenario import (
     evaluate_final_model,
     render_training_progress_metric,
     summarize_research_evaluations,
+    task_reference_panel,
 )
 from robot_learning.train import effective_training_config
 from robot_learning.training.comparison import paired_comparison
@@ -65,19 +66,23 @@ INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
 # Human-owned for the duration of this research problem: the enforcement
-# mechanism, every file that can declare the objective reached, the official
-# robot it measures, and the package files that resolve those imports.
+# mechanism, every file that can declare the objective reached, the human-owned
+# task-reference panel, the official robot they measure, and the package files
+# that resolve those imports.
 PROTECTED_BENCHMARK_PATHS = {
     "research/run_experiment.py",
     "robot_learning/__init__.py",
     "robot_learning/benchmark/__init__.py",
     "robot_learning/benchmark/final_benchmark.py",
     "robot_learning/benchmark/final_contract.py",
+    "robot_learning/benchmark/reference_contract.py",
+    "robot_learning/benchmark/reference_evaluation.py",
     "robot_learning/robots/__init__.py",
     "robot_learning/robots/two_joint_arm.py",
     "robot_learning/robots/two_joint_arm.xml",
     "robot_learning/scenario/__init__.py",
     "robot_learning/scenario/final_benchmark.py",
+    "robot_learning/scenario/task_reference.py",
 }
 # Human-owned test domains. Prefix-based so that creating, renaming or deleting
 # a file underneath them is rejected just like modifying an existing one.
@@ -116,6 +121,8 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # Detailed evidence belongs to the evaluation artifact, not to the compact
 # history or the protocol state.
 DETAILED_EVIDENCE_FIELDS = ("episode_results", "research_evidence")
+# The researcher names the model; the panel behind this key is human-owned.
+TASK_REFERENCE_ENTRY_FIELDS = {"candidate", "label"}
 
 
 def announce(message: str) -> None:
@@ -281,6 +288,11 @@ def evaluation_plan_rows(request: dict) -> list[tuple[str, str]]:
         except (KeyError, TypeError, ValueError):
             detail = "episodes and seed pending validation"
         rows.append((name, detail))
+    for spec in request.get("task_reference_evaluations") or []:
+        if not isinstance(spec, dict):
+            continue
+        name = str(spec.get("candidate", "")).strip() or "-"
+        rows.append(("task reference", name))
     for comparison in request.get("paired_comparisons") or []:
         if not isinstance(comparison, dict):
             continue
@@ -320,6 +332,7 @@ def render_evidence_card(
     champion_summary: dict | None,
     comparisons: list[dict],
     next_phase: str,
+    task_reference_evaluations: list[dict] | None = None,
 ) -> str:
     lines = [f"=== Evidence · Experiment {experiment} ===", ""]
     measured = [item for item in candidates if item.get("summary") is not None]
@@ -333,6 +346,17 @@ def render_evidence_card(
         lines.append("")
     if champion_summary is not None:
         lines.extend(["Champion", f"  {summary_headline(champion_summary)}", ""])
+    references = task_reference_evaluations or []
+    if references:
+        width = max(len(str(item["candidate"])) for item in references)
+        lines.append("Task reference")
+        lines.extend(
+            f"  {item['candidate']!s:<{width}}   "
+            f"success {float(item['success_percent']):.1f}% · "
+            f"{int(item['episodes'])} episodes · {item['panel']}"
+            for item in references
+        )
+        lines.append("")
     for comparison in comparisons:
         delta = float(comparison["success_delta_percent"])
         lines.extend(
@@ -807,6 +831,7 @@ def evaluate_artifact(
     episodes: int = RESEARCH_EVALUATION_EPISODES,
     output_path: Path | None = None,
     official_benchmark: bool = False,
+    task_reference: bool = False,
 ) -> dict:
     output_path = output_path or RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
@@ -831,6 +856,8 @@ def evaluate_artifact(
     ]
     if official_benchmark:
         command.append("--official-benchmark")
+    if task_reference:
+        command.append("--task-reference")
     started = time.monotonic()
     last_progress_at = started
     completed_episodes = 0
@@ -996,12 +1023,43 @@ def archive_candidates(
     return archived
 
 
+def requested_task_references(request: dict) -> list[dict]:
+    references = request.get("task_reference_evaluations")
+    if references is None:
+        return []
+    if not isinstance(references, list):
+        raise TypeError("task_reference_evaluations must be a list")
+    return [item for item in references if item is not None]
+
+
 def validate_evaluation_request(request: dict) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
         value = request.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"evaluation request requires a non-empty {field}")
+    evaluations = request.get("evaluations")
+    if evaluations is None:
+        evaluations = []
+    if not isinstance(evaluations, list):
+        raise TypeError("evaluations must be a list")
+    references = requested_task_references(request)
+    for entry in references:
+        if not isinstance(entry, dict):
+            raise TypeError("each task-reference evaluation must be an object")
+        if not str(entry.get("candidate", "")).strip():
+            raise ValueError("a task-reference evaluation requires a candidate")
+        unknown = sorted(set(entry) - TASK_REFERENCE_ENTRY_FIELDS)
+        if unknown:
+            raise ValueError(
+                "the task-reference panel is human-owned; a task-reference "
+                f"evaluation cannot set {unknown}"
+            )
+    if not evaluations and not references:
+        raise ValueError(
+            "an evaluation request must ask for at least one research or "
+            "task-reference evaluation"
+        )
 
 
 def execute_pending_evaluations() -> int:
@@ -1023,9 +1081,10 @@ def execute_pending_evaluations() -> int:
     experiment = int(pending["experiment"])
     if int(request.get("experiment", -1)) != experiment:
         raise ValueError("evaluation request references the wrong experiment")
-    requested = request.get("evaluations")
+    requested = request.get("evaluations") or []
     if not isinstance(requested, list):
         raise TypeError("evaluation request requires an evaluations list")
+    requested_references = requested_task_references(request)
     announce("\n" + render_evaluation_plan(request, experiment) + "\n")
 
     candidates = pending["candidates"]
@@ -1038,7 +1097,11 @@ def execute_pending_evaluations() -> int:
         }
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
+    reference_executed: list[dict] = list(
+        pending.get("partial_task_reference_evaluations", [])
+    )
     semantics = evaluation_semantics_fingerprint()
+    panel = task_reference_panel()
     # The persisted measurement ledger is the sole source of truth across
     # successive rounds and interrupted resumes.
     for contender in candidates:
@@ -1061,6 +1124,11 @@ def execute_pending_evaluations() -> int:
             str(item.get("evaluation_semantics", "")),
         )
         for item in executed
+    }
+    # A task-reference measurement is identified by the human-owned panel it ran,
+    # never by researcher-owned evaluation semantics.
+    completed_reference_keys = {
+        (item["candidate"], str(item.get("panel", ""))) for item in reference_executed
     }
     try:
         for number, spec in enumerate(requested, start=1):
@@ -1125,12 +1193,54 @@ def execute_pending_evaluations() -> int:
             completed_keys.add(key)
             pending["partial_evaluations"] = executed
             atomic_write_json(STATE_PATH, state)
+
+        for number, spec in enumerate(requested_references, start=1):
+            name = str(spec.get("candidate", "")).strip()
+            contender = available.get(name)
+            if contender is None:
+                raise ValueError(
+                    f"unknown task-reference candidate {name!r}; "
+                    f"choose from {sorted(available)}"
+                )
+            label = str(spec.get("label", f"task reference {number}: {name}"))
+            reference_key = (name, panel["panel"])
+            if reference_key in completed_reference_keys:
+                announce(f"[task reference] already complete; reusing {label}")
+                continue
+            EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
+            output_path = EVALUATION_DIR / task_reference_artifact_name(
+                experiment, name, panel["panel"]
+            )
+            metrics = evaluate_artifact(
+                ROOT / contender["artifact"],
+                panel["seed"],
+                label=label,
+                episodes=panel["episodes"],
+                output_path=output_path,
+                task_reference=True,
+            )
+            reference_executed.append(
+                {
+                    "candidate": name,
+                    "label": label,
+                    "panel": str(metrics["panel"]),
+                    "panel_version": int(metrics["panel_version"]),
+                    "episodes": int(metrics["episodes"]),
+                    "seed": int(metrics["seed"]),
+                    "success_percent": float(metrics["success_percent"]),
+                    "evaluation_artifact": output_path.relative_to(ROOT).as_posix(),
+                }
+            )
+            completed_reference_keys.add(reference_key)
+            pending["partial_task_reference_evaluations"] = reference_executed
+            atomic_write_json(STATE_PATH, state)
     except KeyboardInterrupt:
         announce(
             "[runner] Evaluation request paused. Completed measurements remain "
             "recorded in the pending request."
         )
         pending["partial_evaluations"] = executed
+        pending["partial_task_reference_evaluations"] = reference_executed
         atomic_write_json(STATE_PATH, state)
         return 130
 
@@ -1159,6 +1269,8 @@ def execute_pending_evaluations() -> int:
             "decision_pending": True,
             "candidates": candidates,
             "requested_evaluations": executed,
+            # Measured on the human-owned panel; never pooled with the above.
+            "task_reference_evaluations": reference_executed,
             "paired_comparisons": comparisons,
         }
     )
@@ -1174,6 +1286,7 @@ def execute_pending_evaluations() -> int:
         "champion_available": bool(pending.get("champion_available")),
         "champion_summary": champion_summary,
         "champion_evaluations": champion_evaluations,
+        "task_reference_evaluations": reference_executed,
         "parameters": pending["parameters"],
         "initialization": pending["initialization"],
         "training_budget_steps": pending["training_budget_steps"],
@@ -1185,6 +1298,7 @@ def execute_pending_evaluations() -> int:
     if more_evidence:
         pending["evaluation_plan"] = None
         pending["partial_evaluations"] = executed
+        pending["partial_task_reference_evaluations"] = reference_executed
         state["pending_evaluation_request"] = pending
         state["pending_researcher_decision"] = None
         state["last_verdict"] = (
@@ -1214,6 +1328,7 @@ def execute_pending_evaluations() -> int:
             champion_summary,
             comparisons,
             next_phase,
+            task_reference_evaluations=reference_executed,
         )
     )
     return 0
@@ -1528,6 +1643,12 @@ def evaluation_artifact_name(
     )
 
 
+def task_reference_artifact_name(experiment: int, candidate: str, panel: str) -> str:
+    """Task-reference identity is the model and the human-owned panel, nothing else."""
+    label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    return f"task-reference-experiment-{experiment}-{label}-{panel}.json"
+
+
 def is_generated_path(relative_parts: tuple[str, ...]) -> bool:
     """Tool caches and scratch files are not researcher-owned measurement state."""
     *directories, name = relative_parts
@@ -1589,6 +1710,7 @@ def pending_evaluation_artifacts(pending: dict) -> list[str]:
         if isinstance(candidate, dict):
             paths.extend(evaluation_artifact_paths(candidate.get("evaluations")))
     paths.extend(evaluation_artifact_paths(pending.get("champion_evaluations")))
+    paths.extend(evaluation_artifact_paths(pending.get("task_reference_evaluations")))
     return list(dict.fromkeys(paths))
 
 
@@ -1931,7 +2053,13 @@ def check_proposal() -> int:
         proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
         raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
         contract = validate_proposal_against_state(proposal, raw_state)
-    except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as error:
+    except (
+        json.JSONDecodeError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as error:
         print(f"PROPOSAL_INVALID: {error}")
         return 1
     print(f"PROPOSAL_VALID: {contract}")
@@ -2108,7 +2236,13 @@ def main() -> int:
         proposal = json.loads(PROPOSAL_PATH.read_text(encoding="utf-8"))
         raw_state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
         proposal_contract = validate_proposal_against_state(proposal, raw_state)
-    except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as error:
+    except (
+        json.JSONDecodeError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as error:
         print(f"ERROR: invalid proposal for current phase: {error}")
         return 1
     if proposal_contract == "lineage":

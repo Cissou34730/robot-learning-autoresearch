@@ -82,17 +82,48 @@ and resolve its lineage. There is no measurement-only phase between experiments.
  "question": "<what these measurements decide>",
  "reason": "<why this plan is useful and sufficient>",
  "evaluations": [{"candidate": "<name from the brief>", "episodes": "<positive integer>", "seed": "<integer>", "label": "<optional>"}],
+ "task_reference_evaluations": [{"candidate": "<name from the brief>"}],
  "need_more_evidence": false}
 ```
 
-Replace every placeholder with the required JSON type. `experiment`, `question`,
-`reason` and `evaluations` — each with `candidate`, positive `episodes` and
-`seed` — are required; the rest is optional. `champion` is valid when exposed by
-the brief. `need_more_evidence` preserves completed measurements and opens
-another research-evaluation round within the current experiment. This may be
-repeated until the Researcher has sufficient evidence to resolve the experiment.
-`paired_comparisons` may request candidate/reference comparisons when that method
+Replace every placeholder with the required JSON type. `experiment`, `question`
+and `reason` are required. `evaluations` and `task_reference_evaluations` are
+both optional, but a request must ask for at least one measurement across the
+two; the example shows both mechanisms and does not imply that both are normally
+needed. Each `evaluations` entry requires `candidate`, positive `episodes` and
+`seed`. A `task_reference_evaluations` entry names only a model, plus an optional
+`label`; the rest of that panel is human-owned and a request that tries to set it
+is rejected. `champion` is valid when exposed by the brief. `need_more_evidence`
+preserves completed measurements and opens another research-evaluation round
+within the current experiment. This may be repeated until the Researcher has
+sufficient evidence to resolve the experiment. `paired_comparisons` may request
+candidate/reference comparisons between ordinary `evaluations` when that method
 answers the stated question.
+
+### Two instruments, no default preference
+
+Research evaluation is researcher-owned and answers experiment-specific
+scientific questions. Task-reference evaluation is human-owned and provides a
+stable measurement against the original human-defined task. Neither is preferred
+by default.
+
+When deciding what evidence is needed, consider whether a stable measurement
+against the original human-defined task would materially reduce uncertainty
+relevant to the current scientific decision. If it would, task-reference
+evaluation is available; if it would not, it is unnecessary. Deciding this is
+your judgement, not a rule attached to any particular change, phase, lineage
+step or performance level.
+
+When existing measurements were produced under conditions that are not directly
+comparable, task-reference evaluation can establish that comparison — when the
+comparison matters to the current question.
+
+The task-reference panel is fixed and human-owned: you choose which models it
+measures, never how it measures them. It may compare any model the brief
+exposes. It produces evidence, not a conclusion, it does not replace your own
+diagnostics, and it never declares success. It is development evidence, not an
+optimization target: do not repeatedly probe or tune against the fixed panel
+when researcher-owned measurements can answer the question.
 
 Do not spend training budget merely to obtain information available through
 inspection, local analysis, instrumentation or re-evaluation during this phase.

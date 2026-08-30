@@ -163,6 +163,23 @@ def _evaluation_panel_lines(evaluations: list[dict]) -> list[str]:
     return lines
 
 
+def _task_reference_lines(evaluations: list[dict]) -> list[str]:
+    """Name the human-owned measurements and where their detail lives."""
+    lines: list[str] = []
+    for evaluation in evaluations:
+        detail = (
+            f"- task reference `{evaluation['candidate']}` on "
+            f"`{evaluation.get('panel', '-')}`: success "
+            f"{float(evaluation['success_percent']):.2f}% over "
+            f"{int(evaluation['episodes'])} episodes"
+        )
+        artifact = evaluation.get("evaluation_artifact")
+        if artifact:
+            detail += f"; detail `{artifact}`"
+        lines.append(detail)
+    return lines
+
+
 def _change_details(result: dict) -> str:
     parameter_changes = result.get("parameter_changes") or []
     if parameter_changes:
@@ -306,6 +323,11 @@ def render_research_brief() -> str:
         if pending_evaluation.get("champion_available"):
             evaluation_lines.append("- `champion` — current accepted model lineage.")
         evaluation_lines.extend(
+            _task_reference_lines(
+                pending_evaluation.get("partial_task_reference_evaluations", []) or []
+            )
+        )
+        evaluation_lines.extend(
             [
                 "",
                 (
@@ -317,6 +339,11 @@ def render_research_brief() -> str:
                     "`research/evaluation_request.json` with the scientific "
                     "`question`, the `reason` this plan is sufficient, and the "
                     "evaluations, then exit. There is no automatic tournament."
+                ),
+                (
+                    "`research/program.md` describes when a stable human-owned "
+                    "`task_reference_evaluations` measurement is the right "
+                    "instrument instead of, or alongside, your own evaluations."
                 ),
             ]
         )
@@ -379,6 +406,11 @@ def render_research_brief() -> str:
                     pending_decision.get("champion_evaluations", [])
                 )
             )
+        decision_lines.extend(
+            _task_reference_lines(
+                pending_decision.get("task_reference_evaluations", []) or []
+            )
+        )
 
     state_last_index = int(state.get("last_experiment", 0))
     latest_result_index = int(latest_result["index"]) if latest_result else 0

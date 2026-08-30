@@ -158,9 +158,10 @@ while ($true) {
                 "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
                 "Training is complete. Decide what evidence is necessary to understand this experiment, not merely which panels to rerun."
                 "When useful you may inspect existing evidence, code, logs and artifacts, run a lightweight local analysis, change researcher-owned evaluation or instrumentation code, and request new measurements of already-saved policies. None of this is required every time."
-                "Write research/evaluation_request.json using the experiment number, a question, a reason, and an evaluations list."
+                "Write research/evaluation_request.json using the experiment number, a question, a reason, and at least one measurement."
                 "question states the concise scientific question these evaluations answer; reason states why this plan is useful and sufficient. Both are required and must be non-empty."
-                "Each evaluation names candidate, episodes, seed, and a concise label."
+                "You may request researcher-owned evaluations, human-owned task_reference_evaluations, or both, as described in the research program."
+                "Each researcher-owned evaluation names candidate, episodes, seed, and a concise label. Each task-reference evaluation names only a candidate."
                 "Use only the evidence needed for the scientific decision. Do not start training, evaluation, or a new experiment."
             ) -join " "
             opencode run --model $model --variant $reasoning $evaluationPrompt
@@ -171,7 +172,7 @@ while ($true) {
                     "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
                     "Do not ask for more input and do not propose a new training experiment."
                     "You may still inspect existing evidence, analyse it locally, and change researcher-owned evaluation or instrumentation code before completing the plan."
-                    "Then write research/evaluation_request.json with the pending experiment number, a non-empty question, a non-empty reason, and an evaluations list naming candidate, episodes and seed."
+                    "Then write research/evaluation_request.json with the pending experiment number, a non-empty question, a non-empty reason, and at least one measurement: researcher-owned evaluations naming candidate, episodes and seed, task_reference_evaluations naming only a candidate, or both."
                     "Do not run evaluation or training yourself."
                 ) -join " "
                 opencode run --model $model --variant $reasoning $evaluationRetryPrompt

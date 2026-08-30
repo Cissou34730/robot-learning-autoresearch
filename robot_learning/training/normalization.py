@@ -1,7 +1,7 @@
+import pickle
 from pathlib import Path
 
 import numpy as np
-from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 
 class ObservationNormalizer:
@@ -31,11 +31,11 @@ def load_observation_normalizer(model_path: Path) -> ObservationNormalizer | Non
     stats_path = find_stats_path(model_path)
     if stats_path is None:
         return None
-    # Imported here so the scenario package can depend on this generic helper.
-    from robot_learning.scenario import make_training_env
-
-    dummy_venv = DummyVecEnv([make_training_env])
-    vec_normalize = VecNormalize.load(str(stats_path), dummy_venv)
+    # Read the saved statistics directly: VecNormalize.load() would only need a
+    # vectorized env to attach to, which would pull the training environment
+    # into every evaluation.
+    with stats_path.open("rb") as handle:
+        vec_normalize = pickle.load(handle)
     return ObservationNormalizer(
         mean=np.array(vec_normalize.obs_rms.mean),
         var=np.array(vec_normalize.obs_rms.var),

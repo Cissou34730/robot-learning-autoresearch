@@ -22,11 +22,14 @@ OFFICIAL_TASK_PATHS = (
     "robot_learning/benchmark/__init__.py",
     "robot_learning/benchmark/final_benchmark.py",
     "robot_learning/benchmark/final_contract.py",
+    "robot_learning/benchmark/reference_contract.py",
+    "robot_learning/benchmark/reference_evaluation.py",
     "robot_learning/robots/__init__.py",
     "robot_learning/robots/two_joint_arm.py",
     "robot_learning/robots/two_joint_arm.xml",
     "robot_learning/scenario/__init__.py",
     "robot_learning/scenario/final_benchmark.py",
+    "robot_learning/scenario/task_reference.py",
 )
 
 RESEARCHER_OWNED_PATHS = (

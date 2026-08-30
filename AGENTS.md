@@ -39,12 +39,16 @@ uv run pytest                            # tests
 ## Layout
 
 - `robot_learning/benchmark/final_contract.py`, `final_benchmark.py` - protected
-  Human-owned final task semantics and evaluator
+  Human-owned final task semantics and evaluator, left untouched by other work
+- `robot_learning/benchmark/reference_contract.py`, `reference_evaluation.py` -
+  protected task-reference panel: an independent execution of the same human
+  task producing comparable development evidence, never an objective verdict
 - `robot_learning/benchmark/` - final task metric implementation
 - `robot_learning/scenario/` - everything specific to the current research
-  problem: environment, observations, reward, evaluation, brief evidence, and a
-  thin adapter over the protected benchmark. Generic code imports only the four
-  functions re-exported by `robot_learning/scenario/__init__.py`.
+  problem: environment, observations, reward, evaluation, brief evidence, and
+  thin adapters over the protected benchmark and task-reference panels. Generic
+  code imports only the functions re-exported by
+  `robot_learning/scenario/__init__.py`.
 - `robot_learning/train.py`, `play.py` - CLIs
 - `research/current_params.json` - runtime configuration of the currently
   active training method. Reward and other scenario science

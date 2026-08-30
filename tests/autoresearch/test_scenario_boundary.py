@@ -23,10 +23,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SCENARIO_BOUNDARY = (
     "evaluate_final_model",
     "evaluate_research_model",
+    "evaluate_task_reference_model",
     "make_training_env",
     "make_training_viewer_callback",
     "render_training_progress_metric",
     "summarize_research_evaluations",
+    "task_reference_panel",
     "watch_scenario_policy",
 )
 
@@ -99,6 +101,8 @@ FORBIDDEN_MODULES = frozenset(
         "robot_learning.benchmark.final_benchmark",
         "robot_learning.benchmark.final_contract",
         "robot_learning.benchmark.metrics",
+        "robot_learning.benchmark.reference_contract",
+        "robot_learning.benchmark.reference_evaluation",
         "robot_learning.benchmark.spec",
     }
 )
@@ -292,16 +296,17 @@ def test_compatibility_reexports_alias_the_scenario_implementation():
     assert OBSERVATION_SIZE == observations.OBSERVATION_SIZE
 
 
-def test_normalization_keeps_its_scenario_import_lazy():
+def test_normalization_never_reaches_for_the_scenario():
     normalization = ROOT / "robot_learning" / "training" / "normalization.py"
     scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
 
-    # The scenario depends on this helper, so a module-level import would cycle.
+    # The scenario depends on this helper, so any import back would cycle.
     assert "robot_learning.training.normalization" in module_level_imports(
         scenario_evaluation
     )
-    assert "robot_learning.scenario" not in module_level_imports(normalization)
-    assert "robot_learning.scenario" in imported_modules(normalization)
+    assert "robot_learning.scenario" not in imported_modules(normalization)
+    # Rebuilding policy preprocessing must not construct the training environment.
+    assert "make_training_env" not in normalization.read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)

@@ -15,6 +15,24 @@ Fixed by the human:
 
 Only the human-owned official benchmark may declare the objective reached.
 
+## Task-reference panel
+
+A second human-owned panel measures a model on exactly this task without
+declaring anything about the objective. It exists so models stay comparable on
+the original task while research freely changes the training environment,
+reward, curriculum and its own evaluation.
+
+It runs the protected task — 6–20 cm uniform radius, full angular range, 1 cm,
+2 seconds of continuous hold, official timing and horizon — over a fixed
+200-episode panel on its own seed, distinct from the official benchmark seed.
+You choose which models it measures through `task_reference_evaluations` in
+`research/evaluation_request.json`; you never choose its episodes, seed,
+distribution or success rule. `research/program.md` explains when this
+measurement is the right instrument.
+
+A task-reference result is development evidence. It is never the objective
+verdict, whatever its success percentage.
+
 ## Protected boundary
 
 The official task fixes:
@@ -35,7 +53,11 @@ runner and the protected task:
 * `research/run_experiment.py`;
 * `robot_learning/benchmark/final_contract.py`;
 * `robot_learning/benchmark/final_benchmark.py`;
+* `robot_learning/benchmark/reference_contract.py` and
+  `robot_learning/benchmark/reference_evaluation.py`, the task-reference panel
+  and its own independent execution of the same human task;
 * `robot_learning/scenario/final_benchmark.py`;
+* `robot_learning/scenario/task_reference.py`;
 * `robot_learning/robots/two_joint_arm.py`;
 * `robot_learning/robots/two_joint_arm.xml`;
 * the `__init__.py` of `robot_learning`, `robot_learning/benchmark`,
@@ -64,7 +86,7 @@ redefine the official physics or objective.
 ## Scenario code
 
 `robot_learning/scenario/` is researcher-owned except the protected
-`final_benchmark.py` and `__init__.py`:
+`final_benchmark.py`, `task_reference.py` and `__init__.py`:
 
 * `environment.py` — training task mechanics and `make_training_env()`;
 * `observations.py` — the observation the policy receives;
