@@ -1,21 +1,21 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-4-checkpoint-120832-200ep-seed1000-d04f4e422fe3.json",
-    "research/evaluations/evaluation-experiment-4-checkpoint-120832-200ep-seed2000-d04f4e422fe3.json"
+    "research/evaluations/evaluation-experiment-5-checkpoint-120832-200ep-seed1000-268f629ee9a9.json",
+    "research/evaluations/evaluation-experiment-5-checkpoint-120832-200ep-seed2000-268f629ee9a9.json"
   ],
   "accepted_metrics": {
     "episodes": 400,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 97.0,
+    "pooled_success_percent": 97.5,
     "schema_version": 3,
     "seed_count": 2,
     "seed_success_percent": {
-      "1000": 97.0,
-      "2000": 97.0
+      "1000": 97.5,
+      "2000": 97.5
     },
-    "success_percent": 97.0,
-    "worst_seed_success_percent": 97.0
+    "success_percent": 97.5,
+    "worst_seed_success_percent": 97.5
   },
   "accepted_parameters": {
     "algorithm": {
@@ -41,35 +41,29 @@
       "n_envs": 1
     }
   },
-  "accepted_training_steps": 360000,
-  "last_allocated_experiment": 4,
-  "last_experiment": 4,
+  "accepted_training_steps": 480000,
+  "last_allocated_experiment": 5,
+  "last_experiment": 5,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "The HOLD_EXIT_FORFEIT_FRACTION change improved hold reliability and generalization across both researcher seeds and the task-reference panel without changing protected task semantics."
+      "reason": "Increasing HOLD_EXIT_FORFEIT_FRACTION from 0.5 to 1.0 produced a consistent improvement across both researcher seeds and the independent task-reference panel without changing protected task semantics."
     },
-    "code_parent_commit": "53571d4eb9486ccb003d8c78ea2e9b9bb938e872",
+    "code_parent_commit": "83bbd62fac02b5de50fba5d1a3e6ff855ee09a6d",
     "continue_from": "checkpoint-120832",
-    "experiment": 4,
-    "reason": "Checkpoint-120832 reached 97.0% on both researcher seeds and the independent task-reference panel, improving over the champion's 91.5% pooled researcher result and 90.5% task-reference result. It is the strongest available lineage and is close enough to the 98% objective to warrant the independent final benchmark."
+    "experiment": 5,
+    "reason": "Checkpoint-120832 improved pooled researcher success to 97.5% on both seeds and improved the independent task-reference panel from 97.0% to 98.5%, making it the strongest available lineage and sufficiently close to the objective to request the official final benchmark."
   },
   "last_verdict": "researcher selected checkpoint-120832",
   "official_benchmark_artifact": "e4e5df85e3a7131e3be759341ad65e491cfddf995a46dd0b2556ceefc40be657",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.39833544293670337,
-      "median": 0.3598567291901525,
-      "worst": 2.216067032663358
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "official_metrics": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
+  "pending_final_benchmark": {
+    "artifact": "research\\checkpoints\\accepted",
+    "experiment": 5,
+    "fingerprint": "a4996c42254fe8e26a83953737150407a75456f7e249ba2a5610925c9a81bb43",
+    "selected": "checkpoint-120832"
+  },
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
