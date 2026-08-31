@@ -12,6 +12,7 @@ import pytest
 
 from research.run_experiment import (
     PROTECTED_TEST_PREFIXES,
+    allocated_experiment_index,
     append_result,
     assert_research_surface,
     candidate_directories,
@@ -22,6 +23,8 @@ from research.run_experiment import (
     latest_training_steps,
     load_state,
     main,
+    next_experiment_index,
+    resumed_experiment_index,
     validate_changed_sources,
     validate_experiment_semantics,
     validate_proposal_phase,
@@ -1149,6 +1152,203 @@ def test_proposal_preflight_rejects_incident_residue_without_mutation(
     assert state_path.read_bytes() == original_state
     assert proposal_path.read_bytes() == original_proposal
     assert accepted.read_bytes() == b"accepted-lineage"
+
+
+# --- experiment identity ---------------------------------------------------
+
+
+def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
+    """The smallest on-disk campaign the training path of main() can run."""
+    accepted = tmp_path / "accepted"
+    accepted.mkdir(exist_ok=True)
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        (accepted / filename).touch()
+    state_path = tmp_path / "research_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
+                **state,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "EXPERIMENTS.md").write_text("| # | Date |\n", encoding="utf-8")
+
+    def fail_if_training_starts(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("training started for an experiment that never validated")
+
+    for name, value in {
+        "ROOT": tmp_path,
+        "STATE_PATH": state_path,
+        "LOG_PATH": tmp_path / "EXPERIMENTS.md",
+        "RESULTS_PATH": tmp_path / "results.jsonl",
+        "PROPOSAL_PATH": tmp_path / "proposal.json",
+        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "RESTART_PENDING_PATH": tmp_path / "RESTART_PENDING",
+        "RECOVERY_PENDING_PATH": tmp_path / "RECOVERY_PENDING",
+        "git": lambda *args: "0" * 40 + "\n",
+        "status_paths": lambda paths: [],
+        "train_candidate": fail_if_training_starts,
+    }.items():
+        monkeypatch.setattr(f"research.run_experiment.{name}", value)
+    return state_path
+
+
+def _rejected_proposal() -> dict:
+    """Shape-valid, but carries no research change, so execution rejects it."""
+    return {
+        "kind": "training",
+        "family": "identity.allocation",
+        "hypothesis": "An experiment number is spent even when nothing trains.",
+        "change": "No researcher change at all.",
+        "initialization": "fresh",
+    }
+
+
+def _allocated(state_path: Path) -> int | None:
+    return json.loads(state_path.read_text(encoding="utf-8")).get(
+        "last_allocated_experiment"
+    )
+
+
+def test_runner_state_outranks_an_incomplete_history(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "research.run_experiment.CANDIDATE_ROOT", tmp_path / "candidates"
+    )
+    monkeypatch.setattr("research.run_experiment.RESULTS_PATH", tmp_path / "results")
+    monkeypatch.setattr("research.run_experiment.LOG_PATH", tmp_path / "log")
+    (tmp_path / "results").write_text('{"index": 1}\n{"index": 2}\n', encoding="utf-8")
+    (tmp_path / "log").write_text("| 1 | a |\n| 2 | b |\n", encoding="utf-8")
+
+    assert next_experiment_index({"last_allocated_experiment": 4}) == 5
+
+
+def test_a_state_file_without_allocation_seeds_it_from_the_runner_state():
+    assert allocated_experiment_index({"last_experiment": 4}) == 4
+    assert allocated_experiment_index({}) == 0
+
+
+def test_a_fresh_campaign_allocates_the_first_experiment(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        "research.run_experiment.CANDIDATE_ROOT", tmp_path / "candidates"
+    )
+
+    assert next_experiment_index({"last_experiment": 0}) == 1
+
+
+@pytest.mark.parametrize("existing", ["experiment-5", "recovery-experiment-5"])
+def test_unexpected_experiment_data_is_preserved_and_its_identity_skipped(
+    monkeypatch, tmp_path, capsys, existing
+):
+    candidates = tmp_path / "candidates"
+    (candidates / existing).mkdir(parents=True)
+    (candidates / existing / "model.zip").write_bytes(b"earlier experiment")
+    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", candidates)
+
+    assert next_experiment_index({"last_allocated_experiment": 4}) == 6
+    assert (candidates / existing / "model.zip").read_bytes() == b"earlier experiment"
+    assert "skipping that identity" in capsys.readouterr().out
+
+
+def test_recovery_keeps_the_identity_its_interrupted_run_allocated(tmp_path):
+    state = {"last_experiment": 4, "last_allocated_experiment": 5}
+
+    assert resumed_experiment_index(state, tmp_path / "recovery-experiment-5") == 5
+    assert resumed_experiment_index(state, None) == 5
+    # A state file written before allocation existed still recovers experiment 5.
+    assert (
+        resumed_experiment_index(
+            {"last_experiment": 4}, tmp_path / "recovery-experiment-5"
+        )
+        == 5
+    )
+
+
+def test_an_invalid_experiment_consumes_its_identity(monkeypatch, tmp_path, capsys):
+    state_path = _allocation_campaign(monkeypatch, tmp_path, {"last_experiment": 4})
+    proposal_path = tmp_path / "proposal.json"
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+
+    proposal_path.write_text(json.dumps(_rejected_proposal()), encoding="utf-8")
+    assert main() == 1
+    assert "experiment 5 invalid" in capsys.readouterr().out
+    assert _allocated(state_path) == 5
+
+    # A fresh Runner invocation reloads the persisted state; 5 is spent for good.
+    proposal_path.write_text(json.dumps(_rejected_proposal()), encoding="utf-8")
+    assert main() == 1
+    assert "experiment 6 invalid" in capsys.readouterr().out
+    assert _allocated(state_path) == 6
+    recorded = [
+        json.loads(line)["index"]
+        for line in (tmp_path / "results.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+        if line.strip()
+    ]
+    assert recorded == [5, 6]
+
+
+@pytest.mark.parametrize("mechanism", ["restart", "recovery"])
+def test_a_resumed_experiment_reuses_its_allocated_identity(
+    monkeypatch, tmp_path, capsys, mechanism
+):
+    state_path = _allocation_campaign(
+        monkeypatch,
+        tmp_path,
+        {"last_experiment": 4, "last_allocated_experiment": 5},
+    )
+    (tmp_path / "proposal.json").write_text(
+        json.dumps(_rejected_proposal()), encoding="utf-8"
+    )
+    argv = ["run_experiment.py"]
+    if mechanism == "restart":
+        (tmp_path / "RESTART_PENDING").write_text("restart\n", encoding="utf-8")
+    else:
+        recovery = tmp_path / "models" / "candidates" / "recovery-experiment-5"
+        recovery.mkdir(parents=True)
+        argv += ["--reuse-candidate", str(recovery)]
+    monkeypatch.setattr("sys.argv", argv)
+
+    assert main() == 1
+    assert "experiment 5 invalid" in capsys.readouterr().out
+    assert _allocated(state_path) == 5
+
+
+def test_a_pending_phase_proposal_allocates_no_identity(monkeypatch, tmp_path, capsys):
+    state_path = _allocation_campaign(
+        monkeypatch,
+        tmp_path,
+        {"last_experiment": 4, "pending_evaluation_request": {"experiment": 4}},
+    )
+    (tmp_path / "proposal.json").write_text(
+        json.dumps(_rejected_proposal()), encoding="utf-8"
+    )
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+
+    assert main() == 1
+    assert "invalid proposal for current phase" in capsys.readouterr().out
+    assert _allocated(state_path) is None
+
+
+def test_runner_state_is_never_a_researcher_change(monkeypatch):
+    monkeypatch.setattr(
+        "research.run_experiment.status_paths",
+        lambda paths: (
+            [
+                "research/research_state.json",
+                "robot_learning/scenario/reward.py",
+            ]
+            if paths
+            else []
+        ),
+    )
+
+    assert assert_research_surface() == ["robot_learning/scenario/reward.py"]
 
 
 # --- candidate manifest ----------------------------------------------------

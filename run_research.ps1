@@ -290,7 +290,11 @@ while ($true) {
     Write-Host "=== Researcher forming next hypothesis at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
-    $nextExperiment = [int]$researchState.last_experiment + 1
+    $allocatedExperiment = [Math]::Max(
+        [int]$researchState.last_allocated_experiment,
+        [int]$researchState.last_experiment
+    )
+    $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
         "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."

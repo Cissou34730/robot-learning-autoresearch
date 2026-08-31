@@ -117,6 +117,14 @@ RESEARCHER_OWNED_PATHS = {
     "robot_learning/play.py",
     "robot_learning/train.py",
 }
+# Runner-owned lifecycle files. The Runner writes them itself -- including the
+# experiment identity it allocates before validation -- so a worktree change to
+# one of them is never a researcher change.
+RUNNER_CONTROL_PATHS = {
+    "research/proposal.json",
+    "research/evaluation_request.json",
+    "research/research_state.json",
+}
 # Editing these carries no source change, so the test suites stay untouched.
 PARAMETER_ONLY_PATHS = {"research/current_params.json"}
 DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
@@ -604,11 +612,9 @@ def status_paths(paths: tuple[str, ...]) -> list[str]:
 
 def assert_research_surface() -> list[str]:
     changed = status_paths((".",))
-    control_files = {
-        "research/proposal.json",
-        "research/evaluation_request.json",
-    }
-    return [path for path in changed if path.replace("\\", "/") not in control_files]
+    return [
+        path for path in changed if path.replace("\\", "/") not in RUNNER_CONTROL_PATHS
+    ]
 
 
 def run_module(module: str, *args: str, timeout: int | None = None) -> str:
@@ -726,20 +732,52 @@ def validation_test_paths(
     return VALIDATED_TEST_PATHS
 
 
-def next_index() -> int:
-    indices: list[int] = []
-    if RESULTS_PATH.exists():
-        for line in RESULTS_PATH.read_text(encoding="utf-8").splitlines():
-            if line.strip():
-                indices.append(int(json.loads(line)["index"]))
-    if not indices and LOG_PATH.exists():
-        indices = [
-            int(value)
-            for value in re.findall(
-                r"^\| (\d+) \|", LOG_PATH.read_text(encoding="utf-8"), re.MULTILINE
-            )
-        ]
-    return max(indices, default=0) + 1
+def allocated_experiment_index(state: dict) -> int:
+    """The highest experiment identity the Runner has ever handed out.
+
+    `results.jsonl` and `EXPERIMENTS.md` are histories: they can be incomplete,
+    regenerated or rolled back, so they never allocate identity. A state file
+    written before allocation existed carries only the last experiment the
+    Runner ran, which then seeds the counter.
+    """
+    return max(
+        int(state.get("last_allocated_experiment") or 0),
+        int(state.get("last_experiment") or 0),
+    )
+
+
+def experiment_working_paths(index: int) -> tuple[Path, ...]:
+    return (
+        CANDIDATE_ROOT / f"experiment-{index}",
+        CANDIDATE_ROOT / f"recovery-experiment-{index}",
+    )
+
+
+def next_experiment_index(state: dict) -> int:
+    """Allocate the next identity for a new experiment.
+
+    An identity whose working directories already hold data is skipped, never
+    reused: unexpected data is preserved and only costs a number.
+    """
+    index = allocated_experiment_index(state) + 1
+    while any(path.exists() for path in experiment_working_paths(index)):
+        announce(
+            f"[runner] WARNING: models/candidates already holds data for "
+            f"experiment {index}; preserving it and skipping that identity"
+        )
+        index += 1
+    return index
+
+
+def resumed_experiment_index(state: dict, reuse_candidate: Path | None) -> int:
+    """A preserved proposal keeps the identity its interrupted run allocated."""
+    index = allocated_experiment_index(state)
+    if reuse_candidate is not None:
+        # Only load-bearing for a state file that predates allocated identity.
+        match = re.fullmatch(r"recovery-experiment-(\d+)", reuse_candidate.name)
+        if match:
+            index = max(index, int(match.group(1)))
+    return index
 
 
 def parameter_change_records(
@@ -2326,12 +2364,21 @@ def main() -> int:
     parameter_overrides = proposal.get("params")
     baseline = bool(proposal.get("baseline", False))
     initialization = str(proposal.get("initialization", "transfer")).lower()
-    index = next_index()
     fresh_baseline = baseline and initialization == "fresh"
     state = load_state(
         allow_unmeasured=True,
         allow_missing_artifact=fresh_baseline,
     )
+    # A preserved proposal is the same experiment: recovery and restart reuse
+    # the identity the interrupted run allocated instead of consuming a new one.
+    resuming = args.reuse_candidate is not None or RESTART_PENDING_PATH.exists()
+    index = resumed_experiment_index(state, args.reuse_candidate) if resuming else 0
+    if index < 1:
+        index = next_experiment_index(state)
+    state["last_allocated_experiment"] = index
+    # Durable before validation or training can produce anything under this
+    # identity, so a rejected, crashed or interrupted experiment consumes it.
+    atomic_write_json(STATE_PATH, state)
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
@@ -2423,7 +2470,9 @@ def main() -> int:
         announce("\n" + render_experiment_card(result) + "\n")
         resume = parent_artifact / "model.zip" if initialization == "transfer" else None
 
-        if candidate_dir.exists():
+        if resuming and candidate_dir.exists():
+            # Only the experiment's own leftovers: a new identity that collided
+            # with existing data was skipped rather than allocated.
             announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
             remove_candidate_dir(candidate_dir)
         if args.reuse_candidate is not None:
