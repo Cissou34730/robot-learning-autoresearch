@@ -287,6 +287,13 @@ while ($true) {
 
     Update-ResearchBrief
 
+    # Anchor the rollback baseline before the researcher can change or commit
+    # science. An unfinished experiment keeps the anchor it already established.
+    uv run python research/run_experiment.py --begin-hypothesis
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not establish the scientific parent of the next experiment."
+    }
+
     Write-Host "=== Researcher forming next hypothesis at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count

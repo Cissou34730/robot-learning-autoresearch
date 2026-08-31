@@ -649,6 +649,64 @@ def changed_runner_memory() -> list[str]:
     return [path for path in status_paths((".",)) if is_runner_memory(path)]
 
 
+def committed_change_paths(parent: str) -> list[str]:
+    """Paths changed by commits since `parent`.
+
+    Renames are reported as two independent sides so neither the vanished origin
+    nor the new destination can be lost, exactly as the worktree scan does.
+    """
+    output = git("diff", "--name-only", "--no-renames", parent, "HEAD", "--")
+    return [line.strip() for line in output.splitlines() if line.strip()]
+
+
+def scientific_delta(parent: str) -> list[str]:
+    """Every scientific path changed since the scientific parent.
+
+    Committing a file does not remove it from the experiment that changed it, so
+    the delta spans both the commits made since the parent and the working tree.
+    """
+    committed = committed_change_paths(parent) if parent else []
+    return scientific_change_paths(
+        list(dict.fromkeys([*committed, *status_paths((".",))]))
+    )
+
+
+def require_resolvable_commit(commit: str) -> None:
+    """A rollback baseline that no longer exists must fail, never silently no-op."""
+    try:
+        git("cat-file", "-e", f"{commit}^{{commit}}")
+    except RuntimeError as error:
+        raise RuntimeError(
+            f"the scientific parent {commit} no longer resolves to a commit; "
+            "the code lineage decision cannot be applied safely"
+        ) from error
+
+
+def anchor_scientific_parent(state: dict) -> str:
+    """The scientific state the currently unfinished research originates from.
+
+    Captured once and then preserved across researcher retries, launcher
+    restarts, training recovery, evaluation rounds and invalid experiments, so a
+    rejection returns to the last closed lineage rather than to whatever HEAD
+    happens to be when the runner next looks. Only a completed lineage decision
+    clears it.
+    """
+    parent = str(state.get("pending_scientific_parent") or "").strip()
+    if not parent:
+        parent = git("rev-parse", "HEAD").strip()
+    state["pending_scientific_parent"] = parent
+    return parent
+
+
+def begin_hypothesis_phase() -> int:
+    """Anchor the parent before the researcher may change or commit any science."""
+    state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    parent = anchor_scientific_parent(state)
+    atomic_write_json(STATE_PATH, state)
+    announce(f"[runner] scientific parent of the next experiment: {parent[:12]}")
+    return 0
+
+
 def run_module(module: str, *args: str, timeout: int | None = None) -> str:
     result = subprocess.run(
         [sys.executable, "-m", module, *args],
@@ -1661,10 +1719,13 @@ def validate_experiment_semantics(
     baseline: bool,
 ) -> None:
     normalized = [path.replace("\\", "/") for path in code_changes]
-    if PROTECTED_BENCHMARK_PATHS & set(normalized):
+    protected_sources = sorted(PROTECTED_BENCHMARK_PATHS & set(normalized))
+    if protected_sources:
         raise ValueError(
             "the human-owned final benchmark, official robot and research "
-            "protocol enforcement cannot be changed by a research proposal"
+            "protocol enforcement cannot be changed by a research proposal: "
+            f"{protected_sources}; restore them to their content at the "
+            "scientific parent before proposing another experiment"
         )
     protected_tests = sorted(
         path for path in normalized if path.startswith(PROTECTED_TEST_PREFIXES)
@@ -1672,7 +1733,8 @@ def validate_experiment_semantics(
     if protected_tests:
         raise ValueError(
             "the human-owned benchmark and AutoResearch tests cannot be changed "
-            f"by a research proposal: {protected_tests}"
+            f"by a research proposal: {protected_tests}; restore them to their "
+            "content at the scientific parent before proposing another experiment"
         )
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
@@ -1940,17 +2002,32 @@ def artifact_fingerprint(artifact: Path) -> str:
     return digest.hexdigest()
 
 
-def plan_code_lineage_decision(pending: dict, action: str) -> dict:
+def plan_code_lineage_decision(
+    pending: dict, action: str, *, current_paths: list[str] | None = None
+) -> dict:
     if action == "keep":
         return {"restore": [], "remove_created": []}
     parent = str(pending.get("code_parent_commit", "")).strip()
-    # Campaign memory recorded before this boundary existed can still be listed
-    # here; rejecting science must never restore history to an older version.
-    paths = scientific_change_paths(
-        [str(path) for path in pending.get("research_change_paths", [])]
-    )
-    if not parent or not paths:
+    if not parent:
+        # State written before an experiment recorded a scientific parent.
         return {"restore": [], "remove_created": []}
+    # The intervention that was validated and trained, plus everything scientific
+    # that happened afterwards. Campaign memory recorded in either set before
+    # this boundary existed can still be listed, and rejecting science must never
+    # restore history to an older version.
+    paths = scientific_change_paths(
+        list(
+            dict.fromkeys(
+                [
+                    *(str(path) for path in pending.get("research_change_paths", [])),
+                    *(current_paths or []),
+                ]
+            )
+        )
+    )
+    if not paths:
+        return {"restore": [], "remove_created": []}
+    require_resolvable_commit(parent)
     restorable: list[str] = []
     created: list[Path] = []
     for path in paths:
@@ -2041,8 +2118,17 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     code_reason = str(code_decision.get("reason", "")).strip()
     if code_action not in {"keep", "revert"} or not code_reason:
         raise ValueError("code decision must be keep or revert with a reason")
-    code_plan = plan_code_lineage_decision(pending, code_action)
-    code_plan["parent"] = str(pending.get("code_parent_commit", "")).strip()
+    parent = str(pending.get("code_parent_commit", "")).strip()
+    # The frozen change set describes the intervention that trained; the science
+    # that must be undone is whatever stands against the parent now.
+    code_plan = plan_code_lineage_decision(
+        pending,
+        code_action,
+        current_paths=(
+            scientific_delta(parent) if parent and code_action == "revert" else None
+        ),
+    )
+    code_plan["parent"] = parent
 
     retained = list(state.get("retained_lineages", []))
     retained_by_id = {str(lineage.get("id")): lineage for lineage in retained}
@@ -2309,13 +2395,27 @@ def commit_runner_memory(message: str) -> bool:
     return commit_paths(message, changed_runner_memory())
 
 
-def commit_lineage_decision(experiment: int, selected: str) -> None:
+def commit_lineage_decision(
+    experiment: int,
+    selected: str,
+    *,
+    code_action: str = "keep",
+    state: dict | None = None,
+) -> None:
     # Two owners, two commits: the surviving science first, then the campaign
     # memory that must outlive it whatever the next lineage decision does.
+    reverted = code_action == "revert"
     commit_paths(
-        f"experiment {experiment} code retained for {selected}",
+        f"experiment {experiment} code reverted to its scientific parent"
+        if reverted
+        else f"experiment {experiment} code retained for {selected}",
         assert_research_surface(),
     )
+    if state is not None:
+        # Only durable science closes the lineage: until the commit above has
+        # been published, the rollback anchor must stay recoverable.
+        state["pending_scientific_parent"] = None
+        atomic_write_json(STATE_PATH, state)
     commit_runner_memory(f"select experiment {experiment} lineage: {selected}")
 
 
@@ -2360,7 +2460,10 @@ def main() -> int:
     parser.add_argument("--evaluate-pending-final", action="store_true")
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
+    parser.add_argument("--begin-hypothesis", action="store_true")
     args = parser.parse_args()
+    if args.begin_hypothesis:
+        return begin_hypothesis_phase()
     if args.check_proposal:
         return check_proposal()
     if args.check_lineage_evidence is not None:
@@ -2396,7 +2499,14 @@ def main() -> int:
         apply_previous_result_decision(proposal, state)
         pending_experiment = int(raw_state["pending_researcher_decision"]["experiment"])
         selected_lineage = str(proposal["previous_result_decision"]["continue_from"])
-        commit_lineage_decision(pending_experiment, selected_lineage)
+        commit_lineage_decision(
+            pending_experiment,
+            selected_lineage,
+            code_action=str(proposal["previous_result_decision"]["code"]["action"])
+            .strip()
+            .lower(),
+            state=state,
+        )
         PROPOSAL_PATH.unlink(missing_ok=True)
         return 0
 
@@ -2418,13 +2528,15 @@ def main() -> int:
     if index < 1:
         index = next_experiment_index(state)
     state["last_allocated_experiment"] = index
+    # A fresh baseline has no hypothesis phase to anchor it, and a retry, restart
+    # or recovery keeps the anchor the unfinished research already established.
+    code_parent_commit = anchor_scientific_parent(state)
     # Durable before validation or training can produce anything under this
     # identity, so a rejected, crashed or interrupted experiment consumes it.
     atomic_write_json(STATE_PATH, state)
     candidate_dir = CANDIDATE_ROOT / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = load_experiment_config()
-    code_parent_commit = git("rev-parse", "HEAD").strip()
     code_changes: list[str] = []
     preserve_proposal = False
     reused_candidate: Path | None = None
@@ -2447,7 +2559,7 @@ def main() -> int:
         "verdict": "error",
     }
     try:
-        code_changes = assert_research_surface()
+        code_changes = scientific_delta(code_parent_commit)
         result["code_changes"] = code_changes
         validate_experiment_semantics(
             proposal,
