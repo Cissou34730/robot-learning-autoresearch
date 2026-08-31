@@ -12,18 +12,24 @@ import pytest
 
 from research.run_experiment import (
     PROTECTED_TEST_PREFIXES,
+    RUNNER_CONTROL_PATHS,
     allocated_experiment_index,
     append_result,
     assert_research_surface,
     candidate_directories,
     check_proposal,
     commit_and_push,
+    commit_lineage_decision,
+    commit_result,
+    commit_runner_memory,
     dependency_metadata_changed,
     format_duration,
+    is_runner_memory,
     latest_training_steps,
     load_state,
     main,
     next_experiment_index,
+    plan_code_lineage_decision,
     resumed_experiment_index,
     validate_changed_sources,
     validate_experiment_semantics,
@@ -88,6 +94,153 @@ def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     )
 
     assert assert_research_surface() == ["research/current_params.json"]
+
+
+# --- runner memory versus scientific change --------------------------------
+
+SCIENTIFIC_CHANGE = "robot_learning/scenario/reward.py"
+RUNNER_MEMORY_WORKTREE = [
+    "research/results.jsonl",
+    "research/EXPERIMENTS.md",
+    "research/research_state.json",
+    "research/postmortems.md",
+    "research/BASELINE_PENDING",
+    "research/evaluations/evaluation-experiment-3-champion-200ep-seed1000-abc.json",
+    "research/checkpoints/accepted/model.zip",
+    "research/checkpoints/retained/alternative-3/model.zip",
+]
+
+
+def record_git(monkeypatch, changed: list[str]) -> list[tuple[str, ...]]:
+    """Record every git invocation over a worktree Git reports as `changed`."""
+    calls: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str) -> str:
+        calls.append(args)
+        if args[0] == "ls-files":
+            return args[-1] + "\n"
+        if args[0] == "diff":
+            return "\n".join(args[args.index("--") + 1 :]) + "\n"
+        return ""
+
+    monkeypatch.setattr(
+        "research.run_experiment.status_paths",
+        lambda paths: list(changed) if paths else [],
+    )
+    monkeypatch.setattr("research.run_experiment.git", fake_git)
+    return calls
+
+
+def commits_of(calls: list[tuple[str, ...]]) -> list[tuple[str, ...]]:
+    return [call for call in calls if call[0] == "commit"]
+
+
+def committed_paths(commit: tuple[str, ...]) -> list[str]:
+    return list(commit[commit.index("--") + 1 :])
+
+
+def test_dirty_runner_memory_is_never_a_scientific_change(monkeypatch):
+    monkeypatch.setattr(
+        "research.run_experiment.status_paths",
+        lambda paths: [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE] if paths else [],
+    )
+
+    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
+
+
+def test_a_runner_memory_commit_cannot_capture_scientific_changes(monkeypatch):
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE])
+
+    assert commit_runner_memory("record campaign memory")
+
+    commits = commits_of(calls)
+    assert len(commits) == 1
+    assert set(committed_paths(commits[0])) == set(RUNNER_MEMORY_WORKTREE)
+    assert SCIENTIFIC_CHANGE not in committed_paths(commits[0])
+    # Nothing staged, unstaged, reset or restored the scientific modification.
+    assert not [
+        call for call in calls if call[0] in {"reset", "restore", "checkout", "stash"}
+    ]
+    assert SCIENTIFIC_CHANGE not in {
+        argument for call in calls if call[0] == "add" for argument in call
+    }
+    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
+
+
+def test_invalid_experiment_memory_is_persisted_without_its_science(monkeypatch):
+    history = [
+        "research/results.jsonl",
+        "research/EXPERIMENTS.md",
+        "research/research_state.json",
+    ]
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *history])
+
+    commit_result(3, "Reshape the shaping term")
+
+    commits = commits_of(calls)
+    assert len(commits) == 1
+    assert commits[0][2] == "exp 3: Reshape the shaping term"
+    assert set(committed_paths(commits[0])) == set(history)
+    assert calls[-1] == ("push", "origin", "HEAD")
+    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
+
+
+def test_lineage_closure_separates_the_science_from_the_memory_commit(monkeypatch):
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE])
+
+    commit_lineage_decision(4, "checkpoint-120832")
+
+    science, memory = commits_of(calls)
+    assert committed_paths(science) == [SCIENTIFIC_CHANGE]
+    assert set(committed_paths(memory)) == set(RUNNER_MEMORY_WORKTREE)
+    assert memory[2] == "select experiment 4 lineage: checkpoint-120832"
+
+
+def test_evaluation_artifacts_are_evidence_and_never_restorable_science(monkeypatch):
+    artifact = "research/evaluations/evaluation-experiment-4-champion.json"
+    monkeypatch.setattr(
+        "research.run_experiment.status_paths",
+        lambda paths: [SCIENTIFIC_CHANGE, artifact] if paths else [],
+    )
+
+    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
+    # A campaign recorded before this boundary existed still cannot lose evidence.
+    assert plan_code_lineage_decision(
+        {"code_parent_commit": "0" * 40, "research_change_paths": [artifact]},
+        "revert",
+    ) == {"restore": [], "remove_created": []}
+
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, artifact])
+    assert commit_runner_memory("record measured evidence")
+    assert committed_paths(commits_of(calls)[0]) == [artifact]
+
+
+def test_the_official_final_benchmark_is_persisted_immediately(monkeypatch):
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, "research/research_state.json"])
+    monkeypatch.setattr(
+        "research.run_experiment.execute_pending_final_benchmark", lambda: 0
+    )
+    monkeypatch.setattr("sys.argv", ["run_experiment.py", "--evaluate-pending-final"])
+
+    assert main() == 0
+
+    commits = commits_of(calls)
+    assert len(commits) == 1
+    assert committed_paths(commits[0]) == ["research/research_state.json"]
+
+
+def test_transient_controls_never_become_durable_campaign_memory(monkeypatch):
+    assert RUNNER_CONTROL_PATHS == {
+        "research/proposal.json",
+        "research/evaluation_request.json",
+    }
+    assert not any(is_runner_memory(control) for control in RUNNER_CONTROL_PATHS)
+
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *sorted(RUNNER_CONTROL_PATHS)])
+
+    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
+    assert not commit_runner_memory("record campaign memory")
+    assert calls == []
 
 
 # --- protected test domains ------------------------------------------------

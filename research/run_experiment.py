@@ -117,14 +117,29 @@ RESEARCHER_OWNED_PATHS = {
     "robot_learning/play.py",
     "robot_learning/train.py",
 }
-# Runner-owned lifecycle files. The Runner writes them itself -- including the
-# experiment identity it allocates before validation -- so a worktree change to
-# one of them is never a researcher change.
+# Transient Runner-owned control files: they carry a single phase handover and
+# are discarded, never accumulated. They are Git-ignored and are never history.
 RUNNER_CONTROL_PATHS = {
     "research/proposal.json",
     "research/evaluation_request.json",
-    "research/research_state.json",
 }
+# Durable Runner-owned campaign memory: the lifecycle state the Runner rewrites
+# mid-experiment -- including the identity it allocates before validation --
+# the campaign history, and the evidence and checkpoints operating the campaign
+# produces. Operating the campaign is never a researcher intervention, so these
+# leave the scientific change set and are committed on their own.
+RUNNER_MEMORY_PATHS = {
+    "research/research_state.json",
+    "research/results.jsonl",
+    "research/EXPERIMENTS.md",
+    "research/postmortems.md",
+    "research/BASELINE_PENDING",
+}
+RUNNER_MEMORY_PREFIXES = (
+    "research/evaluations/",
+    "research/checkpoints/accepted/",
+    "research/checkpoints/retained/",
+)
 # Editing these carries no source change, so the test suites stay untouched.
 PARAMETER_ONLY_PATHS = {"research/current_params.json"}
 DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
@@ -610,11 +625,28 @@ def status_paths(paths: tuple[str, ...]) -> list[str]:
     return changed
 
 
+def is_runner_memory(path: str) -> bool:
+    relative = path.replace("\\", "/")
+    return relative in RUNNER_MEMORY_PATHS or relative.startswith(
+        RUNNER_MEMORY_PREFIXES
+    )
+
+
+def is_runner_owned(path: str) -> bool:
+    return path.replace("\\", "/") in RUNNER_CONTROL_PATHS or is_runner_memory(path)
+
+
+def scientific_change_paths(paths: list[str]) -> list[str]:
+    """The researcher intervention alone: campaign memory is not a change to it."""
+    return [path for path in paths if not is_runner_owned(path)]
+
+
 def assert_research_surface() -> list[str]:
-    changed = status_paths((".",))
-    return [
-        path for path in changed if path.replace("\\", "/") not in RUNNER_CONTROL_PATHS
-    ]
+    return scientific_change_paths(status_paths((".",)))
+
+
+def changed_runner_memory() -> list[str]:
+    return [path for path in status_paths((".",)) if is_runner_memory(path)]
 
 
 def run_module(module: str, *args: str, timeout: int | None = None) -> str:
@@ -1912,7 +1944,11 @@ def plan_code_lineage_decision(pending: dict, action: str) -> dict:
     if action == "keep":
         return {"restore": [], "remove_created": []}
     parent = str(pending.get("code_parent_commit", "")).strip()
-    paths = [str(path) for path in pending.get("research_change_paths", [])]
+    # Campaign memory recorded before this boundary existed can still be listed
+    # here; rejecting science must never restore history to an older version.
+    paths = scientific_change_paths(
+        [str(path) for path in pending.get("research_change_paths", [])]
+    )
     if not parent or not paths:
         return {"restore": [], "remove_created": []}
     restorable: list[str] = []
@@ -2265,37 +2301,37 @@ def execute_pending_final_benchmark() -> int:
 
 
 def commit_result(index: int, change: str) -> None:
-    control_files = {
-        "research/proposal.json",
-        "research/evaluation_request.json",
-    }
-    paths = [
-        path
-        for path in status_paths((".",))
-        if path.replace("\\", "/") not in control_files
-    ]
-    stage_existing_or_tracked(paths)
-    for control_file in control_files:
-        git("reset", "--", control_file)
-    if not git("diff", "--cached", "--name-only").strip():
-        return
-    commit_and_push(f"exp {index}: {change}")
+    """An invalid experiment is already finished, so its memory is durable now."""
+    commit_runner_memory(f"exp {index}: {change}")
+
+
+def commit_runner_memory(message: str) -> bool:
+    return commit_paths(message, changed_runner_memory())
 
 
 def commit_lineage_decision(experiment: int, selected: str) -> None:
-    control_files = {"research/proposal.json", "research/evaluation_request.json"}
-    paths = [
-        path
-        for path in status_paths((".",))
-        if path.replace("\\", "/") not in control_files
-    ]
-    stage_existing_or_tracked(paths)
-    if git("diff", "--cached", "--name-only").strip():
-        commit_and_push(f"select experiment {experiment} lineage: {selected}")
+    # Two owners, two commits: the surviving science first, then the campaign
+    # memory that must outlive it whatever the next lineage decision does.
+    commit_paths(
+        f"experiment {experiment} code retained for {selected}",
+        assert_research_surface(),
+    )
+    commit_runner_memory(f"select experiment {experiment} lineage: {selected}")
 
 
-def commit_and_push(message: str) -> None:
-    git("commit", "-m", message)
+def commit_paths(message: str, paths: list[str]) -> bool:
+    """Commit exactly these paths; every other worktree or index entry is left alone."""
+    stageable = stage_existing_or_tracked(paths)
+    if not stageable:
+        return False
+    if not git("diff", "--cached", "--name-only", "--", *stageable).strip():
+        return False
+    commit_and_push(message, tuple(stageable))
+    return True
+
+
+def commit_and_push(message: str, paths: tuple[str, ...] = ()) -> None:
+    git("commit", "-m", message, *(("--", *paths) if paths else ()))
     try:
         git("push", "origin", "HEAD")
     except RuntimeError as error:
@@ -2305,7 +2341,7 @@ def commit_and_push(message: str) -> None:
         ) from error
 
 
-def stage_existing_or_tracked(paths: list[str]) -> None:
+def stage_existing_or_tracked(paths: list[str]) -> list[str]:
     stageable = [
         path
         for path in dict.fromkeys(paths)
@@ -2313,6 +2349,7 @@ def stage_existing_or_tracked(paths: list[str]) -> None:
     ]
     if stageable:
         git("add", "-A", "--", *stageable)
+    return stageable
 
 
 def main() -> int:
@@ -2329,7 +2366,12 @@ def main() -> int:
     if args.check_lineage_evidence is not None:
         return check_lineage_evidence(args.check_lineage_evidence)
     if args.evaluate_pending_final:
-        return execute_pending_final_benchmark()
+        status = execute_pending_final_benchmark()
+        if status == 0:
+            # The official result may be the campaign's last transition, so it
+            # is published now rather than by an experiment that may never run.
+            commit_runner_memory("record the official final benchmark")
+        return status
     if args.evaluate_pending:
         return execute_pending_evaluations()
     if not PROPOSAL_PATH.exists():
@@ -2632,6 +2674,7 @@ def main() -> int:
         result["verdict"] = "invalid; researcher changes preserved"
         append_result(result)
         atomic_write_json(STATE_PATH, state)
+        commit_result(index, change)
         announce(f"[error] experiment {index} invalid: {result['error']}")
         return 1
     finally:
