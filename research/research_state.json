@@ -55,14 +55,21 @@
     "reason": "Checkpoint-120832 reached 97.0% on both researcher seeds and the independent task-reference panel, improving over the champion's 91.5% pooled researcher result and 90.5% task-reference result. It is the strongest available lineage and is close enough to the 98% objective to warrant the independent final benchmark."
   },
   "last_verdict": "researcher selected checkpoint-120832",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research\\checkpoints\\accepted",
-    "experiment": 4,
-    "fingerprint": "e4e5df85e3a7131e3be759341ad65e491cfddf995a46dd0b2556ceefc40be657",
-    "selected": "checkpoint-120832"
+  "official_benchmark_artifact": "e4e5df85e3a7131e3be759341ad65e491cfddf995a46dd0b2556ceefc40be657",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.39833544293670337,
+      "median": 0.3598567291901525,
+      "worst": 2.216067032663358
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
