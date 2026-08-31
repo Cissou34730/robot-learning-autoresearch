@@ -1,8 +1,8 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-6-champion-200ep-seed1000-c0278203b0e7.json",
-    "research/evaluations/evaluation-experiment-6-champion-200ep-seed2000-c0278203b0e7.json"
+    "research/evaluations/evaluation-experiment-7-champion-200ep-seed1000-75d7dd2df0b4.json",
+    "research/evaluations/evaluation-experiment-7-champion-200ep-seed2000-75d7dd2df0b4.json"
   ],
   "accepted_metrics": {
     "episodes": 400,
@@ -42,17 +42,17 @@
     }
   },
   "accepted_training_steps": 480000,
-  "last_allocated_experiment": 6,
-  "last_experiment": 6,
+  "last_allocated_experiment": 7,
+  "last_experiment": 7,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Revert the experiment-6 OUTSIDE_BAND_PENALTY change because it produced no researcher-panel improvement and no independent reference improvement over the champion."
+      "reason": "Revert the experiment-7 HOLD_PROGRESS_EXPONENT change because it reduced researcher-panel success and task-reference success relative to the champion."
     },
-    "code_parent_commit": "e17e46ce0cf096913832bb14474fc0b8b970c276",
+    "code_parent_commit": "d0e06c8d51396a70f381a868e449df9850c73b54",
     "continue_from": "champion",
-    "experiment": 6,
-    "reason": "The experiment-6 checkpoint tied the champion at 97.5% across both researcher seeds and scored lower on the independent task-reference panel (98.0% versus 98.5%). The higher outside-band penalty did not improve recovery enough to justify replacing the existing champion."
+    "experiment": 7,
+    "reason": "The experiment-7 challenger reached 96.75% pooled success versus 97.5% for the champion, had 13 failures versus 10 across the researcher panels, and scored 98.0% versus 98.5% on the independent task-reference panel. The stronger early hold-progress shaping did not improve reliability, so the existing champion remains the active lineage."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "a4996c42254fe8e26a83953737150407a75456f7e249ba2a5610925c9a81bb43",

@@ -59,3 +59,13 @@
 **Interpretation:** Raising `OUTSIDE_BAND_PENALTY` from 0.1 to 0.5 did not improve success and replaced the champion's interruption-heavy failures with additional no-reach failures without improving the shared reference result. Revert the experiment code and continue from the existing champion; its official benchmark has already failed, so no final benchmark is requested.
 
 **Evidence inspected:** `research/evaluations/evaluation-experiment-6-checkpoint-120832-200ep-seed1000-c0278203b0e7.json`, `research/evaluations/evaluation-experiment-6-checkpoint-120832-200ep-seed2000-c0278203b0e7.json`, `research/evaluations/evaluation-experiment-6-champion-200ep-seed1000-c0278203b0e7.json`, `research/evaluations/evaluation-experiment-6-champion-200ep-seed2000-c0278203b0e7.json`, `research/evaluations/task-reference-experiment-6-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-6-champion-task-reference-v1.json`
+
+## Experiment 7
+
+**Result:** The transferred hold-shaping reward reached 96.75% pooled success over two 200-episode researcher seeds, below the champion's 97.5%.
+
+**Observed behavior:** The challenger had 13 failures across the two researcher panels versus 10 for the champion, with more short-hold failures and the same number of no-reach failures; task-reference success was 98.0% versus 98.5% for the champion.
+
+**Interpretation:** Changing `HOLD_PROGRESS_EXPONENT` from 1.0 to 0.5 did not improve hold reliability and weakened both researcher and independent reference results, so revert the experiment code and continue from the existing champion. Its official benchmark has already failed, so no final benchmark is requested.
+
+**Evidence inspected:** `research/evaluations/evaluation-experiment-7-checkpoint-120832-200ep-seed1000-75d7dd2df0b4.json`, `research/evaluations/evaluation-experiment-7-checkpoint-120832-200ep-seed2000-75d7dd2df0b4.json`, `research/evaluations/evaluation-experiment-7-champion-200ep-seed1000-75d7dd2df0b4.json`, `research/evaluations/evaluation-experiment-7-champion-200ep-seed2000-75d7dd2df0b4.json`, `research/evaluations/task-reference-experiment-7-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-7-champion-task-reference-v1.json`
