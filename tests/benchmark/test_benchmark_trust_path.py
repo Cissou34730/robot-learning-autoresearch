@@ -10,9 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from research.run_experiment import (
+from research.run_experiment import execute_pending_final_benchmark
+from research.runner_protocol import (
     PROTECTED_BENCHMARK_PATHS,
-    execute_pending_final_benchmark,
     validate_experiment_semantics,
 )
 
@@ -131,7 +131,7 @@ def test_researcher_cannot_change_the_enforcement_mechanism():
 
 
 def _pending_final_benchmark_state(monkeypatch, tmp_path):
-    from research.run_experiment import artifact_fingerprint
+    from research.runner_repository import artifact_fingerprint
 
     accepted = tmp_path / "accepted"
     accepted.mkdir()
@@ -155,9 +155,9 @@ def _pending_final_benchmark_state(monkeypatch, tmp_path):
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
     return state_path
 
 

@@ -14,20 +14,24 @@ import pytest
 from research.run_experiment import (
     apply_previous_result_decision,
     check_lineage_evidence,
-    compact_result_record,
+    execute_pending_evaluations,
+    execute_pending_final_benchmark,
+)
+from research.runner_execution import training_budget
+from research.runner_protocol import (
     evaluation_artifact_name,
     evaluation_semantics_fingerprint,
     evaluation_semantics_paths,
-    execute_pending_evaluations,
-    execute_pending_final_benchmark,
     experiment_family,
-    measurement_record,
     parameter_change_records,
     plan_previous_result_decision,
-    training_budget,
     training_parent,
     validate_experiment_semantics,
     validate_training_proposal,
+)
+from research.runner_repository import (
+    compact_result_record,
+    measurement_record,
 )
 from robot_learning.scenario import (
     summarize_research_evaluations as summarize_evaluations,
@@ -168,12 +172,12 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", tmp_path)
-    monkeypatch.setattr("research.run_experiment.BASELINE_PENDING_PATH", baseline_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
+    monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", baseline_path)
 
     def skip_result_recording(result):
         del result
@@ -181,8 +185,10 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     def skip_result_commit(index, change):
         del index, change
 
-    monkeypatch.setattr("research.run_experiment.append_result", skip_result_recording)
-    monkeypatch.setattr("research.run_experiment.commit_result", skip_result_commit)
+    monkeypatch.setattr(
+        "research.runner_repository.append_result", skip_result_recording
+    )
+    monkeypatch.setattr("research.runner_repository.commit_result", skip_result_commit)
 
     calls: list[int] = []
 
@@ -193,7 +199,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
             raise KeyboardInterrupt
         return evaluation(seed, [True, False])
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", interrupt_second)
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", interrupt_second)
     assert execute_pending_evaluations() == 130
     assert calls == [1000, 2000]
 
@@ -205,7 +211,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
         resumed_calls.append(seed)
         return evaluation(seed, [True, True])
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", finish)
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", finish)
     assert execute_pending_evaluations() == 0
     assert resumed_calls == [2000]
     final_state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -272,19 +278,21 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
-        "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
 
     def skip_result_recording(result):
         del result
 
-    monkeypatch.setattr("research.run_experiment.append_result", skip_result_recording)
+    monkeypatch.setattr(
+        "research.runner_repository.append_result", skip_result_recording
+    )
     calls = []
 
     def record_evaluation(artifact, seed, **kwargs):
@@ -292,7 +300,9 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
         calls.append(seed)
         return evaluation(seed, [True, False])
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", record_evaluation)
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact", record_evaluation
+    )
 
     assert execute_pending_evaluations() == 0
     assert calls == [1000]
@@ -332,15 +342,15 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
-        "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
-    monkeypatch.setattr("research.run_experiment.append_result", lambda result: None)
+    monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
 
     calls: list[int] = []
 
@@ -349,7 +359,9 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
         calls.append(seed)
         return evaluation(seed, [True, False])
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", record_evaluation)
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact", record_evaluation
+    )
     request_path.write_text(
         json.dumps(
             {
@@ -456,13 +468,13 @@ def _single_panel_evaluation_fixture(monkeypatch, tmp_path):
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", evaluations_dir)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", evaluations_dir)
     monkeypatch.setattr(
-        "research.run_experiment.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
     return state_path, request_path, evaluations_dir
 
@@ -480,7 +492,7 @@ def _recording_evaluator(monkeypatch, payload_for):
             output_path.write_text(json.dumps(payload), encoding="utf-8")
         return payload
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", evaluate)
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
     return calls
 
 
@@ -499,7 +511,7 @@ def test_researcher_evidence_reaches_the_artifact_and_stays_out_of_state(
         monkeypatch, tmp_path
     )
     recorded: list[dict] = []
-    monkeypatch.setattr("research.run_experiment.append_result", recorded.append)
+    monkeypatch.setattr("research.runner_repository.append_result", recorded.append)
 
     def payload(seed):
         measurement = evaluation(seed, [True, False])
@@ -531,7 +543,7 @@ def test_recorded_history_keeps_references_not_detailed_evidence(monkeypatch, tm
     _single_panel_evaluation_fixture(monkeypatch, tmp_path)
     recorded: list[dict] = []
     monkeypatch.setattr(
-        "research.run_experiment.append_result",
+        "research.runner_repository.append_result",
         lambda result: recorded.append(compact_result_record(result)),
     )
 
@@ -558,7 +570,7 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
     _, request_path, evaluations_dir = _single_panel_evaluation_fixture(
         monkeypatch, tmp_path
     )
-    monkeypatch.setattr("research.run_experiment.append_result", lambda result: None)
+    monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
     calls = _recording_evaluator(monkeypatch, lambda seed: evaluation(seed, [True]))
 
     def request_same_panel(more_evidence: bool) -> None:
@@ -578,7 +590,7 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
         )
 
     monkeypatch.setattr(
-        "research.run_experiment.evaluation_semantics_fingerprint", lambda: "before"
+        "research.runner_protocol.evaluation_semantics_fingerprint", lambda: "before"
     )
     request_same_panel(True)
     assert execute_pending_evaluations() == 0
@@ -591,7 +603,7 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
 
     # Re-instrumented: the same candidate, episodes and seed is a new fact.
     monkeypatch.setattr(
-        "research.run_experiment.evaluation_semantics_fingerprint", lambda: "after"
+        "research.runner_protocol.evaluation_semantics_fingerprint", lambda: "after"
     )
     request_same_panel(False)
     assert execute_pending_evaluations() == 0
@@ -632,7 +644,7 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
     monkeypatch, tmp_path
 ):
     scenario = _semantics_tree(tmp_path)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
     assert evaluation_semantics_paths() == [
         "robot_learning/evaluate.py",
@@ -686,7 +698,7 @@ def test_non_scenario_evaluation_dependencies_change_measurement_identity(
     monkeypatch, tmp_path, relative
 ):
     _semantics_tree(tmp_path)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
     original = evaluation_semantics_fingerprint()
     (tmp_path / relative).write_text("changed\n", encoding="utf-8")
@@ -698,7 +710,7 @@ def test_presentation_and_generated_files_stay_out_of_measurement_identity(
     monkeypatch, tmp_path
 ):
     scenario = _semantics_tree(tmp_path)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
     original = evaluation_semantics_fingerprint()
 
@@ -730,7 +742,7 @@ def test_protected_scenario_files_stay_out_of_measurement_identity(
     monkeypatch, tmp_path
 ):
     scenario = _semantics_tree(tmp_path)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
     original = evaluation_semantics_fingerprint()
     for name in ("__init__.py", "final_benchmark.py"):
@@ -757,11 +769,11 @@ def _attested_lineage_state(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
     artifacts = tmp_path / "research" / "evaluations"
     artifacts.mkdir(parents=True)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
-    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", artifacts)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", artifacts)
     state = _decision_state(
         "archive/candidate", _measured(tmp_path, "candidate", artifacts)
     )
@@ -886,7 +898,7 @@ def test_opaque_evidence_survives_the_whole_execution_path(monkeypatch, tmp_path
     state_path, _, _ = _single_panel_evaluation_fixture(monkeypatch, tmp_path)
     recorded: list[dict] = []
     monkeypatch.setattr(
-        "research.run_experiment.append_result",
+        "research.runner_repository.append_result",
         lambda result: recorded.append(compact_result_record(result)),
     )
 
@@ -902,7 +914,7 @@ def test_opaque_evidence_survives_the_whole_execution_path(monkeypatch, tmp_path
             output_path.write_text("{}", encoding="utf-8")
         return payload(seed)
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", evaluate)
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
 
     # Any generic read of the channel would raise before this returns.
     assert execute_pending_evaluations() == 0
@@ -936,12 +948,12 @@ def test_researcher_can_select_an_archived_candidate_as_next_lineage(
             "training_budget_steps": 120_000,
         },
     }
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr(
-        "research.run_experiment.STATE_PATH", tmp_path / "research_state.json"
+        "research.runner_paths.STATE_PATH", tmp_path / "research_state.json"
     )
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
     reached = apply_previous_result_decision(
         {
             "previous_result_decision": {
@@ -1037,17 +1049,17 @@ def _lineage_decision():
 
 def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
 
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
     calls = []
     monkeypatch.setattr(
-        "research.run_experiment.evaluate_final_model",
+        "robot_learning.scenario.evaluate_final_model",
         lambda model: (
             calls.append(model)
             or {
@@ -1076,11 +1088,11 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     monkeypatch, tmp_path
 ):
     _artifact(tmp_path / "archive" / "candidate")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
     state_path = tmp_path / "state.json"
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
@@ -1091,7 +1103,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
         raise RuntimeError("benchmark crashed")
 
     monkeypatch.setattr(
-        "research.run_experiment.evaluate_final_model", failed_benchmark
+        "robot_learning.scenario.evaluate_final_model", failed_benchmark
     )
     with pytest.raises(RuntimeError, match="benchmark crashed"):
         execute_pending_final_benchmark()
@@ -1103,7 +1115,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     assert persisted["official_metrics"] is None
 
     monkeypatch.setattr(
-        "research.run_experiment.evaluate_final_model",
+        "robot_learning.scenario.evaluate_final_model",
         lambda model: {
             "episodes": 200,
             "seed": 1000,
@@ -1120,8 +1132,8 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
 
 def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     decision = _lineage_decision()
     decision["previous_result_decision"]["request_final_benchmark"] = True
@@ -1175,8 +1187,8 @@ def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     with pytest.raises(ValueError, match="not valid"):
         execute_pending_evaluations()
 
@@ -1244,10 +1256,10 @@ def test_champion_can_be_retained_before_replacement(monkeypatch, tmp_path):
     champion = _artifact(tmp_path / "accepted")
     challenger = _artifact(tmp_path / "archive" / "candidate")
     challenger_model = challenger.joinpath("model.zip").read_bytes()
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     state.update(
         {
@@ -1302,7 +1314,7 @@ def _attest(monkeypatch, tmp_path, experiment, paths, label="Evidence inspected"
         f"**{label}:** " + ", ".join(f"`{path}`" for path in paths) + "\n",
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.POSTMORTEM_PATH", postmortem)
+    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", postmortem)
     return postmortem
 
 
@@ -1311,14 +1323,14 @@ def _evaluation_lifecycle_state(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "runner-up")
     artifacts = tmp_path / "research" / "evaluations"
     artifacts.mkdir(parents=True)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
     monkeypatch.setattr(
-        "research.run_experiment.CANDIDATE_ROOT", tmp_path / "models" / "candidates"
+        "research.runner_paths.CANDIDATE_ROOT", tmp_path / "models" / "candidates"
     )
-    monkeypatch.setattr("research.run_experiment.EVALUATION_DIR", artifacts)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", artifacts)
     _attest(
         monkeypatch,
         tmp_path,
@@ -1409,10 +1421,10 @@ def test_removing_retained_lineage_keeps_history_but_removes_artifact(
     retained = _artifact(
         tmp_path / "research" / "checkpoints" / "retained" / "obsolete"
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     state["retained_lineages"] = [
         {
@@ -1450,10 +1462,10 @@ def test_invalid_lineage_decisions_mutate_nothing(monkeypatch, tmp_path, mutate)
     candidate = _artifact(tmp_path / "archive" / "candidate")
     accepted = _artifact(tmp_path / "accepted")
     state_path = tmp_path / "state.json"
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", accepted)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     state["retained_lineages"] = []
     before_state = json.dumps(state, sort_keys=True)
@@ -1471,9 +1483,9 @@ def test_invalid_lineage_decisions_mutate_nothing(monkeypatch, tmp_path, mutate)
 def test_conflicting_retention_is_rejected_before_mutation(monkeypatch, tmp_path):
     _artifact(tmp_path / "archive" / "candidate")
     accepted = _artifact(tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", accepted)
-    monkeypatch.setattr("research.run_experiment.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     state["retained_lineages"] = [
         {"id": "alternative", "artifact": "old", "origin_experiment": 1}
@@ -1493,10 +1505,10 @@ def test_discarded_candidates_keep_history_but_lose_heavyweight_files(
     _artifact(tmp_path / "archive" / "selected")
     discarded = _artifact(tmp_path / "archive" / "discarded")
     (discarded / "replay_buffer.pkl").write_bytes(b"large")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", tmp_path / "state.json")
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
     measurements = [evaluation(44, [True, False])]
     state = _decision_state("archive/selected", measurements)
     state["pending_researcher_decision"]["candidates"].append(

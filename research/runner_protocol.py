@@ -1,0 +1,931 @@
+"""Protocol decisions and validation for the Runner.
+
+Everything here answers "is this admissible, and what would it mean?" without
+performing the destructive part of the answer. The `plan_*` operations resolve
+a complete decision that `run_experiment` and `runner_repository` then apply.
+"""
+
+import hashlib
+import re
+from pathlib import Path
+
+from research import runner_console as console
+from research import runner_paths as paths
+from research import runner_repository as repository
+
+# Human-owned for the duration of this research problem: the enforcement
+# mechanism, every file that can declare the objective reached, the human-owned
+# task-reference panel, the official robot they measure, and the package files
+# that resolve those imports.
+PROTECTED_BENCHMARK_PATHS = {
+    "research/run_experiment.py",
+    "robot_learning/__init__.py",
+    "robot_learning/benchmark/__init__.py",
+    "robot_learning/benchmark/final_benchmark.py",
+    "robot_learning/benchmark/final_contract.py",
+    "robot_learning/benchmark/reference_contract.py",
+    "robot_learning/benchmark/reference_evaluation.py",
+    "robot_learning/robots/__init__.py",
+    "robot_learning/robots/two_joint_arm.py",
+    "robot_learning/robots/two_joint_arm.xml",
+    "robot_learning/scenario/__init__.py",
+    "robot_learning/scenario/final_benchmark.py",
+    "robot_learning/scenario/task_reference.py",
+}
+# The rest of the enforcement mechanism, protected by prefix so that adding a
+# Runner module never silently hands part of the protocol to the researcher.
+PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
+# Human-owned test domains. Prefix-based so that creating, renaming or deleting
+# a file underneath them is rejected just like modifying an existing one.
+PROTECTED_TEST_PREFIXES = (
+    "tests/benchmark/",
+    "tests/autoresearch/",
+)
+VALIDATED_TEST_PATHS = (
+    "tests/benchmark",
+    "tests/autoresearch",
+    "tests/scenario",
+    "tests/training",
+)
+# A researcher code change cannot alter the frozen task, so `tests/benchmark`
+# adds nothing; every other suite still guards code the researcher may rewrite.
+RESEARCHER_VALIDATED_TEST_PATHS = (
+    "tests/autoresearch",
+    "tests/scenario",
+    "tests/training",
+)
+# The researcher-owned scientific surface, stated positively. Anything absent
+# here is unclassified and validated completely, so a new or unfamiliar path is
+# never assumed mutable.
+RESEARCHER_OWNED_PREFIXES = (
+    "robot_learning/scenario/",
+    "robot_learning/training/",
+    "tests/scenario/",
+    "tests/training/",
+)
+RESEARCHER_OWNED_PATHS = {
+    "robot_learning/evaluate.py",
+    "robot_learning/play.py",
+    "robot_learning/train.py",
+}
+# Editing these carries no source change, so the test suites stay untouched.
+PARAMETER_ONLY_PATHS = {"research/current_params.json"}
+DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
+# The researcher-owned surface that materially defines what a research
+# measurement means. The whole scenario package is scanned so new instrumentation
+# modules or data files count without registering them here.
+EVALUATION_SEMANTICS_ROOT = "robot_learning/scenario"
+# Scenario files that only affect what a human sees, never how a saved policy is
+# measured, so editing them must not invalidate completed measurements.
+PRESENTATION_ONLY_PATHS = {
+    "robot_learning/scenario/progress.py",
+    "robot_learning/scenario/viewer.py",
+}
+# The only files outside the scenario package that change how an already-trained
+# policy is replayed, observed and turned into a research measurement.
+EVALUATION_RUNTIME_PATHS = (
+    "robot_learning/evaluate.py",
+    "robot_learning/training/algorithms.py",
+    "robot_learning/training/normalization.py",
+)
+GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
+GENERATED_DIRECTORY_NAMES = {"__pycache__"}
+# The one line a lineage decision must carry to name the evidence it relied on.
+EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
+# The researcher names the model; the panel behind this key is human-owned.
+TASK_REFERENCE_ENTRY_FIELDS = {"candidate", "label"}
+
+
+# --- ownership -------------------------------------------------------------
+
+
+def is_protected_source(path: str) -> bool:
+    relative = path.replace("\\", "/")
+    return relative in PROTECTED_BENCHMARK_PATHS or relative.startswith(
+        PROTECTED_RUNNER_PREFIXES
+    )
+
+
+def is_researcher_owned(path: str) -> bool:
+    """Protected paths lose first, so sharing a researcher prefix never frees them."""
+    relative = path.replace("\\", "/")
+    if is_protected_source(relative):
+        return False
+    if relative.startswith(PROTECTED_TEST_PREFIXES):
+        return False
+    return relative in RESEARCHER_OWNED_PATHS or relative.startswith(
+        RESEARCHER_OWNED_PREFIXES
+    )
+
+
+def dependency_metadata_changed(changed_paths: list[str]) -> bool:
+    return any(
+        path.replace("\\", "/") in DEPENDENCY_METADATA_PATHS for path in changed_paths
+    )
+
+
+def validation_test_paths(
+    changed_paths: list[str], *, fresh_baseline: bool
+) -> tuple[str, ...]:
+    """A fresh campaign baseline is validated completely before it consumes
+    training compute, even when the committed worktree carries no research
+    change. Afterwards the suites follow ownership: a change confined to the
+    researcher's own scientific surface skips only the frozen task tests."""
+    if fresh_baseline:
+        return VALIDATED_TEST_PATHS
+    sources = [
+        path
+        for path in changed_paths
+        if path.replace("\\", "/") not in PARAMETER_ONLY_PATHS
+    ]
+    if not sources:
+        return ()
+    if all(is_researcher_owned(path) for path in sources):
+        return RESEARCHER_VALIDATED_TEST_PATHS
+    return VALIDATED_TEST_PATHS
+
+
+# --- experiment identity ---------------------------------------------------
+
+
+def allocated_experiment_index(state: dict) -> int:
+    """The highest experiment identity the Runner has ever handed out.
+
+    `results.jsonl` and `EXPERIMENTS.md` are histories: they can be incomplete,
+    regenerated or rolled back, so they never allocate identity. A state file
+    written before allocation existed carries only the last experiment the
+    Runner ran, which then seeds the counter.
+    """
+    return max(
+        int(state.get("last_allocated_experiment") or 0),
+        int(state.get("last_experiment") or 0),
+    )
+
+
+def experiment_working_paths(index: int) -> tuple[Path, ...]:
+    return (
+        paths.CANDIDATE_ROOT / f"experiment-{index}",
+        paths.CANDIDATE_ROOT / f"recovery-experiment-{index}",
+    )
+
+
+def next_experiment_index(state: dict) -> int:
+    """Allocate the next identity for a new experiment.
+
+    An identity whose working directories already hold data is skipped, never
+    reused: unexpected data is preserved and only costs a number.
+    """
+    index = allocated_experiment_index(state) + 1
+    while any(path.exists() for path in experiment_working_paths(index)):
+        console.announce(
+            f"[runner] WARNING: models/candidates already holds data for "
+            f"experiment {index}; preserving it and skipping that identity"
+        )
+        index += 1
+    return index
+
+
+def resumed_experiment_index(state: dict, reuse_candidate: Path | None) -> int:
+    """A preserved proposal keeps the identity its interrupted run allocated."""
+    index = allocated_experiment_index(state)
+    if reuse_candidate is not None:
+        # Only load-bearing for a state file that predates allocated identity.
+        match = re.fullmatch(r"recovery-experiment-(\d+)", reuse_candidate.name)
+        if match:
+            index = max(index, int(match.group(1)))
+    return index
+
+
+# --- experiment shape ------------------------------------------------------
+
+
+def parameter_change_records(
+    previous: dict,
+    overrides: dict,
+    prefix: str = "",
+) -> list[dict]:
+    """Describe only the leaves explicitly changed by a proposal."""
+    changes: list[dict] = []
+    for key, after in overrides.items():
+        path = f"{prefix}.{key}" if prefix else key
+        before = previous.get(key) if isinstance(previous, dict) else None
+        if isinstance(after, dict):
+            changes.extend(
+                parameter_change_records(
+                    before if isinstance(before, dict) else {},
+                    after,
+                    path,
+                )
+            )
+        elif before != after:
+            changes.append({"path": path, "before": before, "after": after})
+    return changes
+
+
+def experiment_family(
+    proposal: dict,
+    experiment_kind: str,
+    parameter_changes: list[dict],
+    code_changes: list[str],
+) -> str:
+    declared = str(proposal.get("family", "")).strip()
+    if declared:
+        return declared
+    if experiment_kind == "calibration":
+        return "research.training_seed_calibration"
+    if proposal.get("baseline"):
+        return "training.baseline"
+    parameter_paths = sorted({item["path"] for item in parameter_changes})
+    if parameter_paths:
+        return "+".join(parameter_paths)
+    if experiment_kind == "method":
+        return "research.selection_method"
+    if code_changes:
+        normalized = re.sub(r"[^a-z0-9]+", "_", str(proposal["change"]).lower())
+        return f"code.{normalized.strip('_')[:80]}"
+    return experiment_kind
+
+
+def retained_lineage(state: dict, identifier: str) -> dict | None:
+    return next(
+        (
+            lineage
+            for lineage in state.get("retained_lineages", [])
+            if lineage.get("id") == identifier
+        ),
+        None,
+    )
+
+
+def training_parent(
+    proposal: dict, state: dict, initialization: str
+) -> tuple[str, Path, int]:
+    if initialization != "transfer":
+        return "fresh", Path(), 0
+    identifier = str(proposal["training_parent"]).strip()
+    if identifier == "accepted":
+        return (
+            "accepted",
+            paths.ROOT / state["accepted_artifact"],
+            int(state.get("accepted_training_steps", 0)),
+        )
+    lineage = retained_lineage(state, identifier)
+    if lineage is None:
+        raise ValueError(f"unknown retained training parent {identifier!r}")
+    artifact = paths.ROOT / lineage["artifact"]
+    for filename in repository.ARTIFACT_FILES:
+        if not (artifact / filename).exists():
+            raise ValueError(
+                f"retained lineage {identifier!r} is incomplete: {filename}"
+            )
+    return identifier, artifact, int(lineage.get("training_steps", 0))
+
+
+# --- proposal validation ---------------------------------------------------
+
+
+def validate_experiment_semantics(
+    proposal: dict,
+    experiment_kind: str,
+    initialization: str,
+    parameter_overrides: dict | None,
+    code_changes: list[str],
+    baseline: bool,
+) -> None:
+    normalized = [path.replace("\\", "/") for path in code_changes]
+    protected_sources = sorted(
+        {path for path in normalized if is_protected_source(path)}
+    )
+    if protected_sources:
+        raise ValueError(
+            "the human-owned final benchmark, official robot and research "
+            "protocol enforcement cannot be changed by a research proposal: "
+            f"{protected_sources}; restore them to their content at the "
+            "scientific parent before proposing another experiment"
+        )
+    protected_tests = sorted(
+        path for path in normalized if path.startswith(PROTECTED_TEST_PREFIXES)
+    )
+    if protected_tests:
+        raise ValueError(
+            "the human-owned benchmark and AutoResearch tests cannot be changed "
+            f"by a research proposal: {protected_tests}; restore them to their "
+            "content at the scientific parent before proposing another experiment"
+        )
+    if baseline and (parameter_overrides or code_changes):
+        raise ValueError("baseline requires an unchanged research method")
+    if (
+        not baseline
+        and experiment_kind not in {"continuation", "replication"}
+        and not parameter_overrides
+        and not code_changes
+    ):
+        raise ValueError("experiment contains no research change")
+    if experiment_kind == "replication" and (parameter_overrides or code_changes):
+        raise ValueError("replication requires an unchanged learning method")
+
+
+def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
+    def require_nonempty_string(field: str, description: str) -> None:
+        value = proposal.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{description} must be a non-empty string")
+
+    if baseline:
+        # A baseline is its own runner-generated contract, never a training kind.
+        if "kind" in proposal:
+            raise ValueError("baseline proposal must not declare kind")
+        required = {"change", "hypothesis", "initialization"}
+        missing = sorted(field for field in required if field not in proposal)
+        if missing:
+            raise ValueError(f"baseline proposal is missing required fields: {missing}")
+        require_nonempty_string("hypothesis", "baseline proposal hypothesis")
+        require_nonempty_string("change", "baseline proposal change")
+        # A baseline measures the unchanged method from zero, never a lineage.
+        if proposal["initialization"] != "fresh":
+            raise ValueError("baseline proposal requires fresh initialization")
+        return
+    forbidden = {
+        "previous_result_decision",
+        "previous_experiment_postmortem",
+    } & set(proposal)
+    if forbidden:
+        raise ValueError(
+            f"training proposal contains lineage-only fields: {sorted(forbidden)}"
+        )
+    required = {
+        "kind",
+        "family",
+        "hypothesis",
+        "change",
+        "initialization",
+    }
+    missing = sorted(field for field in required if field not in proposal)
+    if missing:
+        raise ValueError(f"training proposal is missing required fields: {missing}")
+    require_nonempty_string("family", "training proposal family")
+    require_nonempty_string("hypothesis", "training proposal hypothesis")
+    require_nonempty_string("change", "training proposal change")
+    kind = proposal["kind"]
+    if kind not in {"training", "continuation", "replication"}:
+        raise ValueError(
+            "training proposal kind must be training, continuation or replication"
+        )
+    if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
+        raise TypeError("proposal params must be an object")
+    initialization = proposal["initialization"]
+    if initialization not in {"transfer", "fresh"}:
+        raise ValueError("initialization must be transfer or fresh")
+    if initialization == "transfer":
+        if (
+            not isinstance(proposal.get("training_parent"), str)
+            or not proposal["training_parent"].strip()
+        ):
+            raise ValueError("transfer initialization requires training_parent")
+    elif "training_parent" in proposal:
+        raise ValueError("training_parent is only valid with transfer initialization")
+    if kind == "continuation" and initialization != "transfer":
+        raise ValueError("continuation requires transfer initialization")
+    if kind == "replication":
+        if initialization != "fresh":
+            raise ValueError("replication requires fresh initialization")
+        if "training_seed" not in proposal:
+            raise ValueError("replication requires an explicit training_seed")
+        try:
+            replicated_experiment = int(proposal["replication_of"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                "replication requires an exact experiment number"
+            ) from error
+        if replicated_experiment < 1:
+            raise ValueError("replication requires an exact experiment number")
+
+
+def validate_proposal_phase(proposal: dict, state: dict) -> str:
+    """Return the proposal contract expected by the persisted lifecycle state."""
+    if not isinstance(proposal, dict):
+        raise TypeError("proposal.json must contain a JSON object")
+    if state.get("pending_final_benchmark") is not None:
+        raise ValueError(
+            "the final benchmark is pending; no research proposal is accepted"
+        )
+    if state.get("pending_evaluation_request") is not None:
+        raise ValueError(
+            "research evaluation is pending; use evaluation_request.json, not "
+            "proposal.json"
+        )
+    if state.get("pending_researcher_decision") is not None:
+        if set(proposal) != {"previous_result_decision"}:
+            raise ValueError(
+                "the current phase requires a lineage proposal containing only "
+                "previous_result_decision"
+            )
+        return "lineage"
+    if "previous_result_decision" in proposal:
+        raise ValueError(
+            "the previous experiment lineage is already resolved; the current "
+            "phase requires a new training proposal without previous_result_decision"
+        )
+    baseline = bool(proposal.get("baseline", False))
+    validate_training_proposal(proposal, baseline=baseline)
+    return "training"
+
+
+def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
+    """Fully validate a proposal for its phase without mutating repository state."""
+    contract = validate_proposal_phase(proposal, raw_state)
+    if contract == "lineage":
+        state = repository.load_state(
+            allow_unmeasured=True, allow_missing_artifact=True
+        )
+        plan_previous_result_decision(proposal, state)
+    return contract
+
+
+# --- evaluation requests ---------------------------------------------------
+
+
+def requested_task_references(request: dict) -> list[dict]:
+    references = request.get("task_reference_evaluations")
+    if references is None:
+        return []
+    if not isinstance(references, list):
+        raise TypeError("task_reference_evaluations must be a list")
+    return [item for item in references if item is not None]
+
+
+def validate_evaluation_request(request: dict) -> None:
+    """Require the researcher's scientific framing on a newly written request."""
+    for field in ("question", "reason"):
+        value = request.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"evaluation request requires a non-empty {field}")
+    evaluations = request.get("evaluations")
+    if evaluations is None:
+        evaluations = []
+    if not isinstance(evaluations, list):
+        raise TypeError("evaluations must be a list")
+    references = requested_task_references(request)
+    for entry in references:
+        if not isinstance(entry, dict):
+            raise TypeError("each task-reference evaluation must be an object")
+        if not str(entry.get("candidate", "")).strip():
+            raise ValueError("a task-reference evaluation requires a candidate")
+        unknown = sorted(set(entry) - TASK_REFERENCE_ENTRY_FIELDS)
+        if unknown:
+            raise ValueError(
+                "the task-reference panel is human-owned; a task-reference "
+                f"evaluation cannot set {unknown}"
+            )
+    if not evaluations and not references:
+        raise ValueError(
+            "an evaluation request must ask for at least one research or "
+            "task-reference evaluation"
+        )
+
+
+def available_evaluation_candidates(pending: dict, state: dict) -> dict:
+    """The models a request may name: this experiment's candidates and the champion."""
+    available = {item["name"]: item for item in pending["candidates"]}
+    if pending.get("champion_available"):
+        available["champion"] = {
+            "name": "champion",
+            "artifact": state["accepted_artifact"],
+            "evaluations": [],
+        }
+    return available
+
+
+def planned_evaluations(request: dict, available: dict) -> list[dict]:
+    """Resolve every requested research measurement before the first one runs."""
+    requested = request.get("evaluations") or []
+    if not isinstance(requested, list):
+        raise TypeError("evaluation request requires an evaluations list")
+    planned: list[dict] = []
+    for number, spec in enumerate(requested, start=1):
+        if not isinstance(spec, dict):
+            raise TypeError("each requested evaluation must be an object")
+        missing = [
+            field for field in ("candidate", "episodes", "seed") if field not in spec
+        ]
+        if missing:
+            raise ValueError(f"evaluation is missing required fields: {missing}")
+        if "official_benchmark" in spec:
+            raise ValueError(
+                "official_benchmark is not valid in a research evaluation request"
+            )
+        name = str(spec.get("candidate", "")).strip()
+        if name not in available:
+            raise ValueError(
+                f"unknown evaluation candidate {name!r}; "
+                f"choose from {sorted(available)}"
+            )
+        try:
+            episodes = int(spec["episodes"])
+            seed = int(spec["seed"])
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                "evaluation episodes and seed must be whole numbers"
+            ) from error
+        if episodes < 1:
+            raise ValueError("evaluation episodes must be positive")
+        planned.append(
+            {
+                "candidate": name,
+                "episodes": episodes,
+                "seed": seed,
+                "label": str(
+                    spec.get("label", f"requested evaluation {number}: {name}")
+                ),
+            }
+        )
+    return planned
+
+
+def planned_task_references(request: dict, available: dict) -> list[dict]:
+    """Resolve every requested task-reference measurement before the first one runs."""
+    planned: list[dict] = []
+    for number, spec in enumerate(requested_task_references(request), start=1):
+        name = str(spec.get("candidate", "")).strip()
+        if name not in available:
+            raise ValueError(
+                f"unknown task-reference candidate {name!r}; "
+                f"choose from {sorted(available)}"
+            )
+        planned.append(
+            {
+                "candidate": name,
+                "label": str(spec.get("label", f"task reference {number}: {name}")),
+            }
+        )
+    return planned
+
+
+# --- measurement identity --------------------------------------------------
+
+
+def evaluation_artifact_name(
+    experiment: int, candidate: str, episodes: int, seed: int, semantics: str
+) -> str:
+    """One stable file per measured panel, so repeated rounds never collide."""
+    label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    return (
+        f"evaluation-experiment-{experiment}-{label}-"
+        f"{episodes}ep-seed{seed}-{semantics}.json"
+    )
+
+
+def task_reference_artifact_name(experiment: int, candidate: str, panel: str) -> str:
+    """Task-reference identity is the model and the human-owned panel, nothing else."""
+    label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    return f"task-reference-experiment-{experiment}-{label}-{panel}.json"
+
+
+def is_generated_path(relative_parts: tuple[str, ...]) -> bool:
+    """Tool caches and scratch files are not researcher-owned measurement state."""
+    *directories, name = relative_parts
+    if any(
+        part in GENERATED_DIRECTORY_NAMES or part.startswith(".")
+        for part in directories
+    ):
+        return True
+    return name.startswith(".") or name.endswith(GENERATED_FILE_SUFFIXES)
+
+
+def evaluation_semantics_paths() -> list[str]:
+    """Every researcher-owned file that can change how a saved policy is measured.
+
+    Any file type counts, so researcher-authored instrumentation modules and
+    measurement data files are covered without a registry.
+    """
+    included = [
+        relative
+        for relative in EVALUATION_RUNTIME_PATHS
+        if (paths.ROOT / relative).is_file()
+    ]
+    root = paths.ROOT / EVALUATION_SEMANTICS_ROOT
+    if not root.is_dir():
+        return sorted(included)
+    for source in root.rglob("*"):
+        if not source.is_file() or is_generated_path(source.relative_to(root).parts):
+            continue
+        relative = source.relative_to(paths.ROOT).as_posix()
+        if is_protected_source(relative) or relative in PRESENTATION_ONLY_PATHS:
+            continue
+        included.append(relative)
+    return sorted(included)
+
+
+def evaluation_semantics_fingerprint() -> str:
+    """Identify the researcher-owned state that defines what a measurement means.
+
+    Paths are hashed with their contents so an added, renamed or deleted file
+    changes measurement identity just like an edited one.
+    """
+    digest = hashlib.sha256()
+    for relative in evaluation_semantics_paths():
+        digest.update(relative.encode("utf-8"))
+        digest.update((paths.ROOT / relative).read_bytes())
+    return digest.hexdigest()[:12]
+
+
+# --- lineage evidence ------------------------------------------------------
+
+
+def pending_evaluation_artifacts(pending: dict) -> list[str]:
+    """Every detailed artifact measured for the experiment being resolved."""
+    collected: list[str] = []
+    for candidate in pending.get("candidates") or []:
+        if isinstance(candidate, dict):
+            collected.extend(
+                repository.evaluation_artifact_paths(candidate.get("evaluations"))
+            )
+    collected.extend(
+        repository.evaluation_artifact_paths(pending.get("champion_evaluations"))
+    )
+    collected.extend(
+        repository.evaluation_artifact_paths(pending.get("task_reference_evaluations"))
+    )
+    return list(dict.fromkeys(collected))
+
+
+def postmortem_section(experiment: int) -> str:
+    """The postmortem entry for one experiment, or an empty string."""
+    if not paths.POSTMORTEM_PATH.exists():
+        return ""
+    match = re.search(
+        rf"^## Experiment {experiment}\b.*?(?=^## Experiment \d|\Z)",
+        paths.POSTMORTEM_PATH.read_text(encoding="utf-8"),
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    return match.group(0) if match else ""
+
+
+def attested_evidence_paths(section: str) -> list[str]:
+    """Artifact paths the researcher recorded as the basis for the decision."""
+    listed_paths: list[str] = []
+    for line in section.splitlines():
+        cleaned = line.replace("*", "").strip().lstrip("-").strip()
+        if not cleaned.lower().startswith(EVIDENCE_ATTESTATION_LABEL.lower()):
+            continue
+        _, _, listed = cleaned.partition(":")
+        listed_paths.extend(
+            token.strip("`\"',;()[] ")
+            for token in re.split(r"[\s,]+", listed)
+            if token.strip("`\"',;()[] ")
+        )
+    return list(dict.fromkeys(listed_paths))
+
+
+def validate_postmortem_evidence(experiment: int, measured: list[str]) -> None:
+    """Require the decision to name existing evidence of this experiment.
+
+    This shows only that the researcher session identified real artifacts of the
+    experiment it is resolving; it cannot show that they were understood.
+    """
+    section = postmortem_section(experiment)
+    if not section.strip():
+        raise ValueError(f"postmortems.md has no entry for experiment {experiment}")
+    attested = attested_evidence_paths(section)
+    if not attested:
+        raise ValueError(
+            f"the experiment {experiment} postmortem needs an "
+            f"'{EVIDENCE_ATTESTATION_LABEL}:' line listing the detailed "
+            "evaluation artifacts the decision relied on"
+        )
+    owned = {path.replace("\\", "/") for path in measured}
+    matched = [path for path in attested if path.replace("\\", "/") in owned]
+    if not matched:
+        raise ValueError(
+            f"{EVIDENCE_ATTESTATION_LABEL} must name at least one detailed "
+            f"evaluation artifact measured for experiment {experiment}: "
+            f"{sorted(owned)}"
+        )
+    missing = sorted(path for path in matched if not (paths.ROOT / path).is_file())
+    if missing:
+        raise ValueError(f"attested evaluation artifacts do not exist: {missing}")
+
+
+# --- lineage decisions -----------------------------------------------------
+
+
+def plan_code_lineage_decision(
+    pending: dict, action: str, *, current_paths: list[str] | None = None
+) -> dict:
+    if action == "keep":
+        return {"restore": [], "remove_created": []}
+    parent = str(pending.get("code_parent_commit", "")).strip()
+    if not parent:
+        # State written before an experiment recorded a scientific parent.
+        return {"restore": [], "remove_created": []}
+    # The intervention that was validated and trained, plus everything scientific
+    # that happened afterwards. Campaign memory recorded in either set before
+    # this boundary existed can still be listed, and rejecting science must never
+    # restore history to an older version.
+    changed = repository.scientific_change_paths(
+        list(
+            dict.fromkeys(
+                [
+                    *(str(path) for path in pending.get("research_change_paths", [])),
+                    *(current_paths or []),
+                ]
+            )
+        )
+    )
+    if not changed:
+        return {"restore": [], "remove_created": []}
+    repository.require_resolvable_commit(parent)
+    restorable: list[str] = []
+    created: list[Path] = []
+    for path in changed:
+        candidate = (paths.ROOT / path).resolve()
+        if paths.ROOT.resolve() not in candidate.parents:
+            raise RuntimeError(f"unsafe research change path: {path}")
+        if repository.tracked_at_commit(parent, path):
+            restorable.append(path)
+        else:
+            created.append(candidate)
+    return {"restore": restorable, "remove_created": created}
+
+
+def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
+    pending = state.get("pending_researcher_decision")
+    if pending is None:
+        raise ValueError("there is no researcher decision awaiting resolution")
+    if set(proposal) != {"previous_result_decision"}:
+        raise ValueError(
+            "a lineage proposal must contain only previous_result_decision"
+        )
+    decision = proposal.get("previous_result_decision")
+    if not isinstance(decision, dict):
+        raise TypeError(
+            "the previous experiment is awaiting a researcher decision; add "
+            "previous_result_decision to the proposal"
+        )
+    if int(decision.get("experiment", -1)) != int(pending["experiment"]):
+        raise ValueError("previous_result_decision references the wrong experiment")
+    measured_evidence = pending_evaluation_artifacts(pending)
+    if measured_evidence:
+        validate_postmortem_evidence(int(pending["experiment"]), measured_evidence)
+    selected_name = str(decision.get("continue_from", "")).strip()
+    reason = str(decision.get("reason", "")).strip()
+    if not reason:
+        raise ValueError("previous_result_decision requires a reason")
+    allowed = {
+        "experiment",
+        "continue_from",
+        "reason",
+        "code",
+        "retain",
+        "remove_retained",
+        "request_final_benchmark",
+    }
+    extra = set(decision) - allowed
+    if extra:
+        raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
+    sources = {item["name"]: item for item in pending["candidates"]}
+    if pending.get("champion_available"):
+        sources["champion"] = {
+            "name": "champion",
+            "artifact": state["accepted_artifact"],
+            "timesteps": int(state.get("accepted_training_steps", 0)),
+            "summary": state.get("accepted_metrics"),
+            "evaluations": pending.get("champion_evaluations", []),
+            "parameters": state.get("accepted_parameters"),
+        }
+    if selected_name == "champion" and "champion" not in sources:
+        raise ValueError("there is no existing champion to continue from")
+    selected = sources.get(selected_name)
+    if selected is None:
+        raise ValueError(f"continue_from must be one of {sorted(sources)}")
+    selected_artifact = paths.ROOT / selected["artifact"]
+    repository.require_complete_artifact(
+        selected_artifact, f"selected lineage {selected_name!r}"
+    )
+
+    code_decision = decision.get("code")
+    if not isinstance(code_decision, dict):
+        raise TypeError(
+            "previous_result_decision requires a code decision with action and reason"
+        )
+    if set(code_decision) != {"action", "reason"}:
+        raise ValueError("code decision contains unsupported fields")
+    code_action = str(code_decision.get("action", "")).strip().lower()
+    code_reason = str(code_decision.get("reason", "")).strip()
+    if code_action not in {"keep", "revert"} or not code_reason:
+        raise ValueError("code decision must be keep or revert with a reason")
+    parent = str(pending.get("code_parent_commit", "")).strip()
+    # The frozen change set describes the intervention that trained; the science
+    # that must be undone is whatever stands against the parent now.
+    code_plan = plan_code_lineage_decision(
+        pending,
+        code_action,
+        current_paths=(
+            repository.scientific_delta(parent)
+            if parent and code_action == "revert"
+            else None
+        ),
+    )
+    code_plan["parent"] = parent
+
+    retained = list(state.get("retained_lineages", []))
+    retained_by_id = {str(lineage.get("id")): lineage for lineage in retained}
+    removal_ids = decision.get("remove_retained", [])
+    if not isinstance(removal_ids, list) or any(
+        not str(identifier).strip() for identifier in removal_ids
+    ):
+        raise ValueError("remove_retained must be a list of retained lineage IDs")
+    removal_ids = [str(identifier).strip() for identifier in removal_ids]
+    if len(set(removal_ids)) != len(removal_ids):
+        raise ValueError("remove_retained contains duplicate IDs")
+    missing = set(removal_ids) - set(retained_by_id)
+    if missing:
+        raise ValueError(f"unknown retained lineages: {sorted(missing)}")
+
+    requested = decision.get("retain", [])
+    if not isinstance(requested, list):
+        raise TypeError("retain must be a list")
+    retained_ids = set(retained_by_id)
+    retention_plans: list[dict] = []
+    for item in requested:
+        if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
+            raise ValueError(
+                "each retained lineage requires only candidate, id, and reason"
+            )
+        candidate_name = str(item["candidate"]).strip()
+        identifier = str(item["id"]).strip()
+        retention_reason = str(item["reason"]).strip()
+        if (
+            not identifier
+            or Path(identifier).name != identifier
+            or identifier in {".", ".."}
+        ):
+            raise ValueError(
+                "retained lineage ID must be a stable file-name-safe identifier"
+            )
+        if not retention_reason or candidate_name not in sources:
+            raise ValueError(
+                "retained lineages require an available candidate, id, and reason"
+            )
+        if candidate_name == selected_name:
+            raise ValueError("do not retain the lineage becoming active")
+        if identifier in retained_ids or identifier in removal_ids:
+            raise ValueError(f"conflicting retained lineage ID: {identifier}")
+        source = sources[candidate_name]
+        source_artifact = paths.ROOT / source["artifact"]
+        repository.require_complete_artifact(
+            source_artifact, f"retained lineage {identifier!r}"
+        )
+        destination = paths.RESEARCH_DIR / "checkpoints" / "retained" / identifier
+        if destination.exists():
+            raise ValueError(
+                f"retained lineage destination already exists: {identifier}"
+            )
+        retention_plans.append(
+            {
+                "source": source_artifact,
+                "destination": destination,
+                "record": {
+                    "id": identifier,
+                    "artifact": str(destination.relative_to(paths.ROOT)),
+                    "origin_experiment": int(pending["experiment"]),
+                    "candidate": candidate_name,
+                    "reason": retention_reason,
+                    "parameters": source.get("parameters", pending["parameters"]),
+                    "training_steps": int(source["timesteps"]),
+                    "evaluation_artifacts": repository.evaluation_artifact_paths(
+                        source.get("evaluations")
+                    ),
+                },
+            }
+        )
+        retained_ids.add(identifier)
+
+    request_final = decision.get("request_final_benchmark", False)
+    if not isinstance(request_final, bool):
+        raise TypeError("request_final_benchmark must be true or false")
+    selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
+    if (
+        request_final
+        and state.get("official_benchmark_artifact") == selected_fingerprint
+    ):
+        raise ValueError(
+            "the selected accepted artifact already received an official benchmark"
+        )
+    return {
+        "pending": pending,
+        "decision": decision,
+        "selected": selected,
+        "selected_name": selected_name,
+        "selected_artifact": selected_artifact,
+        "selected_fingerprint": selected_fingerprint,
+        "code_action": code_action,
+        "code_reason": code_reason,
+        "code_plan": code_plan,
+        "retained": [
+            lineage for lineage in retained if lineage["id"] not in removal_ids
+        ],
+        "retentions": retention_plans,
+        "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
+        "request_final_benchmark": request_final,
+    }

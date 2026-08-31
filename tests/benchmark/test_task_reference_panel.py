@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from research.run_experiment import (
+from research.runner_protocol import (
     TASK_REFERENCE_ENTRY_FIELDS,
     task_reference_artifact_name,
     validate_evaluation_request,

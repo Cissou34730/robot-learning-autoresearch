@@ -300,14 +300,14 @@ def _preflight_files(monkeypatch, tmp_path, request: dict | str) -> Path:
         request_path.write_text(request, encoding="utf-8")
     else:
         request_path.write_text(json.dumps(request), encoding="utf-8")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
 
     def fail_if_measured(*args, **kwargs):
         del args, kwargs
         pytest.fail("the preflight executed a measurement")
 
-    monkeypatch.setattr("research.run_experiment.evaluate_artifact", fail_if_measured)
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", fail_if_measured)
     return state_path
 
 
@@ -478,10 +478,10 @@ def test_evaluation_preflight_reports_a_missing_deliverable(
     monkeypatch, tmp_path, capsys
 ):
     monkeypatch.setattr(
-        "research.run_experiment.STATE_PATH", tmp_path / "research_state.json"
+        "research.runner_paths.STATE_PATH", tmp_path / "research_state.json"
     )
     monkeypatch.setattr(
-        "research.run_experiment.EVALUATION_REQUEST_PATH",
+        "research.runner_paths.EVALUATION_REQUEST_PATH",
         tmp_path / "evaluation_request.json",
     )
 
@@ -498,8 +498,8 @@ def test_evaluation_preflight_rejects_a_request_outside_its_phase(
         json.dumps({"pending_evaluation_request": None}), encoding="utf-8"
     )
     request_path.write_text(json.dumps(_valid_request()), encoding="utf-8")
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
 
     assert check_evaluation_request() == 1
     assert "awaiting a research evaluation" in capsys.readouterr().out

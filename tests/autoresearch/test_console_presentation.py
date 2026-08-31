@@ -9,15 +9,15 @@ from research.build_research_brief import (
     render_research_brief,
     render_training_summary,
 )
-from research.run_experiment import (
+from research.runner_console import (
     render_decision_card,
     render_evaluation_plan,
     render_evidence_card,
     render_experiment_card,
     render_training_summary_card,
     training_progress_suffix,
-    validate_evaluation_request,
 )
+from research.runner_protocol import validate_evaluation_request
 from robot_learning.training.progress import (
     latest_training_record,
     parse_training_records,
@@ -375,21 +375,20 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
     request["paired_comparisons"] = []
     request_path.write_text(json.dumps(request), encoding="utf-8")
 
-    monkeypatch.setattr(run_experiment, "ROOT", tmp_path)
-    monkeypatch.setattr(run_experiment, "STATE_PATH", state_path)
-    monkeypatch.setattr(run_experiment, "EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr(run_experiment, "CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr(run_experiment, "EVALUATION_DIR", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
-        run_experiment, "BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
-    monkeypatch.setattr(run_experiment, "append_result", lambda result: None)
+    monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
 
     printed: list[str] = []
-    monkeypatch.setattr(run_experiment, "announce", printed.append)
+    monkeypatch.setattr("research.runner_console.announce", printed.append)
     monkeypatch.setattr(
-        run_experiment,
-        "evaluate_artifact",
+        "research.runner_execution.evaluate_artifact",
         lambda artifact, seed, **kwargs: {
             "episodes": 2,
             "seed": seed,

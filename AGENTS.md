@@ -50,9 +50,27 @@ uv run pytest                            # tests
   code imports only the functions re-exported by
   `robot_learning/scenario/__init__.py`.
 - `robot_learning/train.py`, `play.py` - CLIs
+- `research/run_experiment.py` - the Runner: CLI, phase determination and
+  lifecycle orchestration. It sequences Runner operations; the implementation
+  of each one lives in a `research/runner_*.py` module.
+- `research/runner_paths.py` - every filesystem location the Runner operates on
+- `research/runner_console.py` - what a human sees: cards, plans, progress
+- `research/runner_protocol.py` - what is admissible and what a decision means:
+  proposal and evaluation-request validation, protected and researcher-owned
+  surfaces, experiment identity, measurement identity, and the `plan_*`
+  operations that resolve a lineage decision without applying it
+- `research/runner_repository.py` - what is durable: campaign state, campaign
+  history, checkpoints, artifacts, and every Git operation
+- `research/runner_execution.py` - what actually runs: subprocesses, training,
+  research evaluations, timeouts and interruption handling. The training and
+  physics stack is imported inside these execution paths, so validation-only
+  commands never load it.
 - `research/current_params.json` - runtime configuration of the currently
   active training method. Reward and other scenario science
   live in `robot_learning/scenario/` as code.
+- `research/results.jsonl` - the authoritative experiment history
+- `research/EXPERIMENTS.md` - a human-readable view derived from
+  `results.jsonl`, never an independent record
 - `research/program.md` - authoritative research protocol (read before touching
   `research/`)
 - `research/scenario.md` - the current scientific problem
@@ -73,6 +91,15 @@ uv run pytest                            # tests
 
 - Training is headless; rendering only in play/viewer paths.
 - Do not run repo-wide lint/format passes; format only files you touched.
+- `research/results.jsonl` is the experiment history. A record is appended
+  there first, then `research/EXPERIMENTS.md` is regenerated in full and
+  replaced atomically, so an interruption can never leave two competing
+  histories. The Runner reconciles the derived view when it enters a mutable
+  phase; validation and check-only commands stay non-mutating.
+- `research/run_experiment.py` and every `research/runner_*.py` module are the
+  enforcement mechanism and are human-owned; the Runner rejects any proposal
+  that touches them. Splitting a responsibility into a new `runner_*` module
+  therefore never hands part of the protocol to the researcher.
 - Tests are organized by repository domain. During a research campaign the
   researcher may modify only `tests/scenario/` and `tests/training/`;
   `tests/benchmark/` and `tests/autoresearch/` are human-owned and the runner
@@ -93,7 +120,11 @@ uv run pytest                            # tests
   experiment's `code_changes` and its Git code lineage.
 - `tests/benchmark/` and `tests/autoresearch/` must stay method-neutral: they
   never import or assert against a concrete RL algorithm class.
-- Validation timing, enforced by `research/run_experiment.py`:
+- Architecture guards derive the surface they protect rather than naming one
+  file, so a guard follows the code when a responsibility moves into a new
+  Runner module instead of silently guarding nothing.
+- Validation timing, decided by `research/runner_protocol.py` and executed by
+  `research/runner_execution.py`:
   - fresh campaign baseline - complete validation over all four suites before
     training, even with an unchanged worktree;
   - experiment whose changes all fall inside the researcher-owned surface

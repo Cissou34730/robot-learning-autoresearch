@@ -22,6 +22,24 @@ from robot_learning.training.research_config import load_experiment_config
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# Derived, never listed: a guard must follow the Runner when a responsibility
+# moves into a new module instead of silently guarding nothing.
+RUNNER_MODULES = (
+    "research/run_experiment.py",
+    *sorted(
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "research").glob("runner_*.py")
+    ),
+)
+
+
+def runner_sources() -> dict[str, str]:
+    return {
+        relative: (ROOT / relative).read_text(encoding="utf-8")
+        for relative in RUNNER_MODULES
+    }
+
+
 SCENARIO_BOUNDARY = (
     "evaluate_final_model",
     "evaluate_research_model",
@@ -58,8 +76,8 @@ SCENARIO_EVALUATION_FIELDS = (
 RESEARCH_EVALUATION_PANEL_MODULES = (
     "robot_learning/evaluate.py",
     "robot_learning/scenario/evaluation.py",
-    "research/run_experiment.py",
     "research/build_research_brief.py",
+    *RUNNER_MODULES,
 )
 
 SCENARIO_WORDING = (
@@ -89,8 +107,8 @@ GENERIC_CORE_MODULES = (
     "robot_learning/training/normalization.py",
     "robot_learning/training/progress.py",
     "robot_learning/training/research_config.py",
-    "research/run_experiment.py",
     "research/build_research_brief.py",
+    *RUNNER_MODULES,
 )
 
 FORBIDDEN_MODULES = frozenset(
@@ -240,9 +258,10 @@ def test_research_evaluation_panel_is_a_single_orchestration_setting():
     assert "default=RESEARCH_EVALUATION_EPISODES" in (
         ROOT / "robot_learning" / "evaluate.py"
     ).read_text(encoding="utf-8")
-    assert "episodes: int = RESEARCH_EVALUATION_EPISODES" in (
-        ROOT / "research" / "run_experiment.py"
-    ).read_text(encoding="utf-8")
+    assert any(
+        "episodes: int = RESEARCH_EVALUATION_EPISODES" in source
+        for source in runner_sources().values()
+    )
 
 
 def test_the_brief_imposes_no_hypothesis_taxonomy():
@@ -262,35 +281,37 @@ def test_live_training_metric_is_owned_by_the_scenario():
 
 
 def test_runner_reads_the_live_training_metric_only_through_the_boundary():
-    source = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
+    sources = runner_sources()
 
-    assert "render_training_progress_metric" in source
-    assert "success_rate" not in source
+    assert any(
+        "render_training_progress_metric" in source for source in sources.values()
+    )
+    for relative, source in sources.items():
+        assert "success_rate" not in source, relative
 
 
 def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
-    from research import run_experiment
+    from research import runner_console
 
     monkeypatch.setattr(
-        run_experiment,
-        "render_training_progress_metric",
+        "robot_learning.scenario.render_training_progress_metric",
         lambda metrics: "completion 74%",
     )
 
-    assert run_experiment.training_progress_suffix({"ep_rew_mean": -6.9}) == (
+    assert runner_console.training_progress_suffix({"ep_rew_mean": -6.9}) == (
         " | reward -6.9 | completion 74%"
     )
 
 
 def test_researcher_runtime_output_is_never_parsed():
     script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-    runner = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
 
     assert "opencode run --model $model --variant $reasoning" in script
     assert "--format json" not in script
     for forbidden in ("ConvertFrom-Json $opencode", "Select-String", "Tee-Object"):
         assert forbidden not in script
-    assert "opencode" not in runner
+    for relative, source in runner_sources().items():
+        assert "opencode" not in source, relative
 
 
 def test_compatibility_reexports_alias_the_scenario_implementation():
@@ -346,29 +367,28 @@ def test_generic_core_does_not_interpret_scenario_evaluation_fields(relative_pat
 
 
 def test_scenario_owns_the_evaluation_summary():
-    runner_source = (ROOT / "research" / "run_experiment.py").read_text(
-        encoding="utf-8"
-    )
+    sources = runner_sources()
     scenario_source = (
         ROOT / "robot_learning" / "scenario" / "evaluation.py"
     ).read_text(encoding="utf-8")
 
-    assert "summarize_research_evaluations" in runner_source
+    assert any(
+        "summarize_research_evaluations" in source for source in sources.values()
+    )
     assert "def summarize_research_evaluations" in scenario_source
-    assert "def summarize_evaluations" not in runner_source
+    for relative, source in sources.items():
+        assert "def summarize_evaluations" not in source, relative
 
 
 def test_task_success_threshold_is_not_generic_configuration():
     config_source = (
         ROOT / "robot_learning" / "training" / "research_config.py"
     ).read_text(encoding="utf-8")
-    runner_source = (ROOT / "research" / "run_experiment.py").read_text(
-        encoding="utf-8"
-    )
 
     assert "98" not in config_source
     assert "SUCCESS_TARGET" not in config_source
-    assert "98" not in runner_source
+    for relative, source in runner_sources().items():
+        assert "98" not in source, relative
     assert not hasattr(research_config, "RESEARCH_SUCCESS_TARGET_PERCENT")
 
 
@@ -480,15 +500,25 @@ def test_scenario_definition_stays_algorithm_independent():
             assert not mentions(source, algorithm_name), path.name
 
 
-def test_scenario_files_participate_in_normal_code_lineage(monkeypatch):
-    from research import run_experiment
+def test_every_runner_module_is_human_owned():
+    """Splitting the enforcement mechanism must never hand a piece of it away."""
+    from research import runner_protocol
 
-    monkeypatch.setattr(run_experiment, "ROOT", ROOT)
+    for relative in RUNNER_MODULES:
+        assert runner_protocol.is_protected_source(relative), relative
+        assert not runner_protocol.is_researcher_owned(relative), relative
+
+
+def test_scenario_files_participate_in_normal_code_lineage(monkeypatch):
+    from research import runner_protocol
+
+    monkeypatch.setattr("research.runner_paths.ROOT", ROOT)
     monkeypatch.setattr(
-        run_experiment, "git", lambda *args: "robot_learning/scenario/reward.py\n"
+        "research.runner_repository.git",
+        lambda *args: "robot_learning/scenario/reward.py\n",
     )
 
-    plan = run_experiment.plan_code_lineage_decision(
+    plan = runner_protocol.plan_code_lineage_decision(
         {
             "code_parent_commit": "abc123",
             "research_change_paths": [

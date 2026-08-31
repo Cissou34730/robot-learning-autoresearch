@@ -7,43 +7,53 @@ method-neutral: they never name or import a concrete learning algorithm.
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
+from research import runner_execution as execution
+from research import runner_protocol as protocol
 from research.run_experiment import (
-    PROTECTED_TEST_PREFIXES,
-    RUNNER_CONTROL_PATHS,
-    allocated_experiment_index,
-    anchor_scientific_parent,
-    append_result,
-    apply_code_lineage_decision,
     apply_previous_result_decision,
-    assert_research_surface,
     begin_hypothesis_phase,
-    candidate_directories,
     check_proposal,
-    commit_and_push,
-    commit_lineage_decision,
-    commit_result,
-    commit_runner_memory,
-    dependency_metadata_changed,
-    format_duration,
-    is_runner_memory,
-    latest_training_steps,
-    load_state,
     main,
+)
+from research.runner_console import format_duration
+from research.runner_execution import (
+    candidate_directories,
+    latest_training_steps,
+    validate_changed_sources,
+    validate_reusable_candidate,
+)
+from research.runner_protocol import (
+    PROTECTED_TEST_PREFIXES,
+    allocated_experiment_index,
+    dependency_metadata_changed,
     next_experiment_index,
     plan_code_lineage_decision,
     plan_previous_result_decision,
     resumed_experiment_index,
-    scientific_delta,
-    validate_changed_sources,
     validate_experiment_semantics,
     validate_proposal_phase,
-    validate_reusable_candidate,
     validate_training_proposal,
     validation_test_paths,
+)
+from research.runner_repository import (
+    RUNNER_CONTROL_PATHS,
+    anchor_scientific_parent,
+    append_result,
+    apply_code_lineage_decision,
+    assert_research_surface,
+    commit_and_push,
+    commit_lineage_decision,
+    commit_result,
+    commit_runner_memory,
+    is_runner_memory,
+    load_state,
+    scientific_delta,
+    synchronize_experiment_log,
 )
 from robot_learning.evaluate import write_progress
 from robot_learning.train import effective_training_config
@@ -73,9 +83,60 @@ def active_effective_config() -> tuple[dict, dict]:
 # --- research surface ------------------------------------------------------
 
 
+RUNTIME_STACK_MODULES = (
+    "mujoco",
+    "torch",
+    "gymnasium",
+    "stable_baselines3",
+    "robot_learning.scenario",
+)
+
+VALIDATION_ONLY_COMMANDS = (
+    "--check-proposal",
+    "--check-evaluation-request",
+    "--check-lineage-evidence",
+    "--begin-hypothesis",
+)
+
+
+def test_the_runner_loads_without_the_training_runtime():
+    """A control command must not pay for the training and physics stack."""
+    probe = (
+        "import sys, json\n"
+        "from research import run_experiment\n"
+        f"loaded = [m for m in {RUNTIME_STACK_MODULES!r} if m in sys.modules]\n"
+        "print(json.dumps(loaded))\n"
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", probe],
+        cwd=Path(__file__).parents[2],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr[-2000:]
+    assert json.loads(completed.stdout.strip()) == []
+
+
+def test_validation_only_commands_stay_in_the_dispatcher():
+    """Every control command returns before the Runner may write anything."""
+    source = (Path(__file__).parents[2] / "research" / "run_experiment.py").read_text(
+        encoding="utf-8"
+    )
+    dispatch = source.split("def main()", 1)[1]
+    before_mutation, _, _ = dispatch.partition("synchronize_experiment_log")
+
+    assert _
+    for flag in VALIDATION_ONLY_COMMANDS:
+        attribute = flag.removeprefix("--").replace("-", "_")
+        assert attribute in before_mutation, flag
+
+
 def test_research_surface_has_no_file_whitelist(monkeypatch):
     monkeypatch.setattr(
-        "research.run_experiment.status_paths",
+        "research.runner_repository.status_paths",
         lambda paths: (
             [
                 "robot_learning/benchmark/spec.py",
@@ -96,7 +157,7 @@ def test_research_surface_has_no_file_whitelist(monkeypatch):
 
 def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     monkeypatch.setattr(
-        "research.run_experiment.status_paths",
+        "research.runner_repository.status_paths",
         lambda paths: ["research/current_params.json"] if paths else [],
     )
 
@@ -131,10 +192,10 @@ def record_git(monkeypatch, changed: list[str]) -> list[tuple[str, ...]]:
         return ""
 
     monkeypatch.setattr(
-        "research.run_experiment.status_paths",
+        "research.runner_repository.status_paths",
         lambda paths: list(changed) if paths else [],
     )
-    monkeypatch.setattr("research.run_experiment.git", fake_git)
+    monkeypatch.setattr("research.runner_repository.git", fake_git)
     return calls
 
 
@@ -148,7 +209,7 @@ def committed_paths(commit: tuple[str, ...]) -> list[str]:
 
 def test_dirty_runner_memory_is_never_a_scientific_change(monkeypatch):
     monkeypatch.setattr(
-        "research.run_experiment.status_paths",
+        "research.runner_repository.status_paths",
         lambda paths: [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE] if paths else [],
     )
 
@@ -206,7 +267,7 @@ def test_lineage_closure_separates_the_science_from_the_memory_commit(monkeypatc
 def test_evaluation_artifacts_are_evidence_and_never_restorable_science(monkeypatch):
     artifact = "research/evaluations/evaluation-experiment-4-champion.json"
     monkeypatch.setattr(
-        "research.run_experiment.status_paths",
+        "research.runner_repository.status_paths",
         lambda paths: [SCIENTIFIC_CHANGE, artifact] if paths else [],
     )
 
@@ -263,7 +324,7 @@ def worktree_changes(monkeypatch, *entries: str | tuple[str, ...]) -> list[str]:
     for entry in entries:
         fields.extend((entry,) if isinstance(entry, str) else entry)
     monkeypatch.setattr(
-        "research.run_experiment.git",
+        "research.runner_repository.git",
         lambda *args: "".join(f"{field}\0" for field in fields),
     )
     return assert_research_surface()
@@ -411,7 +472,6 @@ def test_researcher_owned_tests_are_ordinary_code_changes(monkeypatch):
 
 
 def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
-    from research import run_experiment
 
     root = Path(__file__).resolve().parents[2]
     created = "tests/training/test_invented_by_this_experiment.py"
@@ -420,10 +480,10 @@ def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
         path = args[-1]
         return "" if path == created else f"{path}\n"
 
-    monkeypatch.setattr(run_experiment, "ROOT", root)
-    monkeypatch.setattr(run_experiment, "git", tracked_at_parent)
+    monkeypatch.setattr("research.runner_paths.ROOT", root)
+    monkeypatch.setattr("research.runner_repository.git", tracked_at_parent)
 
-    plan = run_experiment.plan_code_lineage_decision(
+    plan = protocol.plan_code_lineage_decision(
         {
             "code_parent_commit": "abc123",
             "research_change_paths": [
@@ -443,7 +503,6 @@ def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
 
 
 def test_renamed_researcher_tests_travel_with_the_code_lineage(monkeypatch):
-    from research import run_experiment
 
     root = Path(__file__).resolve().parents[2]
     origin = "tests/scenario/test_reward.py"
@@ -453,10 +512,10 @@ def test_renamed_researcher_tests_travel_with_the_code_lineage(monkeypatch):
         path = args[-1]
         return "" if path == destination else f"{path}\n"
 
-    monkeypatch.setattr(run_experiment, "ROOT", root)
-    monkeypatch.setattr(run_experiment, "git", tracked_at_parent)
+    monkeypatch.setattr("research.runner_paths.ROOT", root)
+    monkeypatch.setattr("research.runner_repository.git", tracked_at_parent)
 
-    plan = run_experiment.plan_code_lineage_decision(
+    plan = protocol.plan_code_lineage_decision(
         {
             "code_parent_commit": "abc123",
             "research_change_paths": [origin, destination],
@@ -505,23 +564,21 @@ def test_parameter_only_experiment_skips_the_test_suites():
 
 
 def test_active_configuration_is_resolved_through_the_trainer():
-    from research import run_experiment
 
     config, effective = active_effective_config()
 
-    assert run_experiment.validate_active_configuration() == effective
+    assert execution.validate_active_configuration() == effective
     assert config == load_experiment_config()
 
 
 def test_incomplete_active_configuration_is_rejected(monkeypatch):
-    from research import run_experiment
-
     monkeypatch.setattr(
-        run_experiment, "load_experiment_config", lambda: {"training": {}}
+        "robot_learning.training.research_config.load_experiment_config",
+        lambda: {"training": {}},
     )
 
     with pytest.raises(RuntimeError, match="active training configuration is invalid"):
-        run_experiment.validate_active_configuration()
+        execution.validate_active_configuration()
 
 
 def test_parameter_only_experiment_still_validates_the_configuration(
@@ -558,25 +615,34 @@ def test_parameter_only_experiment_still_validates_the_configuration(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr(run_experiment, "ROOT", tmp_path)
-    monkeypatch.setattr(run_experiment, "ACCEPTED_DIR", accepted)
-    monkeypatch.setattr(run_experiment, "STATE_PATH", tmp_path / "research_state.json")
-    monkeypatch.setattr(run_experiment, "PROPOSAL_PATH", tmp_path / "proposal.json")
-    monkeypatch.setattr(run_experiment, "LOG_PATH", tmp_path / "EXPERIMENTS.md")
-    monkeypatch.setattr(run_experiment, "RESULTS_PATH", tmp_path / "results.jsonl")
-    monkeypatch.setattr(run_experiment, "CANDIDATE_ROOT", tmp_path / "candidates")
-    monkeypatch.setattr(run_experiment, "git", lambda *args: "")
-    monkeypatch.setattr(run_experiment, "announce", lambda message: None)
-    monkeypatch.setattr(run_experiment, "load_experiment_config", dict)
-    monkeypatch.setattr(run_experiment, "write_experiment_config", lambda config: None)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
     monkeypatch.setattr(
-        run_experiment,
-        "run_module",
+        "research.runner_paths.STATE_PATH", tmp_path / "research_state.json"
+    )
+    monkeypatch.setattr(
+        "research.runner_paths.PROPOSAL_PATH", tmp_path / "proposal.json"
+    )
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "EXPERIMENTS.md")
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
+    )
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
+    monkeypatch.setattr("research.runner_repository.git", lambda *args: "")
+    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
+    monkeypatch.setattr(
+        "robot_learning.training.research_config.load_experiment_config", dict
+    )
+    monkeypatch.setattr(
+        "robot_learning.training.research_config.write_experiment_config",
+        lambda config: None,
+    )
+    monkeypatch.setattr(
+        "research.runner_execution.run_module",
         lambda *args, **kwargs: pytest.fail("a parameter-only experiment ran pytest"),
     )
     monkeypatch.setattr(
-        run_experiment,
-        "train_candidate",
+        "research.runner_execution.train_candidate",
         lambda *args, **kwargs: pytest.fail("training started on an invalid config"),
     )
     monkeypatch.setattr("sys.argv", ["run_experiment.py"])
@@ -661,9 +727,9 @@ def test_dependency_metadata_is_only_checked_when_it_changes():
 
 def test_changed_python_files_are_syntax_checked(monkeypatch, tmp_path):
     (tmp_path / "broken.py").write_text("def broken(:\n", encoding="utf-8")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr(
-        "research.run_experiment.run_module",
+        "research.runner_execution.run_module",
         lambda *args, **kwargs: pytest.fail("linting ran on unparsable source"),
     )
 
@@ -677,7 +743,7 @@ def test_changed_json_files_must_parse(monkeypatch, tmp_path):
     (tmp_path / "results.jsonl").write_text(
         '{"index": 1}\n{"index": 2}\n', encoding="utf-8"
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
     validate_changed_sources(["good.json", "results.jsonl"])
     with pytest.raises(RuntimeError, match="broken.json"):
@@ -686,10 +752,10 @@ def test_changed_json_files_must_parse(monkeypatch, tmp_path):
 
 def test_changed_python_files_are_linted_individually(monkeypatch, tmp_path):
     (tmp_path / "clean.py").write_text("VALUE = 1\n", encoding="utf-8")
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     calls: list[tuple[str, ...]] = []
     monkeypatch.setattr(
-        "research.run_experiment.run_module",
+        "research.runner_execution.run_module",
         lambda *args, **kwargs: calls.append(args) or "",
     )
 
@@ -699,54 +765,50 @@ def test_changed_python_files_are_linted_individually(monkeypatch, tmp_path):
 
 
 def test_dependency_check_never_rewrites_the_lockfile(monkeypatch):
-    from research import run_experiment
-
     calls: list[tuple[str, ...]] = []
     monkeypatch.setattr(
-        run_experiment, "run_command", lambda *args, **kwargs: calls.append(args) or ""
+        "research.runner_execution.run_command",
+        lambda *args, **kwargs: calls.append(args) or "",
     )
 
-    run_experiment.validate_dependency_metadata()
+    execution.validate_dependency_metadata()
 
     assert calls == [("uv", "lock", "--check")]
 
 
 def test_validated_test_paths_are_the_four_repository_domains():
-    from research import run_experiment
 
-    assert run_experiment.VALIDATED_TEST_PATHS == (
+    assert protocol.VALIDATED_TEST_PATHS == (
         "tests/benchmark",
         "tests/autoresearch",
         "tests/scenario",
         "tests/training",
     )
-    assert run_experiment.RESEARCHER_VALIDATED_TEST_PATHS == (
+    assert protocol.RESEARCHER_VALIDATED_TEST_PATHS == (
         "tests/autoresearch",
         "tests/scenario",
         "tests/training",
     )
     root = Path(__file__).resolve().parents[2]
-    for relative in run_experiment.VALIDATED_TEST_PATHS:
+    for relative in protocol.VALIDATED_TEST_PATHS:
         assert (root / relative).is_dir(), relative
 
 
 def test_researcher_owned_surface_is_declared_positively_and_exists():
-    from research import run_experiment
 
     root = Path(__file__).resolve().parents[2]
-    for prefix in run_experiment.RESEARCHER_OWNED_PREFIXES:
+    for prefix in protocol.RESEARCHER_OWNED_PREFIXES:
         assert (root / prefix).is_dir(), prefix
-    for relative in run_experiment.RESEARCHER_OWNED_PATHS:
+    for relative in protocol.RESEARCHER_OWNED_PATHS:
         assert (root / relative).is_file(), relative
 
 
 def test_protected_paths_are_never_researcher_owned():
-    from research import run_experiment
 
-    for relative in run_experiment.PROTECTED_BENCHMARK_PATHS:
-        assert not run_experiment.is_researcher_owned(relative), relative
-    for prefix in run_experiment.PROTECTED_TEST_PREFIXES:
-        assert not run_experiment.is_researcher_owned(f"{prefix}test_anything.py")
+    for relative in protocol.PROTECTED_BENCHMARK_PATHS:
+        assert not protocol.is_researcher_owned(relative), relative
+    for prefix in protocol.PROTECTED_TEST_PREFIXES:
+        assert not protocol.is_researcher_owned(f"{prefix}test_anything.py")
 
 
 def test_a_proposal_touching_protected_tests_is_rejected_before_selection():
@@ -799,7 +861,7 @@ def test_evaluation_progress_is_best_effort(monkeypatch, tmp_path):
 def test_automatic_commit_is_immediately_pushed(monkeypatch):
     calls = []
     monkeypatch.setattr(
-        "research.run_experiment.git",
+        "research.runner_repository.git",
         lambda *args: calls.append(args) or "",
     )
 
@@ -823,8 +885,8 @@ def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
     state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
     assert state["accepted_metrics"] is None
@@ -836,8 +898,8 @@ def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
     log_path = tmp_path / "EXPERIMENTS.md"
     results_path = tmp_path / "results.jsonl"
     log_path.write_text("header\n", encoding="utf-8")
-    monkeypatch.setattr("research.run_experiment.LOG_PATH", log_path)
-    monkeypatch.setattr("research.run_experiment.RESULTS_PATH", results_path)
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
 
     append_result(
         {
@@ -848,9 +910,69 @@ def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
         }
     )
 
-    assert log_path.read_text(encoding="utf-8").count("\n") == 2
-    assert "line one line two" in log_path.read_text(encoding="utf-8")
-    assert "safe / table" in log_path.read_text(encoding="utf-8")
+    rows = [
+        line
+        for line in log_path.read_text(encoding="utf-8").splitlines()
+        if line.startswith("| 1 |")
+    ]
+    assert len(rows) == 1
+    assert "line one line two" in rows[0]
+    assert "safe / table" in rows[0]
+    assert "error: traceback" in rows[0]
+
+
+def test_the_markdown_log_is_derived_from_the_authoritative_history(
+    monkeypatch, tmp_path
+):
+    """`results.jsonl` is the history; the Markdown view is only rendered from it."""
+    log_path = tmp_path / "EXPERIMENTS.md"
+    results_path = tmp_path / "results.jsonl"
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
+
+    for index in (1, 2):
+        append_result(
+            {
+                "index": index,
+                "change": f"change {index}",
+                "hypothesis": f"hypothesis {index}",
+                "verdict": "trained",
+            }
+        )
+
+    records = [
+        json.loads(line)
+        for line in results_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert [record["index"] for record in records] == [1, 2]
+    assert all(record["recorded_at"] for record in records)
+
+    rendered = log_path.read_text(encoding="utf-8")
+    assert rendered.startswith("# Experiment log\n")
+    assert rendered.count("| change 1 |") == 1
+    assert rendered.count("| change 2 |") == 1
+
+    # A Markdown view damaged by an interruption is rebuilt, never trusted.
+    log_path.write_text("# Experiment log\n\ncorrupted\n", encoding="utf-8")
+    synchronize_experiment_log()
+
+    assert log_path.read_text(encoding="utf-8") == rendered
+
+
+def test_a_legacy_record_without_a_date_still_renders(monkeypatch, tmp_path):
+    log_path = tmp_path / "EXPERIMENTS.md"
+    results_path = tmp_path / "results.jsonl"
+    results_path.write_text(
+        json.dumps({"index": 7, "change": "legacy", "verdict": "ok"}) + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
+
+    synchronize_experiment_log()
+
+    assert "| 7 | - | legacy |" in log_path.read_text(encoding="utf-8")
 
 
 # --- artifact reuse --------------------------------------------------------
@@ -950,11 +1072,11 @@ def test_reusable_candidate_compares_effective_configuration_opaquely(tmp_path):
 
 
 def test_runner_does_not_interpret_effective_configuration():
-    source = (Path(__file__).parents[2] / "research" / "run_experiment.py").read_text(
+    source = (Path(__file__).parents[2] / "research" / "runner_execution.py").read_text(
         encoding="utf-8"
     )
     validation = source.split("def validate_reusable_candidate", 1)[1].split(
-        "def retained_lineage", 1
+        "def evaluate_artifact", 1
     )[0]
 
     for forbidden in ("ppo", "n_steps", "policy", "parameters", "n_envs"):
@@ -1158,8 +1280,8 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
 
     assert check_proposal() == 0
     assert "PROPOSAL_VALID: training" in capsys.readouterr().out
@@ -1191,8 +1313,8 @@ def test_proposal_preflight_rejects_static_training_contract_errors(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
 
     assert check_proposal() == 1
     assert message in capsys.readouterr().out
@@ -1212,8 +1334,8 @@ def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
 
 
 @pytest.mark.parametrize("kind", ["training", "replication", "banana"])
@@ -1293,8 +1415,8 @@ def test_proposal_preflight_rejects_incident_residue_without_mutation(
     state_path.write_text(json.dumps(state), encoding="utf-8")
     original_state = state_path.read_bytes()
     original_proposal = proposal_path.read_bytes()
-    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
 
     assert check_proposal() == 1
     assert "lineage is already resolved" in capsys.readouterr().out
@@ -1304,7 +1426,7 @@ def test_proposal_preflight_rejects_incident_residue_without_mutation(
         pytest.fail("training started for a phase-incompatible proposal")
 
     monkeypatch.setattr(
-        "research.run_experiment.train_candidate", fail_if_training_starts
+        "research.runner_execution.train_candidate", fail_if_training_starts
     )
     monkeypatch.setattr("sys.argv", ["run_experiment.py"])
     assert main() == 1
@@ -1341,20 +1463,22 @@ def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
         del args, kwargs
         pytest.fail("training started for an experiment that never validated")
 
-    for name, value in {
-        "ROOT": tmp_path,
-        "STATE_PATH": state_path,
-        "LOG_PATH": tmp_path / "EXPERIMENTS.md",
-        "RESULTS_PATH": tmp_path / "results.jsonl",
-        "PROPOSAL_PATH": tmp_path / "proposal.json",
-        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
-        "RESTART_PENDING_PATH": tmp_path / "RESTART_PENDING",
-        "RECOVERY_PENDING_PATH": tmp_path / "RECOVERY_PENDING",
-        "git": lambda *args: "0" * 40 + "\n" if args[0] == "rev-parse" else "",
-        "status_paths": lambda paths: [],
-        "train_candidate": fail_if_training_starts,
+    for target, value in {
+        "research.runner_paths.ROOT": tmp_path,
+        "research.runner_paths.STATE_PATH": state_path,
+        "research.runner_paths.LOG_PATH": tmp_path / "EXPERIMENTS.md",
+        "research.runner_paths.RESULTS_PATH": tmp_path / "results.jsonl",
+        "research.runner_paths.PROPOSAL_PATH": tmp_path / "proposal.json",
+        "research.runner_paths.CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "research.runner_paths.RESTART_PENDING_PATH": tmp_path / "RESTART_PENDING",
+        "research.runner_paths.RECOVERY_PENDING_PATH": tmp_path / "RECOVERY_PENDING",
+        "research.runner_repository.git": (
+            lambda *args: "0" * 40 + "\n" if args[0] == "rev-parse" else ""
+        ),
+        "research.runner_repository.status_paths": lambda paths: [],
+        "research.runner_execution.train_candidate": fail_if_training_starts,
     }.items():
-        monkeypatch.setattr(f"research.run_experiment.{name}", value)
+        monkeypatch.setattr(target, value)
     return state_path
 
 
@@ -1376,11 +1500,9 @@ def _allocated(state_path: Path) -> int | None:
 
 
 def test_runner_state_outranks_an_incomplete_history(monkeypatch, tmp_path):
-    monkeypatch.setattr(
-        "research.run_experiment.CANDIDATE_ROOT", tmp_path / "candidates"
-    )
-    monkeypatch.setattr("research.run_experiment.RESULTS_PATH", tmp_path / "results")
-    monkeypatch.setattr("research.run_experiment.LOG_PATH", tmp_path / "log")
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", tmp_path / "results")
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "log")
     (tmp_path / "results").write_text('{"index": 1}\n{"index": 2}\n', encoding="utf-8")
     (tmp_path / "log").write_text("| 1 | a |\n| 2 | b |\n", encoding="utf-8")
 
@@ -1393,9 +1515,7 @@ def test_a_state_file_without_allocation_seeds_it_from_the_runner_state():
 
 
 def test_a_fresh_campaign_allocates_the_first_experiment(monkeypatch, tmp_path):
-    monkeypatch.setattr(
-        "research.run_experiment.CANDIDATE_ROOT", tmp_path / "candidates"
-    )
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
 
     assert next_experiment_index({"last_experiment": 0}) == 1
 
@@ -1407,7 +1527,7 @@ def test_unexpected_experiment_data_is_preserved_and_its_identity_skipped(
     candidates = tmp_path / "candidates"
     (candidates / existing).mkdir(parents=True)
     (candidates / existing / "model.zip").write_bytes(b"earlier experiment")
-    monkeypatch.setattr("research.run_experiment.CANDIDATE_ROOT", candidates)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", candidates)
 
     assert next_experiment_index({"last_allocated_experiment": 4}) == 6
     assert (candidates / existing / "model.zip").read_bytes() == b"earlier experiment"
@@ -1497,7 +1617,7 @@ def test_a_pending_phase_proposal_allocates_no_identity(monkeypatch, tmp_path, c
 
 def test_runner_state_is_never_a_researcher_change(monkeypatch):
     monkeypatch.setattr(
-        "research.run_experiment.status_paths",
+        "research.runner_repository.status_paths",
         lambda paths: (
             [
                 "research/research_state.json",
@@ -1600,11 +1720,11 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.run_experiment.ROOT", tmp_path)
-    monkeypatch.setattr("research.run_experiment.STATE_PATH", state_path)
-    monkeypatch.setattr("research.run_experiment.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.run_experiment.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.run_experiment.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
     committed = []
 
     def record_lineage_commit(*args, **kwargs):
@@ -1612,7 +1732,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
         committed.append(args)
 
     monkeypatch.setattr(
-        "research.run_experiment.commit_lineage_decision", record_lineage_commit
+        "research.runner_repository.commit_lineage_decision", record_lineage_commit
     )
 
     def fail_if_training_starts(*args, **kwargs):
@@ -1620,7 +1740,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
         pytest.fail("next experiment trained too early")
 
     monkeypatch.setattr(
-        "research.run_experiment.train_candidate",
+        "research.runner_execution.train_candidate",
         fail_if_training_starts,
     )
     monkeypatch.setattr("sys.argv", ["run_experiment.py"])
@@ -1643,7 +1763,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
         }
 
     monkeypatch.setattr(
-        "research.run_experiment.evaluate_final_model", evaluate_after_commit
+        "robot_learning.scenario.evaluate_final_model", evaluate_after_commit
     )
     from research.run_experiment import execute_pending_final_benchmark
 
@@ -1698,7 +1818,6 @@ def _anchored_parent(work: Path) -> str | None:
 @pytest.fixture
 def science_repo(monkeypatch, tmp_path):
     """A real repository with an origin, so rollback is exercised, not simulated."""
-    from research import run_experiment
 
     subprocess.run(
         ["git", "init", "--bare", "-q", str(tmp_path / "origin.git")], check=True
@@ -1716,9 +1835,9 @@ def science_repo(monkeypatch, tmp_path):
     _write(work, "research/research_state.json", json.dumps({"schema_version": 2}))
     _commit(work, "accepted science")
     _git(work, "push", "-q", "-u", "origin", "main")
-    monkeypatch.setattr(run_experiment, "ROOT", work)
+    monkeypatch.setattr("research.runner_paths.ROOT", work)
     monkeypatch.setattr(
-        run_experiment, "STATE_PATH", work / "research" / "research_state.json"
+        "research.runner_paths.STATE_PATH", work / "research" / "research_state.json"
     )
     return work
 
@@ -1956,18 +2075,18 @@ def test_an_unresolvable_scientific_parent_stops_the_rollback(science_repo):
 
 
 def test_a_closed_lineage_releases_the_scientific_parent(monkeypatch, science_repo):
-    from research import run_experiment
 
     candidate = science_repo / "archive" / "candidate-1"
     candidate.mkdir(parents=True)
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         (candidate / filename).write_bytes(b"artifact")
     monkeypatch.setattr(
-        run_experiment,
-        "ACCEPTED_DIR",
+        "research.runner_paths.ACCEPTED_DIR",
         science_repo / "research" / "checkpoints" / "accepted",
     )
-    monkeypatch.setattr(run_experiment, "GOAL_PATH", science_repo / "GOAL_REACHED")
+    monkeypatch.setattr(
+        "research.runner_paths.GOAL_PATH", science_repo / "GOAL_REACHED"
+    )
     accepted = _head(science_repo)
     begin_hypothesis_phase()
     _write(science_repo, SCIENCE, "experiment reward\n")
@@ -2030,7 +2149,6 @@ def test_a_closed_lineage_releases_the_scientific_parent(monkeypatch, science_re
 def test_an_unpublished_scientific_commit_keeps_the_scientific_parent(
     monkeypatch, science_repo
 ):
-    from research import run_experiment
 
     accepted = _head(science_repo)
     begin_hypothesis_phase()
@@ -2043,7 +2161,7 @@ def test_an_unpublished_scientific_commit_keeps_the_scientific_parent(
         del message, paths
         raise RuntimeError("commit created locally but push to origin failed")
 
-    monkeypatch.setattr(run_experiment, "commit_and_push", unpublishable)
+    monkeypatch.setattr("research.runner_repository.commit_and_push", unpublishable)
 
     with pytest.raises(RuntimeError, match="push to origin failed"):
         commit_lineage_decision(7, "candidate-1", code_action="keep", state=state)
