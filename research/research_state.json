@@ -1,7 +1,8 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-105472-200ep-seed1000-794a24359f81.json"
+    "research/evaluations/evaluation-experiment-2-champion-200ep-seed1000-5b3ead329245.json",
+    "research/evaluations/evaluation-experiment-2-champion-200ep-seed2000-5b3ead329245.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -40,19 +41,19 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 1 was an unchanged fresh baseline, so the code lineage already represents the repository baseline and has no intervention to revert."
+      "action": "revert",
+      "reason": "The experiment's target-sampler intervention reduced held-out performance across both researcher seeds and the stable task-reference panel, so restore the pre-experiment code lineage at bbac60550cdad080da552152102a3d4a05d6d3e8."
     },
-    "code_parent_commit": "694c65ef7ea673e0c563f2189d356b4becdf819c",
-    "continue_from": "checkpoint-105472",
-    "experiment": 1,
-    "reason": "This is the best measured baseline lineage at 66.5%; the later checkpoint measured 66.0% and its task-reference result was 55.0%, so there is no evidence to prefer the final checkpoint or request the official benchmark."
+    "code_parent_commit": "bbac60550cdad080da552152102a3d4a05d6d3e8",
+    "continue_from": "champion",
+    "experiment": 2,
+    "reason": "The outer-workspace curriculum is a clear regression: the challenger reached 21.75% pooled success across two seeds, with 0% success at 18-20 cm, while the accepted champion reached 25.00% on the same researcher panels and 55.5% on the task-reference panel versus 15.0% for the challenger. Continue the accepted champion rather than the failed fresh curriculum lineage."
   },
-  "last_verdict": "researcher selected checkpoint-105472",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
