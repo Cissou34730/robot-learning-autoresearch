@@ -55,15 +55,21 @@
     "reason": "Checkpoint-120832 improved pooled researcher success to 97.5% on both seeds and improved the independent task-reference panel from 97.0% to 98.5%, making it the strongest available lineage and sufficiently close to the objective to request the official final benchmark."
   },
   "last_verdict": "researcher selected checkpoint-120832",
-  "official_benchmark_artifact": "e4e5df85e3a7131e3be759341ad65e491cfddf995a46dd0b2556ceefc40be657",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research\\checkpoints\\accepted",
-    "experiment": 5,
-    "fingerprint": "a4996c42254fe8e26a83953737150407a75456f7e249ba2a5610925c9a81bb43",
-    "selected": "checkpoint-120832"
+  "official_benchmark_artifact": "a4996c42254fe8e26a83953737150407a75456f7e249ba2a5610925c9a81bb43",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.46380726612239864,
+      "median": 0.42354143018631263,
+      "worst": 2.289927115535601
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.5
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
