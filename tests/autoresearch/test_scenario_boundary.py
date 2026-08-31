@@ -299,12 +299,12 @@ def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
 def test_researcher_runtime_output_is_never_parsed():
     script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
 
-    assert "opencode run --model $model --variant $reasoning" in script
+    assert "uv run --group researcher python researcher_copilot.py" in script
     assert "--format json" not in script
-    for forbidden in ("ConvertFrom-Json $opencode", "Select-String", "Tee-Object"):
+    for forbidden in ("ConvertFrom-Json $researcher", "Select-String", "Tee-Object"):
         assert forbidden not in script
     for relative, source in runner_sources().items():
-        assert "opencode" not in source, relative
+        assert "copilot" not in source, relative
 
 
 def test_normalization_never_reaches_for_the_scenario():
