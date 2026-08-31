@@ -537,7 +537,12 @@ ALL_SUITES = (
     "tests/scenario",
     "tests/training",
 )
-RESEARCHER_SUITES = ("tests/autoresearch", "tests/scenario", "tests/training")
+RESEARCHER_SUITES = (
+    "tests/scenario",
+    "tests/training",
+    "tests/autoresearch/test_scenario_boundary.py",
+    "tests/autoresearch/test_training_artifact_contract.py",
+)
 
 
 def test_fresh_campaign_baseline_runs_every_suite():
@@ -787,9 +792,10 @@ def test_validated_test_paths_are_the_four_repository_domains():
         "tests/training",
     )
     assert protocol.RESEARCHER_VALIDATED_TEST_PATHS == (
-        "tests/autoresearch",
         "tests/scenario",
         "tests/training",
+        "tests/autoresearch/test_scenario_boundary.py",
+        "tests/autoresearch/test_training_artifact_contract.py",
     )
     root = Path(__file__).resolve().parents[2]
     for relative in protocol.VALIDATED_TEST_PATHS:
