@@ -27,3 +27,6 @@ dev = [
     "ruff>=0.16.4",
     "tensorboard>=2.21.0",
 ]
+researcher = [
+    "github-copilot-sdk>=1.0.11",
+]

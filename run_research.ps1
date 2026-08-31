@@ -2,7 +2,7 @@
 
 param(
     [ValidateNotNullOrEmpty()]
-    [string]$Model = "github-copilot/gpt-5.6-luna",
+    [string]$Model = "gpt-5.6-luna",
 
     [ValidateSet("low", "medium", "high", "xhigh", "max")]
     [string]$Reasoning = "high"
@@ -40,13 +40,24 @@ function Invoke-ResearcherSession {
         [switch]$Continue
     )
     if ($Continue) {
-        # OpenCode-specific workaround: continue the interrupted Researcher
-        # session instead of restarting its phase analysis from scratch.
-        opencode run --continue --model $model --variant $reasoning $Prompt
+        if (-not $script:ResearcherSessionId) {
+            throw "There is no researcher session to continue for this phase."
+        }
     }
     else {
-        opencode run --model $model --variant $reasoning $Prompt
+        # Each bounded phase owns its session, so a retry resumes that phase and
+        # never inherits whichever session last ran on this machine.
+        $script:ResearcherSessionId = [guid]::NewGuid().ToString()
     }
+    $sessionArgs = @(
+        "--session-id", $script:ResearcherSessionId
+        "--model", $model
+        "--reasoning", $reasoning
+    )
+    if ($Continue) {
+        $sessionArgs += "--resume"
+    }
+    uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt
     # An invocation that never reached a conventional exit reports the absence
     # rather than an invented code.
     $script:ResearcherExitCode = if ($null -eq $LASTEXITCODE) {
