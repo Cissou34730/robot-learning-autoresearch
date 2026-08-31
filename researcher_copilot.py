@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import subprocess
 import sys
 from pathlib import Path
 
@@ -84,14 +85,39 @@ SUITE_DENIAL = (
     "Run the specific suite you need, for example `uv run pytest tests/scenario`."
 )
 
-RESERVED_EXECUTION = (
-    "run_experiment.py",
+RESERVED_SCRIPT_NAMES = ("run_experiment.py", "final_benchmark.py")
+
+RESERVED_SCRIPT_PATHS = ("robot_learning/train.py", "robot_learning/play.py")
+
+RESERVED_MODULES = (
     "robot_learning.train",
-    "robot_learning/train.py",
     "robot_learning.play",
-    "robot_learning/play.py",
-    "final_benchmark",
+    "robot_learning.benchmark.final_benchmark",
 )
+
+# Commands that only ever read. Naming a protected path to one of these is
+# research, not execution.
+READER_COMMANDS = frozenset(
+    {
+        "get-content",
+        "gc",
+        "cat",
+        "type",
+        "rg",
+        "select-string",
+        "sls",
+        "findstr",
+        "head",
+        "tail",
+        "more",
+        "less",
+        "get-childitem",
+        "ls",
+        "dir",
+    }
+)
+
+INTERPRETERS = frozenset({"python", "python.exe", "python3", "py", "py.exe"})
 
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
@@ -125,6 +151,58 @@ def command_segments(command: str) -> list[list[str]]:
     return [segment.split() for segment in text.split("\x00") if segment.split()]
 
 
+def strip_launcher_prefix(tokens: list[str]) -> list[str]:
+    """Drop a leading `uv run [--flag value]` so the real invocation is visible."""
+    if not tokens or tokens[0].lower() not in {"uv", "uvx"}:
+        return tokens
+    index = 1
+    if index < len(tokens) and tokens[index].lower() == "run":
+        index += 1
+    while index < len(tokens) and tokens[index].startswith("-"):
+        index += 1
+        if index < len(tokens) and not tokens[index].startswith("-"):
+            index += 1
+    return tokens[index:]
+
+
+def execution_target(tokens: list[str]) -> str | None:
+    """What this segment would actually run, ignoring anything it merely names."""
+    if not tokens:
+        return None
+    if tokens[0].lower().strip("&.") in READER_COMMANDS:
+        return None
+    tokens = strip_launcher_prefix(tokens)
+    if not tokens:
+        return None
+    if Path(tokens[0]).name.lower() not in INTERPRETERS:
+        return tokens[0]
+    arguments = tokens[1:]
+    index = 0
+    while index < len(arguments):
+        argument = arguments[index]
+        if argument == "-m" and index + 1 < len(arguments):
+            return arguments[index + 1]
+        if argument in {"-c", "--command"}:
+            # Inline code names no target; the guardrail stops here by design.
+            return None
+        if argument.startswith("-"):
+            index += 1
+            continue
+        return argument
+    return None
+
+
+def is_reserved_execution(target: str | None) -> bool:
+    if not target:
+        return False
+    normalized = target.replace("\\", "/").lstrip("./").lower()
+    if Path(normalized).name in RESERVED_SCRIPT_NAMES:
+        return True
+    if any(normalized.endswith(path) for path in RESERVED_SCRIPT_PATHS):
+        return True
+    return normalized in RESERVED_MODULES
+
+
 def denied_git_subcommand(tokens: list[str]) -> str | None:
     """The subcommand when it is not a read-only one, so unknown verbs deny."""
     if "git" not in tokens:
@@ -147,16 +225,21 @@ def is_repository_wide_pytest(tokens: list[str]) -> bool:
 def command_denial(command: str) -> str | None:
     """The reason this command is refused, or None when it may run.
 
-    A guardrail against the failures that have actually broken research runs,
-    not a sandbox: `uv run python -c` can still do anything the researcher could.
+    Only what a segment executes is judged, never what it mentions: reading or
+    grepping a protected path is ordinary research. A guardrail against the
+    failures that have actually broken research runs, not a sandbox --
+    `uv run python -c` can still do anything the researcher could.
     """
     for tokens in command_segments(command):
-        segment = " ".join(tokens)
-        if any(reserved in segment for reserved in RESERVED_EXECUTION):
+        target = execution_target(tokens)
+        if not target:
+            continue
+        name = Path(target).name.lower().removesuffix(".exe")
+        if is_reserved_execution(target):
             return EXECUTION_DENIAL
-        if denied_git_subcommand(tokens):
+        if name == "git" and denied_git_subcommand(tokens):
             return GIT_DENIAL
-        if is_repository_wide_pytest(tokens):
+        if name == "pytest" and is_repository_wide_pytest(tokens):
             return SUITE_DENIAL
     return None
 
@@ -167,6 +250,37 @@ def shell_command_text(request: object) -> str:
         for segment in (getattr(request, "command_segments", None) or [])
     ]
     return "\n".join([getattr(request, "full_command_text", "") or "", *segments])
+
+
+def worktree_status() -> dict[str, str]:
+    """Path to Git status, so a file written by any means is still observed.
+
+    The runtime's own change events only cover its edit tools, and this
+    researcher writes most files through the shell.
+    """
+    try:
+        completed = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=all"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    entries = {}
+    for line in completed.stdout.splitlines():
+        if len(line) > 3:
+            entries[line[3:].strip().strip('"')] = line[:2].strip()
+    return entries
+
+
+def changed_since(before: dict[str, str]) -> list[str]:
+    after = worktree_status()
+    return sorted(
+        path for path in set(before) | set(after) if before.get(path) != after.get(path)
+    )
 
 
 class Console:
@@ -231,8 +345,11 @@ class Console:
         self.session_error = message
         self.line(f"  ! session error: {message}")
 
-    def summary(self, session_id: str) -> None:
-        files = f"{len(self.changed_files)} file(s) changed"
+    def summary(self, session_id: str, changed: list[str]) -> None:
+        for path in changed:
+            if path not in self.changed_files:
+                self.line(f"  ~ {path}")
+        files = f"{len(changed)} file(s) changed"
         tokens = f"{self.input_tokens} in / {self.output_tokens} out tokens"
         denials = f", {self.denials} denied" if self.denials else ""
         self.line(f"-- session {session_id[:8]}: {files}, {tokens}{denials}")
@@ -345,13 +462,14 @@ async def run(args) -> int:
         session = await open_session(
             client, args, session_options(args, console, finished)
         )
+        before = worktree_status()
         try:
             await session.send(args.prompt)
             await asyncio.wait_for(finished.wait(), timeout=args.timeout)
         except TimeoutError:
             await session.abort()
             console.line(f"  ! session timed out after {args.timeout}s")
-            console.summary(session.session_id)
+            console.summary(session.session_id, changed_since(before))
             return EXIT_TIMEOUT
         except KeyboardInterrupt:
             await session.abort()
@@ -360,7 +478,7 @@ async def run(args) -> int:
         finally:
             await session.disconnect()
 
-        console.summary(session.session_id)
+        console.summary(session.session_id, changed_since(before))
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
 
 
