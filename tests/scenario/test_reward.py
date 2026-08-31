@@ -9,12 +9,29 @@ import numpy as np
 import pytest
 
 from robot_learning.scenario import reward as reward_module
-from robot_learning.scenario.reward import HOLD_COMPLETE_BONUS, reach_reward
+from robot_learning.scenario.reward import (
+    CLOSENESS_COEFFICIENT,
+    CLOSENESS_LENGTH_SCALE,
+    HOLD_COMPLETE_BONUS,
+    reach_reward,
+)
 
 
 def test_reward_encourages_progress():
     assert reach_reward(0.10, 0.08, 0.03).total > 0
     assert reach_reward(0.08, 0.10, 0.03).total < 0
+
+
+def test_closeness_signal_rewards_approach_outside_tolerance(monkeypatch):
+    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
+    result = reach_reward(0.10, 0.09, 0.01)
+
+    expected = CLOSENESS_COEFFICIENT * (
+        np.exp(-0.09 / CLOSENESS_LENGTH_SCALE)
+        - np.exp(-0.10 / CLOSENESS_LENGTH_SCALE)
+    )
+    assert result.components["closeness"] == pytest.approx(expected)
+    assert result.total == pytest.approx(result.components["closeness"])
 
 
 def test_linear_hold_progress_reward_pays_completion():
