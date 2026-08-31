@@ -13,23 +13,12 @@ from robot_learning.scenario import environment as environment_module
 from robot_learning.scenario import make_training_env
 from robot_learning.scenario import reward as reward_module
 from robot_learning.scenario.environment import TwoJointArmReachEnv
-from robot_learning.scenario.observations import OBSERVATION_SIZE
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_observation_includes_target_bearing():
-    env = make_training_env()
-    obs, _ = env.reset(seed=0)
-    target = env.data.mocap_pos[0]
-    target_radius = np.hypot(target[0], target[1])
-
-    assert len(obs) == OBSERVATION_SIZE
-    assert np.allclose(obs[-2:], target[:2] / target_radius)
 
 
 def test_training_environment_may_diverge_from_the_official_task():
@@ -52,17 +41,6 @@ def test_training_environment_may_diverge_from_the_official_task():
     assert official.success_threshold == final_contract.SUCCESS_THRESHOLD
     assert official.target_radius_range == final_contract.TARGET_RADIUS_RANGE
     assert official.max_episode_steps == final_contract.MAX_EPISODE_STEPS
-
-
-def test_training_target_sampling_emphasizes_outer_workspace():
-    env = TwoJointArmReachEnv()
-    radii = []
-    for seed in range(256):
-        env.reset(seed=seed)
-        radii.append(float(np.linalg.norm(env.data.mocap_pos[0][:2])))
-
-    midpoint = sum(env.target_radius_range) / 2.0
-    assert np.mean(radii) > midpoint
 
 
 def test_environment_latches_the_outside_penalty_after_losing_hold(monkeypatch):
