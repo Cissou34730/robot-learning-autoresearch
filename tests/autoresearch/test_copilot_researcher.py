@@ -99,6 +99,37 @@ def test_ordinary_research_commands_are_not_obstructed():
 @pytest.mark.parametrize(
     "command",
     [
+        # Naming a protected path is research; only running it is execution.
+        "Get-Content research/run_experiment.py",
+        "rg request_final_benchmark research/runner_protocol.py",
+        "Select-String -Path research/program.md -Pattern final_benchmark",
+        "python -c \"print(proposal['request_final_benchmark'])\"",
+        "cat robot_learning/train.py",
+    ],
+)
+def test_reading_about_a_protected_path_is_not_running_it(command):
+    assert adapter.command_denial(command) is None
+
+
+def test_the_execution_target_is_resolved_through_the_launcher_prefix():
+    resolve = adapter.execution_target
+
+    assert resolve(["uv", "run", "python", "research/run_experiment.py"]) == (
+        "research/run_experiment.py"
+    )
+    assert resolve(["uv", "run", "--group", "researcher", "python", "x.py"]) == "x.py"
+    assert resolve(["uv", "run", "python", "-m", "robot_learning.train"]) == (
+        "robot_learning.train"
+    )
+    assert resolve(["uv", "run", "pytest", "tests/scenario"]) == "pytest"
+    # Inline code names no target, which the guardrail accepts knowingly.
+    assert resolve(["python", "-c", "code"]) is None
+    assert resolve(["Get-Content", "anything"]) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
         "git status; git push",
         "git status && git commit -m x",
         "Get-Content x.txt | git apply",
@@ -179,16 +210,48 @@ def test_the_final_message_is_shown_when_nothing_streamed(capsys):
 
 def test_the_summary_reports_work_not_a_verdict(capsys):
     console = adapter.Console()
-    console.file_changed("modified", "research/proposal.json")
     console.input_tokens, console.output_tokens = 9000, 120
 
-    console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80")
+    console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80", ["research/proposal.json"])
 
     out = capsys.readouterr().out
     assert "1 file(s) changed" in out
     assert "9000 in / 120 out tokens" in out
     for verdict in ("success", "complete", "valid", "failed"):
         assert verdict not in out.lower()
+
+
+def test_a_file_written_outside_the_edit_tools_is_still_reported(capsys):
+    console = adapter.Console()
+
+    # The runtime emitted no change event, because the shell wrote the file.
+    console.summary("session-id", ["research/postmortems.md", "research/proposal.json"])
+
+    out = capsys.readouterr().out
+    assert "  ~ research/postmortems.md" in out
+    assert "  ~ research/proposal.json" in out
+    assert "2 file(s) changed" in out
+
+
+def test_a_file_already_announced_is_not_listed_twice(capsys):
+    console = adapter.Console()
+    console.file_changed("modified", "research/proposal.json")
+
+    console.summary("session-id", ["research/proposal.json"])
+
+    assert capsys.readouterr().out.count("research/proposal.json") == 1
+
+
+def test_the_changed_set_comes_from_the_worktree_not_the_runtime(monkeypatch):
+    monkeypatch.setattr(
+        adapter,
+        "worktree_status",
+        lambda: {"research/proposal.json": "M", "new.py": "??"},
+    )
+
+    changed = adapter.changed_since({"research/proposal.json": "M", "gone.py": "??"})
+
+    assert changed == ["gone.py", "new.py"]
 
 
 # --- event routing ----------------------------------------------------------
