@@ -304,7 +304,10 @@ def test_researcher_retries_continue_the_interrupted_opencode_session():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
-    assert script.count("opencode run --continue --model $model") == 3
+    # One process boundary, three bounded phases, one retry each.
+    assert script.count("Invoke-ResearcherSession -Prompt $") == 6
+    assert script.count("-Continue") == 3
+    assert "opencode run --continue --model $model" in script
     assert "OpenCode-specific workaround" in script
 
 

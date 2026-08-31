@@ -1234,6 +1234,83 @@ def validate_evaluation_request(request: dict) -> None:
         )
 
 
+def available_evaluation_candidates(pending: dict, state: dict) -> dict:
+    """The models a request may name: this experiment's candidates and the champion."""
+    available = {item["name"]: item for item in pending["candidates"]}
+    if pending.get("champion_available"):
+        available["champion"] = {
+            "name": "champion",
+            "artifact": state["accepted_artifact"],
+            "evaluations": [],
+        }
+    return available
+
+
+def planned_evaluations(request: dict, available: dict) -> list[dict]:
+    """Resolve every requested research measurement before the first one runs."""
+    requested = request.get("evaluations") or []
+    if not isinstance(requested, list):
+        raise TypeError("evaluation request requires an evaluations list")
+    planned: list[dict] = []
+    for number, spec in enumerate(requested, start=1):
+        if not isinstance(spec, dict):
+            raise TypeError("each requested evaluation must be an object")
+        missing = [
+            field for field in ("candidate", "episodes", "seed") if field not in spec
+        ]
+        if missing:
+            raise ValueError(f"evaluation is missing required fields: {missing}")
+        if "official_benchmark" in spec:
+            raise ValueError(
+                "official_benchmark is not valid in a research evaluation request"
+            )
+        name = str(spec.get("candidate", "")).strip()
+        if name not in available:
+            raise ValueError(
+                f"unknown evaluation candidate {name!r}; "
+                f"choose from {sorted(available)}"
+            )
+        try:
+            episodes = int(spec["episodes"])
+            seed = int(spec["seed"])
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                "evaluation episodes and seed must be whole numbers"
+            ) from error
+        if episodes < 1:
+            raise ValueError("evaluation episodes must be positive")
+        planned.append(
+            {
+                "candidate": name,
+                "episodes": episodes,
+                "seed": seed,
+                "label": str(
+                    spec.get("label", f"requested evaluation {number}: {name}")
+                ),
+            }
+        )
+    return planned
+
+
+def planned_task_references(request: dict, available: dict) -> list[dict]:
+    """Resolve every requested task-reference measurement before the first one runs."""
+    planned: list[dict] = []
+    for number, spec in enumerate(requested_task_references(request), start=1):
+        name = str(spec.get("candidate", "")).strip()
+        if name not in available:
+            raise ValueError(
+                f"unknown task-reference candidate {name!r}; "
+                f"choose from {sorted(available)}"
+            )
+        planned.append(
+            {
+                "candidate": name,
+                "label": str(spec.get("label", f"task reference {number}: {name}")),
+            }
+        )
+    return planned
+
+
 def execute_pending_evaluations() -> int:
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     pending = state.get("pending_evaluation_request")
@@ -1253,20 +1330,13 @@ def execute_pending_evaluations() -> int:
     experiment = int(pending["experiment"])
     if int(request.get("experiment", -1)) != experiment:
         raise ValueError("evaluation request references the wrong experiment")
-    requested = request.get("evaluations") or []
-    if not isinstance(requested, list):
-        raise TypeError("evaluation request requires an evaluations list")
-    requested_references = requested_task_references(request)
-    announce("\n" + render_evaluation_plan(request, experiment) + "\n")
-
     candidates = pending["candidates"]
-    available = {item["name"]: item for item in candidates}
-    if pending.get("champion_available"):
-        available["champion"] = {
-            "name": "champion",
-            "artifact": state["accepted_artifact"],
-            "evaluations": [],
-        }
+    available = available_evaluation_candidates(pending, state)
+    # The whole plan is resolved first, so nothing is measured for a request
+    # that a later entry would have invalidated.
+    requested = planned_evaluations(request, available)
+    requested_references = planned_task_references(request, available)
+    announce("\n" + render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
     reference_executed: list[dict] = list(
@@ -1303,32 +1373,12 @@ def execute_pending_evaluations() -> int:
         (item["candidate"], str(item.get("panel", ""))) for item in reference_executed
     }
     try:
-        for number, spec in enumerate(requested, start=1):
-            if not isinstance(spec, dict):
-                raise TypeError("each requested evaluation must be an object")
-            missing = [
-                field
-                for field in ("candidate", "episodes", "seed")
-                if field not in spec
-            ]
-            if missing:
-                raise ValueError(f"evaluation is missing required fields: {missing}")
-            if "official_benchmark" in spec:
-                raise ValueError(
-                    "official_benchmark is not valid in a research evaluation request"
-                )
-            name = str(spec.get("candidate", "")).strip()
-            contender = available.get(name)
-            if contender is None:
-                raise ValueError(
-                    f"unknown evaluation candidate {name!r}; "
-                    f"choose from {sorted(available)}"
-                )
-            episodes = int(spec["episodes"])
-            seed = int(spec["seed"])
-            if episodes < 1:
-                raise ValueError("evaluation episodes must be positive")
-            label = str(spec.get("label", f"requested evaluation {number}: {name}"))
+        for spec in requested:
+            name = spec["candidate"]
+            contender = available[name]
+            episodes = spec["episodes"]
+            seed = spec["seed"]
+            label = spec["label"]
             key = request_key(name, episodes, seed, semantics)
             if key in completed_keys:
                 announce(f"[evaluation] already complete; reusing {label}")
@@ -1366,15 +1416,10 @@ def execute_pending_evaluations() -> int:
             pending["partial_evaluations"] = executed
             atomic_write_json(STATE_PATH, state)
 
-        for number, spec in enumerate(requested_references, start=1):
-            name = str(spec.get("candidate", "")).strip()
-            contender = available.get(name)
-            if contender is None:
-                raise ValueError(
-                    f"unknown task-reference candidate {name!r}; "
-                    f"choose from {sorted(available)}"
-                )
-            label = str(spec.get("label", f"task reference {number}: {name}"))
+        for spec in requested_references:
+            name = spec["candidate"]
+            contender = available[name]
+            label = spec["label"]
             reference_key = (name, panel["panel"])
             if reference_key in completed_reference_keys:
                 announce(f"[task reference] already complete; reusing {label}")
@@ -2292,6 +2337,49 @@ def check_proposal() -> int:
     return 0
 
 
+def check_evaluation_request() -> int:
+    """Non-mutating preflight: is the researcher's request usable as written?
+
+    It resolves the same plan execution will run, so a request that passes here
+    fails afterwards only for a genuine Runner execution reason.
+    """
+    if not EVALUATION_REQUEST_PATH.exists():
+        print(
+            "EVALUATION_REQUEST_INVALID: research/evaluation_request.json "
+            "was not created"
+        )
+        return 1
+    try:
+        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        pending = state.get("pending_evaluation_request")
+        if not isinstance(pending, dict):
+            raise TypeError("no experiment is awaiting a research evaluation")
+        request = json.loads(EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        if not isinstance(request, dict):
+            raise TypeError("evaluation_request.json must contain a JSON object")
+        validate_evaluation_request(request)
+        experiment = int(pending["experiment"])
+        if int(request.get("experiment", -1)) != experiment:
+            raise ValueError(
+                "evaluation request references the wrong experiment; "
+                f"experiment {experiment} is awaiting evaluation"
+            )
+        available = available_evaluation_candidates(pending, state)
+        planned_evaluations(request, available)
+        planned_task_references(request, available)
+    except (
+        json.JSONDecodeError,
+        KeyError,
+        OSError,
+        TypeError,
+        ValueError,
+    ) as error:
+        print(f"EVALUATION_REQUEST_INVALID: {error}")
+        return 1
+    print("EVALUATION_REQUEST_VALID")
+    return 0
+
+
 def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     plan = plan_previous_result_decision(proposal, state)
     pending = plan["pending"]
@@ -2460,12 +2548,15 @@ def main() -> int:
     parser.add_argument("--evaluate-pending-final", action="store_true")
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
+    parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
     args = parser.parse_args()
     if args.begin_hypothesis:
         return begin_hypothesis_phase()
     if args.check_proposal:
         return check_proposal()
+    if args.check_evaluation_request:
+        return check_evaluation_request()
     if args.check_lineage_evidence is not None:
         return check_lineage_evidence(args.check_lineage_evidence)
     if args.evaluate_pending_final:

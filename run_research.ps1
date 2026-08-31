@@ -30,6 +30,33 @@ function Assert-ResearchRuntime {
 
 Assert-ResearchRuntime
 
+. "$PSScriptRoot\researcher_session.ps1"
+
+# The single Researcher process boundary. It observes the process exit code and
+# nothing else: the Researcher's own output stays visible and uninterpreted.
+function Invoke-ResearcherSession {
+    param(
+        [Parameter(Mandatory)][string]$Prompt,
+        [switch]$Continue
+    )
+    if ($Continue) {
+        # OpenCode-specific workaround: continue the interrupted Researcher
+        # session instead of restarting its phase analysis from scratch.
+        opencode run --continue --model $model --variant $reasoning $Prompt
+    }
+    else {
+        opencode run --model $model --variant $reasoning $Prompt
+    }
+    # An invocation that never reached a conventional exit reports the absence
+    # rather than an invented code.
+    $script:ResearcherExitCode = if ($null -eq $LASTEXITCODE) {
+        $null
+    }
+    else {
+        [int]$LASTEXITCODE
+    }
+}
+
 function Update-ResearchBrief {
     uv run python research/build_research_brief.py
     if ($LASTEXITCODE -ne 0) {
@@ -98,6 +125,72 @@ function Test-ResearchProposal {
         return $false
     }
     return $true
+}
+
+function Test-EvaluationRequest {
+    $validationOutput = @(
+        uv run python research/run_experiment.py --check-evaluation-request 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $script:EvaluationValidationFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0) {
+        Write-Host $script:EvaluationValidationFeedback
+        return $false
+    }
+    return $true
+}
+
+# The three bounded phases below observe the same facts: what the process did,
+# whether the deliverable exists, and whether the protected validator accepts it.
+function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
+    $present = Test-Path "research\proposal.json"
+    $valid = $false
+    $reason = "research/proposal.json was not created"
+    if ($present) {
+        $valid = Test-ResearchProposal
+        $reason = if ($valid) { "" } else { $script:ProposalValidationFeedback }
+    }
+    New-ResearcherSessionStatus -Phase $phase -Attempt $attempt `
+        -ExitCode $script:ResearcherExitCode `
+        -Deliverable "research/proposal.json" `
+        -Present $present -Valid $valid -Reason $reason
+}
+
+function Get-EvaluationSessionStatus([int]$attempt) {
+    $present = Test-Path "research\evaluation_request.json"
+    $valid = $false
+    $reason = "research/evaluation_request.json was not created"
+    if ($present) {
+        $valid = Test-EvaluationRequest
+        $reason = if ($valid) { "" } else { $script:EvaluationValidationFeedback }
+    }
+    New-ResearcherSessionStatus -Phase "evaluation design" -Attempt $attempt `
+        -ExitCode $script:ResearcherExitCode `
+        -Deliverable "research/evaluation_request.json" `
+        -Present $present -Valid $valid -Reason $reason
+}
+
+function Get-LineageSessionStatus([int]$experiment, [int]$attempt) {
+    $present = (Test-Path "research\postmortems.md") -and (
+        Test-Path "research\proposal.json"
+    )
+    $valid = $false
+    $reason = ""
+    if (Test-LineageResearchMemory $experiment) {
+        $valid = Test-ResearchProposal
+        if (-not $valid) {
+            $reason = $script:ProposalValidationFeedback
+        }
+    }
+    else {
+        $reason = $script:LineageValidationFeedback
+    }
+    New-ResearcherSessionStatus -Phase "lineage decision" -Attempt $attempt `
+        -ExitCode $script:ResearcherExitCode `
+        -Deliverable "research/postmortems.md and research/proposal.json" `
+        -Present $present -Valid $valid -Reason $reason
 }
 
 try {
@@ -173,20 +266,23 @@ while ($true) {
                 "Expected deliverable: research/evaluation_request.json for the current experiment, as defined by the protocol."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
-            opencode run --model $model --variant $reasoning $evaluationPrompt
-            if (-not (Test-Path "research\evaluation_request.json")) {
-                Write-Host "=== Evaluation request missing; retrying the same bounded task once ==="
+            Invoke-ResearcherSession -Prompt $evaluationPrompt
+            $evaluationStatus = Get-EvaluationSessionStatus 1
+            Write-ResearcherSessionStatus $evaluationStatus
+            if (-not $evaluationStatus.Complete) {
+                $evaluationProblem = $evaluationStatus.Reason
+                Write-Host "=== Evaluation request missing or invalid; retrying the same bounded task once ==="
                 $evaluationRetryPrompt = @(
-                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The phase remains open because research/evaluation_request.json was not produced. This is the complete task; do not wait for more input."
+                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
                     "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
                     "Expected deliverable: complete research/evaluation_request.json according to the protocol."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
-                # OpenCode-specific workaround: a headless run may return after a
-                # tool-call batch without scheduling the next agent turn.
-                opencode run --continue --model $model --variant $reasoning $evaluationRetryPrompt
-                if (-not (Test-Path "research\evaluation_request.json")) {
-                    throw "Researcher ended twice without creating research/evaluation_request.json."
+                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Continue
+                $evaluationStatus = Get-EvaluationSessionStatus 2
+                Write-ResearcherSessionStatus $evaluationStatus
+                if (-not $evaluationStatus.Complete) {
+                    throw "Researcher ended twice without a valid research/evaluation_request.json. Last validation error: $($evaluationStatus.Reason)"
                 }
             }
         }
@@ -199,7 +295,7 @@ while ($true) {
             break
         }
         if ($LASTEXITCODE -ne 0) {
-            throw "Requested evaluation failed."
+            throw "Runner execution of the validated evaluation request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
         Write-Host "=== Requested evaluations complete ==="
@@ -239,19 +335,12 @@ while ($true) {
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json defined by the protocol."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
-        opencode run --model $model --variant $reasoning $decisionPrompt
+        Invoke-ResearcherSession -Prompt $decisionPrompt
         $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
-        $lineageReady = Test-LineageResearchMemory $pendingExperiment
-        if ($lineageReady) {
-            $lineageReady = Test-ResearchProposal
-            if (-not $lineageReady) {
-                $lineageProblem = $script:ProposalValidationFeedback
-            }
-        }
-        else {
-            $lineageProblem = $script:LineageValidationFeedback
-        }
-        if (-not $lineageReady) {
+        $lineageStatus = Get-LineageSessionStatus $pendingExperiment 1
+        Write-ResearcherSessionStatus $lineageStatus
+        if (-not $lineageStatus.Complete) {
+            $lineageProblem = $lineageStatus.Reason
             Write-Host "=== Lineage deliverable invalid; retrying the same bounded task once ==="
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
@@ -259,26 +348,16 @@ while ($true) {
                 "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json according to the protocol."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
-            # OpenCode-specific workaround: continue the interrupted Researcher
-            # session instead of restarting its phase analysis from scratch.
-            opencode run --continue --model $model --variant $reasoning $decisionRetryPrompt
-            $lineageReady = Test-LineageResearchMemory $pendingExperiment
-            if ($lineageReady) {
-                $lineageReady = Test-ResearchProposal
-                if (-not $lineageReady) {
-                    $lineageProblem = $script:ProposalValidationFeedback
-                }
-            }
-            else {
-                $lineageProblem = $script:LineageValidationFeedback
-            }
-            if (-not $lineageReady) {
-                throw "Researcher ended twice without valid lineage deliverables for experiment $pendingExperiment. Last validation error: $lineageProblem"
+            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Continue
+            $lineageStatus = Get-LineageSessionStatus $pendingExperiment 2
+            Write-ResearcherSessionStatus $lineageStatus
+            if (-not $lineageStatus.Complete) {
+                throw "Researcher ended twice without valid lineage deliverables for experiment $pendingExperiment. Last validation error: $($lineageStatus.Reason)"
             }
         }
         uv run python research/run_experiment.py
         if ($LASTEXITCODE -ne 0) {
-            throw "Lineage decision could not be finalized."
+            throw "Runner application of the validated lineage decision failed. The researcher deliverables were already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
         Write-Host "=== Lineage decision finalized; requesting next hypothesis ==="
@@ -309,26 +388,21 @@ while ($true) {
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
-    opencode run --model $model --variant $reasoning $researchPrompt
+    Invoke-ResearcherSession -Prompt $researchPrompt
 
     $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     if ($resultCountAfter -gt $resultCountBefore) {
         throw "The researcher executed an experiment during the new-hypothesis phase. The loop stopped without attempting a retry or another execution; restart it to continue from the persisted state."
     }
 
+    # Observed before the runner's own bookkeeping, so a brief or commit failure
+    # cannot swallow what the session did.
+    $proposalStatus = Get-ProposalSessionStatus "new hypothesis" 1
+    Write-ResearcherSessionStatus $proposalStatus
     Update-ResearchBrief
     Save-ResearchMemory
-    $proposalValid = $false
-    if (Test-Path "research\proposal.json") {
-        $proposalValid = Test-ResearchProposal
-    }
-    if (-not $proposalValid) {
-        $proposalProblem = if (Test-Path "research\proposal.json") {
-            $script:ProposalValidationFeedback
-        }
-        else {
-            "research/proposal.json was not created"
-        }
+    if (-not $proposalStatus.Complete) {
+        $proposalProblem = $proposalStatus.Reason
         Write-Host "=== Research proposal missing or invalid; retrying once with bounded context ==="
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
@@ -338,23 +412,20 @@ while ($true) {
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
-        # OpenCode-specific workaround: continue the interrupted Researcher
-        # session so it can finish the required proposal after its tool calls.
-        opencode run --continue --model $model --variant $reasoning $retryPrompt
+        Invoke-ResearcherSession -Prompt $retryPrompt -Continue
 
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {
             throw "The researcher executed an experiment during the new-hypothesis retry. The loop stopped without attempting another execution; restart it to continue from the persisted state."
         }
 
+        $proposalStatus = Get-ProposalSessionStatus "new hypothesis" 2
+        Write-ResearcherSessionStatus $proposalStatus
         Update-ResearchBrief
         Save-ResearchMemory
 
-        if (-not (Test-Path "research\proposal.json")) {
-            throw "Researcher ended twice without creating research/proposal.json. The loop stopped safely."
-        }
-        if (-not (Test-ResearchProposal)) {
-            throw "Researcher ended twice without a proposal valid for the current phase. The loop stopped safely: $script:ProposalValidationFeedback"
+        if (-not $proposalStatus.Complete) {
+            throw "Researcher ended twice without a proposal valid for the current phase. The loop stopped safely: $($proposalStatus.Reason)"
         }
     }
     uv run python research/run_experiment.py
