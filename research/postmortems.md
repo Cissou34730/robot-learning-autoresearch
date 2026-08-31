@@ -19,3 +19,13 @@
 **Interpretation:** Oversampling outer targets did not solve the baseline's outer-workspace failures and instead damaged generalization, including nearby targets in the researcher panels; the challenger is not a useful active lineage, so the curriculum code should be reverted and the accepted champion retained.
 
 **Evidence inspected:** `research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed1000-5b3ead329245.json`, `research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed2000-5b3ead329245.json`, `research/evaluations/evaluation-experiment-2-champion-200ep-seed1000-5b3ead329245.json`, `research/evaluations/evaluation-experiment-2-champion-200ep-seed2000-5b3ead329245.json`, `research/evaluations/task-reference-experiment-2-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-2-champion-task-reference-v1.json`
+
+## Experiment 3
+
+**Result:** The transferred long-range proximity reward reached 91.50% pooled success over two 200-episode researcher seeds, improving on the accepted champion's 63.25% pooled result.
+
+**Observed behavior:** Success was 93.5% and 89.5% across the two researcher seeds, and 90.5% on the independent task-reference panel versus 55.5% for the champion; remaining failures were concentrated near the outer workspace and usually broke the hold shortly after reaching tolerance.
+
+**Interpretation:** Increasing the closeness-potential length scale from 5 cm to 10 cm improved long-range approach and hold reliability without changing the task distribution or protected hold semantics, so checkpoint-120832 is the active lineage and the experiment code should be kept. The evidence is strong development evidence but remains below the 98% objective, so it does not warrant a final benchmark request.
+
+**Evidence inspected:** `research/evaluations/evaluation-experiment-3-checkpoint-120832-200ep-seed1000-0933e7adff8a.json`, `research/evaluations/evaluation-experiment-3-checkpoint-120832-200ep-seed2000-0933e7adff8a.json`, `research/evaluations/evaluation-experiment-3-champion-200ep-seed1000-0933e7adff8a.json`, `research/evaluations/evaluation-experiment-3-champion-200ep-seed2000-0933e7adff8a.json`, `research/evaluations/task-reference-experiment-3-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-3-champion-task-reference-v1.json`

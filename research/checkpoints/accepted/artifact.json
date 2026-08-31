@@ -2,10 +2,10 @@
   "schema_version": 1,
   "algorithm": "ppo",
   "seed": 0,
-  "timesteps": 105472,
+  "timesteps": 120832,
   "requested_timesteps": 120000,
   "completed": true,
-  "resumed_from": null,
+  "resumed_from": "C:\\Users\\cyril.beurier\\code\\robot-learning-scenario-refactor\\research\\checkpoints\\accepted\\model.zip",
   "effective_config": {
     "runtime_config": {
       "ppo": {

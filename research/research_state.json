@@ -1,20 +1,21 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-2-champion-200ep-seed1000-5b3ead329245.json",
-    "research/evaluations/evaluation-experiment-2-champion-200ep-seed2000-5b3ead329245.json"
+    "research/evaluations/evaluation-experiment-3-checkpoint-120832-200ep-seed1000-0933e7adff8a.json",
+    "research/evaluations/evaluation-experiment-3-checkpoint-120832-200ep-seed2000-0933e7adff8a.json"
   ],
   "accepted_metrics": {
-    "episodes": 200,
+    "episodes": 400,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 66.5,
+    "pooled_success_percent": 91.5,
     "schema_version": 3,
-    "seed_count": 1,
+    "seed_count": 2,
     "seed_success_percent": {
-      "1000": 66.5
+      "1000": 93.5,
+      "2000": 89.5
     },
-    "success_percent": 66.5,
-    "worst_seed_success_percent": 66.5
+    "success_percent": 91.5,
+    "worst_seed_success_percent": 89.5
   },
   "accepted_parameters": {
     "algorithm": {
@@ -40,20 +41,20 @@
       "n_envs": 1
     }
   },
-  "accepted_training_steps": 120000,
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "accepted_training_steps": 240000,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
     "code": {
-      "action": "revert",
-      "reason": "The experiment's target-sampler intervention reduced held-out performance across both researcher seeds and the stable task-reference panel, so restore the pre-experiment code lineage at bbac60550cdad080da552152102a3d4a05d6d3e8."
+      "action": "keep",
+      "reason": "The 10 cm closeness-potential length scale improved long-range reach-and-hold reliability across both researcher seeds and the independent task-reference panel without changing the protected task semantics."
     },
-    "code_parent_commit": "bbac60550cdad080da552152102a3d4a05d6d3e8",
-    "continue_from": "champion",
-    "experiment": 2,
-    "reason": "The outer-workspace curriculum is a clear regression: the challenger reached 21.75% pooled success across two seeds, with 0% success at 18-20 cm, while the accepted champion reached 25.00% on the same researcher panels and 55.5% on the task-reference panel versus 15.0% for the challenger. Continue the accepted champion rather than the failed fresh curriculum lineage."
+    "code_parent_commit": "76e1fefa73ae2f59d699c70d9ecda3f7116a88d7",
+    "continue_from": "checkpoint-120832",
+    "experiment": 3,
+    "reason": "The transferred long-range proximity reward improved pooled researcher success to 91.50% across two seeds and task-reference success to 90.5%, versus 63.25% and 55.5% for the accepted champion. Checkpoint-120832 is therefore the strongest available active lineage, although the evidence remains below the 98% objective."
   },
-  "last_verdict": "researcher selected champion",
+  "last_verdict": "researcher selected checkpoint-120832",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
