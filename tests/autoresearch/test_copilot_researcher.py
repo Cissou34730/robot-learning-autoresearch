@@ -1,0 +1,443 @@
+"""The Copilot adapter is a runtime boundary, not a scientific authority.
+
+It decides what may run and what the console shows. It never decides whether a
+bounded research phase succeeded, and none of these tests start a real session.
+"""
+
+import asyncio
+import sys
+import types
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+import researcher_copilot as adapter
+
+ROOT = Path(__file__).resolve().parents[2]
+SOURCE = (ROOT / "researcher_copilot.py").read_text(encoding="utf-8")
+
+
+# --- model identity ---------------------------------------------------------
+
+
+def test_the_provider_prefix_is_stripped_from_the_model():
+    assert adapter.normalize_model("github-copilot/gpt-5.6-luna") == "gpt-5.6-luna"
+    assert adapter.normalize_model("gpt-5.6-luna") == "gpt-5.6-luna"
+
+
+# --- the command policy -----------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "git commit -m x",
+        "git add -A",
+        "git push origin HEAD",
+        "git checkout main",
+        "git reset --hard",
+        "git restore --source HEAD -- file.py",
+        "git stash",
+        "git rebase main",
+        "git clean -fd",
+        # An unfamiliar verb is refused rather than assumed harmless.
+        "git switcheroo",
+    ],
+)
+def test_mutating_git_is_refused_and_names_the_lineage_decision(command):
+    reason = adapter.command_denial(command)
+
+    assert reason == adapter.GIT_DENIAL
+    assert "revert" in reason
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "git status --short",
+        "git diff --name-only",
+        "git log --oneline -5",
+        "git show HEAD:robot_learning/scenario/reward.py",
+        "git rev-parse HEAD",
+        "git ls-files",
+    ],
+)
+def test_read_only_git_stays_available(command):
+    assert adapter.command_denial(command) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "uv run python research/run_experiment.py",
+        "uv run python research/run_experiment.py --evaluate-pending",
+        "uv run python -m robot_learning.train",
+        "uv run python robot_learning/play.py",
+    ],
+)
+def test_execution_belongs_to_the_launcher(command):
+    assert adapter.command_denial(command) == adapter.EXECUTION_DENIAL
+
+
+def test_a_repository_wide_test_run_is_refused_but_a_suite_is_not():
+    assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("uv run pytest tests/scenario") is None
+    assert adapter.command_denial("uv run pytest -q tests/training") is None
+
+
+def test_ordinary_research_commands_are_not_obstructed():
+    for command in (
+        "uv run ruff check robot_learning/scenario/reward.py",
+        "uv run python -c \"import json; print('ok')\"",
+        "Get-Content research/brief.md",
+    ):
+        assert adapter.command_denial(command) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "git status; git push",
+        "git status && git commit -m x",
+        "Get-Content x.txt | git apply",
+    ],
+)
+def test_a_refused_command_cannot_hide_behind_an_allowed_one(command):
+    assert adapter.command_denial(command) is not None
+
+
+def test_the_shell_request_is_read_from_every_segment_it_reports():
+    request = SimpleNamespace(
+        full_command_text="git status",
+        command_segments=[SimpleNamespace(full_command_text="git push")],
+    )
+
+    assert adapter.command_denial(adapter.shell_command_text(request)) is not None
+
+
+# --- what the console shows -------------------------------------------------
+
+
+def test_reading_and_searching_stay_silent(capsys):
+    console = adapter.Console()
+
+    for tool in ("view", "rg", "glob", "apply_patch"):
+        console.tool(tool, {"path": "research/brief.md"})
+
+    assert capsys.readouterr().out == ""
+
+
+def test_a_shell_command_is_one_trimmed_line(capsys):
+    console = adapter.Console()
+
+    console.tool("powershell", {"command": "uv run ruff check  reward.py"})
+
+    assert capsys.readouterr().out == "  > powershell: uv run ruff check reward.py\n"
+
+
+def test_changed_files_are_reported_once_each(capsys):
+    console = adapter.Console()
+
+    console.file_changed("modified", "research/proposal.json")
+    console.file_changed("modified", "research/proposal.json")
+    console.file_changed("created", "research/postmortems.md")
+
+    out = capsys.readouterr().out
+    assert out == "  ~ research/proposal.json\n  + research/postmortems.md\n"
+    assert len(console.changed_files) == 2
+
+
+def test_a_refusal_is_reported_once_not_twice(capsys):
+    console = adapter.Console()
+
+    console.denied(adapter.GIT_DENIAL, "call-1")
+
+    assert "call-1" in console.denied_calls
+    assert console.denials == 1
+    assert capsys.readouterr().out.count("Denied by the harness") == 1
+
+
+def test_streamed_text_is_not_repeated_by_the_final_message(capsys):
+    console = adapter.Console()
+
+    console.delta("partial ")
+    console.delta("answer")
+    console.message("partial answer")
+
+    assert capsys.readouterr().out == "partial answer"
+
+
+def test_the_final_message_is_shown_when_nothing_streamed(capsys):
+    console = adapter.Console()
+
+    console.message("complete answer")
+
+    assert capsys.readouterr().out == "complete answer\n"
+
+
+def test_the_summary_reports_work_not_a_verdict(capsys):
+    console = adapter.Console()
+    console.file_changed("modified", "research/proposal.json")
+    console.input_tokens, console.output_tokens = 9000, 120
+
+    console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80")
+
+    out = capsys.readouterr().out
+    assert "1 file(s) changed" in out
+    assert "9000 in / 120 out tokens" in out
+    for verdict in ("success", "complete", "valid", "failed"):
+        assert verdict not in out.lower()
+
+
+# --- event routing ----------------------------------------------------------
+
+
+def test_only_meaningful_events_reach_the_console(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console()
+    finished = asyncio.Event()
+    on_event, _ = adapter.build_handlers(console, finished)
+
+    def emit(data):
+        on_event(SimpleNamespace(data=data))
+
+    emit(
+        events.AssistantReasoningDeltaData(
+            delta_content="hidden thinking", reasoning_id="r1"
+        )
+    )
+    emit(events.AssistantMessageDeltaData(delta_content="visible", message_id="m1"))
+    emit(events.SessionWorkspaceFileChangedData(operation="modified", path="a.py"))
+    emit(events.SessionIdleData())
+
+    out = capsys.readouterr().out
+    assert "hidden thinking" not in out
+    assert "visible" in out
+    assert "  ~ a.py" in out
+    assert finished.is_set()
+
+
+def test_a_refused_call_does_not_also_report_a_tool_failure(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console()
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    console.denied(adapter.GIT_DENIAL, "call-1")
+    capsys.readouterr()
+    on_event(
+        SimpleNamespace(
+            data=events.ToolExecutionCompleteData(
+                success=False, tool_call_id="call-1", error="rejected"
+            )
+        )
+    )
+
+    assert capsys.readouterr().out == ""
+
+
+def test_a_genuine_tool_failure_is_still_reported(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console()
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    on_event(
+        SimpleNamespace(
+            data=events.ToolExecutionCompleteData(
+                success=False, tool_call_id="call-2", error="ruff exited 1"
+            )
+        )
+    )
+
+    assert "ruff exited 1" in capsys.readouterr().out
+
+
+def test_a_refused_shell_call_answers_with_a_rejection(capsys):
+    pytest.importorskip("copilot")
+    from copilot.rpc import PermissionDecisionReject
+    from copilot.session_events import PermissionRequestShell
+
+    console = adapter.Console()
+    _, on_permission = adapter.build_handlers(console, asyncio.Event())
+    request = PermissionRequestShell(
+        can_offer_session_approval=False,
+        commands=[],
+        full_command_text="git push",
+        has_write_file_redirection=False,
+        intention="publish",
+        possible_paths=[],
+        possible_urls=[],
+        tool_call_id="call-3",
+    )
+
+    decision = on_permission(request, {})
+
+    assert isinstance(decision, PermissionDecisionReject)
+    assert "revert" in decision.feedback
+    assert "call-3" in console.denied_calls
+    capsys.readouterr()
+
+
+# --- the session profile ----------------------------------------------------
+
+
+def test_the_session_runs_a_trimmed_tool_profile_inside_the_worktree():
+    pytest.importorskip("copilot")
+    args = adapter.parse_args(["p", "--session-id", "s", "--reasoning", "medium"])
+
+    options = adapter.session_options(args, adapter.Console(), asyncio.Event())
+
+    assert options["model"] == "gpt-5.6-luna"
+    assert options["reasoning_effort"] == "medium"
+    assert options["working_directory"] == str(ROOT)
+    assert options["streaming"] is True
+    assert options["enable_file_change_tracking"] is True
+    # Everything a robotics experiment cannot use stays out of the context.
+    assert options["enable_skills"] is False
+    assert options["enable_session_store"] is False
+    assert options["enable_mcp_apps"] is False
+    allowed = options["available_tools"].to_list()
+    assert "builtin:view" in allowed
+    assert "builtin:apply_patch" in allowed
+    for absent in ("builtin:web_fetch", "builtin:sql", "builtin:task"):
+        assert absent not in allowed
+
+
+def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():
+    pytest.importorskip("copilot")
+    args = adapter.parse_args(["p", "--session-id", "s"])
+
+    message = adapter.session_options(args, adapter.Console(), asyncio.Event())[
+        "system_message"
+    ]
+
+    assert message["mode"] == "append"
+    assert str(ROOT) in message["content"]
+    assert "run_experiment.py" in message["content"]
+
+
+# --- session identity -------------------------------------------------------
+
+
+class FakeSession:
+    def __init__(self, session_id):
+        self.session_id = session_id
+
+
+class FakeClient:
+    def __init__(self, *, authenticated=True, models=("gpt-5.6-luna",)):
+        self.authenticated = authenticated
+        self.models = models
+        self.created = []
+        self.resumed = []
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *exc):
+        return False
+
+    async def get_auth_status(self):
+        return SimpleNamespace(isAuthenticated=self.authenticated)
+
+    async def list_models(self):
+        return [SimpleNamespace(id=name) for name in self.models]
+
+    async def create_session(self, **kwargs):
+        self.created.append(kwargs)
+        return FakeSession(kwargs["session_id"])
+
+    async def resume_session(self, session_id, **kwargs):
+        self.resumed.append((session_id, kwargs))
+        return FakeSession(session_id)
+
+
+def test_a_first_attempt_creates_the_session_the_launcher_named():
+    client = FakeClient()
+    args = adapter.parse_args(["p", "--session-id", "phase-1"])
+
+    session = asyncio.run(adapter.open_session(client, args, {}))
+
+    assert client.created == [{"session_id": "phase-1"}]
+    assert client.resumed == []
+    assert session.session_id == "phase-1"
+
+
+def test_a_retry_resumes_that_same_session_and_never_an_implicit_one():
+    client = FakeClient()
+    args = adapter.parse_args(["p", "--session-id", "phase-1", "--resume"])
+
+    asyncio.run(adapter.open_session(client, args, {}))
+
+    assert client.resumed == [("phase-1", {})]
+    assert client.created == []
+
+
+def install_fake_sdk(monkeypatch, client):
+    module = types.ModuleType("copilot")
+    module.CopilotClient = lambda **kwargs: client
+    monkeypatch.setitem(sys.modules, "copilot", module)
+
+
+def test_a_missing_copilot_login_fails_without_starting_a_session(monkeypatch, capsys):
+    client = FakeClient(authenticated=False)
+    install_fake_sdk(monkeypatch, client)
+
+    code = adapter.main(["p", "--session-id", "phase-1"])
+
+    assert code == adapter.EXIT_NOT_AUTHENTICATED
+    assert client.created == []
+    assert "not authenticated" in capsys.readouterr().err
+
+
+def test_an_unavailable_model_is_reported_instead_of_silently_replaced(
+    monkeypatch, capsys
+):
+    client = FakeClient(models=("gpt-5.5", "claude-opus-5"))
+    install_fake_sdk(monkeypatch, client)
+
+    code = adapter.main(["p", "--session-id", "phase-1", "--model", "gpt-5.6-luna"])
+
+    error = capsys.readouterr().err
+    assert code == adapter.EXIT_MODEL_UNAVAILABLE
+    assert client.created == []
+    assert "gpt-5.6-luna" in error and "gpt-5.5" in error
+
+
+def test_a_runtime_failure_becomes_an_exit_code_not_a_traceback(monkeypatch, capsys):
+    module = types.ModuleType("copilot")
+
+    def explode(**kwargs):
+        raise RuntimeError("runtime binary is missing")
+
+    module.CopilotClient = explode
+    monkeypatch.setitem(sys.modules, "copilot", module)
+
+    code = adapter.main(["p", "--session-id", "phase-1"])
+
+    assert code == adapter.EXIT_RUNTIME_FAILURE
+    assert "runtime binary is missing" in capsys.readouterr().err
+
+
+# --- the boundary with the science ------------------------------------------
+
+
+def test_the_adapter_never_judges_a_research_deliverable():
+    for deliverable in (
+        "proposal.json",
+        "evaluation_request.json",
+        "postmortems.md",
+        "results.jsonl",
+        "research_state.json",
+    ):
+        assert deliverable not in SOURCE
+
+
+def test_the_copilot_runtime_loads_only_where_it_is_used():
+    header = SOURCE.split("ROOT = Path", 1)[0]
+
+    assert "import copilot" not in header
+    assert "from copilot" not in header
+    # Every other module keeps importing the adapter's policy without the SDK.
+    assert "from copilot" in SOURCE

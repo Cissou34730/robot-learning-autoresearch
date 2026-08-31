@@ -275,7 +275,7 @@ def test_research_runtime_preflight_runs_before_any_researcher_session():
         if line.strip() == "Assert-ResearchRuntime"
     )
     first_session = next(
-        index for index, line in enumerate(lines) if "opencode run" in line
+        index for index, line in enumerate(lines) if "researcher_copilot.py" in line
     )
     first_runner = next(
         index
@@ -300,15 +300,17 @@ def test_lineage_retry_gate_requires_attested_evidence():
     assert "Evidence inspected" in program
 
 
-def test_researcher_retries_continue_the_interrupted_opencode_session():
+def test_researcher_retries_resume_this_phase_own_session():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
     # One process boundary, three bounded phases, one retry each.
     assert script.count("Invoke-ResearcherSession -Prompt $") == 6
     assert script.count("-Continue") == 3
-    assert "opencode run --continue --model $model" in script
-    assert "OpenCode-specific workaround" in script
+    # A retry resumes an identity this phase minted, not an implicit last session.
+    assert "[guid]::NewGuid().ToString()" in script
+    assert '$sessionArgs += "--resume"' in script
+    assert "--continue" not in script
 
 
 def test_researcher_prompts_leave_execution_to_the_launcher():

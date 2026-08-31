@@ -193,11 +193,13 @@ def test_the_first_attempt_stays_visible_after_the_retry(tmp_path):
 
 
 def test_every_researcher_invocation_goes_through_the_one_process_boundary():
-    invocations = [line.strip() for line in LOOP.splitlines() if "opencode run" in line]
+    invocations = [
+        line.strip() for line in LOOP.splitlines() if "researcher_copilot.py" in line
+    ]
 
+    # One command builds every session; continuation is an argument, not a branch.
     assert invocations == [
-        "opencode run --continue --model $model --variant $reasoning $Prompt",
-        "opencode run --model $model --variant $reasoning $Prompt",
+        "uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt",
     ]
     assert LOOP.count("Invoke-ResearcherSession -Prompt") == 6
     assert LOOP.count("-Continue") == 3
@@ -243,8 +245,9 @@ def test_session_observation_reads_no_researcher_output():
         ):
             assert forbidden not in text
     # The provider command is invoked, never captured or interpreted.
-    assert "= opencode" not in LOOP
-    assert "opencode" not in SESSION_LIBRARY
+    assert "= uv run" not in LOOP
+    assert "researcher_copilot" not in SESSION_LIBRARY
+    assert "copilot" not in SESSION_LIBRARY
 
 
 def test_session_observation_is_console_only():

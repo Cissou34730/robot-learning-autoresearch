@@ -24,6 +24,29 @@ The first run after an infrastructure change is an automatic unchanged
 baseline. Training saves neutral checkpoints; the researcher subsequently asks
 for the measurements that are useful to interpret them.
 
+### Researcher runtime
+
+The researcher runs on the GitHub Copilot SDK through `researcher_copilot.py`,
+using your own GitHub Copilot entitlement. Prepare it once:
+
+```powershell
+uv sync
+uv run --group researcher python -m copilot download-runtime
+```
+
+Sign in once with the Copilot CLI if you have never done so; the SDK reuses
+those credentials. Model and reasoning effort stay launch-time choices:
+
+```powershell
+.\run_research.ps1 -Model gpt-5.6-luna -Reasoning high
+```
+
+An unavailable model is reported with the list of available ones rather than
+silently replaced. The adapter streams the researcher's answer, prints one line
+per changed file and per shell command, and stays quiet about reads and
+searches. It reports what a session did; whether a phase is complete remains a
+property of the deliverable and its protected validator.
+
 To discard all experimental history and model lineages while preserving the
 current code, benchmark, parameters, and decision log, run:
 

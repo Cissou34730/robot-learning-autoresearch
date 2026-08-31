@@ -895,3 +895,45 @@ superseded. It does not instruct the autonomous researcher and does not replace
   phase and the existing single retry.
 - **Boundary unchanged:** No research phase, state transition, evaluation
   capability, lineage rule, recovery behavior or training behavior changed.
+
+## 2026-08-31 - The researcher runtime is the Copilot SDK
+
+- **Decision:** OpenCode is replaced by the official GitHub Copilot SDK
+  (`github-copilot-sdk`, declared in the `researcher` dependency group) behind a
+  single repository-owned adapter, `researcher_copilot.py`. `run_research.ps1`
+  changes only inside `Invoke-ResearcherSession`; `researcher_session.ps1` is
+  untouched and still observes a session as process, deliverable presence and
+  deliverable validity.
+- **Reason:** The OpenCode harness was slow, noisy, and inconsistent about
+  repository instructions and scope. The model provider is unchanged: the same
+  GitHub Copilot entitlement serves the same model.
+- **Decision:** The model is named as the SDK names it, `gpt-5.6-luna`; the
+  OpenCode `github-copilot/` provider prefix is normalised away. A model the
+  account cannot reach is reported with the available list and a distinct exit
+  code, never silently replaced.
+- **Decision:** The session profile is trimmed to the tools a robotics
+  experiment can use: `view`, `rg`, `glob`, `apply_patch` and the shell family.
+  Skills, the cross-session store, embedding retrieval and MCP apps are off.
+  Measured on an identical prompt, this moves the runtime from 15 tools and
+  14259 input tokens to 8 tools and 9083.
+- **Decision:** Each bounded phase mints its own session identity and a retry
+  resumes that identity explicitly, replacing OpenCode's "continue the most
+  recent session" behaviour.
+- **Decision:** The adapter refuses, at the tool boundary, the three actions
+  that have corrupted or ended runs: mutating Git, invoking
+  `research/run_experiment.py` or training directly, and repository-wide test
+  runs. Read-only Git stays available. Each refusal returns the sanctioned
+  alternative to the model, so it retries differently rather than stopping the
+  campaign.
+- **Reason for the Git rule:** The runner owns the rollback anchor, the
+  experiment's `code_changes` delta and a postmortem commit that takes no
+  pathspec. A researcher commit would corrupt all three. Reverting an
+  experiment's code is already a protocol action: the lineage proposal's
+  `code` decision, which the runner executes.
+- **Out of scope:** This is a guardrail against the failures actually observed,
+  not a sandbox. `uv run python -c` remains an unconstrained escape hatch, and
+  the 2026-08-29 cooperative-agent trust model still stands.
+- **Boundary unchanged:** No research phase, deliverable schema, validator,
+  evaluation rule, lineage rule, benchmark, result-history semantic or training
+  behavior changed. Researcher output is still never parsed as a scientific
+  fact.
