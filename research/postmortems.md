@@ -29,3 +29,13 @@
 **Interpretation:** Increasing the closeness-potential length scale from 5 cm to 10 cm improved long-range approach and hold reliability without changing the task distribution or protected hold semantics, so checkpoint-120832 is the active lineage and the experiment code should be kept. The evidence is strong development evidence but remains below the 98% objective, so it does not warrant a final benchmark request.
 
 **Evidence inspected:** `research/evaluations/evaluation-experiment-3-checkpoint-120832-200ep-seed1000-0933e7adff8a.json`, `research/evaluations/evaluation-experiment-3-checkpoint-120832-200ep-seed2000-0933e7adff8a.json`, `research/evaluations/evaluation-experiment-3-champion-200ep-seed1000-0933e7adff8a.json`, `research/evaluations/evaluation-experiment-3-champion-200ep-seed2000-0933e7adff8a.json`, `research/evaluations/task-reference-experiment-3-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-3-champion-task-reference-v1.json`
+
+## Experiment 4
+
+**Result:** The transferred hold-stability reward reached 97.0% pooled success over two 200-episode researcher seeds, one percentage point below the 98% objective.
+
+**Observed behavior:** Checkpoint-120832 scored 97.0% on both researcher seeds and on the independent task-reference panel, with six failures per researcher seed; failures were mostly at larger radii or involved reaching tolerance but losing the hold.
+
+**Interpretation:** Forfeiting half of accumulated hold progress after a tolerance exit improved both seed consistency and task-reference performance over the champion's 91.5% pooled researcher result and 90.5% task-reference result. The evidence is sufficiently close and independent to request the final benchmark, while the measured result itself does not declare success.
+
+**Evidence inspected:** `research/evaluations/evaluation-experiment-4-checkpoint-120832-200ep-seed1000-d04f4e422fe3.json`, `research/evaluations/evaluation-experiment-4-checkpoint-120832-200ep-seed2000-d04f4e422fe3.json`, `research/evaluations/evaluation-experiment-4-champion-200ep-seed1000-d04f4e422fe3.json`, `research/evaluations/evaluation-experiment-4-champion-200ep-seed2000-d04f4e422fe3.json`, `research/evaluations/task-reference-experiment-4-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-4-champion-task-reference-v1.json`
