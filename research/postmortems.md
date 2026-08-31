@@ -49,3 +49,13 @@
 **Interpretation:** Increasing `HOLD_EXIT_FORFEIT_FRACTION` from 0.5 to 1.0 produced a small but consistent improvement in researcher and independent task-reference measurements, supporting checkpoint-120832 as the active lineage and keeping the reward change. The independent evidence is close enough to the objective to request the official final benchmark, but these research measurements do not declare success.
 
 **Evidence inspected:** `research/evaluations/evaluation-experiment-5-checkpoint-120832-200ep-seed1000-268f629ee9a9.json`, `research/evaluations/evaluation-experiment-5-checkpoint-120832-200ep-seed2000-268f629ee9a9.json`, `research/evaluations/evaluation-experiment-5-champion-200ep-seed1000-268f629ee9a9.json`, `research/evaluations/evaluation-experiment-5-champion-200ep-seed2000-268f629ee9a9.json`, `research/evaluations/task-reference-experiment-5-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-5-champion-task-reference-v1.json`
+
+## Experiment 6
+
+**Result:** The transferred recovery-stability reward reached 97.5% pooled success over two 200-episode researcher seeds, matching the champion and remaining below the 98% objective.
+
+**Observed behavior:** The challenger had five failures on each researcher seed, with six failures never reaching tolerance and four reaching it only briefly; the champion also had five failures per seed, but scored 98.5% versus 98.0% on the independent task-reference panel.
+
+**Interpretation:** Raising `OUTSIDE_BAND_PENALTY` from 0.1 to 0.5 did not improve success and replaced the champion's interruption-heavy failures with additional no-reach failures without improving the shared reference result. Revert the experiment code and continue from the existing champion; its official benchmark has already failed, so no final benchmark is requested.
+
+**Evidence inspected:** `research/evaluations/evaluation-experiment-6-checkpoint-120832-200ep-seed1000-c0278203b0e7.json`, `research/evaluations/evaluation-experiment-6-checkpoint-120832-200ep-seed2000-c0278203b0e7.json`, `research/evaluations/evaluation-experiment-6-champion-200ep-seed1000-c0278203b0e7.json`, `research/evaluations/evaluation-experiment-6-champion-200ep-seed2000-c0278203b0e7.json`, `research/evaluations/task-reference-experiment-6-checkpoint-120832-task-reference-v1.json`, `research/evaluations/task-reference-experiment-6-champion-task-reference-v1.json`

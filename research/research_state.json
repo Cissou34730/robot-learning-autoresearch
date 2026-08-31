@@ -1,8 +1,8 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-5-checkpoint-120832-200ep-seed1000-268f629ee9a9.json",
-    "research/evaluations/evaluation-experiment-5-checkpoint-120832-200ep-seed2000-268f629ee9a9.json"
+    "research/evaluations/evaluation-experiment-6-champion-200ep-seed1000-c0278203b0e7.json",
+    "research/evaluations/evaluation-experiment-6-champion-200ep-seed2000-c0278203b0e7.json"
   ],
   "accepted_metrics": {
     "episodes": 400,
@@ -42,19 +42,19 @@
     }
   },
   "accepted_training_steps": 480000,
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
+  "last_allocated_experiment": 6,
+  "last_experiment": 6,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Increasing HOLD_EXIT_FORFEIT_FRACTION from 0.5 to 1.0 produced a consistent improvement across both researcher seeds and the independent task-reference panel without changing protected task semantics."
+      "action": "revert",
+      "reason": "Revert the experiment-6 OUTSIDE_BAND_PENALTY change because it produced no researcher-panel improvement and no independent reference improvement over the champion."
     },
-    "code_parent_commit": "83bbd62fac02b5de50fba5d1a3e6ff855ee09a6d",
-    "continue_from": "checkpoint-120832",
-    "experiment": 5,
-    "reason": "Checkpoint-120832 improved pooled researcher success to 97.5% on both seeds and improved the independent task-reference panel from 97.0% to 98.5%, making it the strongest available lineage and sufficiently close to the objective to request the official final benchmark."
+    "code_parent_commit": "e17e46ce0cf096913832bb14474fc0b8b970c276",
+    "continue_from": "champion",
+    "experiment": 6,
+    "reason": "The experiment-6 checkpoint tied the champion at 97.5% across both researcher seeds and scored lower on the independent task-reference panel (98.0% versus 98.5%). The higher outside-band penalty did not improve recovery enough to justify replacing the existing champion."
   },
-  "last_verdict": "researcher selected checkpoint-120832",
+  "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "a4996c42254fe8e26a83953737150407a75456f7e249ba2a5610925c9a81bb43",
   "official_metrics": {
     "episodes": 200,
