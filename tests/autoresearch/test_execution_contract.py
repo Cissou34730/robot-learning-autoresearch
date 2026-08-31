@@ -50,8 +50,10 @@ from research.runner_repository import (
     commit_lineage_decision,
     commit_result,
     commit_runner_memory,
+    copy_artifact,
     is_runner_memory,
     load_state,
+    require_complete_artifact,
     scientific_delta,
     synchronize_experiment_log,
 )
@@ -976,6 +978,27 @@ def test_a_legacy_record_without_a_date_still_renders(monkeypatch, tmp_path):
 
 
 # --- artifact reuse --------------------------------------------------------
+
+
+def test_artifact_without_optional_training_state_promotes_cleanly(tmp_path):
+    source = tmp_path / "source"
+    destination = tmp_path / "destination"
+    source.mkdir()
+    destination.mkdir()
+
+    (source / "model.zip").write_bytes(b"new model")
+    (source / "artifact.json").write_text("{}", encoding="utf-8")
+    (destination / "model.zip").write_bytes(b"old model")
+    (destination / "artifact.json").write_text("{}", encoding="utf-8")
+    (destination / "vecnormalize.pkl").write_bytes(b"stale normalization")
+    (destination / "replay_buffer.pkl").write_bytes(b"stale replay")
+
+    require_complete_artifact(source, "candidate")
+    copy_artifact(source, destination)
+
+    assert (destination / "model.zip").read_bytes() == b"new model"
+    assert not (destination / "vecnormalize.pkl").exists()
+    assert not (destination / "replay_buffer.pkl").exists()
 
 
 def test_reusable_candidate_must_match_experiment(tmp_path):

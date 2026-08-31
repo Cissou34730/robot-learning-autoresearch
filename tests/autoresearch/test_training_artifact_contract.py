@@ -55,7 +55,7 @@ def trained_artifact(tmp_path_factory) -> Path:
 
 
 def test_training_entry_point_produces_the_required_artifact_files(trained_artifact):
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+    for filename in ("model.zip", "artifact.json"):
         assert (trained_artifact / filename).is_file(), filename
     assert (trained_artifact / "candidate_manifest.json").is_file()
     assert (trained_artifact / "final_checkpoint" / "model.zip").is_file()
@@ -70,8 +70,6 @@ def test_artifact_records_effective_configuration_and_preprocessing(trained_arti
     assert artifact["seed"] == 0
     assert artifact["timesteps"] >= SMOKE_TIMESTEPS
     assert artifact["completed"] is True
-    # Preprocessing state travels with the policy so evaluation can restore it.
-    assert (trained_artifact / "vecnormalize.pkl").stat().st_size > 0
 
 
 def test_saved_policy_reloads_and_predicts_a_usable_action(trained_artifact):

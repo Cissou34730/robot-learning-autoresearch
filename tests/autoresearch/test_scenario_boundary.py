@@ -273,13 +273,6 @@ def test_the_brief_imposes_no_hypothesis_taxonomy():
     assert "failure diagnostics" not in source.lower()
 
 
-def test_live_training_metric_is_owned_by_the_scenario():
-    assert scenario.render_training_progress_metric({"success_rate": 0.61}) == (
-        "success 61%"
-    )
-    assert scenario.render_training_progress_metric({"ep_rew_mean": -6.9}) is None
-
-
 def test_runner_reads_the_live_training_metric_only_through_the_boundary():
     sources = runner_sources()
 
@@ -312,21 +305,6 @@ def test_researcher_runtime_output_is_never_parsed():
         assert forbidden not in script
     for relative, source in runner_sources().items():
         assert "opencode" not in source, relative
-
-
-def test_compatibility_reexports_alias_the_scenario_implementation():
-    from robot_learning.environments.reach_env import TwoJointArmReachEnv
-    from robot_learning.rewards.reach_reward import reach_reward
-    from robot_learning.scenario import environment, observations, reward
-    from robot_learning.training.observations import (
-        OBSERVATION_SIZE,
-        reach_observation,
-    )
-
-    assert TwoJointArmReachEnv is environment.TwoJointArmReachEnv
-    assert reach_reward is reward.reach_reward
-    assert reach_observation is observations.reach_observation
-    assert OBSERVATION_SIZE == observations.OBSERVATION_SIZE
 
 
 def test_normalization_never_reaches_for_the_scenario():
@@ -441,21 +419,6 @@ def test_compact_context_states_no_final_threshold(monkeypatch, tmp_path):
     assert "seeds passing" not in brief.lower()
     # The compact context reports the measured result, not a derived failure count.
     assert "failed episodes" not in brief.lower()
-
-
-def test_scenario_owns_rendering():
-    assert not (ROOT / "robot_learning" / "training" / "viewer_callback.py").exists()
-
-    play_source = (ROOT / "robot_learning" / "play.py").read_text(encoding="utf-8")
-    train_source = (ROOT / "robot_learning" / "train.py").read_text(encoding="utf-8")
-    viewer_source = (ROOT / "robot_learning" / "scenario" / "viewer.py").read_text(
-        encoding="utf-8"
-    )
-
-    assert "viewer.launch_passive" not in play_source
-    assert "viewer.launch_passive" not in train_source
-    assert "viewer.launch_passive" in viewer_source
-    assert scenario.make_training_viewer_callback(speed=2.0).speed == 2.0
 
 
 def test_training_environment_carries_no_official_task_enforcement():

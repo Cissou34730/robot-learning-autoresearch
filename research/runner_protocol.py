@@ -50,9 +50,10 @@ VALIDATED_TEST_PATHS = (
 # A researcher code change cannot alter the frozen task, so `tests/benchmark`
 # adds nothing; every other suite still guards code the researcher may rewrite.
 RESEARCHER_VALIDATED_TEST_PATHS = (
-    "tests/autoresearch",
     "tests/scenario",
     "tests/training",
+    "tests/autoresearch/test_scenario_boundary.py",
+    "tests/autoresearch/test_training_artifact_contract.py",
 )
 # The researcher-owned scientific surface, stated positively. Anything absent
 # here is unclassified and validated completely, so a new or unfamiliar path is

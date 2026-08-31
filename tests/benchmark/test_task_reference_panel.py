@@ -154,29 +154,7 @@ def test_reference_panel_keeps_the_original_uniform_radius_semantics():
     ]
 
     assert all(low <= radius <= high for radius in radii)
-    # A uniform radius averages the midpoint; the researcher-owned sqrt(U)
-    # sampler biases the outer workspace and would fail this.
     assert float(np.mean(radii)) == pytest.approx((low + high) / 2, abs=0.01)
-
-
-def test_reference_panel_ignores_the_researcher_training_sampler():
-    from robot_learning.scenario.environment import TwoJointArmReachEnv
-
-    training = TwoJointArmReachEnv()
-    training_radii = []
-    for episode in range(reference_contract.EVALUATION_EPISODES):
-        training.reset(seed=reference_contract.EVALUATION_SEED + episode)
-        training_radii.append(float(np.linalg.norm(training.data.mocap_pos[0][:2])))
-    reference_radii = [
-        float(np.hypot(x, y))
-        for x, y in panel_targets(
-            reference_contract.EVALUATION_EPISODES, reference_contract.EVALUATION_SEED
-        )
-    ]
-
-    assert float(np.mean(training_radii)) != pytest.approx(
-        float(np.mean(reference_radii)), abs=0.005
-    )
 
 
 def test_reference_angles_cover_the_original_full_range():

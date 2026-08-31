@@ -39,7 +39,8 @@ RUNNER_MEMORY_PREFIXES = (
     "research/checkpoints/accepted/",
     "research/checkpoints/retained/",
 )
-ARTIFACT_FILES = ("model.zip", "vecnormalize.pkl", "artifact.json")
+ARTIFACT_FILES = ("model.zip", "artifact.json")
+OPTIONAL_ARTIFACT_FILES = ("vecnormalize.pkl", "replay_buffer.pkl")
 EXPERIMENT_LOG_HEADER = (
     "# Experiment log\n"
     "\n"
@@ -435,21 +436,32 @@ def require_complete_artifact(artifact: Path, description: str) -> None:
 
 def artifact_fingerprint(artifact: Path) -> str:
     digest = hashlib.sha256()
+
     for filename in ARTIFACT_FILES:
         digest.update((artifact / filename).read_bytes())
+
+    for filename in OPTIONAL_ARTIFACT_FILES:
+        path = artifact / filename
+        if path.is_file():
+            digest.update(path.read_bytes())
+
     return digest.hexdigest()
 
 
 def copy_artifact(source: Path, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
+
     for filename in ARTIFACT_FILES:
         shutil.copyfile(source / filename, destination / filename)
-    replay_buffer = source / "replay_buffer.pkl"
-    destination_replay = destination / "replay_buffer.pkl"
-    if replay_buffer.exists():
-        shutil.copyfile(replay_buffer, destination_replay)
-    elif destination_replay.exists():
-        destination_replay.unlink()
+
+    for filename in OPTIONAL_ARTIFACT_FILES:
+        source_file = source / filename
+        destination_file = destination / filename
+
+        if source_file.is_file():
+            shutil.copyfile(source_file, destination_file)
+        else:
+            destination_file.unlink(missing_ok=True)
 
 
 def remove_heavyweight_artifacts(artifact: Path) -> None:
