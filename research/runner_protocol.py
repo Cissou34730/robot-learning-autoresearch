@@ -19,7 +19,6 @@ from research import runner_repository as repository
 # that resolve those imports.
 PROTECTED_BENCHMARK_PATHS = {
     "research/run_experiment.py",
-    "researcher_copilot.py",
     "robot_learning/__init__.py",
     "robot_learning/benchmark/__init__.py",
     "robot_learning/benchmark/final_benchmark.py",
@@ -33,6 +32,9 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/scenario/final_benchmark.py",
     "robot_learning/scenario/task_reference.py",
 }
+# The researcher runtime boundary: it decides which tools and commands a
+# research session may use, so a proposal must not be able to widen its own.
+PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
 PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
@@ -103,8 +105,10 @@ TASK_REFERENCE_ENTRY_FIELDS = {"candidate", "label"}
 
 def is_protected_source(path: str) -> bool:
     relative = path.replace("\\", "/")
-    return relative in PROTECTED_BENCHMARK_PATHS or relative.startswith(
-        PROTECTED_RUNNER_PREFIXES
+    return (
+        relative in PROTECTED_BENCHMARK_PATHS
+        or relative in PROTECTED_RUNTIME_PATHS
+        or relative.startswith(PROTECTED_RUNNER_PREFIXES)
     )
 
 
