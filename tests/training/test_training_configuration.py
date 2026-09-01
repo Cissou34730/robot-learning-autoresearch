@@ -22,8 +22,13 @@ def test_current_params_describes_the_active_method():
 
 def test_runtime_overrides_merge_without_mutating_the_active_configuration():
     config = load_experiment_config()
-    merged = merge_param_overrides(config, {"ppo": {"learning_rate": 0.0001}})
+    original_learning_rate = config["ppo"]["learning_rate"]
+    override_learning_rate = original_learning_rate + 0.0001
+    merged = merge_param_overrides(
+        config,
+        {"ppo": {"learning_rate": override_learning_rate}},
+    )
 
-    assert merged["ppo"]["learning_rate"] == 0.0001
+    assert merged["ppo"]["learning_rate"] == override_learning_rate
     assert merged["ppo"]["n_steps"] == config["ppo"]["n_steps"]
-    assert config["ppo"]["learning_rate"] != 0.0001
+    assert config["ppo"]["learning_rate"] == original_learning_rate
