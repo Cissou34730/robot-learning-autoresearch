@@ -234,7 +234,64 @@ def test_cost_separates_cached_prompt_tokens_from_fresh_ones():
     # A single token total would price a cached read like a fresh one.
     assert "2.50 AIU" in usage
     assert "prompt 400k (90% cached)" in usage
-    assert "output 9k" in usage
+
+
+def test_cost_names_which_kind_of_token_dominated():
+    console = adapter.Console()
+    console.nano_aiu = 2_290_000_000
+    console.nano_aiu_by_type = {
+        "input": 60_000_000,
+        "cache_write": 1_060_000_000,
+        "cache_read": 600_000_000,
+        "output": 600_000_000,
+    }
+
+    # Fresh and cached-write tokens are both new context, so they read as one cost.
+    assert console.cost_split() == " (new 1.12 / read 0.60 / out 0.60)"
+
+
+def test_the_cost_split_is_absent_until_the_runtime_prices_a_turn():
+    assert adapter.Console().cost_split() == ""
+
+
+def test_the_session_reports_the_work_that_drove_its_cost(capsys):
+    console = adapter.Console()
+    for _ in range(12):
+        console.tool("view", {})
+
+    console.summary("session-id", [], offloaded=(3, 174_080))
+
+    out = capsys.readouterr().out
+    # Silent tools still count: cost follows every call, not the visible ones.
+    assert "tools 12" in out
+    assert "offloaded 3 (170 KB)" in out
+
+
+def test_an_unused_offload_is_not_reported_as_work(capsys):
+    console = adapter.Console()
+
+    console.summary("session-id", [])
+
+    out = capsys.readouterr().out
+    assert "tools 0" in out
+    assert "offloaded" not in out
+
+
+def test_offloaded_output_is_counted_only_for_this_session(tmp_path, monkeypatch):
+    monkeypatch.setattr(adapter, "LARGE_OUTPUT_DIR", tmp_path)
+    (tmp_path / "earlier.txt").write_bytes(b"x" * 100)
+    before = adapter.offload_snapshot()
+    (tmp_path / "during.txt").write_bytes(b"y" * 2048)
+
+    assert before == {"earlier.txt"}
+    assert adapter.offloaded_since(before) == (1, 2048)
+
+
+def test_a_missing_offload_directory_reports_nothing(tmp_path, monkeypatch):
+    monkeypatch.setattr(adapter, "LARGE_OUTPUT_DIR", tmp_path / "absent")
+
+    assert adapter.offload_snapshot() == set()
+    assert adapter.offloaded_since(set()) == (0, 0)
 
 
 def test_usage_reports_cleanly_before_any_model_call():

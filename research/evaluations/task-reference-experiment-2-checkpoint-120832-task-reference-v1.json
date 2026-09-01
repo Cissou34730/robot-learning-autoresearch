@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "evaluation_kind": "task_reference",
-  "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-copilot-sdk\\research\\checkpoints\\accepted\\model.zip",
+  "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-copilot-sdk\\research\\checkpoints\\challengers\\experiment-2\\checkpoint-120832\\model.zip",
   "panel": "task-reference-v1",
   "panel_version": 1,
   "episodes": 200,

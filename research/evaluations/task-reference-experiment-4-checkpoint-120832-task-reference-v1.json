@@ -1,46 +1,46 @@
 {
   "schema_version": 1,
   "evaluation_kind": "task_reference",
-  "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-scenario-refactor\\research\\checkpoints\\challengers\\experiment-4\\checkpoint-120832\\model.zip",
+  "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-copilot-sdk\\research\\checkpoints\\challengers\\experiment-4\\checkpoint-120832\\model.zip",
   "panel": "task-reference-v1",
   "panel_version": 1,
   "episodes": 200,
   "seed": 7300,
   "official_benchmark": false,
-  "success_percent": 79.0,
+  "success_percent": 29.0,
   "episode_results": [
     {
       "episode": 0,
       "episode_seed": 7300,
       "target_radius_cm": 6.733609365204499,
       "target_angle_degrees": -116.40879448439824,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.0064912563273831
+      "success": true,
+      "steps": 122,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.8602540995709116
     },
     {
       "episode": 1,
       "episode_seed": 7301,
       "target_radius_cm": 15.42177507473999,
       "target_angle_degrees": 171.51807109490505,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.1881503486328611
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.4802549947103225
     },
     {
       "episode": 2,
       "episode_seed": 7302,
       "target_radius_cm": 16.537986273199085,
       "target_angle_degrees": 22.57450764135344,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6816345293776679
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.788717140862139
     },
     {
       "episode": 3,
@@ -51,7 +51,7 @@
       "steps": 113,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.993539671870207
+      "final_distance_cm": 0.2840634849536538
     },
     {
       "episode": 4,
@@ -59,65 +59,65 @@
       "target_radius_cm": 7.015457318239834,
       "target_angle_degrees": -166.2223145967856,
       "success": true,
-      "steps": 114,
+      "steps": 123,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.5287649921784935
+      "final_distance_cm": 0.6642898716908393
     },
     {
       "episode": 5,
       "episode_seed": 7305,
       "target_radius_cm": 19.530829162878184,
       "target_angle_degrees": -170.12616718767907,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.514614137759657
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.2544350136810305
     },
     {
       "episode": 6,
       "episode_seed": 7306,
       "target_radius_cm": 10.19983580281232,
       "target_angle_degrees": 24.459772656192698,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8048376285137188
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3455185049417955
     },
     {
       "episode": 7,
       "episode_seed": 7307,
       "target_radius_cm": 19.52175389728059,
       "target_angle_degrees": 136.1708142565731,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5667825992544131
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.475511717953939
     },
     {
       "episode": 8,
       "episode_seed": 7308,
       "target_radius_cm": 15.079705756649137,
       "target_angle_degrees": -21.35129998777654,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8268088280673719
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.038820878573353
     },
     {
       "episode": 9,
       "episode_seed": 7309,
       "target_radius_cm": 10.27682118807001,
       "target_angle_degrees": -36.03200050121643,
-      "success": true,
-      "steps": 117,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.9532356044732699
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3650587443679025
     },
     {
       "episode": 10,
@@ -128,7 +128,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.005310667753811
+      "final_distance_cm": 1.4003124003999523
     },
     {
       "episode": 11,
@@ -139,18 +139,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.3265209557430344
+      "final_distance_cm": 1.4204225247234006
     },
     {
       "episode": 12,
       "episode_seed": 7312,
       "target_radius_cm": 17.481084268477588,
       "target_angle_degrees": -41.04689718754798,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.660582083991522
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.25109518193387
     },
     {
       "episode": 13,
@@ -158,10 +158,10 @@
       "target_radius_cm": 11.694434099628545,
       "target_angle_degrees": -87.81893371128062,
       "success": true,
-      "steps": 115,
+      "steps": 120,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.5160046323147351
+      "final_distance_cm": 0.5581320074172164
     },
     {
       "episode": 14,
@@ -169,10 +169,10 @@
       "target_radius_cm": 12.438918422556606,
       "target_angle_degrees": 85.34440768913285,
       "success": true,
-      "steps": 110,
+      "steps": 113,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.3692716587436744
+      "final_distance_cm": 0.4887316473329675
     },
     {
       "episode": 15,
@@ -180,10 +180,10 @@
       "target_radius_cm": 6.704125127230111,
       "target_angle_degrees": -104.57862168642797,
       "success": true,
-      "steps": 117,
+      "steps": 120,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6636880801837297
+      "final_distance_cm": 0.4981304742761947
     },
     {
       "episode": 16,
@@ -194,29 +194,29 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.399819147837212
+      "final_distance_cm": 1.56603693280493
     },
     {
       "episode": 17,
       "episode_seed": 7317,
       "target_radius_cm": 10.661874146080288,
       "target_angle_degrees": 10.965459958184782,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7509276555504419
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3139142807532946
     },
     {
       "episode": 18,
       "episode_seed": 7318,
       "target_radius_cm": 6.990605056262675,
       "target_angle_degrees": 82.47652744567081,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.4033922584641114
+      "success": true,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.9518795992023747
     },
     {
       "episode": 19,
@@ -227,73 +227,73 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.041218155034255
+      "final_distance_cm": 7.52138187049005
     },
     {
       "episode": 20,
       "episode_seed": 7320,
       "target_radius_cm": 18.4454391751408,
       "target_angle_degrees": 78.55344284262387,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8506246195648184
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.382410394274192
     },
     {
       "episode": 21,
       "episode_seed": 7321,
       "target_radius_cm": 16.510117482630072,
       "target_angle_degrees": 134.70491076823387,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.48714335813036536
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.4042306567506446
     },
     {
       "episode": 22,
       "episode_seed": 7322,
       "target_radius_cm": 19.447699377928434,
       "target_angle_degrees": -24.064002782208444,
-      "success": true,
-      "steps": 105,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.41630851687801823
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.484265792907345
     },
     {
       "episode": 23,
       "episode_seed": 7323,
       "target_radius_cm": 13.466806573296525,
       "target_angle_degrees": 34.399409528097316,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8436962416308332
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.642709617727614
     },
     {
       "episode": 24,
       "episode_seed": 7324,
       "target_radius_cm": 17.20791333259268,
       "target_angle_degrees": -48.15174846565387,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5957928202793351
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.510982323202133
     },
     {
       "episode": 25,
       "episode_seed": 7325,
       "target_radius_cm": 16.42663990115631,
       "target_angle_degrees": -153.63484697908478,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5346465555767249
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.2783879991991656
     },
     {
       "episode": 26,
@@ -301,21 +301,21 @@
       "target_radius_cm": 6.90253949150674,
       "target_angle_degrees": 88.32054283268663,
       "success": true,
-      "steps": 115,
+      "steps": 114,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6953841010014531
+      "final_distance_cm": 0.583717601571864
     },
     {
       "episode": 27,
       "episode_seed": 7327,
       "target_radius_cm": 17.638985668906294,
       "target_angle_degrees": 136.79110987224826,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7448959864773114
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.9598026448695034
     },
     {
       "episode": 28,
@@ -326,18 +326,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.2713347452441128
+      "final_distance_cm": 1.5456914642129007
     },
     {
       "episode": 29,
       "episode_seed": 7329,
       "target_radius_cm": 16.398676675607916,
       "target_angle_degrees": -106.32996555087351,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.3123116697706857
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.747605803201117
     },
     {
       "episode": 30,
@@ -345,10 +345,10 @@
       "target_radius_cm": 11.680856941550752,
       "target_angle_degrees": -169.7573251932471,
       "success": true,
-      "steps": 113,
+      "steps": 123,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.9252999025016071
+      "final_distance_cm": 0.8613390271139847
     },
     {
       "episode": 31,
@@ -356,21 +356,21 @@
       "target_radius_cm": 9.886351772266517,
       "target_angle_degrees": 148.01751283601754,
       "success": true,
-      "steps": 112,
+      "steps": 113,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.4307013082651326
+      "final_distance_cm": 0.9135818358342722
     },
     {
       "episode": 32,
       "episode_seed": 7332,
       "target_radius_cm": 15.276571062401256,
       "target_angle_degrees": 130.47729787028464,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5375775980351352
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.485271926755825
     },
     {
       "episode": 33,
@@ -378,32 +378,32 @@
       "target_radius_cm": 14.185024795153051,
       "target_angle_degrees": -175.4175318603135,
       "success": true,
-      "steps": 113,
+      "steps": 117,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.812428111984017
+      "final_distance_cm": 0.9017319028292846
     },
     {
       "episode": 34,
       "episode_seed": 7334,
       "target_radius_cm": 18.361075319071475,
       "target_angle_degrees": -165.71653900760816,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5715411897563617
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.2376816636068484
     },
     {
       "episode": 35,
       "episode_seed": 7335,
       "target_radius_cm": 11.457869033671281,
       "target_angle_degrees": -153.92102366836596,
-      "success": true,
-      "steps": 114,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.16342315267162305
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.061761382396843
     },
     {
       "episode": 36,
@@ -414,29 +414,29 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.3087519482602754
+      "final_distance_cm": 1.7342665677127005
     },
     {
       "episode": 37,
       "episode_seed": 7337,
       "target_radius_cm": 18.677935108007905,
       "target_angle_degrees": -64.08469695954912,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6425423854089005
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.301737123449228
     },
     {
       "episode": 38,
       "episode_seed": 7338,
       "target_radius_cm": 14.51752497479671,
       "target_angle_degrees": -74.21747834433894,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4559253935908031
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.532883577613388
     },
     {
       "episode": 39,
@@ -447,62 +447,62 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.083662246434239
+      "final_distance_cm": 7.78251336541367
     },
     {
       "episode": 40,
       "episode_seed": 7340,
       "target_radius_cm": 12.332247413952242,
       "target_angle_degrees": -137.0839896905584,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.764625041694963
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.1198627553981388
     },
     {
       "episode": 41,
       "episode_seed": 7341,
       "target_radius_cm": 18.022821080499966,
       "target_angle_degrees": 148.03569963560227,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.2957499407261627
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.6056385223200773
     },
     {
       "episode": 42,
       "episode_seed": 7342,
       "target_radius_cm": 14.943030661610063,
       "target_angle_degrees": -110.42365748761301,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.46365831152918097
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.798575559553511
     },
     {
       "episode": 43,
       "episode_seed": 7343,
       "target_radius_cm": 17.871682810746588,
       "target_angle_degrees": 47.76397343129025,
-      "success": true,
-      "steps": 106,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.20200519520389948
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.164320844369368
     },
     {
       "episode": 44,
       "episode_seed": 7344,
       "target_radius_cm": 9.594413241153708,
       "target_angle_degrees": -140.61129181849984,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.34826025492365953
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.03387904858502
     },
     {
       "episode": 45,
@@ -510,21 +510,21 @@
       "target_radius_cm": 10.260540824515454,
       "target_angle_degrees": -74.13549494848019,
       "success": true,
-      "steps": 115,
+      "steps": 120,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.8555366681588766
+      "final_distance_cm": 0.8776154300100545
     },
     {
       "episode": 46,
       "episode_seed": 7346,
       "target_radius_cm": 17.02978177605936,
       "target_angle_degrees": -113.39150172617644,
-      "success": true,
-      "steps": 114,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.37882458930621665
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.935843189705952
     },
     {
       "episode": 47,
@@ -535,7 +535,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.4267217629087043
+      "final_distance_cm": 1.6239284038344515
     },
     {
       "episode": 48,
@@ -543,10 +543,10 @@
       "target_radius_cm": 12.088720500852613,
       "target_angle_degrees": -123.60112905474203,
       "success": true,
-      "steps": 117,
+      "steps": 121,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.46713855589666736
+      "final_distance_cm": 0.4298124956394603
     },
     {
       "episode": 49,
@@ -557,18 +557,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.3425880504669465
+      "final_distance_cm": 1.6978950411582598
     },
     {
       "episode": 50,
       "episode_seed": 7350,
       "target_radius_cm": 19.055774595238013,
       "target_angle_degrees": 57.151008540326096,
-      "success": true,
-      "steps": 105,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.13846424474679248
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.346237694176705
     },
     {
       "episode": 51,
@@ -579,7 +579,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.2888056548054747
+      "final_distance_cm": 1.331248131006188
     },
     {
       "episode": 52,
@@ -590,84 +590,84 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.0971996432280728
+      "final_distance_cm": 1.169206122331847
     },
     {
       "episode": 53,
       "episode_seed": 7353,
       "target_radius_cm": 6.201708731161028,
       "target_angle_degrees": 95.3201540350398,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.4265602129414436
+      "success": true,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.3404953512507698
     },
     {
       "episode": 54,
       "episode_seed": 7354,
       "target_radius_cm": 17.906875023758197,
       "target_angle_degrees": 171.69894891371675,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5325108120157765
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.5654047827861213
     },
     {
       "episode": 55,
       "episode_seed": 7355,
       "target_radius_cm": 16.40496489193509,
       "target_angle_degrees": -105.00264234412401,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.37159636408408564
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.862127673252552
     },
     {
       "episode": 56,
       "episode_seed": 7356,
       "target_radius_cm": 19.48169686481546,
       "target_angle_degrees": -24.721617346668346,
-      "success": true,
-      "steps": 105,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5208880123875503
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.437718311510276
     },
     {
       "episode": 57,
       "episode_seed": 7357,
       "target_radius_cm": 17.499645107732093,
       "target_angle_degrees": -37.934029169072545,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5887212457524991
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.121868752269506
     },
     {
       "episode": 58,
       "episode_seed": 7358,
       "target_radius_cm": 18.348199619155775,
       "target_angle_degrees": -71.98903626577243,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4461586361475348
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.8744421794547685
     },
     {
       "episode": 59,
       "episode_seed": 7359,
       "target_radius_cm": 10.03438170198827,
       "target_angle_degrees": 69.34296024383654,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.2388224570503594
+      "success": true,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.5498396064784891
     },
     {
       "episode": 60,
@@ -678,7 +678,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.635191500155472
+      "final_distance_cm": 1.0999189760414188
     },
     {
       "episode": 61,
@@ -686,21 +686,21 @@
       "target_radius_cm": 11.881854062891087,
       "target_angle_degrees": 57.87008647191946,
       "success": true,
-      "steps": 111,
+      "steps": 117,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.3952775149506667
+      "final_distance_cm": 0.7590012577664866
     },
     {
       "episode": 62,
       "episode_seed": 7362,
       "target_radius_cm": 6.193030853220619,
       "target_angle_degrees": 34.69622235079,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7840941795694917
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3109197261305305
     },
     {
       "episode": 63,
@@ -711,29 +711,29 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 0.9551439521655127
+      "final_distance_cm": 7.233726361095279
     },
     {
       "episode": 64,
       "episode_seed": 7364,
       "target_radius_cm": 13.991675849198442,
       "target_angle_degrees": -4.79546407061957,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.9676344925344391
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.602075134031618
     },
     {
       "episode": 65,
       "episode_seed": 7365,
       "target_radius_cm": 17.619904249347044,
       "target_angle_degrees": 136.48824916900193,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.650552859610921
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.6489926784230367
     },
     {
       "episode": 66,
@@ -741,54 +741,54 @@
       "target_radius_cm": 10.746009249601322,
       "target_angle_degrees": -138.26775119698857,
       "success": true,
-      "steps": 116,
+      "steps": 120,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.4473168565182522
+      "final_distance_cm": 0.6060495743754613
     },
     {
       "episode": 67,
       "episode_seed": 7367,
       "target_radius_cm": 9.76619752608002,
       "target_angle_degrees": 24.814593509376063,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7829039017904729
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3065832727543099
     },
     {
       "episode": 68,
       "episode_seed": 7368,
       "target_radius_cm": 17.882031689397415,
       "target_angle_degrees": -31.60165817097248,
-      "success": true,
-      "steps": 106,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.594144492815627
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.869746956735727
     },
     {
       "episode": 69,
       "episode_seed": 7369,
       "target_radius_cm": 16.24865685758552,
       "target_angle_degrees": -63.99629649015345,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5623319492884509
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.956442411967884
     },
     {
       "episode": 70,
       "episode_seed": 7370,
       "target_radius_cm": 19.527733537940435,
       "target_angle_degrees": -175.3847783259022,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4684928644143183
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.759767957050226
     },
     {
       "episode": 71,
@@ -799,51 +799,51 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.0992733740917267
+      "final_distance_cm": 1.1469407908582046
     },
     {
       "episode": 72,
       "episode_seed": 7372,
       "target_radius_cm": 16.8983890734315,
       "target_angle_degrees": 13.857506610486647,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.748614777453288
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.814273344958727
     },
     {
       "episode": 73,
       "episode_seed": 7373,
       "target_radius_cm": 8.0035203156377,
       "target_angle_degrees": 64.11254340886344,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.2703818559696283
+      "success": true,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.9211921221767555
     },
     {
       "episode": 74,
       "episode_seed": 7374,
       "target_radius_cm": 18.754050714481938,
       "target_angle_degrees": -97.6088876047009,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.49542688911190425
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.942070959675215
     },
     {
       "episode": 75,
       "episode_seed": 7375,
       "target_radius_cm": 15.015555824608107,
       "target_angle_degrees": 115.75717929210992,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.10920313742340461
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.9277403711838006
     },
     {
       "episode": 76,
@@ -851,21 +851,21 @@
       "target_radius_cm": 13.068653724772766,
       "target_angle_degrees": -113.30111114534702,
       "success": true,
-      "steps": 116,
+      "steps": 121,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6955360601180745
+      "final_distance_cm": 0.6432078570319169
     },
     {
       "episode": 77,
       "episode_seed": 7377,
       "target_radius_cm": 18.601247549287482,
       "target_angle_degrees": 172.81365596680274,
-      "success": true,
-      "steps": 114,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.11834810248404208
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.681546172826869
     },
     {
       "episode": 78,
@@ -873,10 +873,10 @@
       "target_radius_cm": 15.55037412472311,
       "target_angle_degrees": -163.87585601490278,
       "success": true,
-      "steps": 115,
+      "steps": 118,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.30573847482134825
+      "final_distance_cm": 0.7732074852058813
     },
     {
       "episode": 79,
@@ -884,21 +884,21 @@
       "target_radius_cm": 11.994317521319225,
       "target_angle_degrees": 169.7513025112409,
       "success": true,
-      "steps": 114,
+      "steps": 113,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.3699273559186074
+      "final_distance_cm": 0.6554125283132419
     },
     {
       "episode": 80,
       "episode_seed": 7380,
       "target_radius_cm": 18.060333499454583,
       "target_angle_degrees": 123.93373728046866,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.33125257748213666
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.157125648946439
     },
     {
       "episode": 81,
@@ -906,32 +906,32 @@
       "target_radius_cm": 10.886234984904533,
       "target_angle_degrees": 138.69235803505174,
       "success": true,
-      "steps": 111,
+      "steps": 112,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.21427619711323884
+      "final_distance_cm": 0.1473436205451853
     },
     {
       "episode": 82,
       "episode_seed": 7382,
       "target_radius_cm": 14.945677122187806,
       "target_angle_degrees": -84.01627233769729,
-      "success": true,
-      "steps": 114,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.17791419608044493
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.1351402545547025
     },
     {
       "episode": 83,
       "episode_seed": 7383,
       "target_radius_cm": 7.308908893375397,
       "target_angle_degrees": -72.77802219255555,
-      "success": true,
-      "steps": 117,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8876875615163173
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3695143340962175
     },
     {
       "episode": 84,
@@ -942,18 +942,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.094875209736741
+      "final_distance_cm": 1.5611282159487003
     },
     {
       "episode": 85,
       "episode_seed": 7385,
       "target_radius_cm": 15.312930789818186,
       "target_angle_degrees": 112.67795046630138,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.9677947832965746
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.126257683454875
     },
     {
       "episode": 86,
@@ -964,29 +964,29 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.6619202055492295
+      "final_distance_cm": 1.5931116602282085
     },
     {
       "episode": 87,
       "episode_seed": 7387,
       "target_radius_cm": 17.619242840266853,
       "target_angle_degrees": 69.29802014300117,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.39440569694598826
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.3077954456622365
     },
     {
       "episode": 88,
       "episode_seed": 7388,
       "target_radius_cm": 18.531251878360624,
       "target_angle_degrees": -29.046568945550483,
-      "success": true,
-      "steps": 106,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.3369285441154119
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.095691175697186
     },
     {
       "episode": 89,
@@ -994,10 +994,10 @@
       "target_radius_cm": 12.188866470691053,
       "target_angle_degrees": -144.3733276580888,
       "success": true,
-      "steps": 115,
+      "steps": 120,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.21741702125226228
+      "final_distance_cm": 0.9559963291169674
     },
     {
       "episode": 90,
@@ -1008,7 +1008,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.445789346557855
+      "final_distance_cm": 1.4364040099722453
     },
     {
       "episode": 91,
@@ -1016,21 +1016,21 @@
       "target_radius_cm": 10.640255585972595,
       "target_angle_degrees": 165.93215348873193,
       "success": true,
-      "steps": 112,
+      "steps": 118,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.4000305579920461
+      "final_distance_cm": 0.35937450044806546
     },
     {
       "episode": 92,
       "episode_seed": 7392,
       "target_radius_cm": 16.468360810289813,
       "target_angle_degrees": 149.13804807813258,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.19180704150929745
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.238055024538681
     },
     {
       "episode": 93,
@@ -1038,21 +1038,21 @@
       "target_radius_cm": 6.85143800233364,
       "target_angle_degrees": 163.92549816364115,
       "success": true,
-      "steps": 113,
+      "steps": 123,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.8708633370188117
+      "final_distance_cm": 0.34501839264593703
     },
     {
       "episode": 94,
       "episode_seed": 7394,
       "target_radius_cm": 18.60930501303066,
       "target_angle_degrees": 91.68956926355658,
-      "success": true,
-      "steps": 106,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.282744455709124
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.830529355845355
     },
     {
       "episode": 95,
@@ -1060,21 +1060,21 @@
       "target_radius_cm": 11.725702761795253,
       "target_angle_degrees": 58.71536345053969,
       "success": true,
-      "steps": 111,
+      "steps": 117,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.3526134015148284
+      "final_distance_cm": 0.7541182724983945
     },
     {
       "episode": 96,
       "episode_seed": 7396,
       "target_radius_cm": 8.063868085715171,
       "target_angle_degrees": 154.32602652023837,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.171632014085181
+      "success": true,
+      "steps": 121,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.07915743936464326
     },
     {
       "episode": 97,
@@ -1085,18 +1085,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.287146091850882
+      "final_distance_cm": 1.3593031842696535
     },
     {
       "episode": 98,
       "episode_seed": 7398,
       "target_radius_cm": 11.233867473394179,
       "target_angle_degrees": -18.275969285586736,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7010479233060772
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.3336251392692586
     },
     {
       "episode": 99,
@@ -1104,32 +1104,32 @@
       "target_radius_cm": 9.29056397972894,
       "target_angle_degrees": 98.00901484837671,
       "success": true,
-      "steps": 113,
+      "steps": 116,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.5534439481465571
+      "final_distance_cm": 0.9201248503332908
     },
     {
       "episode": 100,
       "episode_seed": 7400,
       "target_radius_cm": 19.209944944406175,
       "target_angle_degrees": -147.15982923793297,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8376575967216358
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.3737408387454035
     },
     {
       "episode": 101,
       "episode_seed": 7401,
       "target_radius_cm": 6.576131964921155,
       "target_angle_degrees": 27.783731098656858,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.3785971318172578
+      "success": true,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.5185830584008488
     },
     {
       "episode": 102,
@@ -1140,29 +1140,29 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.194506788395682
+      "final_distance_cm": 1.8745759677167069
     },
     {
       "episode": 103,
       "episode_seed": 7403,
       "target_radius_cm": 18.126919015677235,
       "target_angle_degrees": -99.17435960260832,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4730755619814792
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.759921149407555
     },
     {
       "episode": 104,
       "episode_seed": 7404,
       "target_radius_cm": 14.014228190021505,
       "target_angle_degrees": -26.894100491078596,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8602211968030231
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.204586438048459
     },
     {
       "episode": 105,
@@ -1173,7 +1173,7 @@
       "steps": 112,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.7852529092269072
+      "final_distance_cm": 0.7038608506984688
     },
     {
       "episode": 106,
@@ -1181,120 +1181,120 @@
       "target_radius_cm": 13.290602178863619,
       "target_angle_degrees": 107.33709972110776,
       "success": true,
-      "steps": 110,
+      "steps": 113,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6901657651472306
+      "final_distance_cm": 0.5328651713541634
     },
     {
       "episode": 107,
       "episode_seed": 7407,
       "target_radius_cm": 13.488421387035046,
       "target_angle_degrees": 4.213582814820257,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.9490748470870262
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.181451135596552
     },
     {
       "episode": 108,
       "episode_seed": 7408,
       "target_radius_cm": 16.86094612765668,
       "target_angle_degrees": -125.6951083807355,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.1218234510708651
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.521546542509497
     },
     {
       "episode": 109,
       "episode_seed": 7409,
       "target_radius_cm": 15.698796028629802,
       "target_angle_degrees": 163.07726551657152,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.14541538218145506
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.4420582889440707
     },
     {
       "episode": 110,
       "episode_seed": 7410,
       "target_radius_cm": 19.008716604870447,
       "target_angle_degrees": 3.121433777921413,
-      "success": true,
-      "steps": 105,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.14238069195189523
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.71312765513916
     },
     {
       "episode": 111,
       "episode_seed": 7411,
       "target_radius_cm": 9.397424688566003,
       "target_angle_degrees": 131.69242847439787,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.1088800972343744
+      "success": true,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.3321348899123695
     },
     {
       "episode": 112,
       "episode_seed": 7412,
       "target_radius_cm": 18.67516507077351,
       "target_angle_degrees": -17.928035122097903,
-      "success": true,
-      "steps": 105,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.41820882718778946
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.655963862682765
     },
     {
       "episode": 113,
       "episode_seed": 7413,
       "target_radius_cm": 14.350764295214379,
       "target_angle_degrees": -28.07835870751399,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.2615811907751713
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.139397203136156
     },
     {
       "episode": 114,
       "episode_seed": 7414,
       "target_radius_cm": 19.663589273287567,
       "target_angle_degrees": -41.25919087281474,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4037020713051161
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.955292769075126
     },
     {
       "episode": 115,
       "episode_seed": 7415,
       "target_radius_cm": 7.468855116831083,
       "target_angle_degrees": -82.18093248382317,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.0973195289203657
+      "success": true,
+      "steps": 120,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.9088741048914337
     },
     {
       "episode": 116,
       "episode_seed": 7416,
       "target_radius_cm": 17.35159383543103,
       "target_angle_degrees": 63.631053423314555,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.36333201450453256
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.6356454386064785
     },
     {
       "episode": 117,
@@ -1305,18 +1305,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.4957484033041335
+      "final_distance_cm": 1.6779577757632214
     },
     {
       "episode": 118,
       "episode_seed": 7418,
       "target_radius_cm": 18.452864346144356,
       "target_angle_degrees": 130.8624462682006,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4806568108465693
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.202714567008097
     },
     {
       "episode": 119,
@@ -1324,10 +1324,10 @@
       "target_radius_cm": 12.505611446618975,
       "target_angle_degrees": -155.16667250472202,
       "success": true,
-      "steps": 114,
+      "steps": 121,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6994330894923482
+      "final_distance_cm": 0.6321045334366736
     },
     {
       "episode": 120,
@@ -1338,7 +1338,7 @@
       "steps": 112,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.2864168382661402
+      "final_distance_cm": 0.24854354990979344
     },
     {
       "episode": 121,
@@ -1346,54 +1346,54 @@
       "target_radius_cm": 9.990796892097716,
       "target_angle_degrees": -132.4424790821495,
       "success": true,
-      "steps": 116,
+      "steps": 121,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.7091202018127847
+      "final_distance_cm": 0.9295901572200824
     },
     {
       "episode": 122,
       "episode_seed": 7422,
       "target_radius_cm": 14.259981393723404,
       "target_angle_degrees": -65.0953055398322,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5830376200870107
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.334798824483411
     },
     {
       "episode": 123,
       "episode_seed": 7423,
       "target_radius_cm": 17.79112114889249,
       "target_angle_degrees": -156.3065292133275,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6482116108138288
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.4549489158707924
     },
     {
       "episode": 124,
       "episode_seed": 7424,
       "target_radius_cm": 17.990244449277526,
       "target_angle_degrees": 144.44689897273648,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.47243121893331624
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.7429007202355162
     },
     {
       "episode": 125,
       "episode_seed": 7425,
       "target_radius_cm": 18.315661838852897,
       "target_angle_degrees": 11.217159856598187,
-      "success": true,
-      "steps": 106,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.641032451863947
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.732650091360246
     },
     {
       "episode": 126,
@@ -1404,40 +1404,40 @@
       "steps": 112,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.9086037238149874
+      "final_distance_cm": 0.07379220655775526
     },
     {
       "episode": 127,
       "episode_seed": 7427,
       "target_radius_cm": 8.667303500600228,
       "target_angle_degrees": 86.42280099761842,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.206522159802343
+      "success": true,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.5099723856647413
     },
     {
       "episode": 128,
       "episode_seed": 7428,
       "target_radius_cm": 7.24085533028242,
       "target_angle_degrees": -109.19159315139382,
-      "success": true,
-      "steps": 117,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8499201721969125
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.1236883447430337
     },
     {
       "episode": 129,
       "episode_seed": 7429,
       "target_radius_cm": 16.78213444950081,
       "target_angle_degrees": -29.74546172922175,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.724842921844256
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.101153080652399
     },
     {
       "episode": 130,
@@ -1448,7 +1448,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.0752183323779172
+      "final_distance_cm": 1.1776351399679679
     },
     {
       "episode": 131,
@@ -1459,51 +1459,51 @@
       "steps": 112,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6820072534180504
+      "final_distance_cm": 0.226376991559343
     },
     {
       "episode": 132,
       "episode_seed": 7432,
       "target_radius_cm": 14.399377905887151,
       "target_angle_degrees": -38.85246819808862,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6997276425424072
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.537289259015639
     },
     {
       "episode": 133,
       "episode_seed": 7433,
       "target_radius_cm": 19.628261210391685,
       "target_angle_degrees": -72.85470573108843,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.3929965722452729
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.836990076841373
     },
     {
       "episode": 134,
       "episode_seed": 7434,
       "target_radius_cm": 15.632559787065054,
       "target_angle_degrees": 100.80273208605014,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.425961783880399
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.450424539772689
     },
     {
       "episode": 135,
       "episode_seed": 7435,
       "target_radius_cm": 19.81045669141999,
       "target_angle_degrees": 32.090191179404584,
-      "success": true,
-      "steps": 104,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7149529488639127
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 8.333200263170331
     },
     {
       "episode": 136,
@@ -1511,10 +1511,10 @@
       "target_radius_cm": 13.741678643587035,
       "target_angle_degrees": 111.37105696549422,
       "success": true,
-      "steps": 110,
+      "steps": 115,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.4985081998024228
+      "final_distance_cm": 0.8105166916275623
     },
     {
       "episode": 137,
@@ -1525,7 +1525,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.2490108445666896
+      "final_distance_cm": 1.5746401715353302
     },
     {
       "episode": 138,
@@ -1536,7 +1536,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.4745609901754833
+      "final_distance_cm": 1.6895359641668697
     },
     {
       "episode": 139,
@@ -1544,32 +1544,32 @@
       "target_radius_cm": 10.256705834782357,
       "target_angle_degrees": 108.90869622569376,
       "success": true,
-      "steps": 112,
+      "steps": 113,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6221732938098989
+      "final_distance_cm": 0.5728823715565056
     },
     {
       "episode": 140,
       "episode_seed": 7440,
       "target_radius_cm": 17.91003818115302,
       "target_angle_degrees": 118.7839447365687,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.24404836864559384
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.890132821442131
     },
     {
       "episode": 141,
       "episode_seed": 7441,
       "target_radius_cm": 17.21621705544206,
       "target_angle_degrees": -57.18028820938922,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5188376258021372
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.93268766146761
     },
     {
       "episode": 142,
@@ -1577,76 +1577,76 @@
       "target_radius_cm": 7.850052942676092,
       "target_angle_degrees": 125.30096006334415,
       "success": true,
-      "steps": 113,
+      "steps": 115,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.8305935143469964
+      "final_distance_cm": 0.7510597891805544
     },
     {
       "episode": 143,
       "episode_seed": 7443,
       "target_radius_cm": 19.90880431386997,
       "target_angle_degrees": -72.67969298894758,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5077175600195252
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.116015047631136
     },
     {
       "episode": 144,
       "episode_seed": 7444,
       "target_radius_cm": 18.81964026376135,
       "target_angle_degrees": -97.04922285870083,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.49300615536849335
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.241659935030165
     },
     {
       "episode": 145,
       "episode_seed": 7445,
       "target_radius_cm": 16.538235664471962,
       "target_angle_degrees": -47.29512626744607,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.699584749684379
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.4530693167748785
     },
     {
       "episode": 146,
       "episode_seed": 7446,
       "target_radius_cm": 16.62210741995798,
       "target_angle_degrees": 165.60738715312,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.3225099634875819
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.502062375078475
     },
     {
       "episode": 147,
       "episode_seed": 7447,
       "target_radius_cm": 15.040668501258034,
       "target_angle_degrees": -126.62859816274353,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4472181408542054
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.517547768838737
     },
     {
       "episode": 148,
       "episode_seed": 7448,
       "target_radius_cm": 18.69805059515464,
       "target_angle_degrees": 120.74080293990733,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8943503670772667
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.2107993701622926
     },
     {
       "episode": 149,
@@ -1654,43 +1654,43 @@
       "target_radius_cm": 7.696520738388774,
       "target_angle_degrees": 135.81978592252293,
       "success": true,
-      "steps": 114,
+      "steps": 119,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.871191633101274
+      "final_distance_cm": 0.32930895678934863
     },
     {
       "episode": 150,
       "episode_seed": 7450,
       "target_radius_cm": 15.973198727219149,
       "target_angle_degrees": -156.09560849210584,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.29974394115162295
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.5603261799325434
     },
     {
       "episode": 151,
       "episode_seed": 7451,
       "target_radius_cm": 19.128967203586793,
       "target_angle_degrees": 121.28340997713816,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.38193056112765694
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.163744560446589
     },
     {
       "episode": 152,
       "episode_seed": 7452,
       "target_radius_cm": 17.877026354254692,
       "target_angle_degrees": 169.12454321933612,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.01969336324904162
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.4778206407544565
     },
     {
       "episode": 153,
@@ -1701,62 +1701,62 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.5502056973653797
+      "final_distance_cm": 1.5735030556619531
     },
     {
       "episode": 154,
       "episode_seed": 7454,
       "target_radius_cm": 15.54149646477138,
       "target_angle_degrees": 77.39005212556889,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6373174896585008
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.0408657274055795
     },
     {
       "episode": 155,
       "episode_seed": 7455,
       "target_radius_cm": 16.047068099802164,
       "target_angle_degrees": 47.741516016430666,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4871499304306196
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.454442444727434
     },
     {
       "episode": 156,
       "episode_seed": 7456,
       "target_radius_cm": 10.377824484087203,
       "target_angle_degrees": -132.8951181950246,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.71694861951515
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.1425574347836176
     },
     {
       "episode": 157,
       "episode_seed": 7457,
       "target_radius_cm": 17.776052664216135,
       "target_angle_degrees": -100.26899796169305,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.30041784756901946
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.243859128873405
     },
     {
       "episode": 158,
       "episode_seed": 7458,
       "target_radius_cm": 8.945326253771896,
       "target_angle_degrees": -94.38729816848512,
-      "success": true,
-      "steps": 117,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.9298125884419554
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.2060768306563474
     },
     {
       "episode": 159,
@@ -1767,7 +1767,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.5260855330432999
+      "final_distance_cm": 1.7742760018943557
     },
     {
       "episode": 160,
@@ -1778,18 +1778,18 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.0383478450925636
+      "final_distance_cm": 7.204233457176742
     },
     {
       "episode": 161,
       "episode_seed": 7461,
       "target_radius_cm": 7.012970063261882,
       "target_angle_degrees": 116.59965681612594,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.186521902551871
+      "success": true,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.7714436127162647
     },
     {
       "episode": 162,
@@ -1797,21 +1797,21 @@
       "target_radius_cm": 8.82509805142025,
       "target_angle_degrees": 135.53035287150092,
       "success": true,
-      "steps": 113,
+      "steps": 114,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.87729473092867
+      "final_distance_cm": 0.3109542103577958
     },
     {
       "episode": 163,
       "episode_seed": 7463,
       "target_radius_cm": 15.821734155709603,
       "target_angle_degrees": -163.30682251786632,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5817091839303439
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.474368166779787
     },
     {
       "episode": 164,
@@ -1822,7 +1822,7 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.4712246539998162
+      "final_distance_cm": 1.8580482148819462
     },
     {
       "episode": 165,
@@ -1830,10 +1830,10 @@
       "target_radius_cm": 12.762034660606147,
       "target_angle_degrees": -63.12318375767233,
       "success": true,
-      "steps": 112,
+      "steps": 123,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.9008116091955607
+      "final_distance_cm": 0.9679298218489707
     },
     {
       "episode": 166,
@@ -1841,21 +1841,21 @@
       "target_radius_cm": 10.262616716090838,
       "target_angle_degrees": -143.36912985197276,
       "success": true,
-      "steps": 115,
+      "steps": 122,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.7278413735494997
+      "final_distance_cm": 0.770374702888155
     },
     {
       "episode": 167,
       "episode_seed": 7467,
       "target_radius_cm": 6.074365929243925,
       "target_angle_degrees": 107.54875156996354,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.3642802415682953
+      "success": true,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.7889719658362332
     },
     {
       "episode": 168,
@@ -1866,29 +1866,29 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.2488050500165184
+      "final_distance_cm": 1.358069341271772
     },
     {
       "episode": 169,
       "episode_seed": 7469,
       "target_radius_cm": 14.355311729543747,
       "target_angle_degrees": 145.09844540157857,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.4101943317869291
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.63192591171754
     },
     {
       "episode": 170,
       "episode_seed": 7470,
       "target_radius_cm": 16.02419057868419,
       "target_angle_degrees": 124.49634057499514,
-      "success": true,
-      "steps": 108,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5663927250289746
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.7106861026494533
     },
     {
       "episode": 171,
@@ -1896,10 +1896,10 @@
       "target_radius_cm": 8.552821564918519,
       "target_angle_degrees": -177.3500596126286,
       "success": true,
-      "steps": 119,
+      "steps": 125,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.9594653169136935
+      "final_distance_cm": 0.8879467014198219
     },
     {
       "episode": 172,
@@ -1910,40 +1910,40 @@
       "steps": 111,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.9145206193945296
+      "final_distance_cm": 0.43453137642385836
     },
     {
       "episode": 173,
       "episode_seed": 7473,
       "target_radius_cm": 10.28841254685657,
       "target_angle_degrees": -35.526150827684695,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.33277502613591475
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.4042116398836924
     },
     {
       "episode": 174,
       "episode_seed": 7474,
       "target_radius_cm": 17.307726397718092,
       "target_angle_degrees": -84.26760377254037,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5300407290218313
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.300805301320222
     },
     {
       "episode": 175,
       "episode_seed": 7475,
       "target_radius_cm": 18.239987972780817,
       "target_angle_degrees": -154.78695758731615,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.950414020285853
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.8984180599995955
     },
     {
       "episode": 176,
@@ -1951,54 +1951,54 @@
       "target_radius_cm": 8.003694620824026,
       "target_angle_degrees": -5.443764214563237,
       "success": true,
-      "steps": 114,
+      "steps": 118,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.6721945579104572
+      "final_distance_cm": 0.8185984465986013
     },
     {
       "episode": 177,
       "episode_seed": 7477,
       "target_radius_cm": 12.145828047708795,
       "target_angle_degrees": 40.42296978605273,
-      "success": true,
-      "steps": 111,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.9554100846064629
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.1057703044339373
     },
     {
       "episode": 178,
       "episode_seed": 7478,
       "target_radius_cm": 15.040541874704966,
       "target_angle_degrees": 90.10694719195477,
-      "success": true,
-      "steps": 109,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6716866646811298
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.73769544368585
     },
     {
       "episode": 179,
       "episode_seed": 7479,
       "target_radius_cm": 13.728473330638888,
       "target_angle_degrees": -10.513996104882539,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8358532096747147
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.468973641602663
     },
     {
       "episode": 180,
       "episode_seed": 7480,
       "target_radius_cm": 17.679288670471966,
       "target_angle_degrees": -41.982024980806884,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.622110770770946
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 6.186982489783609
     },
     {
       "episode": 181,
@@ -2006,43 +2006,43 @@
       "target_radius_cm": 11.518156038574876,
       "target_angle_degrees": -116.68630779178906,
       "success": true,
-      "steps": 116,
+      "steps": 120,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.5455487990966881
+      "final_distance_cm": 0.5238986412665434
     },
     {
       "episode": 182,
       "episode_seed": 7482,
       "target_radius_cm": 14.048949462695376,
       "target_angle_degrees": 42.152106258382744,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.798201269911461
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.451290973591875
     },
     {
       "episode": 183,
       "episode_seed": 7483,
       "target_radius_cm": 10.611266206388622,
       "target_angle_degrees": -11.455079777479602,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6807877615025997
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.4472204692287454
     },
     {
       "episode": 184,
       "episode_seed": 7484,
       "target_radius_cm": 15.919945783343072,
       "target_angle_degrees": -123.1798910907559,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.10139879956524032
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.576372703607132
     },
     {
       "episode": 185,
@@ -2050,10 +2050,10 @@
       "target_radius_cm": 13.234096475507734,
       "target_angle_degrees": -128.6815641036791,
       "success": true,
-      "steps": 118,
+      "steps": 130,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.945817341445138
+      "final_distance_cm": 0.9996770050374795
     },
     {
       "episode": 186,
@@ -2061,21 +2061,21 @@
       "target_radius_cm": 13.289299166380639,
       "target_angle_degrees": 124.98854517933792,
       "success": true,
-      "steps": 110,
+      "steps": 114,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.3892275487911527
+      "final_distance_cm": 0.7086472336344636
     },
     {
       "episode": 187,
       "episode_seed": 7487,
       "target_radius_cm": 19.306774723606342,
       "target_angle_degrees": -164.36583381836613,
-      "success": true,
-      "steps": 116,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8189042508873016
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.420965982162953
     },
     {
       "episode": 188,
@@ -2083,32 +2083,32 @@
       "target_radius_cm": 8.754739863907963,
       "target_angle_degrees": 158.232555717725,
       "success": true,
-      "steps": 112,
+      "steps": 121,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.5207643966181633
+      "final_distance_cm": 0.6537405757565018
     },
     {
       "episode": 189,
       "episode_seed": 7489,
       "target_radius_cm": 14.917283912996846,
       "target_angle_degrees": -57.51364250914404,
-      "success": true,
-      "steps": 110,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.6631432786227998
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.590694104473686
     },
     {
       "episode": 190,
       "episode_seed": 7490,
       "target_radius_cm": 17.940849445663197,
       "target_angle_degrees": -13.997951184781154,
-      "success": true,
-      "steps": 106,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.10807631055250949
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.062976073334667
     },
     {
       "episode": 191,
@@ -2119,62 +2119,62 @@
       "steps": 500,
       "terminated": false,
       "truncated": true,
-      "final_distance_cm": 1.1698012998688394
+      "final_distance_cm": 7.749912637828574
     },
     {
       "episode": 192,
       "episode_seed": 7492,
       "target_radius_cm": 17.810930927395855,
       "target_angle_degrees": -95.0368481641259,
-      "success": true,
-      "steps": 112,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.5260172185657761
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 5.082498882497289
     },
     {
       "episode": 193,
       "episode_seed": 7493,
       "target_radius_cm": 9.065890756370585,
       "target_angle_degrees": 27.8789172392939,
-      "success": true,
-      "steps": 113,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.8067296693774912
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 1.0559588985922086
     },
     {
       "episode": 194,
       "episode_seed": 7494,
       "target_radius_cm": 8.31770187307026,
       "target_angle_degrees": 153.89405516285515,
-      "success": false,
-      "steps": 500,
-      "terminated": false,
-      "truncated": true,
-      "final_distance_cm": 1.1222057966898156
+      "success": true,
+      "steps": 121,
+      "terminated": true,
+      "truncated": false,
+      "final_distance_cm": 0.36966625348113186
     },
     {
       "episode": 195,
       "episode_seed": 7495,
       "target_radius_cm": 19.28180251343538,
       "target_angle_degrees": 94.02209836451397,
-      "success": true,
-      "steps": 107,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.20119306994866637
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 4.576413749774768
     },
     {
       "episode": 196,
       "episode_seed": 7496,
       "target_radius_cm": 15.835180882385252,
       "target_angle_degrees": -166.42927157829394,
-      "success": true,
-      "steps": 114,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.07357274126341394
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 3.397359036962302
     },
     {
       "episode": 197,
@@ -2182,21 +2182,21 @@
       "target_radius_cm": 7.927682243541778,
       "target_angle_degrees": -163.79789520273985,
       "success": true,
-      "steps": 113,
+      "steps": 124,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.5709890731581915
+      "final_distance_cm": 0.5257208828730378
     },
     {
       "episode": 198,
       "episode_seed": 7498,
       "target_radius_cm": 12.701757892838728,
       "target_angle_degrees": -11.957692755632062,
-      "success": true,
-      "steps": 115,
-      "terminated": true,
-      "truncated": false,
-      "final_distance_cm": 0.7533281649230225
+      "success": false,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true,
+      "final_distance_cm": 7.523060685068622
     },
     {
       "episode": 199,
@@ -2204,10 +2204,10 @@
       "target_radius_cm": 12.76349163233792,
       "target_angle_degrees": -166.04313416517982,
       "success": true,
-      "steps": 114,
+      "steps": 119,
       "terminated": true,
       "truncated": false,
-      "final_distance_cm": 0.3136658861611944
+      "final_distance_cm": 0.3285449231665594
     }
   ]
 }

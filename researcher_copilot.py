@@ -12,6 +12,7 @@ import argparse
 import asyncio
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -23,6 +24,29 @@ EXIT_MODEL_UNAVAILABLE = 4
 EXIT_TIMEOUT = 5
 EXIT_RUNTIME_FAILURE = 6
 EXIT_INTERRUPTED = 130
+
+_RESET = "\033[0m"
+_DIM = "\033[90m"
+_MARKER_COLORS = {
+    ">": "\033[36m",
+    "x": "\033[31m",
+    "+": "\033[32m",
+    "-": "\033[31m",
+    "~": "\033[36m",
+    "!": "\033[33m",
+    "--": "\033[36m",
+}
+
+
+def format_console_line(text: str) -> str:
+    if not sys.stdout.isatty():
+        return text
+    stripped = text.lstrip()
+    indent = text[: len(text) - len(stripped)]
+    marker, separator, remainder = stripped.partition(" ")
+    color = _MARKER_COLORS.get(marker, "\033[36m")
+    timestamp = f"{_DIM}[{datetime.now():%H:%M:%S}]{_RESET}"
+    return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
 
 # Measured: this profile drops the runtime from 15 tools to 8 and roughly a
 # third of the per-turn context, by removing tools no robotics experiment uses.
@@ -295,6 +319,28 @@ def changed_since(before: dict[str, str]) -> list[str]:
     )
 
 
+def offload_snapshot() -> set[str]:
+    if not LARGE_OUTPUT_DIR.is_dir():
+        return set()
+    return {entry.name for entry in LARGE_OUTPUT_DIR.iterdir() if entry.is_file()}
+
+
+def offloaded_since(before: set[str]) -> tuple[int, int]:
+    """How much tool output never entered the context, as count and bytes.
+
+    Per-session cost tracks how much work the researcher chose to do, so only a
+    direct measure of the mechanism can say whether offloading is doing anything.
+    """
+    if not LARGE_OUTPUT_DIR.is_dir():
+        return (0, 0)
+    written = [
+        entry
+        for entry in LARGE_OUTPUT_DIR.iterdir()
+        if entry.is_file() and entry.name not in before
+    ]
+    return (len(written), sum(entry.stat().st_size for entry in written))
+
+
 class Console:
     """Everything the human sees, and nothing the protocol reads back."""
 
@@ -306,15 +352,17 @@ class Console:
         self.cache_write_tokens = 0
         self.output_tokens = 0
         self.nano_aiu = 0.0
+        self.nano_aiu_by_type: dict[str, float] = {}
         self.session_error: str | None = None
         self.denials = 0
+        self.tool_calls = 0
         self.denied_calls: set[str] = set()
 
     def line(self, text: str) -> None:
         if self._mid_stream:
             print(flush=True)
             self._mid_stream = False
-        print(text, flush=True)
+        print(format_console_line(text), flush=True)
 
     def delta(self, text: str) -> None:
         if not text:
@@ -328,6 +376,7 @@ class Console:
         print(text, flush=True)
 
     def tool(self, name: str, arguments: object) -> None:
+        self.tool_calls += 1
         if name in SILENT_TOOLS:
             return
         detail = ""
@@ -360,23 +409,45 @@ class Console:
         self.session_error = message
         self.line(f"  ! session error: {message}")
 
-    def summary(self, session_id: str, changed: list[str]) -> None:
+    def summary(
+        self, session_id: str, changed: list[str], offloaded: tuple[int, int] = (0, 0)
+    ) -> None:
         for path in changed:
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
         files = f"{len(changed)} file(s) changed"
         denials = f", {self.denials} denied" if self.denials else ""
-        self.line(f"-- session {session_id[:8]}: {files}, {self.usage()}{denials}")
+        self.line(
+            f"-- session {session_id[:8]}: {files}, {self.usage()}"
+            f", {self.work(offloaded)}{denials}"
+        )
+
+    def work(self, offloaded: tuple[int, int]) -> str:
+        count, size = offloaded
+        offload = f", offloaded {count} ({size // 1024} KB)" if count else ""
+        return f"tools {self.tool_calls}{offload}"
 
     def usage(self) -> str:
         """Cost as billed: cached prompt tokens are a tenth the price of fresh ones,
         so a single token total would hide most of what a session actually costs."""
-        aiu = f"{self.nano_aiu / 1e9:.2f} AIU"
         prompt = f"prompt {thousands(self.prompt_tokens)}"
         if self.prompt_tokens:
             share = round(100 * self.cache_read_tokens / self.prompt_tokens)
             prompt += f" ({share}% cached)"
-        return f"{aiu}, {prompt}, output {thousands(self.output_tokens)}"
+        return f"{self.nano_aiu / 1e9:.2f} AIU{self.cost_split()}, {prompt}"
+
+    def cost_split(self) -> str:
+        """Admitting new context costs over ten times re-reading it, so the split
+        says whether to shrink what enters the session or what it replies."""
+        by_type = self.nano_aiu_by_type
+        new = by_type.get("input", 0.0) + by_type.get("cache_write", 0.0)
+        read = by_type.get("cache_read", 0.0)
+        output = by_type.get("output", 0.0)
+        if not (new or read or output):
+            return ""
+        return (
+            f" (new {new / 1e9:.2f} / read {read / 1e9:.2f} / out {output / 1e9:.2f})"
+        )
 
 
 def build_handlers(console: Console, finished: asyncio.Event):
@@ -418,6 +489,15 @@ def build_handlers(console: Console, finished: asyncio.Event):
             console.output_tokens += data.output_tokens or 0
             usage = getattr(data, "copilot_usage", None)
             console.nano_aiu += getattr(usage, "total_nano_aiu", 0) or 0
+            # Priced by the runtime rather than by a rate table copied in here.
+            for detail in getattr(usage, "_token_details", None) or []:
+                batch = getattr(detail, "batch_size", 0) or 0
+                if not batch:
+                    continue
+                nano = (detail.token_count or 0) * (detail.cost_per_batch or 0) / batch
+                console.nano_aiu_by_type[detail.token_type] = (
+                    console.nano_aiu_by_type.get(detail.token_type, 0.0) + nano
+                )
         elif isinstance(data, SessionErrorData):
             console.error(data.message or "unknown session error")
         elif isinstance(data, SessionIdleData):
@@ -496,13 +576,18 @@ async def run(args) -> int:
             client, args, session_options(args, console, finished)
         )
         before = worktree_status()
+        before_offload = offload_snapshot()
         try:
             await session.send(args.prompt)
             await asyncio.wait_for(finished.wait(), timeout=args.timeout)
         except TimeoutError:
             await session.abort()
             console.line(f"  ! session timed out after {args.timeout}s")
-            console.summary(session.session_id, changed_since(before))
+            console.summary(
+                session.session_id,
+                changed_since(before),
+                offloaded_since(before_offload),
+            )
             return EXIT_TIMEOUT
         except KeyboardInterrupt:
             await session.abort()
@@ -511,7 +596,9 @@ async def run(args) -> int:
         finally:
             await session.disconnect()
 
-        console.summary(session.session_id, changed_since(before))
+        console.summary(
+            session.session_id, changed_since(before), offloaded_since(before_offload)
+        )
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
 
 

@@ -1,11 +1,62 @@
 {
-  "schema_version": 2,
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_metrics": null,
-  "accepted_parameters": null,
-  "accepted_training_steps": 0,
+  "accepted_evaluations": [
+    "research/evaluations/evaluation-experiment-6-checkpoint-120832-200ep-seed2000-31932e1eb9a8.json"
+  ],
+  "accepted_metrics": {
+    "episodes": 200,
+    "evaluation_summary_version": 3,
+    "pooled_success_percent": 95.5,
+    "schema_version": 3,
+    "seed_count": 1,
+    "seed_success_percent": {
+      "2000": 95.5
+    },
+    "success_percent": 95.5,
+    "worst_seed_success_percent": 95.5
+  },
+  "accepted_parameters": {
+    "algorithm": {
+      "name": "ppo"
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    },
+    "ppo": {
+      "batch_size": 64,
+      "ent_coef": 0.0,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0003,
+      "n_steps": 1024
+    },
+    "training": {
+      "checkpoint_every_steps": 5000,
+      "n_envs": 1
+    }
+  },
+  "accepted_training_steps": 240000,
+  "last_allocated_experiment": 6,
+  "last_experiment": 6,
+  "last_lineage_decision": {
+    "code": {
+      "action": "keep",
+      "reason": "Experiment 6 changed only the active PPO configuration, and the zero-entropy configuration produced the improvement; keep the current code and configuration."
+    },
+    "code_parent_commit": "af75eff6a858fc0bbe04004dc7813ff68a1adbf7",
+    "continue_from": "checkpoint-120832",
+    "experiment": 6,
+    "reason": "The zero-entropy transfer candidate is the strongest measured lineage: it reached 95.5% research success and 96.0% task-reference success, with fewer hold interruptions than the champion."
+  },
+  "last_verdict": "researcher selected checkpoint-120832",
+  "official_metrics": null,
+  "pending_evaluation_request": null,
+  "pending_researcher_decision": null,
+  "pending_scientific_parent": null,
   "retained_lineages": [],
-  "last_experiment": 0,
-  "last_verdict": "baseline pending after research reset",
-  "official_metrics": null
+  "schema_version": 2
 }
