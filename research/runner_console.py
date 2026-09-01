@@ -4,9 +4,63 @@ The Runner formats facts the researcher already decided or the tools already
 measured. It never adds a scientific conclusion of its own.
 """
 
+import sys
+from datetime import datetime
+
+
+_RESET = "\033[0m"
+_DIM = "\033[90m"
+_CYAN = "\033[1;96m"
+_YELLOW = "\033[1;93m"
+_RED = "\033[1;91m"
+_SECTION_HEADINGS = frozenset(
+    {
+        "Hypothesis",
+        "Experiment",
+        "Training dynamics",
+        "Candidates",
+        "Next",
+        "Question",
+        "Plan",
+        "Reason",
+        "Candidate",
+        "Champion",
+        "Task reference",
+        "Paired comparison",
+        "Continue from",
+        "Code",
+        "Retained alternatives",
+        "Removed retained alternatives",
+        "Final benchmark",
+    }
+)
+
+
+def _style_card_sections(text: str) -> str:
+    lines = text.splitlines(keepends=True)
+    return "".join(
+        f"{_YELLOW}{line}{_RESET}"
+        if line.rstrip("\r\n") in _SECTION_HEADINGS
+        else line
+        for line in lines
+    )
+
 
 def announce(message: str) -> None:
-    print(message, flush=True)
+    leading_break = "\n" if message.startswith("\n") else ""
+    text = message.lstrip("\n")
+    timestamp = f"[{datetime.now():%H:%M:%S}]"
+    if sys.stdout.isatty() and text.startswith("==="):
+        title, separator, remainder = text.partition("\n")
+        text = f"{_CYAN}{timestamp} {title}{_RESET}{separator}{_style_card_sections(remainder)}"
+        timestamp = ""
+    elif sys.stdout.isatty() and text.startswith("[") and "]" in text:
+        prefix, _, remainder = text.partition("]")
+        color = _RED if prefix == "[error" else _CYAN
+        text = f"{color}{prefix}]{_RESET}{remainder}"
+        timestamp = f"{_DIM}{timestamp}{_RESET}"
+    separator = " " if timestamp else ""
+    print(f"{leading_break}{timestamp}{separator}{text}", flush=True)
 
 
 def format_duration(seconds: float) -> str:
