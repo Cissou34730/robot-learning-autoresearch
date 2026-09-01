@@ -1,19 +1,19 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-5-champion-200ep-seed2000-73f588274d2b.json"
+    "research/evaluations/evaluation-experiment-6-checkpoint-120832-200ep-seed2000-31932e1eb9a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 80.5,
+    "pooled_success_percent": 95.5,
     "schema_version": 3,
     "seed_count": 1,
     "seed_success_percent": {
-      "1000": 80.5
+      "2000": 95.5
     },
-    "success_percent": 80.5,
-    "worst_seed_success_percent": 80.5
+    "success_percent": 95.5,
+    "worst_seed_success_percent": 95.5
   },
   "accepted_parameters": {
     "algorithm": {
@@ -28,7 +28,7 @@
     },
     "ppo": {
       "batch_size": 64,
-      "ent_coef": 0.01,
+      "ent_coef": 0.0,
       "gae_lambda": 0.95,
       "gamma": 0.99,
       "learning_rate": 0.0003,
@@ -39,20 +39,20 @@
       "n_envs": 1
     }
   },
-  "accepted_training_steps": 120000,
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
+  "accepted_training_steps": 240000,
+  "last_allocated_experiment": 6,
+  "last_experiment": 6,
   "last_lineage_decision": {
     "code": {
-      "action": "revert",
-      "reason": "Revert experiment 5's quadratic late-hold-credit reward because it did not improve reach-and-hold performance and degraded final accuracy relative to the accepted lineage."
+      "action": "keep",
+      "reason": "Experiment 6 changed only the active PPO configuration, and the zero-entropy configuration produced the improvement; keep the current code and configuration."
     },
-    "code_parent_commit": "40e6c33409098a498b91ea22d4f09771b1b73890",
-    "continue_from": "champion",
-    "experiment": 5,
-    "reason": "Experiment 5's quadratic hold-progress reward remained well below the accepted champion at every measured checkpoint and on the task-reference panel, so the accepted hold-stability champion remains the active model lineage."
+    "code_parent_commit": "af75eff6a858fc0bbe04004dc7813ff68a1adbf7",
+    "continue_from": "checkpoint-120832",
+    "experiment": 6,
+    "reason": "The zero-entropy transfer candidate is the strongest measured lineage: it reached 95.5% research success and 96.0% task-reference success, with fewer hold interruptions than the champion."
   },
-  "last_verdict": "researcher selected champion",
+  "last_verdict": "researcher selected checkpoint-120832",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
