@@ -40,7 +40,7 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 4,
+  "last_allocated_experiment": 5,
   "last_experiment": 4,
   "last_lineage_decision": {
     "code": {
@@ -56,7 +56,7 @@
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "a15c7e7e446e0f84465c49205d5c50322f0bbf11",
   "retained_lineages": [],
   "schema_version": 2
 }
