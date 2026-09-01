@@ -182,8 +182,8 @@ def test_the_first_attempt_stays_visible_after_the_retry(tmp_path):
     )
     console = run_session_script(body, tmp_path)
 
-    first = console.index("attempt 1 ===")
-    second = console.index("attempt 2 ===")
+    first = console.index("attempt 1")
+    second = console.index("attempt 2")
     assert first < second
     assert console.index("Process exit : 1") < second
     assert console.index("Validation   : invalid") > first
