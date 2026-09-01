@@ -121,6 +121,11 @@ INTERPRETERS = frozenset({"python", "python.exe", "python3", "py", "py.exe"})
 
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
+# Oversized tool results are written here instead of occupying the context for
+# the rest of the session. The researcher still opens them on demand.
+LARGE_OUTPUT_DIR = ROOT / ".copilot" / "large-output"
+LARGE_OUTPUT_MAX_BYTES = 32_768
+
 POLICY = f"""
 <harness_policy>
 This session runs inside the repository worktree {ROOT}. The harness enforces
@@ -133,6 +138,9 @@ instead of retrying the same command.
 - The runner owns Git history. Read-only git is allowed. To revert this
   experiment's code, use the lineage proposal's "code" decision.
 - A repository-wide pytest run belongs to the runner; run a specific suite.
+- Every tool call resends the whole conversation, so prefer one aggregation over
+  the same command repeated per file, and read what you need rather than whole
+  artifacts.
 - The phase ends when its deliverable file is written, not when you have
   finished explaining. Write the file.
 </harness_policy>
@@ -142,6 +150,10 @@ instead of retrying the same command.
 def normalize_model(model: str) -> str:
     """OpenCode named the provider inside the model; the SDK names only the model."""
     return model.split("/", 1)[1] if "/" in model else model
+
+
+def thousands(count: int) -> str:
+    return f"{count / 1000:.0f}k" if count >= 1000 else str(count)
 
 
 def command_segments(command: str) -> list[list[str]]:
@@ -289,8 +301,11 @@ class Console:
     def __init__(self) -> None:
         self._mid_stream = False
         self.changed_files: dict[str, str] = {}
-        self.input_tokens = 0
+        self.prompt_tokens = 0
+        self.cache_read_tokens = 0
+        self.cache_write_tokens = 0
         self.output_tokens = 0
+        self.nano_aiu = 0.0
         self.session_error: str | None = None
         self.denials = 0
         self.denied_calls: set[str] = set()
@@ -350,9 +365,18 @@ class Console:
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
         files = f"{len(changed)} file(s) changed"
-        tokens = f"{self.input_tokens} in / {self.output_tokens} out tokens"
         denials = f", {self.denials} denied" if self.denials else ""
-        self.line(f"-- session {session_id[:8]}: {files}, {tokens}{denials}")
+        self.line(f"-- session {session_id[:8]}: {files}, {self.usage()}{denials}")
+
+    def usage(self) -> str:
+        """Cost as billed: cached prompt tokens are a tenth the price of fresh ones,
+        so a single token total would hide most of what a session actually costs."""
+        aiu = f"{self.nano_aiu / 1e9:.2f} AIU"
+        prompt = f"prompt {thousands(self.prompt_tokens)}"
+        if self.prompt_tokens:
+            share = round(100 * self.cache_read_tokens / self.prompt_tokens)
+            prompt += f" ({share}% cached)"
+        return f"{aiu}, {prompt}, output {thousands(self.output_tokens)}"
 
 
 def build_handlers(console: Console, finished: asyncio.Event):
@@ -388,8 +412,12 @@ def build_handlers(console: Console, finished: asyncio.Event):
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):
-            console.input_tokens += data.input_tokens or 0
+            console.prompt_tokens += data.input_tokens or 0
+            console.cache_read_tokens += data.cache_read_tokens or 0
+            console.cache_write_tokens += data.cache_write_tokens or 0
             console.output_tokens += data.output_tokens or 0
+            usage = getattr(data, "copilot_usage", None)
+            console.nano_aiu += getattr(usage, "total_nano_aiu", 0) or 0
         elif isinstance(data, SessionErrorData):
             console.error(data.message or "unknown session error")
         elif isinstance(data, SessionIdleData):
@@ -424,6 +452,11 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
         "enable_session_store": False,
         "skip_embedding_retrieval": True,
         "enable_mcp_apps": False,
+        "large_output": {
+            "enabled": True,
+            "max_size_bytes": LARGE_OUTPUT_MAX_BYTES,
+            "output_directory": str(LARGE_OUTPUT_DIR),
+        },
         "system_message": {"mode": "append", "content": POLICY},
     }
 

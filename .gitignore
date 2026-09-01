@@ -39,6 +39,9 @@ htmlcov/
 .pytest-*-temp/
 .pytest-*/
 
+# Oversized researcher tool output, offloaded out of the model context
+.copilot/
+
 # Transient research runner controls and generated summaries
 research/last_train.log
 research/last_train_summary.md
