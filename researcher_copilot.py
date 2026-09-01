@@ -12,6 +12,7 @@ import argparse
 import asyncio
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -23,6 +24,29 @@ EXIT_MODEL_UNAVAILABLE = 4
 EXIT_TIMEOUT = 5
 EXIT_RUNTIME_FAILURE = 6
 EXIT_INTERRUPTED = 130
+
+_RESET = "\033[0m"
+_DIM = "\033[90m"
+_MARKER_COLORS = {
+    ">": "\033[36m",
+    "x": "\033[31m",
+    "+": "\033[32m",
+    "-": "\033[31m",
+    "~": "\033[36m",
+    "!": "\033[33m",
+    "--": "\033[36m",
+}
+
+
+def format_console_line(text: str) -> str:
+    if not sys.stdout.isatty():
+        return text
+    stripped = text.lstrip()
+    indent = text[: len(text) - len(stripped)]
+    marker, separator, remainder = stripped.partition(" ")
+    color = _MARKER_COLORS.get(marker, "\033[36m")
+    timestamp = f"{_DIM}[{datetime.now():%H:%M:%S}]{_RESET}"
+    return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
 
 # Measured: this profile drops the runtime from 15 tools to 8 and roughly a
 # third of the per-turn context, by removing tools no robotics experiment uses.
@@ -338,7 +362,7 @@ class Console:
         if self._mid_stream:
             print(flush=True)
             self._mid_stream = False
-        print(text, flush=True)
+        print(format_console_line(text), flush=True)
 
     def delta(self, text: str) -> None:
         if not text:
