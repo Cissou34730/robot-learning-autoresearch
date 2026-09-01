@@ -385,7 +385,7 @@ while ($true) {
     }
 
     Write-Status "=== Researcher forming next hypothesis ==="
-    Write-Host "Model: $model, reasoning: $reasoning"
+    Write-Status "Model: $model, reasoning: $reasoning" -Color Magenta -Label researcher
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $allocatedExperiment = [Math]::Max(
         [int]$researchState.last_allocated_experiment,

@@ -6,16 +6,19 @@
 function Write-Status {
     param(
         [Parameter(Mandatory)][string]$Message,
-        [ConsoleColor]$Color = [ConsoleColor]::Cyan
+        [ConsoleColor]$Color = [ConsoleColor]::Cyan,
+        [string]$Label = ""
     )
-    $label = switch ($Color) {
-        Green { "done" }
-        Yellow { "wait" }
-        default { "run" }
+    if (-not $Label) {
+        $Label = switch ($Color) {
+            Green { "done" }
+            Yellow { "wait" }
+            default { "run" }
+        }
     }
     $text = $Message -replace '^===\s*|\s*===$', ''
     Write-Host "[$(Get-Date -Format 'HH:mm:ss')] " -ForegroundColor DarkGray -NoNewline
-    Write-Host "[$label]" -ForegroundColor $Color -NoNewline
+    Write-Host "[$Label]" -ForegroundColor $Color -NoNewline
     Write-Host " $text"
 }
 
