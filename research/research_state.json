@@ -1,15 +1,62 @@
 {
-    "schema_version":  2,
-    "accepted_artifact":  "research\\checkpoints\\accepted",
-    "accepted_metrics":  null,
-    "accepted_parameters":  null,
-    "accepted_training_steps":  0,
-    "retained_lineages":  [
-
-                          ],
-    "last_experiment":  0,
-    "last_allocated_experiment":  0,
-    "pending_scientific_parent":  null,
-    "last_verdict":  "baseline pending after research reset",
-    "official_metrics":  null
+  "accepted_artifact": "research\\checkpoints\\accepted",
+  "accepted_evaluations": [
+    "research/evaluations/evaluation-experiment-1-checkpoint-90112-100ep-seed1000-31932e1eb9a8.json"
+  ],
+  "accepted_metrics": {
+    "episodes": 100,
+    "evaluation_summary_version": 3,
+    "pooled_success_percent": 44.0,
+    "schema_version": 3,
+    "seed_count": 1,
+    "seed_success_percent": {
+      "1000": 44.0
+    },
+    "success_percent": 44.0,
+    "worst_seed_success_percent": 44.0
+  },
+  "accepted_parameters": {
+    "algorithm": {
+      "name": "ppo"
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    },
+    "ppo": {
+      "batch_size": 64,
+      "ent_coef": 0.0,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0001,
+      "n_steps": 1024
+    },
+    "training": {
+      "checkpoint_every_steps": 5000,
+      "n_envs": 1
+    }
+  },
+  "accepted_training_steps": 120000,
+  "last_allocated_experiment": 1,
+  "last_experiment": 1,
+  "last_lineage_decision": {
+    "code": {
+      "action": "keep",
+      "reason": "Experiment 1 was an unchanged fresh baseline with no code changes to revert."
+    },
+    "code_parent_commit": "e1f815620bbff8d072b0197836b748c6b20a662f",
+    "continue_from": "checkpoint-90112",
+    "experiment": 1,
+    "reason": "Checkpoint-90112 reached 44% success, and on the overlapping 100 seeds the 120832-step endpoint lost 21 successes while gaining 8, with shorter holds and more interruptions. It is the strongest measured pre-regression lineage; the evidence does not support requesting the final benchmark."
+  },
+  "last_verdict": "researcher selected checkpoint-90112",
+  "official_metrics": null,
+  "pending_evaluation_request": null,
+  "pending_researcher_decision": null,
+  "pending_scientific_parent": null,
+  "retained_lineages": [],
+  "schema_version": 2
 }
