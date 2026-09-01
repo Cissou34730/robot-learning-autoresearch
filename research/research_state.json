@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed1000-31932e1eb9a8.json"
+    "research/evaluations/evaluation-experiment-3-champion-200ep-seed2000-5a38689675b6.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -40,19 +40,19 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "The hold-progress forfeiture change is supported by the candidate and task-reference improvements, so retain it as the active scenario code."
+      "action": "revert",
+      "reason": "The hold-duration curriculum degraded reach quality and sustained holding; restore the pre-experiment-3 code parent."
     },
-    "code_parent_commit": "4350bceeee548b653e0520417c0c778a8ddaf799",
-    "continue_from": "checkpoint-120832",
-    "experiment": 2,
-    "reason": "The 120,832-step candidate is the strongest measured lineage at 80.5% research-evaluation success, improving on the accepted champion's 66.5%, and also leads the fixed task-reference panel at 84.5% versus 55.0%."
+    "code_parent_commit": "ad0e2791809ddf1a0f34b808a4e10d8b00108bee",
+    "continue_from": "champion",
+    "experiment": 3,
+    "reason": "Experiment 3 substantially underperformed the accepted champion across the research evaluation and task-reference panel, so the accepted experiment-2 lineage remains the active model."
   },
-  "last_verdict": "researcher selected checkpoint-120832",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
