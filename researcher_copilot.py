@@ -295,6 +295,28 @@ def changed_since(before: dict[str, str]) -> list[str]:
     )
 
 
+def offload_snapshot() -> set[str]:
+    if not LARGE_OUTPUT_DIR.is_dir():
+        return set()
+    return {entry.name for entry in LARGE_OUTPUT_DIR.iterdir() if entry.is_file()}
+
+
+def offloaded_since(before: set[str]) -> tuple[int, int]:
+    """How much tool output never entered the context, as count and bytes.
+
+    Per-session cost tracks how much work the researcher chose to do, so only a
+    direct measure of the mechanism can say whether offloading is doing anything.
+    """
+    if not LARGE_OUTPUT_DIR.is_dir():
+        return (0, 0)
+    written = [
+        entry
+        for entry in LARGE_OUTPUT_DIR.iterdir()
+        if entry.is_file() and entry.name not in before
+    ]
+    return (len(written), sum(entry.stat().st_size for entry in written))
+
+
 class Console:
     """Everything the human sees, and nothing the protocol reads back."""
 
@@ -309,6 +331,7 @@ class Console:
         self.nano_aiu_by_type: dict[str, float] = {}
         self.session_error: str | None = None
         self.denials = 0
+        self.tool_calls = 0
         self.denied_calls: set[str] = set()
 
     def line(self, text: str) -> None:
@@ -329,6 +352,7 @@ class Console:
         print(text, flush=True)
 
     def tool(self, name: str, arguments: object) -> None:
+        self.tool_calls += 1
         if name in SILENT_TOOLS:
             return
         detail = ""
@@ -361,13 +385,23 @@ class Console:
         self.session_error = message
         self.line(f"  ! session error: {message}")
 
-    def summary(self, session_id: str, changed: list[str]) -> None:
+    def summary(
+        self, session_id: str, changed: list[str], offloaded: tuple[int, int] = (0, 0)
+    ) -> None:
         for path in changed:
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
         files = f"{len(changed)} file(s) changed"
         denials = f", {self.denials} denied" if self.denials else ""
-        self.line(f"-- session {session_id[:8]}: {files}, {self.usage()}{denials}")
+        self.line(
+            f"-- session {session_id[:8]}: {files}, {self.usage()}"
+            f", {self.work(offloaded)}{denials}"
+        )
+
+    def work(self, offloaded: tuple[int, int]) -> str:
+        count, size = offloaded
+        offload = f", offloaded {count} ({size // 1024} KB)" if count else ""
+        return f"tools {self.tool_calls}{offload}"
 
     def usage(self) -> str:
         """Cost as billed: cached prompt tokens are a tenth the price of fresh ones,
@@ -518,13 +552,18 @@ async def run(args) -> int:
             client, args, session_options(args, console, finished)
         )
         before = worktree_status()
+        before_offload = offload_snapshot()
         try:
             await session.send(args.prompt)
             await asyncio.wait_for(finished.wait(), timeout=args.timeout)
         except TimeoutError:
             await session.abort()
             console.line(f"  ! session timed out after {args.timeout}s")
-            console.summary(session.session_id, changed_since(before))
+            console.summary(
+                session.session_id,
+                changed_since(before),
+                offloaded_since(before_offload),
+            )
             return EXIT_TIMEOUT
         except KeyboardInterrupt:
             await session.abort()
@@ -533,7 +572,9 @@ async def run(args) -> int:
         finally:
             await session.disconnect()
 
-        console.summary(session.session_id, changed_since(before))
+        console.summary(
+            session.session_id, changed_since(before), offloaded_since(before_offload)
+        )
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
 
 
