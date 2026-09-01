@@ -3,6 +3,22 @@
 # that deliverable's validity. Nothing here reads what the Researcher printed,
 # so it stays true whatever command invokes the Researcher.
 
+function Write-Status {
+    param(
+        [Parameter(Mandatory)][string]$Message,
+        [ConsoleColor]$Color = [ConsoleColor]::Cyan
+    )
+    $label = switch ($Color) {
+        Green { "done" }
+        Yellow { "wait" }
+        default { "run" }
+    }
+    $text = $Message -replace '^===\s*|\s*===$', ''
+    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] " -ForegroundColor DarkGray -NoNewline
+    Write-Host "[$label]" -ForegroundColor $Color -NoNewline
+    Write-Host " $text"
+}
+
 function New-ResearcherSessionStatus {
     param(
         [Parameter(Mandatory)][string]$Phase,
@@ -45,14 +61,14 @@ function Write-ResearcherSessionStatus {
         [string]$Status.ExitCode
     }
     if ($Status.Complete -and $exitText -eq "0") {
-        Write-Host (
+        Write-Status (
             "Researcher session: $($Status.Phase), attempt $($Status.Attempt): " +
             "process=$exitText, $($Status.Deliverable)=$($Status.Validity)"
-        )
+        ) Green
         return
     }
     $presence = if ($Status.Present) { "present" } else { "missing" }
-    Write-Host "=== Researcher session - $($Status.Phase) - attempt $($Status.Attempt) ==="
+    Write-Status "=== Researcher session - $($Status.Phase) - attempt $($Status.Attempt) ===" Yellow
     Write-Host "Process exit : $exitText"
     Write-Host "Deliverable  : $($Status.Deliverable) ($presence)"
     Write-Host "Validation   : $($Status.Validity)"

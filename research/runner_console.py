@@ -4,9 +4,26 @@ The Runner formats facts the researcher already decided or the tools already
 measured. It never adds a scientific conclusion of its own.
 """
 
+import sys
+from datetime import datetime
+
+
+_RESET = "\033[0m"
+_DIM = "\033[90m"
+_CYAN = "\033[36m"
+_RED = "\033[31m"
+
 
 def announce(message: str) -> None:
-    print(message, flush=True)
+    leading_break = "\n" if message.startswith("\n") else ""
+    text = message.lstrip("\n")
+    timestamp = f"[{datetime.now():%H:%M:%S}]"
+    if sys.stdout.isatty() and text.startswith("[") and "]" in text:
+        prefix, _, remainder = text.partition("]")
+        color = _RED if prefix == "[error" else _CYAN
+        text = f"{color}{prefix}]{_RESET}{remainder}"
+        timestamp = f"{_DIM}{timestamp}{_RESET}"
+    print(f"{leading_break}{timestamp} {text}", flush=True)
 
 
 def format_duration(seconds: float) -> str:

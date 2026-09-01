@@ -207,7 +207,7 @@ function Get-LineageSessionStatus([int]$experiment, [int]$attempt) {
 try {
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
-        Write-Host "GOAL REACHED - research loop finished."
+        Write-Status "GOAL REACHED - research loop finished." Green
         break
     }
 
@@ -221,17 +221,17 @@ while ($true) {
         if (-not (Test-Path -LiteralPath $recoveryCandidate)) {
             throw "Recovery candidate is missing: $recoveryCandidate"
         }
-        Write-Host "=== Resuming interrupted experiment: $recoveryCandidate ==="
+        Write-Status "=== Resuming interrupted experiment: $recoveryCandidate ==="
         uv run python research/run_experiment.py --reuse-candidate $recoveryCandidate
         if ($LASTEXITCODE -eq 130) {
-            Write-Host "=== Experiment paused again; progress remains saved ==="
+            Write-Status "=== Experiment paused again; progress remains saved ===" Yellow
             break
         }
         if ($LASTEXITCODE -ne 0) {
             throw "Resumed experiment failed. Its recovery state was preserved."
         }
         Update-ResearchBrief
-        Write-Host "=== Resumed experiment complete ==="
+        Write-Status "=== Resumed experiment complete ===" Green
         continue
     }
 
@@ -239,29 +239,29 @@ while ($true) {
         if (-not (Test-Path "research\proposal.json")) {
             throw "Interrupted experiment has no proposal to restart."
         }
-        Write-Host "=== Restarting interrupted experiment from its beginning ==="
+        Write-Status "=== Restarting interrupted experiment from its beginning ==="
         uv run python research/run_experiment.py
         if ($LASTEXITCODE -eq 130) {
-            Write-Host "=== Experiment paused again ==="
+            Write-Status "=== Experiment paused again ===" Yellow
             break
         }
         if ($LASTEXITCODE -ne 0) {
             throw "Restarted experiment failed."
         }
         Update-ResearchBrief
-        Write-Host "=== Restarted experiment complete ==="
+        Write-Status "=== Restarted experiment complete ===" Green
         continue
     }
 
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
     if ($null -ne $researchState.pending_final_benchmark) {
-        Write-Host "=== Evaluating the committed accepted lineage on the final benchmark ==="
+        Write-Status "=== Evaluating the committed accepted lineage on the final benchmark ==="
         uv run python research/run_experiment.py --evaluate-pending-final
         if ($LASTEXITCODE -ne 0) {
             throw "Final benchmark failed. The committed lineage remains pending for recovery."
         }
         Update-ResearchBrief
-        Write-Host "=== Final benchmark complete ==="
+        Write-Status "=== Final benchmark complete ===" Green
         continue
     }
 
@@ -270,7 +270,7 @@ while ($true) {
         $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
         if (-not $evaluationPlanExists) {
             Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
-            Write-Host "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
+            Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
                 "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
@@ -282,7 +282,7 @@ while ($true) {
             Write-ResearcherSessionStatus $evaluationStatus
             if (-not $evaluationStatus.Complete) {
                 $evaluationProblem = $evaluationStatus.Reason
-                Write-Host "=== Evaluation request missing or invalid; retrying the same bounded task once ==="
+                Write-Status "=== Evaluation request missing or invalid; retrying the same bounded task once ===" Yellow
                 $evaluationRetryPrompt = @(
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
                     "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
@@ -298,23 +298,23 @@ while ($true) {
             }
         }
         else {
-            Write-Host "=== Resuming the researcher's evaluation plan ==="
+            Write-Status "=== Resuming the researcher's evaluation plan ==="
         }
         uv run python research/run_experiment.py --evaluate-pending
         if ($LASTEXITCODE -eq 130) {
-            Write-Host "=== Requested evaluation paused; completed measurements were saved ==="
+            Write-Status "=== Requested evaluation paused; completed measurements were saved ===" Yellow
             break
         }
         if ($LASTEXITCODE -ne 0) {
             throw "Runner execution of the validated evaluation request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
-        Write-Host "=== Requested evaluations complete ==="
+        Write-Status "=== Requested evaluations complete ===" Green
         continue
     }
 
     if (Test-Path "research\BASELINE_PENDING") {
-        Write-Host "=== Running fresh baseline training ==="
+        Write-Status "=== Running fresh baseline training ==="
         @{
             baseline = $true
             change = "Fresh baseline"
@@ -325,20 +325,20 @@ while ($true) {
 
         uv run python research/run_experiment.py
         if ($LASTEXITCODE -eq 130) {
-            Write-Host "=== Baseline interrupted cleanly; it remains pending ==="
+            Write-Status "=== Baseline interrupted cleanly; it remains pending ===" Yellow
             break
         }
         if ($LASTEXITCODE -ne 0) {
             throw "Baseline failed. The research loop stopped instead of silently continuing."
         }
         Update-ResearchBrief
-        Write-Host "=== Baseline training complete; researcher evaluation comes next ==="
+        Write-Status "=== Baseline training complete; researcher evaluation comes next ===" Green
         continue
     }
 
     if ($null -ne $researchState.pending_researcher_decision) {
         Update-ResearchBrief
-        Write-Host "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
+        Write-Status "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. This is the complete task; do not wait for more input."
             "Read research/program.md, research/scenario.md, and research/brief.md."
@@ -352,7 +352,7 @@ while ($true) {
         Write-ResearcherSessionStatus $lineageStatus
         if (-not $lineageStatus.Complete) {
             $lineageProblem = $lineageStatus.Reason
-            Write-Host "=== Lineage deliverable invalid; retrying the same bounded task once ==="
+            Write-Status "=== Lineage deliverable invalid; retrying the same bounded task once ===" Yellow
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
                 "Read research/program.md, research/scenario.md, and research/brief.md."
@@ -371,7 +371,7 @@ while ($true) {
             throw "Runner application of the validated lineage decision failed. The researcher deliverables were already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
-        Write-Host "=== Lineage decision finalized; requesting next hypothesis ==="
+        Write-Status "=== Lineage decision finalized; requesting next hypothesis ===" Green
         continue
     }
 
@@ -384,7 +384,7 @@ while ($true) {
         throw "Could not establish the scientific parent of the next experiment."
     }
 
-    Write-Host "=== Researcher forming next hypothesis at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
+    Write-Status "=== Researcher forming next hypothesis ==="
     Write-Host "Model: $model, reasoning: $reasoning"
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $allocatedExperiment = [Math]::Max(
@@ -414,7 +414,7 @@ while ($true) {
     Save-ResearchMemory
     if (-not $proposalStatus.Complete) {
         $proposalProblem = $proposalStatus.Reason
-        Write-Host "=== Research proposal missing or invalid; retrying once with bounded context ==="
+        Write-Status "=== Research proposal missing or invalid; retrying once with bounded context ===" Yellow
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
             "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and inspect the relevant repository state."
@@ -441,14 +441,14 @@ while ($true) {
     }
     uv run python research/run_experiment.py
     if ($LASTEXITCODE -eq 130) {
-        Write-Host "=== Experiment interrupted cleanly; no model decision was made ==="
+        Write-Status "=== Experiment interrupted cleanly; no model decision was made ===" Yellow
         break
     }
     if ($LASTEXITCODE -ne 0) {
         throw "Experiment runner failed. The loop stopped safely."
     }
     Update-ResearchBrief
-    Write-Host "=== Experiment session ended at $(Get-Date -Format 'HH:mm:ss') ==="
+    Write-Status "=== Experiment session ended ===" Green
     Start-Sleep -Seconds 5
 }
 }
