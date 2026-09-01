@@ -5,6 +5,7 @@ bounded research phase succeeded, and none of these tests start a real session.
 """
 
 import asyncio
+import signal
 import sys
 import types
 from pathlib import Path
@@ -292,6 +293,70 @@ def test_a_missing_offload_directory_reports_nothing(tmp_path, monkeypatch):
 
     assert adapter.offload_snapshot() == set()
     assert adapter.offloaded_since(set()) == (0, 0)
+
+
+# --- interruption -----------------------------------------------------------
+
+
+def test_the_first_interrupt_is_a_request_to_stop_not_a_kill():
+    async def scenario():
+        interrupted = asyncio.Event()
+        before = signal.getsignal(signal.SIGINT)
+        restore = adapter.install_interrupt(interrupted)
+        try:
+            installed = signal.getsignal(signal.SIGINT)
+            signal.raise_signal(signal.SIGINT)
+            await asyncio.sleep(0.05)
+            return (
+                interrupted.is_set(),
+                installed is not before,
+                (signal.getsignal(signal.SIGINT) is before),
+            )
+        finally:
+            restore()
+
+    asked_to_stop, was_installed, stepped_aside = asyncio.run(scenario())
+
+    assert asked_to_stop
+    assert was_installed
+    # A second interrupt must reach the default handler and end the process.
+    assert stepped_aside
+
+
+def test_an_interrupted_session_is_distinguished_from_a_finished_one():
+    async def scenario(signal_name):
+        finished, interrupted = asyncio.Event(), asyncio.Event()
+        {"finished": finished, "interrupted": interrupted}[signal_name].set()
+        return await adapter.wait_for_outcome(finished, interrupted, timeout=5)
+
+    assert asyncio.run(scenario("finished")) == "finished"
+    assert asyncio.run(scenario("interrupted")) == "interrupted"
+
+
+def test_a_completed_session_wins_over_a_simultaneous_interrupt():
+    async def scenario():
+        finished, interrupted = asyncio.Event(), asyncio.Event()
+        finished.set()
+        interrupted.set()
+        return await adapter.wait_for_outcome(finished, interrupted, timeout=5)
+
+    # Work that already finished is never reported as interrupted.
+    assert asyncio.run(scenario()) == "finished"
+
+
+def test_a_session_that_never_settles_times_out():
+    async def scenario():
+        return await adapter.wait_for_outcome(
+            asyncio.Event(), asyncio.Event(), timeout=0.05
+        )
+
+    assert asyncio.run(scenario()) == "timeout"
+
+
+def test_each_ending_reports_its_own_exit_code():
+    assert adapter.OUTCOME_EXITS["finished"] == adapter.EXIT_OK
+    assert adapter.OUTCOME_EXITS["interrupted"] == adapter.EXIT_INTERRUPTED
+    assert adapter.OUTCOME_EXITS["timeout"] == adapter.EXIT_TIMEOUT
 
 
 def test_usage_reports_cleanly_before_any_model_call():
