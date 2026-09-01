@@ -10,8 +10,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import contextlib
-import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -25,12 +23,6 @@ EXIT_MODEL_UNAVAILABLE = 4
 EXIT_TIMEOUT = 5
 EXIT_RUNTIME_FAILURE = 6
 EXIT_INTERRUPTED = 130
-
-OUTCOME_EXITS = {
-    "finished": EXIT_OK,
-    "interrupted": EXIT_INTERRUPTED,
-    "timeout": EXIT_TIMEOUT,
-}
 
 # Measured: this profile drops the runtime from 15 tools to 8 and roughly a
 # third of the per-turn context, by removing tools no robotics experiment uses.
@@ -531,55 +523,6 @@ async def open_session(client, args, options: dict):
     return await client.create_session(session_id=args.session_id, **options)
 
 
-def install_interrupt(interrupted: asyncio.Event):
-    """Make the first console interrupt a request to stop, and return how to undo it.
-
-    Letting KeyboardInterrupt propagate out of asyncio ends the process where it
-    stands, so the session is never told to stop and nothing is reported. Windows
-    delivers Ctrl-Break as SIGBREAK, which otherwise kills outright, so both
-    console signals mean the same thing here. The handlers step aside at once,
-    leaving a second interrupt to end the process.
-    """
-    loop = asyncio.get_running_loop()
-    names = [signal.SIGINT]
-    if hasattr(signal, "SIGBREAK"):
-        names.append(signal.SIGBREAK)
-    previous = {name: signal.getsignal(name) for name in names}
-
-    def restore() -> None:
-        for name, handler in previous.items():
-            signal.signal(name, handler)
-
-    def on_interrupt(signum, frame):
-        del signum, frame
-        restore()
-        loop.call_soon_threadsafe(interrupted.set)
-
-    for name in names:
-        signal.signal(name, on_interrupt)
-    return restore
-
-
-async def wait_for_outcome(
-    finished: asyncio.Event, interrupted: asyncio.Event, timeout: float
-) -> str:
-    waits = {
-        asyncio.create_task(finished.wait()): "finished",
-        asyncio.create_task(interrupted.wait()): "interrupted",
-    }
-    try:
-        done, _ = await asyncio.wait(
-            waits, timeout=timeout, return_when=asyncio.FIRST_COMPLETED
-        )
-    finally:
-        for task in waits:
-            task.cancel()
-    outcomes = {waits[task] for task in done}
-    if "finished" in outcomes:
-        return "finished"
-    return "interrupted" if "interrupted" in outcomes else "timeout"
-
-
 async def run(args) -> int:
     from copilot import CopilotClient
 
@@ -610,30 +553,29 @@ async def run(args) -> int:
         )
         before = worktree_status()
         before_offload = offload_snapshot()
-        interrupted = asyncio.Event()
-        restore = install_interrupt(interrupted)
         try:
             await session.send(args.prompt)
-            outcome = await wait_for_outcome(finished, interrupted, args.timeout)
-            if outcome == "interrupted":
-                console.line("  ! interrupt received; stopping the session")
-            elif outcome == "timeout":
-                console.line(f"  ! session timed out after {args.timeout}s")
-            if outcome != "finished":
-                # The runtime shares this console, so it may already be gone.
-                with contextlib.suppress(Exception):
-                    await session.abort()
+            await asyncio.wait_for(finished.wait(), timeout=args.timeout)
+        except TimeoutError:
+            await session.abort()
+            console.line(f"  ! session timed out after {args.timeout}s")
+            console.summary(
+                session.session_id,
+                changed_since(before),
+                offloaded_since(before_offload),
+            )
+            return EXIT_TIMEOUT
+        except KeyboardInterrupt:
+            await session.abort()
+            console.line("  ! session interrupted")
+            return EXIT_INTERRUPTED
         finally:
-            restore()
-            with contextlib.suppress(Exception):
-                await session.disconnect()
+            await session.disconnect()
 
         console.summary(
             session.session_id, changed_since(before), offloaded_since(before_offload)
         )
-        if console.session_error:
-            return EXIT_SESSION_ERROR
-        return OUTCOME_EXITS[outcome]
+        return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
