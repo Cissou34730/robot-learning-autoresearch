@@ -210,15 +210,35 @@ def test_the_final_message_is_shown_when_nothing_streamed(capsys):
 
 def test_the_summary_reports_work_not_a_verdict(capsys):
     console = adapter.Console()
-    console.input_tokens, console.output_tokens = 9000, 120
+    console.prompt_tokens, console.output_tokens = 9000, 120
+    console.nano_aiu = 356_660_000
 
     console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80", ["research/proposal.json"])
 
     out = capsys.readouterr().out
     assert "1 file(s) changed" in out
-    assert "9000 in / 120 out tokens" in out
+    assert "0.36 AIU" in out
     for verdict in ("success", "complete", "valid", "failed"):
         assert verdict not in out.lower()
+
+
+def test_cost_separates_cached_prompt_tokens_from_fresh_ones():
+    console = adapter.Console()
+    console.prompt_tokens = 400_000
+    console.cache_read_tokens = 360_000
+    console.output_tokens = 9_000
+    console.nano_aiu = 2_500_000_000
+
+    usage = console.usage()
+
+    # A single token total would price a cached read like a fresh one.
+    assert "2.50 AIU" in usage
+    assert "prompt 400k (90% cached)" in usage
+    assert "output 9k" in usage
+
+
+def test_usage_reports_cleanly_before_any_model_call():
+    assert "0.00 AIU" in adapter.Console().usage()
 
 
 def test_a_file_written_outside_the_edit_tools_is_still_reported(capsys):
@@ -365,6 +385,33 @@ def test_the_session_runs_a_trimmed_tool_profile_inside_the_worktree():
     assert "builtin:apply_patch" in allowed
     for absent in ("builtin:web_fetch", "builtin:sql", "builtin:task"):
         assert absent not in allowed
+
+
+def test_oversized_tool_output_is_offloaded_instead_of_held_in_context():
+    pytest.importorskip("copilot")
+    args = adapter.parse_args(["p", "--session-id", "s"])
+
+    large_output = adapter.session_options(args, adapter.Console(), asyncio.Event())[
+        "large_output"
+    ]
+
+    assert large_output["enabled"] is True
+    assert large_output["max_size_bytes"] == adapter.LARGE_OUTPUT_MAX_BYTES
+    # Offloaded output stays readable but must never look like a research change.
+    assert large_output["output_directory"] == str(adapter.LARGE_OUTPUT_DIR)
+    assert adapter.LARGE_OUTPUT_DIR.is_relative_to(ROOT)
+    assert ".copilot/" in (ROOT / ".gitignore").read_text(encoding="utf-8")
+
+
+def test_the_researcher_is_told_that_round_trips_resend_the_conversation():
+    pytest.importorskip("copilot")
+    args = adapter.parse_args(["p", "--session-id", "s"])
+
+    content = adapter.session_options(args, adapter.Console(), asyncio.Event())[
+        "system_message"
+    ]["content"]
+
+    assert "resends the whole conversation" in content
 
 
 def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():
