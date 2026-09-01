@@ -51,6 +51,7 @@ A proposal is rejected if it changes any file on the trust path between the
 runner and the protected task:
 
 * `research/run_experiment.py`;
+* `researcher_copilot.py`, the repository-owned Copilot runtime adapter;
 * `robot_learning/benchmark/final_contract.py`;
 * `robot_learning/benchmark/final_benchmark.py`;
 * `robot_learning/benchmark/reference_contract.py` and
