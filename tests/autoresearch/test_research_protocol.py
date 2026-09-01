@@ -23,6 +23,7 @@ from research.runner_protocol import (
     evaluation_semantics_fingerprint,
     evaluation_semantics_paths,
     experiment_family,
+    is_protected_source,
     parameter_change_records,
     plan_previous_result_decision,
     training_parent,
@@ -51,6 +52,10 @@ KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
 
 def mentions(text: str, word: str) -> bool:
     return re.search(rf"\b{word}\b", text, flags=re.IGNORECASE) is not None
+
+
+def test_the_copilot_adapter_is_a_protected_protocol_source():
+    assert is_protected_source("researcher_copilot.py")
 
 
 def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():

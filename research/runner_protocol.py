@@ -19,6 +19,7 @@ from research import runner_repository as repository
 # that resolve those imports.
 PROTECTED_BENCHMARK_PATHS = {
     "research/run_experiment.py",
+    "researcher_copilot.py",
     "robot_learning/__init__.py",
     "robot_learning/benchmark/__init__.py",
     "robot_learning/benchmark/final_benchmark.py",
