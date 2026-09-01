@@ -234,7 +234,24 @@ def test_cost_separates_cached_prompt_tokens_from_fresh_ones():
     # A single token total would price a cached read like a fresh one.
     assert "2.50 AIU" in usage
     assert "prompt 400k (90% cached)" in usage
-    assert "output 9k" in usage
+
+
+def test_cost_names_which_kind_of_token_dominated():
+    console = adapter.Console()
+    console.nano_aiu = 2_290_000_000
+    console.nano_aiu_by_type = {
+        "input": 60_000_000,
+        "cache_write": 1_060_000_000,
+        "cache_read": 600_000_000,
+        "output": 600_000_000,
+    }
+
+    # Fresh and cached-write tokens are both new context, so they read as one cost.
+    assert console.cost_split() == " (new 1.12 / read 0.60 / out 0.60)"
+
+
+def test_the_cost_split_is_absent_until_the_runtime_prices_a_turn():
+    assert adapter.Console().cost_split() == ""
 
 
 def test_usage_reports_cleanly_before_any_model_call():

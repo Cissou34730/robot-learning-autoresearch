@@ -306,6 +306,7 @@ class Console:
         self.cache_write_tokens = 0
         self.output_tokens = 0
         self.nano_aiu = 0.0
+        self.nano_aiu_by_type: dict[str, float] = {}
         self.session_error: str | None = None
         self.denials = 0
         self.denied_calls: set[str] = set()
@@ -371,12 +372,24 @@ class Console:
     def usage(self) -> str:
         """Cost as billed: cached prompt tokens are a tenth the price of fresh ones,
         so a single token total would hide most of what a session actually costs."""
-        aiu = f"{self.nano_aiu / 1e9:.2f} AIU"
         prompt = f"prompt {thousands(self.prompt_tokens)}"
         if self.prompt_tokens:
             share = round(100 * self.cache_read_tokens / self.prompt_tokens)
             prompt += f" ({share}% cached)"
-        return f"{aiu}, {prompt}, output {thousands(self.output_tokens)}"
+        return f"{self.nano_aiu / 1e9:.2f} AIU{self.cost_split()}, {prompt}"
+
+    def cost_split(self) -> str:
+        """Admitting new context costs over ten times re-reading it, so the split
+        says whether to shrink what enters the session or what it replies."""
+        by_type = self.nano_aiu_by_type
+        new = by_type.get("input", 0.0) + by_type.get("cache_write", 0.0)
+        read = by_type.get("cache_read", 0.0)
+        output = by_type.get("output", 0.0)
+        if not (new or read or output):
+            return ""
+        return (
+            f" (new {new / 1e9:.2f} / read {read / 1e9:.2f} / out {output / 1e9:.2f})"
+        )
 
 
 def build_handlers(console: Console, finished: asyncio.Event):
@@ -418,6 +431,15 @@ def build_handlers(console: Console, finished: asyncio.Event):
             console.output_tokens += data.output_tokens or 0
             usage = getattr(data, "copilot_usage", None)
             console.nano_aiu += getattr(usage, "total_nano_aiu", 0) or 0
+            # Priced by the runtime rather than by a rate table copied in here.
+            for detail in getattr(usage, "_token_details", None) or []:
+                batch = getattr(detail, "batch_size", 0) or 0
+                if not batch:
+                    continue
+                nano = (detail.token_count or 0) * (detail.cost_per_batch or 0) / batch
+                console.nano_aiu_by_type[detail.token_type] = (
+                    console.nano_aiu_by_type.get(detail.token_type, 0.0) + nano
+                )
         elif isinstance(data, SessionErrorData):
             console.error(data.message or "unknown session error")
         elif isinstance(data, SessionIdleData):
