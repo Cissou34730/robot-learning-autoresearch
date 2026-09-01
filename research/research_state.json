@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-4-champion-200ep-seed2000-31932e1eb9a8.json"
+    "research/evaluations/evaluation-experiment-5-champion-200ep-seed2000-73f588274d2b.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -41,22 +41,22 @@
   },
   "accepted_training_steps": 120000,
   "last_allocated_experiment": 5,
-  "last_experiment": 4,
+  "last_experiment": 5,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Revert experiment 4's PPO gamma change because higher gamma failed to improve long-horizon credit assignment and degraded reach-and-hold performance."
+      "reason": "Revert experiment 5's quadratic late-hold-credit reward because it did not improve reach-and-hold performance and degraded final accuracy relative to the accepted lineage."
     },
-    "code_parent_commit": "c378c4475d5984f80cae546c760eb2a617608a44",
+    "code_parent_commit": "40e6c33409098a498b91ea22d4f09771b1b73890",
     "continue_from": "champion",
-    "experiment": 4,
-    "reason": "The gamma 0.995 candidate was substantially worse than the accepted champion across every measured checkpoint and the task-reference panel, so the accepted hold-stability lineage remains the active model."
+    "experiment": 5,
+    "reason": "Experiment 5's quadratic hold-progress reward remained well below the accepted champion at every measured checkpoint and on the task-reference panel, so the accepted hold-stability champion remains the active model lineage."
   },
   "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
-  "pending_scientific_parent": "a15c7e7e446e0f84465c49205d5c50322f0bbf11",
+  "pending_scientific_parent": null,
   "retained_lineages": [],
   "schema_version": 2
 }
