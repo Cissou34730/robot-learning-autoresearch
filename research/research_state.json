@@ -1,19 +1,19 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-110592-100ep-seed1000-1a1d8367302b.json"
+    "research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed1000-31932e1eb9a8.json"
   ],
   "accepted_metrics": {
-    "episodes": 100,
+    "episodes": 200,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 66.0,
+    "pooled_success_percent": 80.5,
     "schema_version": 3,
     "seed_count": 1,
     "seed_success_percent": {
-      "1000": 66.0
+      "1000": 80.5
     },
-    "success_percent": 66.0,
-    "worst_seed_success_percent": 66.0
+    "success_percent": 80.5,
+    "worst_seed_success_percent": 80.5
   },
   "accepted_parameters": {
     "algorithm": {
@@ -40,19 +40,19 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 1 was the unchanged fresh baseline, so there is no experimental code to revert."
+      "reason": "The hold-progress forfeiture change is supported by the candidate and task-reference improvements, so retain it as the active scenario code."
     },
-    "code_parent_commit": "b2859c8640f3a53264177b6beefd977b05916377",
-    "continue_from": "checkpoint-110592",
-    "experiment": 1,
-    "reason": "This checkpoint has the strongest researcher evaluation at 66% success; the later checkpoint is 65%, so the earlier stable lineage is the best available baseline for further work."
+    "code_parent_commit": "4350bceeee548b653e0520417c0c778a8ddaf799",
+    "continue_from": "checkpoint-120832",
+    "experiment": 2,
+    "reason": "The 120,832-step candidate is the strongest measured lineage at 80.5% research-evaluation success, improving on the accepted champion's 66.5%, and also leads the fixed task-reference panel at 84.5% versus 55.0%."
   },
-  "last_verdict": "researcher selected checkpoint-110592",
+  "last_verdict": "researcher selected checkpoint-120832",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
