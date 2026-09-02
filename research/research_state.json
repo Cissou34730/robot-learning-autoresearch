@@ -40,7 +40,7 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 2,
+  "last_allocated_experiment": 3,
   "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
@@ -56,7 +56,7 @@
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "f093b02729d1fe24111e85a766841608bc9ed2cc",
   "retained_lineages": [
     {
       "artifact": "research\\checkpoints\\retained\\baseline-100352",
