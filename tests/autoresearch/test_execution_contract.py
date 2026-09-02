@@ -1663,7 +1663,7 @@ def test_runner_state_is_never_a_researcher_change(monkeypatch):
 # --- candidate manifest ----------------------------------------------------
 
 
-def test_candidate_manifest_exposes_all_complete_artifacts(tmp_path):
+def test_candidate_manifest_preserves_identity_and_complete_artifacts(tmp_path):
     finalists = []
     for number in range(3):
         relative = f"finalists/checkpoint-{number}"
@@ -1671,12 +1671,28 @@ def test_candidate_manifest_exposes_all_complete_artifacts(tmp_path):
         artifact_dir.mkdir(parents=True)
         for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
             (artifact_dir / filename).touch()
-        finalists.append({"path": relative})
+        finalists.append(
+            {
+                "name": f"candidate-{number}",
+                "timesteps": number * 100,
+                "path": relative,
+                "training_success": 0.0,
+                "ep_rew_mean": 1.0,
+            }
+        )
     (tmp_path / "candidate_manifest.json").write_text(
         json.dumps({"candidates": finalists}), encoding="utf-8"
     )
 
-    assert candidate_directories(tmp_path) == [
+    candidates = candidate_directories(tmp_path)
+
+    assert [item["name"] for item in candidates] == [
+        "candidate-0",
+        "candidate-1",
+        "candidate-2",
+    ]
+    assert [item["timesteps"] for item in candidates] == [0, 100, 200]
+    assert [item["path"] for item in candidates] == [
         tmp_path / item["path"] for item in finalists
     ]
 

@@ -236,15 +236,18 @@ def render_research_brief() -> str:
                 "The runner saved checkpoints but made no ranking or selection."
             ),
             f"Available candidates ({len(pending_evaluation['candidates'])}):",
+            "",
+            "| Candidate | Steps | Training success | Training reward | Artifact |",
+            "|---|---:|---:|---:|---|",
         ]
         for candidate in sorted(
             pending_evaluation["candidates"], key=lambda item: int(item["timesteps"])
         ):
             evaluation_lines.append(
-                f"- `{candidate['name']}` — {int(candidate['timesteps']):,};"
-                f"{_candidate_metric(candidate, 'training_success')};"
-                f"{_candidate_metric(candidate, 'ep_rew_mean')};"
-                f"`{candidate['artifact']}`"
+                f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
+                f"{_candidate_metric(candidate, 'training_success')} | "
+                f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
+                f"`{candidate['artifact']}` |"
             )
         if pending_evaluation.get("champion_available"):
             evaluation_lines.append("- `champion` — current accepted model lineage.")

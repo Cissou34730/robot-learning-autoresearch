@@ -373,18 +373,33 @@ def remove_candidate_dir(path: Path) -> None:
             time.sleep(0.25)
 
 
-def candidate_directories(candidate_dir: Path) -> list[Path]:
+def candidate_directories(candidate_dir: Path) -> list[dict]:
     manifest_path = candidate_dir / "candidate_manifest.json"
     if not manifest_path.exists():
-        return [candidate_dir / "final_checkpoint"]
+        artifact = candidate_dir / "final_checkpoint"
+        metadata = json.loads((artifact / "artifact.json").read_text(encoding="utf-8"))
+        return [
+            {
+                "name": artifact.name,
+                "timesteps": metadata["timesteps"],
+                "path": artifact,
+                "training_success": metadata.get("training_success"),
+                "ep_rew_mean": metadata.get("ep_rew_mean"),
+            }
+        ]
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    candidates = [candidate_dir / item["path"] for item in manifest["candidates"]]
+    candidates = [
+        {**item, "path": candidate_dir / item["path"]}
+        for item in manifest["candidates"]
+    ]
     if not candidates:
         raise RuntimeError("training must produce at least one candidate")
     for candidate in candidates:
         for filename in repository.ARTIFACT_FILES:
-            if not (candidate / filename).exists():
-                raise RuntimeError(f"candidate is incomplete: {candidate / filename}")
+            if not (candidate["path"] / filename).exists():
+                raise RuntimeError(
+                    f"candidate is incomplete: {candidate['path'] / filename}"
+                )
     return candidates
 
 

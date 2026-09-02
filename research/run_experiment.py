@@ -693,14 +693,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 label="baseline training" if baseline else "candidate training",
             )
         contenders = [
-            {
-                "name": path.name,
-                "kind": "candidate",
-                "path": path,
-                **json.loads((path / "artifact.json").read_text(encoding="utf-8")),
-                "evaluations": [],
-            }
-            for path in execution.candidate_directories(candidate_dir)
+            {**candidate, "kind": "candidate", "evaluations": []}
+            for candidate in execution.candidate_directories(candidate_dir)
         ]
         archived_candidates = repository.archive_candidates(
             index, contenders, effective_config
