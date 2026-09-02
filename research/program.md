@@ -42,6 +42,16 @@ use superseded record schemas. It is research history, not the current
 evaluation contract: current detailed evidence is whatever the referenced
 evaluation artifacts contain.
 
+Raw training records are available through:
+
+`uv run python research/query_training_log.py --experiment <experiment> --from-step <first-step> --to-step <last-step>`
+
+All parameters are required and both timestep bounds are inclusive. Use the
+same bound twice to request one exact timestep. The command returns all recorded
+metrics for the selected snapshots and identifies separate training attempts
+when applicable. Decide whether these records are relevant and how to interpret
+them.
+
 ## Research cycle
 
 train → research evaluation → close the experiment → next experiment

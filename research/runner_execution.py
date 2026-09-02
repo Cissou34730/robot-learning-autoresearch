@@ -204,14 +204,35 @@ def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | Non
     return latest_step_count(read_training_log(log_path, after_offset))
 
 
-def training_log_path() -> Path:
-    return paths.RESEARCH_DIR / "last_train.log"
+def training_log_attempts(experiment: int) -> list[int]:
+    pattern = re.compile(rf"^experiment-{experiment}-attempt-(\d+)\.log$")
+    attempts = [
+        int(match.group(1))
+        for log_path in paths.TRAINING_LOG_DIR.glob(f"experiment-{experiment}-attempt-*.log")
+        if (match := pattern.match(log_path.name)) is not None
+    ]
+    return sorted(attempts)
 
 
-def training_records() -> list[dict[str, float]]:
+def training_log_path(experiment: int, attempt: int) -> Path:
+    return paths.training_log_path(experiment, attempt)
+
+
+def training_attempt(experiment: int, *, recoverable_continuation: bool) -> int:
+    attempts = training_log_attempts(experiment)
+    if recoverable_continuation:
+        if not attempts:
+            raise RuntimeError(
+                f"no training log exists for recoverable experiment {experiment}"
+            )
+        return attempts[-1]
+    return attempts[-1] + 1 if attempts else 1
+
+
+def training_records(experiment: int, attempt: int) -> list[dict[str, float]]:
     from robot_learning.training.progress import parse_training_records
 
-    return parse_training_records(read_training_log(training_log_path()))
+    return parse_training_records(read_training_log(training_log_path(experiment, attempt)))
 
 
 def training_budget(
@@ -229,6 +250,7 @@ def train_candidate(
     timesteps: int,
     seed: int,
     resume: Path | None,
+    training_log: Path,
     label: str = "candidate training",
     continue_timesteps: bool = False,
     target_timesteps: int | None = None,
@@ -252,10 +274,11 @@ def train_candidate(
         command.append("--continue-timesteps")
     if target_timesteps is not None:
         command.extend(["--target-timesteps", str(target_timesteps)])
-    train_log = training_log_path()
+    train_log = training_log
     started = time.monotonic()
     console.announce(f"[train] {label} | seed {seed} | {timesteps:,} steps")
-    with train_log.open("w", encoding="utf-8") as log_file:
+    train_log.parent.mkdir(parents=True, exist_ok=True)
+    with train_log.open("a" if continue_timesteps else "w", encoding="utf-8") as log_file:
         log_file.write(f"\n=== {label} ===\n")
         log_file.flush()
         progress_offset = log_file.tell()

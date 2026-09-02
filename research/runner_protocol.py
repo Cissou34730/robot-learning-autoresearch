@@ -32,6 +32,9 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/scenario/final_benchmark.py",
     "robot_learning/scenario/task_reference.py",
 }
+# Additional Runner instruments are protected even when they do not belong to
+# the official-task trust path.
+PROTECTED_RUNNER_PATHS = {"research/query_training_log.py"}
 # The researcher runtime boundary: it decides which tools and commands a
 # research session may use, so a proposal must not be able to widen its own.
 PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
@@ -107,6 +110,7 @@ def is_protected_source(path: str) -> bool:
     relative = path.replace("\\", "/")
     return (
         relative in PROTECTED_BENCHMARK_PATHS
+        or relative in PROTECTED_RUNNER_PATHS
         or relative in PROTECTED_RUNTIME_PATHS
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
     )

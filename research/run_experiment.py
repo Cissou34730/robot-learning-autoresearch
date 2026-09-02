@@ -531,6 +531,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     if index < 1:
         index = protocol.next_experiment_index(state)
     state["last_allocated_experiment"] = index
+    recoverable_continuation = args.reuse_candidate is not None
     # A fresh baseline has no hypothesis phase to anchor it, and a retry, restart
     # or recovery keeps the anchor the unfinished research already established.
     code_parent_commit = repository.anchor_scientific_parent(state)
@@ -628,6 +629,13 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             # with existing data was skipped rather than allocated.
             console.announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
             execution.remove_candidate_dir(candidate_dir)
+
+        def active_training_log() -> Path:
+            attempt = execution.training_attempt(
+                index, recoverable_continuation=recoverable_continuation
+            )
+            return paths.training_log_path(index, attempt)
+
         if args.reuse_candidate is not None:
             reusable = args.reuse_candidate.resolve()
             reused_candidate = reusable
@@ -665,6 +673,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                         remaining_timesteps,
                         training_seed,
                         reusable / "final_checkpoint" / "model.zip",
+                        active_training_log(),
                         label=(
                             "resumed baseline training"
                             if baseline
@@ -680,6 +689,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 effective_timesteps,
                 training_seed,
                 resume,
+                active_training_log(),
                 label="baseline training" if baseline else "candidate training",
             )
         contenders = [
