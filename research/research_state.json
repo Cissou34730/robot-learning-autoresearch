@@ -1,62 +1,13 @@
 {
+  "schema_version": 2,
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-100352-200ep-seed1000-31932e1eb9a8.json"
-  ],
-  "accepted_metrics": {
-    "episodes": 200,
-    "evaluation_summary_version": 3,
-    "pooled_success_percent": 26.5,
-    "schema_version": 3,
-    "seed_count": 1,
-    "seed_success_percent": {
-      "1000": 26.5
-    },
-    "success_percent": 26.5,
-    "worst_seed_success_percent": 26.5
-  },
-  "accepted_parameters": {
-    "algorithm": {
-      "name": "ppo"
-    },
-    "policy": {
-      "activation": "tanh",
-      "net_arch": [
-        64,
-        64
-      ]
-    },
-    "ppo": {
-      "batch_size": 64,
-      "ent_coef": 0.01,
-      "gae_lambda": 0.95,
-      "gamma": 0.99,
-      "learning_rate": 0.0001,
-      "n_steps": 1024
-    },
-    "training": {
-      "checkpoint_every_steps": 5000,
-      "n_envs": 1
-    }
-  },
-  "accepted_training_steps": 120000,
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 1 made no code or configuration changes, so retain the baseline parent commit."
-    },
-    "code_parent_commit": "83cf2b7ee1234edd6321e8ef67a9461bb7232b5c",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Checkpoint-100352 is the strongest measured baseline at 26.5% success; later checkpoints are lower at 16.5%, 12.5%, and 18.5%, and the terminal checkpoint reached only 15.5% on the fixed task-reference panel."
-  },
-  "last_verdict": "researcher selected checkpoint-100352",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_researcher_decision": null,
-  "pending_scientific_parent": null,
+  "accepted_metrics": null,
+  "accepted_parameters": null,
+  "accepted_training_steps": 0,
   "retained_lineages": [],
-  "schema_version": 2
+  "last_experiment": 0,
+  "last_allocated_experiment": 0,
+  "pending_scientific_parent": null,
+  "last_verdict": "baseline pending after research reset",
+  "official_metrics": null
 }
