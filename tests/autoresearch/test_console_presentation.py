@@ -78,13 +78,13 @@ def test_latest_snapshot_skips_a_block_without_a_step_counter():
 def test_live_progress_shows_reward_and_one_scenario_metric():
     suffix = training_progress_suffix({"ep_rew_mean": -6.9, "success_rate": 0.61})
 
-    assert suffix == " | reward -6.9 | success 61%"
+    assert suffix == " | -6.9 | 61%"
     assert suffix.count("|") == 2
 
 
 def test_live_progress_omits_each_missing_metric():
-    assert training_progress_suffix({"ep_rew_mean": -6.9}) == " | reward -6.9"
-    assert training_progress_suffix({"success_rate": 0.61}) == " | success 61%"
+    assert training_progress_suffix({"ep_rew_mean": -6.9}) == " | -6.9"
+    assert training_progress_suffix({"success_rate": 0.61}) == " | 61%"
     assert training_progress_suffix({"ep_len_mean": 400}) == ""
     assert training_progress_suffix(None) == ""
 
@@ -157,8 +157,9 @@ def test_training_summary_reports_checkpoint_aligned_candidate_facts():
     assert "Completed  : 120,832 steps in 8m54s" in card
     assert "Training dynamics" not in card
     assert "Episode length" not in card
-    assert "checkpoint-30720  30,720 steps  training success unavailable  training reward 0" in card
-    assert "checkpoint-120832  120,832 steps  training success 0%  training reward -6.9" in card
+    assert "Candidate | Steps | Training success | Training reward" in card
+    assert "checkpoint-30720 | 30,720 | unavailable | 0" in card
+    assert "checkpoint-120832 | 120,832 | 0% | -6.9" in card
     assert card.index("checkpoint-30720") < card.index("checkpoint-120832")
     assert "Next\n  Researcher evaluation design" in card
 
@@ -178,8 +179,7 @@ def test_training_summary_keeps_missing_checkpoint_metrics_distinct_from_zero():
         ],
     )
 
-    assert "training success unavailable" in card
-    assert "training reward 0" in card
+    assert "checkpoint-1024 | 1,024 | unavailable | 0" in card
 
 
 def test_runner_no_longer_dumps_the_structured_result_to_the_console():

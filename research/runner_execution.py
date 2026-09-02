@@ -459,6 +459,7 @@ def evaluate_artifact(
         command.append("--official-benchmark")
     if task_reference:
         command.append("--task-reference")
+    progress_label = f"{artifact_dir.name} {label}"
     started = time.monotonic()
     last_progress_at = started
     completed_episodes = 0
@@ -498,7 +499,7 @@ def evaluate_artifact(
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
                     console.announce(
-                        f"[eval] {label:<20} "
+                        f"[eval] {progress_label:<20} "
                         f"| {completed_episodes:>4} / {episodes} "
                         f"| {100 * completed_episodes // episodes:>3}% "
                         f"| {console.format_duration(time.monotonic() - started)}"
@@ -531,7 +532,7 @@ def evaluate_artifact(
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
     console.announce(
-        f"[eval] {label:<20} "
+        f"[eval] {progress_label:<20} "
         f"| {int(metrics['episodes']):>4} / {episodes} | 100% "
         f"| {console.format_duration(time.monotonic() - started)} "
         f"| success {metrics['success_percent']:.1f}%"

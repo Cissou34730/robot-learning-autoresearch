@@ -123,10 +123,11 @@ def training_progress_suffix(record: dict[str, float] | None) -> str:
     parts: list[str] = []
     reward = record.get("ep_rew_mean")
     if reward is not None:
-        parts.append(f"reward {float(reward):g}")
+        parts.append(f"{float(reward):g}")
     scenario_fragment = scenario_progress_metric(record)
     if scenario_fragment:
-        parts.append(scenario_fragment)
+        _, _, value = scenario_fragment.partition(" ")
+        parts.append(value or scenario_fragment)
     return "".join(f" | {part}" for part in parts)
 
 
@@ -158,13 +159,20 @@ def render_training_summary_card(
             f"{format_duration(elapsed_seconds)}"
         ),
     ]
-    lines.extend(["", "Candidates"])
+    lines.extend(
+        [
+            "",
+            "Candidates",
+            "  Candidate | Steps | Training success | Training reward",
+            "  --- | ---: | ---: | ---:",
+        ]
+    )
     for candidate in sorted(candidates, key=lambda item: int(item["timesteps"])):
         training_success = scenario_progress_metric(candidate) or "success unavailable"
         lines.append(
-            f"  {candidate['name']}  {int(candidate['timesteps']):,} steps  "
-            f"training {training_success}  "
-            f"training reward {_candidate_metric(candidate, 'ep_rew_mean')}"
+            f"  {candidate['name']} | {int(candidate['timesteps']):,} | "
+            f"{training_success.removeprefix('success ')} | "
+            f"{_candidate_metric(candidate, 'ep_rew_mean')}"
         )
     lines.extend(["", "Next", "  Researcher evaluation design"])
     return "\n".join(lines)

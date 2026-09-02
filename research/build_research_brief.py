@@ -135,8 +135,6 @@ def _experiment_outcome(result: dict) -> str:
     parts = []
     if success is not None:
         parts.append(f"success {float(success):.2f}%")
-    if result.get("requested_evaluations"):
-        parts.append(f"{len(result['requested_evaluations'])} requested measurements")
     if result.get("error"):
         parts.append(_compact(str(result["error"]), 120))
     return "; ".join(parts) or "no measured candidate result"
@@ -243,10 +241,10 @@ def render_research_brief() -> str:
             pending_evaluation["candidates"], key=lambda item: int(item["timesteps"])
         ):
             evaluation_lines.append(
-                f"- `{candidate['name']}` — {int(candidate['timesteps']):,} steps; "
-                f"training success {_candidate_metric(candidate, 'training_success')}; "
-                f"training reward {_candidate_metric(candidate, 'ep_rew_mean')}; "
-                f"artifact `{candidate['artifact']}`."
+                f"- `{candidate['name']}` — {int(candidate['timesteps']):,};"
+                f"{_candidate_metric(candidate, 'training_success')};"
+                f"{_candidate_metric(candidate, 'ep_rew_mean')};"
+                f"`{candidate['artifact']}`"
             )
         if pending_evaluation.get("champion_available"):
             evaluation_lines.append("- `champion` — current accepted model lineage.")
