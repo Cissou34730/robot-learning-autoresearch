@@ -58,17 +58,34 @@ def test_the_copilot_adapter_is_a_protected_protocol_source():
     assert is_protected_source("researcher_copilot.py")
 
 
+@pytest.mark.parametrize(
+    "path",
+    [
+        "AGENTS.md",
+        "research/program.md",
+        "research/scenario.md",
+        "research/instruments.md",
+        "run_research.ps1",
+        "researcher_session.ps1",
+        "research/build_research_brief.py",
+        "pyproject.toml",
+        "uv.lock",
+    ],
+)
+def test_researcher_cannot_modify_its_context_or_dependency_boundary(path):
+    assert is_protected_source(path)
+    with pytest.raises(ValueError, match="human-owned task, context, dependency"):
+        validate_experiment_semantics({}, "training", "fresh", None, [path], False)
+
+
 def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
     assert "--check-proposal" in LOOP
     assert "Current phase: prepare experiment $nextExperiment" in LOOP
     assert "write a lineage decision" in LOOP
     assert "failed validation: $proposalProblem" in LOOP
     assert "proposal valid for the current phase" in LOOP
-    assert "preliminary diagnosis is not completion" in PROGRAM
-    assert (
-        "chosen one falsifiable hypothesis and its corresponding intervention"
-        in PROGRAM
-    )
+    assert "The phase is incomplete until that deliverable exists" in PROGRAM
+    assert "one falsifiable hypothesis, a plausible alternative" in PROGRAM
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
@@ -1229,7 +1246,7 @@ def test_continuation_and_replication_allow_unchanged_methods():
     with pytest.raises(ValueError, match="explicit training_seed"):
         validate_training_proposal(invalid_replication, baseline=False)
 
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
+    with pytest.raises(ValueError, match="human-owned task, context"):
         validate_experiment_semantics(
             {},
             "training",
@@ -1535,18 +1552,19 @@ def test_discarded_candidates_keep_history_but_lose_heavyweight_files(
 # --- method neutrality of the protocol -------------------------------------
 
 
-def test_protocol_treats_the_implementation_as_a_starting_point():
-    for statement in (
-        "It is a starting point, not part of the problem definition",
-        "modify or replace the learning algorithm",
-        "is not the set of algorithms you are allowed to consider",
+def test_protocol_defines_a_method_neutral_researcher_within_the_fixed_stack():
+    normalized_program = " ".join(PROGRAM.split())
+    for expertise in (
+        "robot-learning",
+        "reinforcement learning",
+        "robotics simulation",
+        "experimental measurement",
+        "scientific software",
     ):
-        assert statement in PROGRAM
-
-
-def test_protocol_requires_a_mechanism_before_changing_method():
-    assert "Poor performance alone is not sufficient evidence" in PROGRAM
-    assert "must not be treated as a menu of preferred interventions" in PROGRAM
+        assert expertise in normalized_program
+    assert "current implementation is a starting point" in PROGRAM
+    assert "within the installed stack" in PROGRAM
+    assert "does not install packages" in PROGRAM
 
 
 def test_protocol_offers_no_alternative_algorithm_menu():
@@ -1555,48 +1573,48 @@ def test_protocol_offers_no_alternative_algorithm_menu():
 
 
 def test_protocol_does_not_enumerate_the_configuration_surface():
-    assert "overrides to the currently active runtime configuration" in PROGRAM
     assert "`algorithm`" not in PROGRAM
 
 
-def test_protocol_example_is_a_minimal_structural_proposal():
-    proposal_example = PROGRAM.split("### Standard training proposal", 1)[1].split(
-        "Required:", 1
-    )[0]
+def test_protocol_delegates_request_schemas_to_the_instrument_catalog():
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
 
-    assert '"initialization": "<fresh|transfer>"' in proposal_example
-    assert '"initialization": "fresh"' not in proposal_example
-    assert '"initialization": "transfer"' not in proposal_example
-    assert "training_parent" not in proposal_example
-    assert "training_seed" not in proposal_example
-    assert '"params"' not in proposal_example
+    assert "```json" not in PROGRAM
+    assert "request contract" in PROGRAM
     for field in ("training_parent", "training_seed", "params"):
-        assert field in PROGRAM
+        assert field not in PROGRAM
+        assert field in instruments
 
 
 def test_baseline_protocol_wording_is_algorithm_neutral():
     assert 'change = "Fresh baseline"' in LOOP
     for algorithm_name in KNOWN_ALGORITHM_NAMES:
         assert not mentions(LOOP, algorithm_name), algorithm_name
-    assert "trains the repository's current unchanged learning method" in PROGRAM
+    assert "current implementation is a starting point" in PROGRAM
 
 
 def test_no_researcher_prompt_forces_the_configuration_into_context():
     assert "research/current_params.json" not in LOOP
     for expected in (
+        "AGENTS.md",
         "research/program.md",
         "research/scenario.md",
+        "research/instruments.md",
         "research/brief.md",
     ):
         assert expected in LOOP
     assert "research/last_train_summary.md" not in LOOP
 
 
-def test_protocol_default_context_excludes_the_configuration():
-    context_block = PROGRAM.split("## Working context", 1)[1].split("##", 1)[0]
-    start_with = context_block.split("Start with:", 1)[1].split("Use this", 1)[0]
+def test_protocol_default_context_names_only_authoritative_context():
+    opening = PROGRAM.split("## Roles", 1)[0]
 
-    assert "`research/current_params.json`" not in start_with
-    assert "`research/last_train_summary.md`" not in context_block
-    # It stays available on demand, just not pushed into every session.
-    assert "`research/current_params.json`" in context_block
+    for expected in (
+        "`AGENTS.md`",
+        "`research/scenario.md`",
+        "`research/instruments.md`",
+        "`research/brief.md`",
+    ):
+        assert expected in opening
+    assert "`research/current_params.json`" not in opening
+    assert "`research/last_train_summary.md`" not in PROGRAM

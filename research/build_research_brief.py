@@ -260,19 +260,9 @@ def render_research_brief() -> str:
             [
                 "",
                 (
-                    "Decide what evidence this experiment needs. You may inspect "
-                    "existing evidence, run a small local analysis, and change "
-                    "researcher-owned evaluation or instrumentation code before "
-                    "deciding which candidates to measure, with which episode "
-                    "counts, seeds and labels. Write "
-                    "`research/evaluation_request.json` with the scientific "
-                    "`question`, the `reason` this plan is sufficient, and the "
-                    "evaluations, then exit. There is no automatic tournament."
-                ),
-                (
-                    "`research/program.md` describes when a stable human-owned "
-                    "`task_reference_evaluations` measurement is the right "
-                    "instrument instead of, or alongside, your own evaluations."
+                    "The available measurement operations and the "
+                    "`research/evaluation_request.json` contract are defined in "
+                    "`research/instruments.md`."
                 ),
             ]
         )
@@ -362,8 +352,7 @@ def render_research_brief() -> str:
         "",
         (
             "The current scientific problem, its protected task definition, and its "
-            "terminology are defined in `research/scenario.md`. Read it together "
-            "with `research/program.md`."
+            "terminology are defined in `research/scenario.md`."
         ),
         "",
         "## Current status",

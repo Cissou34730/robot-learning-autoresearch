@@ -601,7 +601,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         )
         if selected_tests:
             console.announce("[checks] running research-surface checks")
-            if fresh_baseline or protocol.dependency_metadata_changed(code_changes):
+            if fresh_baseline:
                 execution.validate_dependency_metadata()
             execution.run_validation_suites(selected_tests)
             console.announce("[checks] passed")

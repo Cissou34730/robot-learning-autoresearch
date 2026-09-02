@@ -306,12 +306,14 @@ def test_research_runtime_preflight_runs_before_any_researcher_session():
 def test_lineage_retry_gate_requires_attested_evidence():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
-    program = (root / "research" / "program.md").read_text(encoding="utf-8")
+    instruments = (root / "research" / "instruments.md").read_text(
+        encoding="utf-8"
+    )
 
     assert "--check-lineage-evidence" in script
     assert "LineageValidationFeedback" in script
     assert "failed validation: $lineageProblem" in script
-    assert "Evidence inspected" in program
+    assert "Evidence inspected" in instruments
 
 
 def test_researcher_retries_resume_this_phase_own_session():

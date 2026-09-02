@@ -30,7 +30,6 @@ from research.runner_execution import (
 from research.runner_protocol import (
     PROTECTED_TEST_PREFIXES,
     allocated_experiment_index,
-    dependency_metadata_changed,
     next_experiment_index,
     plan_code_lineage_decision,
     plan_previous_result_decision,
@@ -694,7 +693,7 @@ def test_researcher_owned_change_skips_only_the_frozen_task_suite(changed_paths)
 @pytest.mark.parametrize(
     "changed_path",
     [
-        # Unclassified paths are validated completely rather than assumed mutable.
+        # Human-owned paths are validated completely if inspected directly.
         "research/build_research_brief.py",
         "run_research.ps1",
         "research/program.md",
@@ -726,10 +725,23 @@ def test_one_unclassified_path_pulls_the_whole_experiment_to_full_validation():
     )
 
 
-def test_dependency_metadata_is_only_checked_when_it_changes():
-    assert dependency_metadata_changed(["pyproject.toml"])
-    assert dependency_metadata_changed(["uv.lock"])
-    assert not dependency_metadata_changed(["robot_learning/train.py"])
+@pytest.mark.parametrize(
+    "protected_path",
+    [
+        "AGENTS.md",
+        "research/program.md",
+        "research/scenario.md",
+        "research/instruments.md",
+        "run_research.ps1",
+        "researcher_session.ps1",
+        "research/build_research_brief.py",
+        "pyproject.toml",
+        "uv.lock",
+    ],
+)
+def test_context_runtime_and_dependency_metadata_are_protected(protected_path):
+    assert protocol.is_protected_source(protected_path)
+    assert not protocol.is_researcher_owned(protected_path)
 
 
 def test_changed_python_files_are_syntax_checked(monkeypatch, tmp_path):
@@ -1959,7 +1971,7 @@ def test_a_committed_protected_change_cannot_bypass_validation(science_repo):
     delta = scientific_delta(accepted)
 
     assert _git(science_repo, "status", "--porcelain").strip() == ""
-    with pytest.raises(ValueError, match="human-owned final benchmark") as rejection:
+    with pytest.raises(ValueError, match="human-owned task, context") as rejection:
         validate_experiment_semantics({}, "training", "transfer", None, delta, False)
     assert "robot_learning/robots/two_joint_arm.xml" in str(rejection.value)
     assert "scientific parent" in str(rejection.value)

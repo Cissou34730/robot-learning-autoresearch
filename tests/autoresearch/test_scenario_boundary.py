@@ -212,25 +212,36 @@ def test_generic_core_may_only_use_the_scenario_package():
     assert "research/build_research_brief.py" not in users
 
 
-def test_researcher_context_always_includes_both_protocol_and_scenario():
+def test_every_researcher_session_loads_the_authoritative_context():
     script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
     program_lines = [
         line for line in script.splitlines() if "research/program.md" in line
     ]
-    assert program_lines
+    assert len(program_lines) == 6
     for line in program_lines:
-        assert "research/scenario.md" in line, line
+        for context in (
+            "AGENTS.md",
+            "research/scenario.md",
+            "research/instruments.md",
+            "research/brief.md",
+        ):
+            assert context in line, line
 
 
 def test_scenario_document_defines_the_current_problem():
     scenario_text = (ROOT / "research" / "scenario.md").read_text(encoding="utf-8")
     program_text = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
+    instruments_text = (ROOT / "research" / "instruments.md").read_text(
+        encoding="utf-8"
+    )
 
-    assert "robot_learning/scenario/" in scenario_text
     assert "research/scenario.md" in program_text
     for scenario_fact in ("6–20 cm", "1 cm", "2 seconds", "98%"):
         assert scenario_fact in scenario_text
         assert scenario_fact not in program_text
+        assert scenario_fact not in instruments_text
+    for repository_path in ("research/run_experiment.py", "tests/benchmark/"):
+        assert repository_path not in scenario_text
 
 
 def test_protocol_uses_scenario_independent_wording():

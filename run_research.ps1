@@ -276,8 +276,8 @@ while ($true) {
             Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
-                "Read research/program.md, research/scenario.md, and research/brief.md."
-                "Expected deliverable: research/evaluation_request.json for the current experiment, as defined by the protocol."
+                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
             Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design"
@@ -288,8 +288,8 @@ while ($true) {
                 Write-Status "=== Evaluation request missing or invalid; retrying the same bounded task once ===" Yellow
                 $evaluationRetryPrompt = @(
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
-                    "Read research/program.md, research/scenario.md, and research/brief.md."
-                    "Expected deliverable: complete research/evaluation_request.json according to the protocol."
+                    "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                    "Expected deliverable: complete research/evaluation_request.json using the contract in research/instruments.md."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
                 Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Continue
@@ -344,9 +344,9 @@ while ($true) {
         Write-Status "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. This is the complete task; do not wait for more input."
-            "Read research/program.md, research/scenario.md, and research/brief.md."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Read the detailed evaluation artifacts referenced for this experiment in the brief."
-            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json defined by the protocol."
+            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
         Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision"
@@ -358,8 +358,8 @@ while ($true) {
             Write-Status "=== Lineage deliverable invalid; retrying the same bounded task once ===" Yellow
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
-                "Read research/program.md, research/scenario.md, and research/brief.md."
-                "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json according to the protocol."
+                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json using the contracts in research/instruments.md."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
             Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Continue
@@ -396,8 +396,8 @@ while ($true) {
     $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
-        "Read research/program.md, research/scenario.md, and research/brief.md."
-        "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, as defined by the protocol."
+        "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+        "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md."
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
@@ -419,9 +419,9 @@ while ($true) {
         Write-Status "=== Research proposal missing or invalid; retrying once with bounded context ===" Yellow
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
-            "Read research/program.md, research/scenario.md, research/brief.md, and inspect the relevant repository state."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and inspect the relevant repository state."
             "Preserve valid researcher-owned edits that belong to this unfinished experiment."
-            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment according to the protocol."
+            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment using the contract in research/instruments.md."
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "

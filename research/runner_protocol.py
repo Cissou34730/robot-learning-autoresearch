@@ -34,10 +34,22 @@ PROTECTED_BENCHMARK_PATHS = {
 }
 # Additional Runner instruments are protected even when they do not belong to
 # the official-task trust path.
-PROTECTED_RUNNER_PATHS = {"research/query_training_log.py"}
+PROTECTED_RUNNER_PATHS = {
+    "research/build_research_brief.py",
+    "research/query_training_log.py",
+    "researcher_session.ps1",
+    "run_research.ps1",
+}
 # The researcher runtime boundary: it decides which tools and commands a
 # research session may use, so a proposal must not be able to widen its own.
 PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
+# Human-owned context defines the Researcher's protocol, permissions and task.
+PROTECTED_CONTEXT_PATHS = {
+    "AGENTS.md",
+    "research/instruments.md",
+    "research/program.md",
+    "research/scenario.md",
+}
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
 PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
@@ -112,6 +124,8 @@ def is_protected_source(path: str) -> bool:
         relative in PROTECTED_BENCHMARK_PATHS
         or relative in PROTECTED_RUNNER_PATHS
         or relative in PROTECTED_RUNTIME_PATHS
+        or relative in PROTECTED_CONTEXT_PATHS
+        or relative in DEPENDENCY_METADATA_PATHS
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
     )
 
@@ -125,12 +139,6 @@ def is_researcher_owned(path: str) -> bool:
         return False
     return relative in RESEARCHER_OWNED_PATHS or relative.startswith(
         RESEARCHER_OWNED_PREFIXES
-    )
-
-
-def dependency_metadata_changed(changed_paths: list[str]) -> bool:
-    return any(
-        path.replace("\\", "/") in DEPENDENCY_METADATA_PATHS for path in changed_paths
     )
 
 
@@ -308,8 +316,8 @@ def validate_experiment_semantics(
     )
     if protected_sources:
         raise ValueError(
-            "the human-owned final benchmark, official robot and research "
-            "protocol enforcement cannot be changed by a research proposal: "
+            "human-owned task, context, dependency and protocol surfaces cannot "
+            "be changed by a research proposal: "
             f"{protected_sources}; restore them to their content at the "
             "scientific parent before proposing another experiment"
         )

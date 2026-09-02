@@ -73,6 +73,8 @@ def test_read_only_git_stays_available(command):
         "uv run python research/run_experiment.py",
         "uv run python research/run_experiment.py --evaluate-pending",
         "uv run python -m robot_learning.train",
+        "uv run python -m robot_learning.evaluate --official-benchmark --model x.zip",
+        "uv run python robot_learning/evaluate.py --task-reference --model x.zip",
         "uv run python robot_learning/play.py",
     ],
 )
@@ -85,6 +87,35 @@ def test_a_repository_wide_test_run_is_refused_but_a_suite_is_not():
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest tests/scenario") is None
     assert adapter.command_denial("uv run pytest -q tests/training") is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "uv add sb3-contrib",
+        "uv remove stable-baselines3",
+        "uv sync",
+        "uv lock",
+        "uv pip install sb3-contrib",
+        "uv run --with sb3-contrib python analysis.py",
+        "uv run --with-requirements requirements.txt python analysis.py",
+        "uv run pip install sb3-contrib",
+        "uv run python -m pip install sb3-contrib",
+        "uv tool install ruff",
+        "uvx ruff check .",
+        "pip install sb3-contrib",
+        "pipx install ruff",
+        "python -m pip uninstall stable-baselines3",
+        "Install-Package example",
+    ],
+)
+def test_dependency_management_is_refused(command):
+    assert adapter.command_denial(command) == adapter.DEPENDENCY_DENIAL
+
+
+def test_uv_run_uses_the_fixed_environment_without_being_obstructed():
+    assert adapter.command_denial("uv run python analysis.py") is None
+    assert adapter.command_denial("uv run pytest tests/scenario") is None
 
 
 def test_ordinary_research_commands_are_not_obstructed():
