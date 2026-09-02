@@ -1,13 +1,98 @@
 {
-  "schema_version": 2,
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_metrics": null,
-  "accepted_parameters": null,
-  "accepted_training_steps": 0,
-  "retained_lineages": [],
-  "last_experiment": 0,
-  "last_allocated_experiment": 0,
+  "accepted_evaluations": [
+    "research/evaluations/evaluation-experiment-1-checkpoint-90112-200ep-seed1000-31932e1eb9a8.json"
+  ],
+  "accepted_metrics": {
+    "episodes": 200,
+    "evaluation_summary_version": 3,
+    "pooled_success_percent": 46.5,
+    "schema_version": 3,
+    "seed_count": 1,
+    "seed_success_percent": {
+      "1000": 46.5
+    },
+    "success_percent": 46.5,
+    "worst_seed_success_percent": 46.5
+  },
+  "accepted_parameters": {
+    "algorithm": {
+      "name": "ppo"
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    },
+    "ppo": {
+      "batch_size": 64,
+      "ent_coef": 0.03,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0001,
+      "n_steps": 1024
+    },
+    "training": {
+      "checkpoint_every_steps": 5000,
+      "n_envs": 1
+    }
+  },
+  "accepted_training_steps": 120000,
+  "last_allocated_experiment": 1,
+  "last_experiment": 1,
+  "last_lineage_decision": {
+    "code": {
+      "action": "keep",
+      "reason": "Experiment 1 was a fresh baseline with no code or parameter changes, so keeping the code preserves the baseline parent unchanged."
+    },
+    "code_parent_commit": "f9086617a8c5349a3c7ca5538f9a55348c78820d",
+    "continue_from": "checkpoint-90112",
+    "experiment": 1,
+    "reason": "Checkpoint-90112 has the highest measured development success at 46.5%; every later measured checkpoint is lower, including 22.0% at checkpoint-120832 and 21.5% on the task-reference panel."
+  },
+  "last_verdict": "researcher selected checkpoint-90112",
+  "official_metrics": null,
+  "pending_evaluation_request": null,
+  "pending_researcher_decision": null,
   "pending_scientific_parent": null,
-  "last_verdict": "baseline pending after research reset",
-  "official_metrics": null
+  "retained_lineages": [
+    {
+      "artifact": "research\\checkpoints\\retained\\baseline-100352",
+      "candidate": "checkpoint-100352",
+      "evaluation_artifacts": [
+        "research/evaluations/evaluation-experiment-1-checkpoint-100352-200ep-seed1000-31932e1eb9a8.json"
+      ],
+      "id": "baseline-100352",
+      "origin_experiment": 1,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.03,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0001,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "Retain the second-best measured checkpoint as a reusable alternative lineage; it achieved 38.5% and provides a nearby comparison to the selected peak.",
+      "training_steps": 100352
+    }
+  ],
+  "schema_version": 2
 }
