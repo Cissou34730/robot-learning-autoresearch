@@ -1,8 +1,6 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-115712-200ep-seed1000-31932e1eb9a8.json"
-  ],
+  "accepted_evaluations": [],
   "accepted_metrics": {
     "episodes": 200,
     "evaluation_summary_version": 3,
@@ -40,19 +38,19 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 1 was an unchanged fresh baseline with no researcher code or configuration changes to revert."
+      "action": "revert",
+      "reason": "The target-angle reset curriculum did not improve lower-half reach and degraded performance on the original-task reference panel, so restore the pre-experiment code."
     },
-    "code_parent_commit": "cc26ab5853bfd6d0539789ddd9b916ced25b3cdd",
-    "continue_from": "checkpoint-115712",
-    "experiment": 1,
-    "reason": "Select the strongest measured baseline checkpoint: 47.5% success versus 44.5% at checkpoint-110592 and 34.0% at the latest checkpoint-120832 on the same 200-episode evaluation seed. The task-reference panel also places the latest checkpoint at 34.0%, so there is no independent evidence for final benchmarking."
+    "code_parent_commit": "67cd2fdea62b38c977524bd931d135a3588945ce",
+    "continue_from": "champion",
+    "experiment": 2,
+    "reason": "No experiment-2 checkpoint improved the accepted lineage: the best research evaluation was 19.0%, and the task-reference candidate scored 17.0% versus 48.5% for the champion."
   },
-  "last_verdict": "researcher selected checkpoint-115712",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
