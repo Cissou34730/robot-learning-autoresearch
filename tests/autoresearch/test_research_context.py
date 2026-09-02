@@ -75,8 +75,8 @@ def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
 
     brief = render_research_brief()
 
-    assert "`earlier` — 20 steps; training success unavailable; training reward unavailable; artifact `research/checkpoints/earlier`." in brief
-    assert "`later` — 120 steps; training success 0; training reward 0; artifact `research/checkpoints/later`." in brief
+    assert "`earlier` — 20;unavailable;unavailable;`research/checkpoints/earlier`" in brief
+    assert "`later` — 120;0;0;`research/checkpoints/later`" in brief
     assert brief.index("`earlier`") < brief.index("`later`")
     assert "Most recent training dynamics" not in brief
 
