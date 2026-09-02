@@ -37,6 +37,7 @@ Assert-ResearchRuntime
 function Invoke-ResearcherSession {
     param(
         [Parameter(Mandatory)][string]$Prompt,
+        [Parameter(Mandatory)][string]$Phase,
         [switch]$Continue
     )
     if ($Continue) {
@@ -49,6 +50,8 @@ function Invoke-ResearcherSession {
         # never inherits whichever session last ran on this machine.
         $script:ResearcherSessionId = [guid]::NewGuid().ToString()
     }
+    Write-Status "=== Researcher phase: $Phase ===" -Color Magenta -Label researcher
+    Write-Status "Model: $model, reasoning: $reasoning" -Color Magenta -Label researcher
     $sessionArgs = @(
         "--session-id", $script:ResearcherSessionId
         "--model", $model
@@ -277,7 +280,7 @@ while ($true) {
                 "Expected deliverable: research/evaluation_request.json for the current experiment, as defined by the protocol."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $evaluationPrompt
+            Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design"
             $evaluationStatus = Get-EvaluationSessionStatus 1
             Write-ResearcherSessionStatus $evaluationStatus
             if (-not $evaluationStatus.Complete) {
@@ -289,7 +292,7 @@ while ($true) {
                     "Expected deliverable: complete research/evaluation_request.json according to the protocol."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
-                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Continue
+                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Continue
                 $evaluationStatus = Get-EvaluationSessionStatus 2
                 Write-ResearcherSessionStatus $evaluationStatus
                 if (-not $evaluationStatus.Complete) {
@@ -346,7 +349,7 @@ while ($true) {
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json defined by the protocol."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $decisionPrompt
+        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision"
         $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
         $lineageStatus = Get-LineageSessionStatus $pendingExperiment 1
         Write-ResearcherSessionStatus $lineageStatus
@@ -359,7 +362,7 @@ while ($true) {
                 "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json according to the protocol."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Continue
+            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Continue
             $lineageStatus = Get-LineageSessionStatus $pendingExperiment 2
             Write-ResearcherSessionStatus $lineageStatus
             if (-not $lineageStatus.Complete) {
@@ -385,7 +388,6 @@ while ($true) {
     }
 
     Write-Status "=== Researcher forming next hypothesis ==="
-    Write-Status "Model: $model, reasoning: $reasoning" -Color Magenta -Label researcher
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $allocatedExperiment = [Math]::Max(
         [int]$researchState.last_allocated_experiment,
@@ -399,7 +401,7 @@ while ($true) {
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
-    Invoke-ResearcherSession -Prompt $researchPrompt
+    Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis"
 
     $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     if ($resultCountAfter -gt $resultCountBefore) {
@@ -423,7 +425,7 @@ while ($true) {
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $retryPrompt -Continue
+        Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Continue
 
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {
