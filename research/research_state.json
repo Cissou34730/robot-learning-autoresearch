@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-90112-200ep-seed1000-31932e1eb9a8.json"
+    "research/evaluations/evaluation-experiment-2-champion-200ep-seed1000-31932e1eb9a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -40,19 +40,19 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 1 was a fresh baseline with no code or parameter changes, so keeping the code preserves the baseline parent unchanged."
+      "action": "revert",
+      "reason": "Experiment 2 changed only the PPO entropy coefficient through research/current_params.json; revert to the scientific parent to restore the pre-experiment configuration."
     },
-    "code_parent_commit": "f9086617a8c5349a3c7ca5538f9a55348c78820d",
-    "continue_from": "checkpoint-90112",
-    "experiment": 1,
-    "reason": "Checkpoint-90112 has the highest measured development success at 46.5%; every later measured checkpoint is lower, including 22.0% at checkpoint-120832 and 21.5% on the task-reference panel."
+    "code_parent_commit": "26385fa58be163dbdf6293b9b1364e5ee3a8a1c3",
+    "continue_from": "champion",
+    "experiment": 2,
+    "reason": "The reduced-entropy run peaked at 45.0% and then collapsed to 10.5% by checkpoint-120832, while the accepted champion measured 46.5%; select the stronger existing lineage."
   },
-  "last_verdict": "researcher selected checkpoint-90112",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
