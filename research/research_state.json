@@ -1,13 +1,13 @@
 {
+  "schema_version": 2,
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_metrics": null,
   "accepted_parameters": null,
   "accepted_training_steps": 0,
-  "last_allocated_experiment": 1,
-  "last_experiment": 0,
-  "last_verdict": "baseline pending after research reset",
-  "official_metrics": null,
-  "pending_scientific_parent": "28bcaa0079cd4e3ed4398337ecb412686ca217de",
   "retained_lineages": [],
-  "schema_version": 2
+  "last_experiment": 0,
+  "last_allocated_experiment": 0,
+  "pending_scientific_parent": null,
+  "last_verdict": "baseline pending after research reset",
+  "official_metrics": null
 }
