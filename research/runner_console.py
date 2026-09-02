@@ -160,9 +160,10 @@ def render_training_summary_card(
     ]
     lines.extend(["", "Candidates"])
     for candidate in sorted(candidates, key=lambda item: int(item["timesteps"])):
+        training_success = scenario_progress_metric(candidate) or "success unavailable"
         lines.append(
             f"  {candidate['name']}  {int(candidate['timesteps']):,} steps  "
-            f"training success {_candidate_metric(candidate, 'success_rate')}  "
+            f"training {training_success}  "
             f"training reward {_candidate_metric(candidate, 'ep_rew_mean')}"
         )
     lines.extend(["", "Next", "  Researcher evaluation design"])

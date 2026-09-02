@@ -134,13 +134,13 @@ def test_training_summary_reports_checkpoint_aligned_candidate_facts():
             {
                 "name": "checkpoint-120832",
                 "timesteps": 120_832,
-                "success_rate": 0.0,
+                "training_success": 0.0,
                 "ep_rew_mean": -6.9,
             },
             {
                 "name": "checkpoint-30720",
                 "timesteps": 30_720,
-                "success_rate": None,
+                "training_success": None,
                 "ep_rew_mean": 0.0,
             },
         ],
@@ -158,7 +158,7 @@ def test_training_summary_reports_checkpoint_aligned_candidate_facts():
     assert "Training dynamics" not in card
     assert "Episode length" not in card
     assert "checkpoint-30720  30,720 steps  training success unavailable  training reward 0" in card
-    assert "checkpoint-120832  120,832 steps  training success 0  training reward -6.9" in card
+    assert "checkpoint-120832  120,832 steps  training success 0%  training reward -6.9" in card
     assert card.index("checkpoint-30720") < card.index("checkpoint-120832")
     assert "Next\n  Researcher evaluation design" in card
 
@@ -172,7 +172,7 @@ def test_training_summary_keeps_missing_checkpoint_metrics_distinct_from_zero():
             {
                 "name": "checkpoint-1024",
                 "timesteps": 1024,
-                "success_rate": None,
+                "training_success": None,
                 "ep_rew_mean": 0.0,
             }
         ],

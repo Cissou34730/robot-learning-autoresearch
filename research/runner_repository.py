@@ -499,7 +499,7 @@ def archive_candidates(
                 "name": contender["name"],
                 "artifact": str(artifact.relative_to(paths.ROOT)),
                 "timesteps": int(contender["timesteps"]),
-                "success_rate": contender.get("success_rate"),
+                "training_success": contender.get("training_success"),
                 "ep_rew_mean": contender.get("ep_rew_mean"),
                 "evaluations": [],
             }

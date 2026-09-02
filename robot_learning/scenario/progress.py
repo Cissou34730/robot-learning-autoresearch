@@ -8,7 +8,7 @@ from collections.abc import Mapping
 
 
 def render_training_progress_metric(metrics: Mapping[str, float]) -> str | None:
-    value = metrics.get("success_rate")
+    value = metrics.get("success_rate", metrics.get("training_success"))
     if value is None:
         return None
     try:

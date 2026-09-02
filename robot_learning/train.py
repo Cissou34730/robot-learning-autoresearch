@@ -208,11 +208,15 @@ def main() -> None:
                 if metrics_path.exists()
                 else {"success_rate": None, "ep_rew_mean": None}
             )
+            candidate_metrics = {
+                "training_success": training_metrics["success_rate"],
+                "ep_rew_mean": training_metrics["ep_rew_mean"],
+            }
             candidate_artifact = {
                 **artifact,
                 "timesteps": steps,
                 "completed": True,
-                **training_metrics,
+                **candidate_metrics,
             }
             (candidate_dir / "artifact.json").write_text(
                 json.dumps(candidate_artifact, indent=2, default=str) + "\n",
@@ -223,7 +227,7 @@ def main() -> None:
                     "name": f"checkpoint-{steps}",
                     "timesteps": steps,
                     "path": candidate_dir.relative_to(args.output_dir).as_posix(),
-                    **training_metrics,
+                    **candidate_metrics,
                 }
             )
 

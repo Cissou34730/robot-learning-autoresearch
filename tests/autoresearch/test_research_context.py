@@ -54,14 +54,14 @@ def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
                         {
                             "name": "later",
                             "timesteps": 120,
-                            "success_rate": 0.0,
+                            "training_success": 0.0,
                             "ep_rew_mean": 0.0,
                             "artifact": "research/checkpoints/later",
                         },
                         {
                             "name": "earlier",
                             "timesteps": 20,
-                            "success_rate": None,
+                            "training_success": None,
                             "ep_rew_mean": None,
                             "artifact": "research/checkpoints/earlier",
                         },

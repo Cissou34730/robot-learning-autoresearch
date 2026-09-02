@@ -244,7 +244,7 @@ def render_research_brief() -> str:
         ):
             evaluation_lines.append(
                 f"- `{candidate['name']}` — {int(candidate['timesteps']):,} steps; "
-                f"training success {_candidate_metric(candidate, 'success_rate')}; "
+                f"training success {_candidate_metric(candidate, 'training_success')}; "
                 f"training reward {_candidate_metric(candidate, 'ep_rew_mean')}; "
                 f"artifact `{candidate['artifact']}`."
             )
