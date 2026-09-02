@@ -14,7 +14,7 @@
         "gamma": 0.99,
         "learning_rate": 0.0001,
         "gae_lambda": 0.95,
-        "ent_coef": 0.03
+        "ent_coef": 0.01
       },
       "policy": {
         "net_arch": [
@@ -38,7 +38,7 @@
       "gamma": 0.99,
       "learning_rate": 0.0001,
       "gae_lambda": 0.95,
-      "ent_coef": 0.03
+      "ent_coef": 0.01
     },
     "policy": {
       "net_arch": [
@@ -48,6 +48,6 @@
       "activation": "tanh"
     }
   },
-  "training_success": 0.15,
-  "ep_rew_mean": 72.71443796
+  "training_success": 0.0,
+  "ep_rew_mean": 21.87494124
 }

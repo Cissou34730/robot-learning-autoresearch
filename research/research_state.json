@@ -1,19 +1,19 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_evaluations": [
-    "research/evaluations/evaluation-experiment-1-checkpoint-120832-200ep-seed1000-31932e1eb9a8.json"
+    "research/evaluations/evaluation-experiment-2-checkpoint-120832-200ep-seed1000-31932e1eb9a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 18.5,
+    "pooled_success_percent": 22.0,
     "schema_version": 3,
     "seed_count": 1,
     "seed_success_percent": {
-      "1000": 18.5
+      "1000": 22.0
     },
-    "success_percent": 18.5,
-    "worst_seed_success_percent": 18.5
+    "success_percent": 22.0,
+    "worst_seed_success_percent": 22.0
   },
   "accepted_parameters": {
     "algorithm": {
@@ -28,7 +28,7 @@
     },
     "ppo": {
       "batch_size": 64,
-      "ent_coef": 0.01,
+      "ent_coef": 0.03,
       "gae_lambda": 0.95,
       "gamma": 0.99,
       "learning_rate": 0.0001,
@@ -40,23 +40,59 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 1 made no code changes, so the existing code lineage should remain unchanged."
+      "reason": "Experiment 2 changed only the runtime entropy configuration and its measured improvement supports retaining that configuration with the selected checkpoint."
     },
-    "code_parent_commit": "2e318227b10cf3ac2852e4a4db98763d77054467",
+    "code_parent_commit": "938251adc67ade8722716a48ed54f497951e2c3c",
     "continue_from": "checkpoint-120832",
-    "experiment": 1,
-    "reason": "Select the measured end-of-training checkpoint as the active lineage; it is the strongest and only directly measured endpoint, although its 18.50% research and 15.50% task-reference success rates do not support the objective."
+    "experiment": 2,
+    "reason": "The experiment-2 endpoint is the strongest measured lineage: it improves research-panel success from 18.50% to 22.00%, task-reference success from 15.50% to 21.50%, and broadens task-reference angle coverage, while remaining below the objective."
   },
   "last_verdict": "researcher selected checkpoint-120832",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
-  "retained_lineages": [],
+  "retained_lineages": [
+    {
+      "artifact": "research\\checkpoints\\retained\\experiment-1-champion",
+      "candidate": "champion",
+      "evaluation_artifacts": [
+        "research/evaluations/evaluation-experiment-2-champion-200ep-seed1000-31932e1eb9a8.json"
+      ],
+      "id": "experiment-1-champion",
+      "origin_experiment": 2,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0001,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "Preserve the pre-experiment accepted model as a reusable control for future attribution; it is not the active lineage.",
+      "training_steps": 120000
+    }
+  ],
   "schema_version": 2
 }
