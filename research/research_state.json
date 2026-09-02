@@ -1,6 +1,8 @@
 {
   "accepted_artifact": "research\\checkpoints\\accepted",
-  "accepted_evaluations": [],
+  "accepted_evaluations": [
+    "research/evaluations/evaluation-experiment-3-champion-200ep-seed2000-31932e1eb9a8.json"
+  ],
   "accepted_metrics": {
     "episodes": 200,
     "evaluation_summary_version": 3,
@@ -38,17 +40,17 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "The target-angle reset curriculum did not improve lower-half reach and degraded performance on the original-task reference panel, so restore the pre-experiment code."
+      "reason": "Experiment 3 changed only ppo.learning_rate; the measured candidate regressed, so restore the pre-experiment configuration rather than carry the 0.00005 setting forward."
     },
-    "code_parent_commit": "67cd2fdea62b38c977524bd931d135a3588945ce",
+    "code_parent_commit": "537b8a2db27449c4799b6e2b29a58f6ca09d709e",
     "continue_from": "champion",
-    "experiment": 2,
-    "reason": "No experiment-2 checkpoint improved the accepted lineage: the best research evaluation was 19.0%, and the task-reference candidate scored 17.0% versus 48.5% for the champion."
+    "experiment": 3,
+    "reason": "The reduced learning rate did not improve the research panel: the candidate peaked at 41.5% and ended at 34.5%, below the champion's 48.0%; its task-reference result was 33.5% versus 48.5%. Keep the accepted champion as the active lineage."
   },
   "last_verdict": "researcher selected champion",
   "official_metrics": null,
