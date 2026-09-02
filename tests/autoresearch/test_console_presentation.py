@@ -5,10 +5,7 @@ import json
 import pytest
 
 from research import run_experiment
-from research.build_research_brief import (
-    render_research_brief,
-    render_training_summary,
-)
+from research.build_research_brief import render_research_brief
 from research.runner_console import (
     render_decision_card,
     render_evaluation_plan,
@@ -78,14 +75,6 @@ def test_latest_snapshot_skips_a_block_without_a_step_counter():
     assert latest_training_record("no metrics here") is None
 
 
-def test_extraction_left_the_markdown_summary_semantics_unchanged():
-    summary = render_training_summary(TRAINING_LOG)
-
-    assert "| Reward | -42.1 | -6.9 |" in summary
-    assert "| Success | 0.18 | 0.61 |" in summary
-    assert "models/candidates/experiment-2/model.zip" in summary
-
-
 def test_live_progress_shows_reward_and_one_scenario_metric():
     suffix = training_progress_suffix({"ep_rew_mean": -6.9, "success_rate": 0.61})
 
@@ -136,13 +125,25 @@ def test_experiment_card_falls_back_to_the_code_change_description():
     assert "widen the closeness length scale" in render_experiment_card(result)
 
 
-def test_training_summary_reports_the_experiment_and_its_dynamics():
+def test_training_summary_reports_checkpoint_aligned_candidate_facts():
     card = render_training_summary_card(
         experiment_result(),
-        records=parse_training_records(TRAINING_LOG),
         completed_steps=120_832,
         elapsed_seconds=534,
-        candidate_names=["checkpoint-120832"],
+        candidates=[
+            {
+                "name": "checkpoint-120832",
+                "timesteps": 120_832,
+                "success_rate": 0.0,
+                "ep_rew_mean": -6.9,
+            },
+            {
+                "name": "checkpoint-30720",
+                "timesteps": 30_720,
+                "success_rate": None,
+                "ep_rew_mean": 0.0,
+            },
+        ],
     )
 
     assert "=== Training summary · Experiment 2 ===" in card
@@ -154,30 +155,31 @@ def test_training_summary_reports_the_experiment_and_its_dynamics():
     assert "Seed       : 0" in card
     assert "Budget     : 120,000 steps" in card
     assert "Completed  : 120,832 steps in 8m54s" in card
-    assert "Reward mean         -42.1 → -6.9" in card
-    assert "Success              0.18 → 0.61" not in card
-    assert "Success               18% → 61%" in card
-    assert "Episode length        487 → 326" in card
-    assert "Policy std           0.57 → 0.46" in card
-    assert "  checkpoint-120832" in card
+    assert "Training dynamics" not in card
+    assert "Episode length" not in card
+    assert "checkpoint-30720  30,720 steps  training success unavailable  training reward 0" in card
+    assert "checkpoint-120832  120,832 steps  training success 0  training reward -6.9" in card
+    assert card.index("checkpoint-30720") < card.index("checkpoint-120832")
     assert "Next\n  Researcher evaluation design" in card
 
 
-def test_training_summary_omits_metrics_that_were_never_recorded():
-    minimal = [{"total_timesteps": 1024.0, "ep_rew_mean": -3.0}]
-
+def test_training_summary_keeps_missing_checkpoint_metrics_distinct_from_zero():
     card = render_training_summary_card(
         experiment_result(),
-        records=minimal,
         completed_steps=1024,
         elapsed_seconds=12,
-        candidate_names=["checkpoint-1024"],
+        candidates=[
+            {
+                "name": "checkpoint-1024",
+                "timesteps": 1024,
+                "success_rate": None,
+                "ep_rew_mean": 0.0,
+            }
+        ],
     )
 
-    assert "Reward mean  -3 → -3" in card
-    assert "Success" not in card
-    assert "Policy std" not in card
-    assert "Explained variance" not in card
+    assert "training success unavailable" in card
+    assert "training reward 0" in card
 
 
 def test_runner_no_longer_dumps_the_structured_result_to_the_console():
@@ -424,10 +426,6 @@ def test_brief_names_the_active_method_without_dumping_its_configuration(
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
     (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
-    monkeypatch.setattr(
-        "research.build_research_brief.TRAIN_SUMMARY_PATH", tmp_path / "absent.md"
-    )
-
     brief = render_research_brief()
 
     assert "Current learning method: ACTIVE-METHOD" in brief

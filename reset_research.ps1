@@ -55,7 +55,6 @@ $ephemeralPaths = @(
     "research\proposal.json",
     "research\evaluation_request.json",
     "research\last_train.log",
-    "research\last_train_summary.md",
     "research\last_evaluation.json",
     "research\brief.md"
 )

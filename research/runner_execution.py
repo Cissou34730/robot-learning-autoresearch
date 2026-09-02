@@ -233,7 +233,6 @@ def train_candidate(
     continue_timesteps: bool = False,
     target_timesteps: int | None = None,
 ) -> float:
-    from research.build_research_brief import write_training_summary
     from robot_learning.training.progress import latest_training_record
 
     command = [
@@ -321,7 +320,6 @@ def train_candidate(
             )
             stop_process(process, graceful=True)
             raise
-    write_training_summary()
     if process.returncode != 0:
         tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
         raise RuntimeError("training failed:\n" + "\n".join(tail))

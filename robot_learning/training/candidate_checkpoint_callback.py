@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from stable_baselines3.common.callbacks import BaseCallback
@@ -28,6 +29,25 @@ class CandidateCheckpointCallback(BaseCallback):
             self.model.save_replay_buffer(checkpoint_dir / "replay_buffer.pkl")
         if hasattr(self.training_env, "save"):
             self.training_env.save(str(checkpoint_dir / "vecnormalize.pkl"))
+        rewards = [
+            float(episode["r"])
+            for episode in self.model.ep_info_buffer
+            if "r" in episode
+        ]
+        successes = [float(success) for success in self.model.ep_success_buffer]
+        (checkpoint_dir / "training_metrics.json").write_text(
+            json.dumps(
+                {
+                    "success_rate": sum(successes) / len(successes)
+                    if successes
+                    else None,
+                    "ep_rew_mean": sum(rewards) / len(rewards) if rewards else None,
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
         self.last_checkpoint_steps = self.num_timesteps
 
     def _on_rollout_start(self) -> None:

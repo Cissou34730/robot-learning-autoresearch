@@ -6,12 +6,8 @@ import json
 import re
 from pathlib import Path
 
-from robot_learning.training.progress import parse_training_records
-
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
-TRAIN_LOG_PATH = RESEARCH_DIR / "last_train.log"
-TRAIN_SUMMARY_PATH = RESEARCH_DIR / "last_train_summary.md"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
 
 
@@ -22,79 +18,9 @@ def _compact(text: str, limit: int) -> str:
     return text[: limit - 1].rstrip() + "…"
 
 
-def _format_value(record: dict[str, float], key: str) -> str:
-    value = record.get(key)
-    if value is None:
-        return "-"
-    return f"{value:g}"
-
-
-def render_training_summary(log_text: str) -> str:
-    records = parse_training_records(log_text)
-    if not records:
-        tail = _compact("\n".join(log_text.splitlines()[-20:]), 1200)
-        return (
-            "# Last Training Summary\n\n"
-            "No Stable-Baselines3 metric blocks were parsed.\n\n"
-            f"Log tail: {tail or '(empty log)'}\n"
-        )
-
-    first = records[0]
-    final = records[-1]
-    # Deliberately generic: the default context states progress and outcome, and
-    # preselects no diagnostic of the learning method. The raw log stays on disk.
-    fields = [
-        ("Steps", "total_timesteps"),
-        ("Success", "success_rate"),
-        ("Reward", "ep_rew_mean"),
-    ]
-
-    lines = [
-        "# Last Training Summary",
-        "",
-        (
-            f"Compressed from {len(log_text.encode('utf-8')):,} bytes and "
-            f"{len(records)} metric snapshots."
-        ),
-        "",
-        "| Metric | First | Final |",
-        "|---|---:|---:|",
-    ]
-    for label, key in fields:
-        lines.append(
-            f"| {label} | {_format_value(first, key)} | {_format_value(final, key)} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            (
-                "- `Success` is Stable-Baselines3's rolling 100-episode rate "
-                "for the stochastic training policy; it is not the deterministic "
-                "held-out benchmark."
-            ),
-            (
-                "- Snapshot maxima are intentionally omitted because selecting the "
-                "maximum of a noisy rolling series creates a false peak."
-            ),
-            (
-                "- This summary is intentionally minimal. Inspect "
-                "`research/last_train.log` when a specific learning signal "
-                "matters to the question you are asking."
-            ),
-        ]
-    )
-
-    model_match = re.search(r"Model saved to\s+(.+model\.zip)", log_text)
-    if model_match:
-        lines.append(f"- Saved model: {_compact(model_match.group(1), 240)}.")
-    return "\n".join(lines) + "\n"
-
-
-def write_training_summary() -> Path:
-    text = TRAIN_LOG_PATH.read_text(encoding="utf-8") if TRAIN_LOG_PATH.exists() else ""
-    TRAIN_SUMMARY_PATH.write_text(render_training_summary(text), encoding="utf-8")
-    return TRAIN_SUMMARY_PATH
+def _candidate_metric(candidate: dict, key: str) -> str:
+    value = candidate.get(key)
+    return "unavailable" if value is None else f"{float(value):g}"
 
 
 def _postmortem_memory(text: str, count: int = 3) -> list[str]:
@@ -318,6 +244,8 @@ def render_research_brief() -> str:
         ):
             evaluation_lines.append(
                 f"- `{candidate['name']}` — {int(candidate['timesteps']):,} steps; "
+                f"training success {_candidate_metric(candidate, 'success_rate')}; "
+                f"training reward {_candidate_metric(candidate, 'ep_rew_mean')}; "
                 f"artifact `{candidate['artifact']}`."
             )
         if pending_evaluation.get("champion_available"):
@@ -557,10 +485,6 @@ def render_research_brief() -> str:
     else:
         lines.extend(["No postmortem entries yet.", ""])
 
-    if TRAIN_SUMMARY_PATH.exists():
-        summary = TRAIN_SUMMARY_PATH.read_text(encoding="utf-8")
-        lines.extend(["## Most recent training dynamics", "", summary, ""])
-
     lines.extend(
         [
             "## Context discipline",
@@ -588,7 +512,6 @@ def render_research_brief() -> str:
 
 
 def write_research_brief() -> Path:
-    write_training_summary()
     BRIEF_PATH.write_text(render_research_brief(), encoding="utf-8")
     return BRIEF_PATH
 
@@ -596,7 +519,6 @@ def write_research_brief() -> Path:
 def main() -> None:
     brief = write_research_brief()
     print(f"Wrote {brief.relative_to(ROOT)}")
-    print(f"Wrote {TRAIN_SUMMARY_PATH.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

@@ -202,7 +202,18 @@ def main() -> None:
                 for filename in ("model.zip", "vecnormalize.pkl")
             ):
                 continue
-            candidate_artifact = {**artifact, "timesteps": steps, "completed": True}
+            metrics_path = candidate_dir / "training_metrics.json"
+            training_metrics = (
+                json.loads(metrics_path.read_text(encoding="utf-8"))
+                if metrics_path.exists()
+                else {"success_rate": None, "ep_rew_mean": None}
+            )
+            candidate_artifact = {
+                **artifact,
+                "timesteps": steps,
+                "completed": True,
+                **training_metrics,
+            }
             (candidate_dir / "artifact.json").write_text(
                 json.dumps(candidate_artifact, indent=2, default=str) + "\n",
                 encoding="utf-8",
@@ -212,6 +223,7 @@ def main() -> None:
                     "name": f"checkpoint-{steps}",
                     "timesteps": steps,
                     "path": candidate_dir.relative_to(args.output_dir).as_posix(),
+                    **training_metrics,
                 }
             )
 

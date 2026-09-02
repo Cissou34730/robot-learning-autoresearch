@@ -273,7 +273,7 @@ while ($true) {
             Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
-                "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
+                "Read research/program.md, research/scenario.md, and research/brief.md."
                 "Expected deliverable: research/evaluation_request.json for the current experiment, as defined by the protocol."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -285,7 +285,7 @@ while ($true) {
                 Write-Status "=== Evaluation request missing or invalid; retrying the same bounded task once ===" Yellow
                 $evaluationRetryPrompt = @(
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
-                    "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
+                    "Read research/program.md, research/scenario.md, and research/brief.md."
                     "Expected deliverable: complete research/evaluation_request.json according to the protocol."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
@@ -394,7 +394,7 @@ while ($true) {
     $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
-        "Read research/program.md, research/scenario.md, research/brief.md, and research/last_train_summary.md."
+        "Read research/program.md, research/scenario.md, and research/brief.md."
         "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, as defined by the protocol."
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
@@ -417,7 +417,7 @@ while ($true) {
         Write-Status "=== Research proposal missing or invalid; retrying once with bounded context ===" Yellow
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
-            "Read research/program.md, research/scenario.md, research/brief.md, research/last_train_summary.md, and inspect the relevant repository state."
+            "Read research/program.md, research/scenario.md, research/brief.md, and inspect the relevant repository state."
             "Preserve valid researcher-owned edits that belong to this unfinished experiment."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment according to the protocol."
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."

@@ -1587,9 +1587,9 @@ def test_no_researcher_prompt_forces_the_configuration_into_context():
         "research/program.md",
         "research/scenario.md",
         "research/brief.md",
-        "research/last_train_summary.md",
     ):
         assert expected in LOOP
+    assert "research/last_train_summary.md" not in LOOP
 
 
 def test_protocol_default_context_excludes_the_configuration():
@@ -1597,6 +1597,6 @@ def test_protocol_default_context_excludes_the_configuration():
     start_with = context_block.split("Start with:", 1)[1].split("Use this", 1)[0]
 
     assert "`research/current_params.json`" not in start_with
-    assert "`research/last_train_summary.md`" in start_with
+    assert "`research/last_train_summary.md`" not in context_block
     # It stays available on demand, just not pushed into every session.
     assert "`research/current_params.json`" in context_block

@@ -130,68 +130,17 @@ def training_progress_suffix(record: dict[str, float] | None) -> str:
     return "".join(f" | {part}" for part in parts)
 
 
-def _metric_transition(
-    first: dict[str, float],
-    final: dict[str, float],
-    key: str,
-) -> tuple[str, str] | None:
-    before, after = first.get(key), final.get(key)
-    if before is None or after is None:
-        return None
-    return f"{float(before):g}", f"{float(after):g}"
-
-
-def _scenario_transition(
-    first: dict[str, float],
-    final: dict[str, float],
-) -> tuple[str, str, str] | None:
-    before = scenario_progress_metric(first)
-    after = scenario_progress_metric(final)
-    if not before or not after:
-        return None
-    before_label, _, before_value = before.partition(" ")
-    after_label, _, after_value = after.partition(" ")
-    if before_value and before_label == after_label:
-        return before_label.capitalize(), before_value, after_value
-    return "Scenario", before, after
-
-
-def training_dynamics_rows(records: list[dict[str, float]]) -> list[str]:
-    if not records:
-        return []
-    first, final = records[0], records[-1]
-    rows: list[tuple[str, str, str]] = []
-    reward = _metric_transition(first, final, "ep_rew_mean")
-    if reward is not None:
-        rows.append(("Reward mean", *reward))
-    scenario = _scenario_transition(first, final)
-    if scenario is not None:
-        rows.append(scenario)
-    for label, key in (
-        ("Episode length", "ep_len_mean"),
-        ("Policy std", "std"),
-        ("Explained variance", "explained_variance"),
-    ):
-        transition = _metric_transition(first, final, key)
-        if transition is not None:
-            rows.append((label, *transition))
-    if not rows:
-        return []
-    label_width = max(len(label) for label, _, _ in rows)
-    value_width = max(len(before) for _, before, _ in rows)
-    return [
-        f"  {label:<{label_width}}  {before:>{value_width}} → {after}"
-        for label, before, after in rows
-    ]
+def _candidate_metric(candidate: dict, key: str) -> str:
+    value = candidate.get(key)
+    return "unavailable" if value is None else f"{float(value):g}"
 
 
 def render_training_summary_card(
     result: dict,
     *,
-    records: list[dict[str, float]],
     completed_steps: int,
     elapsed_seconds: float,
-    candidate_names: list[str],
+    candidates: list[dict],
 ) -> str:
     budget = result.get("training_budget_steps")
     lines = [
@@ -209,11 +158,13 @@ def render_training_summary_card(
             f"{format_duration(elapsed_seconds)}"
         ),
     ]
-    dynamics = training_dynamics_rows(records)
-    if dynamics:
-        lines.extend(["", "Training dynamics", *dynamics])
     lines.extend(["", "Candidates"])
-    lines.extend(f"  {name}" for name in candidate_names)
+    for candidate in sorted(candidates, key=lambda item: int(item["timesteps"])):
+        lines.append(
+            f"  {candidate['name']}  {int(candidate['timesteps']):,} steps  "
+            f"training success {_candidate_metric(candidate, 'success_rate')}  "
+            f"training reward {_candidate_metric(candidate, 'ep_rew_mean')}"
+        )
     lines.extend(["", "Next", "  Researcher evaluation design"])
     return "\n".join(lines)
 

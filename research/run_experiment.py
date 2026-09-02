@@ -687,11 +687,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 "name": path.name,
                 "kind": "candidate",
                 "path": path,
-                "timesteps": int(
-                    json.loads((path / "artifact.json").read_text(encoding="utf-8"))[
-                        "timesteps"
-                    ]
-                ),
+                **json.loads((path / "artifact.json").read_text(encoding="utf-8")),
                 "evaluations": [],
             }
             for path in execution.candidate_directories(candidate_dir)
@@ -700,23 +696,17 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             index, contenders, effective_config
         )
         verdict = "trained; awaiting researcher evaluation request"
-        records = execution.training_records()
         completed_steps = max(
             (int(candidate["timesteps"]) for candidate in archived_candidates),
             default=0,
         )
-        if records and "total_timesteps" in records[-1]:
-            completed_steps = int(records[-1]["total_timesteps"])
         console.announce(
             "\n"
             + console.render_training_summary_card(
                 result,
-                records=records,
                 completed_steps=completed_steps,
                 elapsed_seconds=training_elapsed,
-                candidate_names=[
-                    str(candidate["name"]) for candidate in archived_candidates
-                ],
+                candidates=archived_candidates,
             )
             + "\n"
         )

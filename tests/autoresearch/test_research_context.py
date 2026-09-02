@@ -1,11 +1,8 @@
 import json
 from pathlib import Path
 
-from research.build_research_brief import (
-    parse_training_records,
-    render_research_brief,
-    render_training_summary,
-)
+from research.build_research_brief import render_research_brief
+from robot_learning.training.progress import parse_training_records
 
 SAMPLE_LOG = """
 -----------------------------------------
@@ -42,22 +39,46 @@ def test_training_log_parser_groups_metric_snapshots():
     assert records[1]["std"] == 0.5
 
 
-def test_default_training_summary_stays_minimal_and_method_neutral():
-    summary = render_training_summary(SAMPLE_LOG)
+def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
+    monkeypatch, tmp_path
+):
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(
+            {
+                "pending_evaluation_request": {
+                    "experiment": 3,
+                    "candidates": [
+                        {
+                            "name": "later",
+                            "timesteps": 120,
+                            "success_rate": 0.0,
+                            "ep_rew_mean": 0.0,
+                            "artifact": "research/checkpoints/later",
+                        },
+                        {
+                            "name": "earlier",
+                            "timesteps": 20,
+                            "success_rate": None,
+                            "ep_rew_mean": None,
+                            "artifact": "research/checkpoints/earlier",
+                        },
+                    ],
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
-    assert "Peak-success snapshot" not in summary
-    assert "stochastic training policy" in summary
-    assert "false peak" in summary
-    assert "models/reach-example/model.zip" in summary
-    # Progress and outcome only; no diagnostic of the current learning method.
-    for preselected in (
-        "Policy std",
-        "Explained variance",
-        "Value loss",
-        "Episode length",
-    ):
-        assert preselected not in summary
-    assert "research/last_train.log" in summary
+    brief = render_research_brief()
+
+    assert "`earlier` — 20 steps; training success unavailable; training reward unavailable; artifact `research/checkpoints/earlier`." in brief
+    assert "`later` — 120 steps; training success 0; training reward 0; artifact `research/checkpoints/later`." in brief
+    assert brief.index("`earlier`") < brief.index("`later`")
+    assert "Most recent training dynamics" not in brief
 
 
 def test_brief_reports_the_measured_score_and_points_at_the_detail(
@@ -226,10 +247,6 @@ def test_postmortems_are_presented_as_contestable_interpretations(
         encoding="utf-8",
     )
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
-    monkeypatch.setattr(
-        "research.build_research_brief.TRAIN_SUMMARY_PATH", tmp_path / "absent.md"
-    )
-
     brief = render_research_brief()
 
     assert "## Prior researcher interpretations" in brief
@@ -253,10 +270,6 @@ def test_unfamiliar_postmortem_heading_does_not_erase_the_experiment(
         encoding="utf-8",
     )
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
-    monkeypatch.setattr(
-        "research.build_research_brief.TRAIN_SUMMARY_PATH", tmp_path / "absent.md"
-    )
-
     brief = render_research_brief()
 
     assert "Experiment 3 - unfamiliar layout" in brief

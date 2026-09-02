@@ -32,8 +32,7 @@ Start with:
 
 * `research/program.md`;
 * `research/scenario.md`;
-* `research/brief.md`;
-* `research/last_train_summary.md`.
+* `research/brief.md`.
 
 Use this context first, then inspect relevant measurement artifacts. Read
 `research/current_params.json` only when the diagnosed mechanism makes it useful.
