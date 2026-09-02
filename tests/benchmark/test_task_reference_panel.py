@@ -259,7 +259,7 @@ def test_final_benchmark_does_not_depend_on_the_task_reference():
 
 @pytest.mark.parametrize("protected_path", PROTECTED_REFERENCE_PATHS)
 def test_research_proposal_cannot_change_the_task_reference(protected_path):
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
+    with pytest.raises(ValueError, match="human-owned task, context"):
         validate_experiment_semantics(
             {}, "training", "transfer", None, [protected_path], False
         )

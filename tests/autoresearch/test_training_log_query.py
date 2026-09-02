@@ -39,6 +39,7 @@ def test_recoverable_continuation_requires_an_existing_attempt(monkeypatch, tmp_
 def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
     monkeypatch, tmp_path
 ):
+    monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
     log = tmp_path / "experiment-1-attempt-1.log"
     write_log(log, "interrupted output\n")
     observed_records = []
