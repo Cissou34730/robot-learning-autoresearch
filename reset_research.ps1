@@ -23,7 +23,35 @@ $dirty = git status --porcelain --untracked-files=all
 if ($LASTEXITCODE -ne 0) {
     throw "Could not inspect the Git working tree."
 }
-if ($dirty) {
+$resettableDirtyPaths = @(
+    "research/EXPERIMENTS.md",
+    "research/results.jsonl",
+    "research/postmortems.md",
+    "research/archive.md",
+    "research/research_state.json",
+    "research/BASELINE_PENDING",
+    "research/GOAL_REACHED",
+    "research/RECOVERY_PENDING",
+    "research/RESTART_PENDING",
+    "research/proposal.json",
+    "research/evaluation_request.json",
+    "research/training_logs",
+    "research/last_evaluation.json",
+    "research/brief.md",
+    "research/checkpoints",
+    "models/candidates"
+)
+$nonResettableDirtyPaths = @(
+    $dirty | ForEach-Object {
+        $path = $_.Substring(3).Trim().Trim('"').Replace('\', '/')
+        if (-not ($resettableDirtyPaths | Where-Object {
+            $path -eq $_ -or $path.StartsWith("$_/")
+        })) {
+            $path
+        }
+    }
+)
+if ($nonResettableDirtyPaths) {
     throw "The working tree is not clean. Commit or resolve its changes before resetting research."
 }
 
