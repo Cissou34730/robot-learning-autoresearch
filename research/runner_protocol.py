@@ -389,6 +389,12 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"{description} must be a non-empty string")
 
+    def require_integer(field: str) -> int:
+        value = proposal.get(field)
+        if type(value) is not int:
+            raise ValueError(f"{field} must be an integer when supplied")
+        return value
+
     if baseline:
         # A baseline is its own runner-generated contract, never a training kind.
         if "kind" in proposal:
@@ -435,6 +441,8 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         require_nonempty_string("change", "training proposal operation description")
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
+    if "training_seed" in proposal:
+        require_integer("training_seed")
     initialization = proposal["initialization"]
     if initialization not in {"transfer", "fresh"}:
         raise ValueError("initialization must be transfer or fresh")
@@ -453,14 +461,9 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("replication requires fresh initialization")
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
-        try:
-            replicated_experiment = int(proposal["replication_of"])
-        except (KeyError, TypeError, ValueError) as error:
-            raise ValueError(
-                "replication requires a positive experiment number"
-            ) from error
-        if replicated_experiment < 1:
-            raise ValueError("replication requires a positive experiment number")
+        require_integer("replication_of")
+        if proposal["replication_of"] < 1:
+            raise ValueError("replication_of must be a positive integer")
 
 
 def validate_proposal_phase(proposal: dict, state: dict) -> str:

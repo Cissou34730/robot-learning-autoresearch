@@ -1839,6 +1839,53 @@ def test_continuation_and_replication_allow_unchanged_methods():
         )
 
 
+@pytest.mark.parametrize("field", ["replication_of", "training_seed"])
+@pytest.mark.parametrize("invalid_value", [True, 12.5, "12", None])
+def test_replication_rejects_non_integer_numeric_fields(field, invalid_value):
+    proposal = {
+        "kind": "replication",
+        "family": "method",
+        "hypothesis": "check outcome spread",
+        "initialization": "fresh",
+        "training_seed": 19,
+        "replication_of": 12,
+    }
+    proposal[field] = invalid_value
+
+    with pytest.raises(ValueError, match=f"{field} must be an integer"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize(
+    ("kind", "initialization", "extra_fields"),
+    [
+        ("training", "fresh", {"change": "test", "training_seed": 0}),
+        (
+            "continuation",
+            "transfer",
+            {"training_parent": "accepted", "training_seed": -7},
+        ),
+        (
+            "replication",
+            "fresh",
+            {"training_seed": 19, "replication_of": 12},
+        ),
+    ],
+)
+def test_training_numeric_fields_accept_valid_integers(
+    kind, initialization, extra_fields
+):
+    proposal = {
+        "kind": kind,
+        "family": "method",
+        "hypothesis": "check numeric contract",
+        "initialization": initialization,
+        **extra_fields,
+    }
+
+    validate_training_proposal(proposal, baseline=False)
+
+
 def test_unchanged_operation_history_uses_neutral_text():
     result = {
         "index": 15,
