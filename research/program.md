@@ -30,31 +30,17 @@ invokes the Runner, training, viewer or final benchmark directly. It uses the
 fixed installed dependencies and does not install packages or modify dependency
 metadata.
 
-## Campaign lifecycle
+## Campaign boundary
 
-A **campaign** is a bounded research effort with independent experiment
-numbering and isolated artifact organization. When a new campaign begins (via
-`reset_research.ps1 -Force`), the Runner:
+A campaign defines the active scientific history for the current research effort.
+Experiments, measurements, postmortems and lineage decisions are interpreted
+within that campaign, and experiment numbering is local to it.
 
-1. Generates a unique campaign ID (UUID v4)
-2. Records the campaign start time (ISO-8601)
-3. Captures the base commit (Git SHA-1) for history inspection
-4. Initializes per-campaign experiment counters (starting at 0)
+The Researcher reasons from the current campaign evidence exposed through the
+research brief and referenced artifacts. Evidence from previous campaigns is
+outside the active scientific context and must not implicitly influence current
+hypotheses, interpretations or decisions.
 
-Campaigns allow multiple independent research directions to safely use the same
-experiment numbers (Experiment 1, Experiment 2, etc.) without collision. All
-artifacts—candidates, checkpoints, evaluations, and training logs—are organized
-under the campaign ID in the filesystem.
-
-Experiment numbers are campaign-scoped. Experiment 1 in Campaign A is
-independent from Experiment 1 in Campaign B. The research brief filters results,
-postmortems and lineage evidence by campaign, showing only the current
-campaign's history.
-
-Campaign boundaries establish unambiguous scientific history: every experiment
-records its campaign_id in `results.jsonl`, and postmortem entries are headed
-with "## Campaign ID / Experiment N" to clarify which campaign's experiment is
-being discussed.
 
 ## Evidence obligation
 
