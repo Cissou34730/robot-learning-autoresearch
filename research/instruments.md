@@ -8,7 +8,7 @@ Read:
 
 * `research/brief.md` for current state, parameters, available models, retained lineages and artifact paths;
 * `research/postmortems.md` for previous observations and interpretations;
-* every JSON or JSONL artifact referenced by the brief, history or candidate metadata, including evaluation results, task-reference results, inventories and parameters. jello is available
+* every JSON or JSONL artifact referenced by the brief, history or candidate metadata, including evaluation results, task-reference results, inventories and parameters. Use jello to extract relevant fields without loading complete artifacts
 
 Candidate training success and reward shown in the brief are training facts, not evaluation results.
 
