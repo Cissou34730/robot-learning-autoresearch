@@ -9,7 +9,7 @@ import json
 import shutil
 import subprocess
 import time
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
 
@@ -39,6 +39,28 @@ RUNNER_MEMORY_PREFIXES = (
     "research/checkpoints/accepted/",
     "research/checkpoints/retained/",
 )
+
+
+def repo_relative_path(path: Path) -> str:
+    root = paths.ROOT.resolve()
+    try:
+        return path.resolve().relative_to(root).as_posix()
+    except ValueError as error:
+        raise ValueError(f"path is outside the repository: {path}") from error
+
+
+def resolve_repo_path(value: str) -> Path:
+    normalized = str(value).replace("\\", "/")
+    relative = Path(normalized)
+    if not normalized or relative.is_absolute() or PureWindowsPath(normalized).drive:
+        raise ValueError(f"repository path must be relative: {value}")
+    root = paths.ROOT.resolve()
+    resolved = (root / relative).resolve()
+    if resolved != root and root not in resolved.parents:
+        raise ValueError(f"path is outside the repository: {value}")
+    return resolved
+
+
 ARTIFACT_FILES = ("model.zip", "artifact.json")
 OPTIONAL_ARTIFACT_FILES = ("vecnormalize.pkl", "replay_buffer.pkl")
 EXPERIMENT_LOG_HEADER = (
@@ -275,7 +297,9 @@ def migrate_state_to_v3(state: dict) -> dict:
         state["schema_version"] = 3
         if "campaign" not in state:
             # Legacy campaign: preserve base_commit from scientific parent or use HEAD
-            base_commit = state.get("pending_scientific_parent") or "HEAD"
+            base_commit = state.get("pending_scientific_parent")
+            if not base_commit:
+                base_commit = git("rev-parse", "HEAD").strip()
             campaign_id = str(__import__("uuid").uuid4())
             state["campaign"] = {
                 "id": campaign_id,
@@ -312,7 +336,7 @@ def load_state(
     if campaign and not isinstance(campaign, dict):
         raise RuntimeError("campaign object is malformed")
     if not allow_missing_artifact:
-        artifact = paths.ROOT / state["accepted_artifact"]
+        artifact = resolve_repo_path(state["accepted_artifact"])
         for filename in ARTIFACT_FILES:
             if not (artifact / filename).exists():
                 raise RuntimeError(f"accepted artifact is incomplete: {filename}")
@@ -521,7 +545,7 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
 
 def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
     return [
-        str(item["evaluation_artifact"])
+        str(item["evaluation_artifact"]).replace("\\", "/")
         for item in evaluations or []
         if item.get("evaluation_artifact")
     ]
@@ -553,7 +577,7 @@ def archive_candidates(
         archived.append(
             {
                 "name": contender["name"],
-                "artifact": str(artifact.relative_to(paths.ROOT)),
+                "artifact": repo_relative_path(artifact),
                 "timesteps": int(contender["timesteps"]),
                 "training_success": contender.get("training_success"),
                 "ep_rew_mean": contender.get("ep_rew_mean"),

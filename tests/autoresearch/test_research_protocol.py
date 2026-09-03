@@ -1127,6 +1127,56 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     assert (tmp_path / "GOAL_REACHED").exists()
 
 
+def test_legacy_champion_path_is_canonicalized_before_final_benchmark(
+    monkeypatch, tmp_path
+):
+    accepted = _artifact(tmp_path / "research" / "checkpoints" / "accepted")
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    state = {
+        "accepted_artifact": "research\\checkpoints\\accepted",
+        "accepted_metrics": {"success_percent": 50.0},
+        "accepted_parameters": {},
+        "accepted_training_steps": 100,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 8,
+            "candidates": [],
+            "champion_available": True,
+            "champion_evaluations": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 100,
+        },
+    }
+    decision = {
+        "previous_result_decision": {
+            "experiment": 8,
+            "continue_from": "champion",
+            "reason": "Keep the accepted lineage.",
+            "code": {"action": "keep", "reason": "Keep the accepted code."},
+            "request_final_benchmark": True,
+        }
+    }
+    monkeypatch.setattr(
+        "robot_learning.scenario.evaluate_final_model",
+        lambda model: {
+            "episodes": 1,
+            "seed": 1000,
+            "success_percent": 50.0,
+            "goal_reached": False,
+        },
+    )
+
+    assert not apply_previous_result_decision(decision, state)
+    assert state["accepted_artifact"] == "research/checkpoints/accepted"
+    assert state["pending_final_benchmark"]["artifact"] == state["accepted_artifact"]
+    assert execute_pending_final_benchmark() == 0
+
+
 def test_pending_final_benchmark_survives_failure_and_failed_result(
     monkeypatch, tmp_path
 ):

@@ -62,7 +62,11 @@ $ephemeralPaths | ForEach-Object { Remove-ResetPath $_ }
 
 # Generate new campaign identity before reset
 $campaignId = [guid]::NewGuid().ToString()
-$baseCom mit = (git rev-parse HEAD 2>$null) -or "HEAD"
+$baseCommit = git rev-parse HEAD 2>$null
+if ($LASTEXITCODE -ne 0 -or -not $baseCommit) {
+    throw "Could not resolve the campaign base commit."
+}
+$baseCommit = $baseCommit.Trim()
 $startedAt = [System.DateTime]::UtcNow.ToString("o")
 
 [ordered]@{

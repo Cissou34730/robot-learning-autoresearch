@@ -107,8 +107,19 @@ function Test-LineageResearchMemory([int]$experiment) {
         $script:LineageValidationFeedback = "research/postmortems.md was not created"
         return $false
     }
-    if (-not ((Get-Content "research\postmortems.md" -Raw) -match "(?m)^## Experiment $experiment\b")) {
-        $script:LineageValidationFeedback = "research/postmortems.md has no entry for experiment $experiment"
+    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    $campaignId = $state.campaign.id
+    $headingPattern = if ($campaignId) {
+        "(?m)^## $([regex]::Escape($campaignId)) / Experiment $experiment\b"
+    }
+    else {
+        "(?m)^## Experiment $experiment\b"
+    }
+    if (-not ((Get-Content "research\postmortems.md" -Raw) -match $headingPattern)) {
+        $script:LineageValidationFeedback = (
+            "research/postmortems.md has no entry for the current campaign " +
+            "and experiment $experiment"
+        )
         return $false
     }
     # The decision must name existing detailed evidence of this experiment.

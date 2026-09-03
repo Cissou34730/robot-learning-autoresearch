@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from research.build_research_brief import render_research_brief
+from research.build_research_brief import _change_details, render_research_brief
 from robot_learning.training.progress import parse_training_records
 
 SAMPLE_LOG = """
@@ -30,6 +30,42 @@ Model saved to models/reach-example/model.zip
 """
 
 
+def test_change_details_uses_structured_parameter_changes_only():
+    result = {
+        "change": "adjust rollout horizon",
+        "hypothesis": "increasing the horizon from 10 to 20 should help",
+        "parameter_changes": [
+            {"path": "training.horizon", "before": 8, "after": 12}
+        ],
+    }
+
+    details = _change_details(result)
+
+    assert details == "training.horizon: 8 → 12"
+    assert "10 → 20" not in details
+
+
+def test_change_details_does_not_infer_values_from_hypothesis():
+    result = {
+        "change": "adjust rollout horizon",
+        "hypothesis": "increasing the horizon from 10 to 20 should help",
+    }
+
+    assert _change_details(result) == "adjust rollout horizon"
+
+
+def test_change_details_represents_recorded_code_changes():
+    result = {
+        "change": "adjust reward shaping",
+        "hypothesis": "a change from 10 to 20 may help",
+        "code_changes": ["robot_learning/rewards.py"],
+    }
+
+    assert _change_details(result) == (
+        "adjust reward shaping; files: robot_learning/rewards.py"
+    )
+
+
 def test_training_log_parser_groups_metric_snapshots():
     records = parse_training_records(SAMPLE_LOG)
 
@@ -42,10 +78,13 @@ def test_training_log_parser_groups_metric_snapshots():
 def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
     monkeypatch, tmp_path
 ):
-    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
-    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
-    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(
+    research_dir = tmp_path / "research"
+    (research_dir / "checkpoints" / "earlier").mkdir(parents=True)
+    (research_dir / "checkpoints" / "later").mkdir(parents=True)
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text(
         json.dumps(
             {
                 "pending_evaluation_request": {
@@ -71,7 +110,8 @@ def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
 
     brief = render_research_brief()
 
@@ -91,10 +131,20 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
         "pooled_success_percent": 50.0,
         "seed_count": 1,
     }
-    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
-    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
-    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(
+    research_dir = tmp_path / "research"
+    (tmp_path / "accepted").mkdir()
+    evaluations_dir = research_dir / "evaluations"
+    evaluations_dir.mkdir(parents=True)
+    (evaluations_dir / "evaluation-experiment-3-champion-4ep-seed1000-ab.json").write_text(
+        "{}", encoding="utf-8"
+    )
+    (evaluations_dir / "evaluation-experiment-4-1.json").write_text(
+        "{}", encoding="utf-8"
+    )
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text(
         json.dumps(
             {
                 "accepted_artifact": "accepted",
@@ -126,7 +176,8 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
 
     brief = render_research_brief()
 
@@ -140,6 +191,38 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
     assert "Open the detailed evaluation artifacts listed below" in brief
     assert "Measured challenger diagnostics" not in brief
     assert "Observed failure diagnostics" not in brief
+
+
+def test_brief_reports_missing_and_legacy_artifacts_as_unavailable(
+    monkeypatch, tmp_path
+):
+    research_dir = tmp_path / "research"
+    evaluations_dir = research_dir / "evaluations"
+    evaluations_dir.mkdir(parents=True)
+    legacy_artifact = research_dir / "checkpoints" / "legacy"
+    legacy_artifact.mkdir(parents=True)
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text(
+        json.dumps(
+            {
+                "accepted_artifact": "research\\checkpoints\\legacy",
+                "accepted_evaluations": [
+                    "research\\evaluations\\missing.json"
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    brief = render_research_brief()
+
+    assert "Accepted checkpoint: `research/checkpoints/legacy`" in brief
+    assert "Accepted evaluation detail: unavailable" in brief
+    assert "research\\evaluations\\missing.json" not in brief
 
 
 def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
@@ -275,6 +358,31 @@ def test_unfamiliar_postmortem_heading_does_not_erase_the_experiment(
 
     assert "Experiment 3 - unfamiliar layout" in brief
     assert "the arm stalls once the target moves outward" in brief
+    assert "Evidence inspected: unavailable" in brief
+    assert "research/evaluations/e3.json" not in brief
+
+
+def test_postmortem_evidence_normalizes_an_existing_legacy_path(
+    monkeypatch, tmp_path
+):
+    research_dir = tmp_path / "research"
+    evaluations_dir = research_dir / "evaluations"
+    evaluations_dir.mkdir(parents=True)
+    (evaluations_dir / "e3.json").write_text("{}", encoding="utf-8")
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text(
+        "## Experiment 3\n\n"
+        "**Result:** measured.\n\n"
+        "**Evidence inspected:** `research\\evaluations\\e3.json`\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    brief = render_research_brief()
+
     assert "Evidence inspected: `research/evaluations/e3.json`" in brief
 
 

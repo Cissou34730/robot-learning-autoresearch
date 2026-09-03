@@ -52,7 +52,9 @@ from research.runner_repository import (
     copy_artifact,
     is_runner_memory,
     load_state,
+    repo_relative_path,
     require_complete_artifact,
+    resolve_repo_path,
     scientific_delta,
     synchronize_experiment_log,
 )
@@ -907,11 +909,61 @@ def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_
     )
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_repository.git", lambda *args: "base-commit\n"
+    )
 
     state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
     assert state["accepted_metrics"] is None
     with pytest.raises(RuntimeError, match="accepted artifact is incomplete"):
         load_state(allow_unmeasured=True)
+
+
+def test_repo_paths_use_forward_slashes_and_resolve_legacy_separators(
+    monkeypatch, tmp_path
+):
+    root = tmp_path / "repo"
+    nested = root / "research" / "checkpoints" / "accepted"
+    monkeypatch.setattr("research.runner_paths.ROOT", root)
+
+    assert repo_relative_path(nested) == "research/checkpoints/accepted"
+    assert resolve_repo_path("research\\checkpoints\\accepted") == nested
+    assert resolve_repo_path("research/checkpoints/accepted") == nested
+
+
+@pytest.mark.parametrize(
+    "persisted",
+    ["../outside", "/absolute/path", "C:\\absolute\\path"],
+)
+def test_resolve_repo_path_rejects_non_repository_paths(
+    monkeypatch, tmp_path, persisted
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path / "repo")
+
+    with pytest.raises(ValueError, match="repository|outside"):
+        resolve_repo_path(persisted)
+
+
+def test_load_state_resolves_legacy_windows_artifact_path(monkeypatch, tmp_path):
+    accepted = tmp_path / "research" / "checkpoints" / "accepted"
+    accepted.mkdir(parents=True)
+    (accepted / "model.zip").write_bytes(b"model")
+    (accepted / "artifact.json").write_text("{}", encoding="utf-8")
+    state_path = tmp_path / "research_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 3,
+                "accepted_artifact": "research\\checkpoints\\accepted",
+                "accepted_metrics": {"success_percent": 50.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+
+    assert load_state()["accepted_artifact"] == "research\\checkpoints\\accepted"
 
 
 def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
@@ -1782,6 +1834,9 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr(
+        "research.runner_repository.git", lambda *args: "base-commit\n"
+    )
     committed = []
 
     def record_lineage_commit(*args, **kwargs):

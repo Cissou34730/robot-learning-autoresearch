@@ -311,13 +311,13 @@ def training_parent(
     if identifier == "accepted":
         return (
             "accepted",
-            paths.ROOT / state["accepted_artifact"],
+            repository.resolve_repo_path(state["accepted_artifact"]),
             int(state.get("accepted_training_steps", 0)),
         )
     lineage = retained_lineage(state, identifier)
     if lineage is None:
         raise ValueError(f"unknown retained training parent {identifier!r}")
-    artifact = paths.ROOT / lineage["artifact"]
+    artifact = repository.resolve_repo_path(lineage["artifact"])
     for filename in repository.ARTIFACT_FILES:
         if not (artifact / filename).exists():
             raise ValueError(
@@ -707,12 +707,23 @@ def pending_evaluation_artifacts(pending: dict) -> list[str]:
     return list(dict.fromkeys(collected))
 
 
-def postmortem_section(experiment: int) -> str:
-    """The postmortem entry for one experiment, or an empty string."""
+def postmortem_section(
+    experiment: int,
+    campaign_id: str | None = None,
+) -> str:
+    """Return one experiment postmortem within the requested campaign."""
     if not paths.POSTMORTEM_PATH.exists():
         return ""
+
+    heading = (
+        rf"^## {re.escape(campaign_id)} / Experiment {experiment}\b"
+        if campaign_id
+        else rf"^## Experiment {experiment}\b"
+    )
+
     match = re.search(
-        rf"^## Experiment {experiment}\b.*?(?=^## Experiment \d|\Z)",
+        heading
+        + r".*?(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
         paths.POSTMORTEM_PATH.read_text(encoding="utf-8"),
         flags=re.MULTILINE | re.DOTALL,
     )
@@ -735,15 +746,25 @@ def attested_evidence_paths(section: str) -> list[str]:
     return list(dict.fromkeys(listed_paths))
 
 
-def validate_postmortem_evidence(experiment: int, measured: list[str]) -> None:
+def validate_postmortem_evidence(
+    experiment: int,
+    measured: list[str],
+    *,
+    campaign_id: str | None = None,
+) -> None:
     """Require the decision to name existing evidence of this experiment.
 
     This shows only that the researcher session identified real artifacts of the
     experiment it is resolving; it cannot show that they were understood.
     """
-    section = postmortem_section(experiment)
+    section = postmortem_section(experiment, campaign_id)
     if not section.strip():
-        raise ValueError(f"postmortems.md has no entry for experiment {experiment}")
+        identity = (
+            f"{campaign_id} / Experiment {experiment}"
+            if campaign_id
+            else f"Experiment {experiment}"
+        )
+        raise ValueError(f"postmortems.md has no entry for {identity}")
     attested = attested_evidence_paths(section)
     if not attested:
         raise ValueError(
@@ -759,7 +780,9 @@ def validate_postmortem_evidence(experiment: int, measured: list[str]) -> None:
             f"evaluation artifact measured for experiment {experiment}: "
             f"{sorted(owned)}"
         )
-    missing = sorted(path for path in matched if not (paths.ROOT / path).is_file())
+    missing = sorted(
+        path for path in matched if not repository.resolve_repo_path(path).is_file()
+    )
     if missing:
         raise ValueError(f"attested evaluation artifacts do not exist: {missing}")
 
@@ -824,7 +847,11 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         raise ValueError("previous_result_decision references the wrong experiment")
     measured_evidence = pending_evaluation_artifacts(pending)
     if measured_evidence:
-        validate_postmortem_evidence(int(pending["experiment"]), measured_evidence)
+        validate_postmortem_evidence(
+            int(pending["experiment"]),
+            measured_evidence,
+            campaign_id=repository.current_campaign_id(state),
+        )
     selected_name = str(decision.get("continue_from", "")).strip()
     reason = str(decision.get("reason", "")).strip()
     if not reason:
@@ -856,7 +883,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     selected = sources.get(selected_name)
     if selected is None:
         raise ValueError(f"continue_from must be one of {sorted(sources)}")
-    selected_artifact = paths.ROOT / selected["artifact"]
+    selected_artifact = repository.resolve_repo_path(selected["artifact"])
     repository.require_complete_artifact(
         selected_artifact, f"selected lineage {selected_name!r}"
     )
@@ -930,7 +957,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         if identifier in retained_ids or identifier in removal_ids:
             raise ValueError(f"conflicting retained lineage ID: {identifier}")
         source = sources[candidate_name]
-        source_artifact = paths.ROOT / source["artifact"]
+        source_artifact = repository.resolve_repo_path(source["artifact"])
         repository.require_complete_artifact(
             source_artifact, f"retained lineage {identifier!r}"
         )
@@ -945,7 +972,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
                 "destination": destination,
                 "record": {
                     "id": identifier,
-                    "artifact": str(destination.relative_to(paths.ROOT)),
+                    "artifact": repository.repo_relative_path(destination),
                     "origin_experiment": int(pending["experiment"]),
                     "candidate": candidate_name,
                     "reason": retention_reason,

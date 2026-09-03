@@ -124,8 +124,14 @@ def check_lineage_evidence(experiment: int) -> int:
     measured = protocol.pending_evaluation_artifacts(pending)
     if not measured:
         return 0
+    campaign_id = repository.current_campaign_id(state)
+
     try:
-        protocol.validate_postmortem_evidence(experiment, measured)
+        protocol.validate_postmortem_evidence(
+            experiment,
+            measured,
+            campaign_id=campaign_id,
+        )
     except ValueError as error:
         print(f"ERROR: {error}")
         return 1
@@ -218,7 +224,7 @@ def execute_pending_evaluations() -> int:
                 experiment, name, episodes, seed, semantics, campaign_id=campaign_id
             )
             metrics = execution.evaluate_artifact(
-                paths.ROOT / contender["artifact"],
+                repository.resolve_repo_path(contender["artifact"]),
                 seed,
                 label=label,
                 episodes=episodes,
@@ -260,7 +266,7 @@ def execute_pending_evaluations() -> int:
                 experiment, name, panel["panel"], campaign_id=campaign_id
             )
             metrics = execution.evaluate_artifact(
-                paths.ROOT / contender["artifact"],
+                repository.resolve_repo_path(contender["artifact"]),
                 panel["seed"],
                 label=label,
                 episodes=panel["episodes"],
@@ -397,7 +403,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         repository.copy_artifact(retention["source"], retention["destination"])
     if selected_name != "champion":
         repository.copy_artifact(plan["selected_artifact"], paths.ACCEPTED_DIR)
-        state["accepted_artifact"] = str(paths.ACCEPTED_DIR.relative_to(paths.ROOT))
+        state["accepted_artifact"] = repository.repo_relative_path(paths.ACCEPTED_DIR)
         state["accepted_metrics"] = selected.get("summary")
         state["accepted_parameters"] = pending["parameters"]
         state["accepted_training_steps"] = (
@@ -409,6 +415,9 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         state["official_metrics"] = None
     else:
         state["accepted_metrics"] = selected.get("summary")
+        state["accepted_artifact"] = repository.repo_relative_path(
+            repository.resolve_repo_path(state["accepted_artifact"])
+        )
     state["accepted_evaluations"] = repository.evaluation_artifact_paths(
         selected.get("evaluations")
     )
@@ -428,15 +437,19 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     repository.atomic_write_json(paths.STATE_PATH, state)
     # Retain compact challenger history while removing every duplicate reusable artifact.
     for candidate in pending["candidates"]:
-        repository.remove_heavyweight_artifacts(paths.ROOT / candidate["artifact"])
+        repository.remove_heavyweight_artifacts(
+            repository.resolve_repo_path(candidate["artifact"])
+        )
     for lineage in plan["removed_retained"]:
-        repository.remove_heavyweight_artifacts(paths.ROOT / lineage["artifact"])
+        repository.remove_heavyweight_artifacts(
+            repository.resolve_repo_path(lineage["artifact"])
+        )
     # Completed evaluations are research history and survive their checkpoints.
     if plan["request_final_benchmark"]:
         state["pending_final_benchmark"] = {
             "experiment": int(pending["experiment"]),
             "selected": selected_name,
-            "artifact": str(paths.ACCEPTED_DIR.relative_to(paths.ROOT)),
+            "artifact": state["accepted_artifact"],
             "fingerprint": plan["selected_fingerprint"],
         }
         repository.atomic_write_json(paths.STATE_PATH, state)
@@ -472,11 +485,14 @@ def execute_pending_final_benchmark() -> int:
             "there is no accepted lineage awaiting final benchmark evaluation"
         )
     artifact = str(pending.get("artifact", "")).strip()
-    if artifact != state.get("accepted_artifact"):
+    accepted_reference = str(state.get("accepted_artifact", "")).strip()
+    if repository.resolve_repo_path(artifact) != repository.resolve_repo_path(
+        accepted_reference
+    ):
         raise ValueError(
             "pending final benchmark does not identify the accepted artifact"
         )
-    accepted_artifact = paths.ROOT / artifact
+    accepted_artifact = repository.resolve_repo_path(artifact)
     repository.require_complete_artifact(
         accepted_artifact, "pending final benchmark artifact"
     )
@@ -756,7 +772,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 execution.remove_candidate_dir(recovery_dir)
             candidate_dir.replace(recovery_dir)
             paths.RECOVERY_PENDING_PATH.write_text(
-                str(recovery_dir.relative_to(paths.ROOT)) + "\n", encoding="utf-8"
+                repository.repo_relative_path(recovery_dir) + "\n", encoding="utf-8"
             )
             preserve_proposal = True
             console.announce(

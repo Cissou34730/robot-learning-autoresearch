@@ -15,9 +15,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-import pytest
-
-from research import runner_protocol, runner_repository, runner_paths
+from research import runner_paths, runner_protocol, runner_repository
 
 
 class TestStateMigrationV2ToV3:
@@ -45,7 +43,7 @@ class TestStateMigrationV2ToV3:
         # Verify UUID format
         uuid.UUID(campaign["id"])
         # Verify ISO-8601 timestamp
-        datetime.fromisoformat(campaign["started_at"].replace("Z", "+00:00"))
+        datetime.fromisoformat(campaign["started_at"])
 
     def test_migrate_v3_state_preserves_campaign(self):
         """v3 state with existing campaign should be unchanged."""
@@ -226,6 +224,37 @@ class TestArchiveCandidatesWithCampaign:
         sig = inspect.signature(runner_repository.archive_candidates)
         assert "campaign_id" in sig.parameters
         assert sig.parameters["campaign_id"].default is None
+
+    def test_archive_candidates_records_forward_slash_artifact_paths(
+        self, monkeypatch, tmp_path
+    ):
+        root = tmp_path / "repo"
+        candidate = tmp_path / "candidate"
+        candidate.mkdir()
+        (candidate / "model.zip").write_bytes(b"model")
+        (candidate / "artifact.json").write_text("{}", encoding="utf-8")
+        monkeypatch.setattr("research.runner_paths.ROOT", root)
+        monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", root / "research")
+
+        archived = runner_repository.archive_candidates(
+            4,
+            [
+                {
+                    "kind": "candidate",
+                    "name": "checkpoint-10",
+                    "path": candidate,
+                    "timesteps": 10,
+                }
+            ],
+            {},
+            campaign_id="campaign-a",
+        )
+
+        assert archived[0]["artifact"] == (
+            "research/checkpoints/challengers/campaign-a/experiment-4/"
+            "checkpoint-10"
+        )
+        assert "\\" not in archived[0]["artifact"]
 
 
 class TestExperimentNumberingScopedPerCampaign:
@@ -566,3 +595,24 @@ class TestComprehensiveCampaignIsolation:
         next_idx = runner_protocol.next_experiment_index(state, campaign_id=campaign_id)
         assert next_idx == 4
 
+def test_postmortem_memory_stops_at_another_campaign_heading():
+    from research.build_research_brief import _postmortem_memory
+
+    campaign1 = str(uuid.uuid4())
+    campaign2 = str(uuid.uuid4())
+
+    postmortems = f"""
+## {campaign1} / Experiment 1
+
+**Result:** Campaign one result
+
+## {campaign2} / Experiment 1
+
+**Interpretation:** CAMPAIGN_TWO_ONLY
+"""
+
+    memories = _postmortem_memory(postmortems, campaign_id=campaign1)
+
+    assert len(memories) == 1
+    assert "Campaign one result" in memories[0]
+    assert "CAMPAIGN_TWO_ONLY" not in memories[0]
