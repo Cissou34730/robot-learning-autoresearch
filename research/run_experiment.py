@@ -142,6 +142,7 @@ def execute_pending_evaluations() -> int:
     )
 
     state = repository.read_state()
+    campaign_id = repository.current_campaign_id(state)
     pending = state.get("pending_evaluation_request")
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
@@ -211,9 +212,10 @@ def execute_pending_evaluations() -> int:
             if key in completed_keys:
                 console.announce(f"[evaluation] already complete; reusing {label}")
                 continue
-            paths.EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-            output_path = paths.EVALUATION_DIR / protocol.evaluation_artifact_name(
-                experiment, name, episodes, seed, semantics
+            eval_dir = paths.campaign_evaluation_dir(campaign_id)
+            eval_dir.mkdir(parents=True, exist_ok=True)
+            output_path = eval_dir / protocol.evaluation_artifact_name(
+                experiment, name, episodes, seed, semantics, campaign_id=campaign_id
             )
             metrics = execution.evaluate_artifact(
                 paths.ROOT / contender["artifact"],
@@ -252,9 +254,10 @@ def execute_pending_evaluations() -> int:
             if reference_key in completed_reference_keys:
                 console.announce(f"[task reference] already complete; reusing {label}")
                 continue
-            paths.EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-            output_path = paths.EVALUATION_DIR / protocol.task_reference_artifact_name(
-                experiment, name, panel["panel"]
+            eval_dir = paths.campaign_evaluation_dir(campaign_id)
+            eval_dir.mkdir(parents=True, exist_ok=True)
+            output_path = eval_dir / protocol.task_reference_artifact_name(
+                experiment, name, panel["panel"], campaign_id=campaign_id
             )
             metrics = execution.evaluate_artifact(
                 paths.ROOT / contender["artifact"],
@@ -518,16 +521,19 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         allow_unmeasured=True,
         allow_missing_artifact=fresh_baseline,
     )
+    # Extract campaign ID early for use throughout the function
+    campaign_id = repository.current_campaign_id(state)
+    
     # A preserved proposal is the same experiment: recovery and restart reuse
     # the identity the interrupted run allocated instead of consuming a new one.
     resuming = args.reuse_candidate is not None or paths.RESTART_PENDING_PATH.exists()
     index = (
-        protocol.resumed_experiment_index(state, args.reuse_candidate)
+        protocol.resumed_experiment_index(state, args.reuse_candidate, campaign_id=campaign_id)
         if resuming
         else 0
     )
     if index < 1:
-        index = protocol.next_experiment_index(state)
+        index = protocol.next_experiment_index(state, campaign_id=campaign_id)
     state["last_allocated_experiment"] = index
     recoverable_continuation = args.reuse_candidate is not None
     # A fresh baseline has no hypothesis phase to anchor it, and a retry, restart
@@ -536,7 +542,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     # Durable before validation or training can produce anything under this
     # identity, so a rejected, crashed or interrupted experiment consumes it.
     repository.atomic_write_json(paths.STATE_PATH, state)
-    candidate_dir = paths.CANDIDATE_ROOT / f"experiment-{index}"
+    candidate_dir = paths.campaign_candidate_root(campaign_id) / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = research_config.load_experiment_config()
     code_changes: list[str] = []
@@ -550,6 +556,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     result: dict[str, Any] = {
         "schema_version": 1,
         "index": index,
+        "campaign_id": campaign_id,
         "change": change,
         "hypothesis": hypothesis,
         "kind": experiment_kind,
@@ -632,7 +639,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             attempt = execution.training_attempt(
                 index, recoverable_continuation=recoverable_continuation
             )
-            return paths.training_log_path(index, attempt)
+            return paths.training_log_path(index, attempt, campaign_id=campaign_id)
 
         if args.reuse_candidate is not None:
             reusable = args.reuse_candidate.resolve()
@@ -695,7 +702,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             for candidate in execution.candidate_directories(candidate_dir)
         ]
         archived_candidates = repository.archive_candidates(
-            index, contenders, effective_config
+            index, contenders, effective_config, campaign_id=campaign_id
         )
         verdict = "trained; awaiting researcher evaluation request"
         completed_steps = max(

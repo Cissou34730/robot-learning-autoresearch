@@ -23,10 +23,23 @@ def _candidate_metric(candidate: dict, key: str) -> str:
     return "unavailable" if value is None else f"{float(value):g}"
 
 
-def _postmortem_memory(text: str, count: int = 3) -> list[str]:
-    sections = re.split(r"(?=^## Experiment \d+\b)", text, flags=re.MULTILINE)
+def _postmortem_memory(text: str, campaign_id: str | None = None, count: int = 3) -> list[str]:
+    """Extract postmortem sections for the given campaign.
+    
+    Handles both new "## Campaign ID / Experiment N" format and legacy "## Experiment N" format.
+    When campaign_id is provided, only sections for that campaign are extracted.
+    """
+    if campaign_id:
+        # New format: "## Campaign ID / Experiment N"
+        pattern = rf"(?=^## {re.escape(campaign_id)} / Experiment \d+\b)"
+        sections = re.split(pattern, text, flags=re.MULTILINE)
+    else:
+        # Legacy format: "## Experiment N"
+        pattern = r"(?=^## Experiment \d+\b)"
+        sections = re.split(pattern, text, flags=re.MULTILINE)
+    
     sections = [
-        section.strip() for section in sections if section.startswith("## Experiment")
+        section.strip() for section in sections if section.startswith("## ")
     ]
     memories: list[str] = []
     # Each rendered label accepts every heading past and present entries use, so
@@ -185,6 +198,8 @@ def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
 
 
 def render_research_brief() -> str:
+    from research import runner_repository  # Import here to avoid circular dependency
+    
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
     state_path = RESEARCH_DIR / "research_state.json"
@@ -203,13 +218,24 @@ def render_research_brief() -> str:
         if state_path.exists()
         else {}
     )
+    
+    # Extract campaign info for filtering
+    campaign_id = runner_repository.current_campaign_id(state) if state else None
+    campaign_base_commit = runner_repository.current_campaign_base_commit(state) if state else None
+    
     results = []
     if results_path.exists():
-        results = [
+        all_results = [
             json.loads(line)
             for line in results_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
+        # Filter by campaign if available
+        if campaign_id:
+            results = [r for r in all_results if r.get("campaign_id") == campaign_id]
+        else:
+            results = all_results
+    
     accepted_metrics = state.get("accepted_metrics")
     latest_result = results[-1] if results else None
     accepted_score = None
@@ -348,6 +374,19 @@ def render_research_brief() -> str:
             "history only when this brief identifies a genuine ambiguity."
         ),
         "",
+    ]
+    
+    # Add campaign header if available
+    if campaign_id:
+        lines.extend([
+            "## Campaign Context",
+            "",
+            f"- Campaign: `{campaign_id}`",
+            f"- Base commit: `{campaign_base_commit}`",
+            "",
+        ])
+    
+    lines.extend([
         "## Immutable goal",
         "",
         (
@@ -395,7 +434,7 @@ def render_research_brief() -> str:
         "",
         "| # | Family | Exact change | Init / budget | Outcome | Verdict |",
         "|---:|---|---|---|---|---|",
-    ]
+    ])
 
     for result in results[-5:]:
         family = str(result.get("family", "-")).replace("|", "/")
@@ -458,7 +497,7 @@ def render_research_brief() -> str:
         lines.append("")
 
     lines.extend(["", "## Prior researcher interpretations", ""])
-    memories = _postmortem_memory(postmortems)
+    memories = _postmortem_memory(postmortems, campaign_id=campaign_id)
     if memories:
         lines.extend(
             [

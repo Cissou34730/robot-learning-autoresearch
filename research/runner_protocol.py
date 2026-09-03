@@ -71,6 +71,7 @@ RESEARCHER_VALIDATED_TEST_PATHS = (
     "tests/scenario",
     "tests/training",
     "tests/autoresearch/test_scenario_boundary.py",
+    "tests/autoresearch/test_campaign_boundary.py",
 )
 # The researcher-owned scientific surface, stated positively. Anything absent
 # here is unclassified and validated completely, so a new or unfamiliar path is
@@ -176,46 +177,62 @@ def validation_test_paths(
 # --- experiment identity ---------------------------------------------------
 
 
-def allocated_experiment_index(state: dict) -> int:
+def allocated_experiment_index(state: dict, campaign_id: str | None = None) -> int:
     """The highest experiment identity the Runner has ever handed out.
 
+    When campaign_id is provided, returns the highest index for that campaign only.
     `results.jsonl` and `EXPERIMENTS.md` are histories: they can be incomplete,
     regenerated or rolled back, so they never allocate identity. A state file
     written before allocation existed carries only the last experiment the
     Runner ran, which then seeds the counter.
     """
-    return max(
-        int(state.get("last_allocated_experiment") or 0),
-        int(state.get("last_experiment") or 0),
-    )
+    if campaign_id is None:
+        # Backward compat: global fallback for legacy code paths
+        return max(
+            int(state.get("last_allocated_experiment") or 0),
+            int(state.get("last_experiment") or 0),
+        )
+    # Campaign-scoped: track per-campaign high index
+    campaign_counters = state.get("campaign_experiment_counters", {})
+    return int(campaign_counters.get(campaign_id, 0))
 
 
-def experiment_working_paths(index: int) -> tuple[Path, ...]:
+def experiment_working_paths(index: int, campaign_id: str | None = None) -> tuple[Path, ...]:
+    if campaign_id:
+        root = paths.campaign_candidate_root(campaign_id)
+    else:
+        root = paths.CANDIDATE_ROOT
     return (
-        paths.CANDIDATE_ROOT / f"experiment-{index}",
-        paths.CANDIDATE_ROOT / f"recovery-experiment-{index}",
+        root / f"experiment-{index}",
+        root / f"recovery-experiment-{index}",
     )
 
 
-def next_experiment_index(state: dict) -> int:
+def next_experiment_index(state: dict, campaign_id: str | None = None) -> int:
     """Allocate the next identity for a new experiment.
 
+    When campaign_id is provided, allocates indices independently per campaign.
     An identity whose working directories already hold data is skipped, never
     reused: unexpected data is preserved and only costs a number.
     """
-    index = allocated_experiment_index(state) + 1
-    while any(path.exists() for path in experiment_working_paths(index)):
+    index = allocated_experiment_index(state, campaign_id=campaign_id) + 1
+    while any(path.exists() for path in experiment_working_paths(index, campaign_id=campaign_id)):
         console.announce(
             f"[runner] WARNING: models/candidates already holds data for "
             f"experiment {index}; preserving it and skipping that identity"
         )
         index += 1
+    # Update campaign counter if campaign_id provided
+    if campaign_id:
+        if "campaign_experiment_counters" not in state:
+            state["campaign_experiment_counters"] = {}
+        state["campaign_experiment_counters"][campaign_id] = index
     return index
 
 
-def resumed_experiment_index(state: dict, reuse_candidate: Path | None) -> int:
+def resumed_experiment_index(state: dict, reuse_candidate: Path | None, campaign_id: str | None = None) -> int:
     """A preserved proposal keeps the identity its interrupted run allocated."""
-    index = allocated_experiment_index(state)
+    index = allocated_experiment_index(state, campaign_id=campaign_id)
     if reuse_candidate is not None:
         # Only load-bearing for a state file that predates allocated identity.
         match = re.fullmatch(r"recovery-experiment-(\d+)", reuse_candidate.name)
@@ -591,19 +608,34 @@ def planned_measurements(request: dict, available: dict) -> tuple[list[dict], li
 
 
 def evaluation_artifact_name(
-    experiment: int, candidate: str, episodes: int, seed: int, semantics: str
+    experiment: int, candidate: str, episodes: int, seed: int, semantics: str, campaign_id: str | None = None
 ) -> str:
-    """One stable file per measured panel, so repeated rounds never collide."""
+    """One stable file per measured panel, so repeated rounds never collide.
+    
+    When campaign_id is provided, includes it in the filename to isolate
+    artifacts per campaign.
+    """
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    if campaign_id:
+        return (
+            f"evaluation-{campaign_id}-experiment-{experiment}-{label}-"
+            f"{episodes}ep-seed{seed}-{semantics}.json"
+        )
     return (
         f"evaluation-experiment-{experiment}-{label}-"
         f"{episodes}ep-seed{seed}-{semantics}.json"
     )
 
 
-def task_reference_artifact_name(experiment: int, candidate: str, panel: str) -> str:
-    """Task-reference identity is the model and the human-owned panel, nothing else."""
+def task_reference_artifact_name(experiment: int, candidate: str, panel: str, campaign_id: str | None = None) -> str:
+    """Task-reference identity is the model and the human-owned panel, nothing else.
+    
+    When campaign_id is provided, includes it in the filename to isolate
+    artifacts per campaign.
+    """
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    if campaign_id:
+        return f"task-reference-{campaign_id}-experiment-{experiment}-{label}-{panel}.json"
     return f"task-reference-experiment-{experiment}-{label}-{panel}.json"
 
 

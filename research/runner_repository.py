@@ -269,6 +269,29 @@ def read_state() -> dict:
     return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
 
 
+def migrate_state_to_v3(state: dict) -> dict:
+    """Upgrade v2 state to v3 by adding campaign object if missing."""
+    if state.get("schema_version", 2) == 2:
+        state["schema_version"] = 3
+        if "campaign" not in state:
+            # Legacy campaign: preserve base_commit from scientific parent or use HEAD
+            base_commit = state.get("pending_scientific_parent") or "HEAD"
+            campaign_id = str(__import__("uuid").uuid4())
+            state["campaign"] = {
+                "id": campaign_id,
+                "started_at": __import__("datetime").datetime.now().isoformat() + "Z",
+                "base_commit": base_commit,
+            }
+            # Preserve the allocated experiment counter in campaign_experiment_counters
+            if "campaign_experiment_counters" not in state:
+                state["campaign_experiment_counters"] = {}
+            # Use last_allocated_experiment (preferred), or last_experiment as fallback
+            counter = state.get("last_allocated_experiment") or state.get("last_experiment") or 0
+            if counter:
+                state["campaign_experiment_counters"][campaign_id] = counter
+    return state
+
+
 def load_state(
     *,
     allow_unmeasured: bool = False,
@@ -277,12 +300,17 @@ def load_state(
     if not paths.STATE_PATH.exists():
         raise RuntimeError("research state is missing; refusing to run")
     state = read_state()
+    state = migrate_state_to_v3(state)
     required = {"schema_version", "accepted_artifact"}
     missing = required - set(state)
     if missing:
         raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
-    if state["schema_version"] != 2:
+    if state["schema_version"] != 3:
         raise RuntimeError("unsupported research state schema")
+    # Campaign object is optional for backward compatibility with legacy state files
+    campaign = state.get("campaign", {})
+    if campaign and not isinstance(campaign, dict):
+        raise RuntimeError("campaign object is malformed")
     if not allow_missing_artifact:
         artifact = paths.ROOT / state["accepted_artifact"]
         for filename in ARTIFACT_FILES:
@@ -307,6 +335,20 @@ def anchor_scientific_parent(state: dict) -> str:
         parent = git("rev-parse", "HEAD").strip()
     state["pending_scientific_parent"] = parent
     return parent
+
+
+def current_campaign_id(state: dict) -> str | None:
+    """Retrieve the active campaign ID from persisted state, or None if missing."""
+    campaign = state.get("campaign", {})
+    campaign_id = campaign.get("id")
+    return str(campaign_id) if campaign_id else None
+
+
+def current_campaign_base_commit(state: dict) -> str | None:
+    """Retrieve the campaign's base commit (pre-reset HEAD) for change attribution, or None if missing."""
+    campaign = state.get("campaign", {})
+    base_commit = campaign.get("base_commit")
+    return str(base_commit) if base_commit else None
 
 
 # --- campaign history ------------------------------------------------------
@@ -370,6 +412,14 @@ def result_records() -> list[dict]:
         json.loads(line)
         for line in paths.RESULTS_PATH.read_text(encoding="utf-8").splitlines()
         if line.strip()
+    ]
+
+
+def result_records_for_campaign(campaign_id: str) -> list[dict]:
+    """Filter result records to a specific campaign, ordered oldest first."""
+    return [
+        record for record in result_records()
+        if record.get("campaign_id") == campaign_id
     ]
 
 
@@ -481,10 +531,16 @@ def archive_candidates(
     index: int,
     contenders: list[dict],
     config: dict,
+    campaign_id: str | None = None,
 ) -> list[dict]:
-    destination = (
-        paths.RESEARCH_DIR / "checkpoints" / "challengers" / f"experiment-{index}"
-    )
+    if campaign_id:
+        destination = (
+            paths.RESEARCH_DIR / "checkpoints" / "challengers" / campaign_id / f"experiment-{index}"
+        )
+    else:
+        destination = (
+            paths.RESEARCH_DIR / "checkpoints" / "challengers" / f"experiment-{index}"
+        )
     if destination.exists():
         raise RuntimeError(f"challenger archive already exists: {destination}")
     destination.mkdir(parents=True)
