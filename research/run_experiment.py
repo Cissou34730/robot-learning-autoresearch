@@ -653,7 +653,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
 
         def active_training_log() -> Path:
             attempt = execution.training_attempt(
-                index, recoverable_continuation=recoverable_continuation
+                index, recoverable_continuation=recoverable_continuation, campaign_id=campaign_id
             )
             return paths.training_log_path(index, attempt, campaign_id=campaign_id)
 
@@ -762,7 +762,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
         repository.atomic_write_json(paths.STATE_PATH, state)
     except KeyboardInterrupt:
-        recovery_dir = paths.CANDIDATE_ROOT / f"recovery-experiment-{index}"
+        recovery_dir = paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"
         recoverable = all(
             (candidate_dir / filename).exists()
             for filename in repository.ARTIFACT_FILES

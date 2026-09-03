@@ -1782,11 +1782,23 @@ def _measured(tmp_path, name, artifacts):
     return [record]
 
 
-def _attest(monkeypatch, tmp_path, experiment, paths, label="Evidence inspected"):
+def _attest(
+    monkeypatch,
+    tmp_path,
+    experiment,
+    paths,
+    label="Evidence inspected",
+    campaign_id=None,
+):
     """Write the postmortem a lineage decision must carry to be accepted."""
     postmortem = tmp_path / "postmortems.md"
+    heading = (
+        f"## {campaign_id} / Experiment {experiment} - measured"
+        if campaign_id
+        else f"## Experiment {experiment} - measured"
+    )
     postmortem.write_text(
-        f"## Experiment {experiment} - measured\n\n"
+        f"{heading}\n\n"
         "**Result:** measured.\n\n"
         "**Observed behavior:** recorded.\n\n"
         "**Interpretation:** the candidate is the useful parent.\n\n"
@@ -1891,6 +1903,38 @@ def test_retained_lineage_keeps_its_evaluation_evidence(monkeypatch, tmp_path):
     assert (artifacts / "evaluation-experiment-8-runner-up-2ep-seed44-ab.json").exists()
     # Removing a retained lineage drops its checkpoint, never its measurements.
     assert (artifacts / Path(obsolete).name).exists()
+
+
+def test_retained_lineage_is_scoped_to_the_active_campaign(monkeypatch, tmp_path):
+    state, _ = _evaluation_lifecycle_state(monkeypatch, tmp_path)
+    campaign_id = "550e8400-e29b-41d4-a716-446655440000"
+    state["campaign"] = {
+        "id": campaign_id,
+        "started_at": "2026-01-01T00:00:00Z",
+        "base_commit": "abc123",
+    }
+    # The lifecycle fixture attests a campaign-less postmortem heading; re-attest
+    # it under the campaign-scoped heading the plan now looks up.
+    _attest(
+        monkeypatch,
+        tmp_path,
+        8,
+        ["research/evaluations/evaluation-experiment-8-candidate-2ep-seed44-ab.json"],
+        campaign_id=campaign_id,
+    )
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["retain"] = [
+        {"candidate": "runner-up", "id": "alternative", "reason": "Useful contrast."}
+    ]
+
+    assert not apply_previous_result_decision(decision, state)
+
+    retained = state["retained_lineages"][0]
+    assert retained["campaign_id"] == campaign_id
+    assert retained["artifact"] == (
+        f"research/checkpoints/retained/{campaign_id}/alternative"
+    )
+    assert (tmp_path / "research" / "checkpoints" / "retained" / campaign_id / "alternative").exists()
 
 
 def test_removing_retained_lineage_keeps_history_but_removes_artifact(

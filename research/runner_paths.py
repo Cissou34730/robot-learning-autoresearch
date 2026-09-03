@@ -54,3 +54,10 @@ def campaign_evaluation_dir(campaign_id: str | None) -> Path:
 		return EVALUATION_DIR
 	return EVALUATION_DIR / campaign_id
 
+
+def campaign_retained_root(campaign_id: str | None) -> Path:
+	"""Retained-lineage archive scoped to a specific campaign, or legacy path if campaign_id is None."""
+	if campaign_id is None:
+		return RESEARCH_DIR / "checkpoints" / "retained"
+	return RESEARCH_DIR / "checkpoints" / "retained" / campaign_id
+

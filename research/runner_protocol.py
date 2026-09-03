@@ -961,7 +961,8 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         repository.require_complete_artifact(
             source_artifact, f"retained lineage {identifier!r}"
         )
-        destination = paths.RESEARCH_DIR / "checkpoints" / "retained" / identifier
+        campaign_id = repository.current_campaign_id(state)
+        destination = paths.campaign_retained_root(campaign_id) / identifier
         if destination.exists():
             raise ValueError(
                 f"retained lineage destination already exists: {identifier}"
@@ -974,6 +975,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
                     "id": identifier,
                     "artifact": repository.repo_relative_path(destination),
                     "origin_experiment": int(pending["experiment"]),
+                    "campaign_id": campaign_id,
                     "candidate": candidate_name,
                     "reason": retention_reason,
                     "parameters": source.get("parameters", pending["parameters"]),

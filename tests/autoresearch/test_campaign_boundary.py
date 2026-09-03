@@ -1,76 +1,33 @@
 """Test campaign boundary enforcement in research state and artifacts.
 
 Campaign boundaries ensure that:
-1. Research state tracks a campaign identity (UUID, start time, base commit)
-2. Schema v2 states auto-migrate to v3 with generated campaign ID
-3. Experiment indices are scoped per campaign
-4. Result records preserve campaign_id for history
-5. Artifact paths are organized by campaign
-6. Brief generation filters to current campaign
+1. Research state requires a campaign identity (UUID, start time, base commit)
+2. Experiment indices are scoped per campaign
+3. Result records preserve campaign_id for history
+4. Artifact paths are organized by campaign
+5. Brief generation filters to current campaign
 """
 
 import json
 import tempfile
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
+
+import pytest
 
 from research import runner_paths, runner_protocol, runner_repository
 
 
-class TestStateMigrationV2ToV3:
-    """State schema v2 should auto-upgrade to v3 with campaign identity."""
+class TestStateRequiresCampaign:
+    """Schema v3 state must always carry a valid campaign identity; there is no v2 fallback."""
 
-    def test_migrate_v2_state_generates_campaign_id(self):
-        """v2 state without campaign should generate UUID and timestamps on migration."""
-        v2_state = {
-            "schema_version": 2,
-            "accepted_artifact": "research\\checkpoints\\accepted",
-            "accepted_metrics": None,
-            "retained_lineages": [],
-            "last_experiment": 5,
-            "last_allocated_experiment": 5,
-        }
-
-        v3_state = runner_repository.migrate_state_to_v3(v2_state)
-
-        assert v3_state["schema_version"] == 3
-        assert "campaign" in v3_state
-        campaign = v3_state["campaign"]
-        assert "id" in campaign
-        assert "started_at" in campaign
-        assert "base_commit" in campaign
-        # Verify UUID format
-        uuid.UUID(campaign["id"])
-        # Verify ISO-8601 timestamp
-        datetime.fromisoformat(campaign["started_at"])
-
-    def test_migrate_v3_state_preserves_campaign(self):
-        """v3 state with existing campaign should be unchanged."""
-        campaign_id = str(uuid.uuid4())
-        v3_state = {
-            "schema_version": 3,
-            "campaign": {
-                "id": campaign_id,
-                "started_at": "2026-09-01T12:00:00Z",
-                "base_commit": "abc123",
-            },
-            "accepted_artifact": "research\\checkpoints\\accepted",
-        }
-
-        result = runner_repository.migrate_state_to_v3(v3_state)
-
-        assert result["campaign"]["id"] == campaign_id
-        assert result["campaign"]["started_at"] == "2026-09-01T12:00:00Z"
-        assert result["campaign"]["base_commit"] == "abc123"
-
-    def test_load_state_validates_v3_schema(self):
-        """load_state should allow missing campaign (backward compatibility) but validate other schema fields."""
-        # Test with missing campaign object - should succeed when allow_missing_artifact=True
+    def test_load_state_rejects_missing_campaign(self):
+        """load_state should reject a v3 state with no campaign object."""
         state_without_campaign = {
             "schema_version": 3,
             "accepted_artifact": "research\\checkpoints\\accepted",
-            "accepted_metrics": {"threshold": 0.5},  # Add metrics to pass validation
+            "accepted_metrics": {"threshold": 0.5},
         }
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -78,14 +35,59 @@ class TestStateMigrationV2ToV3:
             state_file = tmpdir / "research_state.json"
             state_file.write_text(json.dumps(state_without_campaign))
 
-            # Mock the paths
             original_state_path = runner_paths.STATE_PATH
             try:
                 runner_paths.STATE_PATH = state_file
-                # Should succeed - campaign is optional for backward compatibility
+                with pytest.raises(RuntimeError, match="campaign"):
+                    runner_repository.load_state(allow_missing_artifact=True)
+            finally:
+                runner_paths.STATE_PATH = original_state_path
+
+    def test_load_state_rejects_incomplete_campaign(self):
+        """load_state should reject a campaign object missing required fields."""
+        state_with_bad_campaign = {
+            "schema_version": 3,
+            "accepted_artifact": "research\\checkpoints\\accepted",
+            "accepted_metrics": {"threshold": 0.5},
+            "campaign": {"id": "00000000-0000-0000-0000-000000000000"},
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            state_file = tmpdir / "research_state.json"
+            state_file.write_text(json.dumps(state_with_bad_campaign))
+
+            original_state_path = runner_paths.STATE_PATH
+            try:
+                runner_paths.STATE_PATH = state_file
+                with pytest.raises(RuntimeError, match="campaign"):
+                    runner_repository.load_state(allow_missing_artifact=True)
+            finally:
+                runner_paths.STATE_PATH = original_state_path
+
+    def test_load_state_accepts_valid_campaign(self):
+        """load_state should succeed when a complete campaign object is present."""
+        state_with_campaign = {
+            "schema_version": 3,
+            "accepted_artifact": "research\\checkpoints\\accepted",
+            "accepted_metrics": {"threshold": 0.5},
+            "campaign": {
+                "id": str(uuid.uuid4()),
+                "started_at": datetime.now(tz=UTC).isoformat(),
+                "base_commit": "abc123",
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            state_file = tmpdir / "research_state.json"
+            state_file.write_text(json.dumps(state_with_campaign))
+
+            original_state_path = runner_paths.STATE_PATH
+            try:
+                runner_paths.STATE_PATH = state_file
                 result = runner_repository.load_state(allow_missing_artifact=True)
-                assert result["schema_version"] == 3
-                assert "campaign" in result or "campaign" not in result  # Campaign may or may not be present
+                assert result["campaign"]["id"] == state_with_campaign["campaign"]["id"]
             finally:
                 runner_paths.STATE_PATH = original_state_path
 

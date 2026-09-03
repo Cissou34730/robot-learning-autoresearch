@@ -276,50 +276,65 @@ def _request(**overrides) -> dict:
 
 
 def test_request_accepts_research_only_reference_only_and_both():
-    research = [{"candidate": "checkpoint-1", "episodes": 10, "seed": 5}]
-    reference = [{"candidate": "champion"}]
+    research = [
+        {
+            "instrument": "research_evaluation",
+            "candidate": "checkpoint-1",
+            "episodes": 10,
+            "seed": 5,
+        }
+    ]
+    reference = [{"instrument": "task_reference", "candidate": "champion"}]
 
-    validate_evaluation_request(_request(evaluations=research))
-    validate_evaluation_request(_request(task_reference_evaluations=reference))
-    validate_evaluation_request(
-        _request(evaluations=research, task_reference_evaluations=reference)
-    )
+    validate_evaluation_request(_request(measurements=research))
+    validate_evaluation_request(_request(measurements=reference))
+    validate_evaluation_request(_request(measurements=research + reference))
 
 
 def test_request_must_ask_for_at_least_one_measurement():
-    with pytest.raises(ValueError, match="at least one research or"):
-        validate_evaluation_request(_request(evaluations=[]))
+    with pytest.raises(ValueError, match="at least one measurement"):
+        validate_evaluation_request(_request(measurements=[]))
 
 
 @pytest.mark.parametrize(
     "entry",
     [
-        {"candidate": "champion", "episodes": 10},
-        {"candidate": "champion", "seed": 4},
-        {"candidate": "champion", "panel": "custom"},
-        {"candidate": "champion", "official_benchmark": True},
+        {"instrument": "task_reference", "candidate": "champion", "episodes": 10},
+        {"instrument": "task_reference", "candidate": "champion", "seed": 4},
+        {"instrument": "task_reference", "candidate": "champion", "panel": "custom"},
+        {
+            "instrument": "task_reference",
+            "candidate": "champion",
+            "official_benchmark": True,
+        },
     ],
 )
 def test_request_rejects_researcher_owned_reference_panel_parameters(entry):
-    with pytest.raises(ValueError, match="human-owned"):
-        validate_evaluation_request(_request(task_reference_evaluations=[entry]))
+    with pytest.raises(ValueError, match="cannot set unsupported fields"):
+        validate_evaluation_request(_request(measurements=[entry]))
 
 
-@pytest.mark.parametrize("entry", [{}, {"candidate": "   "}])
+@pytest.mark.parametrize(
+    "entry",
+    [
+        {"instrument": "task_reference"},
+        {"instrument": "task_reference", "candidate": "   "},
+    ],
+)
 def test_request_rejects_a_reference_evaluation_without_a_model(entry):
-    with pytest.raises(ValueError, match="requires a candidate"):
-        validate_evaluation_request(_request(task_reference_evaluations=[entry]))
+    with pytest.raises(ValueError, match="requires a non-empty candidate"):
+        validate_evaluation_request(_request(measurements=[entry]))
 
 
 def test_request_rejects_a_malformed_reference_list():
     with pytest.raises(TypeError, match="must be a list"):
-        validate_evaluation_request(_request(task_reference_evaluations={}))
+        validate_evaluation_request(_request(measurements={}))
     with pytest.raises(TypeError, match="must be an object"):
-        validate_evaluation_request(_request(task_reference_evaluations=["champion"]))
+        validate_evaluation_request(_request(measurements=["champion"]))
 
 
 def test_reference_entry_fields_stay_minimal():
-    assert TASK_REFERENCE_ENTRY_FIELDS == {"candidate", "label"}
+    assert TASK_REFERENCE_ENTRY_FIELDS == {"instrument", "candidate", "label"}
 
 
 def test_reference_artifacts_cannot_collide_with_research_artifacts():

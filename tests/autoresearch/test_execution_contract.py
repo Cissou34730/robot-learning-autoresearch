@@ -16,7 +16,6 @@ from research import runner_execution as execution
 from research import runner_protocol as protocol
 from research.run_experiment import (
     apply_previous_result_decision,
-    begin_hypothesis_phase,
     check_proposal,
     main,
 )
@@ -41,7 +40,6 @@ from research.runner_protocol import (
 )
 from research.runner_repository import (
     RUNNER_CONTROL_PATHS,
-    anchor_scientific_parent,
     append_result,
     apply_code_lineage_decision,
     assert_research_surface,
@@ -55,7 +53,6 @@ from research.runner_repository import (
     repo_relative_path,
     require_complete_artifact,
     resolve_repo_path,
-    scientific_delta,
     synchronize_experiment_log,
 )
 from robot_learning.evaluate import write_progress
@@ -601,9 +598,14 @@ def test_parameter_only_experiment_still_validates_the_configuration(
     (tmp_path / "research_state.json").write_text(
         json.dumps(
             {
-                "schema_version": 2,
+                "schema_version": 3,
                 "accepted_artifact": "accepted",
                 "accepted_metrics": None,
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
             }
         ),
         encoding="utf-8",
@@ -900,9 +902,14 @@ def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 2,
+                "schema_version": 3,
                 "accepted_artifact": "missing-checkpoint",
                 "accepted_metrics": None,
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
             }
         ),
         encoding="utf-8",
@@ -956,6 +963,11 @@ def test_load_state_resolves_legacy_windows_artifact_path(monkeypatch, tmp_path)
                 "schema_version": 3,
                 "accepted_artifact": "research\\checkpoints\\accepted",
                 "accepted_metrics": {"success_percent": 50.0},
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
             }
         ),
         encoding="utf-8",
@@ -1538,13 +1550,26 @@ def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
     accepted.mkdir(exist_ok=True)
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         (accepted / filename).touch()
+    campaign_id = "00000000-0000-0000-0000-000000000001"
+    # Experiment identity is allocated per campaign; seed the campaign counter
+    # from whichever flat legacy index the caller intended.
+    allocated = max(
+        int(state.get("last_allocated_experiment") or 0),
+        int(state.get("last_experiment") or 0),
+    )
     state_path = tmp_path / "research_state.json"
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 2,
+                "schema_version": 3,
                 "accepted_artifact": "accepted",
                 "accepted_metrics": None,
+                "campaign": {
+                    "id": campaign_id,
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
+                "campaign_experiment_counters": {campaign_id: allocated},
                 **state,
             }
         ),
@@ -1791,9 +1816,14 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 2,
+                "schema_version": 3,
                 "accepted_artifact": "accepted",
                 "accepted_metrics": None,
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
                 "pending_researcher_decision": {
                     "experiment": 3,
                     "candidates": [
@@ -1880,446 +1910,3 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     from research.run_experiment import execute_pending_final_benchmark
 
     assert execute_pending_final_benchmark() == 0
-
-
-# --- scientific parent and path-scoped rollback ----------------------------
-
-SCIENCE = "robot_learning/scenario/reward.py"
-OTHER_SCIENCE = "robot_learning/training/normalization.py"
-MEMORY = "research/results.jsonl"
-PARAMS = "research/current_params.json"
-
-
-def _git(work: Path, *args: str) -> str:
-    return subprocess.run(
-        ["git", *args], cwd=work, capture_output=True, text=True, check=True
-    ).stdout
-
-
-def _write(work: Path, path: str, text: str) -> None:
-    target = work / path
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(text, encoding="utf-8")
-
-
-def _commit(work: Path, message: str) -> str:
-    _git(work, "add", "-A")
-    _git(work, "commit", "-qm", message)
-    return _head(work)
-
-
-def _head(work: Path) -> str:
-    return _git(work, "rev-parse", "HEAD").strip()
-
-
-def _subjects(work: Path) -> list[str]:
-    return _git(work, "log", "--format=%s").splitlines()
-
-
-def _files_of(work: Path, revision: str) -> list[str]:
-    return _git(work, "show", "--name-only", "--format=", revision).split()
-
-
-def _anchored_parent(work: Path) -> str | None:
-    state = json.loads(
-        (work / "research" / "research_state.json").read_text(encoding="utf-8")
-    )
-    return state.get("pending_scientific_parent")
-
-
-@pytest.fixture
-def science_repo(monkeypatch, tmp_path):
-    """A real repository with an origin, so rollback is exercised, not simulated."""
-
-    subprocess.run(
-        ["git", "init", "--bare", "-q", str(tmp_path / "origin.git")], check=True
-    )
-    work = tmp_path / "work"
-    work.mkdir()
-    _git(work, "init", "-q", "-b", "main")
-    _git(work, "config", "user.email", "runner@example.invalid")
-    _git(work, "config", "user.name", "runner")
-    _git(work, "remote", "add", "origin", str(tmp_path / "origin.git"))
-    _write(work, ".gitignore", "archive/\nmodels/\n")
-    _write(work, SCIENCE, "parent reward\n")
-    _write(work, PARAMS, '{"method": {"rate": 1}}\n')
-    _write(work, MEMORY, '{"index": 1}\n')
-    _write(work, "research/research_state.json", json.dumps({"schema_version": 2}))
-    _commit(work, "accepted science")
-    _git(work, "push", "-q", "-u", "origin", "main")
-    monkeypatch.setattr("research.runner_paths.ROOT", work)
-    monkeypatch.setattr(
-        "research.runner_paths.STATE_PATH", work / "research" / "research_state.json"
-    )
-    return work
-
-
-def test_the_scientific_parent_predates_every_researcher_commit(science_repo):
-    accepted = _head(science_repo)
-
-    assert begin_hypothesis_phase() == 0
-    _write(science_repo, SCIENCE, "researcher commit B\n")
-
-    assert _commit(science_repo, "researcher commit B") != accepted
-    assert _anchored_parent(science_repo) == accepted
-
-
-def test_an_unfinished_researcher_phase_keeps_its_scientific_parent(science_repo):
-    accepted = _head(science_repo)
-    begin_hypothesis_phase()
-    _write(science_repo, SCIENCE, "first attempt\n")
-    _commit(science_repo, "researcher commit B")
-
-    # A retry, a launcher restart and the experiment itself all re-enter the
-    # same unfinished phase, and none of them recaptures HEAD.
-    begin_hypothesis_phase()
-    begin_hypothesis_phase()
-    state = json.loads(
-        (science_repo / "research" / "research_state.json").read_text(encoding="utf-8")
-    )
-
-    assert _anchored_parent(science_repo) == accepted
-    assert anchor_scientific_parent(state) == accepted
-
-
-def test_a_rejected_experiment_leaves_its_science_in_the_next_delta(science_repo):
-    accepted = _head(science_repo)
-    begin_hypothesis_phase()
-    _write(science_repo, SCIENCE, "preserved after rejection\n")
-    _commit(science_repo, "researcher commit B")
-    state = json.loads(
-        (science_repo / "research" / "research_state.json").read_text(encoding="utf-8")
-    )
-
-    assert anchor_scientific_parent(state) == accepted
-    assert scientific_delta(accepted) == [SCIENCE]
-
-
-def test_committed_researcher_changes_stay_in_the_experiment_delta(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, SCIENCE, "committed change\n")
-    _commit(science_repo, "researcher commit B")
-
-    assert _git(science_repo, "status", "--porcelain").strip() == ""
-    assert scientific_delta(accepted) == [SCIENCE]
-
-
-def test_several_researcher_commits_form_one_experiment_delta(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, SCIENCE, "first\n")
-    _commit(science_repo, "researcher commit B")
-    _write(science_repo, "robot_learning/scenario/observations.py", "second\n")
-    _commit(science_repo, "researcher commit C")
-    _write(science_repo, OTHER_SCIENCE, "still dirty\n")
-
-    assert sorted(scientific_delta(accepted)) == [
-        "robot_learning/scenario/observations.py",
-        SCIENCE,
-        OTHER_SCIENCE,
-    ]
-
-
-def test_a_committed_protected_change_cannot_bypass_validation(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, "robot_learning/robots/two_joint_arm.xml", "<mujoco/>\n")
-    _commit(science_repo, "researcher commit touching the official robot")
-    delta = scientific_delta(accepted)
-
-    assert _git(science_repo, "status", "--porcelain").strip() == ""
-    with pytest.raises(ValueError, match="human-owned task, context") as rejection:
-        validate_experiment_semantics({}, "training", "transfer", None, delta, False)
-    assert "robot_learning/robots/two_joint_arm.xml" in str(rejection.value)
-    assert "scientific parent" in str(rejection.value)
-
-
-def test_a_committed_protected_test_cannot_bypass_validation(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, "tests/autoresearch/test_smuggled_rule.py", "assert True\n")
-    _commit(science_repo, "researcher commit inventing a protocol rule")
-    delta = scientific_delta(accepted)
-
-    with pytest.raises(ValueError, match="human-owned .* tests") as rejection:
-        validate_experiment_semantics({}, "training", "transfer", None, delta, False)
-    assert "tests/autoresearch/test_smuggled_rule.py" in str(rejection.value)
-    assert "scientific parent" in str(rejection.value)
-
-
-def test_keep_preserves_every_researcher_commit_and_commits_what_is_left(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, SCIENCE, "commit B reward\n")
-    first = _commit(science_repo, "researcher commit B")
-    _write(science_repo, "robot_learning/scenario/observations.py", "commit C\n")
-    second = _commit(science_repo, "researcher commit C")
-    _write(science_repo, OTHER_SCIENCE, "final adjustment\n")
-    _write(science_repo, MEMORY, '{"index": 1}\n{"index": 2}\n')
-
-    plan = plan_code_lineage_decision(
-        {"code_parent_commit": accepted, "research_change_paths": [SCIENCE]}, "keep"
-    )
-    apply_code_lineage_decision({**plan, "parent": accepted})
-    commit_lineage_decision(4, "checkpoint-1", code_action="keep")
-
-    history = _git(science_repo, "log", "--format=%H").split()
-    assert history[-3:] == [second, first, accepted]
-    assert (science_repo / SCIENCE).read_text(encoding="utf-8") == "commit B reward\n"
-    assert (science_repo / OTHER_SCIENCE).read_text(encoding="utf-8") == (
-        "final adjustment\n"
-    )
-    assert _subjects(science_repo)[:2] == [
-        "select experiment 4 lineage: checkpoint-1",
-        "experiment 4 code retained for checkpoint-1",
-    ]
-    assert _files_of(science_repo, "HEAD~1") == [OTHER_SCIENCE]
-    assert _files_of(science_repo, "HEAD") == [MEMORY]
-
-
-def test_revert_restores_committed_and_uncommitted_science_of_every_kind(science_repo):
-    _write(science_repo, "robot_learning/scenario/observations.py", "parent view\n")
-    _write(science_repo, "robot_learning/scenario/legacy.py", "parent legacy\n")
-    accepted = _commit(science_repo, "more accepted science")
-    _write(science_repo, SCIENCE, "experiment reward\n")
-    _write(science_repo, "robot_learning/scenario/created.py", "created here\n")
-    _commit(science_repo, "researcher commit B")
-    (science_repo / "robot_learning" / "scenario" / "observations.py").unlink()
-    _git(
-        science_repo,
-        "mv",
-        "robot_learning/scenario/legacy.py",
-        "robot_learning/scenario/renamed.py",
-    )
-    _commit(science_repo, "researcher commit C")
-    _write(science_repo, OTHER_SCIENCE, "dirty and uncommitted\n")
-    _write(science_repo, PARAMS, '{"method": {"rate": 2}}\n')
-
-    plan = plan_code_lineage_decision(
-        {"code_parent_commit": accepted, "research_change_paths": []},
-        "revert",
-        current_paths=scientific_delta(accepted),
-    )
-    apply_code_lineage_decision({**plan, "parent": accepted})
-
-    def content(path: str) -> str:
-        return (science_repo / path).read_text(encoding="utf-8")
-
-    assert content(SCIENCE) == "parent reward\n"
-    assert content("robot_learning/scenario/observations.py") == "parent view\n"
-    assert content("robot_learning/scenario/legacy.py") == "parent legacy\n"
-    assert json.loads(content(PARAMS)) == {"method": {"rate": 1}}
-    for absent in (
-        "robot_learning/scenario/renamed.py",
-        "robot_learning/scenario/created.py",
-        OTHER_SCIENCE,
-    ):
-        assert not (science_repo / absent).exists()
-
-
-def test_a_scientific_revert_moves_history_forward_and_spares_runner_memory(
-    science_repo,
-):
-    accepted = _head(science_repo)
-    _write(science_repo, SCIENCE, "experiment reward\n")
-    science_commit = _commit(science_repo, "researcher commit B")
-    _write(science_repo, MEMORY, '{"index": 1}\n{"index": 2}\n')
-    _write(science_repo, "research/evaluations/evaluation-experiment-2.json", "{}\n")
-    memory_commit = _commit(science_repo, "exp 2: record campaign memory")
-    _write(science_repo, SCIENCE, "later adjustment\n")
-    _write(science_repo, "research/postmortems.md", "## Experiment 2\n")
-
-    plan = plan_code_lineage_decision(
-        {"code_parent_commit": accepted, "research_change_paths": [SCIENCE, MEMORY]},
-        "revert",
-        current_paths=scientific_delta(accepted),
-    )
-    apply_code_lineage_decision({**plan, "parent": accepted})
-    commit_lineage_decision(2, "champion", code_action="revert")
-
-    assert plan["restore"] == [SCIENCE]
-    assert plan["remove_created"] == []
-    assert (science_repo / SCIENCE).read_text(encoding="utf-8") == "parent reward\n"
-    # The memory written before, during and after the reverted science survives.
-    assert (science_repo / MEMORY).read_text(encoding="utf-8") == (
-        '{"index": 1}\n{"index": 2}\n'
-    )
-    assert (
-        science_repo / "research" / "evaluations" / "evaluation-experiment-2.json"
-    ).exists()
-    assert (science_repo / "research" / "postmortems.md").read_text(
-        encoding="utf-8"
-    ) == "## Experiment 2\n"
-    history = _git(science_repo, "log", "--format=%H").split()
-    assert history[-3:] == [memory_commit, science_commit, accepted]
-    assert _subjects(science_repo)[:2] == [
-        "select experiment 2 lineage: champion",
-        "experiment 2 code reverted to its scientific parent",
-    ]
-    assert _files_of(science_repo, "HEAD~1") == [SCIENCE]
-    assert MEMORY not in _files_of(science_repo, "HEAD~1")
-
-
-def test_parameter_configuration_follows_the_scientific_rollback(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, PARAMS, '{"method": {"rate": 2}}\n')
-    _commit(science_repo, "researcher commit tuning the active method")
-    pending = {"code_parent_commit": accepted, "research_change_paths": [PARAMS]}
-
-    assert scientific_delta(accepted) == [PARAMS]
-    apply_code_lineage_decision(
-        {**plan_code_lineage_decision(pending, "keep"), "parent": accepted}
-    )
-    assert json.loads((science_repo / PARAMS).read_text(encoding="utf-8")) == {
-        "method": {"rate": 2}
-    }
-
-    apply_code_lineage_decision(
-        {**plan_code_lineage_decision(pending, "revert"), "parent": accepted}
-    )
-    assert json.loads((science_repo / PARAMS).read_text(encoding="utf-8")) == {
-        "method": {"rate": 1}
-    }
-
-
-def test_an_unresolvable_scientific_parent_stops_the_rollback(science_repo):
-    with pytest.raises(RuntimeError, match="no longer resolves"):
-        plan_code_lineage_decision(
-            {"code_parent_commit": "0" * 40, "research_change_paths": [SCIENCE]},
-            "revert",
-        )
-
-
-def test_a_closed_lineage_releases_the_scientific_parent(monkeypatch, science_repo):
-
-    candidate = science_repo / "archive" / "candidate-1"
-    candidate.mkdir(parents=True)
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (candidate / filename).write_bytes(b"artifact")
-    monkeypatch.setattr(
-        "research.runner_paths.ACCEPTED_DIR",
-        science_repo / "research" / "checkpoints" / "accepted",
-    )
-    monkeypatch.setattr(
-        "research.runner_paths.GOAL_PATH", science_repo / "GOAL_REACHED"
-    )
-    accepted = _head(science_repo)
-    begin_hypothesis_phase()
-    _write(science_repo, SCIENCE, "experiment reward\n")
-    _commit(science_repo, "researcher commit B")
-    state = json.loads(
-        (science_repo / "research" / "research_state.json").read_text(encoding="utf-8")
-    )
-    state.update(
-        {
-            "accepted_artifact": "accepted",
-            "accepted_training_steps": 0,
-            "pending_researcher_decision": {
-                "experiment": 7,
-                "candidates": [
-                    {
-                        "name": "candidate-1",
-                        "artifact": "archive/candidate-1",
-                        "summary": None,
-                    }
-                ],
-                "champion_available": False,
-                "parameters": {},
-                "initialization": "fresh",
-                "training_budget_steps": 100,
-                # The runner recomputes the delta, so the frozen list is stale.
-                "code_parent_commit": accepted,
-                "research_change_paths": [],
-            },
-        }
-    )
-
-    assert not apply_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 7,
-                "continue_from": "candidate-1",
-                "reason": "The measured lineage is the useful one.",
-                "code": {
-                    "action": "revert",
-                    "reason": "The intervention did not earn its complexity.",
-                },
-            }
-        },
-        state,
-    )
-
-    assert (science_repo / SCIENCE).read_text(encoding="utf-8") == "parent reward\n"
-    # Changing the working tree is not closing the lineage: the anchor survives
-    # until the restored science is committed and published.
-    assert state["pending_scientific_parent"] == accepted
-    assert _anchored_parent(science_repo) == accepted
-
-    commit_lineage_decision(7, "candidate-1", code_action="revert", state=state)
-
-    assert state["pending_scientific_parent"] is None
-    assert _anchored_parent(science_repo) is None
-    assert _files_of(science_repo, "HEAD~1") == [SCIENCE]
-
-
-def test_an_unpublished_scientific_commit_keeps_the_scientific_parent(
-    monkeypatch, science_repo
-):
-
-    accepted = _head(science_repo)
-    begin_hypothesis_phase()
-    _write(science_repo, SCIENCE, "experiment reward\n")
-    state = json.loads(
-        (science_repo / "research" / "research_state.json").read_text(encoding="utf-8")
-    )
-
-    def unpublishable(message, paths=()):
-        del message, paths
-        raise RuntimeError("commit created locally but push to origin failed")
-
-    monkeypatch.setattr("research.runner_repository.commit_and_push", unpublishable)
-
-    with pytest.raises(RuntimeError, match="push to origin failed"):
-        commit_lineage_decision(7, "candidate-1", code_action="keep", state=state)
-
-    # The experiment stays recoverable: its rollback baseline never moved.
-    assert state["pending_scientific_parent"] == accepted
-    assert _anchored_parent(science_repo) == accepted
-
-
-def test_a_keep_decision_never_plans_a_restoration(science_repo):
-    accepted = _head(science_repo)
-    _write(science_repo, SCIENCE, "experiment reward\n")
-    _commit(science_repo, "researcher commit B")
-    state = {
-        "accepted_artifact": "accepted",
-        "pending_researcher_decision": {
-            "experiment": 7,
-            "candidates": [{"name": "candidate-1", "artifact": "archive/candidate-1"}],
-            "champion_available": False,
-            "parameters": {},
-            "initialization": "fresh",
-            "training_budget_steps": 100,
-            "code_parent_commit": accepted,
-            "research_change_paths": [SCIENCE],
-        },
-    }
-    candidate = science_repo / "archive" / "candidate-1"
-    candidate.mkdir(parents=True)
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (candidate / filename).write_bytes(b"artifact")
-
-    plan = plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 7,
-                "continue_from": "candidate-1",
-                "reason": "The measured lineage is the useful one.",
-                "code": {"action": "keep", "reason": "The mechanism earned its place."},
-            }
-        },
-        state,
-    )
-
-    assert plan["code_plan"] == {
-        "restore": [],
-        "remove_created": [],
-        "parent": accepted,
-    }
-    assert (science_repo / SCIENCE).read_text(encoding="utf-8") == "experiment reward\n"
