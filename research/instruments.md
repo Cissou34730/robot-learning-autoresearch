@@ -8,7 +8,7 @@ Read:
 
 * `research/brief.md` for current state, parameters, available models, retained lineages and artifact paths;
 * `research/postmortems.md` for previous observations and interpretations;
-* every JSON or JSONL artifact referenced by the brief, history or candidate metadata, including evaluation results, task-reference results, inventories and parameters.
+* every JSON or JSONL artifact referenced by the brief, history or candidate metadata, including evaluation results, task-reference results, inventories and parameters. jello is available
 
 Candidate training success and reward shown in the brief are training facts, not evaluation results.
 
@@ -119,7 +119,7 @@ The Runner validates and executes the accepted proposal. Training and Runner ope
 Append to `research/postmortems.md`:
 
 ```markdown
-## Experiment <integer>
+## <Campaign ID> / Experiment <integer>
 
 **Result:** <concise result>
 
@@ -129,6 +129,8 @@ Append to `research/postmortems.md`:
 
 **Evidence inspected:** <artifact paths from this experiment>
 ```
+
+The heading format is `## <Campaign ID> / Experiment <integer>`, where `<Campaign ID>` is the current campaign UUID. This format allows experiments with the same number from different campaigns to be uniquely identified in the postmortem history.
 
 At least one referenced artifact must exist and belong to the experiment.
 

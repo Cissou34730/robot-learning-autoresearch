@@ -14,6 +14,8 @@ Stable-Baselines3. Dependencies are human-owned: the Researcher may use the
 installed stack but may not install packages or modify `pyproject.toml` or
 `uv.lock`.
 
+`jello` is available through the researcher environment for JSON and JSONL artifacts.
+
 All project Python execution goes through `uv run`. Never invoke system
 `python`, `python3`, `pytest` or `ruff`, or the interpreter inside `.venv`.
 
