@@ -275,7 +275,14 @@ def _valid_request() -> dict:
         "experiment": 3,
         "question": "does the intervention change the outcome",
         "reason": "the champion and the candidate must be compared",
-        "evaluations": [{"candidate": "experiment-3", "episodes": 200, "seed": 1000}],
+        "measurements": [
+            {
+                "instrument": "research_evaluation",
+                "candidate": "experiment-3",
+                "episodes": 200,
+                "seed": 1000,
+            }
+        ],
     }
 
 
@@ -337,9 +344,9 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                 "experiment": 3,
                 "question": "q",
                 "reason": "r",
-                "evaluations": [],
+                "measurements": [],
             },
-            "at least one research or task-reference evaluation",
+            "at least one measurement",
         ),
         (
             dict(_valid_request(), experiment=2),
@@ -348,50 +355,78 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
         (
             dict(
                 _valid_request(),
-                task_reference_evaluations=[{"candidate": "champion", "seed": 7}],
+                measurements=[
+                    {"instrument": "task_reference", "candidate": "champion", "seed": 7}
+                ],
             ),
-            "task-reference panel is human-owned",
+            "task_reference measurement cannot set unsupported fields",
         ),
         # Entry-level rules, all resolved before the first measurement.
         (
             dict(
                 _valid_request(),
-                evaluations=[{"candidate": "experiment-9", "episodes": 200, "seed": 1}],
-            ),
-            "unknown evaluation candidate 'experiment-9'",
-        ),
-        (
-            dict(
-                _valid_request(),
-                evaluations=[{"candidate": "experiment-3", "episodes": 0, "seed": 1}],
-            ),
-            "evaluation episodes must be positive",
-        ),
-        (
-            dict(
-                _valid_request(),
-                evaluations=[
-                    {"candidate": "experiment-3", "episodes": "many", "seed": 1}
+                measurements=[
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "experiment-9",
+                        "episodes": 200,
+                        "seed": 1,
+                    }
                 ],
             ),
-            "episodes and seed must be whole numbers",
+            "unknown measurement candidate 'experiment-9'",
         ),
         (
             dict(
                 _valid_request(),
-                evaluations=[{"candidate": "experiment-3", "episodes": 200}],
-            ),
-            "missing required fields: ['seed']",
-        ),
-        (
-            dict(_valid_request(), evaluations=["experiment-3"]),
-            "each requested evaluation must be an object",
-        ),
-        (
-            dict(
-                _valid_request(),
-                evaluations=[
+                measurements=[
                     {
+                        "instrument": "research_evaluation",
+                        "candidate": "experiment-3",
+                        "episodes": 0,
+                        "seed": 1,
+                    }
+                ],
+            ),
+            "research_evaluation episodes must be positive",
+        ),
+        (
+            dict(
+                _valid_request(),
+                measurements=[
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "experiment-3",
+                        "episodes": "many",
+                        "seed": 1,
+                    }
+                ],
+            ),
+            "research_evaluation episodes must be an integer",
+        ),
+        (
+            dict(
+                _valid_request(),
+                measurements=[
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "experiment-3",
+                        "episodes": 200,
+                    }
+                ],
+            ),
+            "research_evaluation is missing required fields: ['seed']",
+        ),
+        (
+            dict(_valid_request(), measurements=["experiment-3"]),
+            "each measurement must be an object",
+        ),
+        (
+            dict(
+                _valid_request(),
+                measurements=[
+                    {
+                        "instrument": "research_evaluation",
                         "candidate": "experiment-3",
                         "episodes": 200,
                         "seed": 1,
@@ -399,25 +434,52 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                     }
                 ],
             ),
-            "official_benchmark is not valid in a research evaluation request",
+            "research_evaluation measurement cannot set unsupported fields",
         ),
         (
             dict(
                 _valid_request(),
-                task_reference_evaluations=[{"candidate": "experiment-9"}],
+                measurements=[
+                    {"instrument": "task_reference", "candidate": "experiment-9"}
+                ],
             ),
-            "unknown task-reference candidate 'experiment-9'",
+            "unknown measurement candidate 'experiment-9'",
+        ),
+        (
+            dict(
+                _valid_request(),
+                measurements=[{"instrument": "official_benchmark", "candidate": "champion"}],
+            ),
+            "unknown measurement instrument 'official_benchmark'",
+        ),
+        (
+            dict(_valid_request(), evaluations=[]),
+            "evaluations is obsolete",
+        ),
+        (
+            dict(_valid_request(), task_reference_evaluations=[]),
+            "task_reference_evaluations is obsolete",
         ),
         # A single unusable entry keeps the whole request out of execution.
         (
             dict(
                 _valid_request(),
-                evaluations=[
-                    {"candidate": "experiment-3", "episodes": 200, "seed": 1},
-                    {"candidate": "experiment-3", "episodes": -5, "seed": 2},
+                measurements=[
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "experiment-3",
+                        "episodes": 200,
+                        "seed": 1,
+                    },
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "experiment-3",
+                        "episodes": -5,
+                        "seed": 2,
+                    },
                 ],
             ),
-            "evaluation episodes must be positive",
+            "research_evaluation episodes must be positive",
         ),
         ("{not json", "Expecting"),
     ],
@@ -443,8 +505,15 @@ def test_evaluation_preflight_accepts_the_champion_the_brief_exposes(
         tmp_path,
         dict(
             _valid_request(),
-            evaluations=[{"candidate": "champion", "episodes": 200, "seed": 1000}],
-            task_reference_evaluations=[{"candidate": "champion"}],
+            measurements=[
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "champion",
+                    "episodes": 200,
+                    "seed": 1000,
+                },
+                {"instrument": "task_reference", "candidate": "champion"},
+            ],
         ),
     )
 
@@ -453,19 +522,39 @@ def test_evaluation_preflight_accepts_the_champion_the_brief_exposes(
 
 
 @pytest.mark.parametrize(
-    "evaluations",
+    "measurements",
     [
-        [{"candidate": "experiment-9", "episodes": 200, "seed": 1}],
-        [{"candidate": "experiment-3", "episodes": 0, "seed": 1}],
-        [{"candidate": "experiment-3", "episodes": 200}],
+        [
+            {
+                "instrument": "research_evaluation",
+                "candidate": "experiment-9",
+                "episodes": 200,
+                "seed": 1,
+            }
+        ],
+        [
+            {
+                "instrument": "research_evaluation",
+                "candidate": "experiment-3",
+                "episodes": 0,
+                "seed": 1,
+            }
+        ],
+        [
+            {
+                "instrument": "research_evaluation",
+                "candidate": "experiment-3",
+                "episodes": 200,
+            }
+        ],
     ],
 )
 def test_execution_rejects_exactly_what_the_preflight_rejects(
-    monkeypatch, tmp_path, capsys, evaluations
+    monkeypatch, tmp_path, capsys, measurements
 ):
     """One contract: validation-only and execution resolve the same plan."""
     _preflight_files(
-        monkeypatch, tmp_path, dict(_valid_request(), evaluations=evaluations)
+        monkeypatch, tmp_path, dict(_valid_request(), measurements=measurements)
     )
 
     assert check_evaluation_request() == 1

@@ -111,7 +111,18 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 # The researcher names the model; the panel behind this key is human-owned.
-TASK_REFERENCE_ENTRY_FIELDS = {"candidate", "label"}
+RESEARCH_EVALUATION_ENTRY_FIELDS = {
+    "instrument",
+    "candidate",
+    "episodes",
+    "seed",
+    "label",
+}
+TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label"}
+SUPPORTED_MEASUREMENT_INSTRUMENTS = {
+    "research_evaluation",
+    "task_reference",
+}
 
 
 # --- ownership -------------------------------------------------------------
@@ -462,13 +473,13 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
 # --- evaluation requests ---------------------------------------------------
 
 
-def requested_task_references(request: dict) -> list[dict]:
-    references = request.get("task_reference_evaluations")
-    if references is None:
-        return []
-    if not isinstance(references, list):
-        raise TypeError("task_reference_evaluations must be a list")
-    return [item for item in references if item is not None]
+def requested_measurements(request: dict) -> list[dict]:
+    measurements = request.get("measurements")
+    if not isinstance(measurements, list):
+        raise TypeError("measurements must be a list")
+    if not measurements:
+        raise ValueError("an evaluation request must contain at least one measurement")
+    return measurements
 
 
 def validate_evaluation_request(request: dict) -> None:
@@ -477,28 +488,48 @@ def validate_evaluation_request(request: dict) -> None:
         value = request.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"evaluation request requires a non-empty {field}")
-    evaluations = request.get("evaluations")
-    if evaluations is None:
-        evaluations = []
-    if not isinstance(evaluations, list):
-        raise TypeError("evaluations must be a list")
-    references = requested_task_references(request)
-    for entry in references:
+    for field in ("evaluations", "task_reference_evaluations"):
+        if field in request:
+            raise ValueError(
+                f"{field} is obsolete; submit measurements through measurements"
+            )
+    for entry in requested_measurements(request):
         if not isinstance(entry, dict):
-            raise TypeError("each task-reference evaluation must be an object")
-        if not str(entry.get("candidate", "")).strip():
-            raise ValueError("a task-reference evaluation requires a candidate")
-        unknown = sorted(set(entry) - TASK_REFERENCE_ENTRY_FIELDS)
+            raise TypeError("each measurement must be an object")
+        instrument = entry.get("instrument")
+        if instrument not in SUPPORTED_MEASUREMENT_INSTRUMENTS:
+            raise ValueError(f"unknown measurement instrument {instrument!r}")
+        candidate = entry.get("candidate")
+        if not isinstance(candidate, str) or not candidate.strip():
+            raise ValueError(f"{instrument} requires a non-empty candidate")
+        allowed_fields = (
+            RESEARCH_EVALUATION_ENTRY_FIELDS
+            if instrument == "research_evaluation"
+            else TASK_REFERENCE_ENTRY_FIELDS
+        )
+        unknown = sorted(set(entry) - allowed_fields)
         if unknown:
             raise ValueError(
-                "the task-reference panel is human-owned; a task-reference "
-                f"evaluation cannot set {unknown}"
+                f"{instrument} measurement cannot set unsupported fields {unknown}"
             )
-    if not evaluations and not references:
-        raise ValueError(
-            "an evaluation request must ask for at least one research or "
-            "task-reference evaluation"
-        )
+        if "label" in entry and not isinstance(entry["label"], str):
+            raise ValueError("measurement label must be a string")
+        if instrument == "research_evaluation":
+            missing = [
+                field for field in ("episodes", "seed") if field not in entry
+            ]
+            if missing:
+                raise ValueError(
+                    f"research_evaluation is missing required fields: {missing}"
+                )
+            if not isinstance(entry["episodes"], int) or isinstance(
+                entry["episodes"], bool
+            ):
+                raise ValueError("research_evaluation episodes must be an integer")
+            if entry["episodes"] < 1:
+                raise ValueError("research_evaluation episodes must be positive")
+            if not isinstance(entry["seed"], int) or isinstance(entry["seed"], bool):
+                raise ValueError("research_evaluation seed must be an integer")
 
 
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:
@@ -513,69 +544,38 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
     return available
 
 
-def planned_evaluations(request: dict, available: dict) -> list[dict]:
-    """Resolve every requested research measurement before the first one runs."""
-    requested = request.get("evaluations") or []
-    if not isinstance(requested, list):
-        raise TypeError("evaluation request requires an evaluations list")
-    planned: list[dict] = []
-    for number, spec in enumerate(requested, start=1):
-        if not isinstance(spec, dict):
-            raise TypeError("each requested evaluation must be an object")
-        missing = [
-            field for field in ("candidate", "episodes", "seed") if field not in spec
-        ]
-        if missing:
-            raise ValueError(f"evaluation is missing required fields: {missing}")
-        if "official_benchmark" in spec:
-            raise ValueError(
-                "official_benchmark is not valid in a research evaluation request"
-            )
-        name = str(spec.get("candidate", "")).strip()
+def planned_measurements(request: dict, available: dict) -> tuple[list[dict], list[dict]]:
+    """Resolve all typed measurements before either evaluator starts."""
+    validate_evaluation_request(request)
+    evaluations: list[dict] = []
+    references: list[dict] = []
+    for spec in requested_measurements(request):
+        name = spec["candidate"].strip()
         if name not in available:
             raise ValueError(
-                f"unknown evaluation candidate {name!r}; "
-                f"choose from {sorted(available)}"
+                f"unknown measurement candidate {name!r}; choose from {sorted(available)}"
             )
-        try:
-            episodes = int(spec["episodes"])
-            seed = int(spec["seed"])
-        except (TypeError, ValueError) as error:
-            raise ValueError(
-                "evaluation episodes and seed must be whole numbers"
-            ) from error
-        if episodes < 1:
-            raise ValueError("evaluation episodes must be positive")
-        planned.append(
-            {
-                "candidate": name,
-                "episodes": episodes,
-                "seed": seed,
-                "label": str(
-                    spec.get("label", f"requested evaluation {number}: {name}")
-                ),
-            }
-        )
-    return planned
-
-
-def planned_task_references(request: dict, available: dict) -> list[dict]:
-    """Resolve every requested task-reference measurement before the first one runs."""
-    planned: list[dict] = []
-    for number, spec in enumerate(requested_task_references(request), start=1):
-        name = str(spec.get("candidate", "")).strip()
-        if name not in available:
-            raise ValueError(
-                f"unknown task-reference candidate {name!r}; "
-                f"choose from {sorted(available)}"
+        if spec["instrument"] == "research_evaluation":
+            evaluations.append(
+                {
+                    "candidate": name,
+                    "episodes": spec["episodes"],
+                    "seed": spec["seed"],
+                    "label": spec.get(
+                        "label", f"requested evaluation {len(evaluations) + 1}: {name}"
+                    ),
+                }
             )
-        planned.append(
-            {
-                "candidate": name,
-                "label": str(spec.get("label", f"task reference {number}: {name}")),
-            }
-        )
-    return planned
+        else:
+            references.append(
+                {
+                    "candidate": name,
+                    "label": spec.get(
+                        "label", f"task reference {len(references) + 1}: {name}"
+                    ),
+                }
+            )
+    return evaluations, references
 
 
 # --- measurement identity --------------------------------------------------

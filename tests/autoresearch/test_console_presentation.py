@@ -196,14 +196,20 @@ def evaluation_request() -> dict:
         "experiment": 2,
         "question": "Did the longer-range shaping improve acquisition?",
         "reason": "A matched panel directly tests the hypothesis.",
-        "evaluations": [
+        "measurements": [
             {
+                "instrument": "research_evaluation",
                 "candidate": "checkpoint-120832",
                 "episodes": 200,
                 "seed": 2000,
                 "label": "checkpoint-120832",
             },
-            {"candidate": "champion", "episodes": 200, "seed": 2000},
+            {
+                "instrument": "research_evaluation",
+                "candidate": "champion",
+                "episodes": 200,
+                "seed": 2000,
+            },
         ],
         "paired_comparisons": [
             {"candidate": "checkpoint-120832", "reference": "champion"}
@@ -371,8 +377,13 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
         encoding="utf-8",
     )
     request = evaluation_request()
-    request["evaluations"] = [
-        {"candidate": "checkpoint-120832", "episodes": 2, "seed": 2000}
+    request["measurements"] = [
+        {
+            "instrument": "research_evaluation",
+            "candidate": "checkpoint-120832",
+            "episodes": 2,
+            "seed": 2000,
+        }
     ]
     request["paired_comparisons"] = []
     request_path.write_text(json.dumps(request), encoding="utf-8")

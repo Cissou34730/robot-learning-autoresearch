@@ -98,8 +98,7 @@ def check_evaluation_request() -> int:
                 f"experiment {experiment} is awaiting evaluation"
             )
         available = protocol.available_evaluation_candidates(pending, state)
-        protocol.planned_evaluations(request, available)
-        protocol.planned_task_references(request, available)
+        protocol.planned_measurements(request, available)
     except (
         json.JSONDecodeError,
         KeyError,
@@ -164,8 +163,7 @@ def execute_pending_evaluations() -> int:
     available = protocol.available_evaluation_candidates(pending, state)
     # The whole plan is resolved first, so nothing is measured for a request
     # that a later entry would have invalidated.
-    requested = protocol.planned_evaluations(request, available)
-    requested_references = protocol.planned_task_references(request, available)
+    requested, requested_references = protocol.planned_measurements(request, available)
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))

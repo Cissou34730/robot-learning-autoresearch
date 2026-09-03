@@ -180,20 +180,19 @@ def render_training_summary_card(
 
 def evaluation_plan_rows(request: dict) -> list[tuple[str, str]]:
     rows: list[tuple[str, str]] = []
-    for spec in request.get("evaluations") or []:
+    for spec in request.get("measurements") or []:
         if not isinstance(spec, dict):
             continue
-        name = str(spec.get("label") or spec.get("candidate", "")).strip() or "-"
-        try:
-            detail = f"{int(spec['episodes'])} episodes · seed {int(spec['seed'])}"
-        except (KeyError, TypeError, ValueError):
-            detail = "episodes and seed pending validation"
-        rows.append((name, detail))
-    for spec in request.get("task_reference_evaluations") or []:
-        if not isinstance(spec, dict):
-            continue
-        name = str(spec.get("candidate", "")).strip() or "-"
-        rows.append(("task reference", name))
+        if spec.get("instrument") == "research_evaluation":
+            name = str(spec.get("label") or spec.get("candidate", "")).strip() or "-"
+            try:
+                detail = f"{int(spec['episodes'])} episodes · seed {int(spec['seed'])}"
+            except (KeyError, TypeError, ValueError):
+                detail = "episodes and seed pending validation"
+            rows.append((name, detail))
+        elif spec.get("instrument") == "task_reference":
+            name = str(spec.get("candidate", "")).strip() or "-"
+            rows.append(("task reference", name))
     for comparison in request.get("paired_comparisons") or []:
         if not isinstance(comparison, dict):
             continue
