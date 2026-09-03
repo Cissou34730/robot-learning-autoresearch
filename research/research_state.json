@@ -40,7 +40,7 @@
     }
   },
   "accepted_training_steps": 120000,
-  "last_allocated_experiment": 3,
+  "last_allocated_experiment": 4,
   "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
