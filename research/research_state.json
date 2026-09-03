@@ -1,9 +1,14 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "accepted_artifact": "research\\checkpoints\\accepted",
   "accepted_metrics": null,
   "accepted_parameters": null,
   "accepted_training_steps": 0,
+  "campaign": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "started_at": "2026-09-03T00:00:00Z",
+    "base_commit": "HEAD"
+  },
   "retained_lineages": [],
   "last_experiment": 0,
   "last_allocated_experiment": 0,
