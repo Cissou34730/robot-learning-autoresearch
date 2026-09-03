@@ -64,8 +64,24 @@ evidence that would distinguish them. An evaluation request states the question
 its measurements answer and why they are sufficient. A lineage decision cites
 the detailed artifacts on which it relies.
 
+Choose evidence according to the uncertainty being resolved. Distinguishing
+model behavior, learning-process effects, and stochastic variation may require
+different evidence; use the form of evidence that can materially resolve the
+current scientific question.
+
+Use additional diagnosis, measurement, or replication only when it could
+materially change the scientific conclusion or lineage decision. Prefer the
+simplest evidence sufficient to distinguish between plausible explanations.
+
+Additional evaluation of an already-trained model provides evidence about that
+model's behavior. Replication provides evidence about the learning process when
+the scientific question concerns whether an observed training outcome is
+attributable to the learning method rather than to one stochastic training
+realization.
+
 Experiment history and prior postmortems are evidence, not authority. Older
 records may use superseded schemas, and prior interpretations may be revisited.
+Prefer targeted extraction over loading complete artifacts or histories.
 
 ## Fixed cycle
 
