@@ -61,6 +61,10 @@ def resolve_repo_path(value: str) -> Path:
     return resolved
 
 
+def canonical_repo_path(value: str) -> str:
+    return repo_relative_path(resolve_repo_path(value))
+
+
 ARTIFACT_FILES = ("model.zip", "artifact.json")
 OPTIONAL_ARTIFACT_FILES = ("vecnormalize.pkl", "replay_buffer.pkl")
 EXPERIMENT_LOG_HEADER = (
@@ -254,7 +258,7 @@ def commit_lineage_decision(
         # Only durable science closes the lineage: until the commit above has
         # been published, the rollback anchor must stay recoverable.
         state["pending_scientific_parent"] = None
-        atomic_write_json(paths.STATE_PATH, state)
+        write_state(state)
     commit_runner_memory(f"select experiment {experiment} lineage: {selected}")
 
 
@@ -278,6 +282,93 @@ def atomic_write_json(path: Path, value: dict) -> None:
         json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     _atomic_replace(temporary, path)
+
+
+def _canonicalize_evaluation_artifact(evaluation: dict) -> None:
+    artifact = evaluation.get("evaluation_artifact")
+    if artifact:
+        evaluation["evaluation_artifact"] = canonical_repo_path(str(artifact))
+
+
+def _canonicalize_candidate_artifacts(candidate: dict) -> None:
+    artifact = candidate.get("artifact")
+    if artifact:
+        candidate["artifact"] = canonical_repo_path(str(artifact))
+    for evaluation in candidate.get("evaluations") or []:
+        if isinstance(evaluation, dict):
+            _canonicalize_evaluation_artifact(evaluation)
+
+
+def _canonicalize_result_artifacts(result: dict) -> None:
+    for candidate in result.get("candidates") or []:
+        if isinstance(candidate, dict):
+            _canonicalize_candidate_artifacts(candidate)
+    for requested in result.get("requested_evaluations") or []:
+        if isinstance(requested, dict):
+            metrics = requested.get("metrics")
+            if isinstance(metrics, dict):
+                _canonicalize_evaluation_artifact(metrics)
+    for evaluation in result.get("task_reference_evaluations") or []:
+        if isinstance(evaluation, dict):
+            _canonicalize_evaluation_artifact(evaluation)
+
+
+def write_state(state: dict) -> None:
+    """Persist state after canonicalizing its known repository references."""
+    accepted = state.get("accepted_artifact")
+    if accepted:
+        state["accepted_artifact"] = canonical_repo_path(str(accepted))
+    if "accepted_evaluations" in state:
+        state["accepted_evaluations"] = [
+            canonical_repo_path(str(path))
+            for path in state.get("accepted_evaluations") or []
+        ]
+    for lineage in state.get("retained_lineages") or []:
+        if not isinstance(lineage, dict):
+            continue
+        artifact = lineage.get("artifact")
+        if artifact:
+            lineage["artifact"] = canonical_repo_path(str(artifact))
+        if "evaluation_artifacts" in lineage:
+            lineage["evaluation_artifacts"] = [
+                canonical_repo_path(str(path))
+                for path in lineage.get("evaluation_artifacts") or []
+            ]
+    final_benchmark = state.get("pending_final_benchmark")
+    if isinstance(final_benchmark, dict) and final_benchmark.get("artifact"):
+        final_benchmark["artifact"] = canonical_repo_path(
+            str(final_benchmark["artifact"])
+        )
+    pending_evaluation = state.get("pending_evaluation_request")
+    if isinstance(pending_evaluation, dict):
+        for candidate in pending_evaluation.get("candidates") or []:
+            if isinstance(candidate, dict):
+                _canonicalize_candidate_artifacts(candidate)
+        for requested in pending_evaluation.get("partial_evaluations") or []:
+            if isinstance(requested, dict) and isinstance(
+                requested.get("metrics"), dict
+            ):
+                _canonicalize_evaluation_artifact(requested["metrics"])
+        for evaluation in pending_evaluation.get(
+            "partial_task_reference_evaluations"
+        ) or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        result = pending_evaluation.get("result")
+        if isinstance(result, dict):
+            _canonicalize_result_artifacts(result)
+    pending_decision = state.get("pending_researcher_decision")
+    if isinstance(pending_decision, dict):
+        for candidate in pending_decision.get("candidates") or []:
+            if isinstance(candidate, dict):
+                _canonicalize_candidate_artifacts(candidate)
+        for evaluation in pending_decision.get("champion_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        for evaluation in pending_decision.get("task_reference_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+    atomic_write_json(paths.STATE_PATH, state)
 
 
 def atomic_write_text(path: Path, text: str) -> None:
@@ -356,11 +447,13 @@ def current_campaign_base_commit(state: dict) -> str | None:
 
 def evaluation_reference(evaluation: dict) -> dict:
     """Everything except the detail the evaluation artifact already holds."""
-    return {
+    reference = {
         key: value
         for key, value in evaluation.items()
         if key not in DETAILED_EVIDENCE_FIELDS
     }
+    _canonicalize_evaluation_artifact(reference)
+    return reference
 
 
 def measurement_record(metrics: dict) -> dict:
@@ -369,11 +462,13 @@ def measurement_record(metrics: dict) -> dict:
     Researcher-defined evidence stays in the artifact so the protocol state
     never becomes a second, opaque evidence store.
     """
-    return {
+    record = {
         key: value
         for key, value in metrics.items()
         if key not in ("model", "research_evidence")
     }
+    _canonicalize_evaluation_artifact(record)
+    return record
 
 
 def compact_result_record(result: dict) -> dict:
@@ -401,6 +496,12 @@ def compact_result_record(result: dict) -> dict:
             else item
             for item in requested
         ]
+    task_references = record.get("task_reference_evaluations")
+    if isinstance(task_references, list):
+        record["task_reference_evaluations"] = [
+            dict(item) if isinstance(item, dict) else item for item in task_references
+        ]
+    _canonicalize_result_artifacts(record)
     return record
 
 
@@ -521,7 +622,7 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
 
 def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
     return [
-        str(item["evaluation_artifact"]).replace("\\", "/")
+        canonical_repo_path(str(item["evaluation_artifact"]))
         for item in evaluations or []
         if item.get("evaluation_artifact")
     ]

@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path, PureWindowsPath
 
+from research.runner_repository import ARTIFACT_FILES
+
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
@@ -118,7 +120,7 @@ def _evaluation_panel_lines(evaluations: list[dict]) -> list[str]:
             detail += f", success {float(success):.2f}%"
         artifact = evaluation.get("evaluation_artifact")
         if artifact:
-            detail += f"; detail {_existing_artifact_reference(artifact)}"
+            detail += f"; detail {_existing_artifact_reference(artifact, kind='file')}"
         lines.append(detail)
     return lines
 
@@ -135,7 +137,7 @@ def _task_reference_lines(evaluations: list[dict]) -> list[str]:
         )
         artifact = evaluation.get("evaluation_artifact")
         if artifact:
-            detail += f"; detail {_existing_artifact_reference(artifact)}"
+            detail += f"; detail {_existing_artifact_reference(artifact, kind='file')}"
         lines.append(detail)
     return lines
 
@@ -153,7 +155,9 @@ def _change_details(result: dict) -> str:
     return str(result.get("change", "-"))
 
 
-def _existing_artifact_reference(value: str | None) -> str:
+def _existing_artifact_reference(
+    value: str | None, *, kind: str = "artifact"
+) -> str:
     if not value:
         return "unavailable"
     normalized = str(value).replace("\\", "/")
@@ -164,7 +168,15 @@ def _existing_artifact_reference(value: str | None) -> str:
     resolved = (root / relative).resolve()
     if resolved != root and root not in resolved.parents:
         return "unavailable"
-    if resolved.exists():
+    is_complete_checkpoint = resolved.is_dir() and all(
+        (resolved / filename).is_file() for filename in ARTIFACT_FILES
+    )
+    is_usable = {
+        "artifact": resolved.is_file() or is_complete_checkpoint,
+        "checkpoint": is_complete_checkpoint,
+        "file": resolved.is_file(),
+    }[kind]
+    if is_usable:
         return f"`{resolved.relative_to(root).as_posix()}`"
     return "unavailable"
 
@@ -309,7 +321,7 @@ def render_research_brief() -> str:
                 f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
                 f"{_candidate_metric(candidate, 'training_success')} | "
                 f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
-                f"{_existing_artifact_reference(candidate.get('artifact'))} |"
+                f"{_existing_artifact_reference(candidate.get('artifact'), kind='checkpoint')} |"
             )
         if pending_evaluation.get("champion_available"):
             evaluation_lines.append("- `champion` — current accepted model lineage.")
@@ -450,7 +462,9 @@ def render_research_brief() -> str:
         ),
         "- Accepted checkpoint: "
         + (
-            _existing_artifact_reference(state["accepted_artifact"])
+            _existing_artifact_reference(
+                state["accepted_artifact"], kind="checkpoint"
+            )
             if "accepted_artifact" in state
             else "missing"
         ),
@@ -458,7 +472,7 @@ def render_research_brief() -> str:
             "- Accepted evaluation detail: "
             + (
                 ", ".join(
-                    _existing_artifact_reference(path)
+                    _existing_artifact_reference(path, kind="file")
                     for path in state.get("accepted_evaluations", [])
                 )
                 or "-"

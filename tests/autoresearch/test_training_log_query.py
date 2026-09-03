@@ -128,7 +128,7 @@ def test_runner_passes_the_correct_active_attempt_to_training(
     monkeypatch.setattr("research.runner_paths.RESTART_PENDING_PATH", restart_pending)
     monkeypatch.setattr("research.runner_repository.load_state", lambda **kwargs: state)
     monkeypatch.setattr("research.runner_repository.anchor_scientific_parent", lambda state: "parent")
-    monkeypatch.setattr("research.runner_repository.atomic_write_json", lambda *args: None)
+    monkeypatch.setattr("research.runner_repository.write_state", dict)
     monkeypatch.setattr("research.runner_repository.scientific_delta", lambda parent: [])
     monkeypatch.setattr("research.runner_repository.archive_candidates", lambda *args, **kwargs: [])
     monkeypatch.setattr("research.runner_protocol.next_experiment_index", lambda *args, **kwargs: 2)

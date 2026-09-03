@@ -33,6 +33,7 @@ from research.runner_protocol import (
 from research.runner_repository import (
     compact_result_record,
     measurement_record,
+    write_state,
 )
 from robot_learning.scenario import (
     summarize_research_evaluations as summarize_evaluations,
@@ -604,6 +605,29 @@ def test_recorded_history_keeps_references_not_detailed_evidence(monkeypatch, tm
     assert measurement["success_percent"] == 50.0
 
 
+def test_pending_evaluation_transition_rewrites_legacy_artifact_paths(
+    monkeypatch, tmp_path
+):
+    state_path, _, _ = _single_panel_evaluation_fixture(monkeypatch, tmp_path)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["pending_evaluation_request"]["candidates"][0]["artifact"] = (
+        "archive\\checkpoint"
+    )
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    results_path = tmp_path / "results.jsonl"
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "EXPERIMENTS.md")
+    _recording_evaluator(monkeypatch, lambda seed: evaluation(seed, [True]))
+
+    assert execute_pending_evaluations() == 0
+
+    persisted_state = json.loads(state_path.read_text(encoding="utf-8"))
+    candidate = persisted_state["pending_researcher_decision"]["candidates"][0]
+    assert candidate["artifact"] == "archive/checkpoint"
+    result = json.loads(results_path.read_text(encoding="utf-8"))
+    assert result["candidates"][0]["artifact"] == "archive/checkpoint"
+
+
 def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_path):
     _, request_path, evaluations_dir = _single_panel_evaluation_fixture(
         monkeypatch, tmp_path
@@ -935,6 +959,86 @@ def test_generic_compaction_never_inspects_the_evidence_channel():
     serialized = json.dumps(history, sort_keys=True)
     assert "research_evidence" not in serialized
     assert "episode_results" not in serialized
+
+
+def test_result_persistence_canonicalizes_legacy_artifact_references(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    result = {
+        "candidates": [
+            {
+                "artifact": "research\\checkpoints\\candidate",
+                "evaluations": [
+                    {
+                        "evaluation_artifact": (
+                            "research\\evaluations\\candidate.json"
+                        )
+                    }
+                ],
+            }
+        ],
+        "task_reference_evaluations": [
+            {"evaluation_artifact": "research\\evaluations\\reference.json"}
+        ],
+    }
+
+    history = compact_result_record(result)
+
+    assert history["candidates"][0]["artifact"] == (
+        "research/checkpoints/candidate"
+    )
+    assert history["candidates"][0]["evaluations"][0][
+        "evaluation_artifact"
+    ] == "research/evaluations/candidate.json"
+    assert history["task_reference_evaluations"][0]["evaluation_artifact"] == (
+        "research/evaluations/reference.json"
+    )
+    assert result["task_reference_evaluations"][0]["evaluation_artifact"] == (
+        "research\\evaluations\\reference.json"
+    )
+
+
+def test_state_persistence_canonicalizes_known_legacy_artifact_references(
+    monkeypatch, tmp_path
+):
+    state_path = tmp_path / "research_state.json"
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    state = {
+        "accepted_artifact": "research\\checkpoints\\accepted",
+        "accepted_evaluations": ["research\\evaluations\\accepted.json"],
+        "retained_lineages": [
+            {
+                "artifact": "research\\checkpoints\\retained",
+                "evaluation_artifacts": [
+                    "research\\evaluations\\retained.json"
+                ],
+            }
+        ],
+        "pending_evaluation_request": {
+            "candidates": [
+                {"artifact": "research\\checkpoints\\candidate"}
+            ]
+        },
+    }
+
+    write_state(state)
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["accepted_artifact"] == "research/checkpoints/accepted"
+    assert persisted["accepted_evaluations"] == [
+        "research/evaluations/accepted.json"
+    ]
+    assert persisted["retained_lineages"][0]["artifact"] == (
+        "research/checkpoints/retained"
+    )
+    assert persisted["retained_lineages"][0]["evaluation_artifacts"] == [
+        "research/evaluations/retained.json"
+    ]
+    assert persisted["pending_evaluation_request"]["candidates"][0][
+        "artifact"
+    ] == "research/checkpoints/candidate"
 
 
 def test_opaque_evidence_survives_the_whole_execution_path(monkeypatch, tmp_path):

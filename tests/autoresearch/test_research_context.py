@@ -30,6 +30,13 @@ Model saved to models/reach-example/model.zip
 """
 
 
+def _checkpoint(path: Path) -> Path:
+    path.mkdir(parents=True)
+    (path / "model.zip").write_bytes(b"model")
+    (path / "artifact.json").write_text("{}", encoding="utf-8")
+    return path
+
+
 def test_change_details_uses_structured_parameter_changes_only():
     result = {
         "change": "adjust rollout horizon",
@@ -79,8 +86,8 @@ def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
     monkeypatch, tmp_path
 ):
     research_dir = tmp_path / "research"
-    (research_dir / "checkpoints" / "earlier").mkdir(parents=True)
-    (research_dir / "checkpoints" / "later").mkdir(parents=True)
+    _checkpoint(research_dir / "checkpoints" / "earlier")
+    _checkpoint(research_dir / "checkpoints" / "later")
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
     (research_dir / "postmortems.md").write_text("", encoding="utf-8")
     (research_dir / "results.jsonl").write_text("", encoding="utf-8")
@@ -132,7 +139,7 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
         "seed_count": 1,
     }
     research_dir = tmp_path / "research"
-    (tmp_path / "accepted").mkdir()
+    _checkpoint(tmp_path / "accepted")
     evaluations_dir = research_dir / "evaluations"
     evaluations_dir.mkdir(parents=True)
     (evaluations_dir / "evaluation-experiment-3-champion-4ep-seed1000-ab.json").write_text(
@@ -199,8 +206,7 @@ def test_brief_reports_missing_and_legacy_artifacts_as_unavailable(
     research_dir = tmp_path / "research"
     evaluations_dir = research_dir / "evaluations"
     evaluations_dir.mkdir(parents=True)
-    legacy_artifact = research_dir / "checkpoints" / "legacy"
-    legacy_artifact.mkdir(parents=True)
+    _checkpoint(research_dir / "checkpoints" / "legacy")
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
     (research_dir / "postmortems.md").write_text("", encoding="utf-8")
     (research_dir / "results.jsonl").write_text("", encoding="utf-8")
@@ -223,6 +229,29 @@ def test_brief_reports_missing_and_legacy_artifacts_as_unavailable(
     assert "Accepted checkpoint: `research/checkpoints/legacy`" in brief
     assert "Accepted evaluation detail: unavailable" in brief
     assert "research\\evaluations\\missing.json" not in brief
+
+
+def test_brief_reports_an_incomplete_checkpoint_as_unavailable(
+    monkeypatch, tmp_path
+):
+    research_dir = tmp_path / "research"
+    incomplete = research_dir / "checkpoints" / "incomplete"
+    incomplete.mkdir(parents=True)
+    (incomplete / "model.zip").write_bytes(b"model")
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text(
+        json.dumps({"accepted_artifact": "research/checkpoints/incomplete"}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    brief = render_research_brief()
+
+    assert "Accepted checkpoint: unavailable" in brief
+    assert "`research/checkpoints/incomplete`" not in brief
 
 
 def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):

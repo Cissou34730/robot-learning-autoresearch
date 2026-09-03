@@ -71,7 +71,7 @@ $startedAt = [System.DateTime]::UtcNow.ToString("o")
 
 [ordered]@{
     schema_version = 3
-    accepted_artifact = "research\checkpoints\accepted"
+    accepted_artifact = "research/checkpoints/accepted"
     accepted_metrics = $null
     accepted_parameters = $null
     accepted_training_steps = 0

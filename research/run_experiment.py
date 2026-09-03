@@ -43,7 +43,7 @@ def begin_hypothesis_phase() -> int:
     """Anchor the parent before the researcher may change or commit any science."""
     state = repository.read_state()
     parent = repository.anchor_scientific_parent(state)
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     console.announce(
         f"[runner] scientific parent of the next experiment: {parent[:12]}"
     )
@@ -157,7 +157,7 @@ def execute_pending_evaluations() -> int:
         protocol.validate_evaluation_request(request)
         pending["evaluation_plan"] = request
         pending.setdefault("partial_evaluations", [])
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
     else:
         request = pending.get("evaluation_plan")
         if not isinstance(request, dict):
@@ -250,7 +250,7 @@ def execute_pending_evaluations() -> int:
             )
             completed_keys.add(key)
             pending["partial_evaluations"] = executed
-            repository.atomic_write_json(paths.STATE_PATH, state)
+            repository.write_state(state)
 
         for spec in requested_references:
             name = spec["candidate"]
@@ -289,7 +289,7 @@ def execute_pending_evaluations() -> int:
             )
             completed_reference_keys.add(reference_key)
             pending["partial_task_reference_evaluations"] = reference_executed
-            repository.atomic_write_json(paths.STATE_PATH, state)
+            repository.write_state(state)
     except KeyboardInterrupt:
         console.announce(
             "[runner] Evaluation request paused. Completed measurements remain "
@@ -297,7 +297,7 @@ def execute_pending_evaluations() -> int:
         )
         pending["partial_evaluations"] = executed
         pending["partial_task_reference_evaluations"] = reference_executed
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
         return 130
 
     for candidate in candidates:
@@ -367,7 +367,7 @@ def execute_pending_evaluations() -> int:
     state["last_experiment"] = experiment
     if pending.get("baseline"):
         paths.BASELINE_PENDING_PATH.unlink(missing_ok=True)
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     paths.EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
     if not more_evidence:
         repository.append_result(result)
@@ -434,7 +434,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     }
     state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {selected_name}"
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     # Retain compact challenger history while removing every duplicate reusable artifact.
     for candidate in pending["candidates"]:
         repository.remove_heavyweight_artifacts(
@@ -452,7 +452,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
             "artifact": state["accepted_artifact"],
             "fingerprint": plan["selected_fingerprint"],
         }
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
     console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
@@ -513,7 +513,7 @@ def execute_pending_final_benchmark() -> int:
     state["official_metrics"] = official_metrics
     state["official_benchmark_artifact"] = fingerprint
     state["pending_final_benchmark"] = None
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     if bool(official_metrics["goal_reached"]):
         paths.GOAL_PATH.write_text(
             f"Goal reached with {pending['selected']} from experiment {pending['experiment']}.\n",
@@ -557,7 +557,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     code_parent_commit = repository.anchor_scientific_parent(state)
     # Durable before validation or training can produce anything under this
     # identity, so a rejected, crashed or interrupted experiment consumes it.
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     candidate_dir = paths.campaign_candidate_root(campaign_id) / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = research_config.load_experiment_config()
@@ -760,7 +760,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         if args.reuse_candidate is not None:
             paths.RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
     except KeyboardInterrupt:
         recovery_dir = paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"
         recoverable = all(
@@ -801,7 +801,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         result["error"] = str(error)[:500]
         result["verdict"] = "invalid; researcher changes preserved"
         repository.append_result(result)
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
         repository.commit_result(index, change)
         console.announce(f"[error] experiment {index} invalid: {result['error']}")
         return 1
