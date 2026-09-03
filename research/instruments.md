@@ -8,7 +8,9 @@ Read:
 
 * `research/brief.md` for current state, parameters, available models, retained lineages and artifact paths;
 * `research/postmortems.md` for previous observations and interpretations;
-* every JSON or JSONL artifact referenced by the brief, history or candidate metadata, including evaluation results, task-reference results, inventories and parameters. Use jello to extract relevant fields without loading complete artifacts
+* every JSON or JSONL artifact referenced by the brief or history, including evaluation results, task-reference results, inventories and parameters. Use jello to extract relevant fields without loading complete artifacts;
+* the detailed researcher-evaluation artifacts under `research/evaluations/` and the detailed task-reference artifacts named by the brief or history;
+* `research/brief.md` under **Current status -> Reported result** for the official benchmark result, with its durable metrics and artifact reference in `research/research_state.json`.
 
 Candidate training success and reward shown in the brief are training facts, not evaluation results.
 
@@ -30,6 +32,14 @@ Use `uv run` for lightweight analysis and focused checks on researcher-owned cod
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
 During evaluation, the Researcher may modify researcher-owned measurement and analysis code before requesting another measurement round. Changes affecting training apply to the next experiment.
+
+## Runner operations
+
+The Runner validates and executes the accepted request for the current phase. It
+allocates experiment identity, records compact results in
+`research/results.jsonl`, derives `research/EXPERIMENTS.md`, and updates
+`research/brief.md`. It owns training, evaluation, lineage decisions and the
+official benchmark; the Researcher writes only the phase deliverable.
 
 ## Request measurements
 
@@ -59,7 +69,7 @@ Write `research/evaluation_request.json`:
 }
 ```
 
-`measurements` must contain at least one entry, and at most three distinct models. `paired_comparisons` is optional. 
+`measurements` must contain at least one entry, and at most three distinct models. `paired_comparisons` is optional.
 
 One evaluation request may measure at most three distinct models. Multiple measurements of the same model count as one. This includes different seeds, episode counts, labels, or instruments applied to the same model.
 
@@ -78,29 +88,30 @@ Set `need_more_evidence` to `true` to preserve completed measurements and open a
 
 **Phase:** Experiment preparation.
 
-Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`:
+Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`. The common required fields are `kind`, `family`, `hypothesis` and `initialization`:
 
 ```json
 {
   "kind": "<training | continuation | replication>",
   "family": "<non-empty hypothesis-family identifier>",
   "hypothesis": "<non-empty falsifiable hypothesis>",
-  "change": "<non-empty description of the requested operation>",
   "initialization": "<fresh | transfer>",
-  "training_parent": "<string; required for transfer or continuation, otherwise omit>",
+  "change": "<non-empty scientific intervention; training only>",
+  "training_parent": "<string; required for transfer, otherwise omit>",
   "training_seed": "<integer; optional except for replication>",
-  "replication_of": "<positive experiment integer; replication only, otherwise omit>",
-  "params": "<object; training only, otherwise omit>"
+  "replication_of": "<positive experiment integer; replication only>",
+  "params": "<object; optional parameter overrides>"
 }
 ```
 
-| Kind           | Meaning                                                                                        | Requirements                                                                                                      |
-| -------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `training`     | Trains a scientific intervention                                                               | Requires a researcher-owned code change or `params`; transfer requires `training_parent`                          |
-| `continuation` | Trains an unchanged method further                                                             | Requires `initialization: "transfer"` and an eligible `training_parent`                                           |
-| `replication`  | Starts the current unchanged method from scratch and groups the run with an earlier experiment | Requires `initialization: "fresh"`, `replication_of` and `training_seed`; code changes and `params` are forbidden |
+| Kind | Meaning | Required or conditional fields |
+| --- | --- | --- |
+| `training` | Trains a scientific intervention. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
+| `continuation` | Trains the unchanged method further from an eligible lineage. | Requires `initialization: "transfer"` and `training_parent`. Code changes and parameter overrides are forbidden. `change` is omitted; if supplied, it is a non-empty operation note and never describes a method mutation. |
+| `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. | Requires `initialization: "fresh"`, a positive integer `replication_of` and an explicit integer `training_seed`. Code changes and `params` are forbidden. `change` is omitted; if supplied, it is a non-empty operation note and never describes a method mutation. |
 
-For `continuation` and `replication`, `change` describes the requested operation; it does not imply a method change.
+`training_seed` is optional for ordinary training and continuation. `params` is
+optional for ordinary training and is omitted for unchanged operations.
 
 An eligible `training_parent` must be exposed by the brief as an active or retained lineage.
 
@@ -108,7 +119,10 @@ The automatic baseline trains the unchanged method from scratch for 120,000 step
 
 Runner recovery resumes the interrupted experiment; it is not a continuation.
 
-The current replication operation records the relationship through `replication_of`. It does not restore the referenced experiment’s code or configuration.
+The current replication operation records the relationship through the positive
+integer `replication_of`. It groups the new run with the referenced experiment
+for replication evidence; it does not restore that experiment’s code or
+configuration and does not claim exact replay.
 
 The Runner validates and executes the accepted proposal. Training and Runner operations are not launched directly by the Researcher.
 

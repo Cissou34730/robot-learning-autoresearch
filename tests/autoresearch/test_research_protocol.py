@@ -24,6 +24,7 @@ from research.runner_protocol import (
     evaluation_semantics_paths,
     experiment_family,
     is_protected_source,
+    operation_description,
     parameter_change_records,
     plan_previous_result_decision,
     training_parent,
@@ -32,6 +33,7 @@ from research.runner_protocol import (
 )
 from research.runner_repository import (
     compact_result_record,
+    experiment_log_row,
     measurement_record,
     write_state,
 )
@@ -1807,6 +1809,25 @@ def test_continuation_and_replication_allow_unchanged_methods():
     with pytest.raises(ValueError, match="explicit training_seed"):
         validate_training_proposal(invalid_replication, baseline=False)
 
+    continuation_without_change = {
+        "kind": "continuation",
+        "family": "method",
+        "hypothesis": "check additional training",
+        "initialization": "transfer",
+        "training_parent": "accepted",
+    }
+    validate_training_proposal(continuation_without_change, baseline=False)
+
+    replication_without_change = {
+        "kind": "replication",
+        "family": "method",
+        "hypothesis": "check outcome spread",
+        "initialization": "fresh",
+        "training_seed": 19,
+        "replication_of": 12,
+    }
+    validate_training_proposal(replication_without_change, baseline=False)
+
     with pytest.raises(ValueError, match="human-owned task, context"):
         validate_experiment_semantics(
             {},
@@ -1816,6 +1837,23 @@ def test_continuation_and_replication_allow_unchanged_methods():
             ["robot_learning/benchmark/final_contract.py"],
             False,
         )
+
+
+def test_unchanged_operation_history_uses_neutral_text():
+    result = {
+        "index": 15,
+        "kind": "replication",
+        "hypothesis": "check outcome spread",
+        "replication_of": 12,
+    }
+
+    assert operation_description(result) == (
+        "Replicate the current method from fresh initialization"
+    )
+    assert "Replicate the current method from fresh initialization" in (
+        experiment_log_row(result)
+    )
+    assert compact_result_record({"replication_of": "12"})["replication_of"] == 12
 
 
 def test_training_proposal_has_no_postmortem_or_lineage_payload():

@@ -526,7 +526,7 @@ def execute_pending_final_benchmark() -> int:
 
 
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
-    change = str(proposal["change"]).strip()
+    change = protocol.operation_description(proposal)
     hypothesis = str(proposal["hypothesis"]).strip()
     experiment_kind = str(proposal.get("kind", "training")).lower()
     parameter_overrides = proposal.get("params")
@@ -639,9 +639,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         result["training_seed"] = training_seed
         result["training_parent"] = parent_name
         if experiment_kind == "replication":
-            result["replication_of"] = str(
-                proposal.get("replication_of", proposal.get("family", ""))
-            ).strip()
+            result["replication_of"] = int(proposal["replication_of"])
         console.announce("\n" + console.render_experiment_card(result) + "\n")
         resume = parent_artifact / "model.zip" if initialization == "transfer" else None
 

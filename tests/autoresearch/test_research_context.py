@@ -254,7 +254,7 @@ def test_brief_reports_an_incomplete_checkpoint_as_unavailable(
     assert "`research/checkpoints/incomplete`" not in brief
 
 
-def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
+def test_brief_groups_original_and_replication_evidence(monkeypatch, tmp_path):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "research_state.json").write_text("{}", encoding="utf-8")
@@ -264,11 +264,15 @@ def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
                 {
                     "index": index,
                     "verdict": "measured",
-                    "change": "same method",
                     "hypothesis": "check spread",
                     "family": "method",
                     "training_seed": seed,
                     "candidate_metrics": {"success_percent": success},
+                    **(
+                        {"kind": "training", "change": "same method"}
+                        if replication_of is None
+                        else {"kind": "replication"}
+                    ),
                     **(
                         {"replication_of": replication_of}
                         if replication_of is not None
@@ -293,6 +297,7 @@ def test_brief_groups_original_and_exact_replications(monkeypatch, tmp_path):
     assert "`12`" in brief
     assert "seed 1" in brief and "seed 2" in brief and "seed 3" in brief
     assert "40.00-60.00%" in brief
+    assert "Replicate the current method from fresh initialization" in brief
 
 
 def test_brief_keeps_the_declared_family_without_deriving_a_taxonomy(
