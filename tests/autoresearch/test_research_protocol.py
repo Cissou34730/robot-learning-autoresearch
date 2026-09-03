@@ -35,7 +35,7 @@ from research.runner_repository import (
     measurement_record,
     write_state,
 )
-from robot_learning.scenario import (
+from robot_learning.scenario.evaluation import (
     summarize_research_evaluations as summarize_evaluations,
 )
 from robot_learning.training.comparison import (
@@ -1206,7 +1206,7 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     request["previous_result_decision"]["request_final_benchmark"] = True
     calls = []
     monkeypatch.setattr(
-        "robot_learning.scenario.evaluate_final_model",
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
         lambda model: (
             calls.append(model)
             or {
@@ -1266,7 +1266,7 @@ def test_legacy_champion_path_is_canonicalized_before_final_benchmark(
         }
     }
     monkeypatch.setattr(
-        "robot_learning.scenario.evaluate_final_model",
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
         lambda model: {
             "episodes": 1,
             "seed": 1000,
@@ -1300,7 +1300,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
         raise RuntimeError("benchmark crashed")
 
     monkeypatch.setattr(
-        "robot_learning.scenario.evaluate_final_model", failed_benchmark
+        "robot_learning.scenario.final_benchmark.evaluate_final_model", failed_benchmark
     )
     with pytest.raises(RuntimeError, match="benchmark crashed"):
         execute_pending_final_benchmark()
@@ -1312,7 +1312,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     assert persisted["official_metrics"] is None
 
     monkeypatch.setattr(
-        "robot_learning.scenario.evaluate_final_model",
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
         lambda model: {
             "episodes": 200,
             "seed": 1000,

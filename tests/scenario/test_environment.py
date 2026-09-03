@@ -7,12 +7,11 @@ that changes the training mechanics is expected to update them.
 import numpy as np
 import pytest
 
+import robot_learning.scenario.environment as environment_module
+import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
-from robot_learning.scenario import environment as environment_module
-from robot_learning.scenario import make_training_env
-from robot_learning.scenario import reward as reward_module
-from robot_learning.scenario.environment import TwoJointArmReachEnv
+from robot_learning.scenario.environment import TwoJointArmReachEnv, make_training_env
 
 
 def test_observation_matches_declared_space():

@@ -46,7 +46,10 @@ The exact available operations are cataloged in `research/instruments.md`.
 - `robot_learning/benchmark/` - human-owned final and task-reference contracts
   and evaluators.
 - `robot_learning/scenario/` - current scenario implementation and scientific
-  measurement code, with protected adapters to the human-owned panels.
+  measurement code, with protected adapters to the human-owned panels. The
+  protected `scenario/__init__.py` is a minimal package initializer, not a
+  scientific extension point; researcher-owned scenario modules import each
+  other directly.
 - `robot_learning/training/` - learning-method implementation and artifact
   support.
 - `robot_learning/train.py`, `evaluate.py`, `play.py` - generic application
@@ -79,7 +82,7 @@ The Researcher may read but not modify these paths through an experiment:
 - `robot_learning/robots/two_joint_arm.py` and
   `robot_learning/robots/two_joint_arm.xml`;
 - `robot_learning/__init__.py`, `robot_learning/robots/__init__.py` and
-  `robot_learning/scenario/__init__.py`;
+  `robot_learning/scenario/__init__.py` (minimal protected package initializer);
 - `robot_learning/scenario/final_benchmark.py` and
   `robot_learning/scenario/task_reference.py`;
 - `tests/benchmark/` and `tests/autoresearch/`.

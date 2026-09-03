@@ -7,7 +7,7 @@ import numpy as np
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
-from robot_learning.scenario import make_training_env
+from robot_learning.scenario.environment import make_training_env
 
 
 def measure(n_envs: int, transitions: int = 4000) -> dict:

@@ -36,6 +36,41 @@ PROPOSAL_ERRORS = (
 )
 
 
+def proposal_training_settings(
+    proposal: dict,
+) -> tuple[str, dict | None, bool, str]:
+    """Resolve the training fields shared by preflight and execution."""
+    return (
+        str(proposal.get("kind", "training")).lower(),
+        proposal.get("params"),
+        bool(proposal.get("baseline", False)),
+        str(proposal.get("initialization", "transfer")).lower(),
+    )
+
+
+def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
+    """Validate the proposal against the parent already anchored for this phase."""
+    experiment_kind, parameter_overrides, baseline, initialization = (
+        proposal_training_settings(proposal)
+    )
+    parent = str(raw_state.get("pending_scientific_parent") or "").strip()
+    if not parent:
+        raise ValueError(
+            "training proposal requires an existing pending scientific parent; "
+            "run --begin-hypothesis before proposing an experiment"
+        )
+    repository.require_resolvable_commit(parent)
+    code_changes = repository.scientific_delta(parent)
+    protocol.validate_experiment_semantics(
+        proposal,
+        experiment_kind,
+        initialization,
+        parameter_overrides,
+        code_changes,
+        baseline,
+    )
+
+
 # --- hypothesis phase ------------------------------------------------------
 
 
@@ -60,9 +95,10 @@ def check_proposal() -> int:
         return 1
     try:
         proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
-        contract = protocol.validate_proposal_against_state(
-            proposal, repository.read_state()
-        )
+        state = repository.read_state()
+        contract = protocol.validate_proposal_against_state(proposal, state)
+        if contract == "training":
+            validate_training_proposal_delta(proposal, state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
         return 1
@@ -142,10 +178,8 @@ def check_lineage_evidence(experiment: int) -> int:
 
 
 def execute_pending_evaluations() -> int:
-    from robot_learning.scenario import (
-        summarize_research_evaluations,
-        task_reference_panel,
-    )
+    from robot_learning.scenario.evaluation import summarize_research_evaluations
+    from robot_learning.scenario.task_reference import task_reference_panel
 
     state = repository.read_state()
     campaign_id = repository.current_campaign_id(state)
@@ -476,7 +510,7 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
 
 
 def execute_pending_final_benchmark() -> int:
-    from robot_learning.scenario import evaluate_final_model
+    from robot_learning.scenario.final_benchmark import evaluate_final_model
 
     state = repository.read_state()
     pending = state.get("pending_final_benchmark")
@@ -528,10 +562,9 @@ def execute_pending_final_benchmark() -> int:
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     change = str(proposal["change"]).strip()
     hypothesis = str(proposal["hypothesis"]).strip()
-    experiment_kind = str(proposal.get("kind", "training")).lower()
-    parameter_overrides = proposal.get("params")
-    baseline = bool(proposal.get("baseline", False))
-    initialization = str(proposal.get("initialization", "transfer")).lower()
+    experiment_kind, parameter_overrides, baseline, initialization = (
+        proposal_training_settings(proposal)
+    )
     fresh_baseline = baseline and initialization == "fresh"
     state = repository.load_state(
         allow_unmeasured=True,

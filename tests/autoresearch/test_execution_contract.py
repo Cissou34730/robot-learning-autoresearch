@@ -1356,6 +1356,7 @@ def _training_proposal() -> dict:
         "hypothesis": "the current representation limits learning",
         "change": "change the observation representation",
         "initialization": "fresh",
+        "params": {"ppo": {"gamma": 0.99}},
     }
 
 
@@ -1378,6 +1379,7 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
     state_path.write_text(
         json.dumps(
             {
+                "pending_scientific_parent": "test-parent",
                 "pending_evaluation_request": None,
                 "pending_researcher_decision": None,
                 "pending_final_benchmark": None,
@@ -1387,9 +1389,92 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
     )
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_repository.require_resolvable_commit", lambda _: None)
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
 
     assert check_proposal() == 0
     assert "PROPOSAL_VALID: training" in capsys.readouterr().out
+
+
+def test_proposal_preflight_rejects_training_without_an_anchored_parent(
+    monkeypatch, tmp_path, capsys
+):
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    proposal = _training_proposal()
+    state = {
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_final_benchmark": None,
+    }
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    original_proposal = proposal_path.read_bytes()
+    original_state = state_path.read_bytes()
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+
+    def fail_if_anchored(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("proposal preflight anchored a scientific parent")
+
+    monkeypatch.setattr(
+        "research.runner_repository.anchor_scientific_parent", fail_if_anchored
+    )
+
+    assert check_proposal() == 1
+    assert "pending scientific parent" in capsys.readouterr().out
+    assert proposal_path.read_bytes() == original_proposal
+    assert state_path.read_bytes() == original_state
+
+
+def test_proposal_preflight_rejects_protected_scenario_initializer_without_execution(
+    monkeypatch, tmp_path, capsys
+):
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    proposal = _training_proposal()
+    state = {
+        "pending_scientific_parent": "test-parent",
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_final_benchmark": None,
+    }
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    original_proposal = proposal_path.read_bytes()
+    original_state = state_path.read_bytes()
+    changed_paths = ["robot_learning/scenario/__init__.py"]
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
+    monkeypatch.setattr(
+        "research.runner_repository.scientific_delta", lambda _: list(changed_paths)
+    )
+
+    def fail_if_execution_starts(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("proposal preflight started execution")
+
+    monkeypatch.setattr(
+        "research.run_experiment.run_training_experiment", fail_if_execution_starts
+    )
+    monkeypatch.setattr(
+        "research.runner_repository.anchor_scientific_parent", fail_if_execution_starts
+    )
+
+    assert check_proposal() == 1
+    assert "robot_learning/scenario/__init__.py" in capsys.readouterr().out
+    assert proposal_path.read_bytes() == original_proposal
+    assert state_path.read_bytes() == original_state
+
+    changed_paths[:] = ["robot_learning/scenario/reward.py"]
+    assert check_proposal() == 0
+    assert "PROPOSAL_VALID: training" in capsys.readouterr().out
+    assert proposal_path.read_bytes() == original_proposal
+    assert state_path.read_bytes() == original_state
 
 
 @pytest.mark.parametrize(
@@ -1432,6 +1517,7 @@ def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
     state_path.write_text(
         json.dumps(
             {
+                "pending_scientific_parent": "test-parent",
                 "pending_evaluation_request": None,
                 "pending_researcher_decision": None,
                 "pending_final_benchmark": None,
@@ -1441,6 +1527,8 @@ def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
     )
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_repository.require_resolvable_commit", lambda _: None)
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
 
 
 @pytest.mark.parametrize("kind", ["training", "replication", "banana"])
@@ -1905,7 +1993,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
         }
 
     monkeypatch.setattr(
-        "robot_learning.scenario.evaluate_final_model", evaluate_after_commit
+        "robot_learning.scenario.final_benchmark.evaluate_final_model", evaluate_after_commit
     )
     from research.run_experiment import execute_pending_final_benchmark
 

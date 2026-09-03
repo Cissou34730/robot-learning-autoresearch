@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from robot_learning.scenario import evaluation as scenario_evaluation
-from robot_learning.scenario import summarize_research_evaluations
+import robot_learning.scenario.evaluation as scenario_evaluation
+from robot_learning.scenario.evaluation import summarize_research_evaluations
 
 BASELINE_EPISODE_FIELDS = {
     "episode",
