@@ -59,7 +59,9 @@ Write `research/evaluation_request.json`:
 }
 ```
 
-`measurements` must contain at least one entry. `paired_comparisons` is optional.
+`measurements` must contain at least one entry, and at most three distinct models. `paired_comparisons` is optional. 
+
+One evaluation request may measure at most three distinct models. Multiple measurements of the same model count as one. This includes different seeds, episode counts, labels, or instruments applied to the same model.
 
 | Instrument            | Additional fields                                                       | Operation                                                          |
 | --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |

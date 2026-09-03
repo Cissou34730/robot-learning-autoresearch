@@ -493,6 +493,8 @@ def validate_evaluation_request(request: dict) -> None:
             raise ValueError(
                 f"{field} is obsolete; submit measurements through measurements"
             )
+    # Collect distinct candidates before detailed validation.
+    distinct_candidates = set()
     for entry in requested_measurements(request):
         if not isinstance(entry, dict):
             raise TypeError("each measurement must be an object")
@@ -502,6 +504,7 @@ def validate_evaluation_request(request: dict) -> None:
         candidate = entry.get("candidate")
         if not isinstance(candidate, str) or not candidate.strip():
             raise ValueError(f"{instrument} requires a non-empty candidate")
+        distinct_candidates.add(candidate.strip())
         allowed_fields = (
             RESEARCH_EVALUATION_ENTRY_FIELDS
             if instrument == "research_evaluation"
@@ -530,6 +533,12 @@ def validate_evaluation_request(request: dict) -> None:
                 raise ValueError("research_evaluation episodes must be positive")
             if not isinstance(entry["seed"], int) or isinstance(entry["seed"], bool):
                 raise ValueError("research_evaluation seed must be an integer")
+    # Enforce the three-model limit per evaluation round.
+    if len(distinct_candidates) > 3:
+        raise ValueError(
+            f"an evaluation request may measure at most 3 distinct models; "
+            f"{len(distinct_candidates)} requested: {sorted(distinct_candidates)}"
+        )
 
 
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:

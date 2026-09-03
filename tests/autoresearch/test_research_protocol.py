@@ -1237,6 +1237,391 @@ def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp
         execute_pending_evaluations()
 
 
+@pytest.mark.parametrize("distinct_count", [1, 2, 3])
+def test_evaluation_request_accepts_up_to_three_distinct_models(
+    distinct_count, monkeypatch, tmp_path
+):
+    """Requests with 1-3 distinct models are accepted."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                for i in range(distinct_count)
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Test question",
+                "reason": "Test reason",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": f"model-{i}",
+                        "episodes": 2,
+                        "seed": 1000,
+                    }
+                    for i in range(distinct_count)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    # Should not raise; validation passes.
+    from research.runner_protocol import validate_evaluation_request
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    validate_evaluation_request(request)
+
+
+def test_evaluation_request_rejects_more_than_three_distinct_models(monkeypatch, tmp_path):
+    """Requests with 4+ distinct models are rejected during validation."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                for i in range(4)
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Test question",
+                "reason": "Test reason",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": f"model-{i}",
+                        "episodes": 2,
+                        "seed": 1000,
+                    }
+                    for i in range(4)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    with pytest.raises(ValueError, match="at most 3 distinct models.*4 requested"):
+        execute_pending_evaluations()
+
+
+def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
+    """Multiple measurements of the same model count as one toward the limit."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": "single-model", "artifact": "archive/single-model", "timesteps": 1, "evaluations": []}
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Test question",
+                "reason": "Test reason",
+                "measurements": [
+                    {"instrument": "research_evaluation", "candidate": "single-model", "episodes": 2, "seed": 1000},
+                    {"instrument": "research_evaluation", "candidate": "single-model", "episodes": 2, "seed": 2000},
+                    {"instrument": "research_evaluation", "candidate": "single-model", "episodes": 4, "seed": 3000},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    # Should not raise; counts as 1 distinct model.
+    from research.runner_protocol import validate_evaluation_request
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    validate_evaluation_request(request)
+
+
+def test_different_instruments_same_model_count_once(monkeypatch, tmp_path):
+    """Different instruments for the same model count as one toward the limit."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": "candidate", "artifact": "archive/candidate", "timesteps": 1, "evaluations": []}
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Test question",
+                "reason": "Test reason",
+                "measurements": [
+                    {"instrument": "research_evaluation", "candidate": "candidate", "episodes": 2, "seed": 1000},
+                    {"instrument": "task_reference", "candidate": "candidate"},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    # Should not raise; counts as 1 distinct model.
+    from research.runner_protocol import validate_evaluation_request
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    validate_evaluation_request(request)
+
+
+def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
+    """Paired comparisons do not count toward the three-model limit."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": "model-a", "artifact": "archive/model-a", "timesteps": 1, "evaluations": []},
+                {"name": "model-b", "artifact": "archive/model-b", "timesteps": 1, "evaluations": []},
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Test question",
+                "reason": "Test reason",
+                "measurements": [
+                    {"instrument": "research_evaluation", "candidate": "model-a", "episodes": 2, "seed": 1000},
+                    {"instrument": "research_evaluation", "candidate": "model-b", "episodes": 2, "seed": 1000},
+                ],
+                "paired_comparisons": [
+                    {"candidate": "model-a", "reference": "model-b"}
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    # Should not raise; paired comparisons are ignored in the count.
+    from research.runner_protocol import validate_evaluation_request
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    validate_evaluation_request(request)
+
+
+def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path):
+    """When limit is exceeded, no evaluations or comparisons are executed."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                for i in range(4)
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Test question",
+                "reason": "Test reason",
+                "measurements": [
+                    {"instrument": "research_evaluation", "candidate": f"model-{i}", "episodes": 2, "seed": 1000}
+                    for i in range(4)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path / "evaluations")
+    monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    
+    calls = []
+    def track_evaluator(artifact, seed, **kwargs):
+        calls.append(("eval", artifact, seed))
+        return evaluation(seed, [True, False])
+    
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", track_evaluator)
+    monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
+    
+    # Should reject before any evaluation is attempted.
+    with pytest.raises(ValueError, match="at most 3 distinct models"):
+        execute_pending_evaluations()
+    
+    # Verify no evaluations were executed.
+    assert calls == []
+    # Verify state was not mutated.
+    final_state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert final_state == state
+
+
+def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tmp_path):
+    """Each additional evaluation round has its own independent limit."""
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    
+    # First round: measure 3 distinct models
+    state = {
+        "schema_version": 2,
+        "accepted_artifact": "accepted",
+        "pending_evaluation_request": {
+            "experiment": 8,
+            "candidates": [
+                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                for i in range(3)
+            ],
+            "champion_available": False,
+            "parameters": {},
+            "initialization": "fresh",
+            "training_budget_steps": 1,
+            "parent_training_steps": 0,
+            "result": {"index": 8, "change": "measure", "hypothesis": "test"},
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "First round",
+                "reason": "Test reason",
+                "measurements": [
+                    {"instrument": "research_evaluation", "candidate": f"model-{i}", "episodes": 2, "seed": 1000}
+                    for i in range(3)
+                ],
+                "need_more_evidence": True,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path / "evaluations")
+    monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
+    
+    def evaluator(artifact, seed, **kwargs):
+        return evaluation(seed, [True, False])
+    
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluator)
+    
+    execute_pending_evaluations()
+    
+    # Reload state after first round
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["pending_evaluation_request"]["partial_evaluations"] is not None
+    assert len(state["pending_evaluation_request"]["partial_evaluations"]) == 3
+    
+    # Second round: measure 3 more distinct models (different from first round).
+    # This should be allowed since each round has its own limit.
+    state["pending_evaluation_request"]["candidates"] = [
+        {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+        for i in range(3, 6)
+    ]
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    
+    request_path.write_text(
+        json.dumps(
+            {
+                "experiment": 8,
+                "question": "Second round",
+                "reason": "Test reason",
+                "measurements": [
+                    {"instrument": "research_evaluation", "candidate": f"model-{i}", "episodes": 2, "seed": 2000}
+                    for i in range(3, 6)
+                ],
+                "need_more_evidence": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    
+    # Should succeed without raising.
+    execute_pending_evaluations()
+    
+    final_state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert final_state["pending_researcher_decision"] is not None
+
+
 def test_continuation_and_replication_allow_unchanged_methods():
     validate_experiment_semantics({}, "continuation", "transfer", None, [], False)
     invalid_continuation = {
