@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-6-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 6
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 7
   },
-  "last_allocated_experiment": 6,
-  "last_experiment": 6,
+  "last_allocated_experiment": 7,
+  "last_experiment": 7,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 6 made no code or parameter changes, so there is no intervention to revert."
+      "action": "revert",
+      "reason": "Changing PPO from one to four environments produced a large, persistent regression dominated by non-reaches, so restore the pre-experiment training configuration."
     },
-    "code_parent_commit": "29f8851b3b00d732481ef77c1c7e28cd698b4137",
+    "code_parent_commit": "128135e2a82e277987b70417660065dc10448bc3",
     "continue_from": "champion",
-    "experiment": 6,
-    "reason": "The seed-1 replication reached only 44.5% versus the champion's 97.0%; the paired comparison recorded 106 champion wins and 1 candidate win across 107 discordant episodes, so the candidate must not be promoted."
+    "experiment": 7,
+    "reason": "The parallel-rollout candidate reached only 21.5% at checkpoint-120832 versus 97.0% for the champion, and its task-reference result was 21.5% versus 98.0%; the candidate is not suitable for promotion."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
