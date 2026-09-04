@@ -135,7 +135,7 @@ def test_success_is_read_from_the_scenario_signal_not_termination(
 ):
     monkeypatch.setattr(
         scenario_evaluation,
-        "make_training_env",
+        "make_evaluation_env",
         lambda: ScriptedEnv(is_success, terminated, truncated),
     )
 

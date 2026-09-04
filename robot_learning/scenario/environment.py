@@ -26,6 +26,8 @@ from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 from robot_learning.scenario.observations import OBSERVATION_SIZE, reach_observation
 from robot_learning.scenario.reward import reach_reward
 
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
+
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
@@ -163,4 +165,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv()
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+
+
+def make_evaluation_env() -> gym.Env:
+    """Build the fixed-distribution environment used by research evaluation."""
+    return TwoJointArmReachEnv(target_radius_range=TARGET_RADIUS_RANGE)

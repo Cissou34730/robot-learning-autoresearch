@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-from robot_learning.scenario.environment import make_training_env
+from robot_learning.scenario.environment import make_evaluation_env
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer
 
@@ -35,7 +35,7 @@ def evaluate_research_model(
     if episodes < 1:
         raise ValueError("an evaluation panel requires at least one episode")
     model = load_policy(model_path, algorithm)
-    env = make_training_env()
+    env = make_evaluation_env()
     normalize_obs = load_observation_normalizer(model_path)
 
     episode_results: list[dict] = []
