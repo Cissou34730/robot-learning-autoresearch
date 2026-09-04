@@ -16,6 +16,18 @@ but prefer targeted extraction of the required fields over loading a complete
 artifact. Read a full artifact when its complete contents are genuinely needed
 or a simple query cannot express the analysis.
 
+Detailed artifacts remain valid sources of scientific evidence, including for
+unsuccessful experiments. Inspect episode-level behavior, distributions,
+failure modes, or any other detail when it may help explain a result or generate
+a useful hypothesis.
+
+When querying structured artifacts, prefer queries that answer a scientific
+question over queries that only rediscover the artifact schema or reconfirm
+summary values already available in `research/brief.md`. Schema inspection is
+appropriate when needed to understand an unfamiliar artifact; once the relevant
+structure is known, proceed directly to the scientific analysis rather than
+repeatedly rediscovering it.
+
 Artifact paths exposed by the brief and research contracts are relative to the
 repository. Use them directly from the repository working directory; do not
 reconstruct them as absolute paths.

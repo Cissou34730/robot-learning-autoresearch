@@ -52,8 +52,8 @@ def test_mutating_git_is_refused_and_names_the_lineage_decision(command):
     assert "revert" in reason
     assert "code provenance and code inspection" in reason
     assert "when the current task requires it" in reason
-    for command in ("status", "diff", "log", "show", "rev-parse", "ls-files"):
-        assert command not in reason
+    for read_command in ("status", "diff", "log", "show", "rev-parse", "ls-files"):
+        assert read_command not in reason
 
 
 @pytest.mark.parametrize(
@@ -186,13 +186,66 @@ def test_the_shell_request_is_read_from_every_segment_it_reports():
 # --- what the console shows -------------------------------------------------
 
 
-def test_reading_and_searching_stay_silent(capsys):
+@pytest.mark.parametrize(
+    ("tool", "arguments", "target"),
+    [
+        ("view", {"path": "research/brief.md"}, "research/brief.md"),
+        ("view", {"filePath": "research/brief.md"}, "research/brief.md"),
+        ("rg", {"pattern": "success_percent", "path": "research"}, "success_percent"),
+        ("rg", {"query": "held_steps"}, "held_steps"),
+        (
+            "glob",
+            {"pattern": "research/evaluations/**/*.json"},
+            "research/evaluations/**/*.json",
+        ),
+        (
+            "apply_patch",
+            {"path": "reward.py", "content": "not for display"},
+            "reward.py",
+        ),
+        ("read_powershell", {"shellId": "shell-1"}, "shell-1"),
+        ("stop_powershell", {"shellId": "shell-1"}, "shell-1"),
+        ("list_powershell", {}, ""),
+    ],
+)
+def test_diagnostic_tool_starts_show_a_compact_target(capsys, tool, arguments, target):
     console = adapter.Console()
 
-    for tool in ("view", "rg", "glob", "apply_patch"):
-        console.tool(tool, {"path": "research/brief.md"})
+    console.tool(tool, arguments)
 
-    assert capsys.readouterr().out == ""
+    suffix = f": {target}" if target else ""
+    assert capsys.readouterr().out == f"  > {tool}{suffix}\n"
+    assert console.tool_calls == 1
+
+
+@pytest.mark.parametrize("argument_key", ["input", "patch", None])
+def test_patch_starts_show_file_targets_without_patch_contents(capsys, argument_key):
+    patch = (
+        "*** Begin Patch\n*** Update File: reward.py\n@@\n"
+        "+large payload that must remain hidden\n"
+        "*** Add File: diagnostic.py\n+another payload\n*** End Patch"
+    )
+    arguments = {argument_key: patch} if argument_key else patch
+
+    adapter.Console().tool("apply_patch", arguments)
+
+    assert capsys.readouterr().out == "  > apply_patch: reward.py, diagnostic.py\n"
+
+
+@pytest.mark.parametrize("arguments", [None, {"path": {"content": "hidden"}}])
+def test_missing_or_structured_targets_do_not_dump_arguments(capsys, arguments):
+    adapter.Console().tool("view", arguments)
+
+    assert capsys.readouterr().out == "  > view\n"
+
+
+@pytest.mark.parametrize(
+    "tool,key", [("powershell", "command"), ("view", "path"), ("rg", "pattern")]
+)
+def test_long_tool_targets_stay_on_one_truncated_line(capsys, tool, key):
+    adapter.Console().tool(tool, {key: "x" * 200 + "\nhidden tail"})
+
+    assert capsys.readouterr().out == f"  > {tool}: {'x' * 107}...\n"
 
 
 def test_a_shell_command_is_one_trimmed_line(capsys):
@@ -297,7 +350,7 @@ def test_the_session_reports_the_work_that_drove_its_cost(capsys):
     console.summary("session-id", [], offloaded=(3, 174_080))
 
     out = capsys.readouterr().out
-    # Silent tools still count: cost follows every call, not the visible ones.
+    # Each invocation counts once, regardless of its display detail.
     assert "tools 12" in out
     assert "offloaded 3 (170 KB)" in out
 
@@ -428,7 +481,9 @@ def test_a_genuine_tool_failure_is_still_reported(capsys):
     assert "ruff exited 1" in capsys.readouterr().out
 
 
-def test_a_silent_tool_failure_identifies_the_tool_and_target(capsys):
+def test_a_silent_tool_failure_identifies_the_tool_and_target(capsys, monkeypatch):
+    # Visibility can be reduced after the diagnostic campaign without losing errors.
+    monkeypatch.setattr(adapter, "SILENT_TOOLS", frozenset({"view"}))
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console()
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -456,6 +511,35 @@ def test_a_silent_tool_failure_identifies_the_tool_and_target(capsys):
     assert "view" in output
     assert "research/missing.json" in output
     assert "Path does not exist" in output
+
+
+def test_successful_tool_output_is_not_dumped_or_counted_again(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console()
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+    on_event(
+        SimpleNamespace(
+            data=events.ToolExecutionStartData(
+                tool_call_id="read-1",
+                tool_name="view",
+                arguments={"path": "reward.py"},
+            )
+        )
+    )
+    capsys.readouterr()
+    on_event(
+        SimpleNamespace(
+            data=events.ToolExecutionCompleteData(
+                tool_call_id="read-1",
+                success=True,
+                result={"content": "large scientific output"},
+            )
+        )
+    )
+
+    assert capsys.readouterr().out == ""
+    assert console.tool_calls == 1
+    assert console.active_tools == {}
 
 
 def test_a_refused_shell_call_answers_with_a_rejection(capsys):
@@ -534,6 +618,17 @@ def test_the_researcher_is_told_that_round_trips_resend_the_conversation():
     ]["content"]
 
     assert "resends the whole conversation" in content
+    normalized = " ".join(content.split())
+    assert "one aggregated tool call when practical" in normalized
+    assert "when the combined result remains compact" in normalized
+    assert "Separate calls remain appropriate" in normalized
+    assert (
+        "Use targeted tests, linting, parsing or analysis while developing"
+        in normalized
+    )
+    assert "when they resolve uncertainty introduced by the work" in normalized
+    assert "do not perform a separate final validation pass solely" in normalized
+    assert "the Runner owns final contract and execution validation" in normalized
 
 
 def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():

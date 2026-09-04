@@ -48,6 +48,7 @@ def format_console_line(text: str) -> str:
     timestamp = f"{_DIM}[{datetime.now(UTC).astimezone():%H:%M:%S}]{_RESET}"
     return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
 
+
 # Measured: this profile drops the runtime from 15 tools to 8 and roughly a
 # third of the per-turn context, by removing tools no robotics experiment uses.
 RESEARCH_TOOLS = [
@@ -61,19 +62,9 @@ RESEARCH_TOOLS = [
     "list_powershell",
 ]
 
-# Reading, searching and patching are how the researcher works; announcing each
-# one buries the few events that carry meaning. Edits surface as file changes.
-SILENT_TOOLS = frozenset(
-    {
-        "view",
-        "rg",
-        "glob",
-        "apply_patch",
-        "read_powershell",
-        "list_powershell",
-        "stop_powershell",
-    }
-)
+# Temporary diagnostic visibility for issue #20. Repopulate this set after the
+# diagnostic campaigns to quiet selected tool starts again; outputs stay hidden.
+SILENT_TOOLS: frozenset[str] = frozenset()
 
 READ_ONLY_GIT = frozenset(
     {
@@ -181,8 +172,15 @@ instead of retrying the same command.
 - Every tool call resends the whole conversation, so prefer one aggregation over
   the same command repeated per file, and read what you need rather than whole
   artifacts.
-- The phase ends when its deliverable file is written, not when you have
-  finished explaining. Write the file.
+  When the same extraction or analysis is needed across several artifacts, prefer
+  one aggregated tool call when practical and when the combined result remains
+  compact. Separate calls remain appropriate when the scientific question differs
+  between artifacts or aggregation would make the analysis less clear.
+- Use targeted tests, linting, parsing or analysis while developing the phase
+  deliverable when they resolve uncertainty introduced by the work. Once the
+  deliverable is complete, do not perform a separate final validation pass solely
+  to reconfirm the deliverable or repository state; the Runner owns final contract
+  and execution validation. The phase ends when its deliverable has been written.
 </harness_policy>
 """.strip()
 
@@ -434,8 +432,54 @@ class Console:
             return
         detail = ""
         if isinstance(arguments, dict):
-            raw = arguments.get("command") or arguments.get("commandLine") or ""
-            detail = " ".join(str(raw).split())
+            keys = (
+                ("query", "pattern", "path")
+                if name in {"rg", "glob"}
+                else (
+                    "command",
+                    "commandLine",
+                    "path",
+                    "filePath",
+                    "query",
+                    "pattern",
+                    "shellId",
+                    "shell_id",
+                    "session_id",
+                )
+            )
+            raw = next(
+                (
+                    arguments[key]
+                    for key in keys
+                    if isinstance(arguments.get(key), (str, int))
+                    and arguments[key] != ""
+                ),
+                "",
+            )
+            detail = str(raw)
+        if name == "apply_patch":
+            patch = (
+                arguments.get("input") or arguments.get("patch")
+                if isinstance(arguments, dict)
+                else arguments
+            )
+            if isinstance(patch, str):
+                # Show only file headers, never the potentially large patch body.
+                prefixes = (
+                    "*** Update File: ",
+                    "*** Add File: ",
+                    "*** Delete File: ",
+                    "*** Move to: ",
+                )
+                targets = []
+                for line in patch.splitlines():
+                    if line.startswith(prefixes):
+                        targets.append(line.split(": ", 1)[1])
+                        if len(targets) == 3:
+                            break
+                if targets:
+                    detail = ", ".join(targets)
+        detail = " ".join(detail.split())
         if len(detail) > 110:
             detail = detail[:107] + "..."
         self.line(f"  > {name}: {detail}" if detail else f"  > {name}")

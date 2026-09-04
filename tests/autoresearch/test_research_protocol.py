@@ -2471,6 +2471,20 @@ def test_evidence_inspection_is_brief_first_and_targeted():
     assert "relative to the repository" in normalized
     assert "Do not inspect instrument or Runner implementation" in normalized
     assert "every JSON or JSONL artifact" not in normalized
+    assert (
+        """Detailed artifacts remain valid sources of scientific evidence, including for
+unsuccessful experiments. Inspect episode-level behavior, distributions,
+failure modes, or any other detail when it may help explain a result or generate
+a useful hypothesis.
+
+When querying structured artifacts, prefer queries that answer a scientific
+question over queries that only rediscover the artifact schema or reconfirm
+summary values already available in `research/brief.md`. Schema inspection is
+appropriate when needed to understand an unfamiliar artifact; once the relevant
+structure is known, proceed directly to the scientific analysis rather than
+repeatedly rediscovering it."""
+        in instruments
+    )
 
     assert LOOP.count("Start from the brief and instrument contract") == 2
     assert LOOP.count("as needed to support the postmortem") == 2
