@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-3-champion-200ep-seed1000-53d9aac1b6d1.json"
+    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-4-champion-200ep-seed1000-88c7ea5975c7.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T10:26:33.0089613Z"
   },
   "campaign_experiment_counters": {
-    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 3
+    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 4
   },
-  "last_allocated_experiment": 3,
-  "last_experiment": 3,
+  "last_allocated_experiment": 4,
+  "last_experiment": 4,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Revert experiment 3's angular-sector oversampling because it degraded full-range evaluation from the accepted 97.0% to 62.0% and then 51.5%, indicating the intervention did not generalize beyond its focused training sector."
+      "reason": "Revert experiment 4's 20% angular-sector oversampling because any focused-sector benefit was outweighed by broad-task degradation; restore the accepted experiment-2 method."
     },
-    "code_parent_commit": "72119f335774b20aae2861553fdab3bc9759200c",
+    "code_parent_commit": "8bc52e876fa3857973e17270156cdbf628b1fb8d",
     "continue_from": "champion",
-    "experiment": 3,
-    "reason": "Keep the accepted champion at 97.0%: both experiment-3 candidates were substantially worse on the same 200-episode panel, and paired outcomes favored the champion by 75-5 at checkpoint-90112 and 95-4 at checkpoint-120832."
+    "experiment": 4,
+    "reason": "Keep the accepted champion at 97.0%: experiment 4 fell from 69.0% to 64.5% with further training, had 62 and 71 failures versus 6 for the champion, and scored only 70.5% on the task-reference panel versus 98.0% for the champion."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
