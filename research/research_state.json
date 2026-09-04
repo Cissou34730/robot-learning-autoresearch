@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-9-champion-200ep-seed1-03316606ae9c.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-10-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 9
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 10
   },
-  "last_allocated_experiment": 9,
-  "last_experiment": 9,
+  "last_allocated_experiment": 10,
+  "last_experiment": 10,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Setting HOLD_EXIT_FORFEIT_FRACTION to 1.0 did not improve holding and produced a persistent reach-and-hold regression, so restore the parent reward implementation."
+      "reason": "The sole intervention, reducing PPO ent_coef from 0.01 to 0.0, caused a persistent regression dominated by non-reaching and did not reduce hold interruptions. Restore the parent configuration."
     },
-    "code_parent_commit": "b59277a5138e0a33a22f319d85858ad2a406a6b8",
+    "code_parent_commit": "451649ffc537486df7fce8fd724458c9918f4b22",
     "continue_from": "champion",
-    "experiment": 9,
-    "reason": "The accepted champion reached 97.0% on the research panel and 98.0% on the task-reference panel, while both experiment-9 checkpoints were severe regressions with zero paired wins against it."
+    "experiment": 10,
+    "reason": "Both entropy-free checkpoints were far below the accepted champion on the research panel (71.0% and 70.5% versus 97.0%), with zero candidate wins in 52 and 53 discordant paired episodes; task-reference success was also lower (61.0% and 64.0% versus 98.0%). Retain the champion."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
