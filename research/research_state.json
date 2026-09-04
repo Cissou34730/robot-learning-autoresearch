@@ -61,14 +61,21 @@
     "reason": "The gamma 0.995 candidate reached only 22.5% and 24.0% on the research panel and 18.5% and 24.5% on the task-reference panel, while the unchanged champion reached 97.0% and 98.0%; the candidate is a persistent large regression."
   },
   "last_verdict": "researcher selected champion",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/accepted",
-    "experiment": 5,
-    "fingerprint": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
-    "selected": "champion"
+  "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
