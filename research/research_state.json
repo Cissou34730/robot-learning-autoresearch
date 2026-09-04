@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-10-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-11-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 10
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 11
   },
-  "last_allocated_experiment": 10,
-  "last_experiment": 10,
+  "last_allocated_experiment": 11,
+  "last_experiment": 11,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "The sole intervention, reducing PPO ent_coef from 0.01 to 0.0, caused a persistent regression dominated by non-reaching and did not reduce hold interruptions. Restore the parent configuration."
+      "reason": "The policy-capacity configuration caused a large, persistent regression and did not address the reach blind spot; restore the accepted parent configuration."
     },
-    "code_parent_commit": "451649ffc537486df7fce8fd724458c9918f4b22",
+    "code_parent_commit": "ef645fcdc2a2cd08a8fdbdad214e3a4dfa6ec41f",
     "continue_from": "champion",
-    "experiment": 10,
-    "reason": "Both entropy-free checkpoints were far below the accepted champion on the research panel (71.0% and 70.5% versus 97.0%), with zero candidate wins in 52 and 53 discordant paired episodes; task-reference success was also lower (61.0% and 64.0% versus 98.0%). Retain the champion."
+    "experiment": 11,
+    "reason": "The wider [128, 128] networks reached only 47.0% and 46.5% at the two candidate checkpoints, with 84 and 85 non-reaches and far more hold interruptions than the 97.0% champion. The task-reference results also favored the champion 98.0% to 44.0% and 44.5%."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
