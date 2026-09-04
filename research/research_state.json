@@ -1,83 +1,18 @@
 {
+  "schema_version": 3,
   "accepted_artifact": "research/checkpoints/accepted",
-  "accepted_evaluations": [
-    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-5-champion-200ep-seed1000-b55ec848ea09.json"
-  ],
-  "accepted_metrics": {
-    "episodes": 200,
-    "evaluation_summary_version": 3,
-    "pooled_success_percent": 97.0,
-    "schema_version": 3,
-    "seed_count": 1,
-    "seed_success_percent": {
-      "1000": 97.0
-    },
-    "success_percent": 97.0,
-    "worst_seed_success_percent": 97.0
-  },
-  "accepted_parameters": {
-    "algorithm": {
-      "name": "ppo"
-    },
-    "policy": {
-      "activation": "tanh",
-      "net_arch": [
-        64,
-        64
-      ]
-    },
-    "ppo": {
-      "batch_size": 64,
-      "ent_coef": 0.01,
-      "gae_lambda": 0.95,
-      "gamma": 0.99,
-      "learning_rate": 0.0003,
-      "n_steps": 1024
-    },
-    "training": {
-      "checkpoint_every_steps": 5000,
-      "n_envs": 1
-    }
-  },
-  "accepted_training_steps": 120000,
+  "accepted_metrics": null,
+  "accepted_parameters": null,
+  "accepted_training_steps": 0,
   "campaign": {
-    "base_commit": "8a9335c37bce95f3631a6b31a9b95fdd06d8645a",
-    "id": "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f",
-    "started_at": "2026-09-04T10:26:33.0089613Z"
+    "id": "cc99cf90-bcce-4974-af2f-bb100ed615cd",
+    "started_at": "2026-09-04T13:53:40.6500467Z",
+    "base_commit": "069febc4fc790d3b3535911dd7ae3420dbfbe4e1"
   },
-  "campaign_experiment_counters": {
-    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 5
-  },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "code": {
-      "action": "revert",
-      "reason": "Revert experiment 5's mixed far-target/full-range training sampler because it did not preserve broad-task competence on either the research or held-out task-reference panel; restore the experiment-5 code parent."
-    },
-    "code_parent_commit": "cc7c7440a6d756dfd6a4187156b7008430c6491e",
-    "continue_from": "champion",
-    "experiment": 5,
-    "reason": "Keep the accepted champion at 97.0%: both experiment-5 checkpoints reached only 55.5% with 89 truncated failures, while the champion reached 97.0% with 6 failures. Paired outcomes favored the champion by 85-2 and 87-4, and the task-reference result was 55.0% versus 98.0%."
-  },
-  "last_verdict": "researcher selected champion",
-  "official_benchmark_artifact": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
-  "pending_researcher_decision": null,
-  "pending_scientific_parent": null,
   "retained_lineages": [],
-  "schema_version": 3
+  "last_experiment": 0,
+  "last_allocated_experiment": 0,
+  "pending_scientific_parent": null,
+  "last_verdict": "baseline pending after research reset",
+  "official_metrics": null
 }
