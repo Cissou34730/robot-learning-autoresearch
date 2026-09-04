@@ -61,14 +61,21 @@
     "reason": "Activate the 97.0% checkpoint with 194/200 successes. It matches checkpoint-120832 and is the earlier point, while paired outcomes show the intervention beats the champion on 64 episodes and loses on only 2."
   },
   "last_verdict": "researcher selected checkpoint-100352",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/accepted",
-    "experiment": 2,
-    "fingerprint": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
-    "selected": "checkpoint-100352"
+  "official_benchmark_artifact": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
