@@ -5,9 +5,9 @@
   "accepted_parameters": null,
   "accepted_training_steps": 0,
   "campaign": {
-    "id": "5d852411-93ec-4c77-9a5f-65e68860bb55",
-    "started_at": "2026-09-04T08:10:47.3814022Z",
-    "base_commit": "02fc15c9271b8765e320a68a425d349456806607"
+    "id": "cc9c2d81-7399-4f8f-a77d-eb0826ddd8ac",
+    "started_at": "2026-09-04T08:53:29.4726380Z",
+    "base_commit": "18edab4048686fc96e3703ce7385a05cf5a64073"
   },
   "retained_lineages": [],
   "last_experiment": 0,
