@@ -355,6 +355,7 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
             {
                 "schema_version": 2,
                 "accepted_artifact": "accepted",
+                    "pending_scientific_parent": "test-parent",
                 "pending_evaluation_request": {
                     "experiment": 2,
                     "candidates": [
@@ -393,6 +394,10 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )

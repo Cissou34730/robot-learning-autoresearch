@@ -48,19 +48,31 @@ def proposal_training_settings(
     )
 
 
+def anchored_scientific_delta(raw_state: dict) -> list[str]:
+    """Return the scientific delta from the parent anchored for this phase."""
+    parent = str(raw_state.get("pending_scientific_parent") or "").strip()
+    if not parent:
+        raise ValueError(
+            "research phase requires an existing pending scientific parent; "
+            "run --begin-hypothesis before proposing an experiment"
+        )
+    repository.require_resolvable_commit(parent)
+    return repository.scientific_delta(parent)
+
+
+def validate_research_delta(raw_state: dict) -> list[str]:
+    """Reject changes outside the researcher-owned scientific surface."""
+    code_changes = anchored_scientific_delta(raw_state)
+    protocol.validate_research_delta_ownership(code_changes)
+    return code_changes
+
+
 def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
     """Validate the proposal against the parent already anchored for this phase."""
     experiment_kind, parameter_overrides, baseline, initialization = (
         proposal_training_settings(proposal)
     )
-    parent = str(raw_state.get("pending_scientific_parent") or "").strip()
-    if not parent:
-        raise ValueError(
-            "training proposal requires an existing pending scientific parent; "
-            "run --begin-hypothesis before proposing an experiment"
-        )
-    repository.require_resolvable_commit(parent)
-    code_changes = repository.scientific_delta(parent)
+    code_changes = validate_research_delta(raw_state)
     protocol.validate_experiment_semantics(
         proposal,
         experiment_kind,
@@ -99,6 +111,8 @@ def check_proposal() -> int:
         contract = protocol.validate_proposal_against_state(proposal, state)
         if contract == "training":
             validate_training_proposal_delta(proposal, state)
+        else:
+            validate_research_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
         return 1
@@ -133,8 +147,12 @@ def check_evaluation_request() -> int:
                 "evaluation request references the wrong experiment; "
                 f"experiment {experiment} is awaiting evaluation"
             )
+        validate_research_delta(state)
         available = protocol.available_evaluation_candidates(pending, state)
-        protocol.planned_measurements(request, available)
+        requested, _ = protocol.planned_measurements(request, available)
+        protocol.validate_paired_comparison_plan(
+            request, pending, available, requested
+        )
     except (
         json.JSONDecodeError,
         KeyError,
@@ -186,12 +204,10 @@ def execute_pending_evaluations() -> int:
     pending = state.get("pending_evaluation_request")
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
+    validate_research_delta(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         protocol.validate_evaluation_request(request)
-        pending["evaluation_plan"] = request
-        pending.setdefault("partial_evaluations", [])
-        repository.write_state(state)
     else:
         request = pending.get("evaluation_plan")
         if not isinstance(request, dict):
@@ -205,6 +221,11 @@ def execute_pending_evaluations() -> int:
     # The whole plan is resolved first, so nothing is measured for a request
     # that a later entry would have invalidated.
     requested, requested_references = protocol.planned_measurements(request, available)
+    protocol.validate_paired_comparison_plan(request, pending, available, requested)
+    if paths.EVALUATION_REQUEST_PATH.exists():
+        pending["evaluation_plan"] = request
+        pending.setdefault("partial_evaluations", [])
+        repository.write_state(state)
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -910,6 +931,7 @@ def main() -> int:
         print(f"ERROR: invalid proposal for current phase: {error}")
         return 1
     if proposal_contract == "lineage":
+        validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
     return run_training_experiment(proposal, args)
 

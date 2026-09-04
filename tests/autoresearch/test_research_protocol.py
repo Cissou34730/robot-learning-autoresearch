@@ -28,7 +28,9 @@ from research.runner_protocol import (
     parameter_change_records,
     plan_previous_result_decision,
     training_parent,
+    validate_evaluation_request,
     validate_experiment_semantics,
+    validate_proposal_against_state,
     validate_training_proposal,
 )
 from research.runner_repository import (
@@ -51,6 +53,14 @@ LOOP = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
 
 # Only used to assert that the protocol names *no* learning algorithm.
 KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
+
+
+@pytest.fixture(autouse=True)
+def _allow_unchanged_research_delta(monkeypatch):
+    """Ownership preflights are covered by the orchestration test modules."""
+    monkeypatch.setattr(
+        "research.run_experiment.validate_research_delta", lambda state: []
+    )
 
 
 def mentions(text: str, word: str) -> bool:
@@ -1621,9 +1631,76 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     # Should not raise; paired comparisons are ignored in the count.
-    from research.runner_protocol import validate_evaluation_request
     request = json.loads(request_path.read_text(encoding="utf-8"))
     validate_evaluation_request(request)
+
+
+@pytest.mark.parametrize("need_more_evidence", [True, False])
+def test_evaluation_request_accepts_boolean_need_more_evidence(need_more_evidence):
+    validate_evaluation_request(
+        {
+            "question": "question",
+            "reason": "reason",
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "candidate",
+                    "episodes": 2,
+                    "seed": 1000,
+                }
+            ],
+            "need_more_evidence": need_more_evidence,
+        }
+    )
+
+
+def test_evaluation_request_allows_omitted_need_more_evidence():
+    validate_evaluation_request(
+        {
+            "question": "question",
+            "reason": "reason",
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "candidate",
+                    "episodes": 2,
+                    "seed": 1000,
+                }
+            ],
+        }
+    )
+
+
+@pytest.mark.parametrize("invalid_value", ["true", "false", 0, 1, None])
+def test_evaluation_request_rejects_non_boolean_need_more_evidence(invalid_value):
+    with pytest.raises(ValueError, match="need_more_evidence must be true or false"):
+        validate_evaluation_request(
+            {
+                "question": "question",
+                "reason": "reason",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "candidate",
+                        "episodes": 2,
+                        "seed": 1000,
+                    }
+                ],
+                "need_more_evidence": invalid_value,
+            }
+        )
+
+
+def test_evaluation_request_still_requires_a_measurement():
+    with pytest.raises(ValueError, match="at least one measurement"):
+        validate_evaluation_request(
+            {
+                "question": "question",
+                "reason": "reason",
+                "measurements": [],
+                "need_more_evidence": False,
+            }
+        )
 
 
 def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path):
@@ -1784,7 +1861,6 @@ def test_continuation_and_replication_allow_unchanged_methods():
         "kind": "continuation",
         "family": "x",
         "hypothesis": "x",
-        "change": "x",
         "initialization": "fresh",
     }
     with pytest.raises(ValueError, match="continuation requires transfer"):
@@ -1802,7 +1878,6 @@ def test_continuation_and_replication_allow_unchanged_methods():
         "kind": "replication",
         "family": "x",
         "hypothesis": "x",
-        "change": "x",
         "initialization": "fresh",
         "replication_of": 12,
     }
@@ -1863,7 +1938,7 @@ def test_replication_rejects_non_integer_numeric_fields(field, invalid_value):
         (
             "continuation",
             "transfer",
-            {"training_parent": "accepted", "training_seed": -7},
+            {"training_parent": "accepted", "training_seed": 7},
         ),
         (
             "replication",
@@ -1884,6 +1959,77 @@ def test_training_numeric_fields_accept_valid_integers(
     }
 
     validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize("kind", ["training", "continuation", "replication"])
+def test_training_proposal_rejects_negative_seed_for_every_operation(kind):
+    proposal = {
+        "kind": kind,
+        "family": "method",
+        "hypothesis": "check seed contract",
+        "initialization": "fresh",
+        "training_seed": -1,
+    }
+    if kind == "training":
+        proposal["change"] = "change method"
+    elif kind == "continuation":
+        proposal.update(initialization="transfer", training_parent="accepted")
+    else:
+        proposal["replication_of"] = 12
+
+    with pytest.raises(ValueError, match="training_seed must be a non-negative integer"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize("kind", ["continuation", "replication"])
+def test_unchanged_operations_reject_change(kind):
+    proposal = {
+        "kind": kind,
+        "family": "method",
+        "hypothesis": "check unchanged operation",
+        "change": "operation note",
+        "initialization": "transfer" if kind == "continuation" else "fresh",
+    }
+    if kind == "continuation":
+        proposal["training_parent"] = "accepted"
+    else:
+        proposal.update(training_seed=1, replication_of=12)
+
+    with pytest.raises(ValueError, match=f"{kind} must omit change"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+def test_replication_reference_must_exist_in_current_campaign(monkeypatch):
+    proposal = {
+        "kind": "replication",
+        "family": "method",
+        "hypothesis": "check outcome spread",
+        "initialization": "fresh",
+        "training_seed": 19,
+        "replication_of": 12,
+    }
+    state = {
+        "campaign": {"id": "current"},
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_final_benchmark": None,
+    }
+    records = {
+        "current": [{"campaign_id": "current", "index": 12}],
+        "previous": [{"campaign_id": "previous", "index": 12}],
+    }
+    monkeypatch.setattr(
+        "research.runner_repository.result_records_for_campaign",
+        lambda campaign_id: records.get(campaign_id, []),
+    )
+
+    assert validate_proposal_against_state(proposal, state) == "training"
+    records["current"] = []
+    with pytest.raises(ValueError, match="existing experiment in the current campaign"):
+        validate_proposal_against_state(proposal, state)
+
+    state["campaign"]["id"] = "previous"
+    assert validate_proposal_against_state(proposal, state) == "training"
 
 
 def test_unchanged_operation_history_uses_neutral_text():

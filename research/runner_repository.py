@@ -70,7 +70,7 @@ OPTIONAL_ARTIFACT_FILES = ("vecnormalize.pkl", "replay_buffer.pkl")
 EXPERIMENT_LOG_HEADER = (
     "# Experiment log\n"
     "\n"
-    "| # | Date | Change | Hypothesis | Candidate success | Seeds passed | Verdict |\n"
+    "| # | Date | Operation | Hypothesis | Candidate success | Seeds passed | Verdict |\n"
     "|---:|---|---|---|---:|---:|---|\n"
 )
 

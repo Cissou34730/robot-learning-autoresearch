@@ -289,6 +289,7 @@ def _valid_request() -> dict:
 def _pending_state() -> dict:
     return {
         "accepted_artifact": "research/checkpoints/accepted",
+        "pending_scientific_parent": "test-parent",
         "pending_evaluation_request": {
             "experiment": 3,
             "champion_available": True,
@@ -312,6 +313,10 @@ def _preflight_files(monkeypatch, tmp_path, request: dict | str) -> Path:
         request_path.write_text(json.dumps(request), encoding="utf-8")
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
 
     def fail_if_measured(*args, **kwargs):
         del args, kwargs
@@ -519,6 +524,59 @@ def test_evaluation_preflight_accepts_the_champion_the_brief_exposes(
 
     assert check_evaluation_request() == 0
     assert "EVALUATION_REQUEST_VALID" in capsys.readouterr().out
+
+
+def test_evaluation_preflight_rejects_protected_changes_without_mutation(
+    monkeypatch, tmp_path, capsys
+):
+    state_path = _preflight_files(monkeypatch, tmp_path, _valid_request())
+    original_state = state_path.read_bytes()
+    monkeypatch.setattr(
+        "research.runner_repository.scientific_delta",
+        lambda _: ["robot_learning/scenario/__init__.py"],
+    )
+
+    assert check_evaluation_request() == 1
+    assert "robot_learning/scenario/__init__.py" in capsys.readouterr().out
+    assert state_path.read_bytes() == original_state
+    with pytest.raises(ValueError, match="robot_learning/scenario/__init__.py"):
+        execute_pending_evaluations()
+    assert state_path.read_bytes() == original_state
+
+
+def test_evaluation_preflight_accepts_researcher_owned_changes(
+    monkeypatch, tmp_path, capsys
+):
+    _preflight_files(monkeypatch, tmp_path, _valid_request())
+    monkeypatch.setattr(
+        "research.runner_repository.scientific_delta",
+        lambda _: ["robot_learning/scenario/reward.py"],
+    )
+
+    assert check_evaluation_request() == 0
+    assert "EVALUATION_REQUEST_VALID" in capsys.readouterr().out
+
+
+def test_invalid_paired_comparison_runs_no_evaluator_and_writes_no_state(
+    monkeypatch, tmp_path, capsys
+):
+    request = dict(
+        _valid_request(),
+        paired_comparisons=[
+            {"candidate": "experiment-3", "reference": "champion"}
+        ],
+    )
+    state_path = _preflight_files(monkeypatch, tmp_path, request)
+    original_state = state_path.read_bytes()
+
+    assert check_evaluation_request() == 1
+    reason = capsys.readouterr().out
+    assert "requires research-evaluation data for both models" in reason
+    assert state_path.read_bytes() == original_state
+
+    with pytest.raises(ValueError, match="requires research-evaluation data"):
+        execute_pending_evaluations()
+    assert state_path.read_bytes() == original_state
 
 
 @pytest.mark.parametrize(

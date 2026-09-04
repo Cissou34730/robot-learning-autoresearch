@@ -1,6 +1,6 @@
 # Researcher instruments
 
-This file defines the evidence sources and Runner operations available to the Researcher. Path ownership is defined by `AGENTS.md`.
+This file defines the evidence sources and phase deliverables available to the Researcher. Path ownership is defined by `AGENTS.md`.
 
 ## Inspect evidence
 
@@ -32,14 +32,6 @@ Use `uv run` for lightweight analysis and focused checks on researcher-owned cod
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
 During evaluation, the Researcher may modify researcher-owned measurement and analysis code before requesting another measurement round. Changes affecting training apply to the next experiment.
-
-## Runner operations
-
-The Runner validates and executes the accepted request for the current phase. It
-allocates experiment identity, records compact results in
-`research/results.jsonl`, derives `research/EXPERIMENTS.md`, and updates
-`research/brief.md`. It owns training, evaluation, lineage decisions and the
-official benchmark; the Researcher writes only the phase deliverable.
 
 ## Request measurements
 
@@ -82,7 +74,10 @@ Add one entry per model. Using identical `research_evaluation` settings measures
 
 A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must have identical `(seed, episode)` sets.
 
-Set `need_more_evidence` to `true` to preserve completed measurements and open another evaluation round. Set it to `false` to proceed to experiment closure.
+`need_more_evidence` is optional. When present, it must be the JSON boolean
+`true` or `false`. Set it to `true` to preserve completed measurements and open
+another evaluation round; omit it or set it to `false` to proceed to experiment
+closure.
 
 ## Request training
 
@@ -98,8 +93,8 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
   "initialization": "<fresh | transfer>",
   "change": "<non-empty scientific intervention; training only>",
   "training_parent": "<string; required for transfer, otherwise omit>",
-  "training_seed": "<integer; optional except for replication>",
-  "replication_of": "<positive experiment integer; replication only>",
+  "training_seed": "<non-negative integer; optional except for replication>",
+  "replication_of": "<positive current-campaign experiment integer; replication only>",
   "params": "<object; optional parameter overrides>"
 }
 ```
@@ -107,11 +102,12 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
 | `training` | Trains a scientific intervention. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
-| `continuation` | Trains the unchanged method further from an eligible lineage. | Requires `initialization: "transfer"` and `training_parent`. Code changes and parameter overrides are forbidden. `change` is omitted; if supplied, it is a non-empty operation note and never describes a method mutation. |
-| `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. | Requires `initialization: "fresh"`, a positive integer `replication_of` and an explicit integer `training_seed`. Code changes and `params` are forbidden. `change` is omitted; if supplied, it is a non-empty operation note and never describes a method mutation. |
+| `continuation` | Trains the unchanged method further from an eligible lineage. | Requires `initialization: "transfer"` and `training_parent`. Code changes, parameter overrides and `change` are forbidden. |
+| `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
-`training_seed` is optional for ordinary training and continuation. `params` is
-optional for ordinary training and is omitted for unchanged operations.
+`training_seed` is optional for ordinary training and continuation, and must be
+a non-negative integer when present. `params` is optional for ordinary training
+and is omitted for unchanged operations.
 
 An eligible `training_parent` must be exposed by the brief as an active or retained lineage.
 
@@ -120,11 +116,10 @@ The automatic baseline trains the unchanged method from scratch for 120,000 step
 Runner recovery resumes the interrupted experiment; it is not a continuation.
 
 The current replication operation records the relationship through the positive
-integer `replication_of`. It groups the new run with the referenced experiment
-for replication evidence; it does not restore that experiment’s code or
-configuration and does not claim exact replay.
-
-The Runner validates and executes the accepted proposal. Training and Runner operations are not launched directly by the Researcher.
+integer `replication_of`, which must name an existing experiment in the current
+campaign. It groups the new run with the referenced experiment for replication
+evidence; it does not restore that experiment’s code or configuration and does
+not claim exact replay.
 
 ## Record the postmortem
 

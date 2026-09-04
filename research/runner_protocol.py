@@ -340,14 +340,8 @@ def training_parent(
 # --- proposal validation ---------------------------------------------------
 
 
-def validate_experiment_semantics(
-    proposal: dict,
-    experiment_kind: str,
-    initialization: str,
-    parameter_overrides: dict | None,
-    code_changes: list[str],
-    baseline: bool,
-) -> None:
+def validate_research_delta_ownership(code_changes: list[str]) -> None:
+    """Reject changes to every human-owned source and test surface."""
     normalized = [path.replace("\\", "/") for path in code_changes]
     protected_sources = sorted(
         {path for path in normalized if is_protected_source(path)}
@@ -368,6 +362,17 @@ def validate_experiment_semantics(
             f"by a research proposal: {protected_tests}; restore them to their "
             "content at the scientific parent before proposing another experiment"
         )
+
+
+def validate_experiment_semantics(
+    proposal: dict,
+    experiment_kind: str,
+    initialization: str,
+    parameter_overrides: dict | None,
+    code_changes: list[str],
+    baseline: bool,
+) -> None:
+    validate_research_delta_ownership(code_changes)
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
     if experiment_kind == "continuation" and (parameter_overrides or code_changes):
@@ -389,10 +394,13 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"{description} must be a non-empty string")
 
-    def require_integer(field: str) -> int:
+    def require_integer(field: str, *, minimum: int | None = None) -> int:
         value = proposal.get(field)
         if type(value) is not int:
             raise ValueError(f"{field} must be an integer when supplied")
+        if minimum is not None and value < minimum:
+            qualifier = "non-negative" if minimum == 0 else "positive"
+            raise ValueError(f"{field} must be a {qualifier} integer")
         return value
 
     if baseline:
@@ -438,11 +446,13 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("training proposal is missing required fields: ['change']")
         require_nonempty_string("change", "training proposal change")
     elif "change" in proposal:
-        require_nonempty_string("change", "training proposal operation description")
+        raise ValueError(
+            f"{kind} must omit change because it uses the unchanged learning method"
+        )
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
     if "training_seed" in proposal:
-        require_integer("training_seed")
+        require_integer("training_seed", minimum=0)
     initialization = proposal["initialization"]
     if initialization not in {"transfer", "fresh"}:
         raise ValueError("initialization must be transfer or fresh")
@@ -461,9 +471,7 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("replication requires fresh initialization")
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
-        require_integer("replication_of")
-        if proposal["replication_of"] < 1:
-            raise ValueError("replication_of must be a positive integer")
+        require_integer("replication_of", minimum=1)
 
 
 def validate_proposal_phase(proposal: dict, state: dict) -> str:
@@ -504,6 +512,19 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
             allow_unmeasured=True, allow_missing_artifact=True
         )
         plan_previous_result_decision(proposal, state)
+    elif proposal.get("kind") == "replication":
+        campaign_id = repository.current_campaign_id(raw_state)
+        recorded = (
+            repository.result_records_for_campaign(campaign_id)
+            if campaign_id
+            else []
+        )
+        referenced = proposal["replication_of"]
+        if not any(record.get("index") == referenced for record in recorded):
+            raise ValueError(
+                "replication_of must reference an existing experiment in the "
+                "current campaign"
+            )
     return contract
 
 
@@ -530,6 +551,28 @@ def validate_evaluation_request(request: dict) -> None:
             raise ValueError(
                 f"{field} is obsolete; submit measurements through measurements"
             )
+    if (
+        "need_more_evidence" in request
+        and type(request["need_more_evidence"]) is not bool
+    ):
+        raise ValueError("need_more_evidence must be true or false")
+    comparisons = request.get("paired_comparisons", [])
+    if not isinstance(comparisons, list):
+        raise TypeError("paired_comparisons must be a list")
+    for comparison in comparisons:
+        if not isinstance(comparison, dict):
+            raise TypeError("each paired comparison must be an object")
+        unsupported = sorted(set(comparison) - {"candidate", "reference"})
+        if unsupported:
+            raise ValueError(
+                f"paired comparison cannot set unsupported fields {unsupported}"
+            )
+        for field in ("candidate", "reference"):
+            value = comparison.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(
+                    f"paired comparison requires a non-empty {field}"
+                )
     # Collect distinct candidates before detailed validation.
     distinct_candidates = set()
     for entry in requested_measurements(request):
@@ -622,6 +665,44 @@ def planned_measurements(request: dict, available: dict) -> tuple[list[dict], li
                 }
             )
     return evaluations, references
+
+
+def validate_paired_comparison_plan(
+    request: dict,
+    pending: dict,
+    available: dict,
+    requested: list[dict],
+) -> None:
+    """Validate comparison identities that will exist after this request."""
+    expected_panels: dict[str, set[tuple[int, int]]] = {
+        name: set() for name in available
+    }
+    for item in pending.get("partial_evaluations", []) or []:
+        name = str(item.get("candidate", "")).strip()
+        if name in expected_panels:
+            expected_panels[name].add((int(item["seed"]), int(item["episodes"])))
+    for item in requested:
+        expected_panels[item["candidate"]].add((item["seed"], item["episodes"]))
+
+    for comparison in request.get("paired_comparisons", []):
+        candidate = comparison["candidate"].strip()
+        reference = comparison["reference"].strip()
+        if candidate not in available:
+            raise ValueError(f"unknown paired comparison candidate {candidate!r}")
+        if reference not in available:
+            raise ValueError(f"unknown paired comparison reference {reference!r}")
+        candidate_panels = expected_panels[candidate]
+        reference_panels = expected_panels[reference]
+        if not candidate_panels or not reference_panels:
+            raise ValueError(
+                f"paired comparison {candidate!r} vs {reference!r} requires "
+                "research-evaluation data for both models"
+            )
+        if candidate_panels != reference_panels:
+            raise ValueError(
+                f"paired comparison {candidate!r} vs {reference!r} requires "
+                "identical (seed, episodes) panels"
+            )
 
 
 # --- measurement identity --------------------------------------------------

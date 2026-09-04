@@ -1324,7 +1324,7 @@ def test_unchanged_operation_rejects_a_blank_supplied_description():
     proposal = dict(_training_proposal(), kind="continuation")
     proposal.update(initialization="transfer", training_parent="accepted", change=" ")
 
-    with pytest.raises(ValueError, match="operation description.*non-empty string"):
+    with pytest.raises(ValueError, match="continuation must omit change"):
         validate_training_proposal(proposal, baseline=False)
 
 
@@ -1510,6 +1510,61 @@ def test_proposal_preflight_rejects_protected_scenario_initializer_without_execu
     assert "PROPOSAL_VALID: training" in capsys.readouterr().out
     assert proposal_path.read_bytes() == original_proposal
     assert state_path.read_bytes() == original_state
+
+
+@pytest.mark.parametrize("code_action", ["keep", "revert"])
+def test_lineage_rejects_protected_changes_before_execution(
+    monkeypatch, tmp_path, capsys, code_action
+):
+    proposal_path = tmp_path / "proposal.json"
+    state_path = tmp_path / "research_state.json"
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "previous_result_decision": {
+                    "code": {"action": code_action, "reason": "resolve lineage"}
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    state = {"pending_scientific_parent": "test-parent"}
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    original_state = state_path.read_bytes()
+    original_proposal = proposal_path.read_bytes()
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr(
+        "research.runner_protocol.validate_proposal_against_state",
+        lambda proposal, raw_state: "lineage",
+    )
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
+    changed_paths = ["robot_learning/scenario/__init__.py"]
+    monkeypatch.setattr(
+        "research.runner_repository.scientific_delta", lambda _: changed_paths
+    )
+
+    def fail_if_lineage_runs(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("lineage execution started")
+
+    monkeypatch.setattr(
+        "research.run_experiment.resolve_pending_lineage", fail_if_lineage_runs
+    )
+
+    assert check_proposal() == 1
+    assert "robot_learning/scenario/__init__.py" in capsys.readouterr().out
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+    with pytest.raises(ValueError, match="robot_learning/scenario/__init__.py"):
+        main()
+    assert state_path.read_bytes() == original_state
+    assert proposal_path.read_bytes() == original_proposal
+
+    changed_paths[:] = ["robot_learning/scenario/reward.py"]
+    assert check_proposal() == 0
+    assert "PROPOSAL_VALID: lineage" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
@@ -1942,6 +1997,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
                 "schema_version": 3,
                 "accepted_artifact": "accepted",
                 "accepted_metrics": None,
+                "pending_scientific_parent": "base-commit",
                 "campaign": {
                     "id": "00000000-0000-0000-0000-000000000001",
                     "started_at": "2026-01-01T00:00:00Z",
@@ -1990,6 +2046,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     monkeypatch.setattr(
         "research.runner_repository.git", lambda *args: "base-commit\n"
     )
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
     committed = []
 
     def record_lineage_commit(*args, **kwargs):
