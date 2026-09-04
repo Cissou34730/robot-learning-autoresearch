@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-3-champion-200ep-seed1-0c8c561d6e3f.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-champion-200ep-seed1-fbfb29f55cf3.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 3
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 4
   },
-  "last_allocated_experiment": 3,
-  "last_experiment": 3,
+  "last_allocated_experiment": 4,
+  "last_experiment": 4,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "The added radius and sine/cosine angle observations produced a large regression with persistent extreme-angle non-reaches; restore the prior observation contract and method."
+      "reason": "The experiment's training-only focused-angle mixture produced a large regression at both measured checkpoints, so restore the parent training distribution and its associated tests."
     },
-    "code_parent_commit": "a39328ab07ad32b0d2913892501c2d95818e860a",
+    "code_parent_commit": "0b138a29b724e02fca624d1408c05ef6b0edbf22",
     "continue_from": "champion",
-    "experiment": 3,
-    "reason": "The augmented polar-observation lineage reached only 25.5% at checkpoint 100352 and 47.5% at checkpoint 120832, while the unchanged champion reached 97.0% on the identical 200-episode panel. The champion is the strongest available lineage."
+    "experiment": 4,
+    "reason": "The angular-focus candidate improved from 72.5% to 82.0% with additional training but remained well below the unchanged champion at 97.0% on the identical 200-episode research panel; the task-reference results likewise remained inferior at 71.0% and 79.5% versus 98.0%."
   },
   "last_verdict": "researcher selected champion",
   "official_metrics": null,
