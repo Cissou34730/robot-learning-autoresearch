@@ -438,7 +438,7 @@ while ($true) {
         Write-Status "=== Research proposal missing or invalid; retrying once with bounded context ===" Yellow
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and inspect the relevant repository state."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if preparing the intervention requires understanding the current code state or delta."
             "Preserve valid researcher-owned edits that belong to this unfinished experiment."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment using the contract in research/instruments.md."

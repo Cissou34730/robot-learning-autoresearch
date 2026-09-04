@@ -2477,6 +2477,11 @@ def test_evidence_inspection_is_brief_first_and_targeted():
     assert "Read the detailed evaluation artifacts" not in LOOP
 
 
+def test_experiment_preparation_retry_avoids_vague_repository_discovery():
+    assert "inspect the relevant repository state" not in LOOP
+    assert LOOP.count("requires understanding the current code state or delta") == 2
+
+
 def test_protocol_default_context_names_only_authoritative_context():
     opening = PROGRAM.split("## Roles", 1)[0]
 

@@ -94,7 +94,7 @@ READ_ONLY_GIT = frozenset(
 GIT_DENIAL = (
     "Denied by the harness: the runner owns mutating Git operations and "
     "restoration. Read-only git is available for code provenance and code "
-    "inspection (status, diff, log, show, rev-parse, ls-files, cat-file). To "
+    "inspection when the current task requires it. To "
     'revert this experiment\'s code, set "code": {"action": "revert", '
     '"reason": "..."} in the lineage proposal and the runner restores it.'
 )

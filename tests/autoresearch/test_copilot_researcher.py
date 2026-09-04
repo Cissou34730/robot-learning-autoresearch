@@ -51,6 +51,9 @@ def test_mutating_git_is_refused_and_names_the_lineage_decision(command):
     assert reason == adapter.GIT_DENIAL
     assert "revert" in reason
     assert "code provenance and code inspection" in reason
+    assert "when the current task requires it" in reason
+    for command in ("status", "diff", "log", "show", "rev-parse", "ls-files"):
+        assert command not in reason
 
 
 @pytest.mark.parametrize(
