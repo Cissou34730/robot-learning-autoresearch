@@ -2,11 +2,9 @@ import argparse
 import json
 from pathlib import Path
 
-from robot_learning.scenario import (
-    evaluate_final_model,
-    evaluate_research_model,
-    evaluate_task_reference_model,
-)
+from robot_learning.scenario.evaluation import evaluate_research_model
+from robot_learning.scenario.final_benchmark import evaluate_final_model
+from robot_learning.scenario.task_reference import evaluate_task_reference_model
 from robot_learning.training.research_config import (
     RESEARCH_EVALUATION_EPISODES,
     RESEARCH_EVALUATION_SEED,

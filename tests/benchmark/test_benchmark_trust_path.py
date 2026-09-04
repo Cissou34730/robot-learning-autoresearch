@@ -44,8 +44,6 @@ RESEARCHER_OWNED_PATHS = (
     "robot_learning/training/algorithms.py",
     "robot_learning/training/research_config.py",
     "research/current_params.json",
-    "research/build_research_brief.py",
-    "pyproject.toml",
 )
 
 
@@ -54,9 +52,9 @@ def test_protected_surface_covers_the_whole_goal_reached_path():
 
 
 def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
+    import robot_learning.scenario.final_benchmark as adapter
     from robot_learning.benchmark import final_benchmark, final_contract
     from robot_learning.robots import two_joint_arm
-    from robot_learning.scenario import final_benchmark as adapter
 
     packages: set[str] = set()
     for module in (adapter, final_benchmark, final_contract, two_joint_arm):
@@ -77,7 +75,7 @@ def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
 
 @pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
 def test_research_proposal_cannot_change_the_official_task(protected_path):
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
+    with pytest.raises(ValueError, match="human-owned task, context"):
         validate_experiment_semantics(
             {}, "training", "transfer", None, [protected_path], False
         )
@@ -85,7 +83,7 @@ def test_research_proposal_cannot_change_the_official_task(protected_path):
 
 @pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
 def test_official_task_protection_ignores_path_separator(protected_path):
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
+    with pytest.raises(ValueError, match="human-owned task, context"):
         validate_experiment_semantics(
             {},
             "training",
@@ -104,8 +102,8 @@ def test_researcher_owned_files_remain_changeable(research_path):
 
 
 def test_scenario_adapter_cannot_bypass_the_protected_benchmark():
+    import robot_learning.scenario.final_benchmark as adapter
     from robot_learning.benchmark import final_benchmark as protected
-    from robot_learning.scenario import final_benchmark as adapter
 
     assert adapter._protected_evaluate_final_model is protected.evaluate_final_model
     assert adapter.FINAL_SUCCESS_PERCENT == 98.0
@@ -119,7 +117,7 @@ def test_protected_task_files_exist_at_their_protected_paths():
 
 
 def test_researcher_cannot_change_the_enforcement_mechanism():
-    with pytest.raises(ValueError, match="human-owned final benchmark"):
+    with pytest.raises(ValueError, match="human-owned task, context"):
         validate_experiment_semantics(
             {},
             "training",

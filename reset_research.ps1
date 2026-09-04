@@ -60,12 +60,26 @@ $ephemeralPaths = @(
 )
 $ephemeralPaths | ForEach-Object { Remove-ResetPath $_ }
 
+# Generate new campaign identity before reset
+$campaignId = [guid]::NewGuid().ToString()
+$baseCommit = git rev-parse HEAD 2>$null
+if ($LASTEXITCODE -ne 0 -or -not $baseCommit) {
+    throw "Could not resolve the campaign base commit."
+}
+$baseCommit = $baseCommit.Trim()
+$startedAt = [System.DateTime]::UtcNow.ToString("o")
+
 [ordered]@{
-    schema_version = 2
-    accepted_artifact = "research\checkpoints\accepted"
+    schema_version = 3
+    accepted_artifact = "research/checkpoints/accepted"
     accepted_metrics = $null
     accepted_parameters = $null
     accepted_training_steps = 0
+    campaign = [ordered]@{
+        id = $campaignId
+        started_at = $startedAt
+        base_commit = $baseCommit
+    }
     retained_lineages = @()
     last_experiment = 0
     last_allocated_experiment = 0

@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
+
+from research.runner_protocol import operation_description
+from research.runner_repository import ARTIFACT_FILES
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -23,11 +26,32 @@ def _candidate_metric(candidate: dict, key: str) -> str:
     return "unavailable" if value is None else f"{float(value):g}"
 
 
-def _postmortem_memory(text: str, count: int = 3) -> list[str]:
-    sections = re.split(r"(?=^## Experiment \d+\b)", text, flags=re.MULTILINE)
-    sections = [
-        section.strip() for section in sections if section.startswith("## Experiment")
-    ]
+def _postmortem_memory(text: str, campaign_id: str | None = None, count: int = 3) -> list[str]:
+    """Extract postmortem sections for the given campaign.
+    
+    Handles both new "## Campaign ID / Experiment N" format and legacy "## Experiment N" format.
+    When campaign_id is provided, only sections for that campaign are extracted.
+    """
+    section_pattern = re.compile(
+        r"^## (?:(?P<campaign>[^\r\n/]+) / )?Experiment \d+\b.*?"
+        r"(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
+        flags=re.MULTILINE | re.DOTALL,
+    )
+
+    sections: list[str] = []
+
+    for match in section_pattern.finditer(text):
+        section_campaign = match.group("campaign")
+        if section_campaign is not None:
+            section_campaign = section_campaign.strip()
+
+        if campaign_id is not None:
+            if section_campaign != campaign_id:
+                continue
+        elif section_campaign is not None:
+            continue
+
+        sections.append(match.group(0).strip())
     memories: list[str] = []
     # Each rendered label accepts every heading past and present entries use, so
     # historical postmortems stay readable without being rewritten.
@@ -60,11 +84,24 @@ def _postmortem_memory(text: str, count: int = 3) -> list[str]:
                     flags=re.DOTALL,
                 )
                 if match:
-                    parts.append(f"{display}: {_compact(match.group(1), 420)}")
+                    value = match.group(1)
+                    if display == "Evidence inspected":
+                        value = _artifact_reference_list(value)
+                    parts.append(f"{display}: {_compact(value, 420)}")
                     recognized.add(display)
                     break
         if not recognized & narrative:
             body = "\n".join(section.splitlines()[1:]).strip()
+            for _, headings in labels:
+                for heading in headings:
+                    body = re.sub(
+                        rf"\*\*{re.escape(heading)}:\*\*\s*"
+                        r".+?(?=\n\s*\n|\n\*\*|\Z)",
+                        "",
+                        body,
+                        flags=re.DOTALL,
+                    )
+            body = body.strip()
             if body:
                 parts.insert(1, _compact(body, 420))
         memories.append("\n".join(parts))
@@ -84,7 +121,7 @@ def _evaluation_panel_lines(evaluations: list[dict]) -> list[str]:
             detail += f", success {float(success):.2f}%"
         artifact = evaluation.get("evaluation_artifact")
         if artifact:
-            detail += f"; detail `{artifact}`"
+            detail += f"; detail {_existing_artifact_reference(artifact, kind='file')}"
         lines.append(detail)
     return lines
 
@@ -101,7 +138,7 @@ def _task_reference_lines(evaluations: list[dict]) -> list[str]:
         )
         artifact = evaluation.get("evaluation_artifact")
         if artifact:
-            detail += f"; detail `{artifact}`"
+            detail += f"; detail {_existing_artifact_reference(artifact, kind='file')}"
         lines.append(detail)
     return lines
 
@@ -113,20 +150,45 @@ def _change_details(result: dict) -> str:
             f"{item['path']}: {item.get('before')} → {item.get('after')}"
             for item in parameter_changes
         )
-    hypothesis = str(result.get("hypothesis", ""))
-    transitions = re.findall(
-        r"(?:from\s+)?(`?[-+]?\d[\d,._e-]*`?)\s+"
-        r"(?:to|->|→)\s+(`?[-+]?\d[\d,._e-]*`?)",
-        hypothesis,
-        flags=re.IGNORECASE,
-    )
-    if transitions:
-        unique_transitions = list(dict.fromkeys(transitions))
-        return "; ".join(f"{before} → {after}" for before, after in unique_transitions)
     code_changes = result.get("code_changes") or []
     if code_changes:
-        return f"{result.get('change', '-')}; files: {', '.join(code_changes)}"
-    return str(result.get("change", "-"))
+        return f"{operation_description(result) or '-'}; files: {', '.join(code_changes)}"
+    return operation_description(result) or "-"
+
+
+def _existing_artifact_reference(
+    value: str | None, *, kind: str = "artifact"
+) -> str:
+    if not value:
+        return "unavailable"
+    normalized = str(value).replace("\\", "/")
+    relative = Path(normalized)
+    if relative.is_absolute() or PureWindowsPath(normalized).drive:
+        return "unavailable"
+    root = ROOT.resolve()
+    resolved = (root / relative).resolve()
+    if resolved != root and root not in resolved.parents:
+        return "unavailable"
+    is_complete_checkpoint = resolved.is_dir() and all(
+        (resolved / filename).is_file() for filename in ARTIFACT_FILES
+    )
+    is_usable = {
+        "artifact": resolved.is_file() or is_complete_checkpoint,
+        "checkpoint": is_complete_checkpoint,
+        "file": resolved.is_file(),
+    }[kind]
+    if is_usable:
+        return f"`{resolved.relative_to(root).as_posix()}`"
+    return "unavailable"
+
+
+def _artifact_reference_list(value: str) -> str:
+    references = [
+        token.strip("`\"',;()[] ")
+        for token in re.split(r"[\s,]+", value)
+        if token.strip("`\"',;()[] ")
+    ]
+    return ", ".join(_existing_artifact_reference(path) for path in references)
 
 
 def _experiment_outcome(result: dict) -> str:
@@ -146,7 +208,7 @@ def _replicated_experiment_index(result: dict) -> int | None:
         return None
     try:
         return int(str(raw_value))
-    except ValueError:
+    except (TypeError, ValueError):
         return None
 
 
@@ -185,6 +247,8 @@ def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
 
 
 def render_research_brief() -> str:
+    from research import runner_repository  # Import here to avoid circular dependency
+    
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
     state_path = RESEARCH_DIR / "research_state.json"
@@ -203,13 +267,24 @@ def render_research_brief() -> str:
         if state_path.exists()
         else {}
     )
+    
+    # Extract campaign info for filtering
+    campaign_id = runner_repository.current_campaign_id(state) if state else None
+    campaign_base_commit = runner_repository.current_campaign_base_commit(state) if state else None
+    
     results = []
     if results_path.exists():
-        results = [
+        all_results = [
             json.loads(line)
             for line in results_path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
+        # Filter by campaign if available
+        if campaign_id:
+            results = [r for r in all_results if r.get("campaign_id") == campaign_id]
+        else:
+            results = all_results
+    
     accepted_metrics = state.get("accepted_metrics")
     latest_result = results[-1] if results else None
     accepted_score = None
@@ -247,7 +322,7 @@ def render_research_brief() -> str:
                 f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
                 f"{_candidate_metric(candidate, 'training_success')} | "
                 f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
-                f"`{candidate['artifact']}` |"
+                f"{_existing_artifact_reference(candidate.get('artifact'), kind='checkpoint')} |"
             )
         if pending_evaluation.get("champion_available"):
             evaluation_lines.append("- `champion` — current accepted model lineage.")
@@ -260,19 +335,9 @@ def render_research_brief() -> str:
             [
                 "",
                 (
-                    "Decide what evidence this experiment needs. You may inspect "
-                    "existing evidence, run a small local analysis, and change "
-                    "researcher-owned evaluation or instrumentation code before "
-                    "deciding which candidates to measure, with which episode "
-                    "counts, seeds and labels. Write "
-                    "`research/evaluation_request.json` with the scientific "
-                    "`question`, the `reason` this plan is sufficient, and the "
-                    "evaluations, then exit. There is no automatic tournament."
-                ),
-                (
-                    "`research/program.md` describes when a stable human-owned "
-                    "`task_reference_evaluations` measurement is the right "
-                    "instrument instead of, or alongside, your own evaluations."
+                    "The available measurement operations and the "
+                    "`research/evaluation_request.json` contract are defined in "
+                    "`research/instruments.md`."
                 ),
             ]
         )
@@ -358,12 +423,24 @@ def render_research_brief() -> str:
             "history only when this brief identifies a genuine ambiguity."
         ),
         "",
+    ]
+    
+    # Add campaign header if available
+    if campaign_id:
+        lines.extend([
+            "## Campaign Context",
+            "",
+            f"- Campaign: `{campaign_id}`",
+            f"- Base commit: `{campaign_base_commit}`",
+            "",
+        ])
+    
+    lines.extend([
         "## Immutable goal",
         "",
         (
             "The current scientific problem, its protected task definition, and its "
-            "terminology are defined in `research/scenario.md`. Read it together "
-            "with `research/program.md`."
+            "terminology are defined in `research/scenario.md`."
         ),
         "",
         "## Current status",
@@ -384,11 +461,21 @@ def render_research_brief() -> str:
             else f"- Reported result: "
             f"{official_metrics.get('pooled_success_percent', official_metrics.get('success_percent', 0)):.1f}%"
         ),
-        f"- Accepted checkpoint: {state.get('accepted_artifact', 'missing')}",
+        "- Accepted checkpoint: "
+        + (
+            _existing_artifact_reference(
+                state["accepted_artifact"], kind="checkpoint"
+            )
+            if "accepted_artifact" in state
+            else "missing"
+        ),
         (
             "- Accepted evaluation detail: "
             + (
-                ", ".join(f"`{path}`" for path in state.get("accepted_evaluations", []))
+                ", ".join(
+                    _existing_artifact_reference(path, kind="file")
+                    for path in state.get("accepted_evaluations", [])
+                )
                 or "-"
             )
         ),
@@ -404,9 +491,9 @@ def render_research_brief() -> str:
         "",
         "## Recent experiment cards",
         "",
-        "| # | Family | Exact change | Init / budget | Outcome | Verdict |",
+        "| # | Family | Operation | Init / budget | Outcome | Verdict |",
         "|---:|---|---|---|---|---|",
-    ]
+    ])
 
     for result in results[-5:]:
         family = str(result.get("family", "-")).replace("|", "/")
@@ -431,6 +518,27 @@ def render_research_brief() -> str:
             )
         else:
             lines.append("| - | training.baseline | New baseline pending | - | - | - |")
+
+    families: dict[str, list[int]] = {}
+
+    for result in results:
+        family = str(result.get("family", "")).strip()
+        if not family:
+            continue
+        families.setdefault(family, []).append(int(result["index"]))
+
+    if families:
+        lines.extend(
+            [
+                "",
+                "## Intervention families explored",
+                "",
+            ]
+        )
+
+        for family, experiments in sorted(families.items()):
+            experiment_list = ", ".join(str(index) for index in experiments)
+            lines.append(f"- `{family}`: experiments {experiment_list}")
 
     replication_groups = _replication_groups(results)
     if replication_groups:
@@ -469,7 +577,7 @@ def render_research_brief() -> str:
         lines.append("")
 
     lines.extend(["", "## Prior researcher interpretations", ""])
-    memories = _postmortem_memory(postmortems)
+    memories = _postmortem_memory(postmortems, campaign_id=campaign_id)
     if memories:
         lines.extend(
             [

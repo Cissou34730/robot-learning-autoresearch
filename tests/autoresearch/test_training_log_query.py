@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from argparse import Namespace
 
 import pytest
@@ -11,10 +12,32 @@ from research import runner_execution as execution
 from research.run_experiment import run_training_experiment
 from research.runner_protocol import is_protected_source
 
+CAMPAIGN_ID = "campaign-test"
+
 
 def write_log(path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def write_campaign_state(monkeypatch, tmp_path) -> None:
+    """Point STATE_PATH at a hermetic v3 state so the query tool doesn't read the real repo's."""
+    state_path = tmp_path / "research_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 3,
+                "accepted_artifact": "research/checkpoints/accepted",
+                "campaign": {
+                    "id": CAMPAIGN_ID,
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
 
 
 def test_training_attempts_isolate_experiments_and_resume_or_restart(monkeypatch, tmp_path):
@@ -39,6 +62,7 @@ def test_recoverable_continuation_requires_an_existing_attempt(monkeypatch, tmp_
 def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
     monkeypatch, tmp_path
 ):
+    monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
     log = tmp_path / "experiment-1-attempt-1.log"
     write_log(log, "interrupted output\n")
     observed_records = []
@@ -104,11 +128,11 @@ def test_runner_passes_the_correct_active_attempt_to_training(
     monkeypatch.setattr("research.runner_paths.RESTART_PENDING_PATH", restart_pending)
     monkeypatch.setattr("research.runner_repository.load_state", lambda **kwargs: state)
     monkeypatch.setattr("research.runner_repository.anchor_scientific_parent", lambda state: "parent")
-    monkeypatch.setattr("research.runner_repository.atomic_write_json", lambda *args: None)
+    monkeypatch.setattr("research.runner_repository.write_state", dict)
     monkeypatch.setattr("research.runner_repository.scientific_delta", lambda parent: [])
-    monkeypatch.setattr("research.runner_repository.archive_candidates", lambda *args: [])
-    monkeypatch.setattr("research.runner_protocol.next_experiment_index", lambda state: 2)
-    monkeypatch.setattr("research.runner_protocol.resumed_experiment_index", lambda *args: 2)
+    monkeypatch.setattr("research.runner_repository.archive_candidates", lambda *args, **kwargs: [])
+    monkeypatch.setattr("research.runner_protocol.next_experiment_index", lambda *args, **kwargs: 2)
+    monkeypatch.setattr("research.runner_protocol.resumed_experiment_index", lambda *args, **kwargs: 2)
     monkeypatch.setattr("research.runner_protocol.training_parent", lambda *args: ("", tmp_path, 0))
     monkeypatch.setattr("research.runner_protocol.validate_experiment_semantics", lambda *args: None)
     monkeypatch.setattr("research.runner_protocol.validation_test_paths", lambda *args, **kwargs: ())
@@ -140,13 +164,14 @@ def test_query_tool_is_a_protected_runner_source():
 
 def test_query_returns_inclusive_range_attempts_metrics_and_missing_values(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
+    write_campaign_state(monkeypatch, tmp_path)
     write_log(
-        tmp_path / "experiment-3-attempt-1.log",
+        tmp_path / CAMPAIGN_ID / "experiment-3-attempt-1.log",
         "| rollout/ |\n| ep_rew_mean | 0 |\n| time/ |\n| total_timesteps | 100 |\n"
         "| rollout/ |\n| success_rate | 0.5 |\n| time/ |\n| total_timesteps | 200 |\n",
     )
     write_log(
-        tmp_path / "experiment-3-attempt-2.log",
+        tmp_path / CAMPAIGN_ID / "experiment-3-attempt-2.log",
         "| rollout/ |\n| ep_rew_mean | 2 |\n| time/ |\n| total_timesteps | 200 |\n",
     )
 
@@ -160,8 +185,9 @@ def test_query_returns_inclusive_range_attempts_metrics_and_missing_values(monke
 
 def test_query_supports_exact_step_and_empty_valid_ranges(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
+    write_campaign_state(monkeypatch, tmp_path)
     write_log(
-        tmp_path / "experiment-1-attempt-1.log",
+        tmp_path / CAMPAIGN_ID / "experiment-1-attempt-1.log",
         "| time/ |\n| total_timesteps | 100 |\n",
     )
 
@@ -190,6 +216,7 @@ def test_query_requires_valid_arguments(arguments):
 
 def test_query_reports_an_unknown_experiment(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
+    write_campaign_state(monkeypatch, tmp_path)
 
     assert query.main(["--experiment", "1", "--from-step", "0", "--to-step", "1"]) == 1
     assert "no training logs found" in capsys.readouterr().err

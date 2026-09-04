@@ -9,7 +9,7 @@ import json
 import shutil
 import subprocess
 import time
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
 
@@ -39,12 +39,38 @@ RUNNER_MEMORY_PREFIXES = (
     "research/checkpoints/accepted/",
     "research/checkpoints/retained/",
 )
+
+
+def repo_relative_path(path: Path) -> str:
+    root = paths.ROOT.resolve()
+    try:
+        return path.resolve().relative_to(root).as_posix()
+    except ValueError as error:
+        raise ValueError(f"path is outside the repository: {path}") from error
+
+
+def resolve_repo_path(value: str) -> Path:
+    normalized = str(value).replace("\\", "/")
+    relative = Path(normalized)
+    if not normalized or relative.is_absolute() or PureWindowsPath(normalized).drive:
+        raise ValueError(f"repository path must be relative: {value}")
+    root = paths.ROOT.resolve()
+    resolved = (root / relative).resolve()
+    if resolved != root and root not in resolved.parents:
+        raise ValueError(f"path is outside the repository: {value}")
+    return resolved
+
+
+def canonical_repo_path(value: str) -> str:
+    return repo_relative_path(resolve_repo_path(value))
+
+
 ARTIFACT_FILES = ("model.zip", "artifact.json")
 OPTIONAL_ARTIFACT_FILES = ("vecnormalize.pkl", "replay_buffer.pkl")
 EXPERIMENT_LOG_HEADER = (
     "# Experiment log\n"
     "\n"
-    "| # | Date | Change | Hypothesis | Candidate success | Seeds passed | Verdict |\n"
+    "| # | Date | Operation | Hypothesis | Candidate success | Seeds passed | Verdict |\n"
     "|---:|---|---|---|---:|---:|---|\n"
 )
 
@@ -232,7 +258,7 @@ def commit_lineage_decision(
         # Only durable science closes the lineage: until the commit above has
         # been published, the rollback anchor must stay recoverable.
         state["pending_scientific_parent"] = None
-        atomic_write_json(paths.STATE_PATH, state)
+        write_state(state)
     commit_runner_memory(f"select experiment {experiment} lineage: {selected}")
 
 
@@ -258,6 +284,93 @@ def atomic_write_json(path: Path, value: dict) -> None:
     _atomic_replace(temporary, path)
 
 
+def _canonicalize_evaluation_artifact(evaluation: dict) -> None:
+    artifact = evaluation.get("evaluation_artifact")
+    if artifact:
+        evaluation["evaluation_artifact"] = canonical_repo_path(str(artifact))
+
+
+def _canonicalize_candidate_artifacts(candidate: dict) -> None:
+    artifact = candidate.get("artifact")
+    if artifact:
+        candidate["artifact"] = canonical_repo_path(str(artifact))
+    for evaluation in candidate.get("evaluations") or []:
+        if isinstance(evaluation, dict):
+            _canonicalize_evaluation_artifact(evaluation)
+
+
+def _canonicalize_result_artifacts(result: dict) -> None:
+    for candidate in result.get("candidates") or []:
+        if isinstance(candidate, dict):
+            _canonicalize_candidate_artifacts(candidate)
+    for requested in result.get("requested_evaluations") or []:
+        if isinstance(requested, dict):
+            metrics = requested.get("metrics")
+            if isinstance(metrics, dict):
+                _canonicalize_evaluation_artifact(metrics)
+    for evaluation in result.get("task_reference_evaluations") or []:
+        if isinstance(evaluation, dict):
+            _canonicalize_evaluation_artifact(evaluation)
+
+
+def write_state(state: dict) -> None:
+    """Persist state after canonicalizing its known repository references."""
+    accepted = state.get("accepted_artifact")
+    if accepted:
+        state["accepted_artifact"] = canonical_repo_path(str(accepted))
+    if "accepted_evaluations" in state:
+        state["accepted_evaluations"] = [
+            canonical_repo_path(str(path))
+            for path in state.get("accepted_evaluations") or []
+        ]
+    for lineage in state.get("retained_lineages") or []:
+        if not isinstance(lineage, dict):
+            continue
+        artifact = lineage.get("artifact")
+        if artifact:
+            lineage["artifact"] = canonical_repo_path(str(artifact))
+        if "evaluation_artifacts" in lineage:
+            lineage["evaluation_artifacts"] = [
+                canonical_repo_path(str(path))
+                for path in lineage.get("evaluation_artifacts") or []
+            ]
+    final_benchmark = state.get("pending_final_benchmark")
+    if isinstance(final_benchmark, dict) and final_benchmark.get("artifact"):
+        final_benchmark["artifact"] = canonical_repo_path(
+            str(final_benchmark["artifact"])
+        )
+    pending_evaluation = state.get("pending_evaluation_request")
+    if isinstance(pending_evaluation, dict):
+        for candidate in pending_evaluation.get("candidates") or []:
+            if isinstance(candidate, dict):
+                _canonicalize_candidate_artifacts(candidate)
+        for requested in pending_evaluation.get("partial_evaluations") or []:
+            if isinstance(requested, dict) and isinstance(
+                requested.get("metrics"), dict
+            ):
+                _canonicalize_evaluation_artifact(requested["metrics"])
+        for evaluation in pending_evaluation.get(
+            "partial_task_reference_evaluations"
+        ) or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        result = pending_evaluation.get("result")
+        if isinstance(result, dict):
+            _canonicalize_result_artifacts(result)
+    pending_decision = state.get("pending_researcher_decision")
+    if isinstance(pending_decision, dict):
+        for candidate in pending_decision.get("candidates") or []:
+            if isinstance(candidate, dict):
+                _canonicalize_candidate_artifacts(candidate)
+        for evaluation in pending_decision.get("champion_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        for evaluation in pending_decision.get("task_reference_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+    atomic_write_json(paths.STATE_PATH, state)
+
+
 def atomic_write_text(path: Path, text: str) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(text, encoding="utf-8")
@@ -281,10 +394,16 @@ def load_state(
     missing = required - set(state)
     if missing:
         raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
-    if state["schema_version"] != 2:
+    if state["schema_version"] != 3:
         raise RuntimeError("unsupported research state schema")
+    # Campaign identity is mandatory: every v3 state is scoped to a campaign.
+    campaign = state.get("campaign")
+    if not isinstance(campaign, dict) or not all(
+        campaign.get(field) for field in ("id", "started_at", "base_commit")
+    ):
+        raise RuntimeError("research state is missing a valid campaign identity")
     if not allow_missing_artifact:
-        artifact = paths.ROOT / state["accepted_artifact"]
+        artifact = resolve_repo_path(state["accepted_artifact"])
         for filename in ARTIFACT_FILES:
             if not (artifact / filename).exists():
                 raise RuntimeError(f"accepted artifact is incomplete: {filename}")
@@ -309,16 +428,32 @@ def anchor_scientific_parent(state: dict) -> str:
     return parent
 
 
+def current_campaign_id(state: dict) -> str | None:
+    """Retrieve the active campaign ID from persisted state, or None if missing."""
+    campaign = state.get("campaign", {})
+    campaign_id = campaign.get("id")
+    return str(campaign_id) if campaign_id else None
+
+
+def current_campaign_base_commit(state: dict) -> str | None:
+    """Retrieve the campaign's base commit (pre-reset HEAD) for change attribution, or None if missing."""
+    campaign = state.get("campaign", {})
+    base_commit = campaign.get("base_commit")
+    return str(base_commit) if base_commit else None
+
+
 # --- campaign history ------------------------------------------------------
 
 
 def evaluation_reference(evaluation: dict) -> dict:
     """Everything except the detail the evaluation artifact already holds."""
-    return {
+    reference = {
         key: value
         for key, value in evaluation.items()
         if key not in DETAILED_EVIDENCE_FIELDS
     }
+    _canonicalize_evaluation_artifact(reference)
+    return reference
 
 
 def measurement_record(metrics: dict) -> dict:
@@ -327,16 +462,23 @@ def measurement_record(metrics: dict) -> dict:
     Researcher-defined evidence stays in the artifact so the protocol state
     never becomes a second, opaque evidence store.
     """
-    return {
+    record = {
         key: value
         for key, value in metrics.items()
         if key not in ("model", "research_evidence")
     }
+    _canonicalize_evaluation_artifact(record)
+    return record
 
 
 def compact_result_record(result: dict) -> dict:
     """History keeps identity, score and artifact references, never the evidence."""
     record = dict(result)
+    if "replication_of" in record:
+        try:
+            record["replication_of"] = int(record["replication_of"])
+        except (TypeError, ValueError):
+            pass
     candidates = record.get("candidates")
     if isinstance(candidates, list):
         record["candidates"] = [
@@ -359,6 +501,12 @@ def compact_result_record(result: dict) -> dict:
             else item
             for item in requested
         ]
+    task_references = record.get("task_reference_evaluations")
+    if isinstance(task_references, list):
+        record["task_reference_evaluations"] = [
+            dict(item) if isinstance(item, dict) else item for item in task_references
+        ]
+    _canonicalize_result_artifacts(record)
     return record
 
 
@@ -373,18 +521,29 @@ def result_records() -> list[dict]:
     ]
 
 
+def result_records_for_campaign(campaign_id: str) -> list[dict]:
+    """Filter result records to a specific campaign, ordered oldest first."""
+    return [
+        record for record in result_records()
+        if record.get("campaign_id") == campaign_id
+    ]
+
+
 def latest_recorded_experiment() -> int | None:
     records = result_records()
     return int(records[-1]["index"]) if records else None
 
 
 def experiment_log_row(record: dict) -> str:
+    from research.runner_protocol import operation_description
+
     def cell(value: object) -> str:
         return " ".join(str(value).replace("|", "/").split())
 
     return (
         f"| {record['index']} | {cell(record.get('recorded_at', '-'))} | "
-        f"{cell(record.get('change', '-'))} | {cell(record.get('hypothesis', '-'))} | "
+        f"{cell(operation_description(record) or '-')} | "
+        f"{cell(record.get('hypothesis', '-'))} | "
         f"{cell(record.get('candidate_success_percent', '-'))} | "
         f"{cell(record.get('candidate_seeds_passed', '-'))} | "
         f"{cell(record.get('verdict', '-'))} |"
@@ -471,7 +630,7 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
 
 def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
     return [
-        str(item["evaluation_artifact"])
+        canonical_repo_path(str(item["evaluation_artifact"]))
         for item in evaluations or []
         if item.get("evaluation_artifact")
     ]
@@ -481,10 +640,9 @@ def archive_candidates(
     index: int,
     contenders: list[dict],
     config: dict,
+    campaign_id: str | None = None,
 ) -> list[dict]:
-    destination = (
-        paths.RESEARCH_DIR / "checkpoints" / "challengers" / f"experiment-{index}"
-    )
+    destination = paths.campaign_checkpoint_root(campaign_id) / f"experiment-{index}"
     if destination.exists():
         raise RuntimeError(f"challenger archive already exists: {destination}")
     destination.mkdir(parents=True)
@@ -497,7 +655,7 @@ def archive_candidates(
         archived.append(
             {
                 "name": contender["name"],
-                "artifact": str(artifact.relative_to(paths.ROOT)),
+                "artifact": repo_relative_path(artifact),
                 "timesteps": int(contender["timesteps"]),
                 "training_success": contender.get("training_success"),
                 "ep_rew_mean": contender.get("ep_rew_mean"),

@@ -28,5 +28,36 @@ CANDIDATE_ROOT = ROOT / "models" / "candidates"
 EVALUATION_DIR = RESEARCH_DIR / "evaluations"
 
 
-def training_log_path(experiment: int, attempt: int) -> Path:
+def training_log_path(experiment: int, attempt: int, campaign_id: str | None = None) -> Path:
+	if campaign_id:
+		return TRAINING_LOG_DIR / campaign_id / f"experiment-{experiment}-attempt-{attempt}.log"
 	return TRAINING_LOG_DIR / f"experiment-{experiment}-attempt-{attempt}.log"
+
+
+def campaign_candidate_root(campaign_id: str | None) -> Path:
+	"""Candidate directory scoped to a specific campaign, or legacy CANDIDATE_ROOT if campaign_id is None."""
+	if campaign_id is None:
+		return CANDIDATE_ROOT
+	return CANDIDATE_ROOT / campaign_id
+
+
+def campaign_checkpoint_root(campaign_id: str | None) -> Path:
+	"""Challenger checkpoint archive scoped to a specific campaign, or legacy path if campaign_id is None."""
+	if campaign_id is None:
+		return RESEARCH_DIR / "checkpoints" / "challengers"
+	return RESEARCH_DIR / "checkpoints" / "challengers" / campaign_id
+
+
+def campaign_evaluation_dir(campaign_id: str | None) -> Path:
+	"""Evaluation artifacts directory scoped to a specific campaign, or legacy EVALUATION_DIR if campaign_id is None."""
+	if campaign_id is None:
+		return EVALUATION_DIR
+	return EVALUATION_DIR / campaign_id
+
+
+def campaign_retained_root(campaign_id: str | None) -> Path:
+	"""Retained-lineage archive scoped to a specific campaign, or legacy path if campaign_id is None."""
+	if campaign_id is None:
+		return RESEARCH_DIR / "checkpoints" / "retained"
+	return RESEARCH_DIR / "checkpoints" / "retained" / campaign_id
+

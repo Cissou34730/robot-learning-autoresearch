@@ -7,13 +7,17 @@ import re
 import sys
 
 from research import runner_paths as paths
+from research import runner_repository as repository
 from robot_learning.training.progress import parse_training_records
 
 
 def experiment_log_paths(experiment: int) -> list[tuple[int, object]]:
+    state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    campaign_id = repository.current_campaign_id(state)
+    directory = paths.TRAINING_LOG_DIR / campaign_id if campaign_id else paths.TRAINING_LOG_DIR
     pattern = re.compile(rf"^experiment-{experiment}-attempt-(\d+)\.log$")
     logs = []
-    for log_path in paths.TRAINING_LOG_DIR.glob(f"experiment-{experiment}-attempt-*.log"):
+    for log_path in directory.glob(f"experiment-{experiment}-attempt-*.log"):
         match = pattern.match(log_path.name)
         if match is not None:
             logs.append((int(match.group(1)), log_path))

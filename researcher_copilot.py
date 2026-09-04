@@ -12,7 +12,7 @@ import argparse
 import asyncio
 import subprocess
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -45,7 +45,7 @@ def format_console_line(text: str) -> str:
     indent = text[: len(text) - len(stripped)]
     marker, separator, remainder = stripped.partition(" ")
     color = _MARKER_COLORS.get(marker, "\033[36m")
-    timestamp = f"{_DIM}[{datetime.now():%H:%M:%S}]{_RESET}"
+    timestamp = f"{_DIM}[{datetime.now(UTC).astimezone():%H:%M:%S}]{_RESET}"
     return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
 
 # Measured: this profile drops the runtime from 15 tools to 8 and roughly a
@@ -109,11 +109,21 @@ SUITE_DENIAL = (
     "Run the specific suite you need, for example `uv run pytest tests/scenario`."
 )
 
+DEPENDENCY_DENIAL = (
+    "Denied by the harness: the project dependency set is human-owned. Use the "
+    "installed environment without installing, removing, syncing or locking packages."
+)
+
 RESERVED_SCRIPT_NAMES = ("run_experiment.py", "final_benchmark.py")
 
-RESERVED_SCRIPT_PATHS = ("robot_learning/train.py", "robot_learning/play.py")
+RESERVED_SCRIPT_PATHS = (
+    "robot_learning/evaluate.py",
+    "robot_learning/play.py",
+    "robot_learning/train.py",
+)
 
 RESERVED_MODULES = (
+    "robot_learning.evaluate",
     "robot_learning.train",
     "robot_learning.play",
     "robot_learning.benchmark.final_benchmark",
@@ -258,6 +268,36 @@ def is_repository_wide_pytest(tokens: list[str]) -> bool:
     )
 
 
+def is_dependency_management(tokens: list[str]) -> bool:
+    """Whether a command changes or extends the fixed project dependency set."""
+    if not tokens:
+        return False
+    lowered = [token.lower() for token in tokens]
+    executable = Path(lowered[0].strip("&.")).name.removesuffix(".exe")
+    if executable == "uvx":
+        return True
+    if executable == "uv":
+        if len(lowered) < 2:
+            return False
+        operation = lowered[1]
+        if operation in {"add", "remove", "sync", "lock", "pip", "tool"}:
+            return True
+        if operation == "run":
+            if any(token.startswith("--with") for token in lowered[2:]):
+                return True
+            return is_dependency_management(strip_launcher_prefix(tokens))
+    if executable in {"pip", "pip3", "pipx"}:
+        return any(operation in lowered[1:] for operation in ("install", "uninstall"))
+    if executable in INTERPRETERS and "-m" in lowered:
+        module_index = lowered.index("-m") + 1
+        if module_index < len(lowered) and lowered[module_index] == "pip":
+            return any(
+                operation in lowered[module_index + 1 :]
+                for operation in ("install", "uninstall")
+            )
+    return executable in {"install-module", "install-package"}
+
+
 def command_denial(command: str) -> str | None:
     """The reason this command is refused, or None when it may run.
 
@@ -267,6 +307,8 @@ def command_denial(command: str) -> str | None:
     `uv run python -c` can still do anything the researcher could.
     """
     for tokens in command_segments(command):
+        if is_dependency_management(tokens):
+            return DEPENDENCY_DENIAL
         target = execution_target(tokens)
         if not target:
             continue

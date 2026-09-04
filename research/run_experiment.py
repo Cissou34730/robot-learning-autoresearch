@@ -36,6 +36,53 @@ PROPOSAL_ERRORS = (
 )
 
 
+def proposal_training_settings(
+    proposal: dict,
+) -> tuple[str, dict | None, bool, str]:
+    """Resolve the training fields shared by preflight and execution."""
+    return (
+        str(proposal.get("kind", "training")).lower(),
+        proposal.get("params"),
+        bool(proposal.get("baseline", False)),
+        str(proposal.get("initialization", "transfer")).lower(),
+    )
+
+
+def anchored_scientific_delta(raw_state: dict) -> list[str]:
+    """Return the scientific delta from the parent anchored for this phase."""
+    parent = str(raw_state.get("pending_scientific_parent") or "").strip()
+    if not parent:
+        raise ValueError(
+            "research phase requires an existing pending scientific parent; "
+            "run --begin-hypothesis before proposing an experiment"
+        )
+    repository.require_resolvable_commit(parent)
+    return repository.scientific_delta(parent)
+
+
+def validate_research_delta(raw_state: dict) -> list[str]:
+    """Reject changes outside the researcher-owned scientific surface."""
+    code_changes = anchored_scientific_delta(raw_state)
+    protocol.validate_research_delta_ownership(code_changes)
+    return code_changes
+
+
+def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
+    """Validate the proposal against the parent already anchored for this phase."""
+    experiment_kind, parameter_overrides, baseline, initialization = (
+        proposal_training_settings(proposal)
+    )
+    code_changes = validate_research_delta(raw_state)
+    protocol.validate_experiment_semantics(
+        proposal,
+        experiment_kind,
+        initialization,
+        parameter_overrides,
+        code_changes,
+        baseline,
+    )
+
+
 # --- hypothesis phase ------------------------------------------------------
 
 
@@ -43,7 +90,7 @@ def begin_hypothesis_phase() -> int:
     """Anchor the parent before the researcher may change or commit any science."""
     state = repository.read_state()
     parent = repository.anchor_scientific_parent(state)
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     console.announce(
         f"[runner] scientific parent of the next experiment: {parent[:12]}"
     )
@@ -60,9 +107,12 @@ def check_proposal() -> int:
         return 1
     try:
         proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
-        contract = protocol.validate_proposal_against_state(
-            proposal, repository.read_state()
-        )
+        state = repository.read_state()
+        contract = protocol.validate_proposal_against_state(proposal, state)
+        if contract == "training":
+            validate_training_proposal_delta(proposal, state)
+        else:
+            validate_research_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
         return 1
@@ -97,9 +147,12 @@ def check_evaluation_request() -> int:
                 "evaluation request references the wrong experiment; "
                 f"experiment {experiment} is awaiting evaluation"
             )
+        validate_research_delta(state)
         available = protocol.available_evaluation_candidates(pending, state)
-        protocol.planned_evaluations(request, available)
-        protocol.planned_task_references(request, available)
+        requested, _ = protocol.planned_measurements(request, available)
+        protocol.validate_paired_comparison_plan(
+            request, pending, available, requested
+        )
     except (
         json.JSONDecodeError,
         KeyError,
@@ -125,8 +178,14 @@ def check_lineage_evidence(experiment: int) -> int:
     measured = protocol.pending_evaluation_artifacts(pending)
     if not measured:
         return 0
+    campaign_id = repository.current_campaign_id(state)
+
     try:
-        protocol.validate_postmortem_evidence(experiment, measured)
+        protocol.validate_postmortem_evidence(
+            experiment,
+            measured,
+            campaign_id=campaign_id,
+        )
     except ValueError as error:
         print(f"ERROR: {error}")
         return 1
@@ -137,21 +196,18 @@ def check_lineage_evidence(experiment: int) -> int:
 
 
 def execute_pending_evaluations() -> int:
-    from robot_learning.scenario import (
-        summarize_research_evaluations,
-        task_reference_panel,
-    )
+    from robot_learning.scenario.evaluation import summarize_research_evaluations
+    from robot_learning.scenario.task_reference import task_reference_panel
 
     state = repository.read_state()
+    campaign_id = repository.current_campaign_id(state)
     pending = state.get("pending_evaluation_request")
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
+    validate_research_delta(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         protocol.validate_evaluation_request(request)
-        pending["evaluation_plan"] = request
-        pending.setdefault("partial_evaluations", [])
-        repository.atomic_write_json(paths.STATE_PATH, state)
     else:
         request = pending.get("evaluation_plan")
         if not isinstance(request, dict):
@@ -164,8 +220,12 @@ def execute_pending_evaluations() -> int:
     available = protocol.available_evaluation_candidates(pending, state)
     # The whole plan is resolved first, so nothing is measured for a request
     # that a later entry would have invalidated.
-    requested = protocol.planned_evaluations(request, available)
-    requested_references = protocol.planned_task_references(request, available)
+    requested, requested_references = protocol.planned_measurements(request, available)
+    protocol.validate_paired_comparison_plan(request, pending, available, requested)
+    if paths.EVALUATION_REQUEST_PATH.exists():
+        pending["evaluation_plan"] = request
+        pending.setdefault("partial_evaluations", [])
+        repository.write_state(state)
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -213,12 +273,13 @@ def execute_pending_evaluations() -> int:
             if key in completed_keys:
                 console.announce(f"[evaluation] already complete; reusing {label}")
                 continue
-            paths.EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-            output_path = paths.EVALUATION_DIR / protocol.evaluation_artifact_name(
-                experiment, name, episodes, seed, semantics
+            eval_dir = paths.campaign_evaluation_dir(campaign_id)
+            eval_dir.mkdir(parents=True, exist_ok=True)
+            output_path = eval_dir / protocol.evaluation_artifact_name(
+                experiment, name, episodes, seed, semantics, campaign_id=campaign_id
             )
             metrics = execution.evaluate_artifact(
-                paths.ROOT / contender["artifact"],
+                repository.resolve_repo_path(contender["artifact"]),
                 seed,
                 label=label,
                 episodes=episodes,
@@ -244,7 +305,7 @@ def execute_pending_evaluations() -> int:
             )
             completed_keys.add(key)
             pending["partial_evaluations"] = executed
-            repository.atomic_write_json(paths.STATE_PATH, state)
+            repository.write_state(state)
 
         for spec in requested_references:
             name = spec["candidate"]
@@ -254,12 +315,13 @@ def execute_pending_evaluations() -> int:
             if reference_key in completed_reference_keys:
                 console.announce(f"[task reference] already complete; reusing {label}")
                 continue
-            paths.EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-            output_path = paths.EVALUATION_DIR / protocol.task_reference_artifact_name(
-                experiment, name, panel["panel"]
+            eval_dir = paths.campaign_evaluation_dir(campaign_id)
+            eval_dir.mkdir(parents=True, exist_ok=True)
+            output_path = eval_dir / protocol.task_reference_artifact_name(
+                experiment, name, panel["panel"], campaign_id=campaign_id
             )
             metrics = execution.evaluate_artifact(
-                paths.ROOT / contender["artifact"],
+                repository.resolve_repo_path(contender["artifact"]),
                 panel["seed"],
                 label=label,
                 episodes=panel["episodes"],
@@ -282,7 +344,7 @@ def execute_pending_evaluations() -> int:
             )
             completed_reference_keys.add(reference_key)
             pending["partial_task_reference_evaluations"] = reference_executed
-            repository.atomic_write_json(paths.STATE_PATH, state)
+            repository.write_state(state)
     except KeyboardInterrupt:
         console.announce(
             "[runner] Evaluation request paused. Completed measurements remain "
@@ -290,7 +352,7 @@ def execute_pending_evaluations() -> int:
         )
         pending["partial_evaluations"] = executed
         pending["partial_task_reference_evaluations"] = reference_executed
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
         return 130
 
     for candidate in candidates:
@@ -360,7 +422,7 @@ def execute_pending_evaluations() -> int:
     state["last_experiment"] = experiment
     if pending.get("baseline"):
         paths.BASELINE_PENDING_PATH.unlink(missing_ok=True)
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     paths.EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
     if not more_evidence:
         repository.append_result(result)
@@ -396,7 +458,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         repository.copy_artifact(retention["source"], retention["destination"])
     if selected_name != "champion":
         repository.copy_artifact(plan["selected_artifact"], paths.ACCEPTED_DIR)
-        state["accepted_artifact"] = str(paths.ACCEPTED_DIR.relative_to(paths.ROOT))
+        state["accepted_artifact"] = repository.repo_relative_path(paths.ACCEPTED_DIR)
         state["accepted_metrics"] = selected.get("summary")
         state["accepted_parameters"] = pending["parameters"]
         state["accepted_training_steps"] = (
@@ -408,6 +470,9 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         state["official_metrics"] = None
     else:
         state["accepted_metrics"] = selected.get("summary")
+        state["accepted_artifact"] = repository.repo_relative_path(
+            repository.resolve_repo_path(state["accepted_artifact"])
+        )
     state["accepted_evaluations"] = repository.evaluation_artifact_paths(
         selected.get("evaluations")
     )
@@ -424,21 +489,25 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     }
     state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {selected_name}"
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     # Retain compact challenger history while removing every duplicate reusable artifact.
     for candidate in pending["candidates"]:
-        repository.remove_heavyweight_artifacts(paths.ROOT / candidate["artifact"])
+        repository.remove_heavyweight_artifacts(
+            repository.resolve_repo_path(candidate["artifact"])
+        )
     for lineage in plan["removed_retained"]:
-        repository.remove_heavyweight_artifacts(paths.ROOT / lineage["artifact"])
+        repository.remove_heavyweight_artifacts(
+            repository.resolve_repo_path(lineage["artifact"])
+        )
     # Completed evaluations are research history and survive their checkpoints.
     if plan["request_final_benchmark"]:
         state["pending_final_benchmark"] = {
             "experiment": int(pending["experiment"]),
             "selected": selected_name,
-            "artifact": str(paths.ACCEPTED_DIR.relative_to(paths.ROOT)),
+            "artifact": state["accepted_artifact"],
             "fingerprint": plan["selected_fingerprint"],
         }
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
     console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
@@ -462,7 +531,7 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
 
 
 def execute_pending_final_benchmark() -> int:
-    from robot_learning.scenario import evaluate_final_model
+    from robot_learning.scenario.final_benchmark import evaluate_final_model
 
     state = repository.read_state()
     pending = state.get("pending_final_benchmark")
@@ -471,11 +540,14 @@ def execute_pending_final_benchmark() -> int:
             "there is no accepted lineage awaiting final benchmark evaluation"
         )
     artifact = str(pending.get("artifact", "")).strip()
-    if artifact != state.get("accepted_artifact"):
+    accepted_reference = str(state.get("accepted_artifact", "")).strip()
+    if repository.resolve_repo_path(artifact) != repository.resolve_repo_path(
+        accepted_reference
+    ):
         raise ValueError(
             "pending final benchmark does not identify the accepted artifact"
         )
-    accepted_artifact = paths.ROOT / artifact
+    accepted_artifact = repository.resolve_repo_path(artifact)
     repository.require_complete_artifact(
         accepted_artifact, "pending final benchmark artifact"
     )
@@ -496,7 +568,7 @@ def execute_pending_final_benchmark() -> int:
     state["official_metrics"] = official_metrics
     state["official_benchmark_artifact"] = fingerprint
     state["pending_final_benchmark"] = None
-    repository.atomic_write_json(paths.STATE_PATH, state)
+    repository.write_state(state)
     if bool(official_metrics["goal_reached"]):
         paths.GOAL_PATH.write_text(
             f"Goal reached with {pending['selected']} from experiment {pending['experiment']}.\n",
@@ -509,27 +581,29 @@ def execute_pending_final_benchmark() -> int:
 
 
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
-    change = str(proposal["change"]).strip()
+    change = protocol.operation_description(proposal)
     hypothesis = str(proposal["hypothesis"]).strip()
-    experiment_kind = str(proposal.get("kind", "training")).lower()
-    parameter_overrides = proposal.get("params")
-    baseline = bool(proposal.get("baseline", False))
-    initialization = str(proposal.get("initialization", "transfer")).lower()
+    experiment_kind, parameter_overrides, baseline, initialization = (
+        proposal_training_settings(proposal)
+    )
     fresh_baseline = baseline and initialization == "fresh"
     state = repository.load_state(
         allow_unmeasured=True,
         allow_missing_artifact=fresh_baseline,
     )
+    # Extract campaign ID early for use throughout the function
+    campaign_id = repository.current_campaign_id(state)
+    
     # A preserved proposal is the same experiment: recovery and restart reuse
     # the identity the interrupted run allocated instead of consuming a new one.
     resuming = args.reuse_candidate is not None or paths.RESTART_PENDING_PATH.exists()
     index = (
-        protocol.resumed_experiment_index(state, args.reuse_candidate)
+        protocol.resumed_experiment_index(state, args.reuse_candidate, campaign_id=campaign_id)
         if resuming
         else 0
     )
     if index < 1:
-        index = protocol.next_experiment_index(state)
+        index = protocol.next_experiment_index(state, campaign_id=campaign_id)
     state["last_allocated_experiment"] = index
     recoverable_continuation = args.reuse_candidate is not None
     # A fresh baseline has no hypothesis phase to anchor it, and a retry, restart
@@ -537,8 +611,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     code_parent_commit = repository.anchor_scientific_parent(state)
     # Durable before validation or training can produce anything under this
     # identity, so a rejected, crashed or interrupted experiment consumes it.
-    repository.atomic_write_json(paths.STATE_PATH, state)
-    candidate_dir = paths.CANDIDATE_ROOT / f"experiment-{index}"
+    repository.write_state(state)
+    candidate_dir = paths.campaign_candidate_root(campaign_id) / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
     previous_config = research_config.load_experiment_config()
     code_changes: list[str] = []
@@ -552,6 +626,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     result: dict[str, Any] = {
         "schema_version": 1,
         "index": index,
+        "campaign_id": campaign_id,
         "change": change,
         "hypothesis": hypothesis,
         "kind": experiment_kind,
@@ -601,7 +676,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         )
         if selected_tests:
             console.announce("[checks] running research-surface checks")
-            if fresh_baseline or protocol.dependency_metadata_changed(code_changes):
+            if fresh_baseline:
                 execution.validate_dependency_metadata()
             execution.run_validation_suites(selected_tests)
             console.announce("[checks] passed")
@@ -618,9 +693,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         result["training_seed"] = training_seed
         result["training_parent"] = parent_name
         if experiment_kind == "replication":
-            result["replication_of"] = str(
-                proposal.get("replication_of", proposal.get("family", ""))
-            ).strip()
+            result["replication_of"] = int(proposal["replication_of"])
         console.announce("\n" + console.render_experiment_card(result) + "\n")
         resume = parent_artifact / "model.zip" if initialization == "transfer" else None
 
@@ -632,9 +705,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
 
         def active_training_log() -> Path:
             attempt = execution.training_attempt(
-                index, recoverable_continuation=recoverable_continuation
+                index, recoverable_continuation=recoverable_continuation, campaign_id=campaign_id
             )
-            return paths.training_log_path(index, attempt)
+            return paths.training_log_path(index, attempt, campaign_id=campaign_id)
 
         if args.reuse_candidate is not None:
             reusable = args.reuse_candidate.resolve()
@@ -697,7 +770,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             for candidate in execution.candidate_directories(candidate_dir)
         ]
         archived_candidates = repository.archive_candidates(
-            index, contenders, effective_config
+            index, contenders, effective_config, campaign_id=campaign_id
         )
         verdict = "trained; awaiting researcher evaluation request"
         completed_steps = max(
@@ -739,9 +812,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         if args.reuse_candidate is not None:
             paths.RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
     except KeyboardInterrupt:
-        recovery_dir = paths.CANDIDATE_ROOT / f"recovery-experiment-{index}"
+        recovery_dir = paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"
         recoverable = all(
             (candidate_dir / filename).exists()
             for filename in repository.ARTIFACT_FILES
@@ -751,7 +824,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 execution.remove_candidate_dir(recovery_dir)
             candidate_dir.replace(recovery_dir)
             paths.RECOVERY_PENDING_PATH.write_text(
-                str(recovery_dir.relative_to(paths.ROOT)) + "\n", encoding="utf-8"
+                repository.repo_relative_path(recovery_dir) + "\n", encoding="utf-8"
             )
             preserve_proposal = True
             console.announce(
@@ -780,7 +853,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         result["error"] = str(error)[:500]
         result["verdict"] = "invalid; researcher changes preserved"
         repository.append_result(result)
-        repository.atomic_write_json(paths.STATE_PATH, state)
+        repository.write_state(state)
         repository.commit_result(index, change)
         console.announce(f"[error] experiment {index} invalid: {result['error']}")
         return 1
@@ -858,6 +931,7 @@ def main() -> int:
         print(f"ERROR: invalid proposal for current phase: {error}")
         return 1
     if proposal_contract == "lineage":
+        validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
     return run_training_experiment(proposal, args)
 

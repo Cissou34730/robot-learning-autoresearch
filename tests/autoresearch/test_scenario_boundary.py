@@ -16,7 +16,7 @@ import pytest
 
 from research.build_research_brief import render_research_brief
 from robot_learning import scenario
-from robot_learning.scenario import summarize_research_evaluations
+from robot_learning.scenario.evaluation import summarize_research_evaluations
 from robot_learning.training import research_config
 from robot_learning.training.research_config import load_experiment_config
 
@@ -39,18 +39,6 @@ def runner_sources() -> dict[str, str]:
         for relative in RUNNER_MODULES
     }
 
-
-SCENARIO_BOUNDARY = (
-    "evaluate_final_model",
-    "evaluate_research_model",
-    "evaluate_task_reference_model",
-    "make_training_env",
-    "make_training_viewer_callback",
-    "render_training_progress_metric",
-    "summarize_research_evaluations",
-    "task_reference_panel",
-    "watch_scenario_policy",
-)
 
 SCENARIO_EVALUATION_FIELDS = (
     "failed_episode_progress",
@@ -126,6 +114,16 @@ FORBIDDEN_MODULES = frozenset(
         "robot_learning.benchmark.spec",
     }
 )
+SCENARIO_OWNING_MODULES = frozenset(
+    {
+        "robot_learning.scenario.environment",
+        "robot_learning.scenario.evaluation",
+        "robot_learning.scenario.final_benchmark",
+        "robot_learning.scenario.progress",
+        "robot_learning.scenario.task_reference",
+        "robot_learning.scenario.viewer",
+    }
+)
 
 # Only used to assert that generic surfaces name *no* learning algorithm.
 KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
@@ -167,14 +165,22 @@ def module_level_imports(path: Path) -> list[str]:
     return modules
 
 
-def test_scenario_exposes_exactly_the_static_boundary():
-    assert tuple(sorted(scenario.__all__)) == SCENARIO_BOUNDARY
-    exported = {
-        name
+def test_scenario_initializer_exposes_no_scientific_or_protected_api():
+    assert not hasattr(scenario, "__all__")
+    assert not any(
+        name in {
+            "evaluate_final_model",
+            "evaluate_research_model",
+            "evaluate_task_reference_model",
+            "make_training_env",
+            "make_training_viewer_callback",
+            "render_training_progress_metric",
+            "summarize_research_evaluations",
+            "task_reference_panel",
+            "watch_scenario_policy",
+        }
         for name in vars(scenario)
-        if not name.startswith("_") and callable(getattr(scenario, name))
-    }
-    assert exported == set(SCENARIO_BOUNDARY)
+    )
 
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
@@ -183,9 +189,10 @@ def test_generic_core_has_no_scenario_specific_imports(relative_path):
         assert module not in FORBIDDEN_MODULES, (
             f"{relative_path} imports scenario-specific module {module}"
         )
-        assert not module.startswith("robot_learning.scenario."), (
-            f"{relative_path} reaches past the scenario boundary via {module}"
-        )
+        if module.startswith("robot_learning.scenario"):
+            assert module in SCENARIO_OWNING_MODULES, (
+                f"{relative_path} uses an unknown scenario import {module}"
+            )
 
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
@@ -201,36 +208,57 @@ def test_generic_core_may_only_use_the_scenario_package():
         path
         for path in GENERIC_CORE_MODULES
         if any(
-            module == "robot_learning.scenario"
+            module.startswith("robot_learning.scenario")
             for module in imported_modules(ROOT / path)
         )
     ]
-    assert "robot_learning/train.py" in users
-    assert "robot_learning/evaluate.py" in users
-    assert "research/run_experiment.py" in users
+    assert set(users) == {
+        "robot_learning/train.py",
+        "robot_learning/evaluate.py",
+        "robot_learning/play.py",
+        "research/run_experiment.py",
+        "research/runner_console.py",
+    }
+    for relative_path in users:
+        assert all(
+            module in SCENARIO_OWNING_MODULES
+            for module in imported_modules(ROOT / relative_path)
+            if module.startswith("robot_learning.scenario")
+        )
     # The compact-context builder needs no scenario code at all.
     assert "research/build_research_brief.py" not in users
 
 
-def test_researcher_context_always_includes_both_protocol_and_scenario():
+def test_every_researcher_session_loads_the_authoritative_context():
     script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
     program_lines = [
         line for line in script.splitlines() if "research/program.md" in line
     ]
-    assert program_lines
+    assert len(program_lines) == 6
     for line in program_lines:
-        assert "research/scenario.md" in line, line
+        for context in (
+            "AGENTS.md",
+            "research/scenario.md",
+            "research/instruments.md",
+            "research/brief.md",
+        ):
+            assert context in line, line
 
 
 def test_scenario_document_defines_the_current_problem():
     scenario_text = (ROOT / "research" / "scenario.md").read_text(encoding="utf-8")
     program_text = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
+    instruments_text = (ROOT / "research" / "instruments.md").read_text(
+        encoding="utf-8"
+    )
 
-    assert "robot_learning/scenario/" in scenario_text
     assert "research/scenario.md" in program_text
     for scenario_fact in ("6–20 cm", "1 cm", "2 seconds", "98%"):
         assert scenario_fact in scenario_text
         assert scenario_fact not in program_text
+        assert scenario_fact not in instruments_text
+    for repository_path in ("research/run_experiment.py", "tests/benchmark/"):
+        assert repository_path not in scenario_text
 
 
 def test_protocol_uses_scenario_independent_wording():
@@ -287,7 +315,7 @@ def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
     from research import runner_console
 
     monkeypatch.setattr(
-        "robot_learning.scenario.render_training_progress_metric",
+        "robot_learning.scenario.progress.render_training_progress_metric",
         lambda metrics: "completion 74%",
     )
 
@@ -378,8 +406,8 @@ def test_task_success_threshold_is_not_generic_configuration():
 
 
 def test_ordinary_research_evaluation_ignores_the_final_threshold():
+    import robot_learning.scenario.evaluation as scenario_evaluation
     from robot_learning.benchmark import final_contract
-    from robot_learning.scenario import evaluation as scenario_evaluation
 
     assert final_contract.FINAL_SUCCESS_PERCENT == 98.0
     assert not hasattr(scenario_evaluation, "FINAL_SUCCESS_PERCENT")
@@ -429,9 +457,11 @@ def test_compact_context_states_no_final_threshold(monkeypatch, tmp_path):
 
 
 def test_training_environment_carries_no_official_task_enforcement():
-    from robot_learning.scenario import environment
+    import robot_learning.scenario.environment
 
-    assert not hasattr(environment, "assert_immutable_invariants")
+    assert not hasattr(
+        robot_learning.scenario.environment, "assert_immutable_invariants"
+    )
 
     source = (ROOT / "robot_learning" / "scenario" / "environment.py").read_text(
         encoding="utf-8"

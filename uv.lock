@@ -306,6 +306,18 @@ wheels = [
 ]
 
 [[package]]
+name = "jello"
+version = "1.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pygments" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fb/5e/fe41641ce367cb8b57a6514372fffd7aed4a8c916cd7dc0bb7e9ae8f6ae2/jello-1.6.1.tar.gz", hash = "sha256:eee1d43f2d9bb3b3b8c857b713e56191badb9a03a2274defaad1e727fad35521", size = 27910, upload-time = "2025-05-30T00:08:45.675Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f4/4e/360680ad90d15e7ca2a45e31a6a7b2f2037458c168e08751d67f9dacdcba/jello-1.6.1-py3-none-any.whl", hash = "sha256:9f9bf668c450728822e7b361daed5073430351cf3df729b250664182bbb3883c", size = 19318, upload-time = "2025-05-30T00:08:43.959Z" },
+]
+
+[[package]]
 name = "jinja2"
 version = "3.1.6"
 source = { registry = "https://pypi.org/simple" }
@@ -868,6 +880,7 @@ dev = [
 ]
 researcher = [
     { name = "github-copilot-sdk" },
+    { name = "jello" },
 ]
 
 [package.metadata]
@@ -884,7 +897,10 @@ dev = [
     { name = "ruff", specifier = ">=0.16.4" },
     { name = "tensorboard", specifier = ">=2.21.0" },
 ]
-researcher = [{ name = "github-copilot-sdk", specifier = ">=1.0.11" }]
+researcher = [
+    { name = "github-copilot-sdk", specifier = ">=1.0.11" },
+    { name = "jello", specifier = ">=1.6.1" },
+]
 
 [[package]]
 name = "ruff"

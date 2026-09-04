@@ -34,10 +34,22 @@ PROTECTED_BENCHMARK_PATHS = {
 }
 # Additional Runner instruments are protected even when they do not belong to
 # the official-task trust path.
-PROTECTED_RUNNER_PATHS = {"research/query_training_log.py"}
+PROTECTED_RUNNER_PATHS = {
+    "research/build_research_brief.py",
+    "research/query_training_log.py",
+    "researcher_session.ps1",
+    "run_research.ps1",
+}
 # The researcher runtime boundary: it decides which tools and commands a
 # research session may use, so a proposal must not be able to widen its own.
 PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
+# Human-owned context defines the Researcher's protocol, permissions and task.
+PROTECTED_CONTEXT_PATHS = {
+    "AGENTS.md",
+    "research/instruments.md",
+    "research/program.md",
+    "research/scenario.md",
+}
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
 PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
@@ -59,7 +71,7 @@ RESEARCHER_VALIDATED_TEST_PATHS = (
     "tests/scenario",
     "tests/training",
     "tests/autoresearch/test_scenario_boundary.py",
-    "tests/autoresearch/test_training_artifact_contract.py",
+    "tests/autoresearch/test_campaign_boundary.py",
 )
 # The researcher-owned scientific surface, stated positively. Anything absent
 # here is unclassified and validated completely, so a new or unfamiliar path is
@@ -100,7 +112,18 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 # The researcher names the model; the panel behind this key is human-owned.
-TASK_REFERENCE_ENTRY_FIELDS = {"candidate", "label"}
+RESEARCH_EVALUATION_ENTRY_FIELDS = {
+    "instrument",
+    "candidate",
+    "episodes",
+    "seed",
+    "label",
+}
+TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label"}
+SUPPORTED_MEASUREMENT_INSTRUMENTS = {
+    "research_evaluation",
+    "task_reference",
+}
 
 
 # --- ownership -------------------------------------------------------------
@@ -112,6 +135,8 @@ def is_protected_source(path: str) -> bool:
         relative in PROTECTED_BENCHMARK_PATHS
         or relative in PROTECTED_RUNNER_PATHS
         or relative in PROTECTED_RUNTIME_PATHS
+        or relative in PROTECTED_CONTEXT_PATHS
+        or relative in DEPENDENCY_METADATA_PATHS
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
     )
 
@@ -125,12 +150,6 @@ def is_researcher_owned(path: str) -> bool:
         return False
     return relative in RESEARCHER_OWNED_PATHS or relative.startswith(
         RESEARCHER_OWNED_PREFIXES
-    )
-
-
-def dependency_metadata_changed(changed_paths: list[str]) -> bool:
-    return any(
-        path.replace("\\", "/") in DEPENDENCY_METADATA_PATHS for path in changed_paths
     )
 
 
@@ -158,46 +177,62 @@ def validation_test_paths(
 # --- experiment identity ---------------------------------------------------
 
 
-def allocated_experiment_index(state: dict) -> int:
+def allocated_experiment_index(state: dict, campaign_id: str | None = None) -> int:
     """The highest experiment identity the Runner has ever handed out.
 
+    When campaign_id is provided, returns the highest index for that campaign only.
     `results.jsonl` and `EXPERIMENTS.md` are histories: they can be incomplete,
     regenerated or rolled back, so they never allocate identity. A state file
     written before allocation existed carries only the last experiment the
     Runner ran, which then seeds the counter.
     """
-    return max(
-        int(state.get("last_allocated_experiment") or 0),
-        int(state.get("last_experiment") or 0),
-    )
+    if campaign_id is None:
+        # Backward compat: global fallback for legacy code paths
+        return max(
+            int(state.get("last_allocated_experiment") or 0),
+            int(state.get("last_experiment") or 0),
+        )
+    # Campaign-scoped: track per-campaign high index
+    campaign_counters = state.get("campaign_experiment_counters", {})
+    return int(campaign_counters.get(campaign_id, 0))
 
 
-def experiment_working_paths(index: int) -> tuple[Path, ...]:
+def experiment_working_paths(index: int, campaign_id: str | None = None) -> tuple[Path, ...]:
+    if campaign_id:
+        root = paths.campaign_candidate_root(campaign_id)
+    else:
+        root = paths.CANDIDATE_ROOT
     return (
-        paths.CANDIDATE_ROOT / f"experiment-{index}",
-        paths.CANDIDATE_ROOT / f"recovery-experiment-{index}",
+        root / f"experiment-{index}",
+        root / f"recovery-experiment-{index}",
     )
 
 
-def next_experiment_index(state: dict) -> int:
+def next_experiment_index(state: dict, campaign_id: str | None = None) -> int:
     """Allocate the next identity for a new experiment.
 
+    When campaign_id is provided, allocates indices independently per campaign.
     An identity whose working directories already hold data is skipped, never
     reused: unexpected data is preserved and only costs a number.
     """
-    index = allocated_experiment_index(state) + 1
-    while any(path.exists() for path in experiment_working_paths(index)):
+    index = allocated_experiment_index(state, campaign_id=campaign_id) + 1
+    while any(path.exists() for path in experiment_working_paths(index, campaign_id=campaign_id)):
         console.announce(
             f"[runner] WARNING: models/candidates already holds data for "
             f"experiment {index}; preserving it and skipping that identity"
         )
         index += 1
+    # Update campaign counter if campaign_id provided
+    if campaign_id:
+        if "campaign_experiment_counters" not in state:
+            state["campaign_experiment_counters"] = {}
+        state["campaign_experiment_counters"][campaign_id] = index
     return index
 
 
-def resumed_experiment_index(state: dict, reuse_candidate: Path | None) -> int:
+def resumed_experiment_index(state: dict, reuse_candidate: Path | None, campaign_id: str | None = None) -> int:
     """A preserved proposal keeps the identity its interrupted run allocated."""
-    index = allocated_experiment_index(state)
+    index = allocated_experiment_index(state, campaign_id=campaign_id)
     if reuse_candidate is not None:
         # Only load-bearing for a state file that predates allocated identity.
         match = re.fullmatch(r"recovery-experiment-(\d+)", reuse_candidate.name)
@@ -251,9 +286,20 @@ def experiment_family(
     if experiment_kind == "method":
         return "research.selection_method"
     if code_changes:
-        normalized = re.sub(r"[^a-z0-9]+", "_", str(proposal["change"]).lower())
+        normalized = re.sub(r"[^a-z0-9]+", "_", operation_description(proposal).lower())
         return f"code.{normalized.strip('_')[:80]}"
     return experiment_kind
+
+
+def operation_description(record: dict) -> str:
+    """Return the stable human-readable operation description for a record."""
+    kind = str(record.get("kind", "")).strip().lower()
+    if kind == "continuation":
+        return "Continue training the unchanged method"
+    if kind == "replication":
+        return "Replicate the current method from fresh initialization"
+    value = record.get("change")
+    return value.strip() if isinstance(value, str) else ""
 
 
 def retained_lineage(state: dict, identifier: str) -> dict | None:
@@ -276,13 +322,13 @@ def training_parent(
     if identifier == "accepted":
         return (
             "accepted",
-            paths.ROOT / state["accepted_artifact"],
+            repository.resolve_repo_path(state["accepted_artifact"]),
             int(state.get("accepted_training_steps", 0)),
         )
     lineage = retained_lineage(state, identifier)
     if lineage is None:
         raise ValueError(f"unknown retained training parent {identifier!r}")
-    artifact = paths.ROOT / lineage["artifact"]
+    artifact = repository.resolve_repo_path(lineage["artifact"])
     for filename in repository.ARTIFACT_FILES:
         if not (artifact / filename).exists():
             raise ValueError(
@@ -294,22 +340,16 @@ def training_parent(
 # --- proposal validation ---------------------------------------------------
 
 
-def validate_experiment_semantics(
-    proposal: dict,
-    experiment_kind: str,
-    initialization: str,
-    parameter_overrides: dict | None,
-    code_changes: list[str],
-    baseline: bool,
-) -> None:
+def validate_research_delta_ownership(code_changes: list[str]) -> None:
+    """Reject changes to every human-owned source and test surface."""
     normalized = [path.replace("\\", "/") for path in code_changes]
     protected_sources = sorted(
         {path for path in normalized if is_protected_source(path)}
     )
     if protected_sources:
         raise ValueError(
-            "the human-owned final benchmark, official robot and research "
-            "protocol enforcement cannot be changed by a research proposal: "
+            "human-owned task, context, dependency and protocol surfaces cannot "
+            "be changed by a research proposal: "
             f"{protected_sources}; restore them to their content at the "
             "scientific parent before proposing another experiment"
         )
@@ -322,8 +362,21 @@ def validate_experiment_semantics(
             f"by a research proposal: {protected_tests}; restore them to their "
             "content at the scientific parent before proposing another experiment"
         )
+
+
+def validate_experiment_semantics(
+    proposal: dict,
+    experiment_kind: str,
+    initialization: str,
+    parameter_overrides: dict | None,
+    code_changes: list[str],
+    baseline: bool,
+) -> None:
+    validate_research_delta_ownership(code_changes)
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
+    if experiment_kind == "continuation" and (parameter_overrides or code_changes):
+        raise ValueError("continuation requires an unchanged learning method")
     if (
         not baseline
         and experiment_kind not in {"continuation", "replication"}
@@ -340,6 +393,15 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         value = proposal.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"{description} must be a non-empty string")
+
+    def require_integer(field: str, *, minimum: int | None = None) -> int:
+        value = proposal.get(field)
+        if type(value) is not int:
+            raise ValueError(f"{field} must be an integer when supplied")
+        if minimum is not None and value < minimum:
+            qualifier = "non-negative" if minimum == 0 else "positive"
+            raise ValueError(f"{field} must be a {qualifier} integer")
+        return value
 
     if baseline:
         # A baseline is its own runner-generated contract, never a training kind.
@@ -367,7 +429,6 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         "kind",
         "family",
         "hypothesis",
-        "change",
         "initialization",
     }
     missing = sorted(field for field in required if field not in proposal)
@@ -375,14 +436,23 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     require_nonempty_string("family", "training proposal family")
     require_nonempty_string("hypothesis", "training proposal hypothesis")
-    require_nonempty_string("change", "training proposal change")
     kind = proposal["kind"]
     if kind not in {"training", "continuation", "replication"}:
         raise ValueError(
             "training proposal kind must be training, continuation or replication"
         )
+    if kind == "training":
+        if "change" not in proposal:
+            raise ValueError("training proposal is missing required fields: ['change']")
+        require_nonempty_string("change", "training proposal change")
+    elif "change" in proposal:
+        raise ValueError(
+            f"{kind} must omit change because it uses the unchanged learning method"
+        )
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
+    if "training_seed" in proposal:
+        require_integer("training_seed", minimum=0)
     initialization = proposal["initialization"]
     if initialization not in {"transfer", "fresh"}:
         raise ValueError("initialization must be transfer or fresh")
@@ -401,14 +471,7 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("replication requires fresh initialization")
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
-        try:
-            replicated_experiment = int(proposal["replication_of"])
-        except (KeyError, TypeError, ValueError) as error:
-            raise ValueError(
-                "replication requires an exact experiment number"
-            ) from error
-        if replicated_experiment < 1:
-            raise ValueError("replication requires an exact experiment number")
+        require_integer("replication_of", minimum=1)
 
 
 def validate_proposal_phase(proposal: dict, state: dict) -> str:
@@ -449,19 +512,32 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
             allow_unmeasured=True, allow_missing_artifact=True
         )
         plan_previous_result_decision(proposal, state)
+    elif proposal.get("kind") == "replication":
+        campaign_id = repository.current_campaign_id(raw_state)
+        recorded = (
+            repository.result_records_for_campaign(campaign_id)
+            if campaign_id
+            else []
+        )
+        referenced = proposal["replication_of"]
+        if not any(record.get("index") == referenced for record in recorded):
+            raise ValueError(
+                "replication_of must reference an existing experiment in the "
+                "current campaign"
+            )
     return contract
 
 
 # --- evaluation requests ---------------------------------------------------
 
 
-def requested_task_references(request: dict) -> list[dict]:
-    references = request.get("task_reference_evaluations")
-    if references is None:
-        return []
-    if not isinstance(references, list):
-        raise TypeError("task_reference_evaluations must be a list")
-    return [item for item in references if item is not None]
+def requested_measurements(request: dict) -> list[dict]:
+    measurements = request.get("measurements")
+    if not isinstance(measurements, list):
+        raise TypeError("measurements must be a list")
+    if not measurements:
+        raise ValueError("an evaluation request must contain at least one measurement")
+    return measurements
 
 
 def validate_evaluation_request(request: dict) -> None:
@@ -470,27 +546,78 @@ def validate_evaluation_request(request: dict) -> None:
         value = request.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"evaluation request requires a non-empty {field}")
-    evaluations = request.get("evaluations")
-    if evaluations is None:
-        evaluations = []
-    if not isinstance(evaluations, list):
-        raise TypeError("evaluations must be a list")
-    references = requested_task_references(request)
-    for entry in references:
+    for field in ("evaluations", "task_reference_evaluations"):
+        if field in request:
+            raise ValueError(
+                f"{field} is obsolete; submit measurements through measurements"
+            )
+    if (
+        "need_more_evidence" in request
+        and type(request["need_more_evidence"]) is not bool
+    ):
+        raise ValueError("need_more_evidence must be true or false")
+    comparisons = request.get("paired_comparisons", [])
+    if not isinstance(comparisons, list):
+        raise TypeError("paired_comparisons must be a list")
+    for comparison in comparisons:
+        if not isinstance(comparison, dict):
+            raise TypeError("each paired comparison must be an object")
+        unsupported = sorted(set(comparison) - {"candidate", "reference"})
+        if unsupported:
+            raise ValueError(
+                f"paired comparison cannot set unsupported fields {unsupported}"
+            )
+        for field in ("candidate", "reference"):
+            value = comparison.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(
+                    f"paired comparison requires a non-empty {field}"
+                )
+    # Collect distinct candidates before detailed validation.
+    distinct_candidates = set()
+    for entry in requested_measurements(request):
         if not isinstance(entry, dict):
-            raise TypeError("each task-reference evaluation must be an object")
-        if not str(entry.get("candidate", "")).strip():
-            raise ValueError("a task-reference evaluation requires a candidate")
-        unknown = sorted(set(entry) - TASK_REFERENCE_ENTRY_FIELDS)
+            raise TypeError("each measurement must be an object")
+        instrument = entry.get("instrument")
+        if instrument not in SUPPORTED_MEASUREMENT_INSTRUMENTS:
+            raise ValueError(f"unknown measurement instrument {instrument!r}")
+        candidate = entry.get("candidate")
+        if not isinstance(candidate, str) or not candidate.strip():
+            raise ValueError(f"{instrument} requires a non-empty candidate")
+        distinct_candidates.add(candidate.strip())
+        allowed_fields = (
+            RESEARCH_EVALUATION_ENTRY_FIELDS
+            if instrument == "research_evaluation"
+            else TASK_REFERENCE_ENTRY_FIELDS
+        )
+        unknown = sorted(set(entry) - allowed_fields)
         if unknown:
             raise ValueError(
-                "the task-reference panel is human-owned; a task-reference "
-                f"evaluation cannot set {unknown}"
+                f"{instrument} measurement cannot set unsupported fields {unknown}"
             )
-    if not evaluations and not references:
+        if "label" in entry and not isinstance(entry["label"], str):
+            raise ValueError("measurement label must be a string")
+        if instrument == "research_evaluation":
+            missing = [
+                field for field in ("episodes", "seed") if field not in entry
+            ]
+            if missing:
+                raise ValueError(
+                    f"research_evaluation is missing required fields: {missing}"
+                )
+            if not isinstance(entry["episodes"], int) or isinstance(
+                entry["episodes"], bool
+            ):
+                raise ValueError("research_evaluation episodes must be an integer")
+            if entry["episodes"] < 1:
+                raise ValueError("research_evaluation episodes must be positive")
+            if not isinstance(entry["seed"], int) or isinstance(entry["seed"], bool):
+                raise ValueError("research_evaluation seed must be an integer")
+    # Enforce the three-model limit per evaluation round.
+    if len(distinct_candidates) > 3:
         raise ValueError(
-            "an evaluation request must ask for at least one research or "
-            "task-reference evaluation"
+            f"an evaluation request may measure at most 3 distinct models; "
+            f"{len(distinct_candidates)} requested: {sorted(distinct_candidates)}"
         )
 
 
@@ -506,88 +633,110 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
     return available
 
 
-def planned_evaluations(request: dict, available: dict) -> list[dict]:
-    """Resolve every requested research measurement before the first one runs."""
-    requested = request.get("evaluations") or []
-    if not isinstance(requested, list):
-        raise TypeError("evaluation request requires an evaluations list")
-    planned: list[dict] = []
-    for number, spec in enumerate(requested, start=1):
-        if not isinstance(spec, dict):
-            raise TypeError("each requested evaluation must be an object")
-        missing = [
-            field for field in ("candidate", "episodes", "seed") if field not in spec
-        ]
-        if missing:
-            raise ValueError(f"evaluation is missing required fields: {missing}")
-        if "official_benchmark" in spec:
-            raise ValueError(
-                "official_benchmark is not valid in a research evaluation request"
-            )
-        name = str(spec.get("candidate", "")).strip()
+def planned_measurements(request: dict, available: dict) -> tuple[list[dict], list[dict]]:
+    """Resolve all typed measurements before either evaluator starts."""
+    validate_evaluation_request(request)
+    evaluations: list[dict] = []
+    references: list[dict] = []
+    for spec in requested_measurements(request):
+        name = spec["candidate"].strip()
         if name not in available:
             raise ValueError(
-                f"unknown evaluation candidate {name!r}; "
-                f"choose from {sorted(available)}"
+                f"unknown measurement candidate {name!r}; choose from {sorted(available)}"
             )
-        try:
-            episodes = int(spec["episodes"])
-            seed = int(spec["seed"])
-        except (TypeError, ValueError) as error:
-            raise ValueError(
-                "evaluation episodes and seed must be whole numbers"
-            ) from error
-        if episodes < 1:
-            raise ValueError("evaluation episodes must be positive")
-        planned.append(
-            {
-                "candidate": name,
-                "episodes": episodes,
-                "seed": seed,
-                "label": str(
-                    spec.get("label", f"requested evaluation {number}: {name}")
-                ),
-            }
-        )
-    return planned
+        if spec["instrument"] == "research_evaluation":
+            evaluations.append(
+                {
+                    "candidate": name,
+                    "episodes": spec["episodes"],
+                    "seed": spec["seed"],
+                    "label": spec.get(
+                        "label", f"requested evaluation {len(evaluations) + 1}: {name}"
+                    ),
+                }
+            )
+        else:
+            references.append(
+                {
+                    "candidate": name,
+                    "label": spec.get(
+                        "label", f"task reference {len(references) + 1}: {name}"
+                    ),
+                }
+            )
+    return evaluations, references
 
 
-def planned_task_references(request: dict, available: dict) -> list[dict]:
-    """Resolve every requested task-reference measurement before the first one runs."""
-    planned: list[dict] = []
-    for number, spec in enumerate(requested_task_references(request), start=1):
-        name = str(spec.get("candidate", "")).strip()
-        if name not in available:
+def validate_paired_comparison_plan(
+    request: dict,
+    pending: dict,
+    available: dict,
+    requested: list[dict],
+) -> None:
+    """Validate comparison identities that will exist after this request."""
+    expected_panels: dict[str, set[tuple[int, int]]] = {
+        name: set() for name in available
+    }
+    for item in pending.get("partial_evaluations", []) or []:
+        name = str(item.get("candidate", "")).strip()
+        if name in expected_panels:
+            expected_panels[name].add((int(item["seed"]), int(item["episodes"])))
+    for item in requested:
+        expected_panels[item["candidate"]].add((item["seed"], item["episodes"]))
+
+    for comparison in request.get("paired_comparisons", []):
+        candidate = comparison["candidate"].strip()
+        reference = comparison["reference"].strip()
+        if candidate not in available:
+            raise ValueError(f"unknown paired comparison candidate {candidate!r}")
+        if reference not in available:
+            raise ValueError(f"unknown paired comparison reference {reference!r}")
+        candidate_panels = expected_panels[candidate]
+        reference_panels = expected_panels[reference]
+        if not candidate_panels or not reference_panels:
             raise ValueError(
-                f"unknown task-reference candidate {name!r}; "
-                f"choose from {sorted(available)}"
+                f"paired comparison {candidate!r} vs {reference!r} requires "
+                "research-evaluation data for both models"
             )
-        planned.append(
-            {
-                "candidate": name,
-                "label": str(spec.get("label", f"task reference {number}: {name}")),
-            }
-        )
-    return planned
+        if candidate_panels != reference_panels:
+            raise ValueError(
+                f"paired comparison {candidate!r} vs {reference!r} requires "
+                "identical (seed, episodes) panels"
+            )
 
 
 # --- measurement identity --------------------------------------------------
 
 
 def evaluation_artifact_name(
-    experiment: int, candidate: str, episodes: int, seed: int, semantics: str
+    experiment: int, candidate: str, episodes: int, seed: int, semantics: str, campaign_id: str | None = None
 ) -> str:
-    """One stable file per measured panel, so repeated rounds never collide."""
+    """One stable file per measured panel, so repeated rounds never collide.
+    
+    When campaign_id is provided, includes it in the filename to isolate
+    artifacts per campaign.
+    """
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    if campaign_id:
+        return (
+            f"evaluation-{campaign_id}-experiment-{experiment}-{label}-"
+            f"{episodes}ep-seed{seed}-{semantics}.json"
+        )
     return (
         f"evaluation-experiment-{experiment}-{label}-"
         f"{episodes}ep-seed{seed}-{semantics}.json"
     )
 
 
-def task_reference_artifact_name(experiment: int, candidate: str, panel: str) -> str:
-    """Task-reference identity is the model and the human-owned panel, nothing else."""
+def task_reference_artifact_name(experiment: int, candidate: str, panel: str, campaign_id: str | None = None) -> str:
+    """Task-reference identity is the model and the human-owned panel, nothing else.
+    
+    When campaign_id is provided, includes it in the filename to isolate
+    artifacts per campaign.
+    """
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
+    if campaign_id:
+        return f"task-reference-{campaign_id}-experiment-{experiment}-{label}-{panel}.json"
     return f"task-reference-experiment-{experiment}-{label}-{panel}.json"
 
 
@@ -659,12 +808,23 @@ def pending_evaluation_artifacts(pending: dict) -> list[str]:
     return list(dict.fromkeys(collected))
 
 
-def postmortem_section(experiment: int) -> str:
-    """The postmortem entry for one experiment, or an empty string."""
+def postmortem_section(
+    experiment: int,
+    campaign_id: str | None = None,
+) -> str:
+    """Return one experiment postmortem within the requested campaign."""
     if not paths.POSTMORTEM_PATH.exists():
         return ""
+
+    heading = (
+        rf"^## {re.escape(campaign_id)} / Experiment {experiment}\b"
+        if campaign_id
+        else rf"^## Experiment {experiment}\b"
+    )
+
     match = re.search(
-        rf"^## Experiment {experiment}\b.*?(?=^## Experiment \d|\Z)",
+        heading
+        + r".*?(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
         paths.POSTMORTEM_PATH.read_text(encoding="utf-8"),
         flags=re.MULTILINE | re.DOTALL,
     )
@@ -687,15 +847,25 @@ def attested_evidence_paths(section: str) -> list[str]:
     return list(dict.fromkeys(listed_paths))
 
 
-def validate_postmortem_evidence(experiment: int, measured: list[str]) -> None:
+def validate_postmortem_evidence(
+    experiment: int,
+    measured: list[str],
+    *,
+    campaign_id: str | None = None,
+) -> None:
     """Require the decision to name existing evidence of this experiment.
 
     This shows only that the researcher session identified real artifacts of the
     experiment it is resolving; it cannot show that they were understood.
     """
-    section = postmortem_section(experiment)
+    section = postmortem_section(experiment, campaign_id)
     if not section.strip():
-        raise ValueError(f"postmortems.md has no entry for experiment {experiment}")
+        identity = (
+            f"{campaign_id} / Experiment {experiment}"
+            if campaign_id
+            else f"Experiment {experiment}"
+        )
+        raise ValueError(f"postmortems.md has no entry for {identity}")
     attested = attested_evidence_paths(section)
     if not attested:
         raise ValueError(
@@ -711,7 +881,9 @@ def validate_postmortem_evidence(experiment: int, measured: list[str]) -> None:
             f"evaluation artifact measured for experiment {experiment}: "
             f"{sorted(owned)}"
         )
-    missing = sorted(path for path in matched if not (paths.ROOT / path).is_file())
+    missing = sorted(
+        path for path in matched if not repository.resolve_repo_path(path).is_file()
+    )
     if missing:
         raise ValueError(f"attested evaluation artifacts do not exist: {missing}")
 
@@ -776,7 +948,11 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         raise ValueError("previous_result_decision references the wrong experiment")
     measured_evidence = pending_evaluation_artifacts(pending)
     if measured_evidence:
-        validate_postmortem_evidence(int(pending["experiment"]), measured_evidence)
+        validate_postmortem_evidence(
+            int(pending["experiment"]),
+            measured_evidence,
+            campaign_id=repository.current_campaign_id(state),
+        )
     selected_name = str(decision.get("continue_from", "")).strip()
     reason = str(decision.get("reason", "")).strip()
     if not reason:
@@ -808,7 +984,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     selected = sources.get(selected_name)
     if selected is None:
         raise ValueError(f"continue_from must be one of {sorted(sources)}")
-    selected_artifact = paths.ROOT / selected["artifact"]
+    selected_artifact = repository.resolve_repo_path(selected["artifact"])
     repository.require_complete_artifact(
         selected_artifact, f"selected lineage {selected_name!r}"
     )
@@ -882,11 +1058,12 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         if identifier in retained_ids or identifier in removal_ids:
             raise ValueError(f"conflicting retained lineage ID: {identifier}")
         source = sources[candidate_name]
-        source_artifact = paths.ROOT / source["artifact"]
+        source_artifact = repository.resolve_repo_path(source["artifact"])
         repository.require_complete_artifact(
             source_artifact, f"retained lineage {identifier!r}"
         )
-        destination = paths.RESEARCH_DIR / "checkpoints" / "retained" / identifier
+        campaign_id = repository.current_campaign_id(state)
+        destination = paths.campaign_retained_root(campaign_id) / identifier
         if destination.exists():
             raise ValueError(
                 f"retained lineage destination already exists: {identifier}"
@@ -897,8 +1074,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
                 "destination": destination,
                 "record": {
                     "id": identifier,
-                    "artifact": str(destination.relative_to(paths.ROOT)),
+                    "artifact": repository.repo_relative_path(destination),
                     "origin_experiment": int(pending["experiment"]),
+                    "campaign_id": campaign_id,
                     "candidate": candidate_name,
                     "reason": retention_reason,
                     "parameters": source.get("parameters", pending["parameters"]),

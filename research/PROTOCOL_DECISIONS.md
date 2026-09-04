@@ -4,7 +4,8 @@ This file records the structural choices made with the human about the
 simulation, learning setup, reward, researcher freedom, and experiment
 selection protocol. It records both active decisions and the choices they
 superseded. It does not instruct the autonomous researcher and does not replace
-`research/program.md`, `research/scenario.md` or `research/current_params.json`.
+`research/program.md`, `research/scenario.md`, `research/instruments.md` or
+`research/current_params.json`.
 
 ## 2026-08-28 — Fixed final benchmark, flexible training target
 
@@ -937,3 +938,25 @@ superseded. It does not instruct the autonomous researcher and does not replace
   evaluation rule, lineage rule, benchmark, result-history semantic or training
   behavior changed. Researcher output is still never parsed as a scientific
   fact.
+
+## 2026-09-02 - Researcher context and instruments have single owners
+
+- **Decision:** `AGENTS.md` owns repository operation and path ownership;
+  `research/program.md` owns the Researcher role and fixed protocol;
+  `research/scenario.md` owns only the current scientific problem and immutable
+  task semantics; `research/instruments.md` is the scenario-neutral authority
+  for available capabilities and request contracts.
+- **Decision:** Every initial and retry Researcher session loads those four
+  documents plus the current generated brief. The PowerShell prompts remain
+  phase adapters and do not duplicate schemas or scientific guidance.
+- **Decision:** The dependency set is human-owned. The Researcher may replace
+  the learning method within the installed stack but may not install packages
+  or modify `pyproject.toml` or `uv.lock`. This supersedes the 2026-08-30
+  statement that `pyproject.toml` remained researcher-owned.
+- **Decision:** Context documents, phase orchestration, the Researcher runtime,
+  the brief builder and dependency metadata are explicitly protected by the
+  Runner. The generic evaluator remains researcher-owned code but, like the
+  training and viewer entry points, cannot be executed by a Researcher session.
+- **Boundary unchanged:** No phase, transition, retry, interruption recovery,
+  training budget, measurement schema, lineage policy or final-benchmark
+  semantic changed.

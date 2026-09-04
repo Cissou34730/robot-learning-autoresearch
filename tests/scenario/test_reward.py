@@ -8,7 +8,7 @@ reward experiment is expected to update them alongside the reward itself.
 import numpy as np
 import pytest
 
-from robot_learning.scenario import reward as reward_module
+import robot_learning.scenario.reward as reward_module
 from robot_learning.scenario.reward import HOLD_COMPLETE_BONUS, reach_reward
 
 

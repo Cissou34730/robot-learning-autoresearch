@@ -29,4 +29,5 @@ dev = [
 ]
 researcher = [
     "github-copilot-sdk>=1.0.11",
+    "jello>=1.6.1",
 ]

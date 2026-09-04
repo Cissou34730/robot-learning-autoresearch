@@ -80,7 +80,7 @@ def scenario_progress_metric(record: dict[str, float]) -> str | None:
     Imported here rather than at module scope so presenting a card never pulls
     the training and physics stack into a validation-only command.
     """
-    from robot_learning.scenario import render_training_progress_metric
+    from robot_learning.scenario.progress import render_training_progress_metric
 
     return render_training_progress_metric(record)
 
@@ -92,7 +92,9 @@ def experiment_change_lines(result: dict) -> list[str]:
             f"{item['path']}: {item.get('before')} → {item.get('after')}"
             for item in changes
         ]
-    return [str(result.get("change", "")).strip() or "-"]
+    from research.runner_protocol import operation_description
+
+    return [operation_description(result) or "-"]
 
 
 def render_experiment_card(result: dict) -> str:
@@ -180,20 +182,19 @@ def render_training_summary_card(
 
 def evaluation_plan_rows(request: dict) -> list[tuple[str, str]]:
     rows: list[tuple[str, str]] = []
-    for spec in request.get("evaluations") or []:
+    for spec in request.get("measurements") or []:
         if not isinstance(spec, dict):
             continue
-        name = str(spec.get("label") or spec.get("candidate", "")).strip() or "-"
-        try:
-            detail = f"{int(spec['episodes'])} episodes · seed {int(spec['seed'])}"
-        except (KeyError, TypeError, ValueError):
-            detail = "episodes and seed pending validation"
-        rows.append((name, detail))
-    for spec in request.get("task_reference_evaluations") or []:
-        if not isinstance(spec, dict):
-            continue
-        name = str(spec.get("candidate", "")).strip() or "-"
-        rows.append(("task reference", name))
+        if spec.get("instrument") == "research_evaluation":
+            name = str(spec.get("label") or spec.get("candidate", "")).strip() or "-"
+            try:
+                detail = f"{int(spec['episodes'])} episodes · seed {int(spec['seed'])}"
+            except (KeyError, TypeError, ValueError):
+                detail = "episodes and seed pending validation"
+            rows.append((name, detail))
+        elif spec.get("instrument") == "task_reference":
+            name = str(spec.get("candidate", "")).strip() or "-"
+            rows.append(("task reference", name))
     for comparison in request.get("paired_comparisons") or []:
         if not isinstance(comparison, dict):
             continue

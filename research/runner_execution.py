@@ -204,22 +204,27 @@ def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | Non
     return latest_step_count(read_training_log(log_path, after_offset))
 
 
-def training_log_attempts(experiment: int) -> list[int]:
+def training_log_attempts(experiment: int, *, campaign_id: str | None = None) -> list[int]:
+    directory = paths.TRAINING_LOG_DIR / campaign_id if campaign_id else paths.TRAINING_LOG_DIR
     pattern = re.compile(rf"^experiment-{experiment}-attempt-(\d+)\.log$")
     attempts = [
         int(match.group(1))
-        for log_path in paths.TRAINING_LOG_DIR.glob(f"experiment-{experiment}-attempt-*.log")
+        for log_path in directory.glob(f"experiment-{experiment}-attempt-*.log")
         if (match := pattern.match(log_path.name)) is not None
     ]
     return sorted(attempts)
 
 
-def training_log_path(experiment: int, attempt: int) -> Path:
-    return paths.training_log_path(experiment, attempt)
+def training_log_path(
+    experiment: int, attempt: int, *, campaign_id: str | None = None
+) -> Path:
+    return paths.training_log_path(experiment, attempt, campaign_id=campaign_id)
 
 
-def training_attempt(experiment: int, *, recoverable_continuation: bool) -> int:
-    attempts = training_log_attempts(experiment)
+def training_attempt(
+    experiment: int, *, recoverable_continuation: bool, campaign_id: str | None = None
+) -> int:
+    attempts = training_log_attempts(experiment, campaign_id=campaign_id)
     if recoverable_continuation:
         if not attempts:
             raise RuntimeError(
@@ -229,10 +234,14 @@ def training_attempt(experiment: int, *, recoverable_continuation: bool) -> int:
     return attempts[-1] + 1 if attempts else 1
 
 
-def training_records(experiment: int, attempt: int) -> list[dict[str, float]]:
+def training_records(
+    experiment: int, attempt: int, *, campaign_id: str | None = None
+) -> list[dict[str, float]]:
     from robot_learning.training.progress import parse_training_records
 
-    return parse_training_records(read_training_log(training_log_path(experiment, attempt)))
+    return parse_training_records(
+        read_training_log(training_log_path(experiment, attempt, campaign_id=campaign_id))
+    )
 
 
 def training_budget(
@@ -359,7 +368,9 @@ def remove_candidate_dir(path: Path) -> None:
     if not path.exists():
         return
     resolved = path.resolve()
-    if resolved.parent != paths.CANDIDATE_ROOT.resolve():
+    root = paths.CANDIDATE_ROOT.resolve()
+    # A campaign-scoped candidate lives one level deeper: CANDIDATE_ROOT/<campaign_id>/experiment-N.
+    if resolved.parent != root and resolved.parent.parent != root:
         raise RuntimeError(f"refusing to remove non-candidate directory: {resolved}")
     for attempt in range(20):
         try:
