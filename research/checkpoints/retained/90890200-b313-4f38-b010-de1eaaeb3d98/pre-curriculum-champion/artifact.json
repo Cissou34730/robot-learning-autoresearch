@@ -2,7 +2,7 @@
   "schema_version": 1,
   "algorithm": "ppo",
   "seed": 0,
-  "timesteps": 120832,
+  "timesteps": 100352,
   "requested_timesteps": 120000,
   "completed": true,
   "resumed_from": null,
@@ -48,6 +48,6 @@
       "activation": "tanh"
     }
   },
-  "training_success": 0.89,
-  "ep_rew_mean": 131.53945811
+  "training_success": 0.97,
+  "ep_rew_mean": 117.31958198000001
 }

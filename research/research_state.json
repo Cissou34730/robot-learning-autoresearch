@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-21-champion-200ep-seed1-8acbea27f7c3.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-22-checkpoint-120832-200ep-seed1-432715182172.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,38 +46,69 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 21
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 22
   },
-  "last_allocated_experiment": 21,
-  "last_experiment": 21,
+  "last_allocated_experiment": 22,
+  "last_experiment": 22,
   "last_lineage_decision": {
     "code": {
-      "action": "revert",
-      "reason": "The 6-14 cm training-mixture intervention did not improve short-radius coverage and caused a large persistent regression in both research and task-reference evaluations."
+      "action": "keep",
+      "reason": "The training-only radius curriculum avoided the broad reach and hold regressions seen in earlier short-radius interventions while preserving the accepted PPO configuration and evaluation semantics."
     },
-    "code_parent_commit": "5a574e3336bd4a3773164bf4cc17617e5a982288",
-    "continue_from": "champion",
-    "experiment": 21,
-    "reason": "The radius-biased candidate regressed to 58.5% versus the champion's 97.0%, with 79 champion-only wins out of 81 discordant paired episodes and substantially worse reach and hold diagnostics."
+    "code_parent_commit": "36579ec9ad3d91b293578af53198e0465699089b",
+    "continue_from": "checkpoint-120832",
+    "experiment": 22,
+    "reason": "The final curriculum checkpoint matched the champion on all 200 research-panel outcomes and improved task-reference success to 99.0% versus 98.0%, making it the strongest measured curriculum lineage for the official benchmark."
   },
-  "last_verdict": "researcher selected champion",
+  "last_verdict": "researcher selected checkpoint-120832",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "official_metrics": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
+  "pending_final_benchmark": {
+    "artifact": "research/checkpoints/accepted",
+    "experiment": 22,
+    "fingerprint": "262c178b55638aaa220cd27751c7ddde6943bf09baa98473714b0d37c5646ebb",
+    "selected": "checkpoint-120832"
+  },
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
-  "retained_lineages": [],
+  "retained_lineages": [
+    {
+      "artifact": "research/checkpoints/retained/90890200-b313-4f38-b010-de1eaaeb3d98/pre-curriculum-champion",
+      "campaign_id": "90890200-b313-4f38-b010-de1eaaeb3d98",
+      "candidate": "champion",
+      "evaluation_artifacts": [
+        "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-22-champion-200ep-seed1-432715182172.json"
+      ],
+      "id": "pre-curriculum-champion",
+      "origin_experiment": 22,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "Preserve the accepted 97.0% champion as a fallback because the curriculum ties it on the research panel and its task-reference advantage is modest.",
+      "training_steps": 120000
+    }
+  ],
   "schema_version": 3
 }
