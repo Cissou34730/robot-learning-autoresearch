@@ -13,3 +13,10 @@
 **Observed behavior:** Each trained checkpoint had 6 failures, compared with 68 for the 66.0% champion; paired outcomes were 64 candidate-only successes and 2 champion-only successes.
 **Interpretation:** Training on 14–20 cm targets substantially improved the diagnosed far-target weakness without changing the research evaluation distribution; the one-episode checkpoint difference provides no evidence that later training is better.
 **Evidence inspected:** `research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-2-checkpoint-100352-200ep-seed1000-261fd1f2c5ff.json`, `research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-2-checkpoint-120832-200ep-seed1000-261fd1f2c5ff.json`, `research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-2-champion-200ep-seed1000-261fd1f2c5ff.json`
+
+## d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f / Experiment 3
+
+**Result:** Angular-hard-region-focused training reached 62.0% at checkpoint-90112 and 51.5% at checkpoint-120832, far below the accepted 97.0% champion.
+**Observed behavior:** The candidates had 76 and 97 failures respectively versus 6 for the champion; paired outcomes favored the champion by 75–5 and 95–4, and only 7 and 10 candidate failures fell in the oversampled -160 to -100 degree sector.
+**Interpretation:** Oversampling the diagnosed angular sector did not preserve broad-task competence and worsened with further training, so neither candidate is a viable active lineage.
+**Evidence inspected:** `research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-3-checkpoint-90112-200ep-seed1000-53d9aac1b6d1.json`, `research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-3-checkpoint-120832-200ep-seed1000-53d9aac1b6d1.json`, `research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-3-champion-200ep-seed1000-53d9aac1b6d1.json`

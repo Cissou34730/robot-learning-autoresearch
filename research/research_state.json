@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-2-checkpoint-100352-200ep-seed1000-261fd1f2c5ff.json"
+    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-3-champion-200ep-seed1000-53d9aac1b6d1.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,21 +46,21 @@
     "started_at": "2026-09-04T10:26:33.0089613Z"
   },
   "campaign_experiment_counters": {
-    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 2
+    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 3
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Keep the far-target-focused training intervention and the fixed-distribution evaluation wiring because the measured improvement directly addresses the diagnosed far-target failures without changing the official task distribution."
+      "action": "revert",
+      "reason": "Revert experiment 3's angular-sector oversampling because it degraded full-range evaluation from the accepted 97.0% to 62.0% and then 51.5%, indicating the intervention did not generalize beyond its focused training sector."
     },
-    "code_parent_commit": "c9c79454a86f89b8e7233da036085e9d5357a025",
-    "continue_from": "checkpoint-100352",
-    "experiment": 2,
-    "reason": "Activate the 97.0% checkpoint with 194/200 successes. It matches checkpoint-120832 and is the earlier point, while paired outcomes show the intervention beats the champion on 64 episodes and loses on only 2."
+    "code_parent_commit": "72119f335774b20aae2861553fdab3bc9759200c",
+    "continue_from": "champion",
+    "experiment": 3,
+    "reason": "Keep the accepted champion at 97.0%: both experiment-3 candidates were substantially worse on the same 200-episode panel, and paired outcomes favored the champion by 75-5 at checkpoint-90112 and 95-4 at checkpoint-120832."
   },
-  "last_verdict": "researcher selected checkpoint-100352",
+  "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
   "official_metrics": {
     "episodes": 200,
