@@ -405,6 +405,7 @@ class Console:
         self.denials = 0
         self.tool_calls = 0
         self.denied_calls: set[str] = set()
+        self.active_tools: dict[str, tuple[str, object]] = {}
 
     def line(self, text: str) -> None:
         if self._mid_stream:
@@ -423,8 +424,12 @@ class Console:
             return
         print(text, flush=True)
 
-    def tool(self, name: str, arguments: object) -> None:
+    def tool(
+        self, name: str, arguments: object, tool_call_id: str | None = None
+    ) -> None:
         self.tool_calls += 1
+        if tool_call_id:
+            self.active_tools[tool_call_id] = (name, arguments)
         if name in SILENT_TOOLS:
             return
         detail = ""
@@ -435,11 +440,27 @@ class Console:
             detail = detail[:107] + "..."
         self.line(f"  > {name}: {detail}" if detail else f"  > {name}")
 
-    def tool_failed(self, error: str) -> None:
-        detail = " ".join(str(error or "").split())
-        if len(detail) > 160:
-            detail = detail[:157] + "..."
-        self.line(f"  x tool failed: {detail}")
+    def tool_failed(
+        self, error: object, name: str = "tool", arguments: object = None
+    ) -> None:
+        target = ""
+        if isinstance(arguments, dict):
+            raw = next(
+                (
+                    arguments[key]
+                    for key in ("path", "filePath", "query", "command", "commandLine")
+                    if arguments.get(key)
+                ),
+                "",
+            )
+            target = " ".join(str(raw).split())
+        if len(target) > 100:
+            target = target[:97] + "..."
+        reason = " ".join(str(error or "").split())
+        if len(reason) > 160:
+            reason = reason[:157] + "..."
+        operation = f"{name} ({target})" if target else name
+        self.line(f"  x {operation} failed: {reason}")
 
     def denied(self, reason: str, tool_call_id: str | None = None) -> None:
         self.denials += 1
@@ -519,15 +540,17 @@ def build_handlers(console: Console, finished: asyncio.Event):
         elif isinstance(data, AssistantMessageData):
             console.message(data.content or "")
         elif isinstance(data, ToolExecutionStartData):
-            console.tool(data.tool_name, data.arguments)
+            console.tool(data.tool_name, data.arguments, data.tool_call_id)
         elif isinstance(data, ToolExecutionCompleteData):
+            tool = console.active_tools.pop(data.tool_call_id, None)
             # A call this harness rejected already reported its reason.
             if (
                 not data.success
                 and data.error
                 and data.tool_call_id not in console.denied_calls
             ):
-                console.tool_failed(data.error)
+                name, arguments = tool or ("tool", None)
+                console.tool_failed(data.error, name, arguments)
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):

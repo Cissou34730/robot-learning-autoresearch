@@ -195,7 +195,9 @@ def test_brief_reports_the_measured_score_and_points_at_the_detail(
         "Accepted evaluation detail: "
         "`research/evaluations/evaluation-experiment-3-champion-4ep-seed1000-ab.json`"
     ) in brief
-    assert "Open the detailed evaluation artifacts listed below" in brief
+    assert "summaries below as the normal evidence entry point" in brief
+    assert "artifacts as needed to resolve the lineage decision" in brief
+    assert "Open the detailed evaluation artifacts listed below" not in brief
     assert "Measured challenger diagnostics" not in brief
     assert "Observed failure diagnostics" not in brief
 

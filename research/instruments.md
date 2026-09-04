@@ -4,13 +4,39 @@ This file defines the evidence sources and phase deliverables available to the R
 
 ## Inspect evidence
 
-Read:
+Start with `research/brief.md`. It is the compact index and summary of the
+current campaign's evidence, including current state, parameters, available
+models, retained lineages and repository-relative artifact paths.
 
-* `research/brief.md` for current state, parameters, available models, retained lineages and artifact paths;
-* `research/postmortems.md` for previous observations and interpretations;
-* every JSON or JSONL artifact referenced by the brief or history, including evaluation results, task-reference results, inventories and parameters. Use jello to extract relevant fields without loading complete artifacts;
-* the detailed researcher-evaluation artifacts under `research/evaluations/` and the detailed task-reference artifacts named by the brief or history;
-* `research/brief.md` under **Current status -> Reported result** for the official benchmark result, with its durable metrics and artifact reference in `research/research_state.json`.
+Use `research/postmortems.md` for previous observations and interpretations.
+Inspect referenced evaluation, task-reference or other structured artifacts
+only when additional detail is needed to resolve the current scientific
+question. Inspect enough evidence to support the requested scientific decision,
+but prefer targeted extraction of the required fields over loading a complete
+artifact. Read a full artifact when its complete contents are genuinely needed
+or a simple query cannot express the analysis.
+
+Artifact paths exposed by the brief and research contracts are relative to the
+repository. Use them directly from the repository working directory; do not
+reconstruct them as absolute paths.
+
+For targeted JSON or JSONL extraction, prefer the installed `jello` command
+through the researcher environment rather than relying on a global executable:
+
+```powershell
+uv run --group researcher jello '_.metrics' -f <artifact.json>
+```
+
+Another existing researcher-owned analysis tool may be used when it better fits
+the question. `research/instruments.md` is the operational contract for these
+instruments and request formats. Do not inspect instrument or Runner
+implementation merely to discover how to use an operation already documented
+here. Implementation inspection remains appropriate when the scientific
+question requires understanding researcher-owned measurement or learning code.
+
+For the official benchmark result, use `research/brief.md` under **Current
+status -> Reported result**. Its durable metrics and artifact reference remain
+in `research/research_state.json`.
 
 Candidate training success and reward shown in the brief are training facts, not evaluation results.
 

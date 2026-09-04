@@ -289,6 +289,7 @@ while ($true) {
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
+                "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -302,6 +303,7 @@ while ($true) {
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
                     "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                     "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
+                    "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
                     "Expected deliverable: complete research/evaluation_request.json using the contract in research/instruments.md."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
@@ -358,7 +360,7 @@ while ($true) {
         $decisionPrompt = @(
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. This is the complete task; do not wait for more input."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Read the detailed evaluation artifacts referenced for this experiment in the brief."
+            "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
             "Use those campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
@@ -373,6 +375,7 @@ while ($true) {
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
                 "Use the campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
                 "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json using the contracts in research/instruments.md."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."

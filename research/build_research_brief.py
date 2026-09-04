@@ -366,8 +366,9 @@ def render_research_brief() -> str:
                 f"`{pending_decision.get('code_parent_commit', 'unknown')}`."
             ),
             (
-                "Open the detailed evaluation artifacts listed below before "
-                "writing the postmortem or choosing a lineage. They hold the "
+                "Use the summaries below as the normal evidence entry point. "
+                "Inspect the referenced detailed evaluation artifacts as needed "
+                "to resolve the lineage decision; they remain the authoritative "
                 "full record of each measurement."
             ),
         ]

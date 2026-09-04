@@ -425,6 +425,36 @@ def test_a_genuine_tool_failure_is_still_reported(capsys):
     assert "ruff exited 1" in capsys.readouterr().out
 
 
+def test_a_silent_tool_failure_identifies_the_tool_and_target(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console()
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    on_event(
+        SimpleNamespace(
+            data=events.ToolExecutionStartData(
+                tool_call_id="call-3",
+                tool_name="view",
+                arguments={"path": "research/missing.json"},
+            )
+        )
+    )
+    assert capsys.readouterr().out == ""
+
+    on_event(
+        SimpleNamespace(
+            data=events.ToolExecutionCompleteData(
+                success=False, tool_call_id="call-3", error="Path does not exist"
+            )
+        )
+    )
+
+    output = capsys.readouterr().out
+    assert "view" in output
+    assert "research/missing.json" in output
+    assert "Path does not exist" in output
+
+
 def test_a_refused_shell_call_answers_with_a_rejection(capsys):
     pytest.importorskip("copilot")
     from copilot.rpc import PermissionDecisionReject

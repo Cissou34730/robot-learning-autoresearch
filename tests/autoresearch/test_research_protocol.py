@@ -2458,6 +2458,25 @@ def test_researcher_guidance_keeps_git_out_of_the_scientific_evidence_surface():
         assert routine_command not in LOOP.lower()
 
 
+def test_evidence_inspection_is_brief_first_and_targeted():
+    instruments = (ROOT / "research" / "instruments.md").read_text(
+        encoding="utf-8"
+    )
+    normalized = " ".join(instruments.split())
+
+    assert "Start with `research/brief.md`" in normalized
+    assert "only when additional detail is needed" in normalized
+    assert "targeted extraction" in normalized
+    assert "uv run --group researcher jello '_.metrics'" in normalized
+    assert "relative to the repository" in normalized
+    assert "Do not inspect instrument or Runner implementation" in normalized
+    assert "every JSON or JSONL artifact" not in normalized
+
+    assert LOOP.count("Start from the brief and instrument contract") == 2
+    assert LOOP.count("as needed to support the postmortem") == 2
+    assert "Read the detailed evaluation artifacts" not in LOOP
+
+
 def test_protocol_default_context_names_only_authoritative_context():
     opening = PROGRAM.split("## Roles", 1)[0]
 
