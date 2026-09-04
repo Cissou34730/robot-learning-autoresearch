@@ -1,18 +1,70 @@
 {
-  "schema_version": 3,
   "accepted_artifact": "research/checkpoints/accepted",
-  "accepted_metrics": null,
-  "accepted_parameters": null,
-  "accepted_training_steps": 0,
-  "campaign": {
-    "id": "90890200-b313-4f38-b010-de1eaaeb3d98",
-    "started_at": "2026-09-04T14:14:21.3905385Z",
-    "base_commit": "cf4844c32983035c448c534d6941f8947e5218f2"
+  "accepted_evaluations": [
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-1-checkpoint-100352-200ep-seed1-f1f33f3d10a8.json"
+  ],
+  "accepted_metrics": {
+    "episodes": 200,
+    "evaluation_summary_version": 3,
+    "pooled_success_percent": 97.0,
+    "schema_version": 3,
+    "seed_count": 1,
+    "seed_success_percent": {
+      "1": 97.0
+    },
+    "success_percent": 97.0,
+    "worst_seed_success_percent": 97.0
   },
-  "retained_lineages": [],
-  "last_experiment": 0,
-  "last_allocated_experiment": 0,
+  "accepted_parameters": {
+    "algorithm": {
+      "name": "ppo"
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    },
+    "ppo": {
+      "batch_size": 64,
+      "ent_coef": 0.01,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0003,
+      "n_steps": 1024
+    },
+    "training": {
+      "checkpoint_every_steps": 5000,
+      "n_envs": 1
+    }
+  },
+  "accepted_training_steps": 120000,
+  "campaign": {
+    "base_commit": "cf4844c32983035c448c534d6941f8947e5218f2",
+    "id": "90890200-b313-4f38-b010-de1eaaeb3d98",
+    "started_at": "2026-09-04T14:14:21.3905385Z"
+  },
+  "campaign_experiment_counters": {
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 1
+  },
+  "last_allocated_experiment": 1,
+  "last_experiment": 1,
+  "last_lineage_decision": {
+    "code": {
+      "action": "keep",
+      "reason": "Experiment 1 was an unchanged fresh baseline with no code or parameter intervention, so there is no experiment-specific scientific change to revert."
+    },
+    "code_parent_commit": "fef60b8ab90c0c04c4f00d8a676e05527d74dfd8",
+    "continue_from": "checkpoint-100352",
+    "experiment": 1,
+    "reason": "It is the strongest measured baseline at 97.0%, outperforming checkpoint-86016 and slightly outperforming checkpoint-120832; it is the best available starting lineage despite remaining below the objective threshold."
+  },
+  "last_verdict": "researcher selected checkpoint-100352",
+  "official_metrics": null,
+  "pending_evaluation_request": null,
+  "pending_researcher_decision": null,
   "pending_scientific_parent": null,
-  "last_verdict": "baseline pending after research reset",
-  "official_metrics": null
+  "retained_lineages": [],
+  "schema_version": 3
 }
