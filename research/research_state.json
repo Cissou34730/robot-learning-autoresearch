@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-13-champion-200ep-seed1-6985840720da.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-14-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 13
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 14
   },
-  "last_allocated_experiment": 13,
-  "last_experiment": 13,
+  "last_allocated_experiment": 14,
+  "last_experiment": 14,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Although the mixture modestly reduced negative-angle failures, it caused a persistent overall regression dominated by positive-angle non-reaches; restore the pre-experiment method."
+      "reason": "Experiment 14 changed only the researcher-owned PPO learning rate from 0.0003 to 0.0001 in research/current_params.json. The measured regression provides no support for keeping that change."
     },
-    "code_parent_commit": "db025f111ea213547adfea7d3dce669a2aaffb0e",
+    "code_parent_commit": "67ee68b00b1e3d434988cc3d3c920941fe570857",
     "continue_from": "champion",
-    "experiment": 13,
-    "reason": "The mild angular-coverage candidate reached only 86.5% at checkpoint-120832 versus the champion's 97.0%, with 27 champion-only wins and 6 candidate-only wins in paired episodes."
+    "experiment": 14,
+    "reason": "The lower-learning-rate candidate reached only 17.5% and 15.0% at the measured checkpoints versus the champion's 97.0%, with zero candidate wins in both paired comparisons. The candidate's failures were dominated by non-reaching and increased hold interruptions, so it should not replace the champion."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
