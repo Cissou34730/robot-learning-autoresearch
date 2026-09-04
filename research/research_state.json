@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-4-champion-200ep-seed1000-88c7ea5975c7.json"
+    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-5-champion-200ep-seed1000-b55ec848ea09.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T10:26:33.0089613Z"
   },
   "campaign_experiment_counters": {
-    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 4
+    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 5
   },
-  "last_allocated_experiment": 4,
-  "last_experiment": 4,
+  "last_allocated_experiment": 5,
+  "last_experiment": 5,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Revert experiment 4's 20% angular-sector oversampling because any focused-sector benefit was outweighed by broad-task degradation; restore the accepted experiment-2 method."
+      "reason": "Revert experiment 5's mixed far-target/full-range training sampler because it did not preserve broad-task competence on either the research or held-out task-reference panel; restore the experiment-5 code parent."
     },
-    "code_parent_commit": "8bc52e876fa3857973e17270156cdbf628b1fb8d",
+    "code_parent_commit": "cc7c7440a6d756dfd6a4187156b7008430c6491e",
     "continue_from": "champion",
-    "experiment": 4,
-    "reason": "Keep the accepted champion at 97.0%: experiment 4 fell from 69.0% to 64.5% with further training, had 62 and 71 failures versus 6 for the champion, and scored only 70.5% on the task-reference panel versus 98.0% for the champion."
+    "experiment": 5,
+    "reason": "Keep the accepted champion at 97.0%: both experiment-5 checkpoints reached only 55.5% with 89 truncated failures, while the champion reached 97.0% with 6 failures. Paired outcomes favored the champion by 85-2 and 87-4, and the task-reference result was 55.0% versus 98.0%."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
