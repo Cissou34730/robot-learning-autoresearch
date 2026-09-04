@@ -9,9 +9,8 @@ from pathlib import Path
 
 from stable_baselines3.common.callbacks import BaseCallback
 
-from robot_learning.scenario.environment import make_training_env
-from robot_learning.training.algorithms import load_policy
-from robot_learning.training.normalization import load_observation_normalizer
+from robot_learning.policy_runtime import load_runtime
+from robot_learning.scenario.environment import make_evaluation_env
 
 
 class _LiveViewerCallback(BaseCallback):
@@ -57,20 +56,18 @@ def watch_scenario_policy(
     """Replay a trained policy in this scenario's viewer."""
     import mujoco.viewer
 
-    env = make_training_env()
-    model = load_policy(model_path)
-    normalize_obs = load_observation_normalizer(model_path)
-    if normalize_obs is None:
-        normalize_obs = lambda obs: obs
+    runtime = load_runtime(model_path)
+    env = make_evaluation_env(policy_runtime=runtime)
     control_dt = env.model.opt.timestep * env.frame_skip
 
     with mujoco.viewer.launch_passive(env.model, env.data) as viewer:
         for _ in range(episodes):
             obs, _ = env.reset()
+            runtime.reset()
             episode_reward = 0.0
             done = False
             while not done and viewer.is_running():
-                action, _ = model.predict(normalize_obs(obs), deterministic=True)
+                action = runtime.predict(obs)
                 obs, reward, terminated, truncated, info = env.step(action)
                 episode_reward += reward
                 done = terminated or truncated

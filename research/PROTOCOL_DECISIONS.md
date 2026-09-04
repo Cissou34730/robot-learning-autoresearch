@@ -960,3 +960,44 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Boundary unchanged:** No phase, transition, retry, interruption recovery,
   training budget, measurement schema, lineage policy or final-benchmark
   semantic changed.
+
+## 2026-09-04 - Preserve the executable contract of every saved policy
+
+- **Failure:** Observation changes affected old champions because every evaluator
+  used the currently checked-out scientific code. Same-sized semantic changes
+  could silently invalidate comparisons, not just trigger shape errors.
+- **Decision:** Save `policy_runtime.pkl` beside each checkpoint, containing its
+  observation/action functions, loader and normalization by value, bound to the
+  exact weight/statistics files. Installed stack dependencies remain assumed.
+- **Execution:** Research, reference and official evaluators and playback use the
+  selected artifact's interface. They retain their common task mechanics rather
+  than restoring a policy's old training environment. Physical action limits and
+  success definitions are unchanged. No observation size is special-cased.
+- **Persistence:** Runtime bytes are included in copying, fingerprints, retention
+  and heavyweight cleanup. New training outputs must include the runtime. Legacy
+  storage stays readable solely for explicit migration; inference never silently
+  falls back to current scientific code or missing normalization.
+- **Migration:** A human-only tool exports a new copy from an explicit historical
+  revision. Older implicit identity action mappings require explicit attestation.
+  No running campaign, old checkpoint, state or cached result is auto-rewritten.
+- **Research surface:** Policy I/O and checkpoint production remain scientific
+  code. Serialization, runtime loading and protected task execution are human-owned.
+  Training budget, proposal lifecycle and architecture changes in transfer are
+  outside this correction.
+
+## 2026-09-04 - Explicit reset modes in the current branch
+
+- **Decision:** `reset_research.ps1` requires `-Mode Fresh` or `-Mode Baseline`.
+  Both operate in the current branch/worktree. No comparison worktree is created.
+- **Fresh:** Preserve current code/parameters and clear campaign state, models,
+  measurements, logs and generated context. The next launch trains a baseline.
+- **Baseline:** Restore a Git-versioned, closed experiment-1 baseline: scientific
+  code and tests, parameters, accepted model/runtime, evidence and raw logs.
+  Preserve the current harness and protected evaluation machinery. Require the
+  same robot/task constants; resume scientific research at experiment 2.
+- **Compatibility:** Require the saved executable policy interface. Do not guess
+  how to adapt old models or silently drop their scientific evidence. Logs absent
+  from Git must be supplied before cleanup and are frozen in the resulting commit.
+- **Safety:** Retain explicit force confirmation, clean-tree protection and the
+  existing automatic reset commit/push. Validate source/paths/locks before cleanup.
+  No campaign launch, change to training budget or lineage decision policy.

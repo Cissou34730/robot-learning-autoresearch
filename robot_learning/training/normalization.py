@@ -36,6 +36,8 @@ def load_observation_normalizer(model_path: Path) -> ObservationNormalizer | Non
     # into every evaluation.
     with stats_path.open("rb") as handle:
         vec_normalize = pickle.load(handle)
+    if not vec_normalize.norm_obs:
+        return None
     return ObservationNormalizer(
         mean=np.array(vec_normalize.obs_rms.mean),
         var=np.array(vec_normalize.obs_rms.var),

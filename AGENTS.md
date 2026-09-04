@@ -43,6 +43,9 @@ benchmark, repository-wide tests, mutating Git commands or dependency-management
 commands. The exact available operations are cataloged in
 `research/instruments.md`.
 
+Legacy policy migration through `research/migrate_policy_runtime.py` is a
+human-only maintenance operation, never a Researcher experiment command.
+
 ## Layout
 
 - `robot_learning/benchmark/` - human-owned final and task-reference contracts
@@ -81,6 +84,7 @@ The Researcher may read but not modify these paths through an experiment:
   `research/build_research_brief.py`, `research/query_training_log.py`;
 - `pyproject.toml`, `uv.lock`;
 - `robot_learning/benchmark/`;
+- `robot_learning/policy_runtime.py`, `research/migrate_policy_runtime.py`;
 - `robot_learning/robots/two_joint_arm.py` and
   `robot_learning/robots/two_joint_arm.xml`;
 - `robot_learning/__init__.py`, `robot_learning/robots/__init__.py` and

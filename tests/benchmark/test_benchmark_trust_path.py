@@ -17,6 +17,7 @@ from research.runner_protocol import (
 )
 
 OFFICIAL_TASK_PATHS = (
+    "robot_learning/policy_runtime.py",
     "research/run_experiment.py",
     "robot_learning/__init__.py",
     "robot_learning/benchmark/__init__.py",

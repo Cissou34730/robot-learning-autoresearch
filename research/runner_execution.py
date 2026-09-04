@@ -204,8 +204,12 @@ def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | Non
     return latest_step_count(read_training_log(log_path, after_offset))
 
 
-def training_log_attempts(experiment: int, *, campaign_id: str | None = None) -> list[int]:
-    directory = paths.TRAINING_LOG_DIR / campaign_id if campaign_id else paths.TRAINING_LOG_DIR
+def training_log_attempts(
+    experiment: int, *, campaign_id: str | None = None
+) -> list[int]:
+    directory = (
+        paths.TRAINING_LOG_DIR / campaign_id if campaign_id else paths.TRAINING_LOG_DIR
+    )
     pattern = re.compile(rf"^experiment-{experiment}-attempt-(\d+)\.log$")
     attempts = [
         int(match.group(1))
@@ -240,7 +244,9 @@ def training_records(
     from robot_learning.training.progress import parse_training_records
 
     return parse_training_records(
-        read_training_log(training_log_path(experiment, attempt, campaign_id=campaign_id))
+        read_training_log(
+            training_log_path(experiment, attempt, campaign_id=campaign_id)
+        )
     )
 
 
@@ -287,7 +293,9 @@ def train_candidate(
     started = time.monotonic()
     console.announce(f"[train] {label} | seed {seed} | {timesteps:,} steps")
     train_log.parent.mkdir(parents=True, exist_ok=True)
-    with train_log.open("a" if continue_timesteps else "w", encoding="utf-8") as log_file:
+    with train_log.open(
+        "a" if continue_timesteps else "w", encoding="utf-8"
+    ) as log_file:
         log_file.write(f"\n=== {label} ===\n")
         log_file.flush()
         progress_offset = log_file.tell()
@@ -355,7 +363,7 @@ def train_candidate(
     if process.returncode != 0:
         tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
         raise RuntimeError("training failed:\n" + "\n".join(tail))
-    for filename in repository.ARTIFACT_FILES:
+    for filename in repository.INFERENCE_ARTIFACT_FILES:
         if not (output_dir / filename).exists():
             raise RuntimeError(f"training output is incomplete: {filename}")
     return time.monotonic() - started
@@ -389,7 +397,7 @@ def candidate_directories(candidate_dir: Path) -> list[dict]:
     if not manifest_path.exists():
         artifact = candidate_dir / "final_checkpoint"
         metadata = json.loads((artifact / "artifact.json").read_text(encoding="utf-8"))
-        return [
+        candidates = [
             {
                 "name": artifact.name,
                 "timesteps": metadata["timesteps"],
@@ -398,15 +406,16 @@ def candidate_directories(candidate_dir: Path) -> list[dict]:
                 "ep_rew_mean": metadata.get("ep_rew_mean"),
             }
         ]
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    candidates = [
-        {**item, "path": candidate_dir / item["path"]}
-        for item in manifest["candidates"]
-    ]
+    else:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        candidates = [
+            {**item, "path": candidate_dir / item["path"]}
+            for item in manifest["candidates"]
+        ]
     if not candidates:
         raise RuntimeError("training must produce at least one candidate")
     for candidate in candidates:
-        for filename in repository.ARTIFACT_FILES:
+        for filename in repository.INFERENCE_ARTIFACT_FILES:
             if not (candidate["path"] / filename).exists():
                 raise RuntimeError(
                     f"candidate is incomplete: {candidate['path'] / filename}"
@@ -439,7 +448,7 @@ def validate_reusable_candidate(
     resume: Path | None,
     config: dict,
 ) -> None:
-    for filename in repository.ARTIFACT_FILES:
+    for filename in repository.INFERENCE_ARTIFACT_FILES:
         if not (source / filename).exists():
             raise ValueError(f"reusable candidate is incomplete: {filename}")
     artifact = json.loads((source / "artifact.json").read_text(encoding="utf-8"))

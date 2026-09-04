@@ -23,7 +23,8 @@ from robot_learning.benchmark.spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
-from robot_learning.scenario.observations import OBSERVATION_SIZE, reach_observation
+from robot_learning.scenario.observations import OBSERVATION_SIZE
+from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
@@ -40,11 +41,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
+        policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -94,13 +97,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         ]
 
     def _observation(self) -> np.ndarray:
-        return reach_observation(self.data)
+        return self.policy_io.observe(self.data)
 
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict[str, Any]]:
         del options
         super().reset(seed=seed)
+        if self.policy_io.reset is not None:
+            self.policy_io.reset()
         mujoco.mj_resetData(self.model, self.data)
         self.data.qpos[:] = 0.0
         self.data.qvel[:] = 0.0
@@ -118,7 +123,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self, action: np.ndarray
     ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
         action = np.clip(
-            np.asarray(action, dtype=np.float64),
+            np.asarray(self.policy_io.action(action), dtype=np.float64),
             self.action_space.low,
             self.action_space.high,
         )
@@ -168,6 +173,11 @@ def make_training_env() -> gym.Env:
     return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
-def make_evaluation_env() -> gym.Env:
+def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
-    return TwoJointArmReachEnv(target_radius_range=TARGET_RADIUS_RANGE)
+    env = TwoJointArmReachEnv(
+        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
+    )
+    if policy_runtime is not None:
+        env.observation_space = policy_runtime.observation_space
+    return env

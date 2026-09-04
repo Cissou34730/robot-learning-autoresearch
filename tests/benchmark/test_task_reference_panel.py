@@ -9,6 +9,7 @@ research campaign and stay independent of any concrete learning method.
 
 import ast
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -54,14 +55,19 @@ def panel_targets(episodes: int, seed: int) -> list[tuple[float, float]]:
 
 
 def stub_policy_loading(monkeypatch) -> None:
+    from robot_learning.scenario.policy_io import make_policy_io
+
+    env = TaskReferenceEnv()
     monkeypatch.setattr(
-        "robot_learning.benchmark.reference_evaluation.load_policy",
-        lambda model_path, algorithm=None: StillPolicy(),
+        "robot_learning.benchmark.reference_evaluation.load_runtime",
+        lambda model_path, algorithm=None: SimpleNamespace(
+            io=make_policy_io(),
+            observation_space=env.observation_space,
+            reset=lambda: None,
+            predict=lambda obs: np.zeros(2),
+        ),
     )
-    monkeypatch.setattr(
-        "robot_learning.benchmark.reference_evaluation.load_observation_normalizer",
-        lambda model_path: None,
-    )
+    env.close()
 
 
 def test_reference_panel_is_fixed_and_human_owned():

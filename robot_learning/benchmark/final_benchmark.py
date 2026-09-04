@@ -11,9 +11,8 @@ import mujoco
 import numpy as np
 
 from robot_learning.benchmark import final_contract
+from robot_learning.policy_runtime import load_runtime
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
-from robot_learning.training.algorithms import load_policy
-from robot_learning.training.normalization import load_observation_normalizer
 
 
 def _policy_observation_contract() -> tuple[int, Callable[[Any], np.ndarray]]:
@@ -29,9 +28,17 @@ def _policy_observation_contract() -> tuple[int, Callable[[Any], np.ndarray]]:
 class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
     """Fixed final task, deliberately separate from research environment defaults."""
 
-    def __init__(self) -> None:
+    def __init__(self, policy_runtime=None) -> None:
         super().__init__()
-        observation_size, self._reach_observation = _policy_observation_contract()
+        if policy_runtime is None:
+            observation_size, self._reach_observation = _policy_observation_contract()
+            self.observation_space = gym.spaces.Box(
+                low=-np.inf, high=np.inf, shape=(observation_size,), dtype=np.float32
+            )
+        else:
+            self._reach_observation = policy_runtime.io.observe
+            self.observation_space = policy_runtime.observation_space
+        self._policy_runtime = policy_runtime
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
         self.success_threshold = final_contract.SUCCESS_THRESHOLD
@@ -41,9 +48,6 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         control_dt = self.model.opt.timestep * self.frame_skip
         self.hold_steps_required = max(
             round(final_contract.HOLD_SECONDS / control_dt), 1
-        )
-        self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(observation_size,), dtype=np.float32
         )
         self.action_space = gym.spaces.Box(
             low=-1.0, high=1.0, shape=(2,), dtype=np.float32
@@ -64,6 +68,11 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
     ) -> tuple[np.ndarray, dict]:
         del options
         super().reset(seed=seed)
+        if (
+            self._policy_runtime is not None
+            and self._policy_runtime.io.reset is not None
+        ):
+            self._policy_runtime.io.reset()
         mujoco.mj_resetData(self.model, self.data)
         self.data.qpos[:] = 0.0
         self.data.qvel[:] = 0.0
@@ -81,6 +90,12 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         return self._reach_observation(self.data), {}
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
+        if self._policy_runtime is not None:
+            action = self._policy_runtime.io.action(action)
+        if np.asarray(action).shape != self.action_space.shape:
+            raise ValueError(
+                "Policy action mapping must produce the robot's physical commands"
+            )
         self.data.ctrl[:] = np.clip(action, -1.0, 1.0)
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
@@ -98,8 +113,8 @@ class FinalBenchmarkEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
 
-def official_environment() -> FinalBenchmarkEnv:
-    return FinalBenchmarkEnv()
+def official_environment(policy_runtime=None) -> FinalBenchmarkEnv:
+    return FinalBenchmarkEnv(policy_runtime)
 
 
 def _hold_progress(distances: list[float], required_steps: int) -> dict:
@@ -133,9 +148,8 @@ def evaluate_final_model(
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> dict:
     """Evaluate one artifact with the fixed final contract only."""
-    model = load_policy(model_path, algorithm)
-    env = official_environment()
-    normalize_obs = load_observation_normalizer(model_path)
+    runtime = load_runtime(model_path, algorithm)
+    env = official_environment(runtime)
     control_dt = env.model.opt.timestep * final_contract.FRAME_SKIP
     required_steps = max(round(final_contract.HOLD_SECONDS / control_dt), 1)
     successes = 0
@@ -143,11 +157,11 @@ def evaluate_final_model(
 
     for episode in range(final_contract.EVALUATION_EPISODES):
         obs, _ = env.reset(seed=final_contract.EVALUATION_SEED + episode)
+        runtime.reset()
         distances: list[float] = []
         done = False
         while not done:
-            normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
-            action, _ = model.predict(normalized_obs, deterministic=True)
+            action = runtime.predict(obs)
             obs, _, terminated, truncated, info = env.step(action)
             distances.append(float(info["distance"]))
             done = terminated or truncated

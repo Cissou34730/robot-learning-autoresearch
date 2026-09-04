@@ -15,7 +15,6 @@ import pytest
 from research import runner_execution as execution
 from research import runner_protocol as protocol
 from research.run_experiment import (
-    apply_previous_result_decision,
     check_proposal,
     main,
 )
@@ -32,7 +31,6 @@ from research.runner_protocol import (
     next_experiment_index,
     operation_description,
     plan_code_lineage_decision,
-    plan_previous_result_decision,
     resumed_experiment_index,
     validate_experiment_semantics,
     validate_proposal_phase,
@@ -42,7 +40,6 @@ from research.runner_protocol import (
 from research.runner_repository import (
     RUNNER_CONTROL_PATHS,
     append_result,
-    apply_code_lineage_decision,
     assert_research_surface,
     commit_and_push,
     commit_lineage_decision,
@@ -594,7 +591,12 @@ def test_parameter_only_experiment_still_validates_the_configuration(
 
     accepted = tmp_path / "accepted"
     accepted.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+    for filename in (
+        "model.zip",
+        "vecnormalize.pkl",
+        "artifact.json",
+        "policy_runtime.pkl",
+    ):
         (accepted / filename).write_bytes(b"artifact")
     (tmp_path / "research_state.json").write_text(
         json.dumps(
@@ -917,9 +919,7 @@ def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_
     )
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(
-        "research.runner_repository.git", lambda *args: "base-commit\n"
-    )
+    monkeypatch.setattr("research.runner_repository.git", lambda *args: "base-commit\n")
 
     state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
     assert state["accepted_metrics"] is None
@@ -1089,6 +1089,7 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
     candidate.mkdir()
     (candidate / "model.zip").touch()
     (candidate / "vecnormalize.pkl").touch()
+    (candidate / "policy_runtime.pkl").touch()
     config, effective = active_effective_config()
     (candidate / "artifact.json").write_text(
         json.dumps(
@@ -1115,7 +1116,7 @@ def test_reusable_candidate_must_match_experiment(tmp_path):
 def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
     candidate = tmp_path / "candidate"
     candidate.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl"):
+    for filename in ("model.zip", "vecnormalize.pkl", "policy_runtime.pkl"):
         (candidate / filename).touch()
     config, effective = active_effective_config()
     (candidate / "artifact.json").write_text(
@@ -1144,7 +1145,7 @@ def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
 def test_reusable_candidate_compares_effective_configuration_opaquely(tmp_path):
     candidate = tmp_path / "candidate"
     candidate.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl"):
+    for filename in ("model.zip", "vecnormalize.pkl", "policy_runtime.pkl"):
         (candidate / filename).touch()
     config, effective = active_effective_config()
     artifact = {
@@ -1424,7 +1425,9 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
     )
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_repository.require_resolvable_commit", lambda _: None)
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
     monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
 
     assert check_proposal() == 0
@@ -1617,7 +1620,9 @@ def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
     )
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_repository.require_resolvable_commit", lambda _: None)
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
     monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
 
 
@@ -1726,7 +1731,12 @@ def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
     """The smallest on-disk campaign the training path of main() can run."""
     accepted = tmp_path / "accepted"
     accepted.mkdir(exist_ok=True)
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+    for filename in (
+        "model.zip",
+        "vecnormalize.pkl",
+        "artifact.json",
+        "policy_runtime.pkl",
+    ):
         (accepted / filename).touch()
     campaign_id = "00000000-0000-0000-0000-000000000001"
     # Experiment identity is allocated per campaign; seed the campaign counter
@@ -1936,7 +1946,12 @@ def test_candidate_manifest_preserves_identity_and_complete_artifacts(tmp_path):
         relative = f"finalists/checkpoint-{number}"
         artifact_dir = tmp_path / relative
         artifact_dir.mkdir(parents=True)
-        for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        for filename in (
+            "model.zip",
+            "vecnormalize.pkl",
+            "artifact.json",
+            "policy_runtime.pkl",
+        ):
             (artifact_dir / filename).touch()
         finalists.append(
             {
@@ -1970,7 +1985,12 @@ def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
         relative = f"finalists/checkpoint-{number}"
         artifact_dir = tmp_path / relative
         artifact_dir.mkdir(parents=True)
-        for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        for filename in (
+            "model.zip",
+            "vecnormalize.pkl",
+            "artifact.json",
+            "policy_runtime.pkl",
+        ):
             (artifact_dir / filename).touch()
         finalists.append({"path": relative})
     (tmp_path / "candidate_manifest.json").write_text(
@@ -1988,7 +2008,12 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
 ):
     candidate = tmp_path / "archive" / "candidate"
     candidate.mkdir(parents=True)
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+    for filename in (
+        "model.zip",
+        "vecnormalize.pkl",
+        "artifact.json",
+        "policy_runtime.pkl",
+    ):
         (candidate / filename).write_bytes(b"artifact")
     state_path = tmp_path / "state.json"
     state_path.write_text(
@@ -2043,9 +2068,7 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
     monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    monkeypatch.setattr(
-        "research.runner_repository.git", lambda *args: "base-commit\n"
-    )
+    monkeypatch.setattr("research.runner_repository.git", lambda *args: "base-commit\n")
     monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
     committed = []
 
@@ -2085,7 +2108,8 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
         }
 
     monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model", evaluate_after_commit
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        evaluate_after_commit,
     )
     from research.run_experiment import execute_pending_final_benchmark
 

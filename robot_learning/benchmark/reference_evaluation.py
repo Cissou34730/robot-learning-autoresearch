@@ -26,9 +26,8 @@ import mujoco
 import numpy as np
 
 from robot_learning.benchmark import final_contract, reference_contract
+from robot_learning.policy_runtime import load_runtime
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
-from robot_learning.training.algorithms import load_policy
-from robot_learning.training.normalization import load_observation_normalizer
 
 TASK_REFERENCE_EVALUATION_KIND = "task_reference"
 
@@ -46,9 +45,17 @@ def _policy_observation_contract() -> tuple[int, Callable[[Any], np.ndarray]]:
 class TaskReferenceEnv(gym.Env[np.ndarray, np.ndarray]):
     """The original human-defined task, independent of research environments."""
 
-    def __init__(self) -> None:
+    def __init__(self, policy_runtime=None) -> None:
         super().__init__()
-        observation_size, self._reach_observation = _policy_observation_contract()
+        if policy_runtime is None:
+            observation_size, self._reach_observation = _policy_observation_contract()
+            self.observation_space = gym.spaces.Box(
+                low=-np.inf, high=np.inf, shape=(observation_size,), dtype=np.float32
+            )
+        else:
+            self._reach_observation = policy_runtime.io.observe
+            self.observation_space = policy_runtime.observation_space
+        self._policy_runtime = policy_runtime
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
         self.success_threshold = final_contract.SUCCESS_THRESHOLD
@@ -58,9 +65,6 @@ class TaskReferenceEnv(gym.Env[np.ndarray, np.ndarray]):
         control_dt = self.model.opt.timestep * self.frame_skip
         self.hold_steps_required = max(
             round(final_contract.HOLD_SECONDS / control_dt), 1
-        )
-        self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(observation_size,), dtype=np.float32
         )
         self.action_space = gym.spaces.Box(
             low=-1.0, high=1.0, shape=(2,), dtype=np.float32
@@ -81,6 +85,11 @@ class TaskReferenceEnv(gym.Env[np.ndarray, np.ndarray]):
     ) -> tuple[np.ndarray, dict]:
         del options
         super().reset(seed=seed)
+        if (
+            self._policy_runtime is not None
+            and self._policy_runtime.io.reset is not None
+        ):
+            self._policy_runtime.io.reset()
         mujoco.mj_resetData(self.model, self.data)
         self.data.qpos[:] = 0.0
         self.data.qvel[:] = 0.0
@@ -99,6 +108,12 @@ class TaskReferenceEnv(gym.Env[np.ndarray, np.ndarray]):
         return self._reach_observation(self.data), {}
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
+        if self._policy_runtime is not None:
+            action = self._policy_runtime.io.action(action)
+        if np.asarray(action).shape != self.action_space.shape:
+            raise ValueError(
+                "Policy action mapping must produce the robot's physical commands"
+            )
         self.data.ctrl[:] = np.clip(action, -1.0, 1.0)
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
@@ -116,8 +131,8 @@ class TaskReferenceEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
 
-def task_reference_environment() -> TaskReferenceEnv:
-    return TaskReferenceEnv()
+def task_reference_environment(policy_runtime=None) -> TaskReferenceEnv:
+    return TaskReferenceEnv(policy_runtime)
 
 
 def task_reference_panel() -> dict:
@@ -140,22 +155,21 @@ def evaluate_task_reference_model(
     panel = task_reference_panel()
     episodes = int(panel["episodes"])
     seed = int(panel["seed"])
-    model = load_policy(model_path, algorithm)
-    env = task_reference_environment()
-    normalize_obs = load_observation_normalizer(model_path)
+    runtime = load_runtime(model_path, algorithm)
+    env = task_reference_environment(runtime)
 
     episode_results: list[dict] = []
     for episode in range(episodes):
         episode_seed = seed + episode
         obs, _ = env.reset(seed=episode_seed)
+        runtime.reset()
         target = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
         steps = 0
         terminated = False
         truncated = False
         distance = float("nan")
         while not (terminated or truncated):
-            normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
-            action, _ = model.predict(normalized_obs, deterministic=True)
+            action = runtime.predict(obs)
             obs, _, terminated, truncated, info = env.step(action)
             distance = float(info["distance"])
             steps += 1

@@ -67,6 +67,16 @@ Use `uv run` for lightweight analysis and focused checks on researcher-owned cod
 
 ## Modify the scientific system
 
+Saved policies carry their own inference contract. `scenario/policy_io.py`
+defines observation construction and mapping from policy outputs to physical
+robot commands; use these same functions in training. The current checkpoint
+writer in `training/checkpoint.py` exports this contract, the loader and
+normalization into `policy_runtime.pkl` beside the weights. Preserve that export
+when replacing training or checkpointing code. Resolve scientific dependencies
+before export rather than importing mutable project code during inference.
+The Runner and evaluators use each artifact's contract, not the current model's
+observation layout. Task mechanics and success measurement remain shared.
+
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
 During evaluation, the Researcher may modify researcher-owned measurement and analysis code before requesting another measurement round. Changes affecting training apply to the next experiment.

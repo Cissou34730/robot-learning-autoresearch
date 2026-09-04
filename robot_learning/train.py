@@ -10,11 +10,13 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
+from robot_learning.policy_runtime import RUNTIME_FILE, frozen_scientific_modules
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.scenario.viewer import make_training_viewer_callback
 from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
 )
+from robot_learning.training.checkpoint import export_runtime
 from robot_learning.training.research_config import load_experiment_config
 
 # The current learning method. Replacing it is a normal research change.
@@ -154,7 +156,8 @@ def main() -> None:
         interrupted = True
         print("\nTraining interrupted - saving the best available policy.")
     finally:
-        model.save(args.output_dir / "last_model")
+        with frozen_scientific_modules():
+            model.save(args.output_dir / "last_model")
         venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
         artifact = {
             "schema_version": 1,
@@ -190,6 +193,8 @@ def main() -> None:
             args.output_dir / "last_vecnormalize.pkl",
             args.output_dir / "vecnormalize.pkl",
         )
+        export_runtime(args.output_dir, stats_path=args.output_dir / "vecnormalize.pkl")
+        shutil.copyfile(args.output_dir / RUNTIME_FILE, final_checkpoint / RUNTIME_FILE)
 
         candidates: list[dict] = []
         pool_dir = args.output_dir / "candidate_pool"

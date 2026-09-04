@@ -15,9 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
+from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
-from robot_learning.training.algorithms import load_policy
-from robot_learning.training.normalization import load_observation_normalizer
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 3
@@ -34,14 +33,14 @@ def evaluate_research_model(
     """Measure one model over the requested deterministic evaluation panel."""
     if episodes < 1:
         raise ValueError("an evaluation panel requires at least one episode")
-    model = load_policy(model_path, algorithm)
-    env = make_evaluation_env()
-    normalize_obs = load_observation_normalizer(model_path)
+    runtime = load_runtime(model_path, algorithm)
+    env = make_evaluation_env(policy_runtime=runtime)
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
+        runtime.reset()
         target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
         reward_total = 0.0
         steps = 0
@@ -56,8 +55,7 @@ def evaluate_research_model(
         hold_interruptions = 0
         was_in_tolerance = False
         while not (terminated or truncated):
-            normalized_obs = normalize_obs(obs) if normalize_obs is not None else obs
-            action, _ = model.predict(normalized_obs, deterministic=True)
+            action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)

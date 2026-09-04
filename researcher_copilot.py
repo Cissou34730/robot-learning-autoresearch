@@ -106,7 +106,11 @@ DEPENDENCY_DENIAL = (
     "installed environment without installing, removing, syncing or locking packages."
 )
 
-RESERVED_SCRIPT_NAMES = ("run_experiment.py", "final_benchmark.py")
+RESERVED_SCRIPT_NAMES = (
+    "run_experiment.py",
+    "final_benchmark.py",
+    "migrate_policy_runtime.py",
+)
 
 RESERVED_SCRIPT_PATHS = (
     "robot_learning/evaluate.py",
@@ -115,6 +119,7 @@ RESERVED_SCRIPT_PATHS = (
 )
 
 RESERVED_MODULES = (
+    "research.migrate_policy_runtime",
     "robot_learning.evaluate",
     "robot_learning.train",
     "robot_learning.play",

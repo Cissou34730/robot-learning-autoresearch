@@ -3,6 +3,8 @@ from pathlib import Path
 
 from stable_baselines3.common.callbacks import BaseCallback
 
+from robot_learning.training.checkpoint import save_checkpoint
+
 
 class CandidateCheckpointCallback(BaseCallback):
     """Save neutral candidates only after completed learning updates."""
@@ -24,11 +26,7 @@ class CandidateCheckpointCallback(BaseCallback):
             self.output_dir / "candidate_pool" / f"checkpoint-{self.num_timesteps}"
         )
         checkpoint_dir.mkdir(parents=True, exist_ok=False)
-        self.model.save(checkpoint_dir / "model")
-        if hasattr(self.model, "save_replay_buffer"):
-            self.model.save_replay_buffer(checkpoint_dir / "replay_buffer.pkl")
-        if hasattr(self.training_env, "save"):
-            self.training_env.save(str(checkpoint_dir / "vecnormalize.pkl"))
+        save_checkpoint(self.model, self.training_env, checkpoint_dir)
         rewards = [
             float(episode["r"])
             for episode in self.model.ep_info_buffer

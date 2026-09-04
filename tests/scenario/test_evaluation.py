@@ -23,10 +23,20 @@ BASELINE_EPISODE_FIELDS = {
     "truncated",
 }
 
+
 class ZeroPolicy:
-    def predict(self, observation, deterministic=False):
-        del observation, deterministic
-        return np.zeros(2), None
+    def __init__(self):
+        env = scenario_evaluation.make_evaluation_env()
+        self.io = env.policy_io
+        self.observation_space = env.observation_space
+        env.close()
+
+    def reset(self):
+        pass
+
+    def predict(self, observation):
+        del observation
+        return np.zeros(2)
 
 
 class ScriptedEnv:
@@ -55,11 +65,9 @@ class ScriptedEnv:
 
 @pytest.fixture
 def stub_policy(monkeypatch, tmp_path):
+    policy = ZeroPolicy()
     monkeypatch.setattr(
-        scenario_evaluation, "load_policy", lambda path, algorithm: ZeroPolicy()
-    )
-    monkeypatch.setattr(
-        scenario_evaluation, "load_observation_normalizer", lambda path: None
+        scenario_evaluation, "load_runtime", lambda path, algorithm: policy
     )
     return tmp_path / "model.zip"
 
@@ -136,7 +144,7 @@ def test_success_is_read_from_the_scenario_signal_not_termination(
     monkeypatch.setattr(
         scenario_evaluation,
         "make_evaluation_env",
-        lambda: ScriptedEnv(is_success, terminated, truncated),
+        lambda **kwargs: ScriptedEnv(is_success, terminated, truncated),
     )
 
     result = scenario_evaluation.evaluate_research_model(

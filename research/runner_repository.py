@@ -66,7 +66,14 @@ def canonical_repo_path(value: str) -> str:
 
 
 ARTIFACT_FILES = ("model.zip", "artifact.json")
-OPTIONAL_ARTIFACT_FILES = ("vecnormalize.pkl", "replay_buffer.pkl")
+INFERENCE_ARTIFACT_FILES = (*ARTIFACT_FILES, "policy_runtime.pkl")
+# Legacy artifacts remain readable for explicit migration, never for evaluation.
+# load_runtime() requires the executable contract before running a policy.
+OPTIONAL_ARTIFACT_FILES = (
+    "vecnormalize.pkl",
+    "replay_buffer.pkl",
+    "policy_runtime.pkl",
+)
 EXPERIMENT_LOG_HEADER = (
     "# Experiment log\n"
     "\n"
@@ -349,9 +356,9 @@ def write_state(state: dict) -> None:
                 requested.get("metrics"), dict
             ):
                 _canonicalize_evaluation_artifact(requested["metrics"])
-        for evaluation in pending_evaluation.get(
-            "partial_task_reference_evaluations"
-        ) or []:
+        for evaluation in (
+            pending_evaluation.get("partial_task_reference_evaluations") or []
+        ):
             if isinstance(evaluation, dict):
                 _canonicalize_evaluation_artifact(evaluation)
         result = pending_evaluation.get("result")
@@ -524,7 +531,8 @@ def result_records() -> list[dict]:
 def result_records_for_campaign(campaign_id: str) -> list[dict]:
     """Filter result records to a specific campaign, ordered oldest first."""
     return [
-        record for record in result_records()
+        record
+        for record in result_records()
         if record.get("campaign_id") == campaign_id
     ]
 
@@ -624,7 +632,12 @@ def copy_artifact(source: Path, destination: Path) -> None:
 
 
 def remove_heavyweight_artifacts(artifact: Path) -> None:
-    for filename in ("model.zip", "vecnormalize.pkl", "replay_buffer.pkl"):
+    for filename in (
+        "model.zip",
+        "vecnormalize.pkl",
+        "replay_buffer.pkl",
+        "policy_runtime.pkl",
+    ):
         (artifact / filename).unlink(missing_ok=True)
 
 

@@ -168,7 +168,8 @@ def module_level_imports(path: Path) -> list[str]:
 def test_scenario_initializer_exposes_no_scientific_or_protected_api():
     assert not hasattr(scenario, "__all__")
     assert not any(
-        name in {
+        name
+        in {
             "evaluate_final_model",
             "evaluate_research_model",
             "evaluate_task_reference_model",
@@ -347,9 +348,7 @@ def test_normalization_never_reaches_for_the_scenario():
     scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
 
     # The scenario depends on this helper, so any import back would cycle.
-    assert "robot_learning.training.normalization" in module_level_imports(
-        scenario_evaluation
-    )
+    assert "robot_learning.policy_runtime" in module_level_imports(scenario_evaluation)
     assert "robot_learning.scenario" not in imported_modules(normalization)
     # Rebuilding policy preprocessing must not construct the training environment.
     assert "make_training_env" not in normalization.read_text(encoding="utf-8")

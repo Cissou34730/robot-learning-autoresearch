@@ -47,15 +47,21 @@ per changed file and per shell command, and stays quiet about reads and
 searches. It reports what a session did; whether a phase is complete remains a
 property of the deliverable and its protected validator.
 
-To discard all experimental history and model lineages while preserving the
-current code, benchmark, parameters, and decision log, run:
+Stop the campaign, then choose a reset mode explicitly in the current branch:
 
 ```powershell
-.\reset_research.ps1 -Force
+.\reset_research.ps1 -Mode Fresh -Force
+.\reset_research.ps1 -Mode Baseline -BaselineRef <prepared-baseline-commit-or-tag> -Force
 ```
 
-The reset refuses to run if the Git working tree is not clean and commits the
-new blank research state before preparing a fresh baseline.
+`Fresh` clears campaign history and models, preserving the current code and
+parameters; baseline training starts on the next launch. `Baseline` restores
+the prepared baseline's scientific code, tests, configuration, saved policy and
+evidence, preserving the current harness; research resumes at experiment 2
+without retraining the baseline. Neither mode creates a branch or worktree.
+
+Both require a clean Git working tree and commit/push the resulting reset state,
+as before. See [reset details and baseline requirements](docs/reset-research.md).
 
 ## Tests and validation
 

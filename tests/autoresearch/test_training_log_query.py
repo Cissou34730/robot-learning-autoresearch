@@ -86,7 +86,7 @@ def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
 
     output_dir = tmp_path / "candidate"
     output_dir.mkdir()
-    for filename in ("model.zip", "artifact.json"):
+    for filename in ("model.zip", "artifact.json", "policy_runtime.pkl"):
         (output_dir / filename).touch()
     monkeypatch.setattr("research.runner_execution.subprocess.Popen", WritingProcess)
     monkeypatch.setattr(
@@ -136,7 +136,7 @@ def test_runner_passes_the_correct_active_attempt_to_training(
     monkeypatch.setattr("research.runner_protocol.training_parent", lambda *args: ("", tmp_path, 0))
     monkeypatch.setattr("research.runner_protocol.validate_experiment_semantics", lambda *args: None)
     monkeypatch.setattr("research.runner_protocol.validation_test_paths", lambda *args, **kwargs: ())
-    monkeypatch.setattr("research.runner_execution.validate_active_configuration", lambda: {})
+    monkeypatch.setattr("research.runner_execution.validate_active_configuration", dict)
     monkeypatch.setattr("research.runner_execution.training_budget", lambda *args: 10)
     monkeypatch.setattr("research.runner_execution.candidate_directories", lambda path: [])
     monkeypatch.setattr("research.runner_execution.remove_candidate_dir", lambda path: None)

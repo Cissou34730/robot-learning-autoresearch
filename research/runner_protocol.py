@@ -18,6 +18,7 @@ from research import runner_repository as repository
 # task-reference panel, the official robot they measure, and the package files
 # that resolve those imports.
 PROTECTED_BENCHMARK_PATHS = {
+    "robot_learning/policy_runtime.py",
     "research/run_experiment.py",
     "robot_learning/__init__.py",
     "robot_learning/benchmark/__init__.py",
@@ -35,6 +36,7 @@ PROTECTED_BENCHMARK_PATHS = {
 # Additional Runner instruments are protected even when they do not belong to
 # the official-task trust path.
 PROTECTED_RUNNER_PATHS = {
+    "research/migrate_policy_runtime.py",
     "research/build_research_brief.py",
     "research/query_training_log.py",
     "researcher_session.ps1",
@@ -103,6 +105,7 @@ PRESENTATION_ONLY_PATHS = {
 # The only files outside the scenario package that change how an already-trained
 # policy is replayed, observed and turned into a research measurement.
 EVALUATION_RUNTIME_PATHS = (
+    "robot_learning/policy_runtime.py",
     "robot_learning/evaluate.py",
     "robot_learning/training/algorithms.py",
     "robot_learning/training/normalization.py",
@@ -197,7 +200,9 @@ def allocated_experiment_index(state: dict, campaign_id: str | None = None) -> i
     return int(campaign_counters.get(campaign_id, 0))
 
 
-def experiment_working_paths(index: int, campaign_id: str | None = None) -> tuple[Path, ...]:
+def experiment_working_paths(
+    index: int, campaign_id: str | None = None
+) -> tuple[Path, ...]:
     if campaign_id:
         root = paths.campaign_candidate_root(campaign_id)
     else:
@@ -216,7 +221,10 @@ def next_experiment_index(state: dict, campaign_id: str | None = None) -> int:
     reused: unexpected data is preserved and only costs a number.
     """
     index = allocated_experiment_index(state, campaign_id=campaign_id) + 1
-    while any(path.exists() for path in experiment_working_paths(index, campaign_id=campaign_id)):
+    while any(
+        path.exists()
+        for path in experiment_working_paths(index, campaign_id=campaign_id)
+    ):
         console.announce(
             f"[runner] WARNING: models/candidates already holds data for "
             f"experiment {index}; preserving it and skipping that identity"
@@ -230,7 +238,9 @@ def next_experiment_index(state: dict, campaign_id: str | None = None) -> int:
     return index
 
 
-def resumed_experiment_index(state: dict, reuse_candidate: Path | None, campaign_id: str | None = None) -> int:
+def resumed_experiment_index(
+    state: dict, reuse_candidate: Path | None, campaign_id: str | None = None
+) -> int:
     """A preserved proposal keeps the identity its interrupted run allocated."""
     index = allocated_experiment_index(state, campaign_id=campaign_id)
     if reuse_candidate is not None:
@@ -515,9 +525,7 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     elif proposal.get("kind") == "replication":
         campaign_id = repository.current_campaign_id(raw_state)
         recorded = (
-            repository.result_records_for_campaign(campaign_id)
-            if campaign_id
-            else []
+            repository.result_records_for_campaign(campaign_id) if campaign_id else []
         )
         referenced = proposal["replication_of"]
         if not any(record.get("index") == referenced for record in recorded):
@@ -570,9 +578,7 @@ def validate_evaluation_request(request: dict) -> None:
         for field in ("candidate", "reference"):
             value = comparison.get(field)
             if not isinstance(value, str) or not value.strip():
-                raise ValueError(
-                    f"paired comparison requires a non-empty {field}"
-                )
+                raise ValueError(f"paired comparison requires a non-empty {field}")
     # Collect distinct candidates before detailed validation.
     distinct_candidates = set()
     for entry in requested_measurements(request):
@@ -598,9 +604,7 @@ def validate_evaluation_request(request: dict) -> None:
         if "label" in entry and not isinstance(entry["label"], str):
             raise ValueError("measurement label must be a string")
         if instrument == "research_evaluation":
-            missing = [
-                field for field in ("episodes", "seed") if field not in entry
-            ]
+            missing = [field for field in ("episodes", "seed") if field not in entry]
             if missing:
                 raise ValueError(
                     f"research_evaluation is missing required fields: {missing}"
@@ -633,7 +637,9 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
     return available
 
 
-def planned_measurements(request: dict, available: dict) -> tuple[list[dict], list[dict]]:
+def planned_measurements(
+    request: dict, available: dict
+) -> tuple[list[dict], list[dict]]:
     """Resolve all typed measurements before either evaluator starts."""
     validate_evaluation_request(request)
     evaluations: list[dict] = []
@@ -709,10 +715,15 @@ def validate_paired_comparison_plan(
 
 
 def evaluation_artifact_name(
-    experiment: int, candidate: str, episodes: int, seed: int, semantics: str, campaign_id: str | None = None
+    experiment: int,
+    candidate: str,
+    episodes: int,
+    seed: int,
+    semantics: str,
+    campaign_id: str | None = None,
 ) -> str:
     """One stable file per measured panel, so repeated rounds never collide.
-    
+
     When campaign_id is provided, includes it in the filename to isolate
     artifacts per campaign.
     """
@@ -728,15 +739,19 @@ def evaluation_artifact_name(
     )
 
 
-def task_reference_artifact_name(experiment: int, candidate: str, panel: str, campaign_id: str | None = None) -> str:
+def task_reference_artifact_name(
+    experiment: int, candidate: str, panel: str, campaign_id: str | None = None
+) -> str:
     """Task-reference identity is the model and the human-owned panel, nothing else.
-    
+
     When campaign_id is provided, includes it in the filename to isolate
     artifacts per campaign.
     """
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
     if campaign_id:
-        return f"task-reference-{campaign_id}-experiment-{experiment}-{label}-{panel}.json"
+        return (
+            f"task-reference-{campaign_id}-experiment-{experiment}-{label}-{panel}.json"
+        )
     return f"task-reference-experiment-{experiment}-{label}-{panel}.json"
 
 
@@ -823,8 +838,7 @@ def postmortem_section(
     )
 
     match = re.search(
-        heading
-        + r".*?(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
+        heading + r".*?(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
         paths.POSTMORTEM_PATH.read_text(encoding="utf-8"),
         flags=re.MULTILINE | re.DOTALL,
     )
