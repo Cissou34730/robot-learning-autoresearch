@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-17-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-18-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 17
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 18
   },
-  "last_allocated_experiment": 17,
-  "last_experiment": 17,
+  "last_allocated_experiment": 18,
+  "last_experiment": 18,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Experiment 17 changed only PPO batch_size from 64 to 128, and the measured candidate remained substantially below the champion with worse hold stability; revert the parameter change."
+      "reason": "Revert the PPO clip_range change because tighter update clipping caused a persistent loss of reach coverage and hold stability relative to the accepted method."
     },
-    "code_parent_commit": "f412199021bbed6ed39914276c571a77d4dfbb70",
+    "code_parent_commit": "47e5dd731cb018671c951cee176264a109791245",
     "continue_from": "champion",
-    "experiment": 17,
-    "reason": "The batch-size candidate reached 79.0% and 79.5% at the two measured checkpoints, while the unchanged champion reached 97.0%. Paired comparisons favored the champion 40-4 and 38-3, so the champion remains the strongest available lineage."
+    "experiment": 18,
+    "reason": "The clip_range=0.1 candidate regressed to 84.5% at the final checkpoint versus the champion's 97.0%, with zero candidate-only paired wins and only 77.5% on the task-reference panel."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
