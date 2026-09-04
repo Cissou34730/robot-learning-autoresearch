@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-14-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-15-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 14
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 15
   },
-  "last_allocated_experiment": 14,
-  "last_experiment": 14,
+  "last_allocated_experiment": 15,
+  "last_experiment": 15,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Experiment 14 changed only the researcher-owned PPO learning rate from 0.0003 to 0.0001 in research/current_params.json. The measured regression provides no support for keeping that change."
+      "reason": "The only experiment change was policy.log_std_init=-0.5 in research/current_params.json, and its severe regression does not support keeping reduced initial action noise."
     },
-    "code_parent_commit": "67ee68b00b1e3d434988cc3d3c920941fe570857",
+    "code_parent_commit": "6ea8f8827f2e4f82fe64507371a53e7e0cb1430f",
     "continue_from": "champion",
-    "experiment": 14,
-    "reason": "The lower-learning-rate candidate reached only 17.5% and 15.0% at the measured checkpoints versus the champion's 97.0%, with zero candidate wins in both paired comparisons. The candidate's failures were dominated by non-reaching and increased hold interruptions, so it should not replace the champion."
+    "experiment": 15,
+    "reason": "The log_std_init=-0.5 candidate improved from 50.5% to 55.5% with more training but remained far below the 97.0% champion; paired outcomes had zero candidate-only wins and 93 and 83 champion-only wins."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
