@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-22-checkpoint-120832-200ep-seed1-432715182172.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-23-champion-200ep-seed1-a724e191a067.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,21 +46,21 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 22
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 23
   },
-  "last_allocated_experiment": 22,
-  "last_experiment": 22,
+  "last_allocated_experiment": 23,
+  "last_experiment": 23,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "The training-only radius curriculum avoided the broad reach and hold regressions seen in earlier short-radius interventions while preserving the accepted PPO configuration and evaluation semantics."
+      "action": "revert",
+      "reason": "Leaving the radius curriculum at the full 6-20 cm range for the final 20,000 steps did not improve either development panel, so retain the accepted curriculum implementation from before experiment 23."
     },
-    "code_parent_commit": "36579ec9ad3d91b293578af53198e0465699089b",
-    "continue_from": "checkpoint-120832",
-    "experiment": 22,
-    "reason": "The final curriculum checkpoint matched the champion on all 200 research-panel outcomes and improved task-reference success to 99.0% versus 98.0%, making it the strongest measured curriculum lineage for the official benchmark."
+    "code_parent_commit": "d4d30f5e3fe0f08cb2e27feeb3fedd017c47cc3d",
+    "continue_from": "champion",
+    "experiment": 23,
+    "reason": "The shortened curriculum recovered from 87.0% at checkpoint-100352 to 96.5% at checkpoint-120832, but remained below the champion at 97.0% on the research panel and 97.5% versus 99.0% on the task-reference panel."
   },
-  "last_verdict": "researcher selected checkpoint-120832",
+  "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "262c178b55638aaa220cd27751c7ddde6943bf09baa98473714b0d37c5646ebb",
   "official_metrics": {
     "episodes": 200,
