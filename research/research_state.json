@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-19-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-20-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 19
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 20
   },
-  "last_allocated_experiment": 19,
-  "last_experiment": 19,
+  "last_allocated_experiment": 20,
+  "last_experiment": 20,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 19 was an unchanged-method replication with no scientific code or parameter intervention to revert."
+      "action": "revert",
+      "reason": "Reducing PPO n_epochs from 10 to 5 did not improve reach coverage or hold stability and caused a persistent regression, so restore the prior optimization setting."
     },
-    "code_parent_commit": "15666fff5f3e6f3f706c1baad9420a0b9dd3358a",
+    "code_parent_commit": "dd219e472cd89b5d11fdc1808122db17187acbd7",
     "continue_from": "champion",
-    "experiment": 19,
-    "reason": "The fresh seed-3 replication reached only 25.5% at checkpoint-120832, versus 97.0% for the champion; paired outcomes were zero candidate-only wins versus 143 champion-only wins, so retain the accepted champion."
+    "experiment": 20,
+    "reason": "The n_epochs=5 candidate reached only 81.5% and 80.5% at the measured late checkpoints versus 97.0% for the champion; paired outcomes favored the champion 35-4 and 37-4, with failures still dominated by non-reaching and hold instability."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
