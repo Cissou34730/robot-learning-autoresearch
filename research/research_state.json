@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-1-checkpoint-100352-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-champion-200ep-seed1-0d6daac47cfe.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,21 +46,21 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 1
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 2
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 1 was an unchanged fresh baseline with no code or parameter intervention, so there is no experiment-specific scientific change to revert."
+      "action": "revert",
+      "reason": "The full 6-20 cm training-radius intervention produced a large regression and did not reduce the known short-radius failures; restore the pre-experiment far-target-focused configuration."
     },
-    "code_parent_commit": "fef60b8ab90c0c04c4f00d8a676e05527d74dfd8",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "It is the strongest measured baseline at 97.0%, outperforming checkpoint-86016 and slightly outperforming checkpoint-120832; it is the best available starting lineage despite remaining below the objective threshold."
+    "code_parent_commit": "c46ec8951612b03c8906045803e33f5f98f2cae7",
+    "continue_from": "champion",
+    "experiment": 2,
+    "reason": "Experiment 2 reached only 59.5% at both measured checkpoints, with 81 failures dominated by non-reaches, while the accepted champion reached 97.0% on the identical 200-episode panel."
   },
-  "last_verdict": "researcher selected checkpoint-100352",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
