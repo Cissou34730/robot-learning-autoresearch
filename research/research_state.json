@@ -1,19 +1,19 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-1-checkpoint-120832-200ep-seed1000-41299d1f0507.json"
+    "research/evaluations/d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f/evaluation-d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f-experiment-2-checkpoint-100352-200ep-seed1000-261fd1f2c5ff.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
     "evaluation_summary_version": 3,
-    "pooled_success_percent": 66.0,
+    "pooled_success_percent": 97.0,
     "schema_version": 3,
     "seed_count": 1,
     "seed_success_percent": {
-      "1000": 66.0
+      "1000": 97.0
     },
-    "success_percent": 66.0,
-    "worst_seed_success_percent": 66.0
+    "success_percent": 97.0,
+    "worst_seed_success_percent": 97.0
   },
   "accepted_parameters": {
     "algorithm": {
@@ -46,23 +46,29 @@
     "started_at": "2026-09-04T10:26:33.0089613Z"
   },
   "campaign_experiment_counters": {
-    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 1
+    "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f": 2
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 1 was a fresh baseline with no recorded code or parameter changes, so keeping the unchanged PPO implementation preserves the valid baseline code lineage."
+      "reason": "Keep the far-target-focused training intervention and the fixed-distribution evaluation wiring because the measured improvement directly addresses the diagnosed far-target failures without changing the official task distribution."
     },
-    "code_parent_commit": "c76812cc5a1a475b45ad22fb7901935036dcb54c",
-    "continue_from": "checkpoint-120832",
-    "experiment": 1,
-    "reason": "Checkpoint-120832 was the best measured candidate at 66.0%, while the small 1.5 percentage-point gain over checkpoint-86016 was supported by only 1-3 discordant episodes in paired comparisons. It is the strongest observed baseline lineage, but remains far below the 98% objective."
+    "code_parent_commit": "c9c79454a86f89b8e7233da036085e9d5357a025",
+    "continue_from": "checkpoint-100352",
+    "experiment": 2,
+    "reason": "Activate the 97.0% checkpoint with 194/200 successes. It matches checkpoint-120832 and is the earlier point, while paired outcomes show the intervention beats the champion on 64 episodes and loses on only 2."
   },
-  "last_verdict": "researcher selected checkpoint-120832",
+  "last_verdict": "researcher selected checkpoint-100352",
   "official_metrics": null,
   "pending_evaluation_request": null,
+  "pending_final_benchmark": {
+    "artifact": "research/checkpoints/accepted",
+    "experiment": 2,
+    "fingerprint": "fe4c050b695142c7ea44fa227c6494c68492f805822e462e34aa089b30ef1868",
+    "selected": "checkpoint-100352"
+  },
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
