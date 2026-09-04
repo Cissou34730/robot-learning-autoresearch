@@ -474,6 +474,11 @@ def measurement_record(metrics: dict) -> dict:
 def compact_result_record(result: dict) -> dict:
     """History keeps identity, score and artifact references, never the evidence."""
     record = dict(result)
+    if "replication_of" in record:
+        try:
+            record["replication_of"] = int(record["replication_of"])
+        except (TypeError, ValueError):
+            pass
     candidates = record.get("candidates")
     if isinstance(candidates, list):
         record["candidates"] = [
@@ -530,12 +535,15 @@ def latest_recorded_experiment() -> int | None:
 
 
 def experiment_log_row(record: dict) -> str:
+    from research.runner_protocol import operation_description
+
     def cell(value: object) -> str:
         return " ".join(str(value).replace("|", "/").split())
 
     return (
         f"| {record['index']} | {cell(record.get('recorded_at', '-'))} | "
-        f"{cell(record.get('change', '-'))} | {cell(record.get('hypothesis', '-'))} | "
+        f"{cell(operation_description(record) or '-')} | "
+        f"{cell(record.get('hypothesis', '-'))} | "
         f"{cell(record.get('candidate_success_percent', '-'))} | "
         f"{cell(record.get('candidate_seeds_passed', '-'))} | "
         f"{cell(record.get('verdict', '-'))} |"

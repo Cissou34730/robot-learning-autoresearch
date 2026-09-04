@@ -19,7 +19,7 @@ from research.run_experiment import (
     check_proposal,
     main,
 )
-from research.runner_console import format_duration
+from research.runner_console import format_duration, render_experiment_card
 from research.runner_execution import (
     candidate_directories,
     latest_training_steps,
@@ -30,6 +30,7 @@ from research.runner_protocol import (
     PROTECTED_TEST_PREFIXES,
     allocated_experiment_index,
     next_experiment_index,
+    operation_description,
     plan_code_lineage_decision,
     plan_previous_result_decision,
     resumed_experiment_index,
@@ -1282,6 +1283,7 @@ def test_training_proposal_accepts_the_valid_training_kinds():
     validate_training_proposal(transfer, baseline=False)
 
     continuation = dict(transfer, kind="continuation")
+    continuation.pop("change")
     validate_training_proposal(continuation, baseline=False)
 
     replication = dict(
@@ -1290,7 +1292,40 @@ def test_training_proposal_accepts_the_valid_training_kinds():
         training_seed=19,
         replication_of=12,
     )
+    replication.pop("change")
     validate_training_proposal(replication, baseline=False)
+
+
+def test_training_intervention_requires_a_nonempty_change():
+    proposal = _training_proposal()
+    proposal.pop("change")
+
+    with pytest.raises(ValueError, match="missing required fields.*change"):
+        validate_training_proposal(proposal, baseline=False)
+
+
+def test_unchanged_operation_has_a_neutral_result_description():
+    result = {
+        "index": 4,
+        "kind": "replication",
+        "hypothesis": "check outcome variation",
+        "initialization": "fresh",
+    }
+
+    assert operation_description(result) == (
+        "Replicate the current method from fresh initialization"
+    )
+    assert "Replicate the current method from fresh initialization" in (
+        render_experiment_card(result)
+    )
+
+
+def test_unchanged_operation_rejects_a_blank_supplied_description():
+    proposal = dict(_training_proposal(), kind="continuation")
+    proposal.update(initialization="transfer", training_parent="accepted", change=" ")
+
+    with pytest.raises(ValueError, match="operation description.*non-empty string"):
+        validate_training_proposal(proposal, baseline=False)
 
 
 def test_baseline_proposal_requires_fields_consumed_by_execution():

@@ -6,6 +6,7 @@ import json
 import re
 from pathlib import Path, PureWindowsPath
 
+from research.runner_protocol import operation_description
 from research.runner_repository import ARTIFACT_FILES
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -151,8 +152,8 @@ def _change_details(result: dict) -> str:
         )
     code_changes = result.get("code_changes") or []
     if code_changes:
-        return f"{result.get('change', '-')}; files: {', '.join(code_changes)}"
-    return str(result.get("change", "-"))
+        return f"{operation_description(result) or '-'}; files: {', '.join(code_changes)}"
+    return operation_description(result) or "-"
 
 
 def _existing_artifact_reference(
@@ -207,7 +208,7 @@ def _replicated_experiment_index(result: dict) -> int | None:
         return None
     try:
         return int(str(raw_value))
-    except ValueError:
+    except (TypeError, ValueError):
         return None
 
 
@@ -490,7 +491,7 @@ def render_research_brief() -> str:
         "",
         "## Recent experiment cards",
         "",
-        "| # | Family | Exact change | Init / budget | Outcome | Verdict |",
+        "| # | Family | Operation | Init / budget | Outcome | Verdict |",
         "|---:|---|---|---|---|---|",
     ])
 

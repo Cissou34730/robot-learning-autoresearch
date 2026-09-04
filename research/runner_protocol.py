@@ -286,9 +286,20 @@ def experiment_family(
     if experiment_kind == "method":
         return "research.selection_method"
     if code_changes:
-        normalized = re.sub(r"[^a-z0-9]+", "_", str(proposal["change"]).lower())
+        normalized = re.sub(r"[^a-z0-9]+", "_", operation_description(proposal).lower())
         return f"code.{normalized.strip('_')[:80]}"
     return experiment_kind
+
+
+def operation_description(record: dict) -> str:
+    """Return the stable human-readable operation description for a record."""
+    kind = str(record.get("kind", "")).strip().lower()
+    if kind == "continuation":
+        return "Continue training the unchanged method"
+    if kind == "replication":
+        return "Replicate the current method from fresh initialization"
+    value = record.get("change")
+    return value.strip() if isinstance(value, str) else ""
 
 
 def retained_lineage(state: dict, identifier: str) -> dict | None:
@@ -359,6 +370,8 @@ def validate_experiment_semantics(
         )
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
+    if experiment_kind == "continuation" and (parameter_overrides or code_changes):
+        raise ValueError("continuation requires an unchanged learning method")
     if (
         not baseline
         and experiment_kind not in {"continuation", "replication"}
@@ -375,6 +388,12 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         value = proposal.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"{description} must be a non-empty string")
+
+    def require_integer(field: str) -> int:
+        value = proposal.get(field)
+        if type(value) is not int:
+            raise ValueError(f"{field} must be an integer when supplied")
+        return value
 
     if baseline:
         # A baseline is its own runner-generated contract, never a training kind.
@@ -402,7 +421,6 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         "kind",
         "family",
         "hypothesis",
-        "change",
         "initialization",
     }
     missing = sorted(field for field in required if field not in proposal)
@@ -410,14 +428,21 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     require_nonempty_string("family", "training proposal family")
     require_nonempty_string("hypothesis", "training proposal hypothesis")
-    require_nonempty_string("change", "training proposal change")
     kind = proposal["kind"]
     if kind not in {"training", "continuation", "replication"}:
         raise ValueError(
             "training proposal kind must be training, continuation or replication"
         )
+    if kind == "training":
+        if "change" not in proposal:
+            raise ValueError("training proposal is missing required fields: ['change']")
+        require_nonempty_string("change", "training proposal change")
+    elif "change" in proposal:
+        require_nonempty_string("change", "training proposal operation description")
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
+    if "training_seed" in proposal:
+        require_integer("training_seed")
     initialization = proposal["initialization"]
     if initialization not in {"transfer", "fresh"}:
         raise ValueError("initialization must be transfer or fresh")
@@ -436,14 +461,9 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("replication requires fresh initialization")
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
-        try:
-            replicated_experiment = int(proposal["replication_of"])
-        except (KeyError, TypeError, ValueError) as error:
-            raise ValueError(
-                "replication requires an exact experiment number"
-            ) from error
-        if replicated_experiment < 1:
-            raise ValueError("replication requires an exact experiment number")
+        require_integer("replication_of")
+        if proposal["replication_of"] < 1:
+            raise ValueError("replication_of must be a positive integer")
 
 
 def validate_proposal_phase(proposal: dict, state: dict) -> str:

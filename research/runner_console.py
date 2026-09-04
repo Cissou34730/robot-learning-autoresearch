@@ -92,7 +92,9 @@ def experiment_change_lines(result: dict) -> list[str]:
             f"{item['path']}: {item.get('before')} → {item.get('after')}"
             for item in changes
         ]
-    return [str(result.get("change", "")).strip() or "-"]
+    from research.runner_protocol import operation_description
+
+    return [operation_description(result) or "-"]
 
 
 def render_experiment_card(result: dict) -> str:
