@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 7
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 8
   },
-  "last_allocated_experiment": 7,
-  "last_experiment": 7,
+  "last_allocated_experiment": 8,
+  "last_experiment": 8,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Changing PPO from one to four environments produced a large, persistent regression dominated by non-reaches, so restore the pre-experiment training configuration."
+      "reason": "The experiment's only configuration change enabled PPO state-dependent exploration with a 64-step sampling frequency, and the resulting persistent collapse in reaching and holding is strong evidence against keeping it."
     },
-    "code_parent_commit": "128135e2a82e277987b70417660065dc10448bc3",
+    "code_parent_commit": "4dad3e301ce80519b4aa04a19e92cbf8522e8dc4",
     "continue_from": "champion",
-    "experiment": 7,
-    "reason": "The parallel-rollout candidate reached only 21.5% at checkpoint-120832 versus 97.0% for the champion, and its task-reference result was 21.5% versus 98.0%; the candidate is not suitable for promotion."
+    "experiment": 8,
+    "reason": "The state-dependent-exploration candidate achieved 0.0% at both measured checkpoints and showed almost no sustained reaching, while the accepted champion achieved 97.0% on the same research panel and 98.0% on task-reference."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
