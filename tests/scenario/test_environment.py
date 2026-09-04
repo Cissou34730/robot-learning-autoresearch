@@ -17,12 +17,30 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.observations import (
+    OBSERVATION_SIZE,
+    TARGET_RADIUS_SCALE,
+)
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_observation_exposes_smooth_target_polar_features():
+    env = make_training_env()
+    obs, _ = env.reset(seed=0)
+    target_x, target_y = env.data.mocap_pos[0][:2]
+    radius = np.hypot(target_x, target_y)
+    angle = np.arctan2(target_y, target_x)
+
+    assert obs.shape == (OBSERVATION_SIZE,)
+    np.testing.assert_allclose(
+        obs[-3:],
+        [radius / TARGET_RADIUS_SCALE, np.sin(angle), np.cos(angle)],
+    )
 
 
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
