@@ -92,8 +92,9 @@ READ_ONLY_GIT = frozenset(
 )
 
 GIT_DENIAL = (
-    "Denied by the harness: the runner owns Git history. Read-only git is "
-    "available (status, diff, log, show, rev-parse, ls-files, cat-file). To "
+    "Denied by the harness: the runner owns mutating Git operations and "
+    "restoration. Read-only git is available for code provenance and code "
+    "inspection (status, diff, log, show, rev-parse, ls-files, cat-file). To "
     'revert this experiment\'s code, set "code": {"action": "revert", '
     '"reason": "..."} in the lineage proposal and the runner restores it.'
 )
@@ -169,8 +170,13 @@ instead of retrying the same command.
 
 - The launcher executes experiments. Never invoke research/run_experiment.py,
   training, the viewer, or the final benchmark.
-- The runner owns Git history. Read-only git is allowed. To revert this
-  experiment's code, use the lineage proposal's "code" decision.
+- Use research/brief.md and the campaign artifacts as the authoritative
+    scientific context. Do not use Git history as scientific evidence or as a
+    routine workspace-discovery step.
+- The runner owns mutating Git operations, provenance and restoration.
+    Read-only Git is available only when the current task specifically requires
+    inspecting the experiment's current code state or delta. To revert this
+    experiment's code, use the lineage proposal's "code" decision.
 - A repository-wide pytest run belongs to the runner; run a specific suite.
 - Every tool call resends the whole conversation, so prefer one aggregation over
   the same command repeated per file, and read what you need rather than whole

@@ -50,6 +50,7 @@ def test_mutating_git_is_refused_and_names_the_lineage_decision(command):
 
     assert reason == adapter.GIT_DENIAL
     assert "revert" in reason
+    assert "code provenance and code inspection" in reason
 
 
 @pytest.mark.parametrize(
@@ -509,10 +510,16 @@ def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():
     message = adapter.session_options(args, adapter.Console(), asyncio.Event())[
         "system_message"
     ]
+    content = " ".join(message["content"].split())
 
     assert message["mode"] == "append"
-    assert str(ROOT) in message["content"]
-    assert "run_experiment.py" in message["content"]
+    assert str(ROOT) in content
+    assert "run_experiment.py" in content
+    assert "research/brief.md and the campaign artifacts" in content
+    assert "authoritative scientific context" in content
+    assert "Do not use Git history as scientific evidence" in content
+    assert "current code state or delta" in content
+    assert "routine workspace-discovery step" in content
 
 
 # --- session identity -------------------------------------------------------

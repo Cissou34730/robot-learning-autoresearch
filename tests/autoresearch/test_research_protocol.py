@@ -2442,6 +2442,22 @@ def test_no_researcher_prompt_forces_the_configuration_into_context():
     assert "research/last_train_summary.md" not in LOOP
 
 
+def test_researcher_guidance_keeps_git_out_of_the_scientific_evidence_surface():
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    normalized_agents = " ".join(agents.split())
+
+    assert "authoritative sources of scientific evidence" in normalized_agents
+    assert "code provenance and code inspection" in normalized_agents
+    assert "routine workspace-discovery mechanism" in normalized_agents
+    assert "inspect files and Git history" not in normalized_agents
+
+    assert LOOP.count("evaluation design normally requires no Git inspection") == 2
+    assert LOOP.count("current experiment's code delta") == 2
+    assert LOOP.count("requires understanding the current code state or delta") == 2
+    for routine_command in ("git log", "git show", "git blame"):
+        assert routine_command not in LOOP.lower()
+
+
 def test_protocol_default_context_names_only_authoritative_context():
     opening = PROGRAM.split("## Roles", 1)[0]
 

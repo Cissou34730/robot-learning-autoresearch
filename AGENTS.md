@@ -35,11 +35,13 @@ uv run python -m robot_learning.play --model <model.zip>  # Human: open the view
 uv run pytest                            # Runner: complete test suite
 ```
 
-The bounded Researcher session may inspect files and Git history, edit its owned
-surface, run lightweight analysis, and run targeted tests. It may not execute
-training, the generic evaluator, the viewer, the Runner, the final benchmark,
-repository-wide tests, mutating Git commands or dependency-management commands.
-The exact available operations are cataloged in `research/instruments.md`.
+The bounded Researcher session may inspect files and, when the current task
+requires understanding code state or a code delta, use read-only Git. It may
+edit its owned surface, run lightweight analysis, and run targeted tests. It may
+not execute training, the generic evaluator, the viewer, the Runner, the final
+benchmark, repository-wide tests, mutating Git commands or dependency-management
+commands. The exact available operations are cataloged in
+`research/instruments.md`.
 
 ## Layout
 
@@ -122,8 +124,17 @@ surface they protect rather than naming one implementation file.
 
 ## Persistence and Git
 
-The Runner owns mutating Git operations and experiment persistence. The
-Researcher has read-only Git access.
+The campaign artifacts, especially `research/brief.md`, are the authoritative
+sources of scientific evidence. The Researcher must not use Git history as
+scientific evidence or as a routine workspace-discovery mechanism.
+
+The Runner owns mutating Git operations, experiment code anchoring,
+restoration, Git-based provenance, commits and repository history management.
+The Researcher has read-only Git access solely for code provenance and code
+inspection when the current task specifically requires understanding the
+experiment's current code state or delta. It requests restoration through the
+existing keep / revert lineage contract; it does not reconstruct ancestry or
+select restoration commits.
 
 `research/results.jsonl` is written before `research/EXPERIMENTS.md` is
 regenerated atomically. Validation-only commands do not reconcile or mutate the

@@ -288,6 +288,7 @@ while ($true) {
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -300,6 +301,7 @@ while ($true) {
                 $evaluationRetryPrompt = @(
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
                     "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                    "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
                     "Expected deliverable: complete research/evaluation_request.json using the contract in research/instruments.md."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
@@ -357,6 +359,7 @@ while ($true) {
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. This is the complete task; do not wait for more input."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Read the detailed evaluation artifacts referenced for this experiment in the brief."
+            "Use those campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -370,6 +373,7 @@ while ($true) {
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Use the campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
                 "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json using the contracts in research/instruments.md."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
@@ -408,6 +412,7 @@ while ($true) {
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+        "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if preparing the intervention requires understanding the current code state or delta."
         "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md."
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
@@ -431,6 +436,7 @@ while ($true) {
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and inspect the relevant repository state."
+            "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if preparing the intervention requires understanding the current code state or delta."
             "Preserve valid researcher-owned edits that belong to this unfinished experiment."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment using the contract in research/instruments.md."
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
