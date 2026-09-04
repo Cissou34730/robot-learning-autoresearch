@@ -12,6 +12,8 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
+    TRAINING_CURRICULUM_END_STEP,
+    TRAINING_CURRICULUM_START_STEP,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -25,13 +27,24 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
+def test_training_curriculum_delays_short_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
     assert training.target_radius_range == (0.14, 0.20)
+    assert training.training_curriculum is True
+    assert training._active_target_radius_range() == (0.14, 0.20)
+    training._training_steps = TRAINING_CURRICULUM_START_STEP
+    assert training._active_target_radius_range() == (0.14, 0.20)
+    training._training_steps = (
+        TRAINING_CURRICULUM_START_STEP + TRAINING_CURRICULUM_END_STEP
+    ) // 2
+    assert training._active_target_radius_range() == (0.10, 0.20)
+    training._training_steps = TRAINING_CURRICULUM_END_STEP
+    assert training._active_target_radius_range() == (0.06, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+    assert evaluation.training_curriculum is False
 
 
 def test_training_environment_may_diverge_from_the_official_task():
