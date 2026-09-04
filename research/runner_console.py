@@ -80,7 +80,7 @@ def scenario_progress_metric(record: dict[str, float]) -> str | None:
     Imported here rather than at module scope so presenting a card never pulls
     the training and physics stack into a validation-only command.
     """
-    from robot_learning.scenario import render_training_progress_metric
+    from robot_learning.scenario.progress import render_training_progress_metric
 
     return render_training_progress_metric(record)
 

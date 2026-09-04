@@ -52,9 +52,9 @@ def test_protected_surface_covers_the_whole_goal_reached_path():
 
 
 def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
+    import robot_learning.scenario.final_benchmark as adapter
     from robot_learning.benchmark import final_benchmark, final_contract
     from robot_learning.robots import two_joint_arm
-    from robot_learning.scenario import final_benchmark as adapter
 
     packages: set[str] = set()
     for module in (adapter, final_benchmark, final_contract, two_joint_arm):
@@ -102,8 +102,8 @@ def test_researcher_owned_files_remain_changeable(research_path):
 
 
 def test_scenario_adapter_cannot_bypass_the_protected_benchmark():
+    import robot_learning.scenario.final_benchmark as adapter
     from robot_learning.benchmark import final_benchmark as protected
-    from robot_learning.scenario import final_benchmark as adapter
 
     assert adapter._protected_evaluate_final_model is protected.evaluate_final_model
     assert adapter.FINAL_SUCCESS_PERCENT == 98.0

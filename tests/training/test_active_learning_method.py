@@ -10,7 +10,7 @@ import pytest
 from stable_baselines3 import PPO
 
 from robot_learning import train as train_module
-from robot_learning.scenario import make_training_env
+from robot_learning.scenario.environment import make_training_env
 from robot_learning.training import algorithms
 from robot_learning.training.research_config import load_experiment_config
 

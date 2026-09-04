@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from robot_learning.scenario import watch_scenario_policy
+from robot_learning.scenario.viewer import watch_scenario_policy
 
 
 def parse_args() -> argparse.Namespace:
