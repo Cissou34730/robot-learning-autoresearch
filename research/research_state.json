@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-champion-200ep-seed1-0d6daac47cfe.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-3-champion-200ep-seed1-0c8c561d6e3f.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 2
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 3
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "The full 6-20 cm training-radius intervention produced a large regression and did not reduce the known short-radius failures; restore the pre-experiment far-target-focused configuration."
+      "reason": "The added radius and sine/cosine angle observations produced a large regression with persistent extreme-angle non-reaches; restore the prior observation contract and method."
     },
-    "code_parent_commit": "c46ec8951612b03c8906045803e33f5f98f2cae7",
+    "code_parent_commit": "a39328ab07ad32b0d2913892501c2d95818e860a",
     "continue_from": "champion",
-    "experiment": 2,
-    "reason": "Experiment 2 reached only 59.5% at both measured checkpoints, with 81 failures dominated by non-reaches, while the accepted champion reached 97.0% on the identical 200-episode panel."
+    "experiment": 3,
+    "reason": "The augmented polar-observation lineage reached only 25.5% at checkpoint 100352 and 47.5% at checkpoint 120832, while the unchanged champion reached 97.0% on the identical 200-episode panel. The champion is the strongest available lineage."
   },
   "last_verdict": "researcher selected champion",
   "official_metrics": null,
