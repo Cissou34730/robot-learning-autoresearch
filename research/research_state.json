@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-11-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-12-champion-200ep-seed1-f1f33f3d10a8.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 11
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 12
   },
-  "last_allocated_experiment": 11,
-  "last_experiment": 11,
+  "last_allocated_experiment": 12,
+  "last_experiment": 12,
   "last_lineage_decision": {
     "code": {
-      "action": "revert",
-      "reason": "The policy-capacity configuration caused a large, persistent regression and did not address the reach blind spot; restore the accepted parent configuration."
+      "action": "keep",
+      "reason": "Experiment 12 was an unchanged-method replication with no code or configuration intervention, so the current PPO implementation should remain in place."
     },
-    "code_parent_commit": "ef645fcdc2a2cd08a8fdbdad214e3a4dfa6ec41f",
+    "code_parent_commit": "b24cd54652d7d80ed955e178f2066e81e150c1c9",
     "continue_from": "champion",
-    "experiment": 11,
-    "reason": "The wider [128, 128] networks reached only 47.0% and 46.5% at the two candidate checkpoints, with 84 and 85 non-reaches and far more hold interruptions than the 97.0% champion. The task-reference results also favored the champion 98.0% to 44.0% and 44.5%."
+    "experiment": 12,
+    "reason": "The fresh seed-2 replication reached only 74.0% at checkpoint-120832 versus 97.0% for the champion, with 46 champion-only paired wins and no candidate-only wins; the task-reference result also remained below the champion."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
