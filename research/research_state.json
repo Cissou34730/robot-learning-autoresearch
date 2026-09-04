@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-20-champion-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-21-champion-200ep-seed1-8acbea27f7c3.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 20
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 21
   },
-  "last_allocated_experiment": 20,
-  "last_experiment": 20,
+  "last_allocated_experiment": 21,
+  "last_experiment": 21,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "Reducing PPO n_epochs from 10 to 5 did not improve reach coverage or hold stability and caused a persistent regression, so restore the prior optimization setting."
+      "reason": "The 6-14 cm training-mixture intervention did not improve short-radius coverage and caused a large persistent regression in both research and task-reference evaluations."
     },
-    "code_parent_commit": "dd219e472cd89b5d11fdc1808122db17187acbd7",
+    "code_parent_commit": "5a574e3336bd4a3773164bf4cc17617e5a982288",
     "continue_from": "champion",
-    "experiment": 20,
-    "reason": "The n_epochs=5 candidate reached only 81.5% and 80.5% at the measured late checkpoints versus 97.0% for the champion; paired outcomes favored the champion 35-4 and 37-4, with failures still dominated by non-reaching and hold instability."
+    "experiment": 21,
+    "reason": "The radius-biased candidate regressed to 58.5% versus the champion's 97.0%, with 79 champion-only wins out of 81 discordant paired episodes and substantially worse reach and hold diagnostics."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
