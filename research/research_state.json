@@ -61,15 +61,21 @@
     "reason": "The final curriculum checkpoint matched the champion on all 200 research-panel outcomes and improved task-reference success to 99.0% versus 98.0%, making it the strongest measured curriculum lineage for the official benchmark."
   },
   "last_verdict": "researcher selected checkpoint-120832",
-  "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/accepted",
-    "experiment": 22,
-    "fingerprint": "262c178b55638aaa220cd27751c7ddde6943bf09baa98473714b0d37c5646ebb",
-    "selected": "checkpoint-120832"
+  "official_benchmark_artifact": "262c178b55638aaa220cd27751c7ddde6943bf09baa98473714b0d37c5646ebb",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.4338826539109256,
+      "median": 0.4051655092276695,
+      "worst": 2.4914517249734676
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.5
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [
