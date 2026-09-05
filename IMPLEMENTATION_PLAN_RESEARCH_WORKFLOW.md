@@ -662,4 +662,4 @@ Report:
 - Every intentional deviation from this plan, with the requirement, actual implementation, reason, and consequence. If a deviation would change Researcher authority, benchmark use, mandatory evaluations, lineage semantics, or campaign data, report it as unresolved rather than silently substituting a new design.
 - Scientific effectiveness remains unproven until the human runs and reviews a later campaign. Do not run that campaign and do not describe passing software tests as proof that the reasoning bias is fixed.
 
-Commit and push only when the human explicitly requests publication.
+
