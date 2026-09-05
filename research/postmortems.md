@@ -3,11 +3,9 @@
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Scientific strategy
 
 **Direction:** Improve full-angle reach-and-hold reliability by addressing the
-negative-angle failure sector identified in the first baseline, while keeping
-the fixed evaluation and objective unchanged. Experiments 2 and 3 show that
-neither focused exposure nor a simple explicit target-geometry augmentation is
-currently safe because each fresh run regressed outside the sector and/or in
-hold stability.
+negative-angle failure sector identified in the first baseline, while first
+separating training-seed variation from representation and control effects.
+The fixed evaluation and objective remain unchanged.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, with
 five of six failures never entering tolerance and concentrated between -122°
@@ -30,23 +28,36 @@ in-sector and 150 of 179 outside-sector, while checkpoint-120832 reached 166
 of 200, including 8 of 21 in-sector and 158 of 179 outside-sector. The later
 checkpoint accumulated 97 hold interruptions, mostly outside the difficult
 sector, versus one for the accepted champion. These are single fresh training
-seeds, so they reject the tested interventions but do not isolate the
-underlying cause.
+seeds, so they do not isolate the underlying cause. Experiment 4's unchanged
+fresh baseline replication was much worse: 59 of 200 at checkpoint-100352 and
+89 of 200 at checkpoint-120832, versus 194 of 200 for the champion. Its
+checkpoint-100352 failures included 136 non-reaches and 252 hold interruptions,
+while the later checkpoint still had 110 non-reaches. This large difference
+across baseline training seeds establishes substantial stochastic variation in
+the learned outcome, although it does not explain the source of that variation
+or establish that either tested intervention is beneficial
+(`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-100352-200ep-seed1-da55aa2016a5.json`,
+`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-120832-200ep-seed1-da55aa2016a5.json`,
+`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-champion-200ep-seed1-da55aa2016a5.json`).
 
-**Open questions:** Whether the negative-angle failures arise from control
-behavior, policy capacity, or training-seed variation remains unresolved.
-It is also uncertain whether late hold instability is a separate mechanism
-from sector performance.
+**Open questions:** Whether the champion's strong full-angle behavior is
+reproducible, and whether the negative-angle failures arise from control
+behavior, policy capacity, or training-seed variation, remain unresolved. It is
+also uncertain whether late hold instability is a separate mechanism from
+sector performance.
 
-**Conditional next steps:** Keep the accepted lineage and do not continue
-either the focused-sampling or the tested target-feature intervention.
-Further work should distinguish representation, control, and stochastic
-effects while preserving the accepted lineage's full-angle and hold behavior.
+**Conditional next steps:** Keep the accepted lineage and do not promote the
+experiment 4 replication or continue either the focused-sampling or tested
+target-feature intervention on the present evidence. Further work should
+distinguish representation, control, and stochastic effects using the accepted
+lineage as the behavioral control and should preserve its full-angle and hold
+behavior.
 
-**Reconsider when:** Replication or a balanced intervention shows a reliable
-sector improvement without material outside-sector or hold-stability
-regression, or when additional evidence demonstrates that the observed
-regressions were training-seed variation.
+**Reconsider when:** A fresh baseline reliably reproduces the champion, or a
+balanced intervention shows a reliable sector improvement without material
+outside-sector or hold-stability regression. Evidence that characterizes the
+seed-dependent outcomes sufficiently to separate them from intervention
+effects would also justify revising the current interpretation.
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 1
 
@@ -101,3 +112,27 @@ retaining the accepted champion, while the single fresh seed leaves
 representation-versus-stochastic causality unresolved.
 
 **Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-3-checkpoint-100352-200ep-seed1-9233771c95e7.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-3-checkpoint-120832-200ep-seed1-9233771c95e7.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-3-champion-200ep-seed1-9233771c95e7.json`.
+
+## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 4
+
+**Result:** The fresh unchanged PPO replication did not reproduce the accepted
+baseline: checkpoint-100352 reached 29.5% (59/200), and checkpoint-120832
+reached 44.5% (89/200), versus 97.0% (194/200) for the champion.
+
+**Observed behavior:** At checkpoint-100352, 136 episodes never reached
+tolerance and the run accumulated 252 hold interruptions; success was 7/21 in
+the -155 to -115 degree sector and 52/179 outside it. At checkpoint-120832,
+110 episodes never reached tolerance, with 7 hold interruptions; success was
+8/21 in-sector and 81/179 outside-sector. The champion had 5 non-reaches and
+one hold interruption, with 15/21 in-sector and 179/179 outside-sector
+successes.
+
+**Interpretation:** The unchanged baseline outcome is strongly
+training-seed-sensitive: the fresh replication failed broadly, not only in the
+previously identified negative-angle sector. This makes stochastic variation a
+major unresolved explanation for the regressions in experiments 2 and 3, so
+those single-seed results cannot by themselves attribute all degradation to
+their interventions. The replication is nevertheless not a viable candidate
+and provides no basis to replace the accepted champion.
+
+**Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-champion-200ep-seed1-da55aa2016a5.json`.
