@@ -101,12 +101,78 @@ $versionedLogs = @()
 $logBackup = $null
 $baseCommit = (Invoke-ResetGit @("rev-parse", "HEAD")).Trim()
 
+function Get-ArtifactFingerprint([string]$Artifact) {
+    $hash = [Security.Cryptography.IncrementalHash]::CreateHash(
+        [Security.Cryptography.HashAlgorithmName]::SHA256
+    )
+    try {
+        foreach ($name in @("model.zip", "artifact.json", "vecnormalize.pkl", "replay_buffer.pkl", "policy_runtime.pkl")) {
+            $path = Get-ResetPath (Join-Path $Artifact $name)
+            if (-not (Test-Path -LiteralPath $path)) { continue }
+            $stream = [IO.File]::OpenRead($path)
+            try {
+                $buffer = [byte[]]::new(1048576)
+                while (($count = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                    $hash.AppendData($buffer, 0, $count)
+                }
+            }
+            finally {
+                $stream.Dispose()
+            }
+        }
+        return -join ($hash.GetHashAndReset() | ForEach-Object { $_.ToString("x2") })
+    }
+    finally {
+        $hash.Dispose()
+    }
+}
+
+function Add-BaselineCompatibilityFields($State, [string]$SourceCommit) {
+    if ($State.schema_version -eq 3) {
+        $artifact = [string]$State.accepted_artifact
+        $evaluations = @($State.accepted_evaluations)
+        $lineage = [ordered]@{
+            artifact = $artifact
+            fingerprint = Get-ArtifactFingerprint $artifact
+            origin_experiment = 1
+            candidate = "legacy-accepted"
+            parameters = if ($State.accepted_parameters) { $State.accepted_parameters } else { [ordered]@{} }
+            scientific_commit = $SourceCommit
+            training_steps = [int]$State.accepted_training_steps
+            evaluation_artifacts = $evaluations
+            reason = "Migrated legacy measured baseline."
+        }
+        foreach ($name in @("accepted_artifact", "accepted_metrics", "accepted_parameters", "accepted_training_steps", "accepted_evaluations")) {
+            $State.PSObject.Properties.Remove($name)
+        }
+        $State.schema_version = 4
+        $State | Add-Member -NotePropertyName working_lineage -NotePropertyValue $lineage
+        $State | Add-Member -NotePropertyName best_known_lineage -NotePropertyValue $lineage
+        $State | Add-Member -NotePropertyName pending_analysis -NotePropertyValue $null
+        $State | Add-Member -NotePropertyName pending_evaluation_request -NotePropertyValue $null
+        $State | Add-Member -NotePropertyName pending_researcher_decision -NotePropertyValue $null
+    }
+    return $State
+}
+
 if ($Mode -eq "Baseline") {
     $baselineCommit = (Invoke-ResetGit @("rev-parse", "--verify", "--end-of-options", "$BaselineRef^{commit}")).Trim()
     function Read-BaselineJson([string]$Path) {
         return ((Invoke-ResetGit @("show", "${baselineCommit}:$Path")) -join "`n" | ConvertFrom-Json)
     }
     $state = Read-BaselineJson "research/research_state.json"
+    if ($state.schema_version -eq 4) {
+        $working = $state.working_lineage
+        $bestKnown = $state.best_known_lineage
+        if ($null -eq $working -or $null -eq $bestKnown -or
+            $working.fingerprint -ne $bestKnown.fingerprint -or
+            @($working.evaluation_artifacts).Count -eq 0) {
+            throw "BaselineRef must have measured working and best-known roles referring to the same artifact."
+        }
+        $state | Add-Member -NotePropertyName accepted_artifact -NotePropertyValue $working.artifact
+        $state | Add-Member -NotePropertyName accepted_metrics -NotePropertyValue @{ success_percent = 0 }
+        $state | Add-Member -NotePropertyName accepted_evaluations -NotePropertyValue @($working.evaluation_artifacts)
+    }
     if ($state.last_experiment -ne 1 -or $state.last_allocated_experiment -ne 1 -or
         $null -eq $state.accepted_metrics -or $state.accepted_artifact -ne "research/checkpoints/accepted" -or
         $state.pending_evaluation_request -or $state.pending_researcher_decision -or
@@ -231,11 +297,9 @@ $campaignId = [guid]::NewGuid().ToString()
 $startedAt = [System.DateTime]::UtcNow.ToString("o")
 
 [ordered]@{
-    schema_version = 3
-    accepted_artifact = "research/checkpoints/accepted"
-    accepted_metrics = $null
-    accepted_parameters = $null
-    accepted_training_steps = 0
+    schema_version = 4
+    working_lineage = $null
+    best_known_lineage = $null
     campaign = [ordered]@{
         id = $campaignId
         started_at = $startedAt
@@ -245,6 +309,11 @@ $startedAt = [System.DateTime]::UtcNow.ToString("o")
     last_experiment = 0
     last_allocated_experiment = 0
     pending_scientific_parent = $null
+    pending_analysis = $null
+    pending_evaluation_request = $null
+    pending_researcher_decision = $null
+    pending_final_benchmark = $null
+    terminal_campaign_status = $null
     last_verdict = "baseline pending after research reset"
     official_metrics = $null
 } | ConvertTo-Json | Set-Content -LiteralPath "research\research_state.json"
@@ -265,6 +334,11 @@ Set-Content -LiteralPath "research\BASELINE_PENDING" -Value "Fresh baseline pend
 }
 else {
     Invoke-ResetGit (@("restore", "--source=$baselineCommit", "--staged", "--worktree", "--") + $restorePaths) | Out-Null
+    $restoredState = Get-Content -Raw -LiteralPath "research\research_state.json" | ConvertFrom-Json
+    $restoredState = Add-BaselineCompatibilityFields $restoredState $baselineCommit
+    $restoredState.working_lineage.scientific_commit = $baselineCommit
+    $restoredState.best_known_lineage.scientific_commit = $baselineCommit
+    $restoredState | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath "research\research_state.json"
     if ($logBackup) {
         $targetLogs = Get-ResetPath $logRelative
         New-Item -ItemType Directory -Path $targetLogs -Force | Out-Null

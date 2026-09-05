@@ -97,6 +97,17 @@ def begin_hypothesis_phase() -> int:
     return 0
 
 
+def migrate_research_state() -> int:
+    """Explicit human-only migration from the legacy v3 state schema."""
+    try:
+        changed = repository.migrate_research_state()
+    except (OSError, RuntimeError, TypeError, ValueError) as error:
+        print(f"RESEARCH_STATE_MIGRATION_INVALID: {error}")
+        return 1
+    print("RESEARCH_STATE_MIGRATED" if changed else "RESEARCH_STATE_ALREADY_CURRENT")
+    return 0
+
+
 # --- non-mutating preflights -----------------------------------------------
 
 
@@ -819,9 +830,7 @@ def execute_pending_final_benchmark() -> int:
 
     official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
     verdict = (
-        "goal_reached"
-        if bool(official_metrics["goal_reached"])
-        else "goal_not_reached"
+        "goal_reached" if bool(official_metrics["goal_reached"]) else "goal_not_reached"
     )
     state["official_metrics"] = official_metrics
     state["official_benchmark_artifact"] = fingerprint
@@ -1202,11 +1211,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
+    parser.add_argument("--migrate-research-state", action="store_true")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.migrate_research_state:
+        migrated = migrate_research_state()
+        print("RESEARCH_STATE_MIGRATED" if migrated else "RESEARCH_STATE_ALREADY_V4")
+        return 0
     if args.begin_hypothesis:
         return begin_hypothesis_phase()
     if args.check_proposal:

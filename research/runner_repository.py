@@ -4,6 +4,7 @@ Every operation here is explicit and path-scoped. Nothing in this module makes
 a protocol decision; it executes the ones the Runner already took.
 """
 
+import copy
 import hashlib
 import json
 import shutil
@@ -38,6 +39,7 @@ RUNNER_MEMORY_PREFIXES = (
     "research/evaluations/",
     "research/checkpoints/accepted/",
     "research/checkpoints/retained/",
+    "research/migration_backups/",
 )
 
 
@@ -509,6 +511,12 @@ def atomic_write_text(path: Path, text: str) -> None:
     _atomic_replace(temporary, path)
 
 
+def atomic_write_bytes(path: Path, content: bytes) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_bytes(content)
+    _atomic_replace(temporary, path)
+
+
 def read_state() -> dict:
     """The persisted lifecycle state exactly as written, without any contract check."""
     return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
@@ -545,6 +553,166 @@ def load_state(
     if not allow_unmeasured and state.get("accepted_metrics") is None:
         raise RuntimeError("accepted checkpoint has no baseline metrics")
     return state
+
+
+def _migration_scientific_commit(state: dict, artifact: Path) -> str | None:
+    """Use legacy provenance only when it still resolves in this repository."""
+    candidates = [
+        state.get("accepted_scientific_commit"),
+        state.get("scientific_commit"),
+        state.get("pending_scientific_parent"),
+    ]
+    artifact_metadata = artifact / "artifact.json"
+    if artifact_metadata.is_file():
+        try:
+            candidates.append(
+                json.loads(artifact_metadata.read_text(encoding="utf-8")).get(
+                    "scientific_commit"
+                )
+            )
+        except (json.JSONDecodeError, OSError, TypeError):
+            pass
+    for candidate in candidates:
+        if not isinstance(candidate, str) or not candidate.strip():
+            continue
+        try:
+            require_resolvable_commit(candidate)
+        except RuntimeError:
+            continue
+        return candidate
+    return None
+
+
+def _translate_legacy_identifiers(value: object) -> object:
+    if isinstance(value, dict):
+        return {key: _translate_legacy_identifiers(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_translate_legacy_identifiers(item) for item in value]
+    if value in {"accepted", "champion"}:
+        return "working"
+    return value
+
+
+def _migrated_pending_analysis(state: dict) -> dict | None:
+    pending = state.get("pending_evaluation_request") or state.get(
+        "pending_researcher_decision"
+    )
+    if pending is None:
+        return None
+    if not isinstance(pending, dict):
+        raise TypeError("legacy pending operation must be an object")
+    translated = _translate_legacy_identifiers(copy.deepcopy(pending))
+    if not isinstance(translated, dict):
+        raise TypeError("legacy pending operation must be an object")
+    return translated
+
+
+def _legacy_lineage_record(state: dict) -> dict | None:
+    artifact = resolve_repo_path(str(state["accepted_artifact"]))
+    require_complete_artifact(artifact, "legacy accepted artifact")
+    return {
+        "artifact": repo_relative_path(artifact),
+        "fingerprint": artifact_fingerprint(artifact),
+        "origin_experiment": max(1, int(state.get("last_experiment", 1))),
+        "candidate": "legacy-accepted",
+        "parameters": copy.deepcopy(state.get("accepted_parameters") or {}),
+        "scientific_commit": _migration_scientific_commit(state, artifact),
+        "training_steps": int(state.get("accepted_training_steps", 0)),
+        "evaluation_artifacts": [
+            canonical_repo_path(str(path))
+            for path in state.get("accepted_evaluations") or []
+        ],
+        "reason": "Migrated legacy accepted lineage.",
+    }
+
+
+def migrate_research_state() -> bool:
+    """Explicitly and transactionally convert a persisted v3 campaign to v4.
+
+    No normal read or validation calls this function. Backup and all validation
+    precede replacement, so validation errors leave the original control files
+    and state untouched.
+    """
+    if not paths.STATE_PATH.exists():
+        raise RuntimeError("research state is missing; refusing to migrate")
+    original_bytes = paths.STATE_PATH.read_bytes()
+    original = json.loads(original_bytes.decode("utf-8"))
+    if original.get("schema_version") == 4:
+        validate_v4_state(copy.deepcopy(original), allow_missing_artifact=True)
+        return False
+    if original.get("schema_version") != 3:
+        raise RuntimeError("only schema-v3 research state can be migrated")
+    load_state(allow_unmeasured=True, allow_missing_artifact=True)
+
+    working = _legacy_lineage_record(original)
+    measured = working is not None and original.get("accepted_metrics") is not None
+    converted = copy.deepcopy(original)
+    for field in (
+        "accepted_artifact",
+        "accepted_metrics",
+        "accepted_parameters",
+        "accepted_training_steps",
+        "accepted_evaluations",
+    ):
+        converted.pop(field, None)
+    converted.update(
+        schema_version=4,
+        working_lineage=working,
+        best_known_lineage=copy.deepcopy(working) if measured else None,
+        retained_lineages=converted.get("retained_lineages", []),
+        pending_analysis=_migrated_pending_analysis(original),
+        pending_evaluation_request=None,
+        pending_researcher_decision=None,
+    )
+    if measured:
+        converted["best_known_lineage"]["reason"] = (
+            "Migrated legacy designation based on recorded development measurements."
+        )
+    if original.get("official_metrics") is not None:
+        converted["terminal_campaign_status"] = (
+            "migrated prior terminal official assessment"
+        )
+    validate_v4_state(copy.deepcopy(converted), allow_missing_artifact=False)
+
+    translated_controls: dict[Path, str] = {}
+    original_controls: dict[Path, bytes] = {}
+    for control in (paths.PROPOSAL_PATH, paths.EVALUATION_REQUEST_PATH):
+        if not control.exists():
+            continue
+        original_controls[control] = control.read_bytes()
+        content = json.loads(original_controls[control].decode("utf-8"))
+        translated_controls[control] = (
+            json.dumps(_translate_legacy_identifiers(content), indent=2, sort_keys=True)
+            + "\n"
+        )
+
+    campaign_id = str(original["campaign"]["id"])
+    backup = paths.RESEARCH_DIR / "migration_backups" / f"v3-{campaign_id}"
+    if backup.exists():
+        raise RuntimeError(f"migration backup already exists: {backup}")
+    temporary_backup = backup.with_name(f".{backup.name}-{time.time_ns()}.tmp")
+    try:
+        temporary_backup.mkdir(parents=True)
+        (temporary_backup / "research_state.json").write_bytes(original_bytes)
+        for control, content in original_controls.items():
+            (temporary_backup / control.name).write_bytes(content)
+        temporary_backup.replace(backup)
+        for control, content in translated_controls.items():
+            atomic_write_text(control, content)
+        atomic_write_json(paths.STATE_PATH, converted)
+    except Exception:
+        shutil.rmtree(temporary_backup, ignore_errors=True)
+        try:
+            atomic_write_bytes(paths.STATE_PATH, original_bytes)
+            for control, content in original_controls.items():
+                atomic_write_bytes(control, content)
+        except Exception as rollback_error:
+            raise RuntimeError(
+                f"migration publication and rollback failed; recover from {backup}"
+            ) from rollback_error
+        shutil.rmtree(backup, ignore_errors=True)
+        raise
+    return True
 
 
 def anchor_scientific_parent(state: dict) -> str:

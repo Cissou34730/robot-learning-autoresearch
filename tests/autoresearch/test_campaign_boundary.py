@@ -43,6 +43,196 @@ class TestStateRequiresCampaign:
             finally:
                 runner_paths.STATE_PATH = original_state_path
 
+
+class TestExplicitV3Migration:
+    def test_unmeasured_legacy_artifact_becomes_working_only(
+        self, monkeypatch, tmp_path
+    ):
+        root = tmp_path / "repo"
+        research = root / "research"
+        artifact = research / "checkpoints" / "accepted"
+        artifact.mkdir(parents=True)
+        artifact.joinpath("model.zip").write_bytes(b"legacy-policy")
+        artifact.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+        campaign = str(uuid.uuid4())
+        state_path = research / "research_state.json"
+        state_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": 3,
+                    "accepted_artifact": "research/checkpoints/accepted",
+                    "accepted_metrics": None,
+                    "accepted_parameters": {},
+                    "accepted_training_steps": 12,
+                    "accepted_evaluations": [],
+                    "campaign": {
+                        "id": campaign,
+                        "started_at": "now",
+                        "base_commit": "old",
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(runner_paths, "ROOT", root)
+        monkeypatch.setattr(runner_paths, "RESEARCH_DIR", research)
+        monkeypatch.setattr(runner_paths, "STATE_PATH", state_path)
+        monkeypatch.setattr(runner_paths, "PROPOSAL_PATH", research / "proposal.json")
+        monkeypatch.setattr(
+            runner_paths,
+            "EVALUATION_REQUEST_PATH",
+            research / "evaluation_request.json",
+        )
+
+        assert runner_repository.migrate_research_state()
+
+        migrated = json.loads(state_path.read_text(encoding="utf-8"))
+        assert migrated["working_lineage"]["artifact"] == (
+            "research/checkpoints/accepted"
+        )
+        assert migrated["best_known_lineage"] is None
+
+    def test_control_write_failure_restores_original_state_and_controls(
+        self, monkeypatch, tmp_path
+    ):
+        root = tmp_path / "repo"
+        research = root / "research"
+        artifact = research / "checkpoints" / "accepted"
+        artifact.mkdir(parents=True)
+        artifact.joinpath("model.zip").write_bytes(b"legacy-policy")
+        artifact.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+        campaign = str(uuid.uuid4())
+        state_path = research / "research_state.json"
+        original_state = json.dumps(
+            {
+                "schema_version": 3,
+                "accepted_artifact": "research/checkpoints/accepted",
+                "accepted_metrics": None,
+                "accepted_parameters": {},
+                "accepted_training_steps": 12,
+                "accepted_evaluations": [],
+                "campaign": {
+                    "id": campaign,
+                    "started_at": "now",
+                    "base_commit": "old",
+                },
+            }
+        )
+        state_path.write_text(original_state, encoding="utf-8")
+        proposal_path = research / "proposal.json"
+        original_proposal = '{"training_parent": "accepted"}'
+        proposal_path.write_text(original_proposal, encoding="utf-8")
+        monkeypatch.setattr(runner_paths, "ROOT", root)
+        monkeypatch.setattr(runner_paths, "RESEARCH_DIR", research)
+        monkeypatch.setattr(runner_paths, "STATE_PATH", state_path)
+        monkeypatch.setattr(runner_paths, "PROPOSAL_PATH", proposal_path)
+        monkeypatch.setattr(
+            runner_paths,
+            "EVALUATION_REQUEST_PATH",
+            research / "evaluation_request.json",
+        )
+        original_atomic_write_text = runner_repository.atomic_write_text
+        failed = False
+
+        def fail_first_control_write(path, content):
+            nonlocal failed
+            if path == proposal_path and not failed:
+                failed = True
+                raise OSError("simulated control publication failure")
+            original_atomic_write_text(path, content)
+
+        monkeypatch.setattr(
+            runner_repository, "atomic_write_text", fail_first_control_write
+        )
+
+        with pytest.raises(OSError, match="simulated control publication failure"):
+            runner_repository.migrate_research_state()
+
+        assert state_path.read_text(encoding="utf-8") == original_state
+        assert proposal_path.read_text(encoding="utf-8") == original_proposal
+
+    def test_migration_preserves_legacy_state_and_translates_pending_controls(
+        self, monkeypatch, tmp_path
+    ):
+        root = tmp_path / "repo"
+        research = root / "research"
+        artifact = research / "checkpoints" / "accepted"
+        artifact.mkdir(parents=True)
+        artifact.joinpath("model.zip").write_bytes(b"legacy-policy")
+        artifact.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+        campaign = str(uuid.uuid4())
+        original = {
+            "schema_version": 3,
+            "accepted_artifact": "research/checkpoints/accepted",
+            "accepted_metrics": {"success_percent": 66},
+            "accepted_parameters": {"seed": 3},
+            "accepted_training_steps": 12,
+            "accepted_evaluations": ["research/evaluations/evidence.json"],
+            "last_experiment": 2,
+            "last_allocated_experiment": 3,
+            "campaign": {"id": campaign, "started_at": "now", "base_commit": "old"},
+            "pending_evaluation_request": {
+                "experiment": 3,
+                "candidates": [],
+                "champion_available": True,
+                "partial_evaluations": [{"candidate": "champion"}],
+            },
+        }
+        state_path = research / "research_state.json"
+        state_path.write_text(json.dumps(original), encoding="utf-8")
+        proposal_path = research / "proposal.json"
+        proposal_path.write_text('{"training_parent": "accepted"}', encoding="utf-8")
+        request_path = research / "evaluation_request.json"
+        request_path.write_text('{"candidate": "champion"}', encoding="utf-8")
+        monkeypatch.setattr(runner_paths, "ROOT", root)
+        monkeypatch.setattr(runner_paths, "RESEARCH_DIR", research)
+        monkeypatch.setattr(runner_paths, "STATE_PATH", state_path)
+        monkeypatch.setattr(runner_paths, "PROPOSAL_PATH", proposal_path)
+        monkeypatch.setattr(runner_paths, "EVALUATION_REQUEST_PATH", request_path)
+        monkeypatch.setattr(
+            runner_repository,
+            "require_resolvable_commit",
+            lambda commit: (_ for _ in ()).throw(RuntimeError("missing")),
+        )
+
+        assert runner_repository.migrate_research_state()
+        migrated = json.loads(state_path.read_text(encoding="utf-8"))
+        assert migrated["schema_version"] == 4
+        assert migrated["working_lineage"]["scientific_commit"] is None
+        assert (
+            migrated["best_known_lineage"]["artifact"]
+            == "research/checkpoints/accepted"
+        )
+        assert (
+            migrated["pending_analysis"]["partial_evaluations"][0]["candidate"]
+            == "working"
+        )
+        assert migrated["last_allocated_experiment"] == 3
+        assert json.loads(proposal_path.read_text())["training_parent"] == "working"
+        assert json.loads(request_path.read_text())["candidate"] == "working"
+        backup = research / "migration_backups" / f"v3-{campaign}"
+        assert (
+            json.loads(backup.joinpath("research_state.json").read_text()) == original
+        )
+        assert not runner_repository.migrate_research_state()
+
+    def test_invalid_legacy_state_is_not_replaced(self, monkeypatch, tmp_path):
+        root = tmp_path / "repo"
+        research = root / "research"
+        research.mkdir(parents=True)
+        state_path = research / "research_state.json"
+        original = '{"schema_version": 3, "accepted_artifact": "missing"}'
+        state_path.write_text(original, encoding="utf-8")
+        monkeypatch.setattr(runner_paths, "ROOT", root)
+        monkeypatch.setattr(runner_paths, "RESEARCH_DIR", research)
+        monkeypatch.setattr(runner_paths, "STATE_PATH", state_path)
+
+        with pytest.raises(RuntimeError, match="campaign"):
+            runner_repository.migrate_research_state()
+
+        assert state_path.read_text(encoding="utf-8") == original
+        assert not (research / "migration_backups").exists()
+
     def test_load_state_rejects_incomplete_campaign(self):
         """load_state should reject a campaign object missing required fields."""
         state_with_bad_campaign = {
@@ -253,8 +443,7 @@ class TestArchiveCandidatesWithCampaign:
         )
 
         assert archived[0]["artifact"] == (
-            "research/checkpoints/challengers/campaign-a/experiment-4/"
-            "checkpoint-10"
+            "research/checkpoints/challengers/campaign-a/experiment-4/checkpoint-10"
         )
         assert "\\" not in archived[0]["artifact"]
 
@@ -268,7 +457,11 @@ class TestExperimentNumberingScopedPerCampaign:
         campaign2 = str(uuid.uuid4())
         state = {
             "schema_version": 3,
-            "campaign": {"id": campaign1, "started_at": "2026-09-01T00:00:00Z", "base_commit": "abc"},
+            "campaign": {
+                "id": campaign1,
+                "started_at": "2026-09-01T00:00:00Z",
+                "base_commit": "abc",
+            },
             "campaign_experiment_counters": {},
             "last_allocated_experiment": 0,
             "last_experiment": 0,
@@ -301,8 +494,14 @@ class TestExperimentNumberingScopedPerCampaign:
             "last_allocated_experiment": 0,
         }
 
-        assert runner_protocol.allocated_experiment_index(state, campaign_id=campaign1) == 5
-        assert runner_protocol.allocated_experiment_index(state, campaign_id=campaign2) == 3
+        assert (
+            runner_protocol.allocated_experiment_index(state, campaign_id=campaign1)
+            == 5
+        )
+        assert (
+            runner_protocol.allocated_experiment_index(state, campaign_id=campaign2)
+            == 3
+        )
 
     def test_allocated_experiment_index_fallback_to_global(self):
         """allocated_experiment_index without campaign_id should use global fallback."""
@@ -345,7 +544,7 @@ class TestEvaluationArtifactAttribution:
             episodes=100,
             seed=42,
             semantics="abc123",
-            campaign_id=campaign_id
+            campaign_id=campaign_id,
         )
         assert campaign_id in name
         assert "evaluation-" in name
@@ -359,7 +558,7 @@ class TestEvaluationArtifactAttribution:
             candidate="baseline",
             episodes=100,
             seed=42,
-            semantics="abc123"
+            semantics="abc123",
         )
         assert "evaluation-experiment-1-" in name
         assert "100ep-seed42-abc123" in name
@@ -371,10 +570,7 @@ class TestEvaluationArtifactAttribution:
         """task_reference_artifact_name should include campaign_id when provided."""
         campaign_id = str(uuid.uuid4())
         name = runner_protocol.task_reference_artifact_name(
-            experiment=1,
-            candidate="baseline",
-            panel="reach",
-            campaign_id=campaign_id
+            experiment=1, candidate="baseline", panel="reach", campaign_id=campaign_id
         )
         assert campaign_id in name
         assert "task-reference-" in name
@@ -384,9 +580,7 @@ class TestEvaluationArtifactAttribution:
     def test_task_reference_artifact_name_without_campaign_id(self):
         """task_reference_artifact_name without campaign_id should use legacy format."""
         name = runner_protocol.task_reference_artifact_name(
-            experiment=1,
-            candidate="baseline",
-            panel="reach"
+            experiment=1, candidate="baseline", panel="reach"
         )
         assert "task-reference-experiment-1-" in name
         assert "-reach" in name
@@ -401,7 +595,7 @@ class TestBriefGenerationCampaignFiltering:
     def test_postmortem_memory_with_campaign_id(self):
         """_postmortem_memory should extract campaign-specific sections."""
         from research.build_research_brief import _postmortem_memory
-        
+
         campaign_id = str(uuid.uuid4())
         postmortems = f"""
 ## {campaign_id} / Experiment 1
@@ -409,7 +603,7 @@ class TestBriefGenerationCampaignFiltering:
 
 **Interpretation:** Reasonable starting point for optimization
 """
-        
+
         memories = _postmortem_memory(postmortems, campaign_id=campaign_id)
         assert len(memories) == 1
         assert "Training completed" in memories[0]
@@ -418,12 +612,12 @@ class TestBriefGenerationCampaignFiltering:
     def test_postmortem_memory_legacy_format(self):
         """_postmortem_memory should still extract legacy format when no campaign_id."""
         from research.build_research_brief import _postmortem_memory
-        
+
         postmortems = """
 ## Experiment 1
 **Result:** Training completed in 150k steps with 45% success
 """
-        
+
         memories = _postmortem_memory(postmortems, campaign_id=None)
         assert len(memories) == 1
         assert "Training completed" in memories[0]
@@ -431,10 +625,10 @@ class TestBriefGenerationCampaignFiltering:
     def test_postmortem_memory_campaign_isolation(self):
         """_postmortem_memory should not extract other campaign sections."""
         from research.build_research_brief import _postmortem_memory
-        
+
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
-        
+
         postmortems = f"""
 ## {campaign1} / Experiment 1
 **Result:** Campaign 1 baseline success 45%
@@ -442,7 +636,7 @@ class TestBriefGenerationCampaignFiltering:
 ## {campaign2} / Experiment 1
 **Result:** Campaign 2 baseline success 50%
 """
-        
+
         # Extract only campaign1
         memories = _postmortem_memory(postmortems, campaign_id=campaign1)
         assert len(memories) == 1
@@ -459,37 +653,45 @@ class TestComprehensiveCampaignIsolation:
         """Two campaigns should have completely independent experiment numbering."""
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
-        
+
         # Initialize state for campaign1
         state1 = {
             "schema_version": 3,
-            "campaign": {"id": campaign1, "started_at": "2026-01-01T00:00:00Z", "base_commit": "abc1"},
+            "campaign": {
+                "id": campaign1,
+                "started_at": "2026-01-01T00:00:00Z",
+                "base_commit": "abc1",
+            },
             "campaign_experiment_counters": {},
             "last_allocated_experiment": 0,
             "last_experiment": 0,
         }
-        
+
         # Initialize state for campaign2 (simulated)
         state2 = {
             "schema_version": 3,
-            "campaign": {"id": campaign2, "started_at": "2026-01-02T00:00:00Z", "base_commit": "abc2"},
+            "campaign": {
+                "id": campaign2,
+                "started_at": "2026-01-02T00:00:00Z",
+                "base_commit": "abc2",
+            },
             "campaign_experiment_counters": {},
             "last_allocated_experiment": 0,
             "last_experiment": 0,
         }
-        
+
         # Allocate 3 experiments for campaign1
         indices1 = []
         for _ in range(3):
             idx = runner_protocol.next_experiment_index(state1, campaign_id=campaign1)
             indices1.append(idx)
-        
+
         # Allocate 3 experiments for campaign2
         indices2 = []
         for _ in range(3):
             idx = runner_protocol.next_experiment_index(state2, campaign_id=campaign2)
             indices2.append(idx)
-        
+
         # Both campaigns should have indices [1, 2, 3]
         assert indices1 == [1, 2, 3]
         assert indices2 == [1, 2, 3]
@@ -500,18 +702,18 @@ class TestComprehensiveCampaignIsolation:
     def test_campaign_result_attribution_chain(self):
         """Results should maintain campaign attribution through the pipeline."""
         campaign_id = str(uuid.uuid4())
-        
+
         # Simulate result records with campaign attribution
         results = [
             {"index": 1, "campaign_id": campaign_id, "verdict": "accepted"},
             {"index": 2, "campaign_id": campaign_id, "verdict": "rejected"},
             {"index": 3, "campaign_id": campaign_id, "verdict": "pending"},
         ]
-        
+
         # Filter by campaign
         filtered = [r for r in results if r.get("campaign_id") == campaign_id]
         assert len(filtered) == 3
-        
+
         # Other campaign should be empty
         other_campaign = str(uuid.uuid4())
         filtered_other = [r for r in results if r.get("campaign_id") == other_campaign]
@@ -521,7 +723,7 @@ class TestComprehensiveCampaignIsolation:
         """Evaluation artifacts should be isolated by campaign ID in filesystem paths."""
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
-        
+
         # Generate artifact names
         artifact1 = runner_protocol.evaluation_artifact_name(
             1, "baseline", 100, 42, "hash1", campaign_id=campaign1
@@ -529,17 +731,17 @@ class TestComprehensiveCampaignIsolation:
         artifact2 = runner_protocol.evaluation_artifact_name(
             1, "baseline", 100, 42, "hash1", campaign_id=campaign2
         )
-        
+
         # Both represent Experiment 1, baseline, same settings
         # But they should have different filenames due to campaign_id
         assert artifact1 != artifact2
         assert campaign1 in artifact1
         assert campaign2 in artifact2
-        
+
         # Simulated paths
         path1 = runner_paths.campaign_evaluation_dir(campaign1) / artifact1
         path2 = runner_paths.campaign_evaluation_dir(campaign2) / artifact2
-        
+
         # Paths should be in different directories
         assert str(campaign1) in str(path1)
         assert str(campaign2) in str(path2)
@@ -548,10 +750,10 @@ class TestComprehensiveCampaignIsolation:
         """Checkpoint paths should be isolated by campaign."""
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
-        
+
         checkpoint_root1 = runner_paths.campaign_checkpoint_root(campaign1)
         checkpoint_root2 = runner_paths.campaign_checkpoint_root(campaign2)
-        
+
         # Paths should be different
         assert str(checkpoint_root1) != str(checkpoint_root2)
         # Each should contain its campaign ID
@@ -566,36 +768,37 @@ class TestComprehensiveCampaignIsolation:
     def test_campaign_state_persistence_and_recovery(self):
         """Campaign state should persist and recover correctly."""
         campaign_id = str(uuid.uuid4())
-        
+
         # Simulate initial campaign state
         state = {
             "schema_version": 3,
             "campaign": {
                 "id": campaign_id,
                 "started_at": "2026-01-01T12:00:00Z",
-                "base_commit": "deadbeef"
+                "base_commit": "deadbeef",
             },
             "campaign_experiment_counters": {campaign_id: 0},
             "last_allocated_experiment": 0,
             "last_experiment": 0,
         }
-        
+
         # Allocate some experiments
         for i in range(1, 4):
             idx = runner_protocol.next_experiment_index(state, campaign_id=campaign_id)
             assert idx == i
-        
+
         # Verify final state
         assert state["campaign"]["id"] == campaign_id
         assert state["campaign_experiment_counters"][campaign_id] == 3
-        
+
         # Simulate recovery: load and continue
         assert runner_repository.current_campaign_id(state) == campaign_id
         assert runner_repository.current_campaign_base_commit(state) == "deadbeef"
-        
+
         # Next allocation should be 4
         next_idx = runner_protocol.next_experiment_index(state, campaign_id=campaign_id)
         assert next_idx == 4
+
 
 def test_postmortem_memory_stops_at_another_campaign_heading():
     from research.build_research_brief import _postmortem_memory

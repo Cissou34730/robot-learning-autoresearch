@@ -108,6 +108,7 @@ DEPENDENCY_DENIAL = (
 
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
+    "migrate_research_state.py",
     "final_benchmark.py",
     "migrate_policy_runtime.py",
 )

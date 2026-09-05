@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import shutil
@@ -52,7 +53,9 @@ def test_reset_persists_a_canonical_accepted_artifact(tmp_path):
     state = json.loads(
         (research_dir / "research_state.json").read_text(encoding="utf-8-sig")
     )
-    assert state["accepted_artifact"] == "research/checkpoints/accepted"
+    assert state["schema_version"] == 4
+    assert state["working_lineage"] is None
+    assert state["best_known_lineage"] is None
 
 
 SCRIPT = Path(__file__).resolve().parents[2] / "reset_research.ps1"
@@ -200,7 +203,7 @@ def reset(root, *arguments):
         cwd=root,
         capture_output=True,
         text=True,
-        timeout=60,
+        timeout=120,
         check=False,
     )
 
@@ -255,6 +258,14 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
     state = json.loads((root / "research/research_state.json").read_text())
     assert state["last_experiment"] == state["last_allocated_experiment"] == 1
     assert state["campaign"]["id"] == CAMPAIGN
+    assert state["schema_version"] == 4
+    assert state["working_lineage"]["artifact"] == "research/checkpoints/accepted"
+    expected_fingerprint = hashlib.sha256(
+        b"baseline\n" + b'{"completed": true}' + b"baseline\n" * 2
+    ).hexdigest()
+    assert state["working_lineage"]["fingerprint"] == expected_fingerprint
+    assert state["best_known_lineage"]["fingerprint"] == expected_fingerprint
+    assert state["working_lineage"]["scientific_commit"] == baseline
     assert git(root, "ls-files", "--", LOG) == LOG
     assert (root / LOG).read_text() == "baseline raw training log\n"
     # Replay from the new commit needs no external source for ignored logs.
@@ -270,7 +281,10 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
         "-Force",
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert git(root, "rev-parse", "HEAD") == prepared
+    replayed = json.loads((root / "research/research_state.json").read_text())
+    assert replayed["schema_version"] == 4
+    assert replayed["working_lineage"]["scientific_commit"] == prepared
+    assert replayed["best_known_lineage"]["scientific_commit"] == prepared
 
 
 def test_fresh_clears_campaign_but_keeps_current_science(baseline_repository):
@@ -289,7 +303,58 @@ def test_fresh_clears_campaign_but_keeps_current_science(baseline_repository):
     )
     assert state["last_experiment"] == 0
     assert state["campaign"]["id"] != CAMPAIGN
+    assert state["schema_version"] == 4
+    assert state["working_lineage"] is None
+    assert state["best_known_lineage"] is None
     assert git(root, "status", "--porcelain") == ""
+
+
+def test_baseline_accepts_measured_v4_roles(baseline_repository):
+    root, baseline = baseline_repository
+    git(root, "checkout", "--detach", baseline)
+    state_path = root / "research/research_state.json"
+    state = json.loads(state_path.read_text())
+    lineage = {
+        "artifact": "research/checkpoints/accepted",
+        "fingerprint": "measured-policy",
+        "origin_experiment": 1,
+        "candidate": "baseline",
+        "parameters": {},
+        "scientific_commit": baseline,
+        "training_steps": 120_000,
+        "evaluation_artifacts": [EVALUATION],
+        "reason": "Measured baseline.",
+    }
+    for field in (
+        "accepted_artifact",
+        "accepted_metrics",
+        "accepted_evaluations",
+        "accepted_parameters",
+        "accepted_training_steps",
+    ):
+        state.pop(field, None)
+    state.update(
+        schema_version=4,
+        working_lineage=lineage,
+        best_known_lineage=dict(lineage),
+        pending_analysis=None,
+        pending_evaluation_request=None,
+        pending_researcher_decision=None,
+    )
+    write(root, "research/research_state.json", json.dumps(state))
+    git(root, "add", "research/research_state.json")
+    git(root, "commit", "-m", "v4 measured baseline")
+    v4_baseline = git(root, "rev-parse", "HEAD")
+    git(root, "checkout", "development")
+
+    result = reset(root, "-Mode", "Baseline", "-BaselineRef", v4_baseline, "-Force")
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    restored = json.loads(state_path.read_text())
+    assert restored["schema_version"] == 4
+    assert restored["working_lineage"]["artifact"] == "research/checkpoints/accepted"
+    assert restored["working_lineage"]["scientific_commit"] == v4_baseline
+    assert restored["best_known_lineage"]["scientific_commit"] == v4_baseline
 
 
 @pytest.mark.parametrize(
