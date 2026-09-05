@@ -2,10 +2,10 @@
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Scientific strategy
 
-**Direction:** Improve full-angle reach-and-hold reliability by addressing the
-negative-angle failure sector identified in the first baseline, while first
-separating training-seed variation from representation and control effects.
-The fixed evaluation and objective remain unchanged.
+**Direction:** Establish how reproducible the accepted full-angle
+reach-and-hold behavior is across fresh PPO seeds before attributing failures to
+representation or control. Use the accepted lineage as the behavioral control
+and keep the fixed evaluation and objective unchanged.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, with
 five of six failures never entering tolerance and concentrated between -122°
@@ -48,10 +48,12 @@ sector performance.
 
 **Conditional next steps:** Keep the accepted lineage and do not promote the
 experiment 4 replication or continue either the focused-sampling or tested
-target-feature intervention on the present evidence. Further work should
-distinguish representation, control, and stochastic effects using the accepted
-lineage as the behavioral control and should preserve its full-angle and hold
-behavior.
+target-feature intervention on the present evidence. Run another unchanged
+fresh-seed replication to determine whether experiment 4 was representative of
+the baseline's seed sensitivity. If independent seeds reproduce strong
+behavior, compare representation or control interventions against that
+reproducible baseline; if they remain broadly variable, quantify that variation
+before interpreting single-seed intervention results.
 
 **Reconsider when:** A fresh baseline reliably reproduces the champion, or a
 balanced intervention shows a reliable sector improvement without material
