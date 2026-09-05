@@ -248,6 +248,160 @@ def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
     ]
 
 
+def _v4_measurements(candidate: dict) -> str:
+    evaluations = candidate.get("evaluations") or []
+    if not evaluations:
+        return "unmeasured"
+    panels = []
+    for evaluation in evaluations:
+        success = evaluation.get("success_percent")
+        result = (
+            f"{evaluation.get('panel', 'research_evaluation')}, "
+            f"seed {evaluation.get('seed', '-')}, "
+            f"{evaluation.get('episodes', '-')} episodes"
+        )
+        if success is not None:
+            result += f", success {float(success):.2f}%"
+        panels.append(result)
+    return "; ".join(panels)
+
+
+def _v4_lineage_lines(label: str, lineage: dict | None) -> list[str]:
+    if not lineage:
+        return [f"- {label}: unset"]
+    return [
+        (
+            f"- {label}: `{lineage.get('candidate', '-')}` from experiment "
+            f"{lineage.get('origin_experiment', '-')}; "
+            f"{int(lineage.get('training_steps', 0)):,} cumulative steps"
+        ),
+        f"  - Artifact: {_existing_artifact_reference(lineage.get('artifact'), kind='checkpoint')}",
+        f"  - Scientific recipe: `{lineage.get('scientific_commit') or 'unmeasured provenance'}`",
+        "  - Measurements: "
+        + (
+            ", ".join(
+                _existing_artifact_reference(path, kind="file")
+                for path in lineage.get("evaluation_artifacts", [])
+            )
+            or "unmeasured"
+        ),
+        f"  - Researcher reason: {lineage.get('reason', '-')}",
+    ]
+
+
+def _render_v4_research_brief(
+    state: dict,
+    results: list[dict],
+    postmortems: str,
+    campaign_id: str | None,
+    campaign_base_commit: str | None,
+    current_method: str,
+) -> str:
+    pending = state.get("pending_analysis")
+    latest = pending.get("result") if isinstance(pending, dict) else (results[-1] if results else None)
+    latest_experiment = pending.get("experiment") if isinstance(pending, dict) else (latest or {}).get("index", "none")
+    phase = "post-training analysis" if isinstance(pending, dict) else "experiment preparation"
+    if state.get("pending_final_benchmark") is not None:
+        phase = "official assessment"
+    terminal = state.get("terminal_campaign_status")
+    lines = [
+        "# Research Brief",
+        "",
+        "## Current phase and latest event",
+        "",
+        f"- Campaign: `{campaign_id or '-'}`",
+        f"- Base commit: `{campaign_base_commit or '-'}`",
+        f"- Current phase: {phase}",
+        f"- Current experiment: {latest_experiment}",
+        f"- Latest event: {state.get('last_verdict', (latest or {}).get('verdict', 'none'))}",
+        "- Available deliverables: "
+        + ("`research/evaluation_request.json` or closure `research/proposal.json`" if isinstance(pending, dict) else "`research/proposal.json`"),
+    ]
+    if terminal:
+        lines.append(f"- Terminal campaign status: {terminal}")
+
+    lines.extend(["", "## Latest experiment", ""])
+    if isinstance(pending, dict):
+        result = pending.get("result", {})
+        lines.extend([
+            f"- Operation: {operation_description(result) or result.get('kind', '-')}",
+            f"- Parent: {result.get('training_parent', pending.get('training_parent', '-'))}",
+            f"- Intervention: {_change_details(result)}",
+            "- Raw training logs: " + ", ".join(
+                _existing_artifact_reference(path, kind="file")
+                for path in pending.get("training_log_paths", [])
+            ) if pending.get("training_log_paths") else "- Raw training logs: unmeasured",
+            "",
+            "| Checkpoint | Steps | Training facts | Measurements |",
+            "|---|---:|---|---|",
+        ])
+        for candidate in sorted(pending.get("candidates", []), key=lambda item: int(item.get("timesteps", 0))):
+            facts = f"success {_candidate_metric(candidate, 'training_success')}; reward {_candidate_metric(candidate, 'ep_rew_mean')}"
+            lines.append(f"| `{candidate.get('name', '-')}` | {int(candidate.get('timesteps', 0)):,} | {facts} | {_v4_measurements(candidate)} |")
+    elif latest:
+        lines.extend([
+            f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",
+            f"- Parent: {latest.get('training_parent', '-')}",
+            f"- Intervention: {_change_details(latest)}",
+            f"- Final action: {(latest.get('closure_decision') or {}).get('continue_from', 'unmeasured')}",
+        ])
+    else:
+        lines.append("No experiment has completed in this campaign.")
+
+    lines.extend(["", "## Working lineage", ""])
+    lines.extend(_v4_lineage_lines("Working", state.get("working_lineage")))
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines.extend(["", "## Current scientific direction", "", "Researcher-authored interpretation:", ""])
+    lines.append("\n".join(strategy.splitlines()[1:]).strip() if strategy else "No scientific strategy recorded for this campaign yet.")
+
+    lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Final action | Detail |", "|---:|---|---|---|---|---|---|"])
+    for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
+        candidates = result.get("candidates") or []
+        checkpoints = "; ".join(
+            f"{item.get('name', '-')} ({int(item.get('timesteps', 0)):,}): {_v4_measurements(item)}"
+            for item in sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
+        ) or "unmeasured"
+        closure = result.get("closure_decision") or {}
+        lines.append(
+            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
+            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
+            f"{_compact(checkpoints, 140).replace('|', '/')} | {closure.get('continue_from', 'unmeasured')} | "
+            f"{_existing_artifact_reference(result.get('postmortem'), kind='file')} |"
+        )
+    if not results:
+        lines.append("| - | - | - | - | - | - | - |")
+
+    lines.extend(["", "## Repeated operations", ""])
+    groups = _replication_groups(results)
+    if groups:
+        for original, entries in groups:
+            facts = "; ".join(
+                f"experiment {entry.get('index')}, seed {entry.get('training_seed', '-')}, "
+                f"{_compact(_v4_measurements((entry.get('candidates') or [{}])[-1]), 100)}"
+                for entry in entries
+            )
+            lines.append(f"- Replication group `{original}`: {facts}")
+    else:
+        lines.append("No repeated operations recorded.")
+
+    lines.extend(["", "## Reusable lineages", ""])
+    retained = state.get("retained_lineages") or []
+    if retained:
+        for lineage in retained:
+            lines.extend(_v4_lineage_lines(f"`{lineage.get('id', '-')}`", lineage))
+    else:
+        lines.append("No retained alternatives.")
+    lines.extend(["", "## Best-known model", ""])
+    best_known = state.get("best_known_lineage")
+    lines.extend(_v4_lineage_lines("Best known", best_known))
+    if best_known and state.get("working_lineage") and best_known.get("fingerprint") == state["working_lineage"].get("fingerprint"):
+        lines.append("- This is also the working model.")
+    official = state.get("official_metrics")
+    if official is not None:
+        lines.extend(["", "## Official report", "", f"- Result: {official}"])
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def render_research_brief() -> str:
     from research import runner_repository  # Import here to avoid circular dependency
 
@@ -288,6 +442,11 @@ def render_research_brief() -> str:
             results = [r for r in all_results if r.get("campaign_id") == campaign_id]
         else:
             results = all_results
+
+    if state.get("schema_version") == 4:
+        return _render_v4_research_brief(
+            state, results, postmortems, campaign_id, campaign_base_commit, current_method
+        )
 
     accepted_metrics = state.get("accepted_metrics")
     latest_result = results[-1] if results else None

@@ -54,11 +54,8 @@ Candidate training success and reward shown in the brief are training facts, not
 
 ### Query Stable-Baselines3 logs
 
-```bash
-uv run python research/query_training_log.py \
-  --experiment <positive-integer> \
-  --from-step <nonnegative-integer> \
-  --to-step <integer-at-least-from-step>
+```powershell
+uv run python research/query_training_log.py --experiment <id> --from-step <start> --to-step <end>
 ```
 
 All arguments are required. Bounds are inclusive. Results preserve separate training attempts and are not aggregated.
@@ -79,11 +76,11 @@ observation layout. Task mechanics and success measurement remain shared.
 
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
-During evaluation, the Researcher may modify researcher-owned measurement and analysis code before requesting another measurement round. Changes affecting training apply to the next experiment.
+During post-training analysis, the Researcher may modify researcher-owned measurement and analysis code before requesting another measurement round. Changes affecting training apply to the next experiment.
 
 ## Request measurements
 
-**Phase:** Research evaluation.
+**Phase:** Post-training analysis.
 
 Write `research/evaluation_request.json`:
 
@@ -104,8 +101,7 @@ Write `research/evaluation_request.json`:
       "candidate": "<measured model>",
       "reference": "<other measured model>"
     }
-  ],
-  "need_more_evidence": "<boolean>"
+  ]
 }
 ```
 
@@ -118,14 +114,13 @@ One evaluation request may measure at most three distinct models. Multiple measu
 | `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Runs the researcher-owned evaluator and writes one result artifact |
 | `task_reference`      | Optional `label`: string                                                | Runs the fixed task-reference panel and writes one result artifact |
 
-Add one entry per model. Using identical `research_evaluation` settings measures several candidates or the champion on a comparable panel.
+Add one entry per model. Using identical `research_evaluation` settings measures several candidates or a selected lineage on a comparable panel.
 
 A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must have identical `(seed, episode)` sets.
 
-`need_more_evidence` is optional. When present, it must be the JSON boolean
-`true` or `false`. Set it to `true` to preserve completed measurements and open
-another evaluation round; omit it or set it to `false` to proceed to experiment
-closure.
+Each completed measurement round returns to post-training analysis. New requests
+do not use `need_more_evidence`; closing is a separate closure proposal in the
+same phase. Legacy accepted requests that contain it remain recoverable.
 
 ## Request training
 
@@ -181,9 +176,10 @@ Runner requires its five entries below and snapshots it with `reasoning` in the
 experiment record. Existing historical records without these fields remain
 readable; a newly submitted proposal must satisfy this contract.
 
-An eligible `training_parent` must be exposed by the brief as an active or retained lineage.
-The active model's training identifier is `accepted`; retained parents use their
-listed ID. The evaluation name `champion` is not a training-parent identifier.
+An eligible `training_parent` must be exposed by the brief as `working`,
+`best_known`, or a retained lineage ID. `continuation` continues the selected
+recipe without a learning-method change. A `training` proposal may deliberately
+apply a changed recipe to an existing parent with `initialization: "transfer"`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -212,8 +208,6 @@ also be edited during experiment preparation. The exact heading and labels are:
 **Open questions:** <uncertainties not yet resolved>
 
 **Conditional next steps:** <possible follow-ups depending on observations>
-
-**Reconsider when:** <evidence that would justify revising or abandoning this direction>
 ```
 
 Each entry must have content and may span multiple lines. This is researcher
@@ -221,8 +215,10 @@ interpretation, not a Runner verdict. Keep historical experiment entries intact;
 revise this section as evidence changes. There is no cycle ID, experiment quota,
 or obligation to execute the anticipated follow-ups. The brief displays this
 campaign's section without generating conclusions or importing another campaign's
-strategy. On adopting this protocol in an existing campaign, write the synthesis
-from inspected history; the Runner does not fabricate one.
+strategy. Historical `Reconsider when` content remains part of the readable
+synthesis but is not required in new sections. On adopting this protocol in an
+existing campaign, write the synthesis from inspected history; the Runner does
+not fabricate one.
 
 Append to `research/postmortems.md`:
 
@@ -240,11 +236,13 @@ Append to `research/postmortems.md`:
 
 The heading format is `## <Campaign ID> / Experiment <integer>`, where `<Campaign ID>` is the current campaign UUID. This format allows experiments with the same number from different campaigns to be uniquely identified in the postmortem history.
 
-At least one referenced artifact must exist and belong to the experiment.
+At least one referenced source must exist and belong to the experiment. It may be
+a training log, checkpoint metadata, recorded training result, or completed
+evaluation artifact. An unmeasured checkpoint is unmeasured, not zero success.
 
 ## Resolve lineage
 
-**Phase:** Experiment closure after the postmortem.
+**Phase:** Post-training analysis, after the postmortem.
 
 Write a lineage-only `research/proposal.json`:
 
@@ -252,11 +250,16 @@ Write a lineage-only `research/proposal.json`:
 {
   "previous_result_decision": {
     "experiment": "<current experiment integer>",
-    "continue_from": "<candidate or champion exposed by the brief>",
+    "continue_from": "<current checkpoint, working, best_known, or retained ID>",
     "reason": "<non-empty scientific reason>",
     "code": {
       "action": "<keep | revert>",
       "reason": "<non-empty reason>"
+    },
+    "best_known": {
+      "candidate": "<available model ID>",
+      "reason": "<non-empty designation reason>",
+      "evidence": ["<development-evaluation artifact path>"]
     },
     "retain": [
       {
@@ -275,7 +278,11 @@ Write a lineage-only `research/proposal.json`:
 
 `retain`, `remove_retained` and `request_final_benchmark` are optional.
 
-This request selects the active model, keeps or reverts the experiment’s code, and manages retained lineages. Unretained model artifacts are removed; their recorded history and measurements remain.
+`best_known`, `retain`, `remove_retained`, and `request_final_benchmark` are
+optional. Omitted `best_known` preserves the existing best-known lineage; it does
+not promote `continue_from`. This request selects the working model, chooses the
+code action, and manages retained lineages. Unretained model artifacts are
+removed; their recorded history and measurements remain.
 
 ## Request the official benchmark
 

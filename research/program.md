@@ -83,28 +83,29 @@ this revisable synthesis from the historical experiment entries. Preserve past
 observations and decisions; correct earlier interpretations in the synthesis
 with evidence rather than silently rewriting what was believed at the time.
 
-Record lessons with their sources and limits, open questions, the current
-direction, conditional follow-ups and evidence that would warrant reconsidering
-the direction. Think beyond the next experiment without committing to a fixed
-sequence or number of experiments. Revise the strategy when new evidence changes
-it, including when an older lesson no longer applies. State uncertainty when
-there is not yet enough evidence for a lesson.
+Record direction, lessons with their sources and limits, open questions, and
+conditional follow-ups. Think beyond the next experiment without committing to a
+fixed sequence or number of experiments. Revise the strategy when new evidence
+changes it, including when an older lesson no longer applies. State uncertainty
+when there is not yet enough evidence for a lesson.
 
-## Fixed cycle
+## Lifecycle
 
 The phase order is:
 
 1. prepare a new hypothesis and experiment;
 2. Runner training;
-3. design and execute research evaluation;
-4. close the experiment and resolve its lineage;
-5. optional Runner execution of the final benchmark through the lineage
+3. post-training analysis, which may request and execute one or more measurement
+   rounds or close directly from logs and existing evidence;
+4. close the experiment and resolve its working lineage, code decision, and
+   optional best-known designation;
+5. optional Runner execution of the final benchmark through the closure
    decision;
 6. prepare the next experiment.
 
-Phases are not merged, skipped or reordered. A Researcher session is bounded to
-its current phase. Runner recovery of an interrupted execution resumes that
-execution and is not a scientific continuation experiment.
+A Researcher session is bounded to its current phase. Runner recovery of an
+interrupted execution resumes that execution and is not a scientific continuation
+experiment.
 
 ## Experiment preparation
 
@@ -130,16 +131,17 @@ The Runner establishes the experiment's code parent before the session,
 validates the proposal and changes, then trains on the fixed budget. The
 Researcher never launches training.
 
-## Research evaluation
+## Post-training analysis
 
-After training, decide what measurements address the experiment's scientific
-question and write `research/evaluation_request.json`. The Runner validates and
-executes the request and preserves detailed artifacts.
+After training, determine what happened using checkpoint inventory, logs, and
+existing evidence. Request measurements only when they answer an unresolved
+scientific question by writing `research/evaluation_request.json`; the Runner
+validates and executes the request and preserves detailed artifacts. Analysis may
+instead close directly with a postmortem and closure proposal.
 
 The phase may contain multiple measurement rounds. Completed measurements remain
-available across rounds. A round either requests more evidence within this same
-phase or ends evaluation and advances to experiment closure; there is no
-measurement-only phase between experiments.
+available across rounds, and each completed round returns to analysis. There is
+no fake empty evaluation and no automatic next measurement.
 
 Research and task-reference measurements are development evidence and never
 declare the objective reached. Neither human-owned panel may be used as an
@@ -147,8 +149,8 @@ iterative optimization surface.
 
 ## Experiment closure
 
-Inspect the experiment's detailed measurement artifacts. Append its durable
-entry to `research/postmortems.md`, separating observed behavior from the
+Inspect the experiment's available training logs and detailed measurement
+artifacts. Append its durable entry to `research/postmortems.md`, separating observed behavior from the
 Researcher's interpretation and citing the inspected artifacts. Then write the
 lineage-only `research/proposal.json`.
 
@@ -156,15 +158,17 @@ Update the scientific synthesis in that same document with what was learned,
 what remains uncertain, and the implications for the next research steps.
 Distinguish these conclusions from the decision about retaining model or code.
 
-The lineage decision selects the active policy, decides whether the
-experiment's code is kept or reverted, and may retain or remove reusable
-alternative lineages. Non-active candidates remain reusable only when retained
-through this decision. The Runner applies the validated decision and removes
-unretained heavyweight artifacts while preserving history and measurements.
+The closure selects a working policy, decides whether the experiment's code is
+kept, reverted, or restored from a named lineage, and may retain or remove
+reusable alternatives. A separate explicit, evidence-backed best-known
+designation may differ from the working lineage. Further training of a promising
+working lineage does not claim it is best known. The Runner applies the validated
+decision and removes unretained heavyweight artifacts while preserving history
+and measurements.
 
-The final benchmark may be requested only through the lineage decision. It is
-the sole objective verdict and does not select a lineage. After a failed final
-benchmark, return to research rather than tuning against the protected result.
+The final benchmark may be requested only through closure and targets the frozen
+best-known model. It is the terminal objective verdict and does not select a
+lineage.
 
 ## Validation and recovery
 

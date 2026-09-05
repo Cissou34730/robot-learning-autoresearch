@@ -201,13 +201,13 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     assert invocations == [
         "uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt",
     ]
-    assert LOOP.count("Invoke-ResearcherSession -Prompt") == 6
-    assert LOOP.count("-Continue") == 3
+    assert LOOP.count("Invoke-ResearcherSession -Prompt") == 8
+    assert LOOP.count("-Continue") == 4
     assert "$script:ResearcherExitCode = if ($null -eq $LASTEXITCODE)" in LOOP
 
 
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
-    for phase in ("proposalStatus", "evaluationStatus", "lineageStatus"):
+    for phase in ("proposalStatus", "evaluationStatus", "lineageStatus", "analysisStatus"):
         assert LOOP.count(f"if (-not ${phase}.Complete)") == 2
 
     assert "ResearcherExitCode -ne" not in LOOP
@@ -217,7 +217,7 @@ def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
 
 
 def test_each_phase_reports_its_session_before_deciding_to_retry():
-    assert LOOP.count("Write-ResearcherSessionStatus") == 6
+    assert LOOP.count("Write-ResearcherSessionStatus") == 8
     for status, retry in (
         ("$proposalStatus", "=== Research proposal missing or invalid"),
         ("$evaluationStatus", "=== Evaluation request missing or invalid"),
@@ -231,6 +231,7 @@ def test_every_phase_validates_its_deliverable_with_the_protected_validator():
         "--check-proposal",
         "--check-evaluation-request",
         "--check-lineage-evidence",
+        "--check-analysis-deliverable",
     ):
         assert validator in LOOP
 
@@ -311,6 +312,11 @@ def _preflight_files(monkeypatch, tmp_path, request: dict | str) -> Path:
         request_path.write_text(request, encoding="utf-8")
     else:
         request_path.write_text(json.dumps(request), encoding="utf-8")
+    accepted = tmp_path / "research" / "checkpoints" / "accepted"
+    accepted.mkdir(parents=True)
+    accepted.joinpath("model.zip").write_bytes(b"model")
+    accepted.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr(
@@ -502,7 +508,7 @@ def test_evaluation_preflight_rejects_with_a_usable_reason(
     assert state_path.read_bytes() == original_state
 
 
-def test_evaluation_preflight_accepts_the_champion_the_brief_exposes(
+def test_evaluation_preflight_rejects_the_legacy_champion_alias(
     monkeypatch, tmp_path, capsys
 ):
     _preflight_files(
@@ -522,8 +528,8 @@ def test_evaluation_preflight_accepts_the_champion_the_brief_exposes(
         ),
     )
 
-    assert check_evaluation_request() == 0
-    assert "EVALUATION_REQUEST_VALID" in capsys.readouterr().out
+    assert check_evaluation_request() == 1
+    assert "unknown measurement candidate 'champion'" in capsys.readouterr().out
 
 
 def test_evaluation_preflight_rejects_protected_changes_without_mutation(
@@ -571,10 +577,10 @@ def test_invalid_paired_comparison_runs_no_evaluator_and_writes_no_state(
 
     assert check_evaluation_request() == 1
     reason = capsys.readouterr().out
-    assert "requires research-evaluation data for both models" in reason
+    assert "unknown paired comparison reference 'champion'" in reason
     assert state_path.read_bytes() == original_state
 
-    with pytest.raises(ValueError, match="requires research-evaluation data"):
+    with pytest.raises(ValueError, match="unknown paired comparison reference 'champion'"):
         execute_pending_evaluations()
     assert state_path.read_bytes() == original_state
 

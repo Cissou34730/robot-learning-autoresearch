@@ -7,6 +7,35 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-05 - Steps 4-5: factual v4 memory and post-training analysis prompts
+
+- **Scope:** The v4 persistence and analysis lifecycle are presented through the
+  compact brief, Runner console, launcher prompts, and Researcher documentation.
+  This is software-contract work only; it neither launches a campaign nor changes
+  training, measurement, or benchmark semantics.
+- **Memory:** The brief leads with current phase and latest event, then shows the
+  latest experiment, working lineage, researcher-authored scientific direction,
+  full current-campaign newest-first experiment index, factual repeated-operation
+  groups, reusable lineages, best-known model, and any official report. Missing
+  measurements are rendered as unmeasured, never as zero or a synthesized score.
+- **Analysis:** A v4 completed training run has one post-training analysis
+  session. It may submit a measurement request or a postmortem-plus-closure
+  request. Completed measurement rounds return to the same analysis phase; the
+  protected `--check-analysis-deliverable` preflight arbitrates the exclusive
+  deliverable before Runner execution. Legacy evaluation and lineage dispatch
+  remains only for legacy state compatibility.
+- **Scientific authority:** Repeated operations and development panels are
+  factual observations, not Runner conclusions. Evidence can establish variability
+  without identifying its cause; another replication is useful only when the
+  Researcher can state the additional scientific question it addresses. Scientific
+  sufficiency remains a Researcher decision.
+- **Strategy:** New scientific strategy sections require Direction, Lessons and
+  limits, Open questions, and Conditional next steps. Historical `Reconsider when`
+  content remains readable but is no longer mandatory.
+- **Boundary:** Code-recipe restoration and final-benchmark terminal semantics
+  remain later implementation work. Documentation does not claim that unavailable
+  restore operation is executable.
+
 ## 2026-09-05 - Step 1: explicit reasoning and revisable scientific direction
 
 - **Scope:** Implemented in `codex/research-reasoning-memory`, from `795b2d2`

@@ -293,7 +293,9 @@ def execute_pending_evaluations() -> int:
         ),
     )
     protocol.validate_paired_comparison_plan(request, pending, available, requested)
-    resolved_models = protocol.resolved_measurement_models(request, available)
+    resolved_models = (
+        protocol.resolved_measurement_models(request, available) if is_v4 else {}
+    )
     if paths.EVALUATION_REQUEST_PATH.exists():
         pending["evaluation_plan"] = request
         if is_v4:
@@ -372,7 +374,10 @@ def execute_pending_evaluations() -> int:
                 paths.ROOT
             ).as_posix()
             clean_metrics["evaluation_semantics"] = semantics
-            clean_metrics["model_fingerprint"] = resolved_models[name]["fingerprint"]
+            if is_v4:
+                clean_metrics["model_fingerprint"] = resolved_models[name][
+                    "fingerprint"
+                ]
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
@@ -381,8 +386,12 @@ def execute_pending_evaluations() -> int:
                     "seed": seed,
                     "label": label,
                     "evaluation_semantics": semantics,
-                    "model_fingerprint": resolved_models[name]["fingerprint"],
                     "metrics": clean_metrics,
+                    **(
+                        {"model_fingerprint": resolved_models[name]["fingerprint"]}
+                        if is_v4
+                        else {}
+                    ),
                 }
             )
             completed_keys.add(key)
@@ -419,10 +428,14 @@ def execute_pending_evaluations() -> int:
                     "episodes": int(metrics["episodes"]),
                     "seed": int(metrics["seed"]),
                     "success_percent": float(metrics["success_percent"]),
-                    "model_fingerprint": resolved_models[name]["fingerprint"],
                     "evaluation_artifact": output_path.relative_to(
                         paths.ROOT
                     ).as_posix(),
+                    **(
+                        {"model_fingerprint": resolved_models[name]["fingerprint"]}
+                        if is_v4
+                        else {}
+                    ),
                 }
             )
             completed_reference_keys.add(reference_key)
@@ -656,6 +669,7 @@ def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
         artifact = repository.resolve_repo_path(lineage["artifact"])
         if artifact not in protected:
             repository.remove_heavyweight_artifacts(artifact)
+    console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
 

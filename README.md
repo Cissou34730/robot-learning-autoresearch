@@ -9,10 +9,13 @@ redefine an official result. The training environment may evolve through researc
 without changing the human-owned final benchmark.
 
 The researcher owns the scientific decisions: learning method, checkpoints to
-measure, evaluation plan, analysis, retained model lineages, and model/code
-lineage. The runner only executes and records those decisions. It does not
-automatically rank candidates, run a tournament, promote a model, or apply a
-statistical gate.
+measure, post-training analysis, retained model lineages, and model/code lineage.
+Training leads to analysis, which can request one or more development-measurement
+rounds or close directly from logs and existing evidence. A closure chooses a
+working lineage and may independently designate an evidence-backed best-known
+model; continuing a promising working lineage does not make it best known. The
+runner only executes and records those decisions. It does not automatically rank
+candidates, run a tournament, promote a model, or apply a statistical gate.
 
 Start the autonomous loop from PowerShell:
 
@@ -20,9 +23,9 @@ Start the autonomous loop from PowerShell:
 .\run_research.ps1
 ```
 
-The first run after an infrastructure change is an automatic unchanged
-baseline. Training saves neutral checkpoints; the researcher subsequently asks
-for the measurements that are useful to interpret them.
+The first run after an infrastructure change is an automatic unchanged baseline.
+Training saves neutral checkpoints; the researcher then analyzes logs and
+artifacts before deciding whether any development measurements are useful.
 
 ### Researcher runtime
 

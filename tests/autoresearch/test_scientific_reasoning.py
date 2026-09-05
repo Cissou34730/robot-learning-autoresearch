@@ -119,7 +119,6 @@ def test_missing_strategy_is_reported_not_generated(proposal, scientific_memory)
         "Lessons and limits",
         "Open questions",
         "Conditional next steps",
-        "Reconsider when",
     ],
 )
 def test_strategy_requires_each_meaningful_entry(proposal, scientific_memory, label):
@@ -130,6 +129,22 @@ def test_strategy_requires_each_meaningful_entry(proposal, scientific_memory, la
         protocol.validate_proposal_against_state(
             proposal, {"campaign": {"id": "current"}}
         )
+
+
+def test_legacy_reconsideration_text_remains_readable_but_is_not_required(
+    proposal, scientific_memory
+):
+    text = scientific_memory.read_text(encoding="utf-8").replace(
+        "**Reconsider when:**", "**Unrelated:**"
+    )
+    scientific_memory.write_text(text, encoding="utf-8")
+
+    assert (
+        protocol.validate_proposal_against_state(
+            proposal, {"campaign": {"id": "current"}}
+        )
+        == "training"
+    )
 
 
 def test_memory_is_separate_from_experiment_attestations(

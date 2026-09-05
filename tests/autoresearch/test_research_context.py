@@ -256,6 +256,53 @@ def test_brief_reports_an_incomplete_checkpoint_as_unavailable(
     assert "`research/checkpoints/incomplete`" not in brief
 
 
+def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics(
+    monkeypatch, tmp_path
+):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text(
+        "## campaign / Scientific strategy\n\n**Direction:** Investigate updates.\n\n"
+        "**Lessons and limits:** Only one run exists.\n\n**Open questions:** Why?\n\n"
+        "**Conditional next steps:** Measure when needed.\n",
+        encoding="utf-8",
+    )
+    results = [
+        {"campaign_id": "campaign", "index": index, "kind": "training", "family": "method", "candidates": []}
+        for index in range(1, 7)
+    ]
+    (research_dir / "results.jsonl").write_text(
+        "\n".join(json.dumps(result) for result in results) + "\n", encoding="utf-8"
+    )
+    (research_dir / "research_state.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 4,
+                "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+                "working_lineage": None,
+                "best_known_lineage": None,
+                "retained_lineages": [],
+                "last_verdict": "awaiting analysis",
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    rendered = render_research_brief()
+
+    assert "## Current phase and latest event" in rendered
+    assert "## Working lineage" in rendered
+    assert "## Best-known model" in rendered
+    assert "## Campaign experiment index" in rendered
+    assert "| 6 |" in rendered and "| 1 |" in rendered
+    assert rendered.index("| 6 |") < rendered.index("| 1 |")
+    assert rendered.count("unmeasured") >= 6
+    assert "candidate_metrics" not in rendered
+
+
 def test_brief_groups_original_and_replication_evidence(monkeypatch, tmp_path):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
@@ -464,9 +511,9 @@ def test_researcher_retries_resume_this_phase_own_session():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
-    # One process boundary, three bounded phases, one retry each.
-    assert script.count("Invoke-ResearcherSession -Prompt $") == 6
-    assert script.count("-Continue") == 3
+    # The v4 analysis phase joins the legacy compatibility phases, with one retry.
+    assert script.count("Invoke-ResearcherSession -Prompt $") == 8
+    assert script.count("-Continue") == 4
     # A retry resumes an identity this phase minted, not an implicit last session.
     assert "[guid]::NewGuid().ToString()" in script
     assert '$sessionArgs += "--resume"' in script
@@ -478,5 +525,16 @@ def test_researcher_prompts_leave_execution_to_the_launcher():
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
     assert script.count("invoke research/run_experiment.py") == 6
+    assert "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py" in script
     assert "Experiment was already executed during the research session" not in script
     assert "The researcher executed an experiment during the new-hypothesis" in script
+
+
+def test_v4_analysis_prompt_offers_measurement_or_closure_with_one_preflight():
+    root = Path(__file__).resolve().parents[2]
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+
+    assert "pending_analysis" in script
+    assert "--check-analysis-deliverable" in script
+    assert "Choose exactly one outcome" in script
+    assert "Candidate-only measurement and closure without new measurements are valid." in script

@@ -432,7 +432,6 @@ def validate_research_memory(proposal: dict, state: dict) -> None:
         "Lessons and limits",
         "Open questions",
         "Conditional next steps",
-        "Reconsider when",
     ):
         match = re.search(
             rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)(?=^\*\*|\Z)",

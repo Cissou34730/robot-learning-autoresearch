@@ -67,8 +67,9 @@ human-only maintenance operation, never a Researcher experiment command.
 - `research/EXPERIMENTS.md` - generated human-readable history.
 - `research/brief.md` - generated current Researcher context.
 - `research/evaluations/` - durable detailed development measurements.
-- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - reusable
-  policy lineages.
+- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - legacy
+  archive locations and reusable policy lineages. Version-4 campaign state names
+  the independent `working_lineage`, `best_known_lineage`, and retained IDs.
 - `models/candidates/` - disposable training candidates.
 - `tests/benchmark/`, `tests/autoresearch/`, `tests/scenario/`,
   `tests/training/` - tests grouped by ownership domain.
@@ -105,7 +106,9 @@ path takes precedence over any researcher-owned prefix.
 - `tests/scenario/`, `tests/training/`;
 - `research/current_params.json`;
 - the phase deliverables `research/proposal.json`,
-  `research/evaluation_request.json` and `research/postmortems.md`.
+  `research/evaluation_request.json` and `research/postmortems.md`. During v4
+  post-training analysis, exactly one actionable request is submitted: a
+  measurement request or a closure proposal with its postmortem.
 
 Scientific analysis, diagnostics and temporary tooling must be created within a
 researcher-owned code prefix. They are ordinary experiment code: they travel

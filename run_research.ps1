@@ -167,6 +167,21 @@ function Test-EvaluationRequest {
     return $true
 }
 
+function Test-AnalysisDeliverable {
+    $validationOutput = @(
+        uv run python research/run_experiment.py --check-analysis-deliverable 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $script:AnalysisValidationFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0) {
+        Write-Host $script:AnalysisValidationFeedback
+        return $false
+    }
+    return $true
+}
+
 # The three bounded phases below observe the same facts: what the process did,
 # whether the deliverable exists, and whether the protected validator accepts it.
 function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
@@ -215,6 +230,20 @@ function Get-LineageSessionStatus([int]$experiment, [int]$attempt) {
     New-ResearcherSessionStatus -Phase "lineage decision" -Attempt $attempt `
         -ExitCode $script:ResearcherExitCode `
         -Deliverable "research/postmortems.md and research/proposal.json" `
+        -Present $present -Valid $valid -Reason $reason
+}
+
+function Get-AnalysisSessionStatus([int]$attempt) {
+    $present = (Test-Path "research\evaluation_request.json") -or (Test-Path "research\proposal.json")
+    $valid = $false
+    $reason = "research/evaluation_request.json or research/proposal.json was not created"
+    if ($present) {
+        $valid = Test-AnalysisDeliverable
+        $reason = if ($valid) { "" } else { $script:AnalysisValidationFeedback }
+    }
+    New-ResearcherSessionStatus -Phase "post-training analysis" -Attempt $attempt `
+        -ExitCode $script:ResearcherExitCode `
+        -Deliverable "research/evaluation_request.json or research/proposal.json" `
         -Present $present -Valid $valid -Reason $reason
 }
 
@@ -276,6 +305,68 @@ while ($true) {
         }
         Update-ResearchBrief
         Write-Status "=== Final benchmark complete ===" Green
+        continue
+    }
+
+    if ($researchState.schema_version -eq 4 -and $null -ne $researchState.pending_analysis) {
+        Update-ResearchBrief
+        $analysisExperiment = [int]$researchState.pending_analysis.experiment
+        if ($null -ne $researchState.pending_analysis.evaluation_plan) {
+            Write-Status "=== Resuming the researcher's accepted measurement plan ==="
+            uv run python research/run_experiment.py --evaluate-pending
+            if ($LASTEXITCODE -eq 130) {
+                Write-Status "=== Requested measurement paused; completed measurements were saved ===" Yellow
+                break
+            }
+            if ($LASTEXITCODE -ne 0) {
+                throw "Runner execution of the accepted measurement request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
+            }
+            Update-ResearchBrief
+            continue
+        }
+        Remove-Item "research\evaluation_request.json", "research\proposal.json" -ErrorAction SilentlyContinue
+        $analysisPrompt = @(
+            "Current phase: post-training analysis for experiment $analysisExperiment. Completed training must now be understood before choosing the next scientific action."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
+            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
+            "Further training is a valid next experiment after closure; do not prepare that proposal now. Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
+        ) -join " "
+        Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis"
+        $analysisStatus = Get-AnalysisSessionStatus 1
+        Write-ResearcherSessionStatus $analysisStatus
+        if (-not $analysisStatus.Complete) {
+            $analysisProblem = $analysisStatus.Reason
+            Write-Status "=== Analysis deliverable missing or invalid; retrying the same bounded task once ===" Yellow
+            $analysisRetryPrompt = @(
+                "Current phase: post-training analysis for experiment $analysisExperiment. The previous deliverable failed validation: $analysisProblem."
+                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
+                "Choose exactly one outcome: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json. Candidate-only measurement and closure without new measurements are valid."
+                "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
+            ) -join " "
+            Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Continue
+            $analysisStatus = Get-AnalysisSessionStatus 2
+            Write-ResearcherSessionStatus $analysisStatus
+            if (-not $analysisStatus.Complete) {
+                throw "Researcher ended twice without a valid post-training analysis deliverable. Last validation error: $($analysisStatus.Reason)"
+            }
+        }
+        if (Test-Path "research\evaluation_request.json") {
+            uv run python research/run_experiment.py --evaluate-pending
+        }
+        else {
+            uv run python research/run_experiment.py
+        }
+        if ($LASTEXITCODE -eq 130) {
+            Write-Status "=== Analysis execution paused; completed work remains saved ===" Yellow
+            break
+        }
+        if ($LASTEXITCODE -ne 0) {
+            throw "Runner execution of the accepted analysis deliverable failed. The researcher phase is not reopened."
+        }
+        Update-ResearchBrief
+        Write-Status "=== Post-training analysis outcome recorded ===" Green
         continue
     }
 

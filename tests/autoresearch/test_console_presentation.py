@@ -182,6 +182,17 @@ def test_training_summary_keeps_missing_checkpoint_metrics_distinct_from_zero():
     assert "checkpoint-1024 | 1,024 | unavailable | 0" in card
 
 
+def test_v4_training_summary_advances_to_post_training_analysis():
+    result = experiment_result()
+    result["schema_version"] = 4
+
+    card = render_training_summary_card(
+        result, completed_steps=1, elapsed_seconds=1, candidates=[]
+    )
+
+    assert "Next\n  Researcher post-training analysis" in card
+
+
 def test_runner_no_longer_dumps_the_structured_result_to_the_console():
     source = run_experiment.__file__
     with open(source, encoding="utf-8") as handle:
@@ -347,6 +358,22 @@ def test_decision_card_lists_retained_and_removed_alternatives():
     assert "Final benchmark\nrequested" in card
 
 
+def test_v4_decision_card_keeps_working_and_best_known_distinct():
+    card = render_decision_card(
+        {
+            "pending": {"experiment": 2},
+            "decision": {"reason": "Keep exploring this checkpoint."},
+            "working_name": "checkpoint-120832",
+            "best_known_name": "baseline",
+            "code_action": "keep",
+            "request_final_benchmark": False,
+        }
+    )
+
+    assert "Working lineage\ncheckpoint-120832" in card
+    assert "Best-known model\nbaseline" in card
+
+
 def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_path):
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
@@ -388,6 +415,11 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
     ]
     request["paired_comparisons"] = []
     request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    checkpoint = tmp_path / "archive" / "checkpoint-120832"
+    checkpoint.mkdir(parents=True)
+    checkpoint.joinpath("model.zip").write_bytes(b"model")
+    checkpoint.joinpath("artifact.json").write_text("{}", encoding="utf-8")
 
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)

@@ -210,6 +210,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
         encoding="utf-8",
     )
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    _artifact(tmp_path / "archive" / "checkpoint")
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
@@ -880,13 +881,13 @@ def test_lineage_decision_requires_attested_current_experiment_evidence(
         (
             ["research/evaluations/evaluation-experiment-8-ghost-2ep-seed44-ab.json"],
             "Evidence inspected",
-            "at least one detailed evaluation artifact",
+            "at least one detailed source",
         ),
         # Names a real artifact belonging to a different experiment.
         (
             ["research/evaluations/evaluation-experiment-2-other-2ep-seed44-ab.json"],
             "Evidence inspected",
-            "at least one detailed evaluation artifact",
+            "at least one detailed source",
         ),
     ],
 )
@@ -1011,6 +1012,8 @@ def test_state_persistence_canonicalizes_known_legacy_artifact_references(
 ):
     state_path = tmp_path / "research_state.json"
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    for index in range(6):
+        _artifact(tmp_path / "archive" / f"model-{index}")
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     state = {
         "accepted_artifact": "research\\checkpoints\\accepted",
@@ -1690,25 +1693,6 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
     validate_evaluation_request(request)
 
 
-@pytest.mark.parametrize("need_more_evidence", [True, False])
-def test_evaluation_request_accepts_boolean_need_more_evidence(need_more_evidence):
-    validate_evaluation_request(
-        {
-            "question": "question",
-            "reason": "reason",
-            "measurements": [
-                {
-                    "instrument": "research_evaluation",
-                    "candidate": "candidate",
-                    "episodes": 2,
-                    "seed": 1000,
-                }
-            ],
-            "need_more_evidence": need_more_evidence,
-        }
-    )
-
-
 def test_evaluation_request_allows_omitted_need_more_evidence():
     validate_evaluation_request(
         {
@@ -1726,9 +1710,9 @@ def test_evaluation_request_allows_omitted_need_more_evidence():
     )
 
 
-@pytest.mark.parametrize("invalid_value", ["true", "false", 0, 1, None])
-def test_evaluation_request_rejects_non_boolean_need_more_evidence(invalid_value):
-    with pytest.raises(ValueError, match="need_more_evidence must be true or false"):
+@pytest.mark.parametrize("obsolete_value", [True, False, "true", 0, None])
+def test_new_evaluation_request_rejects_obsolete_need_more_evidence(obsolete_value):
+    with pytest.raises(ValueError, match="need_more_evidence is obsolete"):
         validate_evaluation_request(
             {
                 "question": "question",
@@ -1741,7 +1725,7 @@ def test_evaluation_request_rejects_non_boolean_need_more_evidence(invalid_value
                         "seed": 1000,
                     }
                 ],
-                "need_more_evidence": invalid_value,
+                "need_more_evidence": obsolete_value,
             }
         )
 
@@ -1753,7 +1737,6 @@ def test_evaluation_request_still_requires_a_measurement():
                 "question": "question",
                 "reason": "reason",
                 "measurements": [],
-                "need_more_evidence": False,
             }
         )
 

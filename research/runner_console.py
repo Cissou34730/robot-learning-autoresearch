@@ -5,8 +5,7 @@ measured. It never adds a scientific conclusion of its own.
 """
 
 import sys
-from datetime import datetime
-
+from datetime import UTC, datetime
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
@@ -49,7 +48,7 @@ def _style_card_sections(text: str) -> str:
 def announce(message: str) -> None:
     leading_break = "\n" if message.startswith("\n") else ""
     text = message.lstrip("\n")
-    timestamp = f"[{datetime.now():%H:%M:%S}]"
+    timestamp = f"[{datetime.now(UTC):%H:%M:%S}]"
     if sys.stdout.isatty() and text.startswith("==="):
         title, separator, remainder = text.partition("\n")
         text = f"{_CYAN}{timestamp} {title}{_RESET}{separator}{_style_card_sections(remainder)}"
@@ -176,7 +175,12 @@ def render_training_summary_card(
             f"{training_success.removeprefix('success ')} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')}"
         )
-    lines.extend(["", "Next", "  Researcher evaluation design"])
+    next_phase = (
+        "Researcher post-training analysis"
+        if result.get("schema_version") == 4
+        else "Researcher evaluation design"
+    )
+    lines.extend(["", "Next", f"  {next_phase}"])
     return "\n".join(lines)
 
 
@@ -275,6 +279,26 @@ def render_evidence_card(
 
 def render_decision_card(plan: dict) -> str:
     pending = plan["pending"]
+    if "working_name" in plan:
+        lines = [
+            f"=== Research decision · Experiment {int(pending['experiment'])} ===",
+            "",
+            "Working lineage",
+            plan["working_name"],
+            "",
+            "Reason",
+            str(plan["decision"]["reason"]).strip(),
+            "",
+            "Best-known model",
+            plan.get("best_known_name") or "unchanged",
+            "",
+            "Code",
+            plan["code_action"],
+            "",
+            "Final benchmark",
+            "requested" if plan["request_final_benchmark"] else "not requested",
+        ]
+        return "\n".join(lines)
     retained = [
         f"  {retention['record']['id']} (from {retention['record']['candidate']})"
         for retention in plan["retentions"]
