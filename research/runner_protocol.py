@@ -323,26 +323,38 @@ def retained_lineage(state: dict, identifier: str) -> dict | None:
     )
 
 
+def lineage_role(state: dict, identifier: str) -> dict | None:
+    """Resolve a Researcher-facing lineage ID without changing its identity."""
+    if identifier in {"working", "best_known"}:
+        lineage = state.get(f"{identifier}_lineage")
+        return lineage if isinstance(lineage, dict) else None
+    lineage = retained_lineage(state, identifier)
+    if lineage is not None:
+        return lineage
+    if state.get("schema_version") == 3 and identifier in {"accepted", "champion"}:
+        return {
+            "artifact": state.get("accepted_artifact"),
+            "training_steps": int(state.get("accepted_training_steps", 0)),
+            "parameters": state.get("accepted_parameters"),
+            "evaluation_artifacts": state.get("accepted_evaluations", []),
+        }
+    return None
+
+
 def training_parent(
     proposal: dict, state: dict, initialization: str
 ) -> tuple[str, Path, int]:
     if initialization != "transfer":
         return "fresh", Path(), 0
     identifier = str(proposal["training_parent"]).strip()
-    if identifier == "accepted":
-        return (
-            "accepted",
-            repository.resolve_repo_path(state["accepted_artifact"]),
-            int(state.get("accepted_training_steps", 0)),
-        )
-    lineage = retained_lineage(state, identifier)
+    lineage = lineage_role(state, identifier)
     if lineage is None:
-        raise ValueError(f"unknown retained training parent {identifier!r}")
+        raise ValueError(f"unknown training parent {identifier!r}")
     artifact = repository.resolve_repo_path(lineage["artifact"])
     for filename in repository.ARTIFACT_FILES:
         if not (artifact / filename).exists():
             raise ValueError(
-                f"retained lineage {identifier!r} is incomplete: {filename}"
+                f"training parent {identifier!r} is incomplete: {filename}"
             )
     return identifier, artifact, int(lineage.get("training_steps", 0))
 
@@ -710,13 +722,24 @@ def validate_evaluation_request(request: dict) -> None:
 
 
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:
-    """The models a request may name: this experiment's candidates and the champion."""
+    """Models a request may name, including independent reusable lineage roles."""
     available = {item["name"]: item for item in pending["candidates"]}
-    if pending.get("champion_available"):
-        available["champion"] = {
-            "name": "champion",
-            "artifact": state["accepted_artifact"],
-            "evaluations": [],
+    identifiers = ["working", "best_known"]
+    identifiers.extend(
+        str(lineage.get("id"))
+        for lineage in state.get("retained_lineages", [])
+        if str(lineage.get("id", "")).strip()
+    )
+    if state.get("schema_version") == 3 and pending.get("champion_available"):
+        identifiers.append("champion")
+    for identifier in identifiers:
+        lineage = lineage_role(state, identifier)
+        if lineage is None:
+            continue
+        available[identifier] = {
+            **lineage,
+            "name": identifier,
+            "evaluations": list(lineage.get("evaluations", [])),
         }
     return available
 
