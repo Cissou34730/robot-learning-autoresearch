@@ -28,8 +28,6 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
-TRAINING_CURRICULUM_START_STEP = 40_000
-TRAINING_CURRICULUM_END_STEP = 120_000
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -44,13 +42,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
-        training_curriculum: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.training_curriculum = training_curriculum
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -75,7 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._training_steps = 0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -85,28 +80,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
 
-    def _active_target_radius_range(self) -> tuple[float, float]:
-        if not self.training_curriculum:
-            return self.target_radius_range
-
-        progress = np.clip(
-            (self._training_steps - TRAINING_CURRICULUM_START_STEP)
-            / (TRAINING_CURRICULUM_END_STEP - TRAINING_CURRICULUM_START_STEP),
-            0.0,
-            1.0,
-        )
-        lower_bound = float(
-            TRAINING_TARGET_RADIUS_RANGE[0]
-            + progress
-            * (TARGET_RADIUS_RANGE[0] - TRAINING_TARGET_RADIUS_RANGE[0])
-        )
-        return lower_bound, self.target_radius_range[1]
-
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
-        radius_range = self._active_target_radius_range()
         radius = float(
-            self.np_random.uniform(radius_range[0], radius_range[1])
+            self.np_random.uniform(
+                self.target_radius_range[0], self.target_radius_range[1]
+            )
         )
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.
@@ -176,8 +155,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = distance
 
         self._step_count += 1
-        if self.training_curriculum:
-            self._training_steps += 1
         terminated = self._held_steps >= self.hold_steps_required
         truncated = self._step_count >= self.max_episode_steps
         info = {
@@ -193,10 +170,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(
-        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        training_curriculum=True,
-    )
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
