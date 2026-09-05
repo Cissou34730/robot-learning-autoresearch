@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-1-checkpoint-100352-200ep-seed1-f1f33f3d10a8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-champion-200ep-seed1-fb234ea119ba.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,21 +46,21 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 1
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 2
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
+  "last_allocated_experiment": 2,
+  "last_experiment": 2,
   "last_lineage_decision": {
     "code": {
-      "action": "keep",
-      "reason": "Experiment 1 was an unchanged fresh baseline with no code or parameter intervention, so there is no experiment-specific scientific change to revert."
+      "action": "revert",
+      "reason": "The experiment's changes in robot_learning/scenario/environment.py and its associated tests implement focused target-angle sampling, which produced a large full-angle and hold-stability regression. Revert the intervention and restore the accepted method."
     },
-    "code_parent_commit": "fef60b8ab90c0c04c4f00d8a676e05527d74dfd8",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "It is the strongest measured baseline at 97.0%, outperforming checkpoint-86016 and slightly outperforming checkpoint-120832; it is the best available starting lineage despite remaining below the objective threshold."
+    "code_parent_commit": "329d0a6d6e0f459f9f04ad4643d916823e3f888d",
+    "continue_from": "champion",
+    "experiment": 2,
+    "reason": "Experiment 2's focused-sampling checkpoints improved the selected negative-angle sector at best but regressed the uniformly evaluated policy from the 97.0% champion to 85.0% and then 77.5%, with substantial failures and hold interruptions outside the sector."
   },
-  "last_verdict": "researcher selected checkpoint-100352",
+  "last_verdict": "researcher selected champion",
   "official_metrics": null,
   "pending_evaluation_request": null,
   "pending_researcher_decision": null,
