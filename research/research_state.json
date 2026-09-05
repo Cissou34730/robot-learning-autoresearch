@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-champion-200ep-seed1-91e28f1ae7b8.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-champion-200ep-seed1-da55aa2016a5.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 7
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 8
   },
-  "last_allocated_experiment": 7,
-  "last_experiment": 7,
+  "last_allocated_experiment": 8,
+  "last_experiment": 8,
   "last_lineage_decision": {
     "code": {
-      "action": "revert",
-      "reason": "The experiment changed only HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 0.5, and the measured candidate degraded success and hold stability. Revert that reward change to restore the accepted champion's code parent."
+      "action": "keep",
+      "reason": "Experiment 8 made no scientific code or configuration change, so the current unchanged baseline code should remain in place."
     },
-    "code_parent_commit": "20e519cebb46464eee78a46ff3c5011650084296",
+    "code_parent_commit": "c20bc9b936469edb7c15e3fb1989e0b92375030d",
     "continue_from": "champion",
-    "experiment": 7,
-    "reason": "The transferred hold-exit reward intervention reached only 84.0% at checkpoint-100352 and 82.5% at checkpoint-120832, while the accepted champion reached 97.0%. It also produced 1226 and 987 hold interruptions versus one for the champion, so the candidate is not a viable active lineage."
+    "experiment": 8,
+    "reason": "Experiment 8 was an unchanged fresh replication and reached only 11.0% at checkpoint-100352 and 8.5% at checkpoint-120832, with broad non-reach failures and no reproduction of the accepted champion's 97.0%. The accepted champion remains the strongest active behavioral lineage."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",

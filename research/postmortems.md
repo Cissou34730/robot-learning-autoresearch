@@ -5,21 +5,21 @@
 **Direction:** Treat the accepted champion as the active behavioral control while
 separating training-seed variability from intervention effects in full-angle
 reach-and-hold. Fresh replications establish that PPO outcomes vary widely, and
-experiment 7 rejects the tested hold-exit reward forfeiture as a remedy for hold
-instability.
+experiments 7 and 8 provide no basis to replace the champion with the tested
+reward intervention or another fresh baseline.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
-the unchanged replications reached 29.5% and 75.5% at that checkpoint
-(experiments 4 and 5), and experiment 6 reached 24.0%, with 25.5% at
-checkpoint-120832. The fresh runs therefore support substantial
-training-seed variation, but none reproduces the accepted 97.0% outcome and
-four seeds do not identify its cause. Experiment 6 failed broadly: its
-checkpoint-100352 evaluation had 2/21 successes in the difficult sector and
-46/179 outside it, with 119 non-reaches and 383 hold interruptions; at
-checkpoint-120832 it had 4/21 and 47/179 successes, with 103 non-reaches and
-155 hold interruptions. Together with experiment 5's distinct late hold
-instability, this indicates that reach and hold reliability can vary
-independently across training. Experiment 7's transfer with
+the four unchanged fresh replications reached 29.5%, 75.5%, 24.0%, and 11.0%
+at that checkpoint (experiments 4, 5, 6, and 8); experiment 8 fell to 8.5% at
+checkpoint-120832. None reproduces the accepted 97.0% outcome, so the spread
+supports substantial training-seed variation but does not identify its cause.
+Experiment 8 failed broadly rather than only in the difficult sector: it had
+0/21 sector and 22/179 outside-sector successes at checkpoint-100352, with 171
+non-reaches and 235 hold interruptions, then 3/21 and 14/179 successes at
+checkpoint-120832, with 183 non-reaches and one hold interruption. Together
+with experiment 5's distinct late hold instability and experiment 6's broad
+failure, this indicates that reach and hold reliability can vary independently
+across training and checkpoint. Experiment 7's transfer with
 `HOLD_EXIT_FORFEIT_FRACTION=0.5` reached 84.0% at checkpoint-100352 and 82.5%
 at checkpoint-120832, with 1,226 and 987 hold interruptions, respectively,
 versus the champion's 97.0% and one interruption. The evidence does not
@@ -195,3 +195,26 @@ the reward change while leaving the broader source of training variability
 unresolved.
 
 **Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-checkpoint-100352-200ep-seed1-91e28f1ae7b8.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-checkpoint-120832-200ep-seed1-91e28f1ae7b8.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-champion-200ep-seed1-91e28f1ae7b8.json`.
+
+## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 8
+
+**Result:** The fourth unchanged fresh PPO replication failed to reproduce the
+accepted champion: checkpoint-100352 reached 11.0% (22/200), checkpoint-120832
+reached 8.5% (17/200), and the champion reached 97.0% (194/200).
+
+**Observed behavior:** At checkpoint-100352, the candidate succeeded on 0/21
+targets in the difficult negative-angle sector and 22/179 outside it, with 171
+non-reaches and 235 hold interruptions. At checkpoint-120832, it succeeded on
+3/21 in-sector and 14/179 outside-sector targets, with 183 non-reaches and one
+hold interruption. The champion comparison had 15/21 in-sector and 179/179
+outside-sector successes, five non-reaches and one hold interruption.
+
+**Interpretation:** This replication failed broadly across the angular range and
+further supports strong seed-dependent PPO outcomes rather than isolating a
+specific sector mechanism. The change from many hold interruptions to almost
+none while non-reaches increased between checkpoints shows that checkpoint
+behavior can vary within one run, but does not identify the training cause.
+The candidate is not a viable replacement; the unchanged code is retained and
+the accepted champion remains active.
+
+**Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-champion-200ep-seed1-da55aa2016a5.json`.
