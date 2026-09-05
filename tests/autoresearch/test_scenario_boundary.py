@@ -235,7 +235,7 @@ def test_every_researcher_session_loads_the_authoritative_context():
     program_lines = [
         line for line in script.splitlines() if "research/program.md" in line
     ]
-    assert len(program_lines) == 6
+    assert len(program_lines) == 8
     for line in program_lines:
         for context in (
             "AGENTS.md",

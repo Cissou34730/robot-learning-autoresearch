@@ -153,6 +153,10 @@ def test_runner_passes_the_correct_active_attempt_to_training(
         "research.runner_repository.scientific_delta", lambda parent: []
     )
     monkeypatch.setattr(
+        "research.runner_repository.publish_scientific_recipe",
+        lambda experiment, scope: "scientific-commit",
+    )
+    monkeypatch.setattr(
         "research.runner_repository.archive_candidates", lambda *args, **kwargs: []
     )
     monkeypatch.setattr(
