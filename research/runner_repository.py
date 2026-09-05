@@ -476,6 +476,24 @@ def write_state(state: dict) -> None:
         for evaluation in pending_decision.get("task_reference_evaluations") or []:
             if isinstance(evaluation, dict):
                 _canonicalize_evaluation_artifact(evaluation)
+    pending_analysis = state.get("pending_analysis")
+    if isinstance(pending_analysis, dict):
+        for candidate in pending_analysis.get("candidates") or []:
+            if isinstance(candidate, dict):
+                _canonicalize_candidate_artifacts(candidate)
+        for requested in pending_analysis.get("partial_evaluations") or []:
+            if isinstance(requested, dict) and isinstance(
+                requested.get("metrics"), dict
+            ):
+                _canonicalize_evaluation_artifact(requested["metrics"])
+        for evaluation in (
+            pending_analysis.get("partial_task_reference_evaluations") or []
+        ):
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        result = pending_analysis.get("result")
+        if isinstance(result, dict):
+            _canonicalize_result_artifacts(result)
     atomic_write_json(paths.STATE_PATH, state)
 
 
@@ -693,6 +711,36 @@ def append_result(result: dict) -> None:
     record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
     with paths.RESULTS_PATH.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, sort_keys=True) + "\n")
+    regenerate_experiment_log()
+
+
+def upsert_result(result: dict) -> None:
+    """Atomically replace one schema-v4 experiment record and rebuild its view."""
+    record = compact_result_record(result)
+    record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
+    campaign_id = record.get("campaign_id")
+    index = record.get("index")
+    if not campaign_id or not isinstance(index, int):
+        raise ValueError("a schema-v4 result needs campaign_id and integer index")
+    records = result_records()
+    replaced = False
+    updated: list[dict] = []
+    for existing in records:
+        if (
+            existing.get("campaign_id") == campaign_id
+            and existing.get("index") == index
+        ):
+            if not replaced:
+                updated.append(record)
+                replaced = True
+            continue
+        updated.append(existing)
+    if not replaced:
+        updated.append(record)
+    atomic_write_text(
+        paths.RESULTS_PATH,
+        "".join(json.dumps(item, sort_keys=True) + "\n" for item in updated),
+    )
     regenerate_experiment_log()
 
 

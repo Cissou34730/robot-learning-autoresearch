@@ -140,7 +140,9 @@ def check_evaluation_request() -> int:
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         if not isinstance(request, dict):
             raise TypeError("evaluation_request.json must contain a JSON object")
-        protocol.validate_evaluation_request(request)
+        protocol.validate_evaluation_request(
+            request, allow_legacy_need_more_evidence=True
+        )
         experiment = int(pending["experiment"])
         if int(request.get("experiment", -1)) != experiment:
             raise ValueError(
@@ -149,7 +151,9 @@ def check_evaluation_request() -> int:
             )
         validate_research_delta(state)
         available = protocol.available_evaluation_candidates(pending, state)
-        requested, _ = protocol.planned_measurements(request, available)
+        requested, _ = protocol.planned_measurements(
+            request, available, allow_legacy_need_more_evidence=True
+        )
         protocol.validate_paired_comparison_plan(request, pending, available, requested)
     except (
         json.JSONDecodeError,
@@ -162,6 +166,58 @@ def check_evaluation_request() -> int:
         return 1
     print("EVALUATION_REQUEST_VALID")
     return 0
+
+
+def check_analysis_deliverable() -> int:
+    """Preflight the single actionable submission allowed during v4 analysis."""
+    try:
+        state = repository.read_state()
+        pending = state.get("pending_analysis")
+        if state.get("schema_version") != 4 or not isinstance(pending, dict):
+            raise TypeError("no experiment is awaiting post-training analysis")
+        measurement_valid = False
+        closure_valid = False
+        if paths.EVALUATION_REQUEST_PATH.exists():
+            request = json.loads(
+                paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8")
+            )
+            if not isinstance(request, dict):
+                raise TypeError("evaluation_request.json must contain a JSON object")
+            if int(request.get("experiment", -1)) != int(pending["experiment"]):
+                raise ValueError("evaluation request references the wrong experiment")
+            available = protocol.available_evaluation_candidates(pending, state)
+            requested, _ = protocol.planned_measurements(request, available)
+            protocol.validate_paired_comparison_plan(
+                request, pending, available, requested
+            )
+            validate_research_delta(state)
+            measurement_valid = True
+        if paths.PROPOSAL_PATH.exists():
+            proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
+            protocol.validate_proposal_against_state(proposal, state)
+            validate_research_delta(state)
+            closure_valid = True
+        if measurement_valid and closure_valid:
+            raise ValueError(
+                "analysis has conflicting actionable measurement and closure deliverables"
+            )
+        if measurement_valid:
+            print("ANALYSIS_DELIVERABLE_VALID: measurement")
+            return 0
+        if closure_valid:
+            print("ANALYSIS_DELIVERABLE_VALID: closure")
+            return 0
+        raise ValueError("analysis requires evaluation_request.json or proposal.json")
+    except (
+        json.JSONDecodeError,
+        KeyError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as error:
+        print(f"ANALYSIS_DELIVERABLE_INVALID: {error}")
+        return 1
 
 
 def check_lineage_evidence(experiment: int) -> int:
@@ -199,13 +255,20 @@ def execute_pending_evaluations() -> int:
 
     state = repository.read_state()
     campaign_id = repository.current_campaign_id(state)
-    pending = state.get("pending_evaluation_request")
+    is_v4 = state.get("schema_version") == 4
+    pending = (
+        state.get("pending_analysis")
+        if is_v4
+        else state.get("pending_evaluation_request")
+    )
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
     validate_research_delta(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
-        protocol.validate_evaluation_request(request)
+        protocol.validate_evaluation_request(
+            request, allow_legacy_need_more_evidence=not is_v4
+        )
     else:
         request = pending.get("evaluation_plan")
         if not isinstance(request, dict):
@@ -218,12 +281,31 @@ def execute_pending_evaluations() -> int:
     available = protocol.available_evaluation_candidates(pending, state)
     # The whole plan is resolved first, so nothing is measured for a request
     # that a later entry would have invalidated.
-    requested, requested_references = protocol.planned_measurements(request, available)
+    requested, requested_references = protocol.planned_measurements(
+        request,
+        available,
+        allow_legacy_need_more_evidence=(
+            not is_v4
+            or (
+                not paths.EVALUATION_REQUEST_PATH.exists()
+                and "need_more_evidence" in request
+            )
+        ),
+    )
     protocol.validate_paired_comparison_plan(request, pending, available, requested)
+    resolved_models = protocol.resolved_measurement_models(request, available)
     if paths.EVALUATION_REQUEST_PATH.exists():
         pending["evaluation_plan"] = request
+        if is_v4:
+            pending["evaluation_plan_models"] = resolved_models
         pending.setdefault("partial_evaluations", [])
         repository.write_state(state)
+    elif is_v4:
+        frozen_models = pending.get("evaluation_plan_models")
+        if not isinstance(frozen_models, dict):
+            raise ValueError("accepted measurement plan has no frozen model identities")
+        if frozen_models != resolved_models:
+            raise ValueError("accepted measurement plan model identity changed")
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -290,6 +372,7 @@ def execute_pending_evaluations() -> int:
                 paths.ROOT
             ).as_posix()
             clean_metrics["evaluation_semantics"] = semantics
+            clean_metrics["model_fingerprint"] = resolved_models[name]["fingerprint"]
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
@@ -298,6 +381,7 @@ def execute_pending_evaluations() -> int:
                     "seed": seed,
                     "label": label,
                     "evaluation_semantics": semantics,
+                    "model_fingerprint": resolved_models[name]["fingerprint"],
                     "metrics": clean_metrics,
                 }
             )
@@ -335,6 +419,7 @@ def execute_pending_evaluations() -> int:
                     "episodes": int(metrics["episodes"]),
                     "seed": int(metrics["seed"]),
                     "success_percent": float(metrics["success_percent"]),
+                    "model_fingerprint": resolved_models[name]["fingerprint"],
                     "evaluation_artifact": output_path.relative_to(
                         paths.ROOT
                     ).as_posix(),
@@ -384,7 +469,7 @@ def execute_pending_evaluations() -> int:
         }
     )
     measured = [item for item in candidates if item.get("summary") is not None]
-    if measured:
+    if measured and not is_v4:
         primary = measured[0]["summary"]
         result["candidate_metrics"] = primary
         result["candidate_success_percent"] = primary["pooled_success_percent"]
@@ -403,8 +488,15 @@ def execute_pending_evaluations() -> int:
         "code_parent_commit": pending.get("code_parent_commit"),
         "research_change_paths": pending.get("research_change_paths", []),
     }
-    more_evidence = bool(request.get("need_more_evidence", False))
-    if more_evidence:
+    more_evidence = bool(request.get("need_more_evidence", False)) and not is_v4
+    if is_v4:
+        pending["evaluation_plan"] = None
+        pending["evaluation_plan_models"] = None
+        pending["partial_evaluations"] = executed
+        pending["partial_task_reference_evaluations"] = reference_executed
+        state["pending_analysis"] = pending
+        state["last_verdict"] = "measured as requested; awaiting researcher analysis"
+    elif more_evidence:
         pending["evaluation_plan"] = None
         pending["partial_evaluations"] = executed
         pending["partial_task_reference_evaluations"] = reference_executed
@@ -422,11 +514,13 @@ def execute_pending_evaluations() -> int:
         paths.BASELINE_PENDING_PATH.unlink(missing_ok=True)
     repository.write_state(state)
     paths.EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
-    if not more_evidence:
+    if is_v4:
+        repository.upsert_result(result)
+    elif not more_evidence:
         repository.append_result(result)
     next_phase = (
-        "Researcher evaluation design"
-        if more_evidence
+        "Researcher post-training analysis"
+        if is_v4 or more_evidence
         else "Researcher lineage decision"
     )
     console.announce(
@@ -526,7 +620,6 @@ def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
         "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
         "code_parent_commit": pending.get("code_parent_commit"),
     }
-    state["pending_researcher_decision"] = None
     state["last_verdict"] = f"researcher selected {plan['working_name']} as working"
     if plan["request_final_benchmark"]:
         best_known = plan["best_known_record"]
@@ -536,6 +629,23 @@ def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
         }
+    if state.get("pending_analysis") is pending:
+        result = pending["result"]
+        result.update(
+            {
+                "status": "closed",
+                "verdict": state["last_verdict"],
+                "decision_pending": False,
+                "closure_decision": plan["decision"],
+                "postmortem": repository.repo_relative_path(paths.POSTMORTEM_PATH),
+                "working_lineage": plan["working_record"],
+                "best_known_lineage": plan["best_known_record"],
+            }
+        )
+        repository.upsert_result(result)
+        state["pending_analysis"] = None
+    else:
+        state["pending_researcher_decision"] = None
     repository.write_state(state)
     protected = repository.role_and_retention_artifacts(state)
     for candidate in pending["candidates"]:
@@ -553,7 +663,13 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
     apply_previous_result_decision(proposal, state)
     repository.commit_lineage_decision(
-        int(raw_state["pending_researcher_decision"]["experiment"]),
+        int(
+            (
+                raw_state["pending_analysis"]
+                if raw_state.get("schema_version") == 4
+                else raw_state["pending_researcher_decision"]
+            )["experiment"]
+        ),
         str(proposal["previous_result_decision"]["continue_from"]),
         code_action=str(proposal["previous_result_decision"]["code"]["action"])
         .strip()
@@ -686,6 +802,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             else "",
             campaign_id,
         )
+    result["proposal_snapshot"] = proposal
     try:
         code_changes = repository.scientific_delta(code_parent_commit)
         result["code_changes"] = code_changes
@@ -823,7 +940,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         archived_candidates = repository.archive_candidates(
             index, contenders, effective_config, campaign_id=campaign_id
         )
-        verdict = "trained; awaiting researcher evaluation request"
+        verdict = "trained; awaiting researcher analysis"
         completed_steps = max(
             (int(candidate["timesteps"]) for candidate in archived_candidates),
             default=0,
@@ -839,31 +956,33 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             + "\n"
         )
 
-        state.update(
-            {
-                "last_experiment": index,
-                "last_verdict": verdict,
-                "pending_evaluation_request": {
-                    "experiment": index,
-                    "candidates": archived_candidates,
-                    "champion_available": not fresh_baseline,
-                    "parameters": effective_config,
-                    "initialization": initialization,
-                    "training_budget_steps": effective_timesteps,
-                    "parent_training_steps": int(parent_training_steps),
-                    "baseline": baseline,
-                    "code_parent_commit": code_parent_commit,
-                    "research_change_paths": code_changes
-                    + (["research/current_params.json"] if parameter_overrides else []),
-                    "result": result,
-                },
-            }
-        )
+        pending = {
+            "experiment": index,
+            "candidates": archived_candidates,
+            "champion_available": not fresh_baseline,
+            "parameters": effective_config,
+            "initialization": initialization,
+            "training_budget_steps": effective_timesteps,
+            "parent_training_steps": int(parent_training_steps),
+            "baseline": baseline,
+            "code_parent_commit": code_parent_commit,
+            "research_change_paths": code_changes
+            + (["research/current_params.json"] if parameter_overrides else []),
+            "result": result,
+        }
+        result["candidates"] = archived_candidates
+        state.update({"last_experiment": index, "last_verdict": verdict})
+        if state.get("schema_version") == 4:
+            state["pending_analysis"] = pending
+        else:
+            state["pending_evaluation_request"] = pending
         result.update({"status": "trained", "verdict": verdict})
         if args.reuse_candidate is not None:
             paths.RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
         repository.write_state(state)
+        if state.get("schema_version") == 4:
+            repository.upsert_result(result)
     except KeyboardInterrupt:
         recovery_dir = (
             paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"
@@ -943,6 +1062,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
     parser.add_argument("--check-evaluation-request", action="store_true")
+    parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
     return parser.parse_args()
 
@@ -955,6 +1075,8 @@ def main() -> int:
         return check_proposal()
     if args.check_evaluation_request:
         return check_evaluation_request()
+    if args.check_analysis_deliverable:
+        return check_analysis_deliverable()
     if args.check_lineage_evidence is not None:
         return check_lineage_evidence(args.check_lineage_evidence)
     # Past this point the Runner may write history, so the derived human-readable

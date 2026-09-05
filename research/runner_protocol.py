@@ -586,6 +586,13 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
         raise ValueError(
             "the final benchmark is pending; no research proposal is accepted"
         )
+    if state.get("schema_version") == 4 and state.get("pending_analysis") is not None:
+        if set(proposal) != {"previous_result_decision"}:
+            raise ValueError(
+                "the current analysis phase requires a closure proposal containing "
+                "only previous_result_decision"
+            )
+        return "lineage"
     if state.get("pending_evaluation_request") is not None:
         raise ValueError(
             "research evaluation is pending; use evaluation_request.json, not "
@@ -644,7 +651,9 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
-def validate_evaluation_request(request: dict) -> None:
+def validate_evaluation_request(
+    request: dict, *, allow_legacy_need_more_evidence: bool = False
+) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
         value = request.get(field)
@@ -655,11 +664,14 @@ def validate_evaluation_request(request: dict) -> None:
             raise ValueError(
                 f"{field} is obsolete; submit measurements through measurements"
             )
-    if (
-        "need_more_evidence" in request
-        and type(request["need_more_evidence"]) is not bool
-    ):
-        raise ValueError("need_more_evidence must be true or false")
+    if "need_more_evidence" in request:
+        if not allow_legacy_need_more_evidence:
+            raise ValueError(
+                "need_more_evidence is obsolete; submit another measurement "
+                "request or close the analysis"
+            )
+        if type(request["need_more_evidence"]) is not bool:
+            raise ValueError("need_more_evidence must be true or false")
     comparisons = request.get("paired_comparisons", [])
     if not isinstance(comparisons, list):
         raise TypeError("paired_comparisons must be a list")
@@ -745,10 +757,12 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
 
 
 def planned_measurements(
-    request: dict, available: dict
+    request: dict, available: dict, *, allow_legacy_need_more_evidence: bool = False
 ) -> tuple[list[dict], list[dict]]:
     """Resolve all typed measurements before either evaluator starts."""
-    validate_evaluation_request(request)
+    validate_evaluation_request(
+        request, allow_legacy_need_more_evidence=allow_legacy_need_more_evidence
+    )
     evaluations: list[dict] = []
     references: list[dict] = []
     for spec in requested_measurements(request):
@@ -778,6 +792,23 @@ def planned_measurements(
                 }
             )
     return evaluations, references
+
+
+def resolved_measurement_models(request: dict, available: dict) -> dict[str, dict]:
+    """Freeze each requested model name to one artifact and fingerprint."""
+    resolved: dict[str, dict] = {}
+    for measurement in requested_measurements(request):
+        name = str(measurement["candidate"]).strip()
+        if name in resolved:
+            continue
+        contender = available[name]
+        artifact = repository.resolve_repo_path(contender["artifact"])
+        repository.require_complete_artifact(artifact, f"measurement model {name!r}")
+        resolved[name] = {
+            "artifact": repository.repo_relative_path(artifact),
+            "fingerprint": repository.artifact_fingerprint(artifact),
+        }
+    return resolved
 
 
 def validate_paired_comparison_plan(
@@ -973,6 +1004,7 @@ def validate_postmortem_evidence(
     measured: list[str],
     *,
     campaign_id: str | None = None,
+    pending: dict | None = None,
 ) -> None:
     """Require the decision to name existing evidence of this experiment.
 
@@ -995,11 +1027,34 @@ def validate_postmortem_evidence(
             "evaluation artifacts the decision relied on"
         )
     owned = {path.replace("\\", "/") for path in measured}
+    if pending is not None:
+        for candidate in pending.get("candidates", []):
+            if not isinstance(candidate, dict) or not candidate.get("artifact"):
+                continue
+            metadata = (
+                repository.resolve_repo_path(str(candidate["artifact"]))
+                / "artifact.json"
+            )
+            if metadata.is_file():
+                owned.add(repository.repo_relative_path(metadata))
+        if paths.RESULTS_PATH.is_file():
+            owned.add(repository.repo_relative_path(paths.RESULTS_PATH))
+        log_root = (
+            paths.TRAINING_LOG_DIR / campaign_id
+            if campaign_id
+            else paths.TRAINING_LOG_DIR
+        )
+        if log_root.is_dir():
+            owned.update(
+                repository.repo_relative_path(path)
+                for path in log_root.glob(f"experiment-{experiment}-attempt-*.log")
+                if path.is_file()
+            )
     matched = [path for path in attested if path.replace("\\", "/") in owned]
     if not matched:
         raise ValueError(
             f"{EVIDENCE_ATTESTATION_LABEL} must name at least one detailed "
-            f"evaluation artifact measured for experiment {experiment}: "
+            f"source belonging to experiment {experiment}: "
             f"{sorted(owned)}"
         )
     missing = sorted(
@@ -1287,9 +1342,9 @@ def _v4_lineage_record(
 
 
 def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
-    pending = state.get("pending_researcher_decision")
+    pending = state.get("pending_analysis") or state.get("pending_researcher_decision")
     if pending is None:
-        raise ValueError("there is no researcher decision awaiting resolution")
+        raise ValueError("there is no post-training analysis awaiting closure")
     if not isinstance(pending, dict):
         raise TypeError("pending researcher decision must be an object")
     if set(proposal) != {"previous_result_decision"}:
@@ -1301,6 +1356,13 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         pending["experiment"]
     ):
         raise ValueError("previous_result_decision references the wrong experiment")
+    if state.get("pending_analysis") is not None:
+        validate_postmortem_evidence(
+            int(pending["experiment"]),
+            pending_evaluation_artifacts(pending),
+            campaign_id=repository.current_campaign_id(state),
+            pending=pending,
+        )
     allowed = {
         "experiment",
         "continue_from",
