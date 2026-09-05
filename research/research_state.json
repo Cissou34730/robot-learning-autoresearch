@@ -61,14 +61,21 @@
     "reason": "Experiment 6 was an unchanged fresh replication and reached only 24.0% at checkpoint-100352 and 25.5% at checkpoint-120832, with broad non-reach and hold failures, versus 97.0% for the accepted champion. The detailed evaluations show no viable replacement lineage, so the accepted champion remains the strongest available model."
   },
   "last_verdict": "researcher selected champion",
-  "official_metrics": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/accepted",
-    "experiment": 6,
-    "fingerprint": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
-    "selected": "champion"
+  "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
   },
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_parent": null,
   "retained_lineages": [],
