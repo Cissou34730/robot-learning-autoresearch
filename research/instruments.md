@@ -131,7 +131,7 @@ closure.
 
 **Phase:** Experiment preparation.
 
-Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`. The common required fields are `kind`, `family`, `hypothesis` and `initialization`:
+Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`. The common required fields are `kind`, `family`, `hypothesis`, `initialization` and `reasoning`:
 
 ```json
 {
@@ -139,6 +139,16 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
   "family": "<non-empty hypothesis-family identifier>",
   "hypothesis": "<non-empty falsifiable hypothesis>",
   "initialization": "<fresh | transfer>",
+  "reasoning": {
+    "evidence": [
+      {"source": "<existing repository-relative file>", "observation": "<what was observed there>"}
+    ],
+    "alternative": "<plausible competing explanation>",
+    "expected_observation": "<observable result supporting the hypothesis>",
+    "contradicting_observation": "<observable result weakening or contradicting it>",
+    "initialization_reason": "<why fresh, or why transfer from this training_parent>",
+    "strategy_link": "<how this experiment advances or revises the current direction>"
+  },
   "change": "<non-empty scientific intervention; training only>",
   "training_parent": "<string; required for transfer, otherwise omit>",
   "training_seed": "<non-negative integer; optional except for replication>",
@@ -157,7 +167,23 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 a non-negative integer when present. `params` is optional for ordinary training
 and is omitted for unchanged operations.
 
+All `reasoning` strings must be non-empty; `evidence` contains at least one
+source/observation pair. Cite inspected campaign artifacts, logs, postmortems or
+code with precise observations; these are not restricted to evaluation results.
+`source` is a file path without a line-number suffix or fragment; put the relevant
+experiment, checkpoint, step range or code location in `observation` as needed.
+The Runner checks file existence and confinement to this repository, not the
+scientific conclusion or proof of inspection. This contract applies equally to
+training, continuation and replication, not to the automatic baseline.
+
+Maintain the campaign's Scientific strategy section before submitting. The
+Runner requires its five entries below and snapshots it with `reasoning` in the
+experiment record. Existing historical records without these fields remain
+readable; a newly submitted proposal must satisfy this contract.
+
 An eligible `training_parent` must be exposed by the brief as an active or retained lineage.
+The active model's training identifier is `accepted`; retained parents use their
+listed ID. The evaluation name `champion` is not a training-parent identifier.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -172,6 +198,31 @@ not claim exact replay.
 ## Record the postmortem
 
 **Phase:** Experiment closure.
+
+In the same file, maintain one revisable section for the active campaign. It can
+also be edited during experiment preparation. The exact heading and labels are:
+
+```markdown
+## <Campaign ID> / Scientific strategy
+
+**Direction:** <current research question and direction>
+
+**Lessons and limits:** <reusable findings, source references and scope; or what remains unknown>
+
+**Open questions:** <uncertainties not yet resolved>
+
+**Conditional next steps:** <possible follow-ups depending on observations>
+
+**Reconsider when:** <evidence that would justify revising or abandoning this direction>
+```
+
+Each entry must have content and may span multiple lines. This is researcher
+interpretation, not a Runner verdict. Keep historical experiment entries intact;
+revise this section as evidence changes. There is no cycle ID, experiment quota,
+or obligation to execute the anticipated follow-ups. The brief displays this
+campaign's section without generating conclusions or importing another campaign's
+strategy. On adopting this protocol in an existing campaign, write the synthesis
+from inspected history; the Runner does not fabricate one.
 
 Append to `research/postmortems.md`:
 

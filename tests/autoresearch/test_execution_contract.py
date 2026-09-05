@@ -585,7 +585,7 @@ def test_incomplete_active_configuration_is_rejected(monkeypatch):
 
 
 def test_parameter_only_experiment_still_validates_the_configuration(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, scientific_reasoning, scientific_memory
 ):
     from research import run_experiment
 
@@ -620,6 +620,7 @@ def test_parameter_only_experiment_still_validates_the_configuration(
                 "kind": "training",
                 "family": "method.rollout_steps",
                 "hypothesis": "a longer rollout stabilizes the update",
+                "reasoning": scientific_reasoning,
                 "change": "lengthen the rollout",
                 "initialization": "transfer",
                 "training_parent": "accepted",
@@ -1193,11 +1194,12 @@ def test_runner_does_not_interpret_effective_configuration():
 # --- proposal validation ---------------------------------------------------
 
 
-def test_training_proposal_requires_only_its_scientific_shape():
+def test_training_proposal_requires_only_its_scientific_shape(scientific_reasoning):
     proposal = {
         "kind": "training",
         "family": "observation.representation",
         "hypothesis": "the observation hides information needed by the policy",
+        "reasoning": scientific_reasoning,
         "change": "change the observation representation",
         "initialization": "fresh",
     }
@@ -1213,7 +1215,7 @@ def test_training_proposal_requires_only_its_scientific_shape():
     )
 
 
-def test_transfer_proposal_requires_a_training_parent():
+def test_transfer_proposal_requires_a_training_parent(scientific_reasoning):
     proposal = {
         "kind": "training",
         "family": "x",
@@ -1226,6 +1228,7 @@ def test_transfer_proposal_requires_a_training_parent():
         validate_training_proposal(proposal, baseline=False)
 
     proposal["training_parent"] = "accepted"
+    proposal["reasoning"] = scientific_reasoning
     validate_training_proposal(proposal, baseline=False)
 
 
@@ -1390,6 +1393,16 @@ def _training_proposal() -> dict:
         "kind": "training",
         "family": "observation.representation",
         "hypothesis": "the current representation limits learning",
+        "reasoning": {
+            "evidence": [
+                {"source": "evidence.txt", "observation": "Learning plateaus."}
+            ],
+            "alternative": "Insufficient training.",
+            "expected_observation": "Progress resumes.",
+            "contradicting_observation": "The plateau persists.",
+            "initialization_reason": "Test the representation from initialization.",
+            "strategy_link": "Determine whether representation limits progress.",
+        },
         "change": "change the observation representation",
         "initialization": "fresh",
         "params": {"ppo": {"gamma": 0.99}},
@@ -1407,7 +1420,7 @@ def test_current_phase_accepts_a_training_proposal_when_no_decision_is_pending()
 
 
 def test_proposal_preflight_accepts_a_valid_training_proposal(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path, capsys, scientific_memory
 ):
     proposal_path = tmp_path / "proposal.json"
     state_path = tmp_path / "research_state.json"
@@ -1416,6 +1429,7 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
         json.dumps(
             {
                 "pending_scientific_parent": "test-parent",
+                "campaign": {"id": "current"},
                 "pending_evaluation_request": None,
                 "pending_researcher_decision": None,
                 "pending_final_benchmark": None,
@@ -1435,12 +1449,13 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
 
 
 def test_proposal_preflight_rejects_training_without_an_anchored_parent(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path, capsys, scientific_memory
 ):
     proposal_path = tmp_path / "proposal.json"
     state_path = tmp_path / "research_state.json"
     proposal = _training_proposal()
     state = {
+        "campaign": {"id": "current"},
         "pending_evaluation_request": None,
         "pending_researcher_decision": None,
         "pending_final_benchmark": None,
@@ -1467,7 +1482,7 @@ def test_proposal_preflight_rejects_training_without_an_anchored_parent(
 
 
 def test_proposal_preflight_rejects_protected_scenario_initializer_without_execution(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path, capsys, scientific_memory
 ):
     proposal_path = tmp_path / "proposal.json"
     state_path = tmp_path / "research_state.json"
@@ -1483,6 +1498,9 @@ def test_proposal_preflight_rejects_protected_scenario_initializer_without_execu
     original_proposal = proposal_path.read_bytes()
     original_state = state_path.read_bytes()
     changed_paths = ["robot_learning/scenario/__init__.py"]
+    state["campaign"] = {"id": "current"}
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    original_state = state_path.read_bytes()
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr(
@@ -1739,6 +1757,18 @@ def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
     ):
         (accepted / filename).touch()
     campaign_id = "00000000-0000-0000-0000-000000000001"
+    (tmp_path / "evidence.txt").write_text("Learning plateaus.", encoding="utf-8")
+    memory = tmp_path / "postmortems.md"
+    memory.write_text(
+        f"## {campaign_id} / Scientific strategy\n\n"
+        "**Direction:** Investigate the plateau.\n\n"
+        "**Lessons and limits:** evidence.txt records a single observation.\n\n"
+        "**Open questions:** Is further training useful?\n\n"
+        "**Conditional next steps:** Continue if progression resumes.\n\n"
+        "**Reconsider when:** No further progress.\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", memory)
     # Experiment identity is allocated per campaign; seed the campaign counter
     # from whichever flat legacy index the caller intended.
     allocated = max(
@@ -1794,6 +1824,7 @@ def _rejected_proposal() -> dict:
         "kind": "training",
         "family": "identity.allocation",
         "hypothesis": "An experiment number is spent even when nothing trains.",
+        "reasoning": _training_proposal()["reasoning"],
         "change": "No researcher change at all.",
         "initialization": "fresh",
     }

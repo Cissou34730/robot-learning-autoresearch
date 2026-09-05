@@ -7,6 +7,44 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-05 - Step 1: explicit reasoning and revisable scientific direction
+
+- **Scope:** Implemented in `codex/research-reasoning-memory`, from `795b2d2`
+  on `codex/model-runtime-isolation`. The reference worktree, its uncommitted
+  scientific changes and campaign are left intact. No reset or campaign launch.
+- **Method:** Seeking a successful policy, attributing a change's effect and
+  measuring training reproducibility are distinct questions. Neither fresh nor
+  transfer is privileged. Unchanged continuation remains a valid experiment.
+- **Proposal:** All researcher-submitted training, continuation and replication
+  proposals require `reasoning`: inspected source/observation pairs, a competing
+  explanation, expected and contradicting observations, initialization/parent
+  justification, and a link to the current scientific direction. Baselines keep
+  their existing runner-generated contract. Checks establish structure and file
+  existence, not truth, quality of inference or proof of inspection.
+- **Memory:** One campaign-scoped Scientific strategy section in postmortems.md
+  records direction, lessons with limits and sources, open questions, conditional
+  follow-ups, and reasons to reconsider. It is revisable; historical experiment
+  observations and decisions are preserved. Existing campaigns are not assigned
+  a fabricated synthesis; the next researcher proposal must establish it.
+- **Persistence:** Training records preserve the submitted reasoning and a copy
+  of the strategy before training. Later synthesis revisions do not rewrite the
+  experiment's original intent. Old history remains readable without migration.
+- **Visibility:** The brief displays the current strategy, unabridged and marked
+  as researcher interpretation. Postmortem extraction stops at section boundaries
+  so strategy text cannot become historical evidence attestation by accident.
+- **Boundary:** No new exploration-cycle object or fixed horizon, no change to
+  training, evaluation requests, phase order, lineage selection or budgets. The
+  working/best-model separation, evaluation freedom, broader prompt/brief redesign
+  and cost optimization belong to the subsequent steps.
+- **Validation:** Contract, memory isolation, legacy-readability and persistence
+  tests exercise the behavior without running a research campaign. Scientific
+  relevance and token cost still require the later controlled researcher trials;
+  passing the software suite alone does not establish those improvements.
+- **Verification:** 352 focused tests passed, then all 764 tests passed (313.63s);
+  Ruff passed on the touched Python files. The locked dependency set was installed
+  in an isolated test environment after a local cache/file-lock installation
+  failure. No test suite was added to the campaign's validation selection rules.
+
 ## 2026-08-28 — Fixed final benchmark, flexible training target
 
 - **Status:** Clarified later on 2026-08-28: the human objective is invariant,

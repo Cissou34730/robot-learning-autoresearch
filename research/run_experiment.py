@@ -150,9 +150,7 @@ def check_evaluation_request() -> int:
         validate_research_delta(state)
         available = protocol.available_evaluation_candidates(pending, state)
         requested, _ = protocol.planned_measurements(request, available)
-        protocol.validate_paired_comparison_plan(
-            request, pending, available, requested
-        )
+        protocol.validate_paired_comparison_plan(request, pending, available, requested)
     except (
         json.JSONDecodeError,
         KeyError,
@@ -593,12 +591,14 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     )
     # Extract campaign ID early for use throughout the function
     campaign_id = repository.current_campaign_id(state)
-    
+
     # A preserved proposal is the same experiment: recovery and restart reuse
     # the identity the interrupted run allocated instead of consuming a new one.
     resuming = args.reuse_candidate is not None or paths.RESTART_PENDING_PATH.exists()
     index = (
-        protocol.resumed_experiment_index(state, args.reuse_candidate, campaign_id=campaign_id)
+        protocol.resumed_experiment_index(
+            state, args.reuse_candidate, campaign_id=campaign_id
+        )
         if resuming
         else 0
     )
@@ -637,6 +637,16 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "status": "error",
         "verdict": "error",
     }
+    # Freeze the pre-training rationale: later revisions of scientific memory
+    # must not retroactively change what this experiment was intended to test.
+    if "reasoning" in proposal:
+        result["reasoning"] = proposal["reasoning"]
+        result["scientific_strategy"] = protocol.scientific_strategy_section(
+            paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
+            if paths.POSTMORTEM_PATH.exists()
+            else "",
+            campaign_id,
+        )
     try:
         code_changes = repository.scientific_delta(code_parent_commit)
         result["code_changes"] = code_changes
@@ -705,7 +715,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
 
         def active_training_log() -> Path:
             attempt = execution.training_attempt(
-                index, recoverable_continuation=recoverable_continuation, campaign_id=campaign_id
+                index,
+                recoverable_continuation=recoverable_continuation,
+                campaign_id=campaign_id,
             )
             return paths.training_log_path(index, attempt, campaign_id=campaign_id)
 
@@ -814,7 +826,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
         repository.write_state(state)
     except KeyboardInterrupt:
-        recovery_dir = paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"
+        recovery_dir = (
+            paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"
+        )
         recoverable = all(
             (candidate_dir / filename).exists()
             for filename in repository.ARTIFACT_FILES

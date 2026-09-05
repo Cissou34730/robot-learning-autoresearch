@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path, PureWindowsPath
 
-from research.runner_protocol import operation_description
+from research.runner_protocol import operation_description, scientific_strategy_section
 from research.runner_repository import ARTIFACT_FILES
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,15 +26,17 @@ def _candidate_metric(candidate: dict, key: str) -> str:
     return "unavailable" if value is None else f"{float(value):g}"
 
 
-def _postmortem_memory(text: str, campaign_id: str | None = None, count: int = 3) -> list[str]:
+def _postmortem_memory(
+    text: str, campaign_id: str | None = None, count: int = 3
+) -> list[str]:
     """Extract postmortem sections for the given campaign.
-    
+
     Handles both new "## Campaign ID / Experiment N" format and legacy "## Experiment N" format.
     When campaign_id is provided, only sections for that campaign are extracted.
     """
     section_pattern = re.compile(
         r"^## (?:(?P<campaign>[^\r\n/]+) / )?Experiment \d+\b.*?"
-        r"(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
+        r"(?=^## |\Z)",
         flags=re.MULTILINE | re.DOTALL,
     )
 
@@ -152,13 +154,13 @@ def _change_details(result: dict) -> str:
         )
     code_changes = result.get("code_changes") or []
     if code_changes:
-        return f"{operation_description(result) or '-'}; files: {', '.join(code_changes)}"
+        return (
+            f"{operation_description(result) or '-'}; files: {', '.join(code_changes)}"
+        )
     return operation_description(result) or "-"
 
 
-def _existing_artifact_reference(
-    value: str | None, *, kind: str = "artifact"
-) -> str:
+def _existing_artifact_reference(value: str | None, *, kind: str = "artifact") -> str:
     if not value:
         return "unavailable"
     normalized = str(value).replace("\\", "/")
@@ -248,7 +250,7 @@ def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
 
 def render_research_brief() -> str:
     from research import runner_repository  # Import here to avoid circular dependency
-    
+
     postmortems_path = RESEARCH_DIR / "postmortems.md"
     params_path = RESEARCH_DIR / "current_params.json"
     state_path = RESEARCH_DIR / "research_state.json"
@@ -267,11 +269,13 @@ def render_research_brief() -> str:
         if state_path.exists()
         else {}
     )
-    
+
     # Extract campaign info for filtering
     campaign_id = runner_repository.current_campaign_id(state) if state else None
-    campaign_base_commit = runner_repository.current_campaign_base_commit(state) if state else None
-    
+    campaign_base_commit = (
+        runner_repository.current_campaign_base_commit(state) if state else None
+    )
+
     results = []
     if results_path.exists():
         all_results = [
@@ -284,7 +288,7 @@ def render_research_brief() -> str:
             results = [r for r in all_results if r.get("campaign_id") == campaign_id]
         else:
             results = all_results
-    
+
     accepted_metrics = state.get("accepted_metrics")
     latest_result = results[-1] if results else None
     accepted_score = None
@@ -425,76 +429,93 @@ def render_research_brief() -> str:
         ),
         "",
     ]
-    
+
     # Add campaign header if available
     if campaign_id:
-        lines.extend([
-            "## Campaign Context",
+        lines.extend(
+            [
+                "## Campaign Context",
+                "",
+                f"- Campaign: `{campaign_id}`",
+                f"- Base commit: `{campaign_base_commit}`",
+                "",
+            ]
+        )
+
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines.extend(
+        [
+            "## Current scientific direction",
             "",
-            f"- Campaign: `{campaign_id}`",
-            f"- Base commit: `{campaign_base_commit}`",
+            "Researcher-authored, revisable interpretation from `research/postmortems.md`.",
             "",
-        ])
-    
-    lines.extend([
-        "## Immutable goal",
-        "",
-        (
-            "The current scientific problem, its protected task definition, and its "
-            "terminology are defined in `research/scenario.md`."
-        ),
-        "",
-        "## Current status",
-        "",
-        f"- Accepted success: {accepted_status}",
-        (
-            f"- Accepted seed panels: "
-            f"{accepted_seed_count if accepted_seed_count is not None else '-'}"
-            + (
-                " (legacy single-seed measurement)"
-                if accepted_metrics and "seed_count" not in accepted_metrics
-                else ""
-            )
-        ),
-        (
-            "- Reported result: pending"
-            if official_metrics is None
-            else f"- Reported result: "
-            f"{official_metrics.get('pooled_success_percent', official_metrics.get('success_percent', 0)):.1f}%"
-        ),
-        "- Accepted checkpoint: "
-        + (
-            _existing_artifact_reference(
-                state["accepted_artifact"], kind="checkpoint"
-            )
-            if "accepted_artifact" in state
-            else "missing"
-        ),
-        (
-            "- Accepted evaluation detail: "
-            + (
-                ", ".join(
-                    _existing_artifact_reference(path, kind="file")
-                    for path in state.get("accepted_evaluations", [])
+            "\n".join(strategy.splitlines()[1:]).strip()
+            if strategy
+            else (
+                "No scientific strategy recorded for this campaign yet. Establish it "
+                "in `research/postmortems.md` when preparing the next experiment; "
+                "historical results have not been reinterpreted automatically."
+            ),
+            "",
+            "## Immutable goal",
+            "",
+            (
+                "The current scientific problem, its protected task definition, and its "
+                "terminology are defined in `research/scenario.md`."
+            ),
+            "",
+            "## Current status",
+            "",
+            f"- Accepted success: {accepted_status}",
+            (
+                f"- Accepted seed panels: "
+                f"{accepted_seed_count if accepted_seed_count is not None else '-'}"
+                + (
+                    " (legacy single-seed measurement)"
+                    if accepted_metrics and "seed_count" not in accepted_metrics
+                    else ""
                 )
-                or "-"
-            )
-        ),
-        (
-            f"- Accepted lineage training budget: "
-            f"{int(state.get('accepted_training_steps', 0)):,} steps"
-        ),
-        (f"- Last experiment: {displayed_last_experiment}"),
-        (f"- Last verdict: {displayed_last_verdict}"),
-        f"- Current learning method: {current_method}",
-        *evaluation_lines,
-        *decision_lines,
-        "",
-        "## Recent experiment cards",
-        "",
-        "| # | Family | Operation | Init / budget | Outcome | Verdict |",
-        "|---:|---|---|---|---|---|",
-    ])
+            ),
+            (
+                "- Reported result: pending"
+                if official_metrics is None
+                else f"- Reported result: "
+                f"{official_metrics.get('pooled_success_percent', official_metrics.get('success_percent', 0)):.1f}%"
+            ),
+            "- Accepted checkpoint: "
+            + (
+                _existing_artifact_reference(
+                    state["accepted_artifact"], kind="checkpoint"
+                )
+                if "accepted_artifact" in state
+                else "missing"
+            ),
+            (
+                "- Accepted evaluation detail: "
+                + (
+                    ", ".join(
+                        _existing_artifact_reference(path, kind="file")
+                        for path in state.get("accepted_evaluations", [])
+                    )
+                    or "-"
+                )
+            ),
+            (
+                f"- Accepted lineage training budget: "
+                f"{int(state.get('accepted_training_steps', 0)):,} steps"
+            ),
+            (f"- Last experiment: {displayed_last_experiment}"),
+            (f"- Last verdict: {displayed_last_verdict}"),
+            f"- Current learning method: {current_method}",
+            *evaluation_lines,
+            *decision_lines,
+            "",
+            "## Recent experiment cards",
+            "",
+            "| # | Family | Operation | Init / budget | Outcome | Verdict |",
+            "|---:|---|---|---|---|---|",
+        ]
+    )
 
     for result in results[-5:]:
         family = str(result.get("family", "-")).replace("|", "/")
@@ -615,7 +636,7 @@ def render_research_brief() -> str:
                 "evidence is insufficient for one specific decision."
             ),
             "- One experiment should test one identifiable hypothesis; a continuation may test whether more training changes the conclusion.",
-            "- Record only 5-8 concise postmortem lines.",
+            "- Keep historical observations and decisions intact; revise the campaign's scientific strategy as evidence changes. Record lessons with their sources and limits, not a prescribed line count.",
         ]
     )
     return "\n".join(lines).rstrip() + "\n"

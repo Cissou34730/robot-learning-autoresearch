@@ -982,11 +982,7 @@ def test_result_persistence_canonicalizes_legacy_artifact_references(
             {
                 "artifact": "research\\checkpoints\\candidate",
                 "evaluations": [
-                    {
-                        "evaluation_artifact": (
-                            "research\\evaluations\\candidate.json"
-                        )
-                    }
+                    {"evaluation_artifact": ("research\\evaluations\\candidate.json")}
                 ],
             }
         ],
@@ -997,12 +993,11 @@ def test_result_persistence_canonicalizes_legacy_artifact_references(
 
     history = compact_result_record(result)
 
-    assert history["candidates"][0]["artifact"] == (
-        "research/checkpoints/candidate"
+    assert history["candidates"][0]["artifact"] == ("research/checkpoints/candidate")
+    assert (
+        history["candidates"][0]["evaluations"][0]["evaluation_artifact"]
+        == "research/evaluations/candidate.json"
     )
-    assert history["candidates"][0]["evaluations"][0][
-        "evaluation_artifact"
-    ] == "research/evaluations/candidate.json"
     assert history["task_reference_evaluations"][0]["evaluation_artifact"] == (
         "research/evaluations/reference.json"
     )
@@ -1023,15 +1018,11 @@ def test_state_persistence_canonicalizes_known_legacy_artifact_references(
         "retained_lineages": [
             {
                 "artifact": "research\\checkpoints\\retained",
-                "evaluation_artifacts": [
-                    "research\\evaluations\\retained.json"
-                ],
+                "evaluation_artifacts": ["research\\evaluations\\retained.json"],
             }
         ],
         "pending_evaluation_request": {
-            "candidates": [
-                {"artifact": "research\\checkpoints\\candidate"}
-            ]
+            "candidates": [{"artifact": "research\\checkpoints\\candidate"}]
         },
     }
 
@@ -1039,18 +1030,17 @@ def test_state_persistence_canonicalizes_known_legacy_artifact_references(
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     assert persisted["accepted_artifact"] == "research/checkpoints/accepted"
-    assert persisted["accepted_evaluations"] == [
-        "research/evaluations/accepted.json"
-    ]
+    assert persisted["accepted_evaluations"] == ["research/evaluations/accepted.json"]
     assert persisted["retained_lineages"][0]["artifact"] == (
         "research/checkpoints/retained"
     )
     assert persisted["retained_lineages"][0]["evaluation_artifacts"] == [
         "research/evaluations/retained.json"
     ]
-    assert persisted["pending_evaluation_request"]["candidates"][0][
-        "artifact"
-    ] == "research/checkpoints/candidate"
+    assert (
+        persisted["pending_evaluation_request"]["candidates"][0]["artifact"]
+        == "research/checkpoints/candidate"
+    )
 
 
 def test_opaque_evidence_survives_the_whole_execution_path(monkeypatch, tmp_path):
@@ -1416,7 +1406,12 @@ def test_evaluation_request_accepts_up_to_three_distinct_models(
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                {
+                    "name": f"model-{i}",
+                    "artifact": f"archive/model-{i}",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
                 for i in range(distinct_count)
             ],
             "champion_available": False,
@@ -1451,11 +1446,14 @@ def test_evaluation_request_accepts_up_to_three_distinct_models(
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     # Should not raise; validation passes.
     from research.runner_protocol import validate_evaluation_request
+
     request = json.loads(request_path.read_text(encoding="utf-8"))
     validate_evaluation_request(request)
 
 
-def test_evaluation_request_rejects_more_than_three_distinct_models(monkeypatch, tmp_path):
+def test_evaluation_request_rejects_more_than_three_distinct_models(
+    monkeypatch, tmp_path
+):
     """Requests with 4+ distinct models are rejected during validation."""
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
@@ -1465,7 +1463,12 @@ def test_evaluation_request_rejects_more_than_three_distinct_models(monkeypatch,
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                {
+                    "name": f"model-{i}",
+                    "artifact": f"archive/model-{i}",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
                 for i in range(4)
             ],
             "champion_available": False,
@@ -1512,7 +1515,12 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": "single-model", "artifact": "archive/single-model", "timesteps": 1, "evaluations": []}
+                {
+                    "name": "single-model",
+                    "artifact": "archive/single-model",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
             ],
             "champion_available": False,
             "parameters": {},
@@ -1530,9 +1538,24 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
                 "question": "Test question",
                 "reason": "Test reason",
                 "measurements": [
-                    {"instrument": "research_evaluation", "candidate": "single-model", "episodes": 2, "seed": 1000},
-                    {"instrument": "research_evaluation", "candidate": "single-model", "episodes": 2, "seed": 2000},
-                    {"instrument": "research_evaluation", "candidate": "single-model", "episodes": 4, "seed": 3000},
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "single-model",
+                        "episodes": 2,
+                        "seed": 1000,
+                    },
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "single-model",
+                        "episodes": 2,
+                        "seed": 2000,
+                    },
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "single-model",
+                        "episodes": 4,
+                        "seed": 3000,
+                    },
                 ],
             }
         ),
@@ -1542,6 +1565,7 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     # Should not raise; counts as 1 distinct model.
     from research.runner_protocol import validate_evaluation_request
+
     request = json.loads(request_path.read_text(encoding="utf-8"))
     validate_evaluation_request(request)
 
@@ -1556,7 +1580,12 @@ def test_different_instruments_same_model_count_once(monkeypatch, tmp_path):
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": "candidate", "artifact": "archive/candidate", "timesteps": 1, "evaluations": []}
+                {
+                    "name": "candidate",
+                    "artifact": "archive/candidate",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
             ],
             "champion_available": False,
             "parameters": {},
@@ -1574,7 +1603,12 @@ def test_different_instruments_same_model_count_once(monkeypatch, tmp_path):
                 "question": "Test question",
                 "reason": "Test reason",
                 "measurements": [
-                    {"instrument": "research_evaluation", "candidate": "candidate", "episodes": 2, "seed": 1000},
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "candidate",
+                        "episodes": 2,
+                        "seed": 1000,
+                    },
                     {"instrument": "task_reference", "candidate": "candidate"},
                 ],
             }
@@ -1585,6 +1619,7 @@ def test_different_instruments_same_model_count_once(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     # Should not raise; counts as 1 distinct model.
     from research.runner_protocol import validate_evaluation_request
+
     request = json.loads(request_path.read_text(encoding="utf-8"))
     validate_evaluation_request(request)
 
@@ -1599,8 +1634,18 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": "model-a", "artifact": "archive/model-a", "timesteps": 1, "evaluations": []},
-                {"name": "model-b", "artifact": "archive/model-b", "timesteps": 1, "evaluations": []},
+                {
+                    "name": "model-a",
+                    "artifact": "archive/model-a",
+                    "timesteps": 1,
+                    "evaluations": [],
+                },
+                {
+                    "name": "model-b",
+                    "artifact": "archive/model-b",
+                    "timesteps": 1,
+                    "evaluations": [],
+                },
             ],
             "champion_available": False,
             "parameters": {},
@@ -1618,8 +1663,18 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
                 "question": "Test question",
                 "reason": "Test reason",
                 "measurements": [
-                    {"instrument": "research_evaluation", "candidate": "model-a", "episodes": 2, "seed": 1000},
-                    {"instrument": "research_evaluation", "candidate": "model-b", "episodes": 2, "seed": 1000},
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "model-a",
+                        "episodes": 2,
+                        "seed": 1000,
+                    },
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "model-b",
+                        "episodes": 2,
+                        "seed": 1000,
+                    },
                 ],
                 "paired_comparisons": [
                     {"candidate": "model-a", "reference": "model-b"}
@@ -1713,7 +1768,12 @@ def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                {
+                    "name": f"model-{i}",
+                    "artifact": f"archive/model-{i}",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
                 for i in range(4)
             ],
             "champion_available": False,
@@ -1732,7 +1792,12 @@ def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path
                 "question": "Test question",
                 "reason": "Test reason",
                 "measurements": [
-                    {"instrument": "research_evaluation", "candidate": f"model-{i}", "episodes": 2, "seed": 1000}
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": f"model-{i}",
+                        "episodes": 2,
+                        "seed": 1000,
+                    }
                     for i in range(4)
                 ],
             }
@@ -1743,21 +1808,26 @@ def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path / "evaluations")
-    monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
-    
+    monkeypatch.setattr(
+        "research.runner_paths.EVALUATION_DIR", tmp_path / "evaluations"
+    )
+    monkeypatch.setattr(
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
+
     calls = []
+
     def track_evaluator(artifact, seed, **kwargs):
         calls.append(("eval", artifact, seed))
         return evaluation(seed, [True, False])
-    
+
     monkeypatch.setattr("research.runner_execution.evaluate_artifact", track_evaluator)
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
-    
+
     # Should reject before any evaluation is attempted.
     with pytest.raises(ValueError, match="at most 3 distinct models"):
         execute_pending_evaluations()
-    
+
     # Verify no evaluations were executed.
     assert calls == []
     # Verify state was not mutated.
@@ -1769,7 +1839,7 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
     """Each additional evaluation round has its own independent limit."""
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
-    
+
     # First round: measure 3 distinct models
     state = {
         "schema_version": 2,
@@ -1777,7 +1847,12 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
         "pending_evaluation_request": {
             "experiment": 8,
             "candidates": [
-                {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+                {
+                    "name": f"model-{i}",
+                    "artifact": f"archive/model-{i}",
+                    "timesteps": 1,
+                    "evaluations": [],
+                }
                 for i in range(3)
             ],
             "champion_available": False,
@@ -1796,7 +1871,12 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
                 "question": "First round",
                 "reason": "Test reason",
                 "measurements": [
-                    {"instrument": "research_evaluation", "candidate": f"model-{i}", "episodes": 2, "seed": 1000}
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": f"model-{i}",
+                        "episodes": 2,
+                        "seed": 1000,
+                    }
                     for i in range(3)
                 ],
                 "need_more_evidence": True,
@@ -1808,30 +1888,39 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path / "evaluations")
-    monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING")
+    monkeypatch.setattr(
+        "research.runner_paths.EVALUATION_DIR", tmp_path / "evaluations"
+    )
+    monkeypatch.setattr(
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
-    
+
     def evaluator(artifact, seed, **kwargs):
         return evaluation(seed, [True, False])
-    
+
     monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluator)
-    
+
     execute_pending_evaluations()
-    
+
     # Reload state after first round
     state = json.loads(state_path.read_text(encoding="utf-8"))
     assert state["pending_evaluation_request"]["partial_evaluations"] is not None
     assert len(state["pending_evaluation_request"]["partial_evaluations"]) == 3
-    
+
     # Second round: measure 3 more distinct models (different from first round).
     # This should be allowed since each round has its own limit.
     state["pending_evaluation_request"]["candidates"] = [
-        {"name": f"model-{i}", "artifact": f"archive/model-{i}", "timesteps": 1, "evaluations": []}
+        {
+            "name": f"model-{i}",
+            "artifact": f"archive/model-{i}",
+            "timesteps": 1,
+            "evaluations": [],
+        }
         for i in range(3, 6)
     ]
     state_path.write_text(json.dumps(state), encoding="utf-8")
-    
+
     request_path.write_text(
         json.dumps(
             {
@@ -1839,7 +1928,12 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
                 "question": "Second round",
                 "reason": "Test reason",
                 "measurements": [
-                    {"instrument": "research_evaluation", "candidate": f"model-{i}", "episodes": 2, "seed": 2000}
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": f"model-{i}",
+                        "episodes": 2,
+                        "seed": 2000,
+                    }
                     for i in range(3, 6)
                 ],
                 "need_more_evidence": False,
@@ -1847,15 +1941,15 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
         ),
         encoding="utf-8",
     )
-    
+
     # Should succeed without raising.
     execute_pending_evaluations()
-    
+
     final_state = json.loads(state_path.read_text(encoding="utf-8"))
     assert final_state["pending_researcher_decision"] is not None
 
 
-def test_continuation_and_replication_allow_unchanged_methods():
+def test_continuation_and_replication_allow_unchanged_methods(scientific_reasoning):
     validate_experiment_semantics({}, "continuation", "transfer", None, [], False)
     invalid_continuation = {
         "kind": "continuation",
@@ -1885,6 +1979,7 @@ def test_continuation_and_replication_allow_unchanged_methods():
         validate_training_proposal(invalid_replication, baseline=False)
 
     continuation_without_change = {
+        "reasoning": scientific_reasoning,
         "kind": "continuation",
         "family": "method",
         "hypothesis": "check additional training",
@@ -1894,6 +1989,7 @@ def test_continuation_and_replication_allow_unchanged_methods():
     validate_training_proposal(continuation_without_change, baseline=False)
 
     replication_without_change = {
+        "reasoning": scientific_reasoning,
         "kind": "replication",
         "family": "method",
         "hypothesis": "check outcome spread",
@@ -1948,7 +2044,7 @@ def test_replication_rejects_non_integer_numeric_fields(field, invalid_value):
     ],
 )
 def test_training_numeric_fields_accept_valid_integers(
-    kind, initialization, extra_fields
+    kind, initialization, extra_fields, scientific_reasoning
 ):
     proposal = {
         "kind": kind,
@@ -1956,6 +2052,7 @@ def test_training_numeric_fields_accept_valid_integers(
         "hypothesis": "check numeric contract",
         "initialization": initialization,
         **extra_fields,
+        "reasoning": scientific_reasoning,
     }
 
     validate_training_proposal(proposal, baseline=False)
@@ -1977,7 +2074,9 @@ def test_training_proposal_rejects_negative_seed_for_every_operation(kind):
     else:
         proposal["replication_of"] = 12
 
-    with pytest.raises(ValueError, match="training_seed must be a non-negative integer"):
+    with pytest.raises(
+        ValueError, match="training_seed must be a non-negative integer"
+    ):
         validate_training_proposal(proposal, baseline=False)
 
 
@@ -1999,11 +2098,14 @@ def test_unchanged_operations_reject_change(kind):
         validate_training_proposal(proposal, baseline=False)
 
 
-def test_replication_reference_must_exist_in_current_campaign(monkeypatch):
+def test_replication_reference_must_exist_in_current_campaign(
+    monkeypatch, scientific_reasoning, scientific_memory
+):
     proposal = {
         "kind": "replication",
         "family": "method",
         "hypothesis": "check outcome spread",
+        "reasoning": scientific_reasoning,
         "initialization": "fresh",
         "training_seed": 19,
         "replication_of": 12,
@@ -2049,10 +2151,11 @@ def test_unchanged_operation_history_uses_neutral_text():
     assert compact_result_record({"replication_of": "12"})["replication_of"] == 12
 
 
-def test_training_proposal_has_no_postmortem_or_lineage_payload():
+def test_training_proposal_has_no_postmortem_or_lineage_payload(scientific_reasoning):
     proposal = {
         "kind": "training",
         "family": "reward.hold",
+        "reasoning": scientific_reasoning,
         "hypothesis": "test",
         "change": "test",
         "initialization": "transfer",
@@ -2269,7 +2372,9 @@ def test_retained_lineage_is_scoped_to_the_active_campaign(monkeypatch, tmp_path
     assert retained["artifact"] == (
         f"research/checkpoints/retained/{campaign_id}/alternative"
     )
-    assert (tmp_path / "research" / "checkpoints" / "retained" / campaign_id / "alternative").exists()
+    assert (
+        tmp_path / "research" / "checkpoints" / "retained" / campaign_id / "alternative"
+    ).exists()
 
 
 def test_removing_retained_lineage_keeps_history_but_removes_artifact(
@@ -2459,9 +2564,7 @@ def test_researcher_guidance_keeps_git_out_of_the_scientific_evidence_surface():
 
 
 def test_evidence_inspection_is_brief_first_and_targeted():
-    instruments = (ROOT / "research" / "instruments.md").read_text(
-        encoding="utf-8"
-    )
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
     normalized = " ".join(instruments.split())
 
     assert "Start with `research/brief.md`" in normalized

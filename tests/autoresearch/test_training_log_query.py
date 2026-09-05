@@ -40,7 +40,9 @@ def write_campaign_state(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
 
 
-def test_training_attempts_isolate_experiments_and_resume_or_restart(monkeypatch, tmp_path):
+def test_training_attempts_isolate_experiments_and_resume_or_restart(
+    monkeypatch, tmp_path
+):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
     write_log(tmp_path / "experiment-1-attempt-1.log", "first")
     write_log(tmp_path / "experiment-1-attempt-2.log", "second")
@@ -96,8 +98,13 @@ def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
 
     attempt = execution.training_attempt(1, recoverable_continuation=True)
     execution.train_candidate(
-        output_dir, 100, 0, None, execution.training_log_path(1, attempt),
-        continue_timesteps=True, target_timesteps=200,
+        output_dir,
+        100,
+        0,
+        None,
+        execution.training_log_path(1, attempt),
+        continue_timesteps=True,
+        target_timesteps=200,
     )
 
     assert log.read_text(encoding="utf-8").startswith("interrupted output\n")
@@ -109,12 +116,19 @@ def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
     [(False, "experiment-2-attempt-1.log"), (True, "experiment-2-attempt-2.log")],
 )
 def test_runner_passes_the_correct_active_attempt_to_training(
-    monkeypatch, tmp_path, restart, expected_name
+    monkeypatch,
+    tmp_path,
+    restart,
+    expected_name,
+    scientific_reasoning,
+    scientific_memory,
 ):
     training_logs = tmp_path / "training_logs"
-    write_log(training_logs / "experiment-1-attempt-9.log", "other experiment\n")
+    write_log(
+        training_logs / "current" / "experiment-1-attempt-9.log", "other experiment\n"
+    )
     if restart:
-        interrupted = training_logs / "experiment-2-attempt-1.log"
+        interrupted = training_logs / "current" / "experiment-2-attempt-1.log"
         write_log(interrupted, "interrupted output\n")
     else:
         interrupted = None
@@ -122,38 +136,79 @@ def test_runner_passes_the_correct_active_attempt_to_training(
     if restart:
         restart_pending.touch()
     captured_logs = []
-    state = {"last_experiment": 1, "last_allocated_experiment": 1}
+    state = {
+        "last_experiment": 1,
+        "last_allocated_experiment": 1,
+        "campaign": {"id": "current"},
+    }
 
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", training_logs)
     monkeypatch.setattr("research.runner_paths.RESTART_PENDING_PATH", restart_pending)
     monkeypatch.setattr("research.runner_repository.load_state", lambda **kwargs: state)
-    monkeypatch.setattr("research.runner_repository.anchor_scientific_parent", lambda state: "parent")
+    monkeypatch.setattr(
+        "research.runner_repository.anchor_scientific_parent", lambda state: "parent"
+    )
     monkeypatch.setattr("research.runner_repository.write_state", dict)
-    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda parent: [])
-    monkeypatch.setattr("research.runner_repository.archive_candidates", lambda *args, **kwargs: [])
-    monkeypatch.setattr("research.runner_protocol.next_experiment_index", lambda *args, **kwargs: 2)
-    monkeypatch.setattr("research.runner_protocol.resumed_experiment_index", lambda *args, **kwargs: 2)
-    monkeypatch.setattr("research.runner_protocol.training_parent", lambda *args: ("", tmp_path, 0))
-    monkeypatch.setattr("research.runner_protocol.validate_experiment_semantics", lambda *args: None)
-    monkeypatch.setattr("research.runner_protocol.validation_test_paths", lambda *args, **kwargs: ())
+    monkeypatch.setattr(
+        "research.runner_repository.scientific_delta", lambda parent: []
+    )
+    monkeypatch.setattr(
+        "research.runner_repository.archive_candidates", lambda *args, **kwargs: []
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.next_experiment_index", lambda *args, **kwargs: 2
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.resumed_experiment_index", lambda *args, **kwargs: 2
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.training_parent", lambda *args: ("", tmp_path, 0)
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.validate_experiment_semantics", lambda *args: None
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.validation_test_paths", lambda *args, **kwargs: ()
+    )
     monkeypatch.setattr("research.runner_execution.validate_active_configuration", dict)
     monkeypatch.setattr("research.runner_execution.training_budget", lambda *args: 10)
-    monkeypatch.setattr("research.runner_execution.candidate_directories", lambda path: [])
-    monkeypatch.setattr("research.runner_execution.remove_candidate_dir", lambda path: None)
-    monkeypatch.setattr("research.runner_console.render_experiment_card", lambda result: "")
-    monkeypatch.setattr("research.runner_console.render_training_summary_card", lambda *args, **kwargs: "")
-    monkeypatch.setattr("research.runner_execution.train_candidate", lambda *args, **kwargs: captured_logs.append(args[4]) or 0.0)
+    monkeypatch.setattr(
+        "research.runner_execution.candidate_directories", lambda path: []
+    )
+    monkeypatch.setattr(
+        "research.runner_execution.remove_candidate_dir", lambda path: None
+    )
+    monkeypatch.setattr(
+        "research.runner_console.render_experiment_card", lambda result: ""
+    )
+    monkeypatch.setattr(
+        "research.runner_console.render_training_summary_card",
+        lambda *args, **kwargs: "",
+    )
+    monkeypatch.setattr(
+        "research.runner_execution.train_candidate",
+        lambda *args, **kwargs: captured_logs.append(args[4]) or 0.0,
+    )
 
     proposal = {
         "change": "exercise training log wiring",
         "hypothesis": "the selected attempt is passed to training",
+        "reasoning": scientific_reasoning,
         "kind": "training",
         "family": "training.logs",
         "initialization": "fresh",
     }
-    assert run_training_experiment(proposal, Namespace(timesteps=10, reuse_candidate=None)) == 0
+    assert (
+        run_training_experiment(proposal, Namespace(timesteps=10, reuse_candidate=None))
+        == 0
+    )
 
-    assert captured_logs == [training_logs / expected_name]
+    assert captured_logs == [training_logs / "current" / expected_name]
+    result = state["pending_evaluation_request"]["result"]
+    assert result["reasoning"] == scientific_reasoning
+    assert "Investigate the plateau" in result["scientific_strategy"]
+    scientific_memory.write_text("Revised later", encoding="utf-8")
+    assert "Investigate the plateau" in result["scientific_strategy"]
     if interrupted is not None:
         assert interrupted.read_text(encoding="utf-8") == "interrupted output\n"
 
@@ -162,7 +217,9 @@ def test_query_tool_is_a_protected_runner_source():
     assert is_protected_source("research/query_training_log.py")
 
 
-def test_query_returns_inclusive_range_attempts_metrics_and_missing_values(monkeypatch, tmp_path, capsys):
+def test_query_returns_inclusive_range_attempts_metrics_and_missing_values(
+    monkeypatch, tmp_path, capsys
+):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
     write_campaign_state(monkeypatch, tmp_path)
     write_log(
@@ -175,7 +232,9 @@ def test_query_returns_inclusive_range_attempts_metrics_and_missing_values(monke
         "| rollout/ |\n| ep_rew_mean | 2 |\n| time/ |\n| total_timesteps | 200 |\n",
     )
 
-    assert query.main(["--experiment", "3", "--from-step", "100", "--to-step", "200"]) == 0
+    assert (
+        query.main(["--experiment", "3", "--from-step", "100", "--to-step", "200"]) == 0
+    )
     output = capsys.readouterr().out
     assert "| attempt | total_timesteps | ep_rew_mean | success_rate |" in output
     assert "| 1 | 100 | 0 |  |" in output
@@ -183,7 +242,9 @@ def test_query_returns_inclusive_range_attempts_metrics_and_missing_values(monke
     assert "| 2 | 200 | 2 |  |" in output
 
 
-def test_query_supports_exact_step_and_empty_valid_ranges(monkeypatch, tmp_path, capsys):
+def test_query_supports_exact_step_and_empty_valid_ranges(
+    monkeypatch, tmp_path, capsys
+):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
     write_campaign_state(monkeypatch, tmp_path)
     write_log(
@@ -191,9 +252,13 @@ def test_query_supports_exact_step_and_empty_valid_ranges(monkeypatch, tmp_path,
         "| time/ |\n| total_timesteps | 100 |\n",
     )
 
-    assert query.main(["--experiment", "1", "--from-step", "100", "--to-step", "100"]) == 0
+    assert (
+        query.main(["--experiment", "1", "--from-step", "100", "--to-step", "100"]) == 0
+    )
     assert "| 1 | 100 |" in capsys.readouterr().out
-    assert query.main(["--experiment", "1", "--from-step", "101", "--to-step", "200"]) == 0
+    assert (
+        query.main(["--experiment", "1", "--from-step", "101", "--to-step", "200"]) == 0
+    )
     assert capsys.readouterr().out.splitlines() == [
         "| attempt | total_timesteps |",
         "| --- | --- |",

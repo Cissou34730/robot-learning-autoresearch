@@ -44,6 +44,12 @@ hypotheses, interpretations or decisions.
 
 ## Evidence obligation
 
+The campaign seeks a learned policy that satisfies the human objective. Improving
+robot behavior, attributing an intervention's effect, and establishing training
+reproducibility are distinct scientific questions. An experiment need not answer
+all three. Choose the question that advances the current research direction;
+neither fresh initialization nor transfer is the default scientific preference.
+
 Every scientific action must be grounded in inspected evidence. A training
 proposal states one falsifiable hypothesis, a plausible alternative, and the
 evidence that would distinguish them. An evaluation request states the question
@@ -69,6 +75,21 @@ Experiment history and prior postmortems are evidence, not authority. Older
 records may use superseded schemas, and prior interpretations may be revisited.
 Prefer targeted extraction over loading complete artifacts or histories.
 
+## Scientific memory and direction
+
+Maintain the current campaign's **Scientific strategy** section in
+`research/postmortems.md`, using the format in `research/instruments.md`. Separate
+this revisable synthesis from the historical experiment entries. Preserve past
+observations and decisions; correct earlier interpretations in the synthesis
+with evidence rather than silently rewriting what was believed at the time.
+
+Record lessons with their sources and limits, open questions, the current
+direction, conditional follow-ups and evidence that would warrant reconsidering
+the direction. Think beyond the next experiment without committing to a fixed
+sequence or number of experiments. Revise the strategy when new evidence changes
+it, including when an older lesson no longer applies. State uncertainty when
+there is not yet enough evidence for a lesson.
+
 ## Fixed cycle
 
 The phase order is:
@@ -91,6 +112,19 @@ Inspect relevant repository state and completed evidence, make the scientific
 code or parameter changes required by the intervention, and write
 `research/proposal.json`. The phase is incomplete until that deliverable exists
 and satisfies the contract in `research/instruments.md`.
+
+Before submitting, establish or update the scientific strategy. The proposal's
+`reasoning` records inspected sources and observations, the alternative
+explanation, expected and contradicting observations, the initialization/parent
+rationale and its contribution to that strategy. Explain why a fresh start or
+the selected transfer parent serves this question, not merely that it isolates
+an effect. Continuing an unchanged method is a legitimate experiment and does
+not require a parameter or code modification.
+
+The Runner checks structure and source existence, not scientific merit or
+whether the Researcher truly understood the evidence. It preserves the proposal
+reasoning and the strategy at training submission in the experiment record.
+The automatic baseline requires no Researcher-authored rationale.
 
 The Runner establishes the experiment's code parent before the session,
 validates the proposal and changes, then trains on the fixed budget. The
@@ -117,6 +151,10 @@ Inspect the experiment's detailed measurement artifacts. Append its durable
 entry to `research/postmortems.md`, separating observed behavior from the
 Researcher's interpretation and citing the inspected artifacts. Then write the
 lineage-only `research/proposal.json`.
+
+Update the scientific synthesis in that same document with what was learned,
+what remains uncertain, and the implications for the next research steps.
+Distinguish these conclusions from the decision about retaining model or code.
 
 The lineage decision selects the active policy, decides whether the
 experiment's code is kept or reverted, and may retain or remove reusable

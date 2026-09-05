@@ -350,6 +350,87 @@ def training_parent(
 # --- proposal validation ---------------------------------------------------
 
 
+def validate_scientific_reasoning(proposal: dict) -> None:
+    """Check explicit reasoning, not its scientific merit or truthfulness."""
+    reasoning = proposal.get("reasoning")
+    if not isinstance(reasoning, dict):
+        raise TypeError("proposal reasoning must be an object")
+    for field in (
+        "alternative",
+        "expected_observation",
+        "contradicting_observation",
+        "initialization_reason",
+        "strategy_link",
+    ):
+        value = reasoning.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"reasoning.{field} must be a non-empty string")
+    evidence = reasoning.get("evidence")
+    if not isinstance(evidence, list) or not evidence:
+        raise ValueError("reasoning.evidence must be a non-empty list")
+    for item in evidence:
+        if not isinstance(item, dict):
+            raise TypeError("each reasoning.evidence entry must be an object")
+        for field in ("source", "observation"):
+            if not isinstance(item.get(field), str) or not item[field].strip():
+                raise ValueError(
+                    f"reasoning.evidence.{field} must be a non-empty string"
+                )
+
+
+def scientific_strategy_section(text: str, campaign_id: str | None) -> str:
+    """Read only this campaign's revisable memory, separate from experiments."""
+    if not campaign_id:
+        return ""
+    heading = rf"^## {re.escape(campaign_id)} / Scientific strategy[ \t]*\r?$"
+    matches = list(
+        re.finditer(
+            heading + r".*?(?=^## |\Z)",
+            text,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+    )
+    if len(matches) > 1:
+        raise ValueError(
+            "postmortems.md contains duplicate scientific strategy sections"
+        )
+    return matches[0].group(0).strip() if matches else ""
+
+
+def validate_research_memory(proposal: dict, state: dict) -> None:
+    """Validate references and the memory format without inventing conclusions."""
+    for item in proposal["reasoning"]["evidence"]:
+        source = repository.resolve_repo_path(item["source"])
+        if not source.is_file():
+            raise ValueError(
+                f"reasoning evidence source does not exist: {item['source']}"
+            )
+    text = (
+        paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
+        if paths.POSTMORTEM_PATH.exists()
+        else ""
+    )
+    section = scientific_strategy_section(text, repository.current_campaign_id(state))
+    if not section:
+        raise ValueError(
+            "postmortems.md needs the current campaign's Scientific strategy section"
+        )
+    for label in (
+        "Direction",
+        "Lessons and limits",
+        "Open questions",
+        "Conditional next steps",
+        "Reconsider when",
+    ):
+        match = re.search(
+            rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
+            section,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        if not match or not match.group(1).strip():
+            raise ValueError(f"scientific strategy needs a non-empty '{label}' entry")
+
+
 def validate_research_delta_ownership(code_changes: list[str]) -> None:
     """Reject changes to every human-owned source and test surface."""
     normalized = [path.replace("\\", "/") for path in code_changes]
@@ -482,6 +563,7 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
         require_integer("replication_of", minimum=1)
+    validate_scientific_reasoning(proposal)
 
 
 def validate_proposal_phase(proposal: dict, state: dict) -> str:
@@ -533,6 +615,8 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
                 "replication_of must reference an existing experiment in the "
                 "current campaign"
             )
+    if contract == "training" and not proposal.get("baseline"):
+        validate_research_memory(proposal, raw_state)
     return contract
 
 
@@ -838,7 +922,7 @@ def postmortem_section(
     )
 
     match = re.search(
-        heading + r".*?(?=^## (?:[^\r\n/]+ / )?Experiment \d+\b|\Z)",
+        heading + r".*?(?=^## |\Z)",
         paths.POSTMORTEM_PATH.read_text(encoding="utf-8"),
         flags=re.MULTILINE | re.DOTALL,
     )
