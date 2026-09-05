@@ -4,9 +4,9 @@
 
 **Direction:** Treat the accepted champion as the active behavioral control while
 separating training-seed variability from intervention effects in full-angle
-reach-and-hold. Fresh replications establish that PPO outcomes vary widely, and
-experiments 7 through 12 provide no basis to replace the champion with the
-tested reward intervention or another fresh baseline.
+reach-and-hold. Test a small, balanced hold-margin reward shape with the same
+fresh seed as the accepted baseline, rather than relying on the rejected exit
+forfeiture or another uncontrolled fresh comparison.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
 The eight unchanged fresh replications reached 29.5%, 75.5%, 24.0%, 11.0%,
@@ -39,9 +39,11 @@ remain unresolved. It is also unknown whether checkpoint selection can
 reliably avoid late hold instability.
 
 **Conditional next steps:** Keep the accepted champion as the active lineage.
-If research resumes, use seed-controlled comparisons of non-reach and
-hold-interruption behavior rather than continuing the tested 0.5 hold-exit
-forfeiture setting or attributing the remaining failures to that mechanism.
+Experiment 13 tests whether a small quadratic penalty for holding near the
+tolerance boundary reduces hold interruptions without increasing non-reaches,
+using the accepted baseline's fresh seed to control one source of variation.
+If it fails that balanced test, investigate training-process or control
+stochasticity rather than increasing the penalty.
 
 **Reconsider when:** Independent fresh runs reliably reproduce the champion, or
 a balanced intervention shows a repeatable sector improvement without material
