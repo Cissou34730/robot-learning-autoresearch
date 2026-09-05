@@ -5,21 +5,21 @@
 **Direction:** Treat the accepted champion as the active behavioral control while
 separating training-seed variability from intervention effects in full-angle
 reach-and-hold. Fresh replications establish that PPO outcomes vary widely, and
-experiments 7 and 8 provide no basis to replace the champion with the tested
+experiments 7, 8 and 9 provide no basis to replace the champion with the tested
 reward intervention or another fresh baseline.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
-the four unchanged fresh replications reached 29.5%, 75.5%, 24.0%, and 11.0%
-at that checkpoint (experiments 4, 5, 6, and 8); experiment 8 fell to 8.5% at
-checkpoint-120832. None reproduces the accepted 97.0% outcome, so the spread
-supports substantial training-seed variation but does not identify its cause.
-Experiment 8 failed broadly rather than only in the difficult sector: it had
-0/21 sector and 22/179 outside-sector successes at checkpoint-100352, with 171
-non-reaches and 235 hold interruptions, then 3/21 and 14/179 successes at
-checkpoint-120832, with 183 non-reaches and one hold interruption. Together
-with experiment 5's distinct late hold instability and experiment 6's broad
-failure, this indicates that reach and hold reliability can vary independently
-across training and checkpoint. Experiment 7's transfer with
+the five unchanged fresh replications reached 29.5%, 75.5%, 24.0%, 11.0% and
+78.0% at that checkpoint (experiments 4, 5, 6, 8 and 9); experiment 9 fell to
+72.5% at checkpoint-120832. None reproduces the accepted 97.0% outcome, so the
+spread supports substantial training-seed variation but does not identify its
+cause. Experiment 9 also failed across the full angle range: it had 17/21
+sector and 139/179 outside-sector successes at checkpoint-100352, with 27
+non-reaches and 611 hold interruptions, then 14/21 and 131/179 successes at
+checkpoint-120832, with 37 non-reaches and 468 hold interruptions. Together
+with experiment 8's broad failure and experiment 5's distinct late hold
+instability, this indicates that reach and hold reliability can vary
+independently across training and checkpoint. Experiment 7's transfer with
 `HOLD_EXIT_FORFEIT_FRACTION=0.5` reached 84.0% at checkpoint-100352 and 82.5%
 at checkpoint-120832, with 1,226 and 987 hold interruptions, respectively,
 versus the champion's 97.0% and one interruption. The evidence does not
@@ -47,7 +47,9 @@ a balanced intervention shows a repeatable sector improvement without material
 outside-sector or hold-stability regression. Evidence that characterizes the
 seed-dependent outcomes sufficiently to separate them from intervention effects
 or an official result above the objective threshold would also justify revising
-the current interpretation.
+the current interpretation. Experiment 9's relatively strong but still
+sub-champion seed would warrant reconsideration only if comparable runs also
+reduce its outside-sector failures and hold interruptions.
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 1
 
@@ -218,3 +220,28 @@ The candidate is not a viable replacement; the unchanged code is retained and
 the accepted champion remains active.
 
 **Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-champion-200ep-seed1-da55aa2016a5.json`.
+
+## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 9
+
+**Result:** The fifth unchanged fresh PPO replication remained below the
+accepted champion: checkpoint-100352 reached 78.0% (156/200), checkpoint-120832
+reached 72.5% (145/200), and the champion reached 97.0% (194/200).
+
+**Observed behavior:** At checkpoint-100352, the candidate succeeded on 17/21
+targets in the difficult negative-angle sector and 139/179 outside it, with 27
+non-reaches and 611 hold interruptions. At checkpoint-120832, it succeeded on
+14/21 in-sector and 131/179 outside-sector targets, with 37 non-reaches and 468
+hold interruptions. The champion comparison had 15/21 in-sector and 179/179
+outside-sector successes, five non-reaches and one hold interruption. The
+paired comparisons favored the champion by 19.0 and 24.5 percentage points at
+the two checkpoints.
+
+**Interpretation:** This fresh run was substantially better than experiments 4,
+6 and 8 at checkpoint-100352, but it still failed broadly outside the difficult
+sector and had far more hold interruptions than the champion. Its late decline
+and change in the balance of non-reaches versus hold interruptions further
+support seed- and checkpoint-dependent reach-and-hold behavior without
+identifying the training cause. The candidate is not a viable replacement; the
+unchanged code remains appropriate and the accepted champion stays active.
+
+**Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-9-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-9-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-9-champion-200ep-seed1-da55aa2016a5.json`.

@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-8-champion-200ep-seed1-da55aa2016a5.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-9-champion-200ep-seed1-da55aa2016a5.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 8
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 9
   },
-  "last_allocated_experiment": 8,
-  "last_experiment": 8,
+  "last_allocated_experiment": 9,
+  "last_experiment": 9,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 8 made no scientific code or configuration change, so the current unchanged baseline code should remain in place."
+      "reason": "Experiment 9 made no scientific code or configuration change, so the unchanged baseline code should remain in place."
     },
-    "code_parent_commit": "c20bc9b936469edb7c15e3fb1989e0b92375030d",
+    "code_parent_commit": "e091fd5ddffa8e4ec45f033ade9e7c73e7115b15",
     "continue_from": "champion",
-    "experiment": 8,
-    "reason": "Experiment 8 was an unchanged fresh replication and reached only 11.0% at checkpoint-100352 and 8.5% at checkpoint-120832, with broad non-reach failures and no reproduction of the accepted champion's 97.0%. The accepted champion remains the strongest active behavioral lineage."
+    "experiment": 9,
+    "reason": "Experiment 9 was an unchanged fresh replication and reached 78.0% at checkpoint-100352 and 72.5% at checkpoint-120832, versus 97.0% for the accepted champion. Its failures occurred across the full angle range and included 611 and 468 hold interruptions, so it does not provide a viable replacement or isolate a training cause."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
