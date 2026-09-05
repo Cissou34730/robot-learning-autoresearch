@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 
 from research import runner_protocol as protocol
+from research import runner_repository as repository
+from research.run_experiment import apply_previous_result_decision
 
 
 def _artifact(path: Path, marker: str) -> Path:
@@ -106,10 +108,264 @@ def test_v4_rejects_legacy_role_aliases(monkeypatch, tmp_path):
 
     for identifier in ("accepted", "champion"):
         try:
-            protocol.training_parent(
-                {"training_parent": identifier}, state, "transfer"
-            )
+            protocol.training_parent({"training_parent": identifier}, state, "transfer")
         except ValueError as error:
             assert str(error) == f"unknown training parent {identifier!r}"
         else:
             raise AssertionError(f"legacy role {identifier!r} was accepted")
+
+
+def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    best = _artifact(tmp_path / "best", "best")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(working, steps=120_000),
+        "best_known_lineage": _lineage(best, steps=90_000),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint-5000",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {"algorithm": {"name": "ppo"}},
+            "initialization": "transfer",
+            "parent_training_steps": 120_000,
+        },
+    }
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "checkpoint-5000",
+                "reason": "Explore its learning trajectory.",
+                "code": {"action": "keep", "reason": "The recipe remains active."},
+            }
+        },
+        state,
+    )
+
+    assert plan["working_record"]["artifact"] == candidate.name
+    assert plan["working_record"]["training_steps"] == 125_000
+    assert plan["best_known_record"]["artifact"] == best.name
+
+
+def test_v4_best_known_requires_evidence_for_its_candidate(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Measured well.",
+                "evidence": ["missing.json"],
+            },
+        }
+    }
+
+    try:
+        protocol.plan_previous_result_decision(proposal, state)
+    except ValueError as error:
+        assert "best_known evidence" in str(error)
+    else:
+        raise AssertionError("best-known designation accepted unrelated evidence")
+
+
+def test_v4_retained_lineage_is_selectable_and_preserved(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    retained = _artifact(tmp_path / "retained", "retained")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    retained_plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "checkpoint",
+                "reason": "Keep it.",
+                "code": {"action": "keep", "reason": "No code change."},
+                "retain": [
+                    {
+                        "candidate": "checkpoint",
+                        "id": "alternate",
+                        "reason": "Keep the checkpoint reusable.",
+                    }
+                ],
+            }
+        },
+        state,
+    )
+    state["retained_lineages"] = retained_plan["retained"]
+    state["retained_lineages"][0]["artifact"] = retained.name
+    state["retained_lineages"][0]["fingerprint"] = (
+        protocol.repository.artifact_fingerprint(retained)
+    )
+
+    parent = protocol.training_parent(
+        {"training_parent": "alternate"}, state, "transfer"
+    )
+
+    assert parent == ("alternate", retained, 5_000)
+    assert retained in protocol.repository.role_and_retention_artifacts(state)
+
+
+def test_v4_state_rejects_legacy_accepted_aliases(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "campaign": {
+            "id": "campaign-test",
+            "started_at": "2026-09-05T00:00:00Z",
+            "base_commit": "a" * 40,
+        },
+        "accepted_artifact": "legacy",
+    }
+
+    try:
+        repository.validate_v4_state(state, allow_missing_artifact=False)
+    except RuntimeError as error:
+        assert "legacy accepted aliases" in str(error)
+    else:
+        raise AssertionError("schema-v4 state accepted a legacy role alias")
+
+
+def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    incumbent_evidence = tmp_path / "incumbent-evaluation.json"
+    candidate_evidence = tmp_path / "candidate-evaluation.json"
+    incumbent_evidence.write_text("{}", encoding="utf-8")
+    candidate_evidence.write_text("{}", encoding="utf-8")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(incumbent, steps=10_000),
+        "best_known_lineage": _lineage(incumbent, steps=10_000),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [{"evaluation_artifact": candidate_evidence.name}],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
+    decision = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Continue exploring.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Designate from comparable evidence.",
+                "evidence": [candidate_evidence.name, incumbent_evidence.name],
+            },
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(decision, state)
+
+    assert plan["best_known_record"]["artifact"] == candidate.name
+
+
+def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(repository, "write_state", lambda state: None)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint",
+            "reason": "Keep the promising model.",
+            "code": {"action": "keep", "reason": "No code change."},
+        }
+    }
+
+    assert not apply_previous_result_decision(proposal, state)
+
+    assert state["working_lineage"]["artifact"] == candidate.name
+    assert candidate.joinpath("model.zip").read_bytes() == b"candidate"
+    assert candidate.joinpath("artifact.json").is_file()

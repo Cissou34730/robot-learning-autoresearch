@@ -320,8 +320,109 @@ def _canonicalize_result_artifacts(result: dict) -> None:
             _canonicalize_evaluation_artifact(evaluation)
 
 
+LINEAGE_RECORD_FIELDS = {
+    "artifact",
+    "fingerprint",
+    "origin_experiment",
+    "candidate",
+    "parameters",
+    "scientific_commit",
+    "training_steps",
+    "evaluation_artifacts",
+    "reason",
+}
+
+
+def canonicalize_lineage_record(lineage: dict) -> None:
+    """Validate and canonicalize one schema-v4 reusable policy record."""
+    if not isinstance(lineage, dict):
+        raise TypeError("lineage record must be an object")
+    missing = LINEAGE_RECORD_FIELDS - set(lineage)
+    extra = set(lineage) - LINEAGE_RECORD_FIELDS - {"id", "campaign_id"}
+    if missing or extra:
+        raise ValueError(
+            "lineage record fields are invalid: "
+            f"missing={sorted(missing)}, extra={sorted(extra)}"
+        )
+    lineage["artifact"] = canonical_repo_path(str(lineage["artifact"]))
+    for field in ("fingerprint", "candidate", "reason"):
+        if not isinstance(lineage[field], str) or not lineage[field].strip():
+            raise ValueError(f"lineage record {field} must be a non-empty string")
+    scientific_commit = lineage["scientific_commit"]
+    if scientific_commit is not None and (
+        not isinstance(scientific_commit, str) or not scientific_commit.strip()
+    ):
+        raise ValueError("lineage record scientific_commit must be null or a commit")
+    for field in ("origin_experiment", "training_steps"):
+        if not isinstance(lineage[field], int) or isinstance(lineage[field], bool):
+            raise TypeError(f"lineage record {field} must be an integer")
+    if lineage["origin_experiment"] < 1 or lineage["training_steps"] < 0:
+        raise ValueError(
+            "lineage record experiment and training steps must be positive"
+        )
+    if not isinstance(lineage["parameters"], dict):
+        raise TypeError("lineage record parameters must be an object")
+    evaluations = lineage["evaluation_artifacts"]
+    if not isinstance(evaluations, list) or not all(
+        isinstance(path, str) and path.strip() for path in evaluations
+    ):
+        raise ValueError("lineage record evaluation_artifacts must be a list of paths")
+    lineage["evaluation_artifacts"] = [
+        canonical_repo_path(path) for path in evaluations
+    ]
+
+
+def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
+    if state.get("schema_version") != 4:
+        raise RuntimeError("unsupported research state schema")
+    required = {"working_lineage", "best_known_lineage", "retained_lineages"}
+    missing = required - set(state)
+    if missing:
+        raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
+    campaign = state.get("campaign")
+    if not isinstance(campaign, dict) or not all(
+        campaign.get(field) for field in ("id", "started_at", "base_commit")
+    ):
+        raise RuntimeError("research state is missing a valid campaign identity")
+    legacy_aliases = sorted(key for key in state if key.startswith("accepted_"))
+    if legacy_aliases:
+        raise RuntimeError(
+            f"schema-v4 state cannot contain legacy accepted aliases: {legacy_aliases}"
+        )
+    for role in ("working_lineage", "best_known_lineage"):
+        lineage = state.get(role)
+        if lineage is not None:
+            canonicalize_lineage_record(lineage)
+    retained = state.get("retained_lineages", [])
+    if not isinstance(retained, list):
+        raise TypeError("retained_lineages must be a list")
+    identifiers: set[str] = set()
+    for lineage in retained:
+        canonicalize_lineage_record(lineage)
+        identifier = lineage.get("id")
+        if (
+            not isinstance(identifier, str)
+            or not identifier.strip()
+            or identifier in identifiers
+        ):
+            raise RuntimeError("retained lineage IDs must be non-empty and unique")
+        identifiers.add(identifier)
+    if not allow_missing_artifact:
+        for role in ("working_lineage", "best_known_lineage"):
+            lineage = state.get(role)
+            if lineage is not None:
+                require_complete_artifact(resolve_repo_path(lineage["artifact"]), role)
+        for lineage in retained:
+            require_complete_artifact(
+                resolve_repo_path(lineage["artifact"]),
+                f"retained lineage {lineage['id']!r}",
+            )
+
+
 def write_state(state: dict) -> None:
     """Persist state after canonicalizing its known repository references."""
+    if state.get("schema_version") == 4:
+        validate_v4_state(state, allow_missing_artifact=True)
     accepted = state.get("accepted_artifact")
     if accepted:
         state["accepted_artifact"] = canonical_repo_path(str(accepted))
@@ -397,6 +498,9 @@ def load_state(
     if not paths.STATE_PATH.exists():
         raise RuntimeError("research state is missing; refusing to run")
     state = read_state()
+    if state.get("schema_version") == 4:
+        validate_v4_state(state, allow_missing_artifact=allow_missing_artifact)
+        return state
     required = {"schema_version", "accepted_artifact"}
     missing = required - set(state)
     if missing:
@@ -639,6 +743,20 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
         "policy_runtime.pkl",
     ):
         (artifact / filename).unlink(missing_ok=True)
+
+
+def role_and_retention_artifacts(state: dict) -> set[Path]:
+    """Artifacts that cleanup must preserve even when labels are removed."""
+    records = [
+        state.get("working_lineage"),
+        state.get("best_known_lineage"),
+        *(state.get("retained_lineages") or []),
+    ]
+    return {
+        resolve_repo_path(record["artifact"])
+        for record in records
+        if isinstance(record, dict) and record.get("artifact")
+    }
 
 
 def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:

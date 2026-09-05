@@ -448,6 +448,8 @@ def execute_pending_evaluations() -> int:
 
 def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
     plan = protocol.plan_previous_result_decision(proposal, state)
+    if state.get("schema_version") == 4:
+        return apply_v4_previous_result_decision(plan, state)
     pending = plan["pending"]
     selected = plan["selected"]
     selected_name = plan["selected_name"]
@@ -507,6 +509,43 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
         }
         repository.write_state(state)
     console.announce("\n" + console.render_decision_card(plan) + "\n")
+    return False
+
+
+def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
+    pending = plan["pending"]
+    repository.apply_code_lineage_decision(plan["code_plan"])
+    state["working_lineage"] = plan["working_record"]
+    state["best_known_lineage"] = plan["best_known_record"]
+    state["retained_lineages"] = plan["retained"]
+    state["last_lineage_decision"] = {
+        "experiment": int(pending["experiment"]),
+        "continue_from": plan["working_name"],
+        "reason": plan["decision"]["reason"],
+        "best_known": plan["best_known_name"],
+        "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
+        "code_parent_commit": pending.get("code_parent_commit"),
+    }
+    state["pending_researcher_decision"] = None
+    state["last_verdict"] = f"researcher selected {plan['working_name']} as working"
+    if plan["request_final_benchmark"]:
+        best_known = plan["best_known_record"]
+        state["pending_final_benchmark"] = {
+            "experiment": int(pending["experiment"]),
+            "selected": plan["best_known_name"] or "best_known",
+            "artifact": best_known["artifact"],
+            "fingerprint": best_known["fingerprint"],
+        }
+    repository.write_state(state)
+    protected = repository.role_and_retention_artifacts(state)
+    for candidate in pending["candidates"]:
+        artifact = repository.resolve_repo_path(candidate["artifact"])
+        if artifact not in protected:
+            repository.remove_heavyweight_artifacts(artifact)
+    for lineage in plan["removed_retained"]:
+        artifact = repository.resolve_repo_path(lineage["artifact"])
+        if artifact not in protected:
+            repository.remove_heavyweight_artifacts(artifact)
     return False
 
 

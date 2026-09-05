@@ -1052,6 +1052,8 @@ def plan_code_lineage_decision(
 
 
 def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
+    if state.get("schema_version") == 4:
+        return plan_v4_previous_result_decision(proposal, state)
     pending = state.get("pending_researcher_decision")
     if pending is None:
         raise ValueError("there is no researcher decision awaiting resolution")
@@ -1236,5 +1238,235 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         ],
         "retentions": retention_plans,
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
+        "request_final_benchmark": request_final,
+    }
+
+
+def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
+    sources = {
+        item["name"]: {**item, "_current_candidate": True}
+        for item in pending["candidates"]
+    }
+    for identifier in ("working", "best_known"):
+        lineage = lineage_role(state, identifier)
+        if lineage is not None:
+            sources[identifier] = {**lineage, "name": identifier}
+    for lineage in state.get("retained_lineages", []):
+        sources[str(lineage["id"])] = {**lineage, "name": str(lineage["id"])}
+    return sources
+
+
+def _v4_lineage_record(
+    source: dict, pending: dict, artifact: Path, reason: str
+) -> dict:
+    current = bool(source.get("_current_candidate"))
+    checkpoint_steps = int(source.get("timesteps", source.get("training_steps", 0)))
+    steps = (
+        int(pending.get("parent_training_steps", 0)) + checkpoint_steps
+        if current and pending.get("initialization") == "transfer"
+        else checkpoint_steps
+    )
+    return {
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_experiment": int(pending["experiment"])
+        if current
+        else int(source["origin_experiment"]),
+        "candidate": str(source.get("name", source.get("candidate"))),
+        "parameters": source.get("parameters", pending["parameters"]),
+        "scientific_commit": source.get("scientific_commit")
+        or pending.get("scientific_commit"),
+        "training_steps": steps,
+        "evaluation_artifacts": repository.evaluation_artifact_paths(
+            source.get("evaluations")
+        )
+        if current
+        else list(source.get("evaluation_artifacts", [])),
+        "reason": reason,
+    }
+
+
+def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
+    pending = state.get("pending_researcher_decision")
+    if pending is None:
+        raise ValueError("there is no researcher decision awaiting resolution")
+    if not isinstance(pending, dict):
+        raise TypeError("pending researcher decision must be an object")
+    if set(proposal) != {"previous_result_decision"}:
+        raise ValueError(
+            "a lineage proposal must contain only previous_result_decision"
+        )
+    decision = proposal["previous_result_decision"]
+    if not isinstance(decision, dict) or int(decision.get("experiment", -1)) != int(
+        pending["experiment"]
+    ):
+        raise ValueError("previous_result_decision references the wrong experiment")
+    allowed = {
+        "experiment",
+        "continue_from",
+        "reason",
+        "code",
+        "best_known",
+        "retain",
+        "remove_retained",
+        "request_final_benchmark",
+    }
+    extra = set(decision) - allowed
+    if extra:
+        raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
+    working_name, working_reason = (
+        str(decision.get("continue_from", "")).strip(),
+        str(decision.get("reason", "")).strip(),
+    )
+    sources = _v4_sources(pending, state)
+    if not working_reason or working_name not in sources:
+        raise ValueError(
+            f"continue_from must be one of {sorted(sources)} with a reason"
+        )
+    working_source = sources[working_name]
+    working_artifact = repository.resolve_repo_path(working_source["artifact"])
+    repository.require_complete_artifact(
+        working_artifact, f"selected lineage {working_name!r}"
+    )
+    code = decision.get("code")
+    if not isinstance(code, dict) or set(code) != {"action", "reason"}:
+        raise ValueError("code decision requires only action and reason")
+    code_action, code_reason = (
+        str(code.get("action", "")).lower(),
+        str(code.get("reason", "")).strip(),
+    )
+    if code_action not in {"keep", "revert"} or not code_reason:
+        raise ValueError("code decision must be keep or revert with a reason")
+    parent = str(pending.get("code_parent_commit", "")).strip()
+    code_plan = plan_code_lineage_decision(
+        pending,
+        code_action,
+        current_paths=(
+            repository.scientific_delta(parent)
+            if parent and code_action == "revert"
+            else None
+        ),
+    )
+    code_plan["parent"] = parent
+    best_decision, best_record, best_name = (
+        decision.get("best_known"),
+        state.get("best_known_lineage"),
+        None,
+    )
+    if best_decision is not None:
+        if not isinstance(best_decision, dict) or set(best_decision) != {
+            "candidate",
+            "reason",
+            "evidence",
+        }:
+            raise ValueError("best_known requires candidate, reason, and evidence")
+        best_name, evidence = (
+            str(best_decision["candidate"]).strip(),
+            best_decision["evidence"],
+        )
+        if (
+            best_name not in sources
+            or not str(best_decision["reason"]).strip()
+            or not isinstance(evidence, list)
+            or not evidence
+        ):
+            raise ValueError(
+                "best_known requires an available candidate, reason, and evidence"
+            )
+        best_source = sources[best_name]
+        best_artifact = repository.resolve_repo_path(best_source["artifact"])
+        repository.require_complete_artifact(best_artifact, "best-known lineage")
+        available_evidence = (
+            set(repository.evaluation_artifact_paths(best_source.get("evaluations")))
+            if best_source.get("_current_candidate")
+            else set(best_source.get("evaluation_artifacts", []))
+        )
+        cited = {repository.canonical_repo_path(str(path)) for path in evidence}
+        if not cited & available_evidence:
+            raise ValueError("best_known evidence must measure its selected candidate")
+        existing_best = state.get("best_known_lineage")
+        if existing_best is not None and existing_best[
+            "fingerprint"
+        ] != repository.artifact_fingerprint(best_artifact):
+            incumbent_evidence = set(existing_best["evaluation_artifacts"])
+            if not cited & incumbent_evidence:
+                raise ValueError(
+                    "replacing best_known requires cited evidence for the incumbent"
+                )
+        for path in cited:
+            if not repository.resolve_repo_path(path).is_file():
+                raise ValueError(f"best_known evidence does not exist: {path}")
+        best_record = _v4_lineage_record(
+            best_source, pending, best_artifact, str(best_decision["reason"]).strip()
+        )
+    retained = list(state.get("retained_lineages", []))
+    removal_ids = decision.get("remove_retained", [])
+    if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):
+        raise ValueError(
+            "remove_retained must be a list of unique retained lineage IDs"
+        )
+    removed = [lineage for lineage in retained if lineage["id"] in removal_ids]
+    if len(removed) != len(removal_ids):
+        raise ValueError("unknown retained lineages in remove_retained")
+    retained_ids = {item["id"] for item in retained}
+    if {name for name in (working_name, best_name) if name in retained_ids} & set(
+        removal_ids
+    ):
+        raise ValueError("cannot remove a retained lineage selected for a role")
+    new_retained: list[dict] = []
+    known_ids = retained_ids - set(removal_ids)
+    for item in decision.get("retain", []):
+        if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
+            raise ValueError(
+                "each retained lineage requires only candidate, id, and reason"
+            )
+        candidate_name, identifier, reason = (
+            str(item["candidate"]).strip(),
+            str(item["id"]).strip(),
+            str(item["reason"]).strip(),
+        )
+        if (
+            not identifier
+            or Path(identifier).name != identifier
+            or identifier in {".", ".."}
+            or identifier in known_ids
+        ):
+            raise ValueError("retained lineage ID must be unique and file-name-safe")
+        if candidate_name not in sources or not reason:
+            raise ValueError(
+                "retained lineages require an available candidate and reason"
+            )
+        source = sources[candidate_name]
+        artifact = repository.resolve_repo_path(source["artifact"])
+        repository.require_complete_artifact(
+            artifact, f"retained lineage {identifier!r}"
+        )
+        new_retained.append(
+            {"id": identifier, **_v4_lineage_record(source, pending, artifact, reason)}
+        )
+        known_ids.add(identifier)
+    request_final = decision.get("request_final_benchmark", False)
+    if not isinstance(request_final, bool):
+        raise TypeError("request_final_benchmark must be true or false")
+    if request_final and best_record is None:
+        raise ValueError("a final benchmark requires a designated best-known model")
+    return {
+        "pending": pending,
+        "decision": decision,
+        "working_name": working_name,
+        "working_record": _v4_lineage_record(
+            working_source, pending, working_artifact, working_reason
+        ),
+        "best_known_record": best_record,
+        "best_known_name": best_name,
+        "code_action": code_action,
+        "code_reason": code_reason,
+        "code_plan": code_plan,
+        "retained": [
+            lineage for lineage in retained if lineage["id"] not in removal_ids
+        ]
+        + new_retained,
+        "retentions": [],
+        "removed_retained": removed,
         "request_final_benchmark": request_final,
     }
