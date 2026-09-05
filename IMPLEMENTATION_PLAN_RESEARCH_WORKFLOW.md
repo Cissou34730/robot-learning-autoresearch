@@ -663,5 +663,3 @@ Report:
 - Scientific effectiveness remains unproven until the human runs and reviews a later campaign. Do not run that campaign and do not describe passing software tests as proof that the reasoning bias is fixed.
 
 <!-- End of implementation plan. -->
-
-
