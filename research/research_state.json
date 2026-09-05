@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-champion-200ep-seed1-fb234ea119ba.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-3-champion-200ep-seed1-9233771c95e7.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 2
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 3
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
     "code": {
       "action": "revert",
-      "reason": "The experiment's changes in robot_learning/scenario/environment.py and its associated tests implement focused target-angle sampling, which produced a large full-angle and hold-stability regression. Revert the intervention and restore the accepted method."
+      "reason": "Revert the experiment-3 observation and test changes because explicit target radius and sine/cosine angle features did not improve the difficult sector and caused substantial full-angle and hold-stability regressions in the measured fresh run."
     },
-    "code_parent_commit": "329d0a6d6e0f459f9f04ad4643d916823e3f888d",
+    "code_parent_commit": "5e293eda92e27f5be6bb45f50c702c1934bbac3f",
     "continue_from": "champion",
-    "experiment": 2,
-    "reason": "Experiment 2's focused-sampling checkpoints improved the selected negative-angle sector at best but regressed the uniformly evaluated policy from the 97.0% champion to 85.0% and then 77.5%, with substantial failures and hold interruptions outside the sector."
+    "experiment": 3,
+    "reason": "Experiment 3's target-geometry observation augmentation reached only 78.5% at checkpoint-100352 and 83.0% at checkpoint-120832, with sector success of 7/21 and 8/21 and broad outside-sector and hold regressions. The accepted champion remained at 97.0%, with 15/21 sector success, 179/179 outside-sector success, and one hold interruption. Continue from the accepted champion rather than retain an inferior experiment-3 candidate."
   },
   "last_verdict": "researcher selected champion",
   "official_metrics": null,
