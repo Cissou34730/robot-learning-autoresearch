@@ -4,9 +4,9 @@
 
 **Direction:** Quantify fresh-seed variability in full-angle reach-and-hold
 training before attributing failures to representation or control. Four fresh
-runs now provide a broad seed-sensitive comparison; use the accepted champion
-as the behavioral control and keep the fixed evaluation and objective
-unchanged.
+runs provide a broad seed-sensitive comparison; use the accepted champion as
+the behavioral control and test hold-specific reward credit assignment through
+transfer, keeping the fixed evaluation and objective unchanged.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
 the unchanged replications reached 29.5% and 75.5% at that checkpoint
@@ -34,10 +34,11 @@ remain unresolved. It is also unknown whether checkpoint selection can
 reliably avoid late hold instability.
 
 **Conditional next steps:** Treat the accepted champion as the active lineage.
-If research continues, require baseline or intervention comparisons to
-distinguish non-reach and hold-interruption behavior across fresh seeds, and
-interpret any representation or control result only against that variability
-rather than from a single fresh run.
+The current intervention tests whether partially forfeiting accumulated
+hold-progress reward on an exit reduces hold interruptions without sacrificing
+reach performance. If it fails, return to seed-controlled comparisons of
+non-reach and hold-interruption behavior rather than attributing the result to
+the reward mechanism alone.
 
 **Reconsider when:** Independent fresh runs reliably reproduce the champion, or
 a balanced intervention shows a repeatable sector improvement without material
