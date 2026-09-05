@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-champion-200ep-seed1-da55aa2016a5.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-champion-200ep-seed1-da55aa2016a5.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 4
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 5
   },
-  "last_allocated_experiment": 4,
-  "last_experiment": 4,
+  "last_allocated_experiment": 5,
+  "last_experiment": 5,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "Experiment 4 was a replication with no experiment-specific code changes, so there is no intervention to revert. Keep the current unchanged method code alongside the accepted champion."
+      "reason": "Experiment 5 made no researcher-owned code or configuration changes, so there is no intervention to revert. Keeping the unchanged baseline code is consistent with selecting the accepted champion and preserves the current scientific method."
     },
-    "code_parent_commit": "2ebd9eda427d653127e9adfceb6d61efe79f1f5d",
+    "code_parent_commit": "66ee70b3b1f256153860f1ad1d4b3d288ec9017e",
     "continue_from": "champion",
-    "experiment": 4,
-    "reason": "The fresh unchanged baseline replication reached only 29.5% at checkpoint-100352 and 44.5% at checkpoint-120832, with broad non-reach failures, while the accepted champion reached 97.0% and had no outside-sector failures. The replication provides evidence of strong training-seed variation but is not a viable replacement lineage."
+    "experiment": 5,
+    "reason": "Experiment 5 was an unchanged fresh replication and reached only 75.5% at checkpoint-100352 and 74.0% at checkpoint-120832, versus 97.0% for the accepted champion. It provides evidence of seed-sensitive learning but is not a viable replacement lineage."
   },
   "last_verdict": "researcher selected champion",
   "official_metrics": null,

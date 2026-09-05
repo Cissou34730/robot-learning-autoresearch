@@ -2,64 +2,44 @@
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Scientific strategy
 
-**Direction:** Establish how reproducible the accepted full-angle
-reach-and-hold behavior is across fresh PPO seeds before attributing failures to
-representation or control. Use the accepted lineage as the behavioral control
-and keep the fixed evaluation and objective unchanged.
+**Direction:** Quantify fresh-seed variability in full-angle reach-and-hold
+training before attributing the negative-angle failures to representation or
+control. Use the accepted champion as the behavioral control and keep the fixed
+evaluation and objective unchanged.
 
-**Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, with
-five of six failures never entering tolerance and concentrated between -122°
-and -145°; this supports investigating that sector
-(`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-1-checkpoint-100352-200ep-seed1-f1f33f3d10a8.json`).
-The evidence is one training seed and does not establish whether the sector
-problem is caused by sampling, policy capacity, control behavior, or
-stochastic variation. Experiment 2's focused-sampling checkpoint-100352
-solved all 21 evaluated sector episodes but succeeded on only 149 of 179
-outside-sector episodes and accumulated 576 hold interruptions; its later
-checkpoint fell to 18 of 21 in-sector and 137 of 179 outside-sector successes.
-The accepted champion remained at 15 of 21 in-sector and 179 of 179
-outside-sector successes, for 97.0% overall versus 85.0% and 77.5%
-(`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-checkpoint-100352-200ep-seed1-fb234ea119ba.json`,
-`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-checkpoint-120832-200ep-seed1-fb234ea119ba.json`,
-`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-2-champion-200ep-seed1-fb234ea119ba.json`).
-Experiment 3's added target radius and sine/cosine angle features also
-regressed: checkpoint-100352 reached 157 of 200 successes, including 7 of 21
-in-sector and 150 of 179 outside-sector, while checkpoint-120832 reached 166
-of 200, including 8 of 21 in-sector and 158 of 179 outside-sector. The later
-checkpoint accumulated 97 hold interruptions, mostly outside the difficult
-sector, versus one for the accepted champion. These are single fresh training
-seeds, so they do not isolate the underlying cause. Experiment 4's unchanged
-fresh baseline replication was much worse: 59 of 200 at checkpoint-100352 and
-89 of 200 at checkpoint-120832, versus 194 of 200 for the champion. Its
-checkpoint-100352 failures included 136 non-reaches and 252 hold interruptions,
-while the later checkpoint still had 110 non-reaches. This large difference
-across baseline training seeds establishes substantial stochastic variation in
-the learned outcome, although it does not explain the source of that variation
-or establish that either tested intervention is beneficial
-(`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-100352-200ep-seed1-da55aa2016a5.json`,
-`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-120832-200ep-seed1-da55aa2016a5.json`,
-`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-champion-200ep-seed1-da55aa2016a5.json`).
+**Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
+the unchanged replications reached 29.5% and 75.5% at that checkpoint
+(experiments 4 and 5), with experiment 5 falling from 75.5% to 74.0% at
+checkpoint-120832. The two fresh runs therefore support substantial
+training-seed variation, but neither reproduces the accepted 97.0% outcome and
+two seeds do not identify its cause. Experiment 5 also separates failure
+mechanisms across training: its 100352 checkpoint had 49 non-reaches and no
+hold interruptions, while its 120832 checkpoint had 36 non-reaches and 404
+hold interruptions, all outside the difficult sector. This indicates that
+late hold instability can vary independently of the sector's reach failures,
+but the available evidence does not establish a causal mechanism or show that
+either prior intervention is beneficial
+(`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-checkpoint-100352-200ep-seed1-da55aa2016a5.json`,
+`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-checkpoint-120832-200ep-seed1-da55aa2016a5.json`).
 
-**Open questions:** Whether the champion's strong full-angle behavior is
+**Open questions:** What training-process factors produce the large
+seed-dependent spread, whether the champion's strong full-angle behavior is
 reproducible, and whether the negative-angle failures arise from control
-behavior, policy capacity, or training-seed variation, remain unresolved. It is
-also uncertain whether late hold instability is a separate mechanism from
-sector performance.
+behavior, policy capacity, or stochastic variation remain unresolved. It is
+also unknown whether checkpoint selection can reliably avoid late hold
+instability.
 
-**Conditional next steps:** Keep the accepted lineage and do not promote the
-experiment 4 replication or continue either the focused-sampling or tested
-target-feature intervention on the present evidence. Run another unchanged
-fresh-seed replication to determine whether experiment 4 was representative of
-the baseline's seed sensitivity. If independent seeds reproduce strong
-behavior, compare representation or control interventions against that
-reproducible baseline; if they remain broadly variable, quantify that variation
-before interpreting single-seed intervention results.
+**Conditional next steps:** Treat the accepted champion as the active lineage
+and require future baseline or intervention comparisons to distinguish
+non-reach and hold-interruption behavior across fresh seeds. Interpret any
+representation or control result only against that variability rather than
+from a single fresh run.
 
-**Reconsider when:** A fresh baseline reliably reproduces the champion, or a
-balanced intervention shows a reliable sector improvement without material
+**Reconsider when:** Independent fresh runs reliably reproduce the champion, or
+a balanced intervention shows a repeatable sector improvement without material
 outside-sector or hold-stability regression. Evidence that characterizes the
-seed-dependent outcomes sufficiently to separate them from intervention
-effects would also justify revising the current interpretation.
+seed-dependent outcomes sufficiently to separate them from intervention effects
+would also justify revising the current interpretation.
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 1
 
@@ -138,3 +118,26 @@ their interventions. The replication is nevertheless not a viable candidate
 and provides no basis to replace the accepted champion.
 
 **Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-4-champion-200ep-seed1-da55aa2016a5.json`.
+
+## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 5
+
+**Result:** The unchanged fresh PPO replication remained below the accepted
+champion: checkpoint-100352 reached 75.5% (151/200), and checkpoint-120832
+reached 74.0% (148/200), versus 97.0% (194/200) for the champion.
+
+**Observed behavior:** At checkpoint-100352, success was 7/21 in the difficult
+negative-angle sector and 144/179 outside it, with 49 non-reaches and no hold
+interruptions. At checkpoint-120832, success was 7/21 in-sector and 141/179
+outside-sector, with 36 non-reaches and 404 hold interruptions; all measured
+hold interruptions were outside the sector. The champion had 15/21 in-sector
+and 179/179 outside-sector successes, 5 non-reaches and one hold interruption.
+
+**Interpretation:** This second unchanged replication supports the conclusion
+that fresh PPO training is strongly seed-sensitive: seed 2 was substantially
+better than experiment 4 but still did not reproduce the accepted lineage.
+The late increase in hold interruptions, despite fewer non-reaches, suggests
+that reach and hold reliability can vary independently during training. The
+result does not identify the source of the stochastic variation or justify
+promoting this candidate.
+
+**Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-champion-200ep-seed1-da55aa2016a5.json`.
