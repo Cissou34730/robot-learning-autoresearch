@@ -236,6 +236,12 @@ def commit_paths(message: str, scope: list[str]) -> bool:
     return True
 
 
+def publish_scientific_recipe(experiment: int, scope: list[str]) -> str:
+    """Publish an experiment's validated scientific recipe and return its revision."""
+    commit_paths(f"experiment {experiment} scientific recipe", scope)
+    return git("rev-parse", "HEAD").strip()
+
+
 def commit_runner_memory(message: str) -> bool:
     return commit_paths(message, changed_runner_memory())
 

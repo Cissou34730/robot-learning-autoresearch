@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from research import runner_protocol as protocol
 from research import runner_repository as repository
 from research.run_experiment import apply_previous_result_decision
@@ -369,3 +371,156 @@ def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):
     assert state["working_lineage"]["artifact"] == candidate.name
     assert candidate.joinpath("model.zip").read_bytes() == b"candidate"
     assert candidate.joinpath("artifact.json").is_file()
+
+
+def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(working, steps=10_000),
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_analysis": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
+    monkeypatch.setattr(
+        protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
+    )
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda commit: [
+            "robot_learning/scenario/reward.py",
+            "tests/scenario/test_reward.py",
+        ],
+    )
+    monkeypatch.setattr(
+        repository,
+        "tracked_at_commit",
+        lambda commit, path: path == "robot_learning/scenario/reward.py",
+    )
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "checkpoint",
+                "reason": "Continue the candidate.",
+                "code": {
+                    "action": "restore",
+                    "reason": "Return to the working recipe.",
+                    "lineage": "working",
+                },
+            }
+        },
+        state,
+    )
+
+    assert plan["code_plan"]["parent"] == "a" * 40
+    assert plan["code_plan"]["restore"] == ["robot_learning/scenario/reward.py"]
+    assert plan["code_plan"]["remove_created"] == [
+        (tmp_path / "tests/scenario/test_reward.py").resolve()
+    ]
+
+
+def test_v4_restore_rejects_lineage_without_recipe_provenance(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    lineage = _lineage(working, steps=10_000)
+    lineage["scientific_commit"] = None
+    monkeypatch.setattr(
+        protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
+    )
+    state = {
+        "schema_version": 4,
+        "working_lineage": lineage,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_analysis": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    with pytest.raises(ValueError, match="scientific_commit provenance"):
+        protocol.plan_previous_result_decision(
+            {
+                "previous_result_decision": {
+                    "experiment": 2,
+                    "continue_from": "checkpoint",
+                    "reason": "Continue.",
+                    "code": {
+                        "action": "restore",
+                        "reason": "Restore.",
+                        "lineage": "working",
+                    },
+                }
+            },
+            state,
+        )
+
+
+def test_v4_cleanup_completion_is_recorded_without_removed_retained(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(repository, "write_state", lambda state: None)
+    selected = _artifact(tmp_path / "selected", "selected")
+    disposable = _artifact(tmp_path / "disposable", "disposable")
+    state = {
+        "working_lineage": _lineage(selected, steps=10_000),
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_closure_operation": {
+            "progress": "durable",
+            "plan": {
+                "pending": {
+                    "candidates": [
+                        {
+                            "name": "selected",
+                            "artifact": selected.name,
+                        },
+                        {
+                            "name": "disposable",
+                            "artifact": disposable.name,
+                        },
+                    ]
+                },
+                "removed_retained": [],
+            },
+        },
+    }
+
+    from research.run_experiment import finalize_pending_v4_closure
+
+    finalize_pending_v4_closure(state)
+
+    assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
+    assert selected.joinpath("model.zip").is_file()
+    assert not disposable.joinpath("model.zip").exists()

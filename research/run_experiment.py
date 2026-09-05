@@ -620,8 +620,57 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
 
 
 def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
+    operation = state.get("pending_closure_operation")
+    if operation is None:
+        operation = {
+            "experiment": int(plan["pending"]["experiment"]),
+            "selected": plan["working_name"],
+            "code_action": plan["code_action"],
+            "plan": _serialize_closure_plan(plan),
+            "progress": "planned",
+        }
+        state["pending_closure_operation"] = operation
+        repository.write_state(state)
+    return apply_pending_v4_closure(state)
+
+
+def _serialize_closure_plan(plan: dict) -> dict:
+    code_plan = plan["code_plan"]
+    return {
+        "pending": plan["pending"],
+        "decision": plan["decision"],
+        "working_name": plan["working_name"],
+        "working_record": plan["working_record"],
+        "best_known_record": plan["best_known_record"],
+        "best_known_name": plan["best_known_name"],
+        "code_action": plan["code_action"],
+        "code_reason": plan["code_reason"],
+        "code_plan": {
+            "parent": code_plan["parent"],
+            "restore": code_plan["restore"],
+            "remove_created": [
+                repository.repo_relative_path(path)
+                for path in code_plan["remove_created"]
+            ],
+        },
+        "retained": plan["retained"],
+        "removed_retained": plan["removed_retained"],
+        "request_final_benchmark": plan["request_final_benchmark"],
+    }
+
+
+def apply_pending_v4_closure(state: dict) -> bool:
+    operation = state.get("pending_closure_operation")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending closure operation")
+    plan = operation["plan"]
     pending = plan["pending"]
-    repository.apply_code_lineage_decision(plan["code_plan"])
+    if operation.get("progress") == "planned":
+        code_plan = dict(plan["code_plan"])
+        code_plan["remove_created"] = [
+            repository.resolve_repo_path(path) for path in code_plan["remove_created"]
+        ]
+        repository.apply_code_lineage_decision(code_plan)
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
     state["retained_lineages"] = plan["retained"]
@@ -660,6 +709,18 @@ def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
     else:
         state["pending_researcher_decision"] = None
     repository.write_state(state)
+    operation["progress"] = "durable"
+    repository.write_state(state)
+    return False
+
+
+def finalize_pending_v4_closure(state: dict) -> None:
+    """Clean only after the scientific and campaign-memory commits are published."""
+    operation = state.get("pending_closure_operation")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending closure operation")
+    plan = operation["plan"]
+    pending = plan["pending"]
     protected = repository.role_and_retention_artifacts(state)
     for candidate in pending["candidates"]:
         artifact = repository.resolve_repo_path(candidate["artifact"])
@@ -669,8 +730,8 @@ def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
         artifact = repository.resolve_repo_path(lineage["artifact"])
         if artifact not in protected:
             repository.remove_heavyweight_artifacts(artifact)
-    console.announce("\n" + console.render_decision_card(plan) + "\n")
-    return False
+    operation["progress"] = "cleanup_complete"
+    repository.write_state(state)
 
 
 def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
@@ -690,7 +751,11 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
         .lower(),
         state=state,
     )
+    if state.get("schema_version") == 4:
+        finalize_pending_v4_closure(state)
     paths.PROPOSAL_PATH.unlink(missing_ok=True)
+    state["pending_closure_operation"] = None
+    repository.write_state(state)
     return 0
 
 
@@ -862,6 +927,24 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             console.announce("[checks] passed")
 
         effective_config = research_config.load_experiment_config()
+        scientific_scope = repository.scientific_delta(code_parent_commit)
+        state["pending_scientific_commit"] = {
+            "experiment": index,
+            "code_parent_commit": code_parent_commit,
+            "scope": scientific_scope,
+        }
+        repository.write_state(state)
+        scientific_commit = repository.publish_scientific_recipe(
+            index,
+            scientific_scope,
+        )
+        state["pending_scientific_commit"] = {
+            "experiment": index,
+            "code_parent_commit": code_parent_commit,
+            "scientific_commit": scientific_commit,
+        }
+        repository.write_state(state)
+        result["scientific_commit"] = scientific_commit
         effective_timesteps = execution.training_budget(
             args.timesteps,
             initialization,
@@ -954,6 +1037,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         archived_candidates = repository.archive_candidates(
             index, contenders, effective_config, campaign_id=campaign_id
         )
+        for candidate in archived_candidates:
+            candidate["scientific_commit"] = scientific_commit
         verdict = "trained; awaiting researcher analysis"
         completed_steps = max(
             (int(candidate["timesteps"]) for candidate in archived_candidates),
@@ -980,6 +1065,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             "parent_training_steps": int(parent_training_steps),
             "baseline": baseline,
             "code_parent_commit": code_parent_commit,
+            "scientific_commit": scientific_commit,
             "research_change_paths": code_changes
             + (["research/current_params.json"] if parameter_overrides else []),
             "result": result,
@@ -1106,6 +1192,22 @@ def main() -> int:
         return status
     if args.evaluate_pending:
         return execute_pending_evaluations()
+    if repository.read_state().get("pending_closure_operation"):
+        state = repository.load_state(
+            allow_unmeasured=True, allow_missing_artifact=True
+        )
+        operation = state["pending_closure_operation"]
+        apply_pending_v4_closure(state)
+        repository.commit_lineage_decision(
+            int(operation["experiment"]),
+            str(operation["selected"]),
+            code_action=str(operation["code_action"]),
+            state=state,
+        )
+        finalize_pending_v4_closure(state)
+        state["pending_closure_operation"] = None
+        repository.write_state(state)
+        return 0
     if not paths.PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
         return 1

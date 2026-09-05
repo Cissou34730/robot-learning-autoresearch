@@ -14,6 +14,7 @@ import pytest
 
 from research import runner_execution as execution
 from research import runner_protocol as protocol
+from research import runner_repository as repository
 from research.run_experiment import (
     check_proposal,
     main,
@@ -899,6 +900,16 @@ def test_automatic_commit_is_immediately_pushed(monkeypatch):
         ("commit", "-m", "record result"),
         ("push", "origin", "HEAD"),
     ]
+
+
+def test_scientific_recipe_publication_commits_its_scoped_changes(monkeypatch):
+    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE])
+
+    revision = repository.publish_scientific_recipe(4, [SCIENTIFIC_CHANGE])
+
+    assert committed_paths(commits_of(calls)[0]) == [SCIENTIFIC_CHANGE]
+    assert commits_of(calls)[0][2] == "experiment 4 scientific recipe"
+    assert revision == ""
 
 
 def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_path):

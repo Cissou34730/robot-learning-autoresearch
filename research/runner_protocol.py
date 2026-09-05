@@ -1105,6 +1105,28 @@ def plan_code_lineage_decision(
     return {"restore": restorable, "remove_created": created}
 
 
+def plan_lineage_restore(lineage: dict) -> dict:
+    """Restore all researcher-owned changes between a lineage recipe and now."""
+    commit = str(lineage.get("scientific_commit") or "").strip()
+    if not commit:
+        raise ValueError("restore lineage has no scientific_commit provenance")
+    repository.require_resolvable_commit(commit)
+    changed = [
+        path
+        for path in repository.scientific_delta(commit)
+        if is_researcher_owned(path)
+    ]
+    restorable: list[str] = []
+    created: list[Path] = []
+    for path in changed:
+        candidate = (paths.ROOT / path).resolve()
+        if repository.tracked_at_commit(commit, path):
+            restorable.append(path)
+        else:
+            created.append(candidate)
+    return {"parent": commit, "restore": restorable, "remove_created": created}
+
+
 def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     if state.get("schema_version") == 4:
         return plan_v4_previous_result_decision(proposal, state)
@@ -1390,25 +1412,46 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         working_artifact, f"selected lineage {working_name!r}"
     )
     code = decision.get("code")
-    if not isinstance(code, dict) or set(code) != {"action", "reason"}:
-        raise ValueError("code decision requires only action and reason")
+    if not isinstance(code, dict):
+        raise TypeError("code decision requires action and reason")
     code_action, code_reason = (
         str(code.get("action", "")).lower(),
         str(code.get("reason", "")).strip(),
     )
-    if code_action not in {"keep", "revert"} or not code_reason:
-        raise ValueError("code decision must be keep or revert with a reason")
+    if code_action not in {"keep", "revert", "restore"} or not code_reason:
+        raise ValueError("code decision must be keep, revert, or restore with a reason")
+    allowed_code_fields = {"action", "reason"}
+    if code_action == "restore":
+        allowed_code_fields.add("lineage")
+    if set(code) != allowed_code_fields:
+        raise ValueError(
+            "code restore requires lineage; other code actions require only action and reason"
+        )
     parent = str(pending.get("code_parent_commit", "")).strip()
-    code_plan = plan_code_lineage_decision(
-        pending,
-        code_action,
-        current_paths=(
-            repository.scientific_delta(parent)
-            if parent and code_action == "revert"
-            else None
-        ),
-    )
-    code_plan["parent"] = parent
+    if code_action == "restore":
+        restore_name = str(code["lineage"]).strip()
+        restore_source = _v4_sources(pending, state).get(restore_name)
+        if restore_name not in {"working", "best_known"} and not retained_lineage(
+            state, restore_name
+        ):
+            raise ValueError(
+                "code restore lineage must be working, best_known, or a retained lineage ID"
+            )
+        if restore_source is None:
+            raise ValueError(f"code restore lineage {restore_name!r} is unavailable")
+        code_plan = plan_lineage_restore(restore_source)
+        code_plan["lineage"] = restore_name
+    else:
+        code_plan = plan_code_lineage_decision(
+            pending,
+            code_action,
+            current_paths=(
+                repository.scientific_delta(parent)
+                if parent and code_action == "revert"
+                else None
+            ),
+        )
+        code_plan["parent"] = parent
     best_decision, best_record, best_name = (
         decision.get("best_known"),
         state.get("best_known_lineage"),
