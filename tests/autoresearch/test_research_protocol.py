@@ -34,6 +34,7 @@ from research.runner_protocol import (
     validate_training_proposal,
 )
 from research.runner_repository import (
+    artifact_fingerprint,
     compact_result_record,
     experiment_log_row,
     measurement_record,
@@ -1233,6 +1234,8 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     persisted = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
     assert persisted["official_metrics"]["success_percent"] == 100.0
     assert persisted["pending_final_benchmark"] is None
+    assert persisted["official_benchmark_verdict"] == "goal_reached"
+    assert persisted["terminal_campaign_status"] == "goal_reached"
     assert (tmp_path / "GOAL_REACHED").exists()
 
 
@@ -1330,6 +1333,95 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     assert persisted["pending_final_benchmark"] is None
     assert persisted["official_metrics"]["success_percent"] == 97.5
     assert not (tmp_path / "GOAL_REACHED").exists()
+
+
+def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
+    monkeypatch, tmp_path
+):
+    artifact = _artifact(tmp_path / "archive" / "best-known")
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    fingerprint = artifact_fingerprint(artifact)
+    best_known = {
+        "artifact": "archive/best-known",
+        "fingerprint": fingerprint,
+        "origin_experiment": 8,
+        "candidate": "candidate",
+        "parameters": {},
+        "scientific_commit": "abc123",
+        "training_steps": 120_000,
+        "evaluation_artifacts": [],
+        "reason": "Measured model selected for official assessment.",
+    }
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": best_known.copy(),
+        "best_known_lineage": best_known.copy(),
+        "retained_lineages": [],
+        "pending_final_benchmark": {
+            "experiment": 8,
+            "selected": "best_known",
+            "artifact": best_known["artifact"],
+            "fingerprint": fingerprint,
+            "best_known": best_known.copy(),
+        },
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        lambda model: {"goal_reached": False, "model": str(model)},
+    )
+
+    assert execute_pending_final_benchmark() == 0
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["pending_final_benchmark"] is None
+    assert persisted["official_benchmark_artifact"] == fingerprint
+    assert persisted["official_benchmark_model"] == {
+        "selected": "best_known",
+        "artifact": "archive/best-known",
+        "fingerprint": fingerprint,
+    }
+    assert persisted["official_benchmark_verdict"] == "goal_not_reached"
+    assert persisted["terminal_campaign_status"] == "goal_not_reached"
+    assert not (tmp_path / "GOAL_REACHED").exists()
+
+
+def test_v4_final_benchmark_rejects_a_pending_request_that_does_not_match_best_known(
+    monkeypatch, tmp_path
+):
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 4,
+                "best_known_lineage": {"artifact": "archive/best", "fingerprint": "best"},
+                "pending_final_benchmark": {
+                    "selected": "best_known",
+                    "artifact": "archive/other",
+                    "fingerprint": "other",
+                    "best_known": {"artifact": "archive/other", "fingerprint": "other"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="does not match the v4 best-known"):
+        execute_pending_final_benchmark()
+
+
+def test_terminal_campaign_rejects_new_proposals():
+    with pytest.raises(ValueError, match="terminal official assessment"):
+        validate_proposal_against_state(
+            {"hypothesis": "another run"},
+            {"terminal_campaign_status": "goal_not_reached"},
+        )
 
 
 def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path):

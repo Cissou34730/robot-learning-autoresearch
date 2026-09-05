@@ -303,6 +303,43 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     assert "candidate_metrics" not in rendered
 
 
+def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 4,
+                "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+                "working_lineage": None,
+                "best_known_lineage": None,
+                "retained_lineages": [],
+                "terminal_campaign_status": "goal_not_reached",
+                "official_benchmark_model": {
+                    "selected": "best_known",
+                    "artifact": "research/checkpoints/best-known",
+                },
+                "official_benchmark_verdict": "goal_not_reached",
+                "official_metrics": {"goal_reached": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    rendered = render_research_brief()
+
+    assert "Current phase: terminal official assessment" in rendered
+    assert "Available deliverables: none; the campaign is complete" in rendered
+    assert "Model: best_known (research/checkpoints/best-known)" in rendered
+    assert "Verdict: goal_not_reached" in rendered
+    assert "Terminal assessment: goal_not_reached" in rendered
+
+
 def test_brief_groups_original_and_replication_evidence(monkeypatch, tmp_path):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")

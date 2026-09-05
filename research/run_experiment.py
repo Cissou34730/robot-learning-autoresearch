@@ -687,9 +687,10 @@ def apply_pending_v4_closure(state: dict) -> bool:
         best_known = plan["best_known_record"]
         state["pending_final_benchmark"] = {
             "experiment": int(pending["experiment"]),
-            "selected": plan["best_known_name"] or "best_known",
+            "selected": "best_known",
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
+            "best_known": best_known,
         }
     if state.get("pending_analysis") is pending:
         result = pending["result"]
@@ -771,19 +772,39 @@ def execute_pending_final_benchmark() -> int:
         raise TypeError(
             "there is no accepted lineage awaiting final benchmark evaluation"
         )
-    artifact = str(pending.get("artifact", "")).strip()
-    accepted_reference = str(state.get("accepted_artifact", "")).strip()
-    if repository.resolve_repo_path(artifact) != repository.resolve_repo_path(
-        accepted_reference
-    ):
-        raise ValueError(
-            "pending final benchmark does not identify the accepted artifact"
-        )
+    if state.get("schema_version") == 4:
+        best_known = state.get("best_known_lineage")
+        frozen_best_known = pending.get("best_known")
+        if not isinstance(best_known, dict) or not isinstance(frozen_best_known, dict):
+            raise ValueError("pending final benchmark requires a v4 best-known lineage")
+        if pending.get("selected") != "best_known":
+            raise ValueError("pending final benchmark must target best_known")
+        if (
+            frozen_best_known.get("artifact") != best_known.get("artifact")
+            or frozen_best_known.get("fingerprint") != best_known.get("fingerprint")
+            or pending.get("artifact") != best_known.get("artifact")
+            or pending.get("fingerprint") != best_known.get("fingerprint")
+        ):
+            raise ValueError(
+                "pending final benchmark does not match the v4 best-known lineage"
+            )
+        artifact = str(best_known["artifact"])
+        fingerprint = str(best_known["fingerprint"])
+    else:
+        artifact = str(pending.get("artifact", "")).strip()
+        fingerprint = str(pending.get("fingerprint", "")).strip()
+    if state.get("schema_version") != 4:
+        accepted_reference = str(state.get("accepted_artifact", "")).strip()
+        if repository.resolve_repo_path(artifact) != repository.resolve_repo_path(
+            accepted_reference
+        ):
+            raise ValueError(
+                "pending final benchmark does not identify the accepted artifact"
+            )
     accepted_artifact = repository.resolve_repo_path(artifact)
     repository.require_complete_artifact(
         accepted_artifact, "pending final benchmark artifact"
     )
-    fingerprint = str(pending.get("fingerprint", "")).strip()
     if (
         not fingerprint
         or repository.artifact_fingerprint(accepted_artifact) != fingerprint
@@ -797,9 +818,26 @@ def execute_pending_final_benchmark() -> int:
         )
 
     official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
+    verdict = (
+        "goal_reached"
+        if bool(official_metrics["goal_reached"])
+        else "goal_not_reached"
+    )
     state["official_metrics"] = official_metrics
     state["official_benchmark_artifact"] = fingerprint
+    state["official_benchmark_model"] = {
+        "selected": pending["selected"],
+        "artifact": artifact,
+        "fingerprint": fingerprint,
+    }
+    state["official_benchmark_verdict"] = verdict
     state["pending_final_benchmark"] = None
+    state["terminal_campaign_status"] = verdict
+    state["last_verdict"] = (
+        "official benchmark reached the goal"
+        if bool(official_metrics["goal_reached"])
+        else "official benchmark did not reach the goal"
+    )
     repository.write_state(state)
     if bool(official_metrics["goal_reached"]):
         paths.GOAL_PATH.write_text(

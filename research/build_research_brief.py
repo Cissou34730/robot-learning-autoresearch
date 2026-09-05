@@ -304,6 +304,8 @@ def _render_v4_research_brief(
     if state.get("pending_final_benchmark") is not None:
         phase = "official assessment"
     terminal = state.get("terminal_campaign_status")
+    if terminal:
+        phase = "terminal official assessment"
     lines = [
         "# Research Brief",
         "",
@@ -315,7 +317,13 @@ def _render_v4_research_brief(
         f"- Current experiment: {latest_experiment}",
         f"- Latest event: {state.get('last_verdict', (latest or {}).get('verdict', 'none'))}",
         "- Available deliverables: "
-        + ("`research/evaluation_request.json` or closure `research/proposal.json`" if isinstance(pending, dict) else "`research/proposal.json`"),
+        + (
+            "none; the campaign is complete"
+            if terminal
+            else "`research/evaluation_request.json` or closure `research/proposal.json`"
+            if isinstance(pending, dict)
+            else "`research/proposal.json`"
+        ),
     ]
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
@@ -398,7 +406,16 @@ def _render_v4_research_brief(
         lines.append("- This is also the working model.")
     official = state.get("official_metrics")
     if official is not None:
-        lines.extend(["", "## Official report", "", f"- Result: {official}"])
+        official_model = state.get("official_benchmark_model") or {}
+        lines.extend([
+            "",
+            "## Official report",
+            "",
+            f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
+            f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
+            f"- Result: {official}",
+            f"- Terminal assessment: {terminal or 'not recorded'}",
+        ])
     return "\n".join(lines).rstrip() + "\n"
 
 

@@ -296,6 +296,19 @@ def test_the_official_final_benchmark_is_persisted_immediately(monkeypatch):
     assert committed_paths(commits[0]) == ["research/research_state.json"]
 
 
+def test_official_terminal_result_is_published_without_starting_another_experiment(
+    monkeypatch,
+):
+    calls = record_git(monkeypatch, ["research/research_state.json"])
+    monkeypatch.setattr(
+        "research.run_experiment.execute_pending_final_benchmark", lambda: 0
+    )
+    monkeypatch.setattr("sys.argv", ["run_experiment.py", "--evaluate-pending-final"])
+
+    assert main() == 0
+    assert len(commits_of(calls)) == 1
+
+
 def test_transient_controls_never_become_durable_campaign_memory(monkeypatch):
     assert RUNNER_CONTROL_PATHS == {
         "research/proposal.json",

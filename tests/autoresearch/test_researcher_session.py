@@ -268,6 +268,15 @@ def test_runner_execution_failure_never_reopens_the_researcher_phase():
         assert "retry" not in remainder.lower()
 
 
+def test_launcher_stops_for_either_terminal_official_assessment():
+    terminal_guard = LOOP.split("terminal_campaign_status", 1)[1].split(
+        'if (Test-Path "research\\RECOVERY_PENDING")', 1
+    )[0]
+
+    assert "Official assessment complete" in terminal_guard
+    assert "break" in terminal_guard
+
+
 # --- the evaluation-request preflight --------------------------------------
 
 

@@ -254,6 +254,12 @@ while ($true) {
         break
     }
 
+    $terminalState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    if ($null -ne $terminalState.terminal_campaign_status) {
+        Write-Status "Official assessment complete: $($terminalState.terminal_campaign_status). Research loop finished." Green
+        break
+    }
+
     if (Test-Path "research\RECOVERY_PENDING") {
         if (-not (Test-Path "research\proposal.json")) {
             throw "Interrupted experiment has no proposal to resume."

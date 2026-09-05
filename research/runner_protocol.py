@@ -581,6 +581,8 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
     """Return the proposal contract expected by the persisted lifecycle state."""
     if not isinstance(proposal, dict):
         raise TypeError("proposal.json must contain a JSON object")
+    if state.get("terminal_campaign_status") is not None:
+        raise ValueError("the campaign has received its terminal official assessment")
     if state.get("pending_final_benchmark") is not None:
         raise ValueError(
             "the final benchmark is pending; no research proposal is accepted"
