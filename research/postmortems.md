@@ -2,11 +2,11 @@
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Scientific strategy
 
-**Direction:** Quantify fresh-seed variability in full-angle reach-and-hold
-training before attributing failures to representation or control. Four fresh
-runs provide a broad seed-sensitive comparison; use the accepted champion as
-the behavioral control and test hold-specific reward credit assignment through
-transfer, keeping the fixed evaluation and objective unchanged.
+**Direction:** Treat the accepted champion as the active behavioral control while
+separating training-seed variability from intervention effects in full-angle
+reach-and-hold. Fresh replications establish that PPO outcomes vary widely, and
+experiment 7 rejects the tested hold-exit reward forfeiture as a remedy for hold
+instability.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
 the unchanged replications reached 29.5% and 75.5% at that checkpoint
@@ -19,8 +19,12 @@ checkpoint-100352 evaluation had 2/21 successes in the difficult sector and
 checkpoint-120832 it had 4/21 and 47/179 successes, with 103 non-reaches and
 155 hold interruptions. Together with experiment 5's distinct late hold
 instability, this indicates that reach and hold reliability can vary
-independently across training, but the available evidence does not establish a
-causal mechanism or show that either prior intervention is beneficial
+independently across training. Experiment 7's transfer with
+`HOLD_EXIT_FORFEIT_FRACTION=0.5` reached 84.0% at checkpoint-100352 and 82.5%
+at checkpoint-120832, with 1,226 and 987 hold interruptions, respectively,
+versus the champion's 97.0% and one interruption. The evidence does not
+establish the cause of seed variation, but it does not support this reward
+intervention.
 (`research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-checkpoint-100352-200ep-seed1-da55aa2016a5.json`,
 `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-5-checkpoint-120832-200ep-seed1-da55aa2016a5.json`,
 `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-6-checkpoint-100352-200ep-seed1-da55aa2016a5.json`,
@@ -33,12 +37,10 @@ failures arise from control behavior, policy capacity, or stochastic variation
 remain unresolved. It is also unknown whether checkpoint selection can
 reliably avoid late hold instability.
 
-**Conditional next steps:** Treat the accepted champion as the active lineage.
-The current intervention tests whether partially forfeiting accumulated
-hold-progress reward on an exit reduces hold interruptions without sacrificing
-reach performance. If it fails, return to seed-controlled comparisons of
-non-reach and hold-interruption behavior rather than attributing the result to
-the reward mechanism alone.
+**Conditional next steps:** Keep the accepted champion as the active lineage.
+If research resumes, use seed-controlled comparisons of non-reach and
+hold-interruption behavior rather than continuing the tested 0.5 hold-exit
+forfeiture setting or attributing the remaining failures to that mechanism.
 
 **Reconsider when:** Independent fresh runs reliably reproduce the champion, or
 a balanced intervention shows a repeatable sector improvement without material
@@ -171,3 +173,25 @@ replacement and the result does not identify the source of the stochastic
 variation.
 
 **Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-6-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-6-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-6-champion-200ep-seed1-da55aa2016a5.json`.
+
+## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 7
+
+**Result:** The transferred hold-exit reward intervention remained below the
+accepted champion: checkpoint-100352 reached 84.0% (168/200), checkpoint-120832
+reached 82.5% (165/200), and the champion reached 97.0% (194/200).
+
+**Observed behavior:** At checkpoint-100352, the candidate had 15 non-reaches
+and 1,226 hold interruptions, with 10/21 successes in the difficult
+negative-angle sector and 158/179 outside it. At checkpoint-120832, it had 14
+non-reaches and 987 hold interruptions, with 11/21 sector successes and 154/179
+outside-sector successes. The champion had 5 non-reaches, one hold interruption,
+15/21 sector successes and 179/179 outside-sector successes.
+
+**Interpretation:** Partially forfeiting accumulated hold-progress reward on an
+exit did not reduce hold interruptions and substantially degraded both full-angle
+success and sector performance in this transferred run. The intervention is not
+a viable replacement for the accepted lineage; the evidence supports reverting
+the reward change while leaving the broader source of training variability
+unresolved.
+
+**Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-checkpoint-100352-200ep-seed1-91e28f1ae7b8.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-checkpoint-120832-200ep-seed1-91e28f1ae7b8.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-7-champion-200ep-seed1-91e28f1ae7b8.json`.
