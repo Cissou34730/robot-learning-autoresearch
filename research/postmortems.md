@@ -5,22 +5,22 @@
 **Direction:** Treat the accepted champion as the active behavioral control while
 separating training-seed variability from intervention effects in full-angle
 reach-and-hold. Fresh replications establish that PPO outcomes vary widely, and
-experiments 7 through 11 provide no basis to replace the champion with the
+experiments 7 through 12 provide no basis to replace the champion with the
 tested reward intervention or another fresh baseline.
 
 **Lessons and limits:** Experiment 1 reached 97.0% at checkpoint-100352, while
-the seven unchanged fresh replications reached 29.5%, 75.5%, 24.0%, 11.0%,
-78.0%, 15.5% and 34.0% at that checkpoint (experiments 4, 5, 6, 8, 9, 10 and
-11); experiments 10 and 11 rose only to 25.5% and 33.0%, respectively, at
-checkpoint-120832. None reproduces the accepted 97.0% outcome, so the spread
-supports substantial training-seed variation but does not identify its cause.
-Experiment 11 failed broadly: it had 4/21 sector and 64/179 outside-sector
-successes at checkpoint-100352, with 115 non-reaches and 345 hold
-interruptions, then 4/21 and 62/179 successes at checkpoint-120832, with 114
-non-reaches and 664 hold interruptions. Together with experiment 10's broad
-failure, experiment 9's distinct late hold instability and experiment 8's broad
-failure, this indicates that reach and hold reliability can vary independently
-across training and checkpoint. Experiment 7's transfer with
+The eight unchanged fresh replications reached 29.5%, 75.5%, 24.0%, 11.0%,
+78.0%, 15.5%, 34.0% and 43.0% at checkpoint-100352 (experiments 4, 5, 6, 8,
+9, 10, 11 and 12); experiments 10, 11 and 12 reached only 25.5%, 33.0% and
+44.0%, respectively, at checkpoint-120832. None reproduces the accepted 97.0%
+outcome, so the spread supports substantial training-seed variation but does
+not identify its cause. Experiment 12's detailed episode records show 86/200
+and 88/200 successes at its two checkpoints, while the champion comparison
+shows 194/200 successes. Together with experiment 11's broad failure,
+experiment 10's broad failure, experiment 9's distinct late hold instability
+and experiment 8's broad failure, this indicates that reach and hold
+reliability can vary independently across training and checkpoint. Experiment
+7's transfer with
 `HOLD_EXIT_FORFEIT_FRACTION=0.5` reached 84.0% at checkpoint-100352 and 82.5%
 at checkpoint-120832, with 1,226 and 987 hold interruptions, respectively,
 versus the champion's 97.0% and one interruption. The evidence does not
@@ -293,3 +293,24 @@ The candidate is not a viable replacement; the unchanged code remains
 appropriate and the accepted champion stays active.
 
 **Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-11-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-11-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-11-champion-200ep-seed1-da55aa2016a5.json`.
+
+## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 12
+
+**Result:** The eighth unchanged fresh PPO replication did not reproduce the
+accepted champion: checkpoint-100352 reached 43.0% (86/200), checkpoint-120832
+reached 44.0% (88/200), and the champion reached 97.0% (194/200).
+
+**Observed behavior:** The detailed episode records contain 114 and 112 failed
+episodes at checkpoints 100352 and 120832, respectively, versus six for the
+champion comparison. The later checkpoint improved the candidate by only two
+successes and remained 106 percentage points below the champion's success count
+on the same 200-episode panel.
+
+**Interpretation:** This unchanged fresh run remains far below the accepted
+lineage at both checkpoints and adds another non-reproduction of the champion.
+It strengthens the evidence for large seed- and checkpoint-dependent PPO
+variation without identifying its training cause. The candidate is not a viable
+replacement; the unchanged code remains appropriate and the accepted champion
+stays active.
+
+**Evidence inspected:** `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-12-checkpoint-100352-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-12-checkpoint-120832-200ep-seed1-da55aa2016a5.json`, `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-12-champion-200ep-seed1-da55aa2016a5.json`.

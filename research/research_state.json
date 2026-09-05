@@ -1,7 +1,7 @@
 {
   "accepted_artifact": "research/checkpoints/accepted",
   "accepted_evaluations": [
-    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-11-champion-200ep-seed1-da55aa2016a5.json"
+    "research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/evaluation-90890200-b313-4f38-b010-de1eaaeb3d98-experiment-12-champion-200ep-seed1-da55aa2016a5.json"
   ],
   "accepted_metrics": {
     "episodes": 200,
@@ -46,19 +46,19 @@
     "started_at": "2026-09-04T14:14:21.3905385Z"
   },
   "campaign_experiment_counters": {
-    "90890200-b313-4f38-b010-de1eaaeb3d98": 11
+    "90890200-b313-4f38-b010-de1eaaeb3d98": 12
   },
-  "last_allocated_experiment": 11,
-  "last_experiment": 11,
+  "last_allocated_experiment": 12,
+  "last_experiment": 12,
   "last_lineage_decision": {
     "code": {
       "action": "keep",
-      "reason": "The experiment used the unchanged current method, so there is no intervention to roll back. Keeping the code preserves the accepted method while the champion remains the active behavioral lineage."
+      "reason": "Experiment 12 made no scientific code or configuration intervention; keeping the unchanged code preserves the active method and avoids attributing the replication's stochastic outcome to a code change."
     },
-    "code_parent_commit": "a4fe18ba324f5a713a7d1035c68917446c6a77a1",
+    "code_parent_commit": "6141552e093cb756e5401a9dbcb6967348e0d0e6",
     "continue_from": "champion",
-    "experiment": 11,
-    "reason": "Experiment 11 was an unchanged fresh replication that reached only 34.0% at checkpoint-100352 and 33.0% at checkpoint-120832, with broad sector and outside-sector failures and far more non-reaches and hold interruptions than the champion's 97.0% result. It is not a viable replacement."
+    "experiment": 12,
+    "reason": "Experiment 12 was an unchanged fresh PPO replication and reached only 43.0% at checkpoint-100352 and 44.0% at checkpoint-120832, while the accepted champion reached 97.0% on the same 200-episode comparison. The replication adds evidence of seed-dependent variation but is not a viable replacement."
   },
   "last_verdict": "researcher selected champion",
   "official_benchmark_artifact": "342df9c372160a6d5a770b42708be3dbc1d6026b6a5139471b5c308bd21b2abd",
