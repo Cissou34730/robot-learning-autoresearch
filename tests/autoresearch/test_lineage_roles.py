@@ -20,7 +20,7 @@ def _artifact(path: Path, marker: str) -> Path:
 def _lineage(path: Path, *, steps: int) -> dict:
     return {
         "artifact": path.name,
-        "fingerprint": f"fingerprint-{path.name}",
+        "fingerprint": repository.artifact_fingerprint(path),
         "origin_experiment": 1,
         "candidate": path.name,
         "parameters": {"algorithm": {"name": path.name}},
@@ -314,6 +314,24 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
         },
     }
     state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
+    state["pending_researcher_decision"]["partial_evaluations"] = [
+        {
+            "candidate": "checkpoint",
+            "episodes": 200,
+            "seed": 1,
+            "evaluation_semantics": "semantics",
+            "model_fingerprint": repository.artifact_fingerprint(candidate),
+            "metrics": {"evaluation_artifact": candidate_evidence.name},
+        },
+        {
+            "candidate": "best_known",
+            "episodes": 200,
+            "seed": 1,
+            "evaluation_semantics": "semantics",
+            "model_fingerprint": repository.artifact_fingerprint(incumbent),
+            "metrics": {"evaluation_artifact": incumbent_evidence.name},
+        },
+    ]
     decision = {
         "previous_result_decision": {
             "experiment": 2,
@@ -331,6 +349,78 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
     plan = protocol.plan_previous_result_decision(decision, state)
 
     assert plan["best_known_record"]["artifact"] == candidate.name
+
+
+def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
+    )
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    incumbent_evidence = tmp_path / "incumbent-evaluation.json"
+    candidate_evidence = tmp_path / "candidate-evaluation.json"
+    incumbent_evidence.write_text("{}", encoding="utf-8")
+    candidate_evidence.write_text("{}", encoding="utf-8")
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": _lineage(incumbent, steps=10_000),
+        "best_known_lineage": _lineage(incumbent, steps=10_000),
+        "retained_lineages": [],
+        "pending_analysis": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [{"evaluation_artifact": candidate_evidence.name}],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+            "partial_evaluations": [
+                {
+                    "candidate": "checkpoint",
+                    "episodes": 200,
+                    "seed": 1,
+                    "evaluation_semantics": "candidate-semantics",
+                    "model_fingerprint": repository.artifact_fingerprint(candidate),
+                    "metrics": {"evaluation_artifact": candidate_evidence.name},
+                },
+                {
+                    "candidate": "best_known",
+                    "episodes": 200,
+                    "seed": 1,
+                    "evaluation_semantics": "incumbent-semantics",
+                    "model_fingerprint": repository.artifact_fingerprint(incumbent),
+                    "metrics": {"evaluation_artifact": incumbent_evidence.name},
+                },
+            ],
+        },
+    }
+    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Continue exploring.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Designate from comparable evidence.",
+                "evidence": [candidate_evidence.name, incumbent_evidence.name],
+            },
+        }
+    }
+    monkeypatch.setattr(
+        protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
+    )
+
+    with pytest.raises(ValueError, match="compatible instrument and panel settings"):
+        protocol.plan_previous_result_decision(proposal, state)
 
 
 def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):

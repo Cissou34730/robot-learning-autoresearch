@@ -197,6 +197,52 @@ def test_v4_closure_updates_result_before_clearing_analysis(monkeypatch, tmp_pat
     assert record["closure_decision"] == proposal["previous_result_decision"]
 
 
+def test_v4_closure_resume_clears_reloaded_pending_analysis(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    repository.upsert_result(
+        {
+            "schema_version": 4,
+            "campaign_id": "campaign",
+            "index": 1,
+            "hypothesis": "test",
+        }
+    )
+    (tmp_path / "research" / "postmortems.md").write_text(
+        "## campaign / Experiment 1\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        encoding="utf-8",
+    )
+    state = repository.read_state()
+    plan = run_experiment.protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "checkpoint",
+                "reason": "Preserve the trained candidate.",
+                "code": {"action": "keep", "reason": "No recipe change."},
+            }
+        },
+        state,
+    )
+    state["pending_closure_operation"] = {
+        "experiment": 1,
+        "selected": plan["working_name"],
+        "code_action": plan["code_action"],
+        "plan": run_experiment._serialize_closure_plan(
+            plan, pending_field="pending_analysis"
+        ),
+        "progress": "planned",
+    }
+    repository.write_state(state)
+
+    reloaded = repository.read_state()
+    assert not run_experiment.apply_pending_v4_closure(reloaded)
+
+    persisted = repository.read_state()
+    assert persisted["pending_analysis"] is None
+    assert repository.result_records()[0]["status"] == "closed"
+
+
 def test_v4_resumed_measurement_rejects_changed_model_identity(monkeypatch, tmp_path):
     state_path, request_path, _ = _configure(monkeypatch, tmp_path)
     state = repository.read_state()

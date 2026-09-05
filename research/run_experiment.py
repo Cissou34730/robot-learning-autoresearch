@@ -633,11 +633,16 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
 def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
     operation = state.get("pending_closure_operation")
     if operation is None:
+        pending_field = (
+            "pending_analysis"
+            if state.get("pending_analysis") is plan["pending"]
+            else "pending_researcher_decision"
+        )
         operation = {
             "experiment": int(plan["pending"]["experiment"]),
             "selected": plan["working_name"],
             "code_action": plan["code_action"],
-            "plan": _serialize_closure_plan(plan),
+            "plan": _serialize_closure_plan(plan, pending_field=pending_field),
             "progress": "planned",
         }
         state["pending_closure_operation"] = operation
@@ -645,10 +650,11 @@ def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
     return apply_pending_v4_closure(state)
 
 
-def _serialize_closure_plan(plan: dict) -> dict:
+def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
     code_plan = plan["code_plan"]
     return {
         "pending": plan["pending"],
+        "pending_field": pending_field,
         "decision": plan["decision"],
         "working_name": plan["working_name"],
         "working_record": plan["working_record"],
@@ -676,6 +682,13 @@ def apply_pending_v4_closure(state: dict) -> bool:
         raise TypeError("there is no pending closure operation")
     plan = operation["plan"]
     pending = plan["pending"]
+    pending_field = plan.get("pending_field")
+    if pending_field not in {"pending_analysis", "pending_researcher_decision"}:
+        pending_field = (
+            "pending_analysis"
+            if isinstance(state.get("pending_analysis"), dict)
+            else "pending_researcher_decision"
+        )
     if operation.get("progress") == "planned":
         code_plan = dict(plan["code_plan"])
         code_plan["remove_created"] = [
@@ -703,7 +716,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
             "fingerprint": best_known["fingerprint"],
             "best_known": best_known,
         }
-    if state.get("pending_analysis") is pending:
+    if pending_field == "pending_analysis":
         result = pending["result"]
         result.update(
             {

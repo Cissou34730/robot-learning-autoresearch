@@ -1364,6 +1364,102 @@ def _v4_lineage_record(
     }
 
 
+def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]:
+    catalog: dict[str, dict] = {}
+    campaign_id = repository.current_campaign_id(state)
+    sources = [
+        *repository.result_records_for_campaign(campaign_id),
+        pending,
+    ]
+    for source in sources:
+        research_evaluations = [
+            *(source.get("requested_evaluations") or []),
+            *(source.get("partial_evaluations") or []),
+        ]
+        for evaluation in research_evaluations:
+            if not isinstance(evaluation, dict):
+                continue
+            metrics = evaluation.get("metrics")
+            if not isinstance(metrics, dict):
+                metrics = evaluation
+            path = metrics.get("evaluation_artifact")
+            if not isinstance(path, str) or not path.strip():
+                continue
+            catalog[repository.canonical_repo_path(path)] = {
+                "instrument": "research_evaluation",
+                "model_fingerprint": evaluation.get("model_fingerprint")
+                or metrics.get("model_fingerprint"),
+                "settings": (
+                    "research_evaluation",
+                    int(evaluation.get("episodes", metrics.get("episodes", -1))),
+                    int(evaluation.get("seed", metrics.get("seed", -1))),
+                    str(
+                        evaluation.get(
+                            "evaluation_semantics",
+                            metrics.get("evaluation_semantics", ""),
+                        )
+                    ),
+                ),
+            }
+        reference_evaluations = [
+            *(source.get("task_reference_evaluations") or []),
+            *(source.get("partial_task_reference_evaluations") or []),
+        ]
+        for evaluation in reference_evaluations:
+            if not isinstance(evaluation, dict):
+                continue
+            path = evaluation.get("evaluation_artifact")
+            if not isinstance(path, str) or not path.strip():
+                continue
+            catalog[repository.canonical_repo_path(path)] = {
+                "instrument": "task_reference",
+                "model_fingerprint": evaluation.get("model_fingerprint"),
+                "settings": (
+                    "task_reference",
+                    str(evaluation.get("panel", "")),
+                    int(evaluation.get("panel_version", -1)),
+                    int(evaluation.get("episodes", -1)),
+                    int(evaluation.get("seed", -1)),
+                ),
+            }
+    return catalog
+
+
+def _validated_designation_evidence(
+    paths: set[str],
+    *,
+    expected_fingerprint: str,
+    catalog: dict[str, dict],
+    description: str,
+) -> list[dict]:
+    records: list[dict] = []
+    for path in paths:
+        record = catalog.get(path)
+        if record is None:
+            raise ValueError(
+                f"{description} evidence lacks measurement metadata: {path}"
+            )
+        if record["model_fingerprint"] != expected_fingerprint:
+            raise ValueError(
+                f"{description} evidence does not match its artifact: {path}"
+            )
+        settings = record["settings"]
+        if (
+            record["instrument"] == "research_evaluation"
+            and (settings[1] < 1 or settings[2] < 0 or not settings[3])
+        ) or (
+            record["instrument"] == "task_reference"
+            and (
+                not settings[1] or settings[2] < 1 or settings[3] < 1 or settings[4] < 0
+            )
+        ):
+            raise ValueError(
+                f"{description} evidence has incomplete panel metadata: {path}"
+            )
+        records.append(record)
+    return records
+
+
 def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     pending = state.get("pending_analysis") or state.get("pending_researcher_decision")
     if pending is None:
@@ -1488,17 +1584,42 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             else set(best_source.get("evaluation_artifacts", []))
         )
         cited = {repository.canonical_repo_path(str(path)) for path in evidence}
-        if not cited & available_evidence:
+        selected_evidence = cited & available_evidence
+        if not selected_evidence:
             raise ValueError("best_known evidence must measure its selected candidate")
+        evidence_catalog = _development_evidence_catalog(pending, state)
+        selected_records = _validated_designation_evidence(
+            selected_evidence,
+            expected_fingerprint=repository.artifact_fingerprint(best_artifact),
+            catalog=evidence_catalog,
+            description="best_known candidate",
+        )
         existing_best = state.get("best_known_lineage")
         if existing_best is not None and existing_best[
             "fingerprint"
         ] != repository.artifact_fingerprint(best_artifact):
             incumbent_evidence = set(existing_best["evaluation_artifacts"])
-            if not cited & incumbent_evidence:
+            cited_incumbent_evidence = cited & incumbent_evidence
+            if not cited_incumbent_evidence:
                 raise ValueError(
                     "replacing best_known requires cited evidence for the incumbent"
                 )
+            incumbent_records = _validated_designation_evidence(
+                cited_incumbent_evidence,
+                expected_fingerprint=existing_best["fingerprint"],
+                catalog=evidence_catalog,
+                description="incumbent best_known",
+            )
+            selected_settings = {record["settings"] for record in selected_records}
+            incumbent_settings = {record["settings"] for record in incumbent_records}
+            if not selected_settings & incumbent_settings:
+                raise ValueError(
+                    "replacing best_known requires compatible instrument and panel settings"
+                )
+            if cited - selected_evidence - cited_incumbent_evidence:
+                raise ValueError("best_known evidence includes an unrelated artifact")
+        elif cited != selected_evidence:
+            raise ValueError("best_known evidence includes an unrelated artifact")
         for path in cited:
             if not repository.resolve_repo_path(path).is_file():
                 raise ValueError(f"best_known evidence does not exist: {path}")
