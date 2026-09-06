@@ -8,7 +8,7 @@
 
 **Open questions:** Which control, dynamics, or observation design property causes the persistent negative-angle reach failures, and whether it can be changed without sacrificing hold stability. It also remains unknown how frequently the unchanged method reaches the retained baseline's performance across fresh initializations.
 
-**Conditional next steps:** After closure, inspect the control and representation path against the restored baseline and design an intervention that directly targets the reach limitation. Do not further narrow angular sampling or treat the target-coordinate result as evidence that all representation changes are ineffective; any continued training should account for initialization variance and use matched development evaluation with explicit hold-stability diagnostics.
+**Conditional next steps:** Test whether the reach wedge is caused by presenting an invalid inverse-kinematic branch to the controller: retain the displacement features, select a joint-limit-feasible branch, and expose branch validity. Use a fresh run with the baseline seed to avoid stale normalization while holding initialization comparable. Do not further narrow angular sampling or treat the target-coordinate result as evidence that all representation changes are ineffective; use matched development evaluation with explicit hold-stability diagnostics.
 
 ## 90890200-b313-4f38-b010-de1eaaeb3d98 / Experiment 1
 
