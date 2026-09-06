@@ -12,6 +12,7 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
+    ACTION_SMOOTHING_CURRENT_WEIGHT,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -84,3 +85,22 @@ def test_environment_latches_the_outside_penalty_after_losing_hold(monkeypatch):
     assert continued_reward == pytest.approx(produced[1].total)
     assert exit_info["reward_components"] == produced[0].components
     assert continued_info["reward_components"] == produced[1].components
+
+
+def test_environment_smooths_successive_actions_and_resets_the_filter():
+    env = make_training_env()
+    env.reset(seed=0)
+
+    env.step(np.array([1.0, -1.0]))
+    env.step(np.array([-1.0, 1.0]))
+    expected = np.array(
+        [
+            1.0 - 2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT,
+            2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT - 1.0,
+        ]
+    )
+    np.testing.assert_allclose(env.data.ctrl, expected)
+
+    env.reset(seed=1)
+    env.step(np.array([1.0, -1.0]))
+    np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])

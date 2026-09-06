@@ -28,6 +28,7 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
+ACTION_SMOOTHING_CURRENT_WEIGHT = 0.75
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -71,6 +72,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_action: np.ndarray | None = None
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -117,6 +119,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_action = None
         return self._observation(), {}
 
     def step(
@@ -127,6 +130,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
+        if self._previous_action is not None:
+            action = (
+                ACTION_SMOOTHING_CURRENT_WEIGHT * action
+                + (1.0 - ACTION_SMOOTHING_CURRENT_WEIGHT) * self._previous_action
+            )
+        self._previous_action = action.copy()
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
