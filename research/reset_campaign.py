@@ -56,6 +56,7 @@ TASK_COMPATIBILITY_PATHS = (
     "robot_learning/robots/two_joint_arm.py",
     "robot_learning/robots/two_joint_arm.xml",
 )
+RESET_OPERATION_VERSION = 1
 
 
 def git(*arguments: str, text: bool = True) -> str | bytes:
@@ -104,6 +105,71 @@ def reset_backup_root() -> Path:
             f"Git resolved an unsafe reset-maintenance path: {backup}"
         )
     return backup
+
+
+def git_administrative_path(option: str) -> Path:
+    return Path(
+        str(git("rev-parse", "--path-format=absolute", option)).strip()
+    ).resolve()
+
+
+def repository_identity() -> dict[str, str]:
+    return {
+        "root": str(paths.ROOT.resolve()),
+        "git_dir": str(git_administrative_path("--git-dir")),
+        "git_common_dir": str(git_administrative_path("--git-common-dir")),
+        "branch": str(git("symbolic-ref", "--quiet", "--short", "HEAD")).strip(),
+    }
+
+
+def path_fingerprint(path: Path) -> str:
+    digest = hashlib.sha256()
+    if path.is_file():
+        digest.update(b"file\0")
+        digest.update(path.read_bytes())
+        return digest.hexdigest()
+    if not path.is_dir():
+        raise RuntimeError(f"reset cannot fingerprint unsupported path: {path}")
+    digest.update(b"directory\0")
+    for item in sorted(
+        path.rglob("*"), key=lambda value: value.relative_to(path).as_posix()
+    ):
+        relative = item.relative_to(path).as_posix().encode()
+        if item.is_dir():
+            digest.update(b"directory\0" + relative + b"\0")
+        elif item.is_file():
+            digest.update(b"file\0" + relative + b"\0")
+            digest.update(item.read_bytes())
+        else:
+            raise RuntimeError(f"reset cannot fingerprint unsupported path: {item}")
+    return digest.hexdigest()
+
+
+def normalize_targets(relative_paths: list[str]) -> list[str]:
+    normalized: list[str] = []
+    for relative in dict.fromkeys(relative_paths):
+        target = safe_path(relative)
+        normalized.append(target.relative_to(paths.ROOT.resolve()).as_posix())
+    return normalized
+
+
+def new_operation(mode: str, source: str | None, targets: list[str]) -> dict:
+    operation = {
+        "schema_version": RESET_OPERATION_VERSION,
+        "mode": mode,
+        "source_commit": source,
+        "original_head": str(git("rev-parse", "HEAD")).strip(),
+        "repository": repository_identity(),
+        "targeted_paths": normalize_targets(targets),
+        "pre_reset": [],
+        "commits": [],
+        "progress": "planned",
+    }
+    if mode == "fresh":
+        operation["recipe_source_commit"] = source
+    else:
+        operation["baseline_source_commit"] = source
+    return operation
 
 
 def commit_files(commit: str) -> set[str]:
@@ -398,18 +464,35 @@ def create_backup(relative_paths: list[str], operation: dict) -> Path:
     files = backup / "files"
     files.mkdir(parents=True)
     manifest: list[str] = []
-    for relative in dict.fromkeys(relative_paths):
+    pre_reset: list[dict] = []
+    for relative in operation["targeted_paths"]:
         source = safe_path(relative)
         if not source.exists():
+            pre_reset.append({"path": relative, "exists": False})
             continue
         destination = files / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
             shutil.copytree(source, destination)
+            kind = "directory"
         else:
             shutil.copy2(source, destination)
+            kind = "file"
         manifest.append(relative)
-    operation.update(progress="backed_up", backup=str(backup), backed_up=manifest)
+        pre_reset.append(
+            {
+                "path": relative,
+                "exists": True,
+                "kind": kind,
+                "fingerprint": path_fingerprint(source),
+            }
+        )
+    operation.update(
+        progress="backed_up",
+        backup=str(backup.resolve()),
+        backed_up=manifest,
+        pre_reset=pre_reset,
+    )
     repository.atomic_write_json(backup / "operation.json", operation)
     return backup
 
@@ -417,6 +500,217 @@ def create_backup(relative_paths: list[str], operation: dict) -> Path:
 def update_operation(backup: Path, operation: dict, progress: str) -> None:
     operation["progress"] = progress
     repository.atomic_write_json(backup / "operation.json", operation)
+
+
+def publish_reset_changes(
+    backup: Path,
+    operation: dict,
+    message: str,
+    scope: list[str],
+    purpose: str,
+    force_add: list[str] | None = None,
+) -> str | None:
+    forced = list(dict.fromkeys(force_add or []))
+    ordinary = [path for path in scope if path not in forced]
+    stageable = repository.stage_existing_or_tracked(ordinary)
+    if forced:
+        git("add", "-f", "--", *forced)
+        stageable.extend(forced)
+    if not stageable or not str(
+        git("diff", "--cached", "--name-only", "--", *stageable)
+    ).strip():
+        return None
+    git("commit", "-m", message, "--", *stageable)
+    commit = str(git("rev-parse", "HEAD")).strip()
+    operation["commits"].append(
+        {"purpose": purpose, "commit": commit, "pushed": False}
+    )
+    update_operation(backup, operation, f"{purpose}_committed")
+    repository.push_head()
+    operation["commits"][-1]["pushed"] = True
+    update_operation(backup, operation, f"{purpose}_published")
+    return commit
+
+
+def path_is_covered(relative: str, targets: list[str]) -> bool:
+    return any(
+        relative == target or relative.startswith(f"{target}/")
+        for target in targets
+    )
+
+
+def validate_recovery_operation(operation_path: str) -> tuple[Path, dict]:
+    backup_root = reset_backup_root().resolve()
+    candidate = Path(operation_path)
+    if candidate.is_dir():
+        candidate = candidate / "operation.json"
+    candidate = candidate.resolve()
+    if candidate.name != "operation.json" or candidate.parent.parent != backup_root:
+        raise ValueError(
+            f"recovery operation must be directly below {backup_root}"
+        )
+    try:
+        operation = json.loads(candidate.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"invalid reset recovery operation: {candidate}") from error
+    if (
+        not isinstance(operation, dict)
+        or operation.get("schema_version") != RESET_OPERATION_VERSION
+    ):
+        raise ValueError("unsupported reset recovery operation schema")
+    if operation.get("repository") != repository_identity():
+        raise ValueError(
+            "reset recovery operation belongs to a different repository/worktree"
+        )
+    targets = operation.get("targeted_paths")
+    entries = operation.get("pre_reset")
+    commits = operation.get("commits")
+    if (
+        operation.get("mode") not in {"fresh", "baseline"}
+        or not isinstance(targets, list)
+        or not targets
+        or len(targets) != len(set(targets))
+        or not isinstance(entries, list)
+        or [entry.get("path") for entry in entries if isinstance(entry, dict)]
+        != targets
+        or not isinstance(commits, list)
+        or any(
+            not isinstance(record, dict)
+            or record.get("purpose") not in {"recipe", "campaign"}
+            or not isinstance(record.get("commit"), str)
+            or not record["commit"]
+            or not isinstance(record.get("pushed"), bool)
+            for record in commits
+        )
+    ):
+        raise ValueError("reset recovery operation has an invalid target manifest")
+    for relative in targets:
+        safe_path(relative)
+        if not (
+            path_is_covered(relative, list(CAMPAIGN_PATHS))
+            or protocol.is_researcher_owned(relative)
+            or relative in protocol.PARAMETER_ONLY_PATHS
+        ):
+            raise ValueError(
+                f"reset recovery operation contains an unsafe target: {relative}"
+            )
+    backup_files = candidate.parent / "files"
+    for entry in entries:
+        backup_path = backup_files / entry["path"]
+        if not entry.get("exists"):
+            if backup_path.exists():
+                raise ValueError(f"unexpected backup content for {entry['path']}")
+            continue
+        if (
+            entry.get("kind") not in {"file", "directory"}
+            or not backup_path.exists()
+        ):
+            raise ValueError(f"reset backup is incomplete for {entry['path']}")
+        if path_fingerprint(backup_path) != entry.get("fingerprint"):
+            raise ValueError(
+                f"reset backup fingerprint mismatch for {entry['path']}"
+            )
+    return candidate, operation
+
+
+def changed_worktree_paths() -> set[str]:
+    changed = set(str(git("diff", "--name-only")).splitlines())
+    changed.update(str(git("diff", "--cached", "--name-only")).splitlines())
+    changed.update(
+        str(git("ls-files", "--others", "--exclude-standard")).splitlines()
+    )
+    return {path for path in changed if path}
+
+
+def restore_backup_files(operation_path: Path, operation: dict) -> None:
+    targets = operation["targeted_paths"]
+    unrelated = sorted(
+        path
+        for path in changed_worktree_paths()
+        if not path_is_covered(path, targets)
+    )
+    if unrelated:
+        raise RuntimeError(
+            "recovery refuses unrelated working-tree changes: " + ", ".join(unrelated)
+        )
+    staged = str(git("diff", "--cached", "--name-only")).splitlines()
+    if staged:
+        git("restore", "--staged", "--source", "HEAD", "--", *staged)
+    backup_files = operation_path.parent / "files"
+    for entry in operation["pre_reset"]:
+        relative = entry["path"]
+        target = safe_path(relative)
+        remove_path(relative)
+        if not entry.get("exists"):
+            continue
+        source = backup_files / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if entry["kind"] == "directory":
+            shutil.copytree(source, target)
+        else:
+            shutil.copy2(source, target)
+    for entry in operation["pre_reset"]:
+        target = safe_path(entry["path"])
+        if bool(entry.get("exists")) != target.exists():
+            raise RuntimeError(f"recovery existence mismatch for {entry['path']}")
+        if entry.get("exists") and path_fingerprint(target) != entry["fingerprint"]:
+            raise RuntimeError(f"recovery fingerprint mismatch for {entry['path']}")
+
+
+def tracked_recovery_paths(operation: dict) -> list[str]:
+    targets = operation["targeted_paths"]
+    tracked = commit_files(operation["original_head"]) | commit_files("HEAD")
+    return sorted(path for path in tracked if path_is_covered(path, targets))
+
+
+def recover_reset(operation_path: str) -> tuple[Path, str | None, bool]:
+    manifest_path, operation = validate_recovery_operation(operation_path)
+    if operation.get("progress") == "recovered":
+        return manifest_path.parent, operation.get("recovery_commit"), True
+    recovery_commit = operation.get("recovery_commit")
+    if recovery_commit:
+        if str(git("rev-parse", "HEAD")).strip() != recovery_commit:
+            raise RuntimeError("recorded local recovery commit is not the current HEAD")
+    else:
+        commits = operation.get("commits")
+        expected_head = commits[-1]["commit"] if commits else operation["original_head"]
+        if str(git("rev-parse", "HEAD")).strip() != expected_head:
+            raise RuntimeError("current HEAD does not match the failed reset operation")
+        restore_backup_files(manifest_path, operation)
+        if commits:
+            stageable = tracked_recovery_paths(operation)
+            if stageable:
+                git("add", "-f", "-A", "--", *stageable)
+            git(
+                "commit",
+                "-m",
+                f"recover failed research reset {manifest_path.parent.name}",
+                "--",
+                *stageable,
+            )
+            recovery_commit = str(git("rev-parse", "HEAD")).strip()
+            operation["recovery_commit"] = recovery_commit
+            operation["recovery_pushed"] = False
+            update_operation(manifest_path.parent, operation, "recovery_committed")
+        elif changed_worktree_paths():
+            raise RuntimeError(
+                "recovery restored files but the original worktree is not clean"
+            )
+    if recovery_commit and not operation.get("recovery_pushed"):
+        try:
+            repository.push_head()
+        except RuntimeError as error:
+            update_operation(
+                manifest_path.parent, operation, "recovery_local_unpublished"
+            )
+            raise RuntimeError(
+                f"recovery commit {recovery_commit} is complete locally but not pushed"
+            ) from error
+        operation["recovery_pushed"] = True
+    if changed_worktree_paths():
+        raise RuntimeError("recovery completed with an unexpectedly dirty working tree")
+    update_operation(manifest_path.parent, operation, "recovered")
+    return manifest_path.parent, recovery_commit, True
 
 
 def remove_path(relative: str) -> None:
@@ -535,28 +829,35 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None, Path]:
         verify_recipe_source(source)
     targets = [*CAMPAIGN_PATHS, *(plan_paths(plan) if plan else [])]
     preflight_targets(targets)
-    operation = {"mode": "fresh", "recipe_source_commit": source, "progress": "planned"}
+    operation = new_operation("fresh", source, targets)
     backup = create_backup(targets, operation)
     try:
         if plan:
             repository.apply_code_lineage_decision(plan)
             validate_restored_recipe()
             update_operation(backup, operation, "recipe_restored")
-            repository.commit_paths(
-                f"restore scientific recipe from {source}", plan_paths(plan)
+            publish_reset_changes(
+                backup,
+                operation,
+                f"restore scientific recipe from {source}",
+                plan_paths(plan),
+                "recipe",
             )
-            update_operation(backup, operation, "recipe_published")
         state = write_fresh_campaign(source)
         update_operation(backup, operation, "campaign_initialized")
-        repository.commit_paths(
+        publish_reset_changes(
+            backup,
+            operation,
             "reset research experiment state: fresh",
             list(CAMPAIGN_PATHS),
+            "campaign",
         )
         update_operation(backup, operation, "complete")
     except Exception as error:
         operation["error"] = str(error)
         repository.atomic_write_json(backup / "operation.json", operation)
-        raise RuntimeError(f"reset failed; recover from {backup}: {error}") from error
+        command = f'.\\reset_research.ps1 -Recover "{backup / "operation.json"}" -Force'
+        raise RuntimeError(f"reset failed; run {command}: {error}") from error
     return str(state["campaign"]["id"]), source, backup
 
 
@@ -569,11 +870,7 @@ def reset_baseline(
     external_logs = baseline_log_source(source, state, training_log_source)
     targets = sorted({*CAMPAIGN_PATHS, *restore, *plan_paths(recipe_plan)})
     preflight_targets(targets)
-    operation = {
-        "mode": "baseline",
-        "baseline_source_commit": source,
-        "progress": "planned",
-    }
+    operation = new_operation("baseline", source, targets)
     backup = create_backup(targets, operation)
     try:
         for relative in CAMPAIGN_PATHS:
@@ -602,14 +899,14 @@ def reset_baseline(
         publication_scope = list(
             dict.fromkeys([*repository.status_paths((".",)), *tracked_logs])
         )
-        ordinary_scope = [
-            path for path in publication_scope if path not in tracked_logs
-        ]
-        repository.stage_existing_or_tracked(ordinary_scope)
-        git("add", "-f", "--", *tracked_logs)
-        if str(git("diff", "--cached", "--name-only")).strip():
-            repository.commit_and_push(
-                f"reset research experiment state: baseline {source}"
+        if str(git("status", "--porcelain", "--untracked-files=all")).strip():
+            publish_reset_changes(
+                backup,
+                operation,
+                f"reset research experiment state: baseline {source}",
+                publication_scope,
+                "campaign",
+                force_add=tracked_logs,
             )
         else:
             repository.push_head()
@@ -617,13 +914,16 @@ def reset_baseline(
     except Exception as error:
         operation["error"] = str(error)
         repository.atomic_write_json(backup / "operation.json", operation)
-        raise RuntimeError(f"reset failed; recover from {backup}: {error}") from error
+        command = f'.\\reset_research.ps1 -Recover "{backup / "operation.json"}" -Force'
+        raise RuntimeError(f"reset failed; run {command}: {error}") from error
     return str(state["campaign"]["id"]), source, backup
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=("fresh", "baseline"), required=True)
+    operation = parser.add_mutually_exclusive_group(required=True)
+    operation.add_argument("--mode", choices=("fresh", "baseline"))
+    operation.add_argument("--recover")
     parser.add_argument("--recipe-ref")
     parser.add_argument("--baseline-ref")
     parser.add_argument("--training-log-source")
@@ -633,6 +933,14 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     try:
+        if args.recover:
+            if args.recipe_ref or args.baseline_ref or args.training_log_source:
+                raise ValueError("recovery accepts --recover only")
+            backup, commit, _ = recover_reset(args.recover)
+            print("=== Research reset recovered ===")
+            print(f"Operation: {backup / 'operation.json'}")
+            print(f"Recovery commit: {commit or 'none required'}")
+            return 0
         ensure_clean_repository()
         if args.mode == "fresh":
             if args.baseline_ref or args.training_log_source:

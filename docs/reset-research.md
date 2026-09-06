@@ -63,6 +63,23 @@ The logs are copied to temporary storage before cleanup and then versioned in
 the reset commit. That resulting commit can serve as a self-contained prepared
 baseline reference for subsequent resets. No new worktree is created.
 
+## Recovery
+
+Every reset records its original HEAD, exact target manifest, pre-reset content
+hashes, and commit/push progress under Git's administrative directory. If a
+reset fails after backup creation, its error prints the exact recovery command:
+
+```powershell
+.\reset_research.ps1 -Recover <operation.json> -Force
+```
+
+Recovery validates that the operation belongs to the current repository and
+worktree, verifies every backup hash, and restores only the recorded paths. If
+the reset created a commit, recovery publishes an explicit rollback commit; it
+never rewrites history or force-pushes. If publication is unavailable, the
+rollback remains as a clean local commit and the command reports its hash. The
+same recovery operation can be invoked again safely.
+
 ## Safety and Git
 
 Both modes refuse dirty tracked/untracked files, detached HEAD and a missing
@@ -75,7 +92,6 @@ pushes it to origin. A push failure leaves the local commit intact and reports
 the failure; no force-push or history rewriting is performed. If the desired
 state already matches Git, no redundant commit is created.
 
-Versioned files remain recoverable from Git. Removed ignored candidates,
-requests and logs are not generally recoverable. Baseline logs copied to
-temporary storage are retained there if an operation fails; the script prints
-that location. The operation is not a transactional filesystem rollback.
+Versioned and ignored reset targets are included in the validated recovery
+backup. The reset reports the backup location after success and an executable
+recovery command after failure.

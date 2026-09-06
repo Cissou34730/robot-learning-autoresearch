@@ -79,6 +79,8 @@ the new empty campaign state; all reset commits are pushed without rewriting
 history. Recovery backups are stored through Git's resolved administrative path,
 so reset works from both primary checkouts and linked worktrees. See
 [reset details and baseline requirements](docs/reset-research.md).
+Failed resets print a supported `-Recover <operation.json> -Force` command that
+restores the exact recorded targets and publishes a rollback when required.
 
 ## Tests and validation
 

@@ -161,6 +161,8 @@ def test_reset_entry_point_exposes_fresh_recipe_restoration():
     assert '"Local\\RobotLearningAutoresearch"' in wrapper
     assert "uv run python research/reset_campaign.py" in wrapper
     assert 'parser.add_argument("--recipe-ref")' in helper
+    assert '[Parameter(Mandatory, ParameterSetName = "Recover")]' in wrapper
+    assert 'operation.add_argument("--recover")' in helper
 
 
 @pytest.fixture(scope="module")
@@ -629,7 +631,7 @@ def test_push_failure_keeps_recovery_backup_and_never_reports_success(
     result = reset(root, "-Mode", "Fresh", "-RecipeRef", recipe, "-Force")
 
     assert result.returncode != 0
-    assert "recover from" in result.stderr
+    assert "reset_research.ps1 -Recover" in result.stderr
     assert "New campaign ID" not in result.stdout
     backups = list((root / ".git/research-reset-backups").glob("*/operation.json"))
     assert len(backups) == 1
@@ -696,7 +698,7 @@ def test_internal_failure_keeps_recovery_backup(
         monkeypatch.setattr(reset_campaign.repository, "commit_paths", fail)
         recipe_ref = None
 
-    with pytest.raises(RuntimeError, match=f"recover from .*simulated {phase} failure"):
+    with pytest.raises(RuntimeError, match=r"reset_research\.ps1 -Recover"):
         reset_campaign.reset_fresh(recipe_ref)
 
     backups = list((root / ".git/research-reset-backups").glob("*/operation.json"))

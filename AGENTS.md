@@ -42,6 +42,8 @@ empty v4 campaign. This imports no trained policy or evidence. `Baseline` is the
 separate operation for restoring a prepared experiment-1 policy and its evidence.
 The reset wrapper and research launcher share a machine-wide mutex. Reset
 backups resolve through Git's administrative path and support linked worktrees.
+Failed resets are restored with the human-only `-Recover <operation.json>
+-Force` operation, which validates the recorded manifest before writing.
 
 The Researcher session may inspect files and, when the current phase
 requires understanding code state or a code delta, use read-only Git. It may
