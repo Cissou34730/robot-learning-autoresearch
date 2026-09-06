@@ -69,13 +69,20 @@ VALIDATED_TEST_PATHS = (
     "tests/scenario",
     "tests/training",
 )
+AUTORESEARCH_BOUNDARY_TEST_PATHS = (
+    "tests/autoresearch/test_scenario_boundary.py",
+    "tests/autoresearch/test_campaign_boundary.py",
+)
 # A researcher code change cannot alter the frozen task, so `tests/benchmark`
 # adds nothing; every other suite still guards code the researcher may rewrite.
 RESEARCHER_VALIDATED_TEST_PATHS = (
     "tests/scenario",
     "tests/training",
-    "tests/autoresearch/test_scenario_boundary.py",
-    "tests/autoresearch/test_campaign_boundary.py",
+    *AUTORESEARCH_BOUNDARY_TEST_PATHS,
+)
+FRESH_BASELINE_VALIDATED_TEST_PATHS = (
+    "tests/benchmark",
+    *RESEARCHER_VALIDATED_TEST_PATHS,
 )
 # The researcher-owned scientific surface, stated positively. Anything absent
 # here is unclassified and validated completely, so a new or unfamiliar path is
@@ -168,12 +175,12 @@ def is_researcher_owned(path: str) -> bool:
 def validation_test_paths(
     changed_paths: list[str], *, fresh_baseline: bool
 ) -> tuple[str, ...]:
-    """A fresh campaign baseline is validated completely before it consumes
-    training compute, even when the committed worktree carries no research
-    change. Afterwards the suites follow ownership: a change confined to the
+    """A fresh campaign validates the scientific and task surfaces before it
+    consumes training compute, using targeted AutoResearch boundary checks.
+    Afterwards the suites follow ownership: a change confined to the
     researcher's own scientific surface skips only the frozen task tests."""
     if fresh_baseline:
-        return VALIDATED_TEST_PATHS
+        return FRESH_BASELINE_VALIDATED_TEST_PATHS
     sources = [
         path
         for path in changed_paths

@@ -738,15 +738,16 @@ RESEARCHER_SUITES = (
     "tests/autoresearch/test_scenario_boundary.py",
     "tests/autoresearch/test_campaign_boundary.py",
 )
+FRESH_BASELINE_SUITES = ("tests/benchmark", *RESEARCHER_SUITES)
 
 
-def test_fresh_campaign_baseline_runs_every_suite():
-    assert validation_test_paths([], fresh_baseline=True) == ALL_SUITES
+def test_fresh_campaign_baseline_runs_targeted_autoresearch_checks():
+    assert validation_test_paths([], fresh_baseline=True) == FRESH_BASELINE_SUITES
     assert (
         validation_test_paths(
             ["robot_learning/scenario/reward.py"], fresh_baseline=True
         )
-        == ALL_SUITES
+        == FRESH_BASELINE_SUITES
     )
 
 
@@ -1536,6 +1537,13 @@ def test_validated_test_paths_are_the_four_repository_domains():
         "tests/training",
     )
     assert protocol.RESEARCHER_VALIDATED_TEST_PATHS == (
+        "tests/scenario",
+        "tests/training",
+        "tests/autoresearch/test_scenario_boundary.py",
+        "tests/autoresearch/test_campaign_boundary.py",
+    )
+    assert protocol.FRESH_BASELINE_VALIDATED_TEST_PATHS == (
+        "tests/benchmark",
         "tests/scenario",
         "tests/training",
         "tests/autoresearch/test_scenario_boundary.py",
