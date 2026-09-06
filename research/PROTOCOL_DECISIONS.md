@@ -30,8 +30,10 @@ superseded. It does not instruct the autonomous researcher and does not replace
   identity and evaluation settings match. The Runner establishes compatibility;
   the Researcher decides whether and how the evidence supports a comparison.
 - **Inference contract:** Policy preprocessing belongs to the saved inference
-  runtime, including mutable preprocessing state and reset at every episode
-  boundary. Loading a model without its compatible runtime is refused.
+  runtime, including mutable preprocessing state. Environments reset that state
+  exactly once at each physical episode boundary; `PolicyRuntime.reset()` owns
+  only recurrent model state and the SB3 episode-start flag. Loading a model
+  without its compatible runtime is refused.
 - **Hypothesis closure:** New experiment postmortems explicitly revisit the
   proposal's expected and contradicting observations. The Researcher authors the
   assessment; the Runner validates and persists it without manufacturing a

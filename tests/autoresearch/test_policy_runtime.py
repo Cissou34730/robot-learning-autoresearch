@@ -105,7 +105,44 @@ def test_stateful_action_mapping_is_frozen_independent_and_resettable(
     np.testing.assert_allclose(second.io.action([-1.0, 1.0]), [-1.0, 1.0])
 
     first.reset()
+    np.testing.assert_allclose(first.io.action([-1.0, 1.0]), [-0.875, 0.875])
+    first.io.reset()
     np.testing.assert_allclose(first.io.action([-1.0, 1.0]), [-1.0, 1.0])
+
+
+def test_environment_owns_each_policy_io_episode_reset(monkeypatch, tmp_path):
+    from robot_learning.benchmark.final_benchmark import official_environment
+    from robot_learning.benchmark.reference_evaluation import (
+        task_reference_environment,
+    )
+    from robot_learning.scenario.environment import make_evaluation_env
+
+    for factory in (
+        official_environment,
+        task_reference_environment,
+        make_evaluation_env,
+    ):
+        path = stateful_artifact(
+            tmp_path / factory.__name__, scientific_module(monkeypatch, 3)
+        )
+        runtime = load_runtime(path)
+        reset_count = 0
+        original_reset = runtime.io.reset
+
+        def count_reset(reset=original_reset):
+            nonlocal reset_count
+            reset_count += 1
+            reset()
+
+        runtime.io.reset = count_reset
+        env = factory(policy_runtime=runtime)
+        env.reset(seed=7)
+        runtime.reset()
+        assert reset_count == 1
+        env.reset(seed=7)
+        runtime.reset()
+        assert reset_count == 2
+        env.close()
 
 
 def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(

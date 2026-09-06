@@ -119,10 +119,9 @@ class PolicyRuntime:
         self.reset()
 
     def reset(self):
+        """Reset model recurrence; the environment owns policy-I/O episode reset."""
         self.state = None
         self.episode_start = True
-        if self.io.reset is not None:
-            self.io.reset()
 
     def predict(self, observation):
         if self.normalizer is not None:
