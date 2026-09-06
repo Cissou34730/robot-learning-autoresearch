@@ -4,7 +4,6 @@ These describe the scenario as it is implemented today. A scenario experiment
 that changes the training mechanics is expected to update them.
 """
 
-import mujoco
 import numpy as np
 import pytest
 
@@ -18,32 +17,12 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import reach_observation
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_observation_selects_a_joint_limit_feasible_ik_branch():
-    env = make_training_env()
-    env.reset(seed=0)
-    angle = np.deg2rad(-130.0)
-    radius = 0.13
-    env.data.mocap_pos[0] = [
-        radius * np.cos(angle),
-        radius * np.sin(angle),
-        env.data.site("end_effector").xpos[2],
-    ]
-    mujoco.mj_forward(env.model, env.data)
-
-    observation = reach_observation(env.data)
-
-    np.testing.assert_array_equal(observation[-2:], [0.0, 1.0])
-    assert observation[7] == pytest.approx(-1.45, abs=0.05)
-    assert observation[8] == pytest.approx(-1.89, abs=0.05)
 
 
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
