@@ -3,11 +3,37 @@ import subprocess
 from argparse import Namespace
 from pathlib import Path
 
+import numpy as np
+from gymnasium.spaces import Box
+
 from research import reset_campaign, run_experiment, runner_paths
 from research import runner_execution as execution
 from research import runner_protocol as protocol
 from research import runner_repository as repository
+from robot_learning.policy_runtime import PolicyIO, load_runtime, save_runtime
 from robot_learning.training import research_config
+
+
+class DeterministicFixturePolicy:
+    def __init__(self):
+        self.observation_space = Box(-np.inf, np.inf, (1,), dtype=np.float32)
+        self.action_space = Box(-1, 1, (2,), dtype=np.float32)
+
+    def predict(self, observation, **_kwargs):
+        value = float(np.asarray(observation)[0])
+        return np.array([value, -value], dtype=np.float32), None
+
+
+def load_fixture_policy(_model_path, _algorithm=None):
+    return DeterministicFixturePolicy()
+
+
+def fixture_observation(_data):
+    return np.array([0.25], dtype=np.float32)
+
+
+def fixture_action(action):
+    return np.asarray(action, dtype=np.float32) * 0.5
 
 
 def git(root: Path, *arguments: str) -> str:
@@ -130,13 +156,18 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     validated_recipes: list[str] = []
     training_calls: list[tuple[int, int, Path | None, str]] = []
     evaluation_calls: list[bytes] = []
+    pause_next_validation = False
 
     def validate_configuration():
+        nonlocal pause_next_validation
         recipe = json.loads(research_config.CONFIG_PATH.read_text())["recipe"]
         assert (root / "robot_learning/scenario/reward.py").read_text() == (
             f"RECIPE = '{recipe}'\n"
         )
         validated_recipes.append(recipe)
+        if pause_next_validation:
+            pause_next_validation = False
+            raise KeyboardInterrupt
 
     def train_candidate(output_dir, timesteps, seed, resume, training_log, **kwargs):
         del training_log
@@ -149,7 +180,12 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
             json.dumps({"completed": True, "timesteps": timesteps}),
             encoding="utf-8",
         )
-        artifact.joinpath("policy_runtime.pkl").write_bytes(b"runtime:" + marker)
+        save_runtime(
+            artifact / "model.zip",
+            policy_io=PolicyIO(fixture_observation, fixture_action),
+            loader=load_fixture_policy,
+            normalizer=None,
+        )
         return 0.0
 
     def evaluate_artifact(artifact, seed, output_path, **kwargs):
@@ -267,13 +303,24 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
         "initialization": "transfer",
         "training_parent": "working",
     }
+    pause_next_validation = True
+    assert (
+        run_experiment.run_training_experiment(
+            continuation, Namespace(timesteps=100, reuse_candidate=None)
+        )
+        == 130
+    )
+    interrupted = repository.read_state()["pending_training_operation"]
+    assert interrupted["frozen_proposal"] == continuation
+    assert interrupted["progress"] == "configuration_applying"
+    assert training_calls == [(100, 0, None, "baseline training")]
     assert (
         run_experiment.run_training_experiment(
             continuation, Namespace(timesteps=100, reuse_candidate=None)
         )
         == 0
     )
-    assert validated_recipes == ["A", "A"]
+    assert validated_recipes == ["A", "A", "A"]
     assert not (root / "robot_learning/scenario/recipe_b_only.py").exists()
     assert training_calls[1][0:2] == (100, 0)
     assert training_calls[1][2] == root / first_working["artifact"] / "model.zip"
@@ -362,4 +409,11 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
         assert (
             repository.artifact_fingerprint(artifact)
             == cloned_state[role]["fingerprint"]
+        )
+        runtime = load_runtime(artifact / "model.zip")
+        observation = runtime.io.observe(None)
+        np.testing.assert_allclose(observation, [0.25])
+        np.testing.assert_allclose(
+            runtime.io.action(runtime.predict(observation)),
+            [0.125, -0.125],
         )
