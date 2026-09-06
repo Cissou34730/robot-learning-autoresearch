@@ -35,7 +35,7 @@ uv run python -m robot_learning.play --model <model.zip>  # Human: open the view
 uv run pytest                            # Runner: complete test suite
 ```
 
-The bounded Researcher session may inspect files and, when the current task
+The Researcher session may inspect files and, when the current phase
 requires understanding code state or a code delta, use read-only Git. It may
 edit its owned surface, run lightweight analysis, and run targeted tests. It may
 not execute training, the generic evaluator, the viewer, the Runner, the final

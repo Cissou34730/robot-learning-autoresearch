@@ -120,6 +120,10 @@ One evaluation request may measure at most three distinct models. Multiple measu
 Add one entry per model. Using identical `research_evaluation` settings measures several candidates or a selected lineage on a comparable panel.
 
 A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must have identical `(seed, episode)` sets.
+Compatible historical measurements may supply either or both sides when their
+model fingerprints, instrument settings, panel semantics, and exact episode
+identities match. Reusing the same development panel does not create independent
+confirmation.
 
 Each completed measurement round returns to post-training analysis. New requests
 do not use `need_more_evidence`; closing is a separate closure proposal in the
@@ -175,7 +179,7 @@ scientific conclusion or proof of inspection. This contract applies equally to
 training, continuation and replication, not to the automatic baseline.
 
 Maintain the campaign's Scientific strategy section before submitting. The
-Runner requires its five entries below and snapshots it with `reasoning` in the
+Runner requires its four entries below and snapshots it with `reasoning` in the
 experiment record. Existing historical records without these fields remain
 readable; a newly submitted proposal must satisfy this contract.
 
@@ -183,6 +187,9 @@ An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. `continuation` continues the selected
 recipe without a learning-method change. A `training` proposal may deliberately
 apply a changed recipe to an existing parent with `initialization: "transfer"`.
+Fresh training alone does not prove that an intervention caused its outcome.
+Continuation, replication, and additional seeds remain available scientific
+choices, not mandatory controls or gates for accepting a model.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -263,8 +270,9 @@ Write a lineage-only `research/proposal.json`:
     "continue_from": "<current checkpoint, working, best_known, or retained ID>",
     "reason": "<non-empty scientific reason>",
     "code": {
-      "action": "<keep | revert>",
-      "reason": "<non-empty reason>"
+      "action": "<keep | revert | restore>",
+      "reason": "<non-empty reason>",
+      "lineage": "<working | best_known | retained lineage ID; restore only>"
     },
     "best_known": {
       "candidate": "<available model ID>",
@@ -286,16 +294,26 @@ Write a lineage-only `research/proposal.json`:
 }
 ```
 
-`retain`, `remove_retained` and `request_final_benchmark` are optional.
-
 `best_known`, `retain`, `remove_retained`, and `request_final_benchmark` are
 optional. Omitted `best_known` preserves the existing best-known lineage; it does
 not promote `continue_from`. This request selects the working model, chooses the
 code action, and manages retained lineages. Unretained model artifacts are
 removed; their recorded history and measurements remain.
 
+`experiment` is an integer. `continue_from` and both `reason` values are
+non-empty strings. `code.action` is one of `keep`, `revert`, or `restore`.
+For `restore`, `code.lineage` is required and names `working`, `best_known`, or a
+retained lineage ID; for `keep` and `revert`, omit `code.lineage`. `best_known`
+requires a candidate string, reason string, and non-empty string array of
+compatible development-evaluation artifact paths. Those paths may cite
+historical measurements for both the proposed model and incumbent. `retain` is
+an array of candidate/id/reason objects, `remove_retained` is an array of unique
+retained IDs, and `request_final_benchmark` is a boolean.
+
 ## Request the official benchmark
 
 Set `request_final_benchmark` to `true` in `previous_result_decision`.
 
-After applying the lineage decision, the Runner benchmarks the selected model. Read the verdict in `research/brief.md` under **Current status → Reported result**.
+After applying the lineage decision, the Runner benchmarks the frozen best-known
+model. Read the verdict in `research/brief.md` under **Current status → Reported
+result**. This terminal assessment is not a routine input to another hypothesis.

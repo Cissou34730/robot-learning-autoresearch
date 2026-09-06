@@ -46,7 +46,7 @@ function Invoke-ResearcherSession {
         }
     }
     else {
-        # Each bounded phase owns its session, so a retry resumes that phase and
+        # Each phase owns its session, so a retry resumes that phase and
         # never inherits whichever session last ran on this machine.
         $script:ResearcherSessionId = [guid]::NewGuid().ToString()
     }
@@ -182,7 +182,7 @@ function Test-AnalysisDeliverable {
     return $true
 }
 
-# The three bounded phases below observe the same facts: what the process did,
+# The phases below observe the same facts: what the process did,
 # whether the deliverable exists, and whether the protected validator accepts it.
 function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
     $present = Test-Path "research\proposal.json"
@@ -335,6 +335,7 @@ while ($true) {
             "Current phase: post-training analysis for experiment $analysisExperiment. Completed training must now be understood before choosing the next scientific action."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
+            "Revisit the original expected and contradicting observations, then update lessons, limits, open questions, and conditional next steps."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
             "Further training is a valid next experiment after closure; do not prepare that proposal now. Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
@@ -343,11 +344,12 @@ while ($true) {
         Write-ResearcherSessionStatus $analysisStatus
         if (-not $analysisStatus.Complete) {
             $analysisProblem = $analysisStatus.Reason
-            Write-Status "=== Analysis deliverable missing or invalid; retrying the same bounded task once ===" Yellow
+            Write-Status "=== Analysis deliverable missing or invalid; retrying the same phase once ===" Yellow
             $analysisRetryPrompt = @(
                 "Current phase: post-training analysis for experiment $analysisExperiment. The previous deliverable failed validation: $analysisProblem."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
+                "Revisit the original expected and contradicting observations, then update lessons, limits, open questions, and conditional next steps."
                 "Choose exactly one outcome: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json. Candidate-only measurement and closure without new measurements are valid."
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
@@ -383,7 +385,7 @@ while ($true) {
             Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
             Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
-                "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). This is the complete task; do not wait for more input."
+                "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
                 "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
@@ -395,9 +397,9 @@ while ($true) {
             Write-ResearcherSessionStatus $evaluationStatus
             if (-not $evaluationStatus.Complete) {
                 $evaluationProblem = $evaluationStatus.Reason
-                Write-Status "=== Evaluation request missing or invalid; retrying the same bounded task once ===" Yellow
+                Write-Status "=== Evaluation request missing or invalid; retrying the same phase once ===" Yellow
                 $evaluationRetryPrompt = @(
-                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. This is the complete task; do not wait for more input."
+                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. Do not exit without a corrected deliverable."
                     "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                     "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
                     "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
@@ -455,7 +457,7 @@ while ($true) {
         Update-ResearchBrief
         Write-Status "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
-            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. This is the complete task; do not wait for more input."
+            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
             "Use those campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
@@ -468,9 +470,9 @@ while ($true) {
         Write-ResearcherSessionStatus $lineageStatus
         if (-not $lineageStatus.Complete) {
             $lineageProblem = $lineageStatus.Reason
-            Write-Status "=== Lineage deliverable invalid; retrying the same bounded task once ===" Yellow
+            Write-Status "=== Lineage deliverable invalid; retrying the same phase once ===" Yellow
             $decisionRetryPrompt = @(
-                "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. This is the complete task; do not wait for more input."
+                "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
                 "Use the campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
@@ -510,10 +512,13 @@ while ($true) {
     )
     $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
-        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. This is the complete task; do not wait for more input."
+        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. Do not exit without the required deliverable."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-        "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if preparing the intervention requires understanding the current code state or delta."
-        "Expected deliverables: any researcher-owned code or configuration changes required by the intervention and research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md."
+        "Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
+        "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
+        "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
+        "Code or configuration edits are required only when the selected operation calls for them."
+        "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md, plus any edits called for by the selected operation."
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
@@ -532,11 +537,14 @@ while ($true) {
     Save-ResearchMemory
     if (-not $proposalStatus.Complete) {
         $proposalProblem = $proposalStatus.Reason
-        Write-Status "=== Research proposal missing or invalid; retrying once with bounded context ===" Yellow
+        Write-Status "=== Research proposal missing or invalid; retrying the same phase once ===" Yellow
         $retryPrompt = @(
-            "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. This is the complete task; do not wait for more input."
+            "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if preparing the intervention requires understanding the current code state or delta."
+            "Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
+            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
+            "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
+            "Code or configuration edits are required only when the selected operation calls for them."
             "Preserve valid researcher-owned edits that belong to this unfinished experiment."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment using the contract in research/instruments.md."
             "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."

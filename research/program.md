@@ -71,6 +71,12 @@ the scientific question concerns whether an observed training outcome is
 attributable to the learning method rather than to one stochastic training
 realization.
 
+Fresh training does not by itself establish that an intervention caused an
+outcome. Further training from an existing policy is also a legitimate research
+action. A paired control, replication, or additional seed is useful only when it
+serves the current scientific question; none is a prerequisite for continuing
+or accepting a model.
+
 Experiment history and prior postmortems are evidence, not authority. Older
 records may use superseded schemas, and prior interpretations may be revisited.
 Prefer targeted extraction over loading complete artifacts or histories.
@@ -103,15 +109,17 @@ The phase order is:
    decision;
 6. prepare the next experiment.
 
-A Researcher session is bounded to its current phase. Runner recovery of an
-interrupted execution resumes that execution and is not a scientific continuation
-experiment.
+A Researcher session operates within its current phase and required deliverable.
+That operational boundary does not prescribe the scientific decision. Runner
+recovery of an interrupted execution resumes that execution and is not a
+scientific continuation experiment.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence, make the scientific
-code or parameter changes required by the intervention, and write
-`research/proposal.json`. The phase is incomplete until that deliverable exists
+Inspect relevant repository state and completed evidence, choose continuation,
+an intervention with fresh or transfer initialization, or replication, and write
+`research/proposal.json`. Make scientific code or parameter changes only when
+the selected operation calls for them. The phase is incomplete until that deliverable exists
 and satisfies the contract in `research/instruments.md`.
 
 Before submitting, establish or update the scientific strategy. The proposal's
@@ -137,15 +145,26 @@ After training, determine what happened using checkpoint inventory, logs, and
 existing evidence. Request measurements only when they answer an unresolved
 scientific question by writing `research/evaluation_request.json`; the Runner
 validates and executes the request and preserves detailed artifacts. Analysis may
-instead close directly with a postmortem and closure proposal.
+instead close directly with a postmortem and closure proposal. A request may
+measure only a candidate or may compare models when comparison serves the
+question.
+
+Revisit the proposal's original expected and contradicting observations when
+writing the hypothesis assessment. Update the scientific strategy's lessons,
+limits, open questions, and conditional next steps from the evidence actually
+observed. Mechanistic investigation may use logs, code inspection, lightweight
+analysis, scientific instrumentation, and development measurements as useful;
+no particular diagnostic or action sequence is mandatory.
 
 The phase may contain multiple measurement rounds. Completed measurements remain
 available across rounds, and each completed round returns to analysis. There is
 no fake empty evaluation and no automatic next measurement.
 
-Research and task-reference measurements are development evidence and never
-declare the objective reached. Neither human-owned panel may be used as an
-iterative optimization surface.
+Research and task-reference panels are development measurements and never
+declare the objective reached. They may inform research decisions, but repeated
+use of the same panel remains repeated evidence from that panel, not independent
+held-out confirmation. The Researcher may not change a protected panel's
+definition or present development evidence as final validation.
 
 ## Experiment closure
 
@@ -166,9 +185,14 @@ working lineage does not claim it is best known. The Runner applies the validate
 decision and removes unretained heavyweight artifacts while preserving history
 and measurements.
 
+The working lineage identifies the line of investigation being pursued. Best
+known records an explicit evidence-backed designation. Either role may change;
+neither requires indefinite loyalty to a model or immediate competition after
+every run.
+
 The final benchmark may be requested only through closure and targets the frozen
 best-known model. It is the terminal objective verdict and does not select a
-lineage.
+lineage or become routine evidence for a next hypothesis.
 
 ## Validation and recovery
 
@@ -176,8 +200,8 @@ Researcher-owned tests travel with scientific code. The Runner determines the
 validation required before execution.
 
 Initial and retry sessions receive the same authoritative context for their
-phase. A retry resumes only that bounded phase. Interruption recovery preserves
-completed work and does not create a scientific decision or alter phase order.
+phase. A retry resumes only that phase. Interruption recovery preserves completed
+work and does not create a scientific decision or alter phase order.
 
 ## Stopping
 

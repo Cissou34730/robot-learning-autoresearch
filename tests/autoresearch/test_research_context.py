@@ -560,6 +560,34 @@ def test_lineage_retry_gate_requires_attested_evidence():
     assert "Evidence inspected" in instruments
 
 
+def test_research_contract_exposes_choices_and_exact_closure_conditions():
+    root = Path(__file__).resolve().parents[2]
+    program = (root / "research" / "program.md").read_text(encoding="utf-8")
+    instruments = (root / "research" / "instruments.md").read_text(
+        encoding="utf-8"
+    )
+    combined = f"{program}\n{instruments}".lower()
+
+    for forbidden in (
+        "this is the complete task",
+        "bounded task",
+        "five entries",
+        "iterative optimization surface",
+    ):
+        assert forbidden not in combined
+    assert "choose continuation" in combined
+    assert "fresh training does not by itself establish" in combined
+    assert "repeated evidence from that panel" in combined
+    assert "runner requires its four entries" in combined
+    assert '"action": "<keep | revert | restore>"' in instruments
+    assert "For `restore`, `code.lineage` is required" in instruments
+    assert "omit `code.lineage`" in instruments
+    assert "historical measurements for both the proposed model and incumbent" in (
+        instruments
+    )
+    assert "benchmarks the frozen best-known" in instruments
+
+
 def test_researcher_retries_resume_this_phase_own_session():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")

@@ -206,6 +206,27 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     assert "$script:ResearcherExitCode = if ($null -eq $LASTEXITCODE)" in LOOP
 
 
+def test_phase_prompts_expose_choices_without_bounded_task_framing():
+    lower = LOOP.lower()
+
+    assert "this is the complete task" not in lower
+    assert "bounded task" not in lower
+    assert "bounded context" not in lower
+    assert LOOP.count(
+        "Available preparation operations: continuation, training with fresh or "
+        "transfer initialization, and replication."
+    ) == 2
+    assert LOOP.count(
+        "Code or configuration edits are required only when the selected operation "
+        "calls for them."
+    ) == 2
+    assert LOOP.count(
+        "Revisit the original expected and contradicting observations"
+    ) == 2
+    assert LOOP.count("Candidate-only measurement") == 2
+    assert LOOP.count("closure without new measurements") == 2
+
+
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
     for phase in ("proposalStatus", "evaluationStatus", "lineageStatus", "analysisStatus"):
         assert LOOP.count(f"if (-not ${phase}.Complete)") == 2

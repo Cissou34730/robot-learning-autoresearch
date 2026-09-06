@@ -16,6 +16,11 @@ working lineage and may independently designate an evidence-backed best-known
 model; continuing a promising working lineage does not make it best known. The
 runner only executes and records those decisions. It does not automatically rank
 candidates, run a tournament, promote a model, or apply a statistical gate.
+Preparation may continue an unchanged lineage, train an intervention from fresh
+or transferred initialization, or replicate an earlier operation. Code and
+configuration edits are needed only when the chosen operation calls for them.
+Repeated use of one development panel remains evidence from that panel, not
+independent held-out confirmation.
 
 Start the autonomous loop from PowerShell:
 
