@@ -58,56 +58,30 @@
     "experiment": 7,
     "reason": "The canonicalized checkpoint-120832 is the strongest measured candidate: it matches the candidate's 99.0% research-panel result, improves task-reference to 99.5%, removes all incumbent failure identities, and introduces only one task-reference failure. It is selected for the next official objective measurement."
   },
-  "last_verdict": "researcher selected checkpoint-120832 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
-  "pending_analysis": null,
-  "pending_closure_operation": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
+  "last_verdict": "official benchmark reached the goal",
+  "official_benchmark_artifact": "29689d72597ea902895ae2a536c5ed4110534645ec53662fa78bfd4a5b95ed91",
+  "official_benchmark_model": {
     "artifact": "research/checkpoints/retained/5d4e159f-7fae-4a25-b885-b127042e894e/e7-c8cf701d5-29689d72597ea902895ae2a536c5ed4110534645ec53662fa78bfd4a5b95ed91",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/5d4e159f-7fae-4a25-b885-b127042e894e/e7-c8cf701d5-29689d72597ea902895ae2a536c5ed4110534645ec53662fa78bfd4a5b95ed91",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/5d4e159f-7fae-4a25-b885-b127042e894e/evaluation-5d4e159f-7fae-4a25-b885-b127042e894e-experiment-7-checkpoint-120832-200ep-seed0-d72ec900e7de.json",
-        "research/evaluations/5d4e159f-7fae-4a25-b885-b127042e894e/task-reference-5d4e159f-7fae-4a25-b885-b127042e894e-experiment-7-checkpoint-120832-task-reference-v1.json"
-      ],
-      "fingerprint": "29689d72597ea902895ae2a536c5ed4110534645ec53662fa78bfd4a5b95ed91",
-      "origin_experiment": 7,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0001,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It is the best measured development candidate, with 99.0% research success and 99.5% task-reference success, exceeding the incumbent's 97.0% and 98.0% results.",
-      "scientific_commit": "593614c4638a4c50620aa1138ae73abb2f7816b5",
-      "training_steps": 120832
-    },
-    "experiment": 7,
     "fingerprint": "29689d72597ea902895ae2a536c5ed4110534645ec53662fa78bfd4a5b95ed91",
     "selected": "best_known"
   },
+  "official_benchmark_verdict": "goal_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.4390203635273449,
+      "median": 0.404296590931447,
+      "worst": 1.0859084761898845
+    },
+    "goal_reached": true,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 99.0
+  },
+  "pending_analysis": null,
+  "pending_closure_operation": null,
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "efef4e99aa98e2e664641bbbcafb0f3d837bc483",
@@ -118,7 +92,7 @@
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/5d4e159f-7fae-4a25-b885-b127042e894e/e7-c8cf701d5-29689d72597ea902895ae2a536c5ed4110534645ec53662fa78bfd4a5b95ed91",
     "candidate": "checkpoint-120832",
