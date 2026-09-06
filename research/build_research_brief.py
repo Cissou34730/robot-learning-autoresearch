@@ -7,7 +7,7 @@ import re
 from pathlib import Path, PureWindowsPath
 
 from research.runner_protocol import operation_description, scientific_strategy_section
-from research.runner_repository import ARTIFACT_FILES
+from research.runner_repository import ARTIFACT_FILES, compact_measurement_summary
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -299,10 +299,8 @@ def _v4_lineage_lines(label: str, lineage: dict | None) -> list[str]:
 
 def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
     records: dict[str, str] = {}
-    sources = [*results]
     if isinstance(pending, dict):
-        sources.append(pending)
-    for source in sources:
+        source = pending
         evaluations = [
             *(source.get("requested_evaluations") or []),
             *(source.get("partial_evaluations") or []),
@@ -339,12 +337,25 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
                 f"task reference; model `{identity}`; panel "
                 f"`{evaluation.get('panel', 'unavailable')}`"
             )
-    if not records:
-        return ["No fingerprint-bound development evidence recorded yet."]
-    return [
+    lines = [
         f"- {_existing_artifact_reference(path, kind='file')}: {description}"
         for path, description in sorted(records.items())
     ]
+    for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
+        summary = compact_measurement_summary(result)
+        if summary == "unmeasured":
+            continue
+        sources = [_existing_artifact_reference("research/results.jsonl", kind="file")]
+        postmortem = result.get("postmortem")
+        if postmortem:
+            sources.append(_existing_artifact_reference(postmortem, kind="file"))
+        lines.append(
+            f"- Experiment {result.get('index', '-')}: {summary}; source "
+            + ", ".join(dict.fromkeys(sources))
+        )
+    if not lines:
+        return ["No fingerprint-bound development evidence recorded yet."]
+    return lines
 
 
 def _render_v4_research_brief(
@@ -423,11 +434,7 @@ def _render_v4_research_brief(
 
     lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |", "|---:|---|---|---|---|---|---|---|"])
     for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
-        candidates = result.get("candidates") or []
-        checkpoints = "; ".join(
-            f"{item.get('name', '-')} ({int(item.get('timesteps', 0)):,}): {_v4_measurements(item)}"
-            for item in sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
-        ) or "unmeasured"
+        checkpoints = compact_measurement_summary(result)
         closure = result.get("closure_decision") or {}
         lines.append(
             f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "

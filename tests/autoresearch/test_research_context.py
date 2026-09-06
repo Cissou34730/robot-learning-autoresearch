@@ -319,6 +319,90 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     )
 
 
+def test_v4_brief_groups_long_campaign_checkpoint_and_evidence_detail(
+    monkeypatch, tmp_path
+):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text(
+        "## campaign / Scientific strategy\n\n**Direction:** Investigate updates.\n\n"
+        "**Lessons and limits:** Evidence remains experiment-scoped.\n\n"
+        "**Open questions:** Which update helps?\n\n"
+        "**Conditional next steps:** Measure when needed.\n",
+        encoding="utf-8",
+    )
+
+    def records(unmeasured: int, measurements: int) -> list[dict]:
+        return [
+            {
+                "schema_version": 4,
+                "campaign_id": "campaign",
+                "index": index,
+                "kind": "training",
+                "family": "method",
+                "candidates": [
+                    {
+                        "name": "measured",
+                        "evaluations": [
+                            {
+                                "panel": "development-v1",
+                                "seed": seed,
+                                "episodes": 20,
+                                "evaluation_artifact": (
+                                    f"research/evaluations/experiment-{index}-{seed}.json"
+                                ),
+                            }
+                            for seed in range(measurements)
+                        ],
+                    },
+                    *[
+                        {"name": f"checkpoint-{checkpoint}", "evaluations": []}
+                        for checkpoint in range(unmeasured)
+                    ],
+                ],
+                "hypothesis_assessment": f"Assessment {index}",
+                "postmortem": "research/postmortems.md",
+            }
+            for index in range(1, 26)
+        ]
+
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "last_verdict": "awaiting proposal",
+    }
+    (research_dir / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    compact_records = records(19, 1)
+    results_path = research_dir / "results.jsonl"
+    results_path.write_text(
+        "\n".join(json.dumps(record) for record in compact_records) + "\n",
+        encoding="utf-8",
+    )
+    compact = render_research_brief()
+    expanded_records = records(199, 50)
+    results_path.write_text(
+        "\n".join(json.dumps(record) for record in expanded_records) + "\n",
+        encoding="utf-8",
+    )
+    expanded = render_research_brief()
+
+    assert compact.count("1 measured checkpoint; 19 unmeasured checkpoints") == 50
+    assert "research_evaluation/development-v1: 1 measurement" in compact
+    assert "experiment-25-0.json" in results_path.read_text(encoding="utf-8")
+    assert "experiment-25-0.json" not in expanded
+    assert "checkpoint-198" not in expanded
+    assert len(expanded) - len(compact) < 250
+
+
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()

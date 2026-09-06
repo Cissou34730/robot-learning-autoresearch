@@ -886,6 +886,54 @@ def latest_recorded_experiment() -> int | None:
     return int(records[-1]["index"]) if records else None
 
 
+def compact_measurement_summary(record: dict) -> str:
+    """Summarize checkpoint coverage without repeating every checkpoint."""
+    candidates = [
+        candidate
+        for candidate in record.get("candidates") or []
+        if isinstance(candidate, dict)
+    ]
+    task_references = [
+        item
+        for item in record.get("task_reference_evaluations") or []
+        if isinstance(item, dict)
+    ]
+    task_reference_candidates = {
+        str(item.get("candidate", "checkpoint")) for item in task_references
+    }
+    measured = 0
+    groups: dict[tuple[str, str], int] = {}
+    for candidate in candidates:
+        evaluations = [
+            item
+            for item in candidate.get("evaluations") or []
+            if isinstance(item, dict)
+        ]
+        name = str(candidate.get("name", "checkpoint"))
+        if evaluations or name in task_reference_candidates:
+            measured += 1
+        for evaluation in evaluations:
+            instrument = str(evaluation.get("instrument", "research_evaluation"))
+            panel = str(evaluation.get("panel") or instrument)
+            groups[(instrument, panel)] = groups.get((instrument, panel), 0) + 1
+    for evaluation in task_references:
+        instrument = str(evaluation.get("instrument", "task_reference"))
+        panel = str(evaluation.get("panel") or instrument)
+        groups[(instrument, panel)] = groups.get((instrument, panel), 0) + 1
+    if not candidates and not groups:
+        return "unmeasured"
+    unmeasured = max(len(candidates) - measured, 0)
+    parts = [
+        f"{measured} measured checkpoint{'s' if measured != 1 else ''}",
+        f"{unmeasured} unmeasured checkpoint{'s' if unmeasured != 1 else ''}",
+    ]
+    parts.extend(
+        f"{instrument}/{panel}: {count} measurement{'s' if count != 1 else ''}"
+        for (instrument, panel), count in sorted(groups.items())
+    )
+    return "; ".join(parts)
+
+
 def experiment_log_row(record: dict) -> str:
     from research.runner_protocol import operation_description
 
@@ -904,42 +952,12 @@ def experiment_log_row(record: dict) -> str:
             return f"{operation_description(record) or '-'}; files: {', '.join(code_changes)}"
         return operation_description(record) or "-"
 
-    def measurement(evaluation: dict, default_instrument: str) -> str:
-        instrument = evaluation.get("instrument", default_instrument)
-        panel = evaluation.get("panel") or instrument
-        details = [f"{instrument}/{panel}"]
-        if evaluation.get("seed") is not None:
-            details.append(f"seed {evaluation['seed']}")
-        if evaluation.get("episodes") is not None:
-            details.append(f"{evaluation['episodes']} episodes")
-        if evaluation.get("success_percent") is not None:
-            details.append(f"success {float(evaluation['success_percent']):.2f}%")
-        return ", ".join(details)
-
-    measurements: list[str] = []
-    for candidate in record.get("candidates") or []:
-        if not isinstance(candidate, dict):
-            continue
-        evaluations = candidate.get("evaluations") or []
-        name = candidate.get("name", "checkpoint")
-        if evaluations:
-            measurements.extend(
-                f"{name}: {measurement(item, 'research_evaluation')}"
-                for item in evaluations
-                if isinstance(item, dict)
-            )
-        else:
-            measurements.append(f"{name}: unmeasured")
-    measurements.extend(
-        f"{item.get('candidate', 'checkpoint')}: {measurement(item, 'task_reference')}"
-        for item in record.get("task_reference_evaluations") or []
-        if isinstance(item, dict)
-    )
-    if not measurements and record.get("schema_version") != 4:
+    measurements = compact_measurement_summary(record)
+    if measurements == "unmeasured" and record.get("schema_version") != 4:
         legacy_success = record.get("candidate_success_percent")
         legacy_seeds = record.get("candidate_seeds_passed")
         if legacy_success is not None or legacy_seeds is not None:
-            measurements.append(
+            measurements = (
                 f"legacy success {legacy_success if legacy_success is not None else '-'}; "
                 f"seeds passed {legacy_seeds if legacy_seeds is not None else '-'}"
             )
@@ -961,7 +979,7 @@ def experiment_log_row(record: dict) -> str:
     parent = record.get("training_parent", "-")
     return (
         f"| {record['index']} | {cell(operation)} / parent {cell(parent)} | "
-        f"{cell(intervention())} | {cell('; '.join(measurements) or 'unmeasured')} | "
+        f"{cell(intervention())} | {cell(measurements)} | "
         f"{cell(record.get('hypothesis_assessment', '-'))} | "
         f"{cell('; '.join(str(item) for item in decisions))} |"
     )

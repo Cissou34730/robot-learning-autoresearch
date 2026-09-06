@@ -2290,9 +2290,10 @@ def test_v4_history_keeps_distinct_checkpoint_panels_and_closure_decisions():
         }
     )
 
-    assert "checkpoint-20: research_evaluation/development-v1" in row
-    assert "checkpoint-20: task_reference/reference-v1" in row
-    assert "checkpoint-40: unmeasured" in row
+    assert "1 measured checkpoint; 1 unmeasured checkpoint" in row
+    assert "research_evaluation/development-v1: 1 measurement" in row
+    assert "task_reference/reference-v1: 1 measurement" in row
+    assert "checkpoint-40" not in row
     assert "working checkpoint-20; best known checkpoint-20; code keep" in row
     assert "The prediction is partly supported." in row
     assert "stale awaiting analysis" not in row

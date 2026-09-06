@@ -34,6 +34,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
   identity separately covers current environment, evaluator, reward evidence,
   and measurement instrumentation, so model-contained source edits do not create
   false historical incompatibility.
+- **Derived memory:** `EXPERIMENTS.md` and historical brief sections group
+  measured panels and unmeasured checkpoints by count. The current unresolved
+  experiment and reusable lineage roles retain detailed evidence links, while
+  `results.jsonl`, postmortems, logs, and evaluation artifacts remain complete
+  and authoritative.
 - **Inference contract:** Policy preprocessing belongs to the saved inference
   runtime, including mutable preprocessing state. Environments reset that state
   exactly once at each physical episode boundary; `PolicyRuntime.reset()` owns
