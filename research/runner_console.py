@@ -270,9 +270,17 @@ def render_evidence_card(
                 "Paired comparison",
                 f"  {comparison['candidate']} vs {comparison['reference']}",
                 f"  delta {delta:+.1f} pp",
-                "",
             ]
         )
+        for panel in comparison.get("panels", []):
+            lines.append(
+                f"  panel seed {panel['seed']} · {panel['episodes']} episodes · "
+                f"semantics {panel['evaluation_semantics']}"
+            )
+            lines.extend(
+                f"    source {path}" for path in panel.get("source_artifacts", [])
+            )
+        lines.append("")
     lines.extend(["Next", f"  {next_phase}"])
     return "\n".join(lines)
 

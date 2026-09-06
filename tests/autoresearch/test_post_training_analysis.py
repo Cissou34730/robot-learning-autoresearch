@@ -128,6 +128,170 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(monkeypatch, tmp_p
     assert [item["seed"] for item in records[0]["requested_evaluations"]] == [10, 20]
 
 
+def test_v4_paired_comparison_reuses_historical_working_evidence(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    working_artifact = tmp_path / "archive" / "working"
+    _artifact(working_artifact)
+    working_artifact.joinpath("model.zip").write_bytes(b"working model")
+    working_fingerprint = repository.artifact_fingerprint(working_artifact)
+    candidate_fingerprint = repository.artifact_fingerprint(
+        tmp_path / "archive" / "checkpoint"
+    )
+    historical_path = tmp_path / "research" / "evaluations" / "working.json"
+    historical_path.parent.mkdir(parents=True)
+    historical_path.write_text(
+        json.dumps(
+            {
+                "episodes": 2,
+                "seed": 10,
+                "success_percent": 50.0,
+                "episode_results": [
+                    {"episode": 0, "episode_seed": 10, "success": False},
+                    {"episode": 1, "episode_seed": 11, "success": True},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["working_lineage"] = {
+        "artifact": "archive/working",
+        "fingerprint": working_fingerprint,
+        "origin_experiment": 1,
+        "candidate": "checkpoint",
+        "parameters": {},
+        "scientific_commit": "base",
+        "training_steps": 100,
+        "evaluation_artifacts": ["research/evaluations/working.json"],
+        "reason": "Current working model.",
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    repository.upsert_result(
+        {
+            "schema_version": 4,
+            "campaign_id": "campaign",
+            "index": 0,
+            "requested_evaluations": [
+                {
+                    "candidate": "checkpoint",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "test",
+                    "model_fingerprint": working_fingerprint,
+                    "metrics": {
+                        "episodes": 2,
+                        "seed": 10,
+                        "evaluation_semantics": "test",
+                        "model_fingerprint": working_fingerprint,
+                        "evaluation_artifact": "research/evaluations/working.json",
+                    },
+                }
+            ],
+        }
+    )
+    request = _request(10)
+    request["paired_comparisons"] = [
+        {"candidate": "checkpoint", "reference": "working"}
+    ]
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    calls: list[tuple[str, int]] = []
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del kwargs
+        calls.append((Path(artifact).name, seed))
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 100.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": True},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+
+    assert run_experiment.execute_pending_evaluations() == 0
+
+    assert calls == [("checkpoint", 10)]
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    comparison = persisted["pending_analysis"]["result"]["paired_comparisons"][0]
+    assert comparison["candidate_model_fingerprint"] == candidate_fingerprint
+    assert comparison["reference_model_fingerprint"] == working_fingerprint
+    assert comparison["source_artifacts"][0].endswith(
+        "checkpoint-2ep-seed10-test.json"
+    )
+    assert comparison["source_artifacts"][1] == "research/evaluations/working.json"
+
+
+def test_v4_paired_comparison_reports_incompatible_historical_semantics(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    working_artifact = tmp_path / "archive" / "working"
+    _artifact(working_artifact)
+    working_artifact.joinpath("model.zip").write_bytes(b"working model")
+    working_fingerprint = repository.artifact_fingerprint(working_artifact)
+    historical_path = tmp_path / "research" / "evaluations" / "working-old.json"
+    historical_path.parent.mkdir(parents=True)
+    historical_path.write_text("{}", encoding="utf-8")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["working_lineage"] = {
+        "artifact": "archive/working",
+        "fingerprint": working_fingerprint,
+        "origin_experiment": 1,
+        "candidate": "checkpoint",
+        "parameters": {},
+        "scientific_commit": "base",
+        "training_steps": 100,
+        "evaluation_artifacts": ["research/evaluations/working-old.json"],
+        "reason": "Current working model.",
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    repository.upsert_result(
+        {
+            "schema_version": 4,
+            "campaign_id": "campaign",
+            "index": 0,
+            "requested_evaluations": [
+                {
+                    "candidate": "old-alias",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "old-semantics",
+                    "model_fingerprint": working_fingerprint,
+                    "metrics": {
+                        "evaluation_artifact": "research/evaluations/working-old.json"
+                    },
+                }
+            ],
+        }
+    )
+    request = _request(10)
+    request["paired_comparisons"] = [
+        {"candidate": "checkpoint", "reference": "working"}
+    ]
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    calls: list[int] = []
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact",
+        lambda artifact, seed, **kwargs: calls.append(seed),
+    )
+
+    with pytest.raises(ValueError) as error:
+        run_experiment.execute_pending_evaluations()
+
+    message = str(error.value)
+    assert "no compatible research-evaluation semantics" in message
+    assert "working-old.json" in message
+    assert "checkpoint-2ep-seed10-test.json" in message
+    assert calls == []
+
+
 def test_analysis_preflight_rejects_measurement_and_closure_conflict(
     monkeypatch, tmp_path, capsys
 ):
@@ -388,3 +552,64 @@ def test_v4_resumed_measurement_rejects_changed_model_identity(monkeypatch, tmp_
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     assert persisted["pending_analysis"]["evaluation_plan"] == request
+
+
+def test_v4_resumed_measurement_accepts_relocated_identical_model(
+    monkeypatch, tmp_path
+):
+    _, request_path, _ = _configure(monkeypatch, tmp_path)
+    state = repository.read_state()
+    pending = state["pending_analysis"]
+    request = _request(10)
+    available = run_experiment.protocol.available_evaluation_candidates(pending, state)
+    pending["evaluation_plan"] = request
+    pending["evaluation_plan_models"] = (
+        run_experiment.protocol.resolved_measurement_models(request, available)
+    )
+    pending["evaluation_evidence_plan"] = []
+    source = tmp_path / "archive" / "checkpoint"
+    relocated = tmp_path / "archive" / "relocated"
+    source.rename(relocated)
+    pending["candidates"][0]["artifact"] = "archive/relocated"
+    repository.write_state(state)
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    calls: list[Path] = []
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del kwargs
+        calls.append(Path(artifact))
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [True, False],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    assert calls == [relocated]
+
+
+def test_v4_resumed_measurement_rejects_edited_accepted_request(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    state = repository.read_state()
+    pending = state["pending_analysis"]
+    request = _request(10)
+    available = run_experiment.protocol.available_evaluation_candidates(pending, state)
+    pending["evaluation_plan"] = request
+    pending["evaluation_plan_models"] = (
+        run_experiment.protocol.resolved_measurement_models(request, available)
+    )
+    pending["evaluation_evidence_plan"] = []
+    repository.write_state(state)
+    request_path.write_text(json.dumps(_request(20)), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="accepted measurement plan changed"):
+        run_experiment.execute_pending_evaluations()
+
+    assert json.loads(state_path.read_text(encoding="utf-8")) == state

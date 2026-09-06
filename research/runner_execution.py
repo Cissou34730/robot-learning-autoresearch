@@ -601,6 +601,8 @@ def evaluate_artifact(
 def requested_paired_comparisons(
     request: dict,
     evaluations_by_candidate: dict[str, list[dict]],
+    *,
+    evidence_plan: list[dict] | None = None,
 ) -> list[dict]:
     from robot_learning.training.comparison import paired_comparison
 
@@ -608,19 +610,78 @@ def requested_paired_comparisons(
     if not isinstance(comparisons, list):
         raise TypeError("paired_comparisons must be a list")
     results: list[dict] = []
-    for comparison in comparisons:
+    for index, comparison in enumerate(comparisons):
         if not isinstance(comparison, dict):
             raise TypeError("each paired comparison must be an object")
         candidate_name = str(comparison.get("candidate", "")).strip()
         reference_name = str(comparison.get("reference", "")).strip()
-        if candidate_name not in evaluations_by_candidate:
-            raise ValueError(f"unknown paired comparison candidate {candidate_name!r}")
-        if reference_name not in evaluations_by_candidate:
-            raise ValueError(f"unknown paired comparison reference {reference_name!r}")
+        provenance: dict = {}
+        if evidence_plan is not None:
+            if index >= len(evidence_plan):
+                raise ValueError("accepted paired comparison has no frozen evidence")
+            frozen = evidence_plan[index]
+            if (candidate_name, reference_name) != (
+                frozen.get("candidate"),
+                frozen.get("reference"),
+            ):
+                raise ValueError("accepted paired comparison identity changed")
+            candidate_evaluations: list[dict] = []
+            reference_evaluations: list[dict] = []
+            used_panels: list[dict] = []
+            source_artifacts: list[str] = []
+            for panel in frozen.get("panels", []):
+                candidate_evaluation = _load_frozen_panel(
+                    panel["candidate_artifacts"],
+                    panel.get("candidate_artifact_fingerprints", {}),
+                    panel,
+                    candidate_name,
+                )
+                reference_evaluation = _load_frozen_panel(
+                    panel["reference_artifacts"],
+                    panel.get("reference_artifact_fingerprints", {}),
+                    panel,
+                    reference_name,
+                )
+                candidate_evaluations.append(candidate_evaluation)
+                reference_evaluations.append(reference_evaluation)
+                panel_sources = [
+                    *panel["candidate_artifacts"],
+                    *panel["reference_artifacts"],
+                ]
+                source_artifacts.extend(panel_sources)
+                used_panels.append(
+                    {
+                        "episodes": panel["episodes"],
+                        "seed": panel["seed"],
+                        "evaluation_semantics": panel["evaluation_semantics"],
+                        "source_artifacts": panel_sources,
+                    }
+                )
+            provenance = {
+                "candidate_model_fingerprint": frozen[
+                    "candidate_model_fingerprint"
+                ],
+                "reference_model_fingerprint": frozen[
+                    "reference_model_fingerprint"
+                ],
+                "panels": used_panels,
+                "source_artifacts": list(dict.fromkeys(source_artifacts)),
+            }
+        else:
+            if candidate_name not in evaluations_by_candidate:
+                raise ValueError(
+                    f"unknown paired comparison candidate {candidate_name!r}"
+                )
+            if reference_name not in evaluations_by_candidate:
+                raise ValueError(
+                    f"unknown paired comparison reference {reference_name!r}"
+                )
+            candidate_evaluations = evaluations_by_candidate[candidate_name]
+            reference_evaluations = evaluations_by_candidate[reference_name]
         try:
             result = paired_comparison(
-                evaluations_by_candidate[candidate_name],
-                evaluations_by_candidate[reference_name],
+                candidate_evaluations,
+                reference_evaluations,
             )
         except ValueError as error:
             raise ValueError(
@@ -631,6 +692,83 @@ def requested_paired_comparisons(
                 "candidate": candidate_name,
                 "reference": reference_name,
                 **result,
+                **provenance,
             }
         )
     return results
+
+
+def _load_frozen_panel(
+    paths: list[str], fingerprints: dict[str, str], panel: dict, model_name: str
+) -> dict:
+    """Load one deterministic panel and reject conflicting duplicate artifacts."""
+    expected: dict[tuple[int, int], bool] | None = None
+    selected: dict | None = None
+    for path in paths:
+        artifact = repository.resolve_repo_path(path)
+        if not artifact.is_file():
+            raise ValueError(
+                f"paired comparison evidence artifact does not exist for "
+                f"{model_name!r}: {path}"
+            )
+        expected_fingerprint = fingerprints.get(path)
+        if expected_fingerprint is None:
+            raise ValueError(
+                f"paired comparison evidence has no frozen content identity for "
+                f"{model_name!r}: {path}"
+            )
+        if repository.file_fingerprint(artifact) != expected_fingerprint:
+            raise ValueError(
+                f"paired comparison evidence content changed after acceptance for "
+                f"{model_name!r}: {path}"
+            )
+        measurement = json.loads(artifact.read_text(encoding="utf-8"))
+        if (
+            int(measurement.get("episodes", -1)) != int(panel["episodes"])
+            or int(measurement.get("seed", -1)) != int(panel["seed"])
+        ):
+            raise ValueError(
+                f"paired comparison evidence panel metadata changed for "
+                f"{model_name!r}: {path}"
+            )
+        episode_results = measurement.get("episode_results")
+        if not isinstance(episode_results, list) or not episode_results:
+            raise ValueError(
+                f"paired comparison evidence lacks detailed episode outcomes for "
+                f"{model_name!r}: {path}"
+            )
+        try:
+            identified_outcomes = [
+                (
+                    (int(item["episode"]), int(item["episode_seed"])),
+                    bool(item["success"]),
+                )
+                for item in episode_results
+                if isinstance(item, dict)
+            ]
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                f"paired comparison evidence has invalid episode identities for "
+                f"{model_name!r}: {path}"
+            ) from error
+        outcomes = dict(identified_outcomes)
+        if len(outcomes) != len(identified_outcomes):
+            raise ValueError(
+                f"paired comparison evidence repeats an episode identity for "
+                f"{model_name!r}: {path}"
+            )
+        if len(outcomes) != int(panel["episodes"]):
+            raise ValueError(
+                f"paired comparison evidence has incomplete episode identities for "
+                f"{model_name!r}: {path}"
+            )
+        if expected is not None and outcomes != expected:
+            raise ValueError(
+                f"conflicting deterministic measurements for {model_name!r} panel "
+                f"seed {panel['seed']}: {paths}"
+            )
+        expected = outcomes
+        selected = measurement
+    if selected is None:
+        raise ValueError(f"paired comparison has no evidence artifacts for {model_name!r}")
+    return selected

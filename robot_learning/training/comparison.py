@@ -16,9 +16,13 @@ def exact_mcnemar_pvalue(candidate_wins: int, reference_wins: int) -> float:
 def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
     """Compare policies evaluated on identical seed/episode pairs."""
 
-    def outcomes(evaluations: list[dict]) -> dict[tuple[int, int], bool]:
+    def outcomes(evaluations: list[dict]) -> dict[tuple[int, int, int], bool]:
         return {
-            (int(evaluation["seed"]), int(episode["episode"])): bool(episode["success"])
+            (
+                int(evaluation["seed"]),
+                int(episode["episode"]),
+                int(episode["episode_seed"]),
+            ): bool(episode["success"])
             for evaluation in evaluations
             for episode in evaluation.get("episode_results", [])
         }

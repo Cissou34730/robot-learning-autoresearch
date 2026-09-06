@@ -24,6 +24,7 @@ from research.runner_console import format_duration, render_experiment_card
 from research.runner_execution import (
     candidate_directories,
     latest_training_steps,
+    requested_paired_comparisons,
     validate_changed_sources,
     validate_reusable_candidate,
 )
@@ -55,6 +56,161 @@ from research.runner_repository import (
     resolve_repo_path,
     synchronize_experiment_log,
 )
+
+
+def _paired_evidence_plan(candidate_paths: list[str], reference_paths: list[str]):
+    candidate_fingerprints = {
+        path: repository.file_fingerprint(repository.resolve_repo_path(path))
+        for path in candidate_paths
+    }
+    reference_fingerprints = {
+        path: repository.file_fingerprint(repository.resolve_repo_path(path))
+        for path in reference_paths
+    }
+    return [
+        {
+            "candidate": "candidate",
+            "reference": "working",
+            "candidate_model_fingerprint": "candidate-fingerprint",
+            "reference_model_fingerprint": "working-fingerprint",
+            "panels": [
+                {
+                    "instrument": "research_evaluation",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "semantics",
+                    "candidate_artifacts": candidate_paths,
+                    "candidate_artifact_fingerprints": candidate_fingerprints,
+                    "reference_artifacts": reference_paths,
+                    "reference_artifact_fingerprints": reference_fingerprints,
+                }
+            ],
+        }
+    ]
+
+
+def _write_evaluation(path: Path, outcomes: list[tuple[int, bool]]) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "episodes": len(outcomes),
+                "seed": 10,
+                "episode_results": [
+                    {
+                        "episode": episode,
+                        "episode_seed": episode_seed,
+                        "success": success,
+                    }
+                    for episode, (episode_seed, success) in enumerate(outcomes)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_frozen_paired_evidence_requires_exact_episode_identities(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = tmp_path / "candidate.json"
+    reference = tmp_path / "reference.json"
+    _write_evaluation(candidate, [(10, True), (11, False)])
+    _write_evaluation(reference, [(10, False), (12, True)])
+
+    with pytest.raises(ValueError, match="identical episodes"):
+        requested_paired_comparisons(
+            {
+                "paired_comparisons": [
+                    {"candidate": "candidate", "reference": "working"}
+                ]
+            },
+            {},
+            evidence_plan=_paired_evidence_plan(
+                [candidate.name], [reference.name]
+            ),
+        )
+
+
+def test_frozen_paired_evidence_rejects_conflicting_duplicate_panels(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate_a = tmp_path / "candidate-a.json"
+    candidate_b = tmp_path / "candidate-b.json"
+    reference = tmp_path / "reference.json"
+    _write_evaluation(candidate_a, [(10, True), (11, False)])
+    _write_evaluation(candidate_b, [(10, False), (11, False)])
+    _write_evaluation(reference, [(10, False), (11, False)])
+
+    with pytest.raises(ValueError, match="conflicting deterministic measurements"):
+        requested_paired_comparisons(
+            {
+                "paired_comparisons": [
+                    {"candidate": "candidate", "reference": "working"}
+                ]
+            },
+            {},
+            evidence_plan=_paired_evidence_plan(
+                [candidate_a.name, candidate_b.name], [reference.name]
+            ),
+        )
+
+
+def test_frozen_paired_evidence_rejects_duplicate_episode_identity(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = tmp_path / "candidate.json"
+    reference = tmp_path / "reference.json"
+    candidate.write_text(
+        json.dumps(
+            {
+                "episodes": 2,
+                "seed": 10,
+                "episode_results": [
+                    {"episode": 0, "episode_seed": 10, "success": True},
+                    {"episode": 0, "episode_seed": 10, "success": False},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    _write_evaluation(reference, [(10, False), (11, False)])
+
+    with pytest.raises(ValueError, match="repeats an episode identity"):
+        requested_paired_comparisons(
+            {
+                "paired_comparisons": [
+                    {"candidate": "candidate", "reference": "working"}
+                ]
+            },
+            {},
+            evidence_plan=_paired_evidence_plan(
+                [candidate.name], [reference.name]
+            ),
+        )
+
+
+def test_frozen_paired_evidence_rejects_replaced_artifact(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = tmp_path / "candidate.json"
+    reference = tmp_path / "reference.json"
+    _write_evaluation(candidate, [(10, True), (11, False)])
+    _write_evaluation(reference, [(10, False), (11, False)])
+    evidence_plan = _paired_evidence_plan([candidate.name], [reference.name])
+    _write_evaluation(reference, [(10, True), (11, True)])
+
+    with pytest.raises(ValueError, match="content changed after acceptance"):
+        requested_paired_comparisons(
+            {
+                "paired_comparisons": [
+                    {"candidate": "candidate", "reference": "working"}
+                ]
+            },
+            {},
+            evidence_plan=evidence_plan,
+        )
 from robot_learning.evaluate import write_progress
 from robot_learning.train import effective_training_config
 from robot_learning.training.research_config import load_experiment_config

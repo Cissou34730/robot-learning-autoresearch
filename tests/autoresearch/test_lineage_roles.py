@@ -394,6 +394,145 @@ def test_v4_best_known_requires_evidence_for_its_candidate(monkeypatch, tmp_path
         raise AssertionError("best-known designation accepted unrelated evidence")
 
 
+def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
+    )
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    fingerprint = repository.artifact_fingerprint(candidate)
+    evidence = tmp_path / "historical-evaluation.json"
+    evidence.write_text("{}", encoding="utf-8")
+    repository.append_result(
+        {
+            "campaign_id": "campaign",
+            "index": 1,
+            "requested_evaluations": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "old-alias",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "semantics",
+                    "model_fingerprint": fingerprint,
+                    "metrics": {
+                        "evaluation_artifact": evidence.name,
+                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                            evidence
+                        ),
+                    },
+                }
+            ],
+        }
+    )
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Historical evidence measures these exact weights.",
+                "evidence": [evidence.name],
+            },
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(proposal, state)
+
+    assert plan["best_known_record"]["evaluation_artifacts"] == [evidence.name]
+
+    evidence.write_text('{"replaced": true}', encoding="utf-8")
+    with pytest.raises(ValueError, match="content changed after measurement"):
+        protocol.plan_previous_result_decision(proposal, state)
+
+
+def test_v4_best_known_reports_missing_legacy_model_identity(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
+    )
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    evidence = tmp_path / "legacy-evaluation.json"
+    evidence.write_text("{}", encoding="utf-8")
+    repository.append_result(
+        {
+            "campaign_id": "campaign",
+            "index": 1,
+            "requested_evaluations": [
+                {
+                    "candidate": "checkpoint",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "semantics",
+                    "metrics": {"evaluation_artifact": evidence.name},
+                }
+            ],
+        }
+    )
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Try to use imported legacy evidence.",
+                "evidence": [evidence.name],
+            },
+        }
+    }
+
+    with pytest.raises(ValueError, match="lacks model identity metadata"):
+        protocol.plan_previous_result_decision(proposal, state)
+
+
 def test_v4_retained_lineage_is_selectable_and_preserved(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     retained = _artifact(tmp_path / "retained", "retained")
@@ -503,7 +642,7 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
             "parent_training_steps": 0,
         },
     }
-    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
+    state["best_known_lineage"]["evaluation_artifacts"] = []
     state["pending_researcher_decision"]["partial_evaluations"] = [
         {
             "candidate": "checkpoint",
@@ -511,7 +650,12 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
             "seed": 1,
             "evaluation_semantics": "semantics",
             "model_fingerprint": repository.artifact_fingerprint(candidate),
-            "metrics": {"evaluation_artifact": candidate_evidence.name},
+            "metrics": {
+                "evaluation_artifact": candidate_evidence.name,
+                "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                    candidate_evidence
+                ),
+            },
         },
         {
             "candidate": "best_known",
@@ -519,7 +663,12 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
             "seed": 1,
             "evaluation_semantics": "semantics",
             "model_fingerprint": repository.artifact_fingerprint(incumbent),
-            "metrics": {"evaluation_artifact": incumbent_evidence.name},
+            "metrics": {
+                "evaluation_artifact": incumbent_evidence.name,
+                "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                    incumbent_evidence
+                ),
+            },
         },
     ]
     decision = {
@@ -580,7 +729,12 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
                     "seed": 1,
                     "evaluation_semantics": "candidate-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(candidate),
-                    "metrics": {"evaluation_artifact": candidate_evidence.name},
+                    "metrics": {
+                        "evaluation_artifact": candidate_evidence.name,
+                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                            candidate_evidence
+                        ),
+                    },
                 },
                 {
                     "candidate": "best_known",
@@ -588,7 +742,12 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
                     "seed": 1,
                     "evaluation_semantics": "incumbent-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(incumbent),
-                    "metrics": {"evaluation_artifact": incumbent_evidence.name},
+                    "metrics": {
+                        "evaluation_artifact": incumbent_evidence.name,
+                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                            incumbent_evidence
+                        ),
+                    },
                 },
             ],
         },

@@ -263,7 +263,19 @@ def check_evaluation_request() -> int:
         requested, _ = protocol.planned_measurements(
             request, available, allow_legacy_need_more_evidence=True
         )
-        protocol.validate_paired_comparison_plan(request, pending, available, requested)
+        resolved_models = (
+            protocol.resolved_measurement_models(request, available)
+            if state.get("schema_version") == 4
+            else None
+        )
+        protocol.validate_paired_comparison_plan(
+            request,
+            pending,
+            available,
+            requested,
+            state=state,
+            resolved_models=resolved_models,
+        )
     except (
         json.JSONDecodeError,
         KeyError,
@@ -296,8 +308,14 @@ def check_analysis_deliverable() -> int:
                 raise ValueError("evaluation request references the wrong experiment")
             available = protocol.available_evaluation_candidates(pending, state)
             requested, _ = protocol.planned_measurements(request, available)
+            resolved_models = protocol.resolved_measurement_models(request, available)
             protocol.validate_paired_comparison_plan(
-                request, pending, available, requested
+                request,
+                pending,
+                available,
+                requested,
+                state=state,
+                resolved_models=resolved_models,
             )
             validate_research_delta(state)
             measurement_valid = True
@@ -358,6 +376,18 @@ def check_lineage_evidence(experiment: int) -> int:
 # --- evaluation phase ------------------------------------------------------
 
 
+def _seal_paired_evidence_artifact(evidence_plan: list[dict], path: Path) -> None:
+    canonical_path = repository.repo_relative_path(path)
+    fingerprint = repository.file_fingerprint(path)
+    for comparison in evidence_plan:
+        for panel in comparison.get("panels", []):
+            for side in ("candidate", "reference"):
+                if canonical_path in panel.get(f"{side}_artifacts", []):
+                    panel.setdefault(f"{side}_artifact_fingerprints", {})[
+                        canonical_path
+                    ] = fingerprint
+
+
 def execute_pending_evaluations() -> int:
     from robot_learning.scenario.evaluation import summarize_research_evaluations
     from robot_learning.scenario.task_reference import task_reference_panel
@@ -383,6 +413,9 @@ def execute_pending_evaluations() -> int:
         if not isinstance(request, dict):
             print("ERROR: research/evaluation_request.json not found.")
             return 1
+    accepted_v4_plan = is_v4 and isinstance(pending.get("evaluation_plan"), dict)
+    if accepted_v4_plan and request != pending["evaluation_plan"]:
+        raise ValueError("accepted measurement plan changed")
     experiment = int(pending["experiment"])
     if int(request.get("experiment", -1)) != experiment:
         raise ValueError("evaluation request references the wrong experiment")
@@ -401,22 +434,42 @@ def execute_pending_evaluations() -> int:
             )
         ),
     )
-    protocol.validate_paired_comparison_plan(request, pending, available, requested)
     resolved_models = (
         protocol.resolved_measurement_models(request, available) if is_v4 else {}
     )
-    if paths.EVALUATION_REQUEST_PATH.exists():
-        pending["evaluation_plan"] = request
-        if is_v4:
-            pending["evaluation_plan_models"] = resolved_models
-        pending.setdefault("partial_evaluations", [])
-        repository.write_state(state)
-    elif is_v4:
+    evidence_plan: list[dict] = []
+    if accepted_v4_plan:
         frozen_models = pending.get("evaluation_plan_models")
         if not isinstance(frozen_models, dict):
             raise ValueError("accepted measurement plan has no frozen model identities")
-        if frozen_models != resolved_models:
+        frozen_fingerprints = {
+            name: model.get("fingerprint") for name, model in frozen_models.items()
+        }
+        resolved_fingerprints = {
+            name: model.get("fingerprint") for name, model in resolved_models.items()
+        }
+        if frozen_fingerprints != resolved_fingerprints:
             raise ValueError("accepted measurement plan model identity changed")
+        frozen_evidence = pending.get("evaluation_evidence_plan")
+        if not isinstance(frozen_evidence, list):
+            raise ValueError("accepted measurement plan has no frozen evidence plan")
+        evidence_plan = frozen_evidence
+    else:
+        evidence_plan = protocol.validate_paired_comparison_plan(
+            request,
+            pending,
+            available,
+            requested,
+            state=state if is_v4 else None,
+            resolved_models=resolved_models if is_v4 else None,
+        )
+    if paths.EVALUATION_REQUEST_PATH.exists() and not accepted_v4_plan:
+        pending["evaluation_plan"] = request
+        if is_v4:
+            pending["evaluation_plan_models"] = resolved_models
+            pending["evaluation_evidence_plan"] = evidence_plan
+        pending.setdefault("partial_evaluations", [])
+        repository.write_state(state)
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -476,6 +529,8 @@ def execute_pending_evaluations() -> int:
                 episodes=episodes,
                 output_path=output_path,
             )
+            if is_v4:
+                _seal_paired_evidence_artifact(evidence_plan, output_path)
             # The artifact keeps the detail, including whatever researcher-owned
             # evidence the scenario emitted; state keeps only a reference to it.
             clean_metrics = repository.measurement_record(metrics)
@@ -484,12 +539,16 @@ def execute_pending_evaluations() -> int:
             ).as_posix()
             clean_metrics["evaluation_semantics"] = semantics
             if is_v4:
+                clean_metrics["evaluation_artifact_fingerprint"] = (
+                    repository.file_fingerprint(output_path)
+                )
                 clean_metrics["model_fingerprint"] = resolved_models[name][
                     "fingerprint"
                 ]
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
+                    "instrument": "research_evaluation",
                     "candidate": name,
                     "episodes": episodes,
                     "seed": seed,
@@ -530,6 +589,7 @@ def execute_pending_evaluations() -> int:
             )
             reference_executed.append(
                 {
+                    "instrument": "task_reference",
                     "candidate": name,
                     "label": label,
                     "panel": str(metrics["panel"]),
@@ -541,7 +601,12 @@ def execute_pending_evaluations() -> int:
                         paths.ROOT
                     ).as_posix(),
                     **(
-                        {"model_fingerprint": resolved_models[name]["fingerprint"]}
+                        {
+                            "model_fingerprint": resolved_models[name]["fingerprint"],
+                            "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                                output_path
+                            ),
+                        }
                         if is_v4
                         else {}
                     ),
@@ -576,7 +641,11 @@ def execute_pending_evaluations() -> int:
     comparison_inputs = {
         name: contender.get("evaluations", []) for name, contender in available.items()
     }
-    comparisons = execution.requested_paired_comparisons(request, comparison_inputs)
+    comparisons = execution.requested_paired_comparisons(
+        request,
+        comparison_inputs,
+        evidence_plan=evidence_plan if is_v4 else None,
+    )
     result = pending["result"]
     result.update(
         {
@@ -614,6 +683,7 @@ def execute_pending_evaluations() -> int:
     if is_v4:
         pending["evaluation_plan"] = None
         pending["evaluation_plan_models"] = None
+        pending["evaluation_evidence_plan"] = None
         pending["partial_evaluations"] = executed
         pending["partial_task_reference_evaluations"] = reference_executed
         state["pending_analysis"] = pending

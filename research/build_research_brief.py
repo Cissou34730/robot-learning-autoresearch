@@ -289,6 +289,56 @@ def _v4_lineage_lines(label: str, lineage: dict | None) -> list[str]:
     ]
 
 
+def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
+    records: dict[str, str] = {}
+    sources = [*results]
+    if isinstance(pending, dict):
+        sources.append(pending)
+    for source in sources:
+        evaluations = [
+            *(source.get("requested_evaluations") or []),
+            *(source.get("partial_evaluations") or []),
+        ]
+        for evaluation in evaluations:
+            metrics = evaluation.get("metrics") or {}
+            path = metrics.get("evaluation_artifact")
+            if not path:
+                continue
+            fingerprint = evaluation.get("model_fingerprint") or metrics.get(
+                "model_fingerprint"
+            )
+            identity = str(fingerprint)[:12] if fingerprint else "unverified"
+            semantics = evaluation.get("evaluation_semantics") or metrics.get(
+                "evaluation_semantics", "unavailable"
+            )
+            episodes = evaluation.get("episodes", metrics.get("episodes", "-"))
+            seed = evaluation.get("seed", metrics.get("seed", "-"))
+            records[str(path)] = (
+                f"research evaluation; model `{identity}`; seed {seed}; "
+                f"{episodes} episodes; semantics `{semantics}`"
+            )
+        references = [
+            *(source.get("task_reference_evaluations") or []),
+            *(source.get("partial_task_reference_evaluations") or []),
+        ]
+        for evaluation in references:
+            path = evaluation.get("evaluation_artifact")
+            if not path:
+                continue
+            fingerprint = evaluation.get("model_fingerprint")
+            identity = str(fingerprint)[:12] if fingerprint else "unverified"
+            records[str(path)] = (
+                f"task reference; model `{identity}`; panel "
+                f"`{evaluation.get('panel', 'unavailable')}`"
+            )
+    if not records:
+        return ["No fingerprint-bound development evidence recorded yet."]
+    return [
+        f"- {_existing_artifact_reference(path, kind='file')}: {description}"
+        for path, description in sorted(records.items())
+    ]
+
+
 def _render_v4_research_brief(
     state: dict,
     results: list[dict],
@@ -358,6 +408,8 @@ def _render_v4_research_brief(
 
     lines.extend(["", "## Working lineage", ""])
     lines.extend(_v4_lineage_lines("Working", state.get("working_lineage")))
+    lines.extend(["", "## Available development evidence", ""])
+    lines.extend(_v4_evidence_lines(pending, results))
     strategy = scientific_strategy_section(postmortems, campaign_id)
     lines.extend(["", "## Current scientific direction", "", "Researcher-authored interpretation:", ""])
     lines.append("\n".join(strategy.splitlines()[1:]).strip() if strategy else "No scientific strategy recorded for this campaign yet.")

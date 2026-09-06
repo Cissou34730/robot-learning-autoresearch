@@ -6,6 +6,7 @@ a complete decision that `run_experiment` and `runner_repository` then apply.
 """
 
 import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -839,10 +840,24 @@ def planned_measurements(
 def resolved_measurement_models(request: dict, available: dict) -> dict[str, dict]:
     """Freeze each requested model name to one artifact and fingerprint."""
     resolved: dict[str, dict] = {}
-    for measurement in requested_measurements(request):
-        name = str(measurement["candidate"]).strip()
+    names = [
+        str(measurement["candidate"]).strip()
+        for measurement in requested_measurements(request)
+    ]
+    for comparison in request.get("paired_comparisons", []):
+        names.extend(
+            (
+                str(comparison["candidate"]).strip(),
+                str(comparison["reference"]).strip(),
+            )
+        )
+    for name in names:
         if name in resolved:
             continue
+        if name not in available:
+            raise ValueError(
+                f"unknown measurement model {name!r}; choose from {sorted(available)}"
+            )
         contender = available[name]
         artifact = repository.resolve_repo_path(contender["artifact"])
         repository.require_complete_artifact(artifact, f"measurement model {name!r}")
@@ -858,8 +873,18 @@ def validate_paired_comparison_plan(
     pending: dict,
     available: dict,
     requested: list[dict],
-) -> None:
+    *,
+    state: dict | None = None,
+    resolved_models: dict[str, dict] | None = None,
+) -> list[dict]:
     """Validate comparison identities that will exist after this request."""
+    if state is not None and state.get("schema_version") == 4:
+        if resolved_models is None:
+            resolved_models = resolved_measurement_models(request, available)
+        return _resolved_paired_evidence_plan(
+            request, pending, state, requested, resolved_models
+        )
+
     expected_panels: dict[str, set[tuple[int, int]]] = {
         name: set() for name in available
     }
@@ -889,6 +914,7 @@ def validate_paired_comparison_plan(
                 f"paired comparison {candidate!r} vs {reference!r} requires "
                 "identical (seed, episodes) panels"
             )
+    return []
 
 
 # --- measurement identity --------------------------------------------------
@@ -1474,6 +1500,18 @@ def _v4_artifact_publications(
 
 def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]:
     catalog: dict[str, dict] = {}
+
+    def add(path: str, record: dict) -> None:
+        canonical_path = repository.canonical_repo_path(path)
+        record["evaluation_artifact"] = canonical_path
+        existing = catalog.get(canonical_path)
+        if existing is not None and existing != record:
+            raise ValueError(
+                f"conflicting measurement metadata for evidence artifact: "
+                f"{canonical_path}"
+            )
+        catalog[canonical_path] = record
+
     campaign_id = repository.current_campaign_id(state)
     sources = [
         *repository.result_records_for_campaign(campaign_id),
@@ -1493,22 +1531,29 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
             path = metrics.get("evaluation_artifact")
             if not isinstance(path, str) or not path.strip():
                 continue
-            catalog[repository.canonical_repo_path(path)] = {
-                "instrument": "research_evaluation",
-                "model_fingerprint": evaluation.get("model_fingerprint")
-                or metrics.get("model_fingerprint"),
-                "settings": (
-                    "research_evaluation",
-                    int(evaluation.get("episodes", metrics.get("episodes", -1))),
-                    int(evaluation.get("seed", metrics.get("seed", -1))),
-                    str(
-                        evaluation.get(
-                            "evaluation_semantics",
-                            metrics.get("evaluation_semantics", ""),
-                        )
+            add(
+                path,
+                {
+                    "instrument": "research_evaluation",
+                    "model_fingerprint": evaluation.get("model_fingerprint")
+                    or metrics.get("model_fingerprint"),
+                    "evaluation_artifact_fingerprint": evaluation.get(
+                        "evaluation_artifact_fingerprint"
+                    )
+                    or metrics.get("evaluation_artifact_fingerprint"),
+                    "settings": (
+                        "research_evaluation",
+                        int(evaluation.get("episodes", metrics.get("episodes", -1))),
+                        int(evaluation.get("seed", metrics.get("seed", -1))),
+                        str(
+                            evaluation.get(
+                                "evaluation_semantics",
+                                metrics.get("evaluation_semantics", ""),
+                            )
+                        ),
                     ),
-                ),
-            }
+                },
+            )
         reference_evaluations = [
             *(source.get("task_reference_evaluations") or []),
             *(source.get("partial_task_reference_evaluations") or []),
@@ -1519,18 +1564,312 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
             path = evaluation.get("evaluation_artifact")
             if not isinstance(path, str) or not path.strip():
                 continue
-            catalog[repository.canonical_repo_path(path)] = {
-                "instrument": "task_reference",
-                "model_fingerprint": evaluation.get("model_fingerprint"),
-                "settings": (
-                    "task_reference",
-                    str(evaluation.get("panel", "")),
-                    int(evaluation.get("panel_version", -1)),
-                    int(evaluation.get("episodes", -1)),
-                    int(evaluation.get("seed", -1)),
-                ),
-            }
+            add(
+                path,
+                {
+                    "instrument": "task_reference",
+                    "model_fingerprint": evaluation.get("model_fingerprint"),
+                    "evaluation_artifact_fingerprint": evaluation.get(
+                        "evaluation_artifact_fingerprint"
+                    ),
+                    "settings": (
+                        "task_reference",
+                        str(evaluation.get("panel", "")),
+                        int(evaluation.get("panel_version", -1)),
+                        int(evaluation.get("episodes", -1)),
+                        int(evaluation.get("seed", -1)),
+                    ),
+                },
+            )
     return catalog
+
+
+def _validated_historical_panel_records(
+    records: list[dict], settings: tuple
+) -> list[dict]:
+    """Validate detailed historical panels and collapse byte-identical copies."""
+    validated: list[dict] = []
+    fingerprints: set[str] = set()
+    expected_outcomes: dict[tuple[int, int], bool] | None = None
+    for record in records:
+        if record.get("planned"):
+            validated.append(record)
+            continue
+        path = record["evaluation_artifact"]
+        artifact = repository.resolve_repo_path(path)
+        content_fingerprint = repository.file_fingerprint(artifact)
+        frozen_fingerprint = record.get("evaluation_artifact_fingerprint")
+        if frozen_fingerprint and frozen_fingerprint != content_fingerprint:
+            raise ValueError(
+                f"historical evidence content changed after measurement: {path}"
+            )
+        try:
+            measurement = json.loads(artifact.read_text(encoding="utf-8"))
+            episode_results = measurement["episode_results"]
+            identified_outcomes = [
+                (
+                    (int(item["episode"]), int(item["episode_seed"])),
+                    bool(item["success"]),
+                )
+                for item in episode_results
+            ]
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                f"historical evidence has invalid detailed episode identities: {path}"
+            ) from error
+        outcomes = dict(identified_outcomes)
+        if len(outcomes) != len(identified_outcomes):
+            raise ValueError(
+                f"historical evidence repeats an episode identity: {path}"
+            )
+        if (
+            int(measurement.get("episodes", -1)) != int(settings[1])
+            or int(measurement.get("seed", -1)) != int(settings[2])
+            or len(outcomes) != int(settings[1])
+        ):
+            raise ValueError(
+                f"historical evidence panel metadata is inconsistent: {path}"
+            )
+        if expected_outcomes is not None and outcomes != expected_outcomes:
+            raise ValueError(
+                f"conflicting deterministic measurements for historical panel "
+                f"seed {settings[2]}: {[item['evaluation_artifact'] for item in records]}"
+            )
+        expected_outcomes = outcomes
+        if content_fingerprint in fingerprints:
+            continue
+        fingerprints.add(content_fingerprint)
+        validated.append(
+            {
+                **record,
+                "content_fingerprint": content_fingerprint,
+                "episode_identities": sorted(outcomes),
+            }
+        )
+    return validated
+
+
+def _resolved_paired_evidence_plan(
+    request: dict,
+    pending: dict,
+    state: dict,
+    requested: list[dict],
+    resolved_models: dict[str, dict],
+) -> list[dict]:
+    """Resolve comparisons to immutable models and exact evidence artifacts."""
+    catalog = _development_evidence_catalog(pending, state)
+    semantics = evaluation_semantics_fingerprint()
+    campaign_id = repository.current_campaign_id(state)
+    experiment = int(pending["experiment"])
+    for measurement in requested:
+        name = measurement["candidate"]
+        path = paths.campaign_evaluation_dir(campaign_id) / evaluation_artifact_name(
+            experiment,
+            name,
+            measurement["episodes"],
+            measurement["seed"],
+            semantics,
+            campaign_id=campaign_id,
+        )
+        canonical_path = repository.repo_relative_path(path)
+        planned_record = {
+            "instrument": "research_evaluation",
+            "model_fingerprint": resolved_models[name]["fingerprint"],
+            "evaluation_artifact": canonical_path,
+            "planned": True,
+            "settings": (
+                "research_evaluation",
+                int(measurement["episodes"]),
+                int(measurement["seed"]),
+                semantics,
+            ),
+        }
+        existing = catalog.get(canonical_path)
+        if existing is None:
+            catalog[canonical_path] = planned_record
+        elif any(
+            existing[key] != planned_record[key]
+            for key in ("instrument", "model_fingerprint", "settings")
+        ):
+            raise ValueError(
+                f"planned measurement conflicts with existing evidence metadata: "
+                f"{canonical_path}"
+            )
+
+    plan: list[dict] = []
+    for comparison in request.get("paired_comparisons", []):
+        candidate = str(comparison["candidate"]).strip()
+        reference = str(comparison["reference"]).strip()
+        candidate_fingerprint = resolved_models[candidate]["fingerprint"]
+        reference_fingerprint = resolved_models[reference]["fingerprint"]
+        candidate_records = [
+            record
+            for record in catalog.values()
+            if record["instrument"] == "research_evaluation"
+            and record["model_fingerprint"] == candidate_fingerprint
+        ]
+        reference_records = [
+            record
+            for record in catalog.values()
+            if record["instrument"] == "research_evaluation"
+            and record["model_fingerprint"] == reference_fingerprint
+        ]
+        for record in [*candidate_records, *reference_records]:
+            if not record.get("planned") and not repository.resolve_repo_path(
+                record["evaluation_artifact"]
+            ).is_file():
+                raise ValueError(
+                    "paired comparison evidence artifact does not exist: "
+                    f"{record['evaluation_artifact']}"
+                )
+        if not candidate_records or not reference_records:
+            missing = candidate if not candidate_records else reference
+            missing_fingerprint = (
+                candidate_fingerprint
+                if not candidate_records
+                else reference_fingerprint
+            )
+            missing_source = available_evaluation_candidates(pending, state)[missing]
+            associated_paths = set(
+                repository.evaluation_artifact_paths(
+                    missing_source.get("evaluations")
+                )
+            ) | {
+                repository.canonical_repo_path(str(path))
+                for path in missing_source.get("evaluation_artifacts", [])
+            }
+            associated_records = [
+                catalog[path]
+                for path in associated_paths
+                if path in catalog
+                and catalog[path]["instrument"] == "research_evaluation"
+            ]
+            unverifiable = [
+                record["evaluation_artifact"]
+                for record in associated_records
+                if not record["model_fingerprint"]
+            ]
+            mismatched = [
+                (
+                    record["evaluation_artifact"],
+                    record["model_fingerprint"],
+                )
+                for record in associated_records
+                if record["model_fingerprint"]
+                and record["model_fingerprint"] != missing_fingerprint
+            ]
+            if unverifiable:
+                raise ValueError(
+                    f"paired comparison evidence for {missing!r} lacks model "
+                    f"identity metadata: {sorted(unverifiable)}"
+                )
+            if mismatched:
+                raise ValueError(
+                    f"paired comparison evidence for {missing!r} has a true "
+                    f"fingerprint mismatch; expected {missing_fingerprint}, "
+                    f"found {sorted(mismatched)}"
+                )
+            raise ValueError(
+                f"paired comparison {candidate!r} vs {reference!r} has no "
+                f"fingerprint-bound research-evaluation evidence for {missing!r}"
+            )
+        candidate_settings = {record["settings"] for record in candidate_records}
+        reference_settings = {record["settings"] for record in reference_records}
+        common_settings = sorted(candidate_settings & reference_settings)
+        if not common_settings:
+            candidate_contexts = sorted(
+                (record["evaluation_artifact"], record["settings"])
+                for record in candidate_records
+            )
+            reference_contexts = sorted(
+                (record["evaluation_artifact"], record["settings"])
+                for record in reference_records
+            )
+            raise ValueError(
+                f"paired comparison {candidate!r} vs {reference!r} has no compatible "
+                "research-evaluation semantics and panel settings; "
+                f"candidate contexts: {candidate_contexts}; "
+                f"reference contexts: {reference_contexts}"
+            )
+        panels = []
+        for settings in common_settings:
+            panel_candidate_records = _validated_historical_panel_records(
+                [
+                    record
+                    for record in candidate_records
+                    if record["settings"] == settings
+                ],
+                settings,
+            )
+            panel_reference_records = _validated_historical_panel_records(
+                [
+                    record
+                    for record in reference_records
+                    if record["settings"] == settings
+                ],
+                settings,
+            )
+            candidate_identities = {
+                tuple(record["episode_identities"])
+                for record in panel_candidate_records
+                if "episode_identities" in record
+            }
+            reference_identities = {
+                tuple(record["episode_identities"])
+                for record in panel_reference_records
+                if "episode_identities" in record
+            }
+            if (
+                candidate_identities
+                and reference_identities
+                and candidate_identities != reference_identities
+            ):
+                raise ValueError(
+                    f"paired comparison {candidate!r} vs {reference!r} has "
+                    f"nonmatching historical episode identities for seed {settings[2]}"
+                )
+            candidate_paths = sorted(
+                record["evaluation_artifact"]
+                for record in panel_candidate_records
+            )
+            reference_paths = sorted(
+                record["evaluation_artifact"]
+                for record in panel_reference_records
+            )
+            panels.append(
+                {
+                    "instrument": settings[0],
+                    "episodes": settings[1],
+                    "seed": settings[2],
+                    "evaluation_semantics": settings[3],
+                    "candidate_artifacts": candidate_paths,
+                    "candidate_artifact_fingerprints": {
+                        path: repository.file_fingerprint(
+                            repository.resolve_repo_path(path)
+                        )
+                        for path in candidate_paths
+                        if repository.resolve_repo_path(path).is_file()
+                    },
+                    "reference_artifacts": reference_paths,
+                    "reference_artifact_fingerprints": {
+                        path: repository.file_fingerprint(
+                            repository.resolve_repo_path(path)
+                        )
+                        for path in reference_paths
+                        if repository.resolve_repo_path(path).is_file()
+                    },
+                }
+            )
+        plan.append(
+            {
+                "candidate": candidate,
+                "reference": reference,
+                "candidate_model_fingerprint": candidate_fingerprint,
+                "reference_model_fingerprint": reference_fingerprint,
+                "panels": panels,
+            }
+        )
+    return plan
 
 
 def _validated_designation_evidence(
@@ -1545,11 +1884,28 @@ def _validated_designation_evidence(
         record = catalog.get(path)
         if record is None:
             raise ValueError(
-                f"{description} evidence lacks measurement metadata: {path}"
+                f"{description} evidence has unavailable measurement provenance: {path}"
+            )
+        if not record["model_fingerprint"]:
+            raise ValueError(
+                f"{description} evidence lacks model identity metadata: {path}"
             )
         if record["model_fingerprint"] != expected_fingerprint:
             raise ValueError(
-                f"{description} evidence does not match its artifact: {path}"
+                f"{description} evidence fingerprint does not match the selected "
+                f"model: {path}"
+            )
+        artifact = repository.resolve_repo_path(path)
+        if not artifact.is_file():
+            raise ValueError(f"{description} evidence does not exist: {path}")
+        evidence_fingerprint = record.get("evaluation_artifact_fingerprint")
+        if not evidence_fingerprint:
+            raise ValueError(
+                f"{description} evidence lacks immutable file identity: {path}"
+            )
+        if repository.file_fingerprint(artifact) != evidence_fingerprint:
+            raise ValueError(
+                f"{description} evidence content changed after measurement: {path}"
             )
         settings = record["settings"]
         if (
@@ -1688,19 +2044,52 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         best_source = sources[best_name]
         best_artifact = repository.resolve_repo_path(best_source["artifact"])
         repository.require_complete_artifact(best_artifact, "best-known lineage")
-        available_evidence = (
-            set(repository.evaluation_artifact_paths(best_source.get("evaluations")))
-            if best_source.get("_current_candidate")
-            else set(best_source.get("evaluation_artifacts", []))
-        )
+        evidence_catalog = _development_evidence_catalog(pending, state)
+        best_fingerprint = repository.artifact_fingerprint(best_artifact)
+        available_evidence = {
+            path
+            for path, record in evidence_catalog.items()
+            if record["model_fingerprint"] == best_fingerprint
+        }
         cited = {repository.canonical_repo_path(str(path)) for path in evidence}
         selected_evidence = cited & available_evidence
         if not selected_evidence:
+            unavailable = sorted(path for path in cited if path not in evidence_catalog)
+            unverifiable = [
+                path
+                for path in cited
+                if path in evidence_catalog
+                and not evidence_catalog[path]["model_fingerprint"]
+            ]
+            mismatched = sorted(
+                (
+                    path,
+                    evidence_catalog[path]["model_fingerprint"],
+                )
+                for path in cited
+                if path in evidence_catalog
+                and evidence_catalog[path]["model_fingerprint"]
+                and evidence_catalog[path]["model_fingerprint"] != best_fingerprint
+            )
+            if unavailable:
+                raise ValueError(
+                    "best_known evidence has unavailable measurement provenance: "
+                    f"{unavailable}"
+                )
+            if unverifiable:
+                raise ValueError(
+                    "best_known evidence lacks model identity metadata: "
+                    f"{sorted(unverifiable)}"
+                )
+            if mismatched:
+                raise ValueError(
+                    "best_known evidence has a true fingerprint mismatch; "
+                    f"expected {best_fingerprint}, found {mismatched}"
+                )
             raise ValueError("best_known evidence must measure its selected candidate")
-        evidence_catalog = _development_evidence_catalog(pending, state)
         selected_records = _validated_designation_evidence(
             selected_evidence,
-            expected_fingerprint=repository.artifact_fingerprint(best_artifact),
+            expected_fingerprint=best_fingerprint,
             catalog=evidence_catalog,
             description="best_known candidate",
         )
@@ -1708,7 +2097,11 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         if existing_best is not None and existing_best[
             "fingerprint"
         ] != repository.artifact_fingerprint(best_artifact):
-            incumbent_evidence = set(existing_best["evaluation_artifacts"])
+            incumbent_evidence = {
+                path
+                for path, record in evidence_catalog.items()
+                if record["model_fingerprint"] == existing_best["fingerprint"]
+            }
             cited_incumbent_evidence = cited & incumbent_evidence
             if not cited_incumbent_evidence:
                 raise ValueError(
@@ -1735,6 +2128,9 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 raise ValueError(f"best_known evidence does not exist: {path}")
         best_record = _v4_lineage_record(
             best_source, pending, best_artifact, str(best_decision["reason"]).strip()
+        )
+        best_record["evaluation_artifacts"] = sorted(
+            set(best_record["evaluation_artifacts"]) | selected_evidence
         )
     retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
     removal_ids = decision.get("remove_retained", [])

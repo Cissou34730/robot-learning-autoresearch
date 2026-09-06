@@ -960,6 +960,11 @@ def artifact_fingerprint(artifact: Path) -> str:
     return digest.hexdigest()
 
 
+def file_fingerprint(path: Path) -> str:
+    """Return the immutable content identity of one evidence file."""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def copy_artifact(source: Path, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
 
