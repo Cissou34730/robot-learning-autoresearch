@@ -56,6 +56,13 @@ superseded. It does not instruct the autonomous researcher and does not replace
   commit, restores the complete researcher-owned scientific surface, and starts
   a new empty version-4 campaign at experiment 1. It imports no trained baseline,
   model identity, score, evidence, strategy, campaign identity or counter.
+- **Reset storage:** Reset backups resolve through Git's administrative-path
+  semantics instead of assuming `.git` is a directory, so the same operation
+  works from primary checkouts and linked worktrees.
+- **Reset recovery:** Each backup includes a repository-bound, path-confined
+  operation manifest. The human-only `-Recover <operation.json> -Force` command
+  validates that manifest, restores the recorded pre-reset state, and publishes
+  a rollback commit when the failed reset already published one.
 - **Prompt contract:** Phase prompts expose continuation, intervention,
   replication, measurement and closure choices while preserving each phase's
   exclusive deliverable and protected validation requirements.
