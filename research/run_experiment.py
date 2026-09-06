@@ -13,6 +13,7 @@ those operations lives in the `runner_*` modules:
 
 import argparse
 import copy
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -35,6 +36,97 @@ PROPOSAL_ERRORS = (
     TypeError,
     ValueError,
 )
+
+
+class FrozenOperationMismatch(ValueError):
+    """The live proposal or scientific surface differs from accepted state."""
+
+
+def _canonical_fingerprint(value: Any) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _scientific_manifest(relative_paths: list[str]) -> list[dict]:
+    manifest: list[dict] = []
+    for relative in sorted(
+        {repository.canonical_repo_path(path) for path in relative_paths}
+    ):
+        path = repository.resolve_repo_path(relative)
+        if path.exists() and not path.is_file():
+            raise ValueError(f"scientific manifest path is not a file: {relative}")
+        manifest.append(
+            {
+                "path": relative,
+                "exists": path.is_file(),
+                "fingerprint": (
+                    repository.file_fingerprint(path) if path.is_file() else None
+                ),
+            }
+        )
+    return manifest
+
+
+def _current_scientific_manifest(code_parent_commit: str) -> list[dict]:
+    return _scientific_manifest(repository.scientific_delta(code_parent_commit))
+
+
+def _require_matching_manifest(
+    expected: object,
+    actual: list[dict],
+    description: str,
+) -> None:
+    if not isinstance(expected, list) or expected != actual:
+        expected_paths = {
+            str(entry.get("path"))
+            for entry in expected or []
+            if isinstance(entry, dict)
+        }
+        actual_paths = {str(entry["path"]) for entry in actual}
+        differing = sorted(expected_paths ^ actual_paths)
+        detail = f"; differing paths: {differing}" if differing else ""
+        raise FrozenOperationMismatch(
+            f"{description} changed after the training operation was accepted{detail}"
+        )
+
+
+def _verify_operation_surface(operation: dict, manifest_field: str, label: str) -> None:
+    actual = _current_scientific_manifest(str(operation["code_parent_commit"]))
+    _require_matching_manifest(operation.get(manifest_field), actual, label)
+
+
+def _verify_configuration_resume_surface(operation: dict) -> None:
+    expected = (
+        operation.get("restored_recipe_manifest")
+        if operation.get("recipe_restore") is not None
+        else operation.get("researcher_delta_manifest")
+    )
+    actual = _current_scientific_manifest(str(operation["code_parent_commit"]))
+    frozen_proposal = operation.get("frozen_proposal")
+    runner_changes_parameters = operation.get("recipe_restore") is not None or (
+        isinstance(frozen_proposal, dict) and bool(frozen_proposal.get("params"))
+    )
+    parameter_path = (
+        "research/current_params.json" if runner_changes_parameters else None
+    )
+    filtered_expected = [
+        entry
+        for entry in expected or []
+        if isinstance(entry, dict) and entry.get("path") != parameter_path
+    ]
+    filtered_actual = [
+        entry for entry in actual if entry.get("path") != parameter_path
+    ]
+    _require_matching_manifest(
+        filtered_expected,
+        filtered_actual,
+        "scientific source during configuration recovery",
+    )
 
 
 def proposal_training_settings(
@@ -68,35 +160,75 @@ def _training_parent_operation(
     code_parent_commit: str,
     researcher_changes: list[str],
 ) -> dict | None:
+    frozen_proposal = copy.deepcopy(proposal)
+    proposal_fingerprint = _canonical_fingerprint(frozen_proposal)
     existing = state.get("pending_training_operation")
     if isinstance(existing, dict):
         if (
             int(existing.get("experiment", -1)) != experiment
-            or existing.get("kind") != str(proposal.get("kind", "training")).lower()
-            or existing.get("requested_parent")
-            != str(proposal.get("training_parent", "")).strip()
             or existing.get("code_parent_commit") != code_parent_commit
         ):
-            raise ValueError(
-                "pending training operation does not match the preserved proposal"
+            raise FrozenOperationMismatch(
+                "pending training operation identity does not match the preserved experiment"
+            )
+        if (
+            existing.get("proposal_fingerprint") != proposal_fingerprint
+            or existing.get("frozen_proposal") != frozen_proposal
+        ):
+            raise FrozenOperationMismatch(
+                "proposal changed after the training operation was accepted"
+            )
+        progress = str(existing.get("progress", ""))
+        if progress == "parent_frozen":
+            _verify_operation_surface(
+                existing,
+                "researcher_delta_manifest",
+                "Researcher scientific delta",
+            )
+        elif progress == "recipe_restored":
+            _verify_operation_surface(
+                existing,
+                "restored_recipe_manifest",
+                "restored recipe",
+            )
+        elif progress == "configuration_applying":
+            _verify_configuration_resume_surface(existing)
+        elif progress in {
+            "configuration_frozen",
+            "recipe_published",
+            "training_dispatched",
+            "training_completed",
+        }:
+            _verify_operation_surface(
+                existing,
+                "effective_scientific_manifest",
+                "effective scientific configuration",
             )
         return existing
     parent = protocol.resolved_training_parent(proposal, state, initialization)
-    if parent is None:
-        return None
     restore = (
         _serialize_restore_plan(protocol.plan_lineage_restore(parent))
-        if str(proposal.get("kind", "training")).lower() == "continuation"
+        if parent is not None
+        and str(proposal.get("kind", "training")).lower() == "continuation"
         else None
     )
+    researcher_manifest = _scientific_manifest(researcher_changes)
     operation = {
         "experiment": experiment,
         "kind": str(proposal.get("kind", "training")).lower(),
-        "requested_parent": str(proposal["training_parent"]).strip(),
+        "requested_parent": str(proposal.get("training_parent", "")).strip(),
         "code_parent_commit": code_parent_commit,
         "researcher_changes": list(researcher_changes),
-        "parent": copy.deepcopy(parent),
+        "researcher_delta_manifest": researcher_manifest,
+        "researcher_delta_fingerprint": _canonical_fingerprint(researcher_manifest),
+        "frozen_proposal": frozen_proposal,
+        "proposal_fingerprint": proposal_fingerprint,
+        "parent": copy.deepcopy(parent) if parent is not None else None,
         "recipe_restore": restore,
+        "restored_recipe_manifest": None,
+        "restored_config_fingerprint": None,
+        "effective_scientific_manifest": None,
+        "effective_config_fingerprint": None,
         "progress": "parent_frozen",
     }
     state["pending_training_operation"] = operation
@@ -111,7 +243,10 @@ def _apply_training_parent_operation(
         return None
     if operation.get("progress") not in {
         "parent_frozen",
+        "recipe_restoring",
         "recipe_restored",
+        "configuration_applying",
+        "configuration_frozen",
         "recipe_published",
         "training_dispatched",
         "training_completed",
@@ -120,24 +255,47 @@ def _apply_training_parent_operation(
             f"unknown training operation progress: {operation.get('progress')!r}"
         )
     parent = operation["parent"]
-    artifact = repository.resolve_repo_path(str(parent["artifact"]))
-    fingerprint = str(parent.get("fingerprint") or "").strip()
-    if fingerprint:
-        repository.require_complete_inference_artifact(
-            artifact, "frozen training parent"
-        )
-    else:
-        repository.require_complete_artifact(artifact, "frozen training parent")
-    if fingerprint and repository.artifact_fingerprint(artifact) != fingerprint:
-        raise ValueError("frozen training parent fingerprint changed")
+    if parent is not None:
+        artifact = repository.resolve_repo_path(str(parent["artifact"]))
+        fingerprint = str(parent.get("fingerprint") or "").strip()
+        if fingerprint:
+            repository.require_complete_inference_artifact(
+                artifact, "frozen training parent"
+            )
+        else:
+            repository.require_complete_artifact(artifact, "frozen training parent")
+        if fingerprint and repository.artifact_fingerprint(artifact) != fingerprint:
+            raise FrozenOperationMismatch("frozen training parent fingerprint changed")
     restore = operation.get("recipe_restore")
-    if restore is not None and operation["progress"] == "parent_frozen":
+    if restore is not None and operation["progress"] in {
+        "parent_frozen",
+        "recipe_restoring",
+        "configuration_applying",
+    }:
         plan = dict(restore)
         plan["remove_created"] = [
             repository.resolve_repo_path(path) for path in plan["remove_created"]
         ]
+        if operation["progress"] == "parent_frozen":
+            operation["progress"] = "recipe_restoring"
+            repository.write_state(state)
         repository.apply_code_lineage_decision(plan)
         research_config.write_experiment_config(copy.deepcopy(parent["parameters"]))
+        operation["restored_config_fingerprint"] = _canonical_fingerprint(
+            parent["parameters"]
+        )
+        restored_manifest = _current_scientific_manifest(
+            str(operation["code_parent_commit"])
+        )
+        planned_paths = {
+            repository.canonical_repo_path(path)
+            for path in [*restore["restore"], *restore["remove_created"]]
+        }
+        if {entry["path"] for entry in restored_manifest} != planned_paths:
+            raise FrozenOperationMismatch(
+                "restored recipe contains paths outside its frozen restoration plan"
+            )
+        operation["restored_recipe_manifest"] = restored_manifest
         operation["progress"] = "recipe_restored"
         repository.write_state(state)
     return parent
@@ -1170,14 +1328,18 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             else "",
             campaign_id,
         )
-    result["proposal_snapshot"] = proposal
+    result["proposal_snapshot"] = copy.deepcopy(proposal)
     try:
         existing_operation = state.get("pending_training_operation")
-        code_changes = (
-            list(existing_operation["researcher_changes"])
-            if isinstance(existing_operation, dict)
-            else repository.scientific_delta(code_parent_commit)
-        )
+        if isinstance(existing_operation, dict):
+            existing_manifest = existing_operation.get("researcher_delta_manifest")
+            if not isinstance(existing_manifest, list):
+                raise FrozenOperationMismatch(
+                    "pending training operation has no frozen Researcher delta"
+                )
+            code_changes = [str(entry["path"]) for entry in existing_manifest]
+        else:
+            code_changes = repository.scientific_delta(code_parent_commit)
         result["code_changes"] = code_changes
         protocol.validate_experiment_semantics(
             proposal,
@@ -1207,32 +1369,64 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         parent_training_steps = (
             int(parent["training_steps"]) if parent is not None else 0
         )
-        previous_config = research_config.load_experiment_config()
-
-        if parameter_overrides:
-            console.announce("[checks] validating proposed parameters")
-            research_config.validate_param_overrides(parameter_overrides)
-            result["parameter_changes"] = protocol.parameter_change_records(
-                previous_config, parameter_overrides
+        configuration_frozen = operation.get("progress") in {
+            "configuration_frozen",
+            "recipe_published",
+            "training_dispatched",
+            "training_completed",
+        }
+        if configuration_frozen:
+            effective_manifest = operation.get("effective_scientific_manifest")
+            if not isinstance(effective_manifest, list):
+                raise FrozenOperationMismatch(
+                    "pending training operation has no effective scientific manifest"
+                )
+            _verify_operation_surface(
+                operation,
+                "effective_scientific_manifest",
+                "effective scientific configuration",
             )
-            research_config.write_experiment_config(
-                research_config.merge_param_overrides(
+            effective_config = research_config.load_experiment_config()
+            if operation.get("effective_config_fingerprint") != _canonical_fingerprint(
+                effective_config
+            ):
+                raise FrozenOperationMismatch(
+                    "effective parameters changed after the training operation was accepted"
+                )
+            result["parameter_changes"] = copy.deepcopy(
+                operation.get("parameter_changes", [])
+            )
+        else:
+            operation["progress"] = "configuration_applying"
+            repository.write_state(state)
+            previous_config = research_config.load_experiment_config()
+            if parameter_overrides:
+                console.announce("[checks] validating proposed parameters")
+                research_config.validate_param_overrides(parameter_overrides)
+                result["parameter_changes"] = protocol.parameter_change_records(
                     previous_config, parameter_overrides
                 )
-            )
+                research_config.write_experiment_config(
+                    research_config.merge_param_overrides(
+                        previous_config, parameter_overrides
+                    )
+                )
+            effective_config = research_config.load_experiment_config()
+            effective_manifest = _current_scientific_manifest(code_parent_commit)
+        validation_scope = [str(entry["path"]) for entry in effective_manifest]
         result["family"] = protocol.experiment_family(
             proposal,
             experiment_kind,
             result["parameter_changes"],
             code_changes,
         )
-        if code_changes:
+        if validation_scope:
             console.announce("[checks] validating changed files")
-            execution.validate_changed_sources(code_changes)
+            execution.validate_changed_sources(validation_scope)
         console.announce("[checks] resolving the effective training configuration")
         execution.validate_active_configuration()
         selected_tests = protocol.validation_test_paths(
-            code_changes, fresh_baseline=fresh_baseline
+            validation_scope, fresh_baseline=fresh_baseline
         )
         if selected_tests:
             console.announce("[checks] running research-surface checks")
@@ -1241,8 +1435,28 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             execution.run_validation_suites(selected_tests)
             console.announce("[checks] passed")
 
-        effective_config = research_config.load_experiment_config()
-        scientific_scope = repository.scientific_delta(code_parent_commit)
+        _require_matching_manifest(
+            effective_manifest,
+            _current_scientific_manifest(code_parent_commit),
+            "validated scientific configuration",
+        )
+        if not configuration_frozen:
+            operation["parameter_changes"] = copy.deepcopy(
+                result["parameter_changes"]
+            )
+            operation["effective_scientific_manifest"] = effective_manifest
+            operation["effective_scientific_fingerprint"] = _canonical_fingerprint(
+                effective_manifest
+            )
+            operation["effective_config_fingerprint"] = _canonical_fingerprint(
+                effective_config
+            )
+            operation["progress"] = "configuration_frozen"
+            repository.write_state(state)
+        operation["validated_scientific_fingerprint"] = _canonical_fingerprint(
+            effective_manifest
+        )
+        scientific_scope = list(validation_scope)
         state["pending_scientific_commit"] = {
             "experiment": index,
             "code_parent_commit": code_parent_commit,
@@ -1257,6 +1471,11 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             scientific_commit = str(operation["scientific_commit"])
             repository.require_resolvable_commit(scientific_commit)
         else:
+            _verify_operation_surface(
+                operation,
+                "effective_scientific_manifest",
+                "validated scientific configuration",
+            )
             scientific_commit = repository.publish_scientific_recipe(
                 index,
                 scientific_scope,
@@ -1464,6 +1683,21 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         repository.write_state(state)
         if state.get("schema_version") == 4:
             repository.upsert_result(result)
+    except FrozenOperationMismatch as error:
+        result["error"] = str(error)[:500]
+        operation = state.get("pending_training_operation")
+        if isinstance(operation, dict):
+            operation["last_error"] = result["error"]
+            repository.write_state(state)
+        preserve_proposal = True
+        paths.RESTART_PENDING_PATH.write_text(
+            "Restore the accepted proposal and scientific surface before retrying.\n",
+            encoding="utf-8",
+        )
+        console.announce(
+            f"[error] experiment {index} frozen operation mismatch: {result['error']}"
+        )
+        return 1
     except KeyboardInterrupt:
         recovery_dir = (
             paths.campaign_candidate_root(campaign_id) / f"recovery-experiment-{index}"

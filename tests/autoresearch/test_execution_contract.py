@@ -1089,6 +1089,114 @@ def test_continuation_restores_and_recovers_frozen_parent_recipe(monkeypatch, tm
     assert persisted["pending_analysis"]["result"]["training_parent_lineage"] == frozen
 
 
+def test_frozen_training_operation_rejects_proposal_tampering(monkeypatch, tmp_path):
+    from research import run_experiment
+
+    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("reward = 1\n", encoding="utf-8")
+    proposal = {
+        "kind": "training",
+        "family": "reward.intervention",
+        "hypothesis": "The accepted reward improves learning.",
+        "reasoning": _training_proposal()["reasoning"],
+        "change": "Change the reward.",
+        "initialization": "fresh",
+    }
+    state = {}
+    monkeypatch.setattr(run_experiment.paths, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        run_experiment.protocol,
+        "resolved_training_parent",
+        lambda *_args: None,
+    )
+    monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
+
+    run_experiment._training_parent_operation(
+        proposal,
+        state,
+        experiment=1,
+        initialization="fresh",
+        code_parent_commit="parent",
+        researcher_changes=["robot_learning/scenario/reward.py"],
+    )
+    changed = {**proposal, "hypothesis": "A different hypothesis."}
+
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch,
+        match="proposal changed",
+    ):
+        run_experiment._training_parent_operation(
+            changed,
+            state,
+            experiment=1,
+            initialization="fresh",
+            code_parent_commit="parent",
+            researcher_changes=["robot_learning/scenario/reward.py"],
+        )
+
+
+@pytest.mark.parametrize("tamper", ["edit", "add"])
+def test_frozen_training_operation_rejects_source_tampering(
+    monkeypatch, tmp_path, tamper
+):
+    from research import run_experiment
+
+    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    added = tmp_path / "robot_learning" / "scenario" / "added.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("reward = 1\n", encoding="utf-8")
+    changed_paths = ["robot_learning/scenario/reward.py"]
+    proposal = {
+        "kind": "training",
+        "family": "reward.intervention",
+        "hypothesis": "The accepted reward improves learning.",
+        "reasoning": _training_proposal()["reasoning"],
+        "change": "Change the reward.",
+        "initialization": "fresh",
+    }
+    state = {}
+    monkeypatch.setattr(run_experiment.paths, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        run_experiment.protocol,
+        "resolved_training_parent",
+        lambda *_args: None,
+    )
+    monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(
+        run_experiment.repository,
+        "scientific_delta",
+        lambda _parent: list(changed_paths),
+    )
+    run_experiment._training_parent_operation(
+        proposal,
+        state,
+        experiment=1,
+        initialization="fresh",
+        code_parent_commit="parent",
+        researcher_changes=changed_paths,
+    )
+
+    if tamper == "edit":
+        source.write_text("reward = 2\n", encoding="utf-8")
+    else:
+        added.write_text("added = True\n", encoding="utf-8")
+        changed_paths.append("robot_learning/scenario/added.py")
+
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch,
+        match="Researcher scientific delta changed",
+    ):
+        run_experiment._training_parent_operation(
+            proposal,
+            state,
+            experiment=1,
+            initialization="fresh",
+            code_parent_commit="parent",
+            researcher_changes=changed_paths,
+        )
+
+
 def test_transfer_intervention_keeps_current_recipe(monkeypatch, tmp_path):
     from research import run_experiment
 

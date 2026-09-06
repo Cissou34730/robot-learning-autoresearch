@@ -21,6 +21,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
   complete scientific recipe and effective configuration before training.
   Ordinary transfer remains distinct and may intentionally apply current changed
   science to a selected policy.
+- **Interrupted training:** Once a training proposal is accepted, recovery is
+  bound to its canonical proposal, Researcher-authored source manifest, restored
+  recipe manifest, effective parameters, and validated publication scope. A
+  retry rejects later proposal or scientific-surface changes and reuses completed
+  training only under that frozen operation.
 - **Historical evidence:** Existing evaluation evidence is reusable when policy
   identity and evaluation settings match. The Runner establishes compatibility;
   the Researcher decides whether and how the evidence supports a comparison.
