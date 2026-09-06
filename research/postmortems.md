@@ -10,7 +10,7 @@ No experiments recorded.
 
 **Open questions:** Whether the 100,352-step checkpoint reaches the 98% objective on the official panel remains unknown. It is unresolved whether the persistent negative-angle failures arise from control or representation limitations rather than target-radius coverage, and whether a different intervention can improve them without repeating the late-training decline. The development panels do not resolve stochastic training variation.
 
-**Conditional next steps:** Keep checkpoint 100,352 as the working and best-known development lineage. If work continues, investigate the persistent negative-angle failures through control or observation/representation changes, with measurements designed around the failure geometry; do not assume that more training or broader radius sampling will help. Additional replication or paired measurement is justified only if it can change the intervention or lineage decision.
+**Conditional next steps:** Keep checkpoint 100,352 as the working and best-known development lineage. The next intervention tests whether explicit smooth target-direction features let a freshly trained policy resolve the persistent negative-angle failures; measurements should retain the fixed panels and inspect failure geometry. If the failures persist, treat the representation hypothesis as weakened and investigate control or optimization limits rather than assuming that more training or broader radius sampling will help. Additional replication or paired measurement is justified only if it can change the intervention or lineage decision.
 
 ## 5d4e159f-7fae-4a25-b885-b127042e894e / Experiment 1
 
