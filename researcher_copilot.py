@@ -111,6 +111,7 @@ RESERVED_SCRIPT_NAMES = (
     "migrate_research_state.py",
     "final_benchmark.py",
     "migrate_policy_runtime.py",
+    "reset_campaign.py",
 )
 
 RESERVED_SCRIPT_PATHS = (
@@ -121,6 +122,7 @@ RESERVED_SCRIPT_PATHS = (
 
 RESERVED_MODULES = (
     "research.migrate_policy_runtime",
+    "research.reset_campaign",
     "robot_learning.evaluate",
     "robot_learning.train",
     "robot_learning.play",

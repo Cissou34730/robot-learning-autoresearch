@@ -82,6 +82,7 @@ def test_the_copilot_adapter_is_a_protected_protocol_source():
         "run_research.ps1",
         "researcher_session.ps1",
         "research/build_research_brief.py",
+        "research/reset_campaign.py",
         "pyproject.toml",
         "uv.lock",
     ],

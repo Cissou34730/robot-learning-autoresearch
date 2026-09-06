@@ -519,6 +519,38 @@ def write_state(state: dict) -> None:
     atomic_write_json(paths.STATE_PATH, state)
 
 
+def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
+    """Build a native empty v4 campaign without importing prior lineage evidence."""
+    campaign_id = str(campaign.get("id") or "")
+    if not campaign_id:
+        raise ValueError("fresh campaign state requires a campaign ID")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "campaign": copy.deepcopy(campaign),
+        "campaign_experiment_counters": {campaign_id: 0},
+        "retained_lineages": [],
+        "last_experiment": 0,
+        "last_allocated_experiment": 0,
+        "pending_scientific_parent": None,
+        "pending_training_operation": None,
+        "pending_analysis": None,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "pending_closure_operation": None,
+        "pending_final_benchmark": None,
+        "terminal_campaign_status": None,
+        "last_lineage_decision": None,
+        "last_verdict": last_verdict,
+        "official_metrics": None,
+        "official_benchmark_model": None,
+        "official_benchmark_verdict": None,
+    }
+    validate_v4_state(copy.deepcopy(state), allow_missing_artifact=True)
+    return state
+
+
 def atomic_write_text(path: Path, text: str) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(text, encoding="utf-8")
@@ -686,7 +718,9 @@ def migrate_research_state() -> bool:
         converted["terminal_campaign_status"] = (
             "migrated prior terminal official assessment"
         )
-    validate_v4_state(copy.deepcopy(converted), allow_missing_artifact=False)
+    # State migration preserves legacy evidence; runtime migration separately
+    # makes an old policy executable under the current inference contract.
+    validate_v4_state(copy.deepcopy(converted), allow_missing_artifact=True)
 
     translated_controls: dict[Path, str] = {}
     original_controls: dict[Path, bytes] = {}

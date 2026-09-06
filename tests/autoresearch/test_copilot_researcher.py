@@ -79,6 +79,8 @@ def test_read_only_git_stays_available(command):
         "uv run python research/run_experiment.py --migrate-research-state",
         "uv run python research/migrate_policy_runtime.py --help",
         "uv run python -m research.migrate_policy_runtime --help",
+        "uv run python research/reset_campaign.py --mode fresh",
+        "uv run python -m research.reset_campaign --mode fresh",
         "uv run python -m robot_learning.train",
         "uv run python -m robot_learning.evaluate --official-benchmark --model x.zip",
         "uv run python robot_learning/evaluate.py --task-reference --model x.zip",

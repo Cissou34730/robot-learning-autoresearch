@@ -38,6 +38,7 @@ PROTECTED_BENCHMARK_PATHS = {
 # the official-task trust path.
 PROTECTED_RUNNER_PATHS = {
     "research/migrate_policy_runtime.py",
+    "research/reset_campaign.py",
     "research/build_research_brief.py",
     "research/query_training_log.py",
     "researcher_session.ps1",

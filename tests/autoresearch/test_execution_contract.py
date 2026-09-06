@@ -1629,7 +1629,7 @@ def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
         {
             "index": 1,
             "change": "line one\nline two",
-            "hypothesis": "safe | table",
+            "hypothesis_assessment": "safe | table",
             "verdict": "error:\ntraceback",
         }
     )
@@ -1696,7 +1696,9 @@ def test_a_legacy_record_without_a_date_still_renders(monkeypatch, tmp_path):
 
     synchronize_experiment_log()
 
-    assert "| 7 | - | legacy |" in log_path.read_text(encoding="utf-8")
+    assert "| 7 | legacy / parent - | legacy | unmeasured | - | ok |" in (
+        log_path.read_text(encoding="utf-8")
+    )
 
 
 # --- artifact reuse --------------------------------------------------------
@@ -2024,6 +2026,110 @@ def test_baseline_proposal_must_not_declare_a_kind(kind):
 
 def test_runner_generated_baseline_remains_valid():
     validate_training_proposal(_baseline_proposal(), baseline=True)
+
+
+def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
+    monkeypatch, tmp_path
+):
+    from research import run_experiment
+
+    research = tmp_path / "research"
+    research.mkdir()
+    state_path = research / "research_state.json"
+    campaign_id = "00000000-0000-0000-0000-000000000001"
+    restored_config = {"algorithm": {"name": "ppo"}, "training": {"n_envs": 1}}
+    state = repository.empty_v4_campaign_state(
+        campaign={
+            "id": campaign_id,
+            "started_at": "2026-01-01T00:00:00Z",
+            "base_commit": "reset-commit",
+            "recipe_source_commit": "restored-recipe",
+        },
+        last_verdict="fresh baseline pending after research reset",
+    )
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    baseline_pending = research / "BASELINE_PENDING"
+    baseline_pending.write_text("Fresh baseline pending.\n", encoding="utf-8")
+    proposal_path = research / "proposal.json"
+    proposal_path.write_text(json.dumps(_baseline_proposal()), encoding="utf-8")
+    path_values = {
+        "ROOT": tmp_path,
+        "RESEARCH_DIR": research,
+        "STATE_PATH": state_path,
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "POSTMORTEM_PATH": research / "postmortems.md",
+        "PROPOSAL_PATH": proposal_path,
+        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "TRAINING_LOG_DIR": research / "training_logs",
+        "BASELINE_PENDING_PATH": baseline_pending,
+        "RESTART_PENDING_PATH": research / "RESTART_PENDING",
+        "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
+    }
+    for name, value in path_values.items():
+        monkeypatch.setattr(repository.paths, name, value)
+
+    dispatched = []
+
+    def stop_before_training(output_dir, timesteps, seed, resume, training_log, **kwargs):
+        dispatched.append(
+            {
+                "output_dir": output_dir,
+                "timesteps": timesteps,
+                "seed": seed,
+                "resume": resume,
+                "training_log": training_log,
+                "label": kwargs["label"],
+                "config": run_experiment.research_config.load_experiment_config(),
+            }
+        )
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(repository, "git", lambda *args: "reset-commit\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    monkeypatch.setattr(
+        repository, "publish_scientific_recipe", lambda experiment, scope: "recipe"
+    )
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: restored_config,
+    )
+    monkeypatch.setattr(execution, "validate_active_configuration", lambda: None)
+    monkeypatch.setattr(execution, "validate_dependency_metadata", lambda: None)
+    monkeypatch.setattr(execution, "run_validation_suites", lambda paths: None)
+    monkeypatch.setattr(execution, "train_candidate", stop_before_training)
+    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
+
+    assert (
+        run_experiment.run_training_experiment(
+            _baseline_proposal(), Namespace(timesteps=120_000, reuse_candidate=None)
+        )
+        == 130
+    )
+
+    assert dispatched == [
+        {
+            "output_dir": tmp_path
+            / "models/candidates"
+            / campaign_id
+            / "experiment-1",
+            "timesteps": 120_000,
+            "seed": 0,
+            "resume": None,
+            "training_log": research
+            / "training_logs"
+            / campaign_id
+            / "experiment-1-attempt-1.log",
+            "label": "baseline training",
+            "config": restored_config,
+        }
+    ]
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["last_allocated_experiment"] == 1
+    assert persisted["working_lineage"] is None
+    assert persisted["best_known_lineage"] is None
+    assert baseline_pending.exists()
 
 
 def _training_proposal() -> dict:
