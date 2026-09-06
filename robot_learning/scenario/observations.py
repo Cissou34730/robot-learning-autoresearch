@@ -8,7 +8,7 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 13
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -26,7 +26,6 @@ def reach_observation(data) -> np.ndarray:
 
     target_x = float(data.mocap_pos[0][0])
     target_y = float(data.mocap_pos[0][1])
-    target_angle = float(np.arctan2(target_y, target_x))
     cos_elbow = (
         target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
     ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
@@ -40,7 +39,6 @@ def reach_observation(data) -> np.ndarray:
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
-            [np.cos(target_angle), np.sin(target_angle)],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
