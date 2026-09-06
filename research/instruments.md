@@ -71,6 +71,9 @@ writer in `training/checkpoint.py` exports this contract, the loader and
 normalization into `policy_runtime.pkl` beside the weights. Preserve that export
 when replacing training or checkpointing code. Resolve scientific dependencies
 before export rather than importing mutable project code during inference.
+Stateful observation or action preprocessing belongs in `PolicyIO`, with its
+episode state cleared through the existing reset hook. Construct independent
+mapping state for each environment and apply the saved mapping exactly once.
 The Runner and evaluators use each artifact's contract, not the current model's
 observation layout. Task mechanics and success measurement remain shared.
 

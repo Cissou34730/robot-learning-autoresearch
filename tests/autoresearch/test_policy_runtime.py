@@ -48,6 +48,22 @@ def artifact(tmp_path, module):
     return path
 
 
+def stateful_artifact(tmp_path, module):
+    from robot_learning.scenario.policy_io import make_policy_io
+
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    path = tmp_path / "model.zip"
+    path.write_bytes(b"stateful weights")
+    (tmp_path / "artifact.json").write_text("{}")
+    save_runtime(
+        path,
+        policy_io=make_policy_io(),
+        loader=module.load,
+        normalizer=None,
+    )
+    return path
+
+
 @pytest.mark.parametrize("size", [3, 17, 30])
 def test_runtime_retains_code_and_shape_after_scientific_module_replacement(
     monkeypatch, tmp_path, size
@@ -72,6 +88,24 @@ def test_same_shape_semantic_changes_are_isolated(monkeypatch, tmp_path):
     runtime = load_runtime(path)
     np.testing.assert_allclose(runtime.io.observe(None), [0.25] * 3)
     np.testing.assert_allclose(runtime.io.action(np.ones(2)), [0.1, 0.1])
+
+
+def test_stateful_action_mapping_is_frozen_independent_and_resettable(
+    monkeypatch, tmp_path
+):
+    from robot_learning.scenario import policy_io
+
+    path = stateful_artifact(tmp_path, scientific_module(monkeypatch, 3))
+    monkeypatch.setattr(policy_io, "ACTION_SMOOTHING_CURRENT_WEIGHT", 0.1)
+    first = load_runtime(path)
+    second = load_runtime(path)
+
+    np.testing.assert_allclose(first.io.action([1.0, -1.0]), [1.0, -1.0])
+    np.testing.assert_allclose(first.io.action([-1.0, 1.0]), [-0.5, 0.5])
+    np.testing.assert_allclose(second.io.action([-1.0, 1.0]), [-1.0, 1.0])
+
+    first.reset()
+    np.testing.assert_allclose(first.io.action([-1.0, 1.0]), [-1.0, 1.0])
 
 
 def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(
@@ -101,6 +135,31 @@ def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(
             np.testing.assert_allclose(env.data.ctrl, [0.1, 0.1])
             env.close()
         np.testing.assert_array_equal(*positions)
+
+
+def test_all_evaluation_environments_apply_saved_action_mapping_once(
+    monkeypatch, tmp_path
+):
+    from robot_learning.benchmark.final_benchmark import official_environment
+    from robot_learning.benchmark.reference_evaluation import (
+        task_reference_environment,
+    )
+    from robot_learning.scenario.environment import make_evaluation_env
+
+    path = stateful_artifact(tmp_path, scientific_module(monkeypatch, 3))
+    for factory in (
+        official_environment,
+        task_reference_environment,
+        make_evaluation_env,
+    ):
+        runtime = load_runtime(path)
+        env = factory(policy_runtime=runtime)
+        env.reset(seed=7)
+        env.step(np.array([1.0, -1.0]))
+        np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])
+        env.step(np.array([-1.0, 1.0]))
+        np.testing.assert_allclose(env.data.ctrl, [-0.5, 0.5])
+        env.close()
 
 
 def test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly(

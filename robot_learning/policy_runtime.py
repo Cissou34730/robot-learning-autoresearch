@@ -121,6 +121,8 @@ class PolicyRuntime:
     def reset(self):
         self.state = None
         self.episode_start = True
+        if self.io.reset is not None:
+            self.io.reset()
 
     def predict(self, observation):
         if self.normalizer is not None:
