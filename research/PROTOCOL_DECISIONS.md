@@ -7,6 +7,45 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-06 - Campaign correctness and durable scientific lineage
+
+- **Scope:** These decisions repair campaign execution, persistence, recovery,
+  prompts and reset behavior. They do not change the fixed task, training budget,
+  checkpoint cadence or campaign-time validation selection, and do not establish
+  improved learning convergence.
+- **Durable lineages:** Every version-4 candidate selected as working or
+  best-known is published with its complete inference artifact under the
+  campaign-scoped, Git-versioned retained archive before disposable challenger
+  cleanup. State must never rely on an ignored challenger path.
+- **Recipe semantics:** An unchanged continuation restores the selected parent's
+  complete scientific recipe and effective configuration before training.
+  Ordinary transfer remains distinct and may intentionally apply current changed
+  science to a selected policy.
+- **Historical evidence:** Existing evaluation evidence is reusable when policy
+  identity and evaluation settings match. The Runner establishes compatibility;
+  the Researcher decides whether and how the evidence supports a comparison.
+- **Inference contract:** Policy preprocessing belongs to the saved inference
+  runtime, including mutable preprocessing state and reset at every episode
+  boundary. Loading a model without its compatible runtime is refused.
+- **Hypothesis closure:** New experiment postmortems explicitly revisit the
+  proposal's expected and contradicting observations. The Researcher authors the
+  assessment; the Runner validates and persists it without manufacturing a
+  scientific conclusion. Historical records remain readable, and an already
+  accepted closure resumes under the contract captured in its persisted plan.
+- **Lineage roles:** Working and best-known remain independent Researcher choices.
+  Comparable secondary diagnostics may support a reasoned best-known designation,
+  but the Runner has no ranking or promotion formula.
+- **Fresh recipe reset:** `Fresh -RecipeRef <git-ref>` resolves one immutable
+  commit, restores the complete researcher-owned scientific surface, and starts
+  a new empty version-4 campaign at experiment 1. It imports no trained baseline,
+  model identity, score, evidence, strategy, campaign identity or counter.
+- **Prompt contract:** Phase prompts expose continuation, intervention,
+  replication, measurement and closure choices while preserving each phase's
+  exclusive deliverable and protected validation requirements.
+- **Deferred work:** Current training-log query usage was confirmed. Improving
+  query targeting or output efficiency is intentionally deferred and is not part
+  of this campaign-correctness implementation.
+
 ## 2026-09-05 - Steps 4-5: factual v4 memory and post-training analysis prompts
 
 - **Scope:** The v4 persistence and analysis lifecycle are presented through the

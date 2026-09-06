@@ -59,17 +59,24 @@ Stop the campaign, then choose a reset mode explicitly in the current branch:
 
 ```powershell
 .\reset_research.ps1 -Mode Fresh -Force
+.\reset_research.ps1 -Mode Fresh -RecipeRef <verified-recipe-commit> -Force
 .\reset_research.ps1 -Mode Baseline -BaselineRef <prepared-baseline-commit-or-tag> -Force
 ```
 
 `Fresh` clears campaign history and models, preserving the current code and
-parameters; baseline training starts on the next launch. `Baseline` restores
-the prepared baseline's scientific code, tests, configuration, saved policy and
-evidence, preserving the current harness; research resumes at experiment 2
-without retraining the baseline. Neither mode creates a branch or worktree.
+parameters; baseline training starts on the next launch. With `-RecipeRef`, it
+first restores the complete researcher-owned scientific code, tests and
+configuration from the resolved commit, including deleting later scientific
+files. It does not import a model, score, evidence, strategy, campaign identity
+or experiment counter. `Baseline` restores the prepared baseline's scientific
+code, tests, configuration, saved policy and evidence, preserving the current
+harness; research resumes at experiment 2 without retraining the baseline.
+Neither mode creates a branch or worktree.
 
-Both require a clean Git working tree and commit/push the resulting reset state,
-as before. See [reset details and baseline requirements](docs/reset-research.md).
+Both require a clean Git working tree and hold the same machine-wide mutex as
+the research launcher. A recipe reset commits restored science separately from
+the new empty campaign state; all reset commits are pushed without rewriting
+history. See [reset details and baseline requirements](docs/reset-research.md).
 
 ## Tests and validation
 
@@ -97,6 +104,13 @@ follow the same Git code lineage as the implementation they validate. A
 structural experiment is expected to update them; a parameter-only experiment
 is not.
 
+Selected version-4 working and best-known policies are published under
+`research/checkpoints/retained/<campaign-id>/` before disposable challengers are
+cleaned up. Their model, metadata and saved preprocessing runtime are versioned
+with the campaign memory, so a clean clone can load every lineage named by
+state. Working and best-known remain independent Researcher decisions; the
+runner does not infer either role from a score.
+
 Validation runs before compute is spent:
 
 * a fresh campaign baseline is fully validated even when the worktree carries no
@@ -115,3 +129,7 @@ then runs:
 ```powershell
 uv run pytest -q tests/benchmark tests/autoresearch tests/scenario tests/training
 ```
+
+Harness regression coverage does not broaden campaign-time selection: ordinary
+reward and parameter changes still run only the suites selected by the existing
+ownership rules above.

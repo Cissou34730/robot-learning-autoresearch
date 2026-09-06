@@ -420,6 +420,62 @@ def test_v4_closure_resume_clears_reloaded_pending_analysis(monkeypatch, tmp_pat
     assert repository.result_records()[0]["status"] == "closed"
 
 
+def test_accepted_legacy_closure_resumes_without_new_assessment(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    repository.upsert_result(
+        {
+            "schema_version": 4,
+            "campaign_id": "campaign",
+            "index": 1,
+            "hypothesis": "test",
+        }
+    )
+    postmortem = tmp_path / "research" / "postmortems.md"
+    postmortem.write_text(
+        "## campaign / Experiment 1\n\n"
+        "**Hypothesis assessment:** The prediction remains unresolved.\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        encoding="utf-8",
+    )
+    state = repository.read_state()
+    plan = run_experiment.protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "checkpoint",
+                "reason": "Preserve the trained candidate.",
+                "code": {"action": "keep", "reason": "No recipe change."},
+            }
+        },
+        state,
+    )
+    accepted_plan = run_experiment._serialize_closure_plan(
+        plan, pending_field="pending_analysis"
+    )
+    accepted_plan.pop("hypothesis_assessment")
+    state["pending_closure_operation"] = {
+        "experiment": 1,
+        "selected": plan["working_name"],
+        "code_action": plan["code_action"],
+        "plan": accepted_plan,
+        "progress": "planned",
+    }
+    repository.write_state(state)
+    postmortem.write_text(
+        "## campaign / Experiment 1\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        encoding="utf-8",
+    )
+
+    reloaded = repository.read_state()
+    assert not run_experiment.apply_pending_v4_closure(reloaded)
+
+    record = repository.result_records()[0]
+    assert record["status"] == "closed"
+    assert "hypothesis_assessment" not in record
+    assert repository.read_state()["pending_analysis"] is None
+
+
 def test_v4_closure_retries_after_copy_progress_write_failure(monkeypatch, tmp_path):
     _configure(monkeypatch, tmp_path)
     (tmp_path / "research" / "postmortems.md").write_text(

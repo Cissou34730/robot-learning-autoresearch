@@ -33,7 +33,14 @@ uv sync                                  # Human: install the fixed dependencies
 uv run python -m robot_learning.train    # Runner: train a policy
 uv run python -m robot_learning.play --model <model.zip>  # Human: open the viewer
 uv run pytest                            # Runner: complete test suite
+.\reset_research.ps1 -Mode Fresh -Force  # Human: reset campaign, preserve science
 ```
+
+The human may add `-RecipeRef <git-ref>` to `Fresh` to restore the complete
+researcher-owned scientific surface from one resolved commit before creating an
+empty v4 campaign. This imports no trained policy or evidence. `Baseline` is the
+separate operation for restoring a prepared experiment-1 policy and its evidence.
+The reset wrapper and research launcher share a machine-wide mutex.
 
 The Researcher session may inspect files and, when the current phase
 requires understanding code state or a code delta, use read-only Git. It may
@@ -83,7 +90,7 @@ The Researcher may read but not modify these paths through an experiment:
 - `AGENTS.md`, `research/program.md`, `research/scenario.md`,
   `research/instruments.md`;
 - `run_research.ps1`, `researcher_session.ps1`, `researcher_copilot.py`;
-- `research/run_experiment.py`, `research/runner_*.py`,
+- `research/run_experiment.py`, `research/reset_campaign.py`, `research/runner_*.py`,
   `research/build_research_brief.py`, `research/query_training_log.py`;
 - `pyproject.toml`, `uv.lock`;
 - `robot_learning/benchmark/`;
@@ -130,6 +137,8 @@ run no suites.
 Tests assert the behavior owned by their domain. Human-owned benchmark and
 AutoResearch tests remain method-neutral. Architecture guards derive the
 surface they protect rather than naming one implementation file.
+Adding harness regression tests does not itself broaden campaign-time suite
+selection for researcher-owned reward or parameter changes.
 
 ## Persistence and Git
 
@@ -149,3 +158,18 @@ select restoration commits.
 regenerated atomically. Validation-only commands do not reconcile or mutate the
 derived view. Researcher-owned tests and scientific code travel together in the
 experiment's `code_changes` and Git lineage.
+
+Version-4 closure publishes every selected working or best-known candidate to
+`research/checkpoints/retained/<campaign-id>/` before candidate cleanup and
+commits the artifact with the state that references it. A retained inference
+artifact consists of `model.zip`, `artifact.json` and `policy_runtime.pkl`;
+preprocessing state and its per-episode reset behavior are part of that saved
+runtime contract. Working and best-known lineages are independent Researcher
+designations, not Runner rankings.
+
+An unchanged continuation restores the selected parent's complete scientific
+recipe and configuration before validation and training. An ordinary transfer
+experiment may instead combine a selected policy with the intentionally changed
+current science. Historical development evidence may be reused only when policy
+identity and evaluation settings match; whether it supports a comparison remains
+the Researcher's decision.
