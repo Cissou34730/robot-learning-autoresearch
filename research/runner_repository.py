@@ -22,6 +22,8 @@ DETAILED_EVIDENCE_FIELDS = ("episode_results", "research_evidence")
 RUNNER_CONTROL_PATHS = {
     "research/proposal.json",
     "research/evaluation_request.json",
+    "research/RECOVERY_PENDING",
+    "research/RESTART_PENDING",
 }
 # Durable Runner-owned campaign memory: the lifecycle state the Runner rewrites
 # mid-experiment -- including the identity it allocates before validation --
@@ -244,7 +246,8 @@ def commit_paths(message: str, scope: list[str]) -> bool:
 
 def publish_scientific_recipe(experiment: int, scope: list[str]) -> str:
     """Publish an experiment's validated scientific recipe and return its revision."""
-    commit_paths(f"experiment {experiment} scientific recipe", scope)
+    if not commit_paths(f"experiment {experiment} scientific recipe", scope):
+        push_head()
     return git("rev-parse", "HEAD").strip()
 
 

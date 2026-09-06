@@ -344,8 +344,22 @@ def lineage_role(state: dict, identifier: str) -> dict | None:
 def training_parent(
     proposal: dict, state: dict, initialization: str
 ) -> tuple[str, Path, int]:
-    if initialization != "transfer":
+    resolved = resolved_training_parent(proposal, state, initialization)
+    if resolved is None:
         return "fresh", Path(), 0
+    return (
+        str(resolved["identifier"]),
+        repository.resolve_repo_path(str(resolved["artifact"])),
+        int(resolved["training_steps"]),
+    )
+
+
+def resolved_training_parent(
+    proposal: dict, state: dict, initialization: str
+) -> dict | None:
+    """Freeze every model and recipe fact needed by training or recovery."""
+    if initialization != "transfer":
+        return None
     identifier = str(proposal["training_parent"]).strip()
     lineage = lineage_role(state, identifier)
     if lineage is None:
@@ -356,7 +370,34 @@ def training_parent(
             raise ValueError(
                 f"training parent {identifier!r} is incomplete: {filename}"
             )
-    return identifier, artifact, int(lineage.get("training_steps", 0))
+    if state.get("schema_version") == 4:
+        repository.require_complete_inference_artifact(
+            artifact, f"training parent {identifier!r}"
+        )
+        fingerprint = str(lineage.get("fingerprint") or "").strip()
+        if not fingerprint or repository.artifact_fingerprint(artifact) != fingerprint:
+            raise ValueError(
+                f"training parent {identifier!r} fingerprint does not match its artifact"
+            )
+    if str(proposal.get("kind", "training")).strip().lower() == "continuation":
+        if not str(lineage.get("scientific_commit") or "").strip():
+            raise ValueError(
+                f"continuation parent {identifier!r} has no scientific_commit provenance"
+            )
+        if not isinstance(lineage.get("parameters"), dict):
+            raise ValueError(
+                f"continuation parent {identifier!r} has no effective parameters"
+            )
+    return {
+        "identifier": identifier,
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": lineage.get("fingerprint"),
+        "origin_experiment": lineage.get("origin_experiment"),
+        "candidate": lineage.get("candidate", identifier),
+        "parameters": lineage.get("parameters"),
+        "scientific_commit": lineage.get("scientific_commit"),
+        "training_steps": int(lineage.get("training_steps", 0)),
+    }
 
 
 # --- proposal validation ---------------------------------------------------
@@ -1116,7 +1157,7 @@ def plan_lineage_restore(lineage: dict) -> dict:
     changed = [
         path
         for path in repository.scientific_delta(commit)
-        if is_researcher_owned(path)
+        if is_researcher_owned(path) or path.replace("\\", "/") in PARAMETER_ONLY_PATHS
     ]
     restorable: list[str] = []
     created: list[Path] = []

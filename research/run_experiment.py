@@ -12,6 +12,7 @@ those operations lives in the `runner_*` modules:
 """
 
 import argparse
+import copy
 import json
 import sys
 from pathlib import Path
@@ -48,6 +49,100 @@ def proposal_training_settings(
     )
 
 
+def _serialize_restore_plan(plan: dict) -> dict:
+    return {
+        "parent": str(plan["parent"]),
+        "restore": list(plan["restore"]),
+        "remove_created": [
+            repository.repo_relative_path(path) for path in plan["remove_created"]
+        ],
+    }
+
+
+def _training_parent_operation(
+    proposal: dict,
+    state: dict,
+    *,
+    experiment: int,
+    initialization: str,
+    code_parent_commit: str,
+    researcher_changes: list[str],
+) -> dict | None:
+    existing = state.get("pending_training_operation")
+    if isinstance(existing, dict):
+        if (
+            int(existing.get("experiment", -1)) != experiment
+            or existing.get("kind") != str(proposal.get("kind", "training")).lower()
+            or existing.get("requested_parent")
+            != str(proposal.get("training_parent", "")).strip()
+            or existing.get("code_parent_commit") != code_parent_commit
+        ):
+            raise ValueError(
+                "pending training operation does not match the preserved proposal"
+            )
+        return existing
+    parent = protocol.resolved_training_parent(proposal, state, initialization)
+    if parent is None:
+        return None
+    restore = (
+        _serialize_restore_plan(protocol.plan_lineage_restore(parent))
+        if str(proposal.get("kind", "training")).lower() == "continuation"
+        else None
+    )
+    operation = {
+        "experiment": experiment,
+        "kind": str(proposal.get("kind", "training")).lower(),
+        "requested_parent": str(proposal["training_parent"]).strip(),
+        "code_parent_commit": code_parent_commit,
+        "researcher_changes": list(researcher_changes),
+        "parent": copy.deepcopy(parent),
+        "recipe_restore": restore,
+        "progress": "parent_frozen",
+    }
+    state["pending_training_operation"] = operation
+    repository.write_state(state)
+    return operation
+
+
+def _apply_training_parent_operation(
+    operation: dict | None, state: dict
+) -> dict | None:
+    if operation is None:
+        return None
+    if operation.get("progress") not in {
+        "parent_frozen",
+        "recipe_restored",
+        "recipe_published",
+        "training_dispatched",
+        "training_completed",
+    }:
+        raise ValueError(
+            f"unknown training operation progress: {operation.get('progress')!r}"
+        )
+    parent = operation["parent"]
+    artifact = repository.resolve_repo_path(str(parent["artifact"]))
+    fingerprint = str(parent.get("fingerprint") or "").strip()
+    if fingerprint:
+        repository.require_complete_inference_artifact(
+            artifact, "frozen training parent"
+        )
+    else:
+        repository.require_complete_artifact(artifact, "frozen training parent")
+    if fingerprint and repository.artifact_fingerprint(artifact) != fingerprint:
+        raise ValueError("frozen training parent fingerprint changed")
+    restore = operation.get("recipe_restore")
+    if restore is not None and operation["progress"] == "parent_frozen":
+        plan = dict(restore)
+        plan["remove_created"] = [
+            repository.resolve_repo_path(path) for path in plan["remove_created"]
+        ]
+        repository.apply_code_lineage_decision(plan)
+        research_config.write_experiment_config(copy.deepcopy(parent["parameters"]))
+        operation["progress"] = "recipe_restored"
+        repository.write_state(state)
+    return parent
+
+
 def anchored_scientific_delta(raw_state: dict) -> list[str]:
     """Return the scientific delta from the parent anchored for this phase."""
     parent = str(raw_state.get("pending_scientific_parent") or "").strip()
@@ -81,6 +176,9 @@ def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
         code_changes,
         baseline,
     )
+    parent = protocol.resolved_training_parent(proposal, raw_state, initialization)
+    if experiment_kind == "continuation" and parent is not None:
+        protocol.plan_lineage_restore(parent)
 
 
 # --- hypothesis phase ------------------------------------------------------
@@ -943,7 +1041,11 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
 
     # A preserved proposal is the same experiment: recovery and restart reuse
     # the identity the interrupted run allocated instead of consuming a new one.
-    resuming = args.reuse_candidate is not None or paths.RESTART_PENDING_PATH.exists()
+    resuming = (
+        args.reuse_candidate is not None
+        or paths.RESTART_PENDING_PATH.exists()
+        or isinstance(state.get("pending_training_operation"), dict)
+    )
     index = (
         protocol.resumed_experiment_index(
             state, args.reuse_candidate, campaign_id=campaign_id
@@ -963,14 +1065,13 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     repository.write_state(state)
     candidate_dir = paths.campaign_candidate_root(campaign_id) / f"experiment-{index}"
     created_candidate_dirs: list[Path] = []
-    previous_config = research_config.load_experiment_config()
     code_changes: list[str] = []
     preserve_proposal = False
     reused_candidate: Path | None = None
-    training_elapsed = 0.0
-    parent_name, parent_artifact, parent_training_steps = protocol.training_parent(
-        proposal, state, initialization
+    recovery_candidate = (
+        args.reuse_candidate.resolve() if args.reuse_candidate is not None else None
     )
+    training_elapsed = 0.0
 
     result: dict[str, Any] = {
         "schema_version": 1,
@@ -998,7 +1099,12 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         )
     result["proposal_snapshot"] = proposal
     try:
-        code_changes = repository.scientific_delta(code_parent_commit)
+        existing_operation = state.get("pending_training_operation")
+        code_changes = (
+            list(existing_operation["researcher_changes"])
+            if isinstance(existing_operation, dict)
+            else repository.scientific_delta(code_parent_commit)
+        )
         result["code_changes"] = code_changes
         protocol.validate_experiment_semantics(
             proposal,
@@ -1008,6 +1114,27 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             code_changes,
             baseline,
         )
+        operation = _training_parent_operation(
+            proposal,
+            state,
+            experiment=index,
+            initialization=initialization,
+            code_parent_commit=code_parent_commit,
+            researcher_changes=code_changes,
+        )
+        parent = _apply_training_parent_operation(operation, state)
+        if operation is not None:
+            operation.pop("last_error", None)
+        parent_name = str(parent["identifier"]) if parent is not None else "fresh"
+        parent_artifact = (
+            repository.resolve_repo_path(str(parent["artifact"]))
+            if parent is not None
+            else Path()
+        )
+        parent_training_steps = (
+            int(parent["training_steps"]) if parent is not None else 0
+        )
+        previous_config = research_config.load_experiment_config()
 
         if parameter_overrides:
             console.announce("[checks] validating proposed parameters")
@@ -1049,10 +1176,21 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             "scope": scientific_scope,
         }
         repository.write_state(state)
-        scientific_commit = repository.publish_scientific_recipe(
-            index,
-            scientific_scope,
-        )
+        if operation is not None and operation.get("progress") in {
+            "recipe_published",
+            "training_dispatched",
+            "training_completed",
+        }:
+            scientific_commit = str(operation["scientific_commit"])
+            repository.require_resolvable_commit(scientific_commit)
+        else:
+            scientific_commit = repository.publish_scientific_recipe(
+                index,
+                scientific_scope,
+            )
+            if operation is not None:
+                operation["scientific_commit"] = scientific_commit
+                operation["progress"] = "recipe_published"
         state["pending_scientific_commit"] = {
             "experiment": index,
             "code_parent_commit": code_parent_commit,
@@ -1060,6 +1198,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         }
         repository.write_state(state)
         result["scientific_commit"] = scientific_commit
+        if parent is not None:
+            result["training_parent_lineage"] = copy.deepcopy(parent)
         effective_timesteps = execution.training_budget(
             args.timesteps,
             initialization,
@@ -1074,12 +1214,53 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             result["replication_of"] = int(proposal["replication_of"])
         console.announce("\n" + console.render_experiment_card(result) + "\n")
         resume = parent_artifact / "model.zip" if initialization == "transfer" else None
+        completed_candidate_available = False
 
         if resuming and candidate_dir.exists():
-            # Only the experiment's own leftovers: a new identity that collided
-            # with existing data was skipped rather than allocated.
-            console.announce(f"[cleanup] removing stale candidate {candidate_dir.name}")
-            execution.remove_candidate_dir(candidate_dir)
+            complete = all(
+                (candidate_dir / filename).is_file()
+                for filename in repository.INFERENCE_ARTIFACT_FILES
+            )
+            if (
+                complete
+                and operation is not None
+                and operation.get("progress")
+                in {"training_dispatched", "training_completed"}
+                and args.reuse_candidate is None
+            ):
+                metadata = json.loads(
+                    (candidate_dir / "artifact.json").read_text(encoding="utf-8")
+                )
+                if bool(metadata.get("completed", True)):
+                    execution.validate_reusable_candidate(
+                        candidate_dir,
+                        timesteps=effective_timesteps,
+                        seed=training_seed,
+                        resume=resume,
+                        config=effective_config,
+                    )
+                    execution.candidate_directories(candidate_dir)
+                    completed_candidate_available = True
+                    operation["progress"] = "training_completed"
+                    repository.write_state(state)
+                    console.announce(
+                        f"[recovery] reusing completed candidate from {candidate_dir}"
+                    )
+                else:
+                    recovery_candidate = (
+                        paths.campaign_candidate_root(campaign_id)
+                        / f"recovery-experiment-{index}"
+                    )
+                    if recovery_candidate.exists():
+                        execution.remove_candidate_dir(recovery_candidate)
+                    candidate_dir.replace(recovery_candidate)
+            else:
+                # Only the experiment's own leftovers: a new identity that collided
+                # with existing data was skipped rather than allocated.
+                console.announce(
+                    f"[cleanup] removing stale candidate {candidate_dir.name}"
+                )
+                execution.remove_candidate_dir(candidate_dir)
 
         def active_training_log() -> Path:
             attempt = execution.training_attempt(
@@ -1089,8 +1270,14 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             )
             return paths.training_log_path(index, attempt, campaign_id=campaign_id)
 
-        if args.reuse_candidate is not None:
-            reusable = args.reuse_candidate.resolve()
+        if operation is not None and not completed_candidate_available:
+            operation["progress"] = "training_dispatched"
+            repository.write_state(state)
+
+        if completed_candidate_available:
+            pass
+        elif recovery_candidate is not None:
+            reusable = recovery_candidate
             reused_candidate = reusable
             execution.validate_reusable_candidate(
                 reusable,
@@ -1145,6 +1332,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 active_training_log(),
                 label="baseline training" if baseline else "candidate training",
             )
+        if operation is not None and not completed_candidate_available:
+            operation["progress"] = "training_completed"
+            repository.write_state(state)
         contenders = [
             {**candidate, "kind": "candidate", "evaluations": []}
             for candidate in execution.candidate_directories(candidate_dir)
@@ -1185,6 +1375,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             + (["research/current_params.json"] if parameter_overrides else []),
             "result": result,
         }
+        if parent is not None:
+            pending["training_parent_lineage"] = copy.deepcopy(parent)
         result["candidates"] = archived_candidates
         state.update({"last_experiment": index, "last_verdict": verdict})
         if state.get("schema_version") == 4:
@@ -1192,6 +1384,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         else:
             state["pending_evaluation_request"] = pending
         result.update({"status": "trained", "verdict": verdict})
+        state["pending_training_operation"] = None
         if args.reuse_candidate is not None:
             paths.RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
@@ -1238,7 +1431,21 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         return 130
     except Exception as error:  # noqa: BLE001
         result["error"] = str(error)[:500]
+        operation = state.get("pending_training_operation")
+        if isinstance(operation, dict) and operation.get("recipe_restore") is not None:
+            operation["last_error"] = result["error"]
+            preserve_proposal = True
+            paths.RESTART_PENDING_PATH.write_text(
+                "Retry the frozen continuation operation.\n", encoding="utf-8"
+            )
+            repository.write_state(state)
+            console.announce(
+                f"[error] experiment {index} continuation remains recoverable: "
+                f"{result['error']}"
+            )
+            return 1
         result["verdict"] = "invalid; researcher changes preserved"
+        state["pending_training_operation"] = None
         repository.append_result(result)
         repository.write_state(state)
         repository.commit_result(index, change)
@@ -1247,14 +1454,15 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     finally:
         if not preserve_proposal:
             paths.PROPOSAL_PATH.unlink(missing_ok=True)
-        cleanup_targets = created_candidate_dirs or [candidate_dir]
-        for cleanup_target in cleanup_targets:
-            try:
-                execution.remove_candidate_dir(cleanup_target)
-            except OSError as cleanup_error:
-                console.announce(
-                    f"[runner] WARNING: candidate cleanup failed: {cleanup_error}"
-                )
+        if not preserve_proposal:
+            cleanup_targets = created_candidate_dirs or [candidate_dir]
+            for cleanup_target in cleanup_targets:
+                try:
+                    execution.remove_candidate_dir(cleanup_target)
+                except OSError as cleanup_error:
+                    console.announce(
+                        f"[runner] WARNING: candidate cleanup failed: {cleanup_error}"
+                    )
         if (
             reused_candidate is not None
             and not paths.RECOVERY_PENDING_PATH.exists()

@@ -71,6 +71,92 @@ def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path
     assert best_known.joinpath("model.zip").read_bytes() == b"best-known"
 
 
+def test_v4_continuation_freezes_complete_parent_identity(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working-checkpoint", "working")
+    lineage = _lineage(working, steps=120_000)
+    lineage["candidate"] = "checkpoint-100352"
+    state = {
+        "schema_version": 4,
+        "working_lineage": lineage,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+    }
+
+    resolved = protocol.resolved_training_parent(
+        {
+            "kind": "continuation",
+            "training_parent": "working",
+        },
+        state,
+        "transfer",
+    )
+
+    assert resolved == {
+        "identifier": "working",
+        "artifact": working.name,
+        "fingerprint": lineage["fingerprint"],
+        "origin_experiment": 1,
+        "candidate": "checkpoint-100352",
+        "parameters": lineage["parameters"],
+        "scientific_commit": "a" * 40,
+        "training_steps": 120_000,
+    }
+
+
+def test_v4_continuation_requires_parent_recipe_provenance(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working-checkpoint", "working")
+    lineage = _lineage(working, steps=120_000)
+    lineage["scientific_commit"] = None
+    state = {
+        "schema_version": 4,
+        "working_lineage": lineage,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+    }
+
+    with pytest.raises(ValueError, match="has no scientific_commit provenance"):
+        protocol.resolved_training_parent(
+            {"kind": "continuation", "training_parent": "working"},
+            state,
+            "transfer",
+        )
+
+
+def test_lineage_restore_includes_effective_parameter_file(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda commit: [
+            "robot_learning/scenario/reward.py",
+            "research/current_params.json",
+            "research/run_experiment.py",
+        ],
+    )
+    monkeypatch.setattr(repository, "tracked_at_commit", lambda commit, path: True)
+
+    plan = protocol.plan_lineage_restore({"scientific_commit": "a" * 40})
+
+    assert plan["restore"] == [
+        "robot_learning/scenario/reward.py",
+        "research/current_params.json",
+    ]
+
+
+def test_lineage_restore_is_noop_when_parent_recipe_is_current(monkeypatch):
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
+    monkeypatch.setattr(repository, "scientific_delta", lambda commit: [])
+
+    assert protocol.plan_lineage_restore({"scientific_commit": "a" * 40}) == {
+        "parent": "a" * 40,
+        "restore": [],
+        "remove_created": [],
+    }
+
+
 def test_v4_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
