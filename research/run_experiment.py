@@ -565,6 +565,10 @@ def execute_pending_evaluations() -> int:
 
 
 def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
+    if state.get("schema_version") == 4 and isinstance(
+        state.get("pending_closure_operation"), dict
+    ):
+        return apply_pending_v4_closure(state)
     plan = protocol.plan_previous_result_decision(proposal, state)
     if state.get("schema_version") == 4:
         return apply_v4_previous_result_decision(plan, state)
@@ -672,6 +676,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         },
         "retained": plan["retained"],
         "removed_retained": plan["removed_retained"],
+        "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
     }
 
@@ -689,12 +694,35 @@ def apply_pending_v4_closure(state: dict) -> bool:
             if isinstance(state.get("pending_analysis"), dict)
             else "pending_researcher_decision"
         )
-    if operation.get("progress") == "planned":
+    progress = operation.get("progress")
+    if progress not in {
+        "planned",
+        "copied",
+        "code_applied",
+        "role_result_written",
+        "durable",
+        "cleanup_complete",
+    }:
+        raise ValueError(f"unknown v4 closure progress: {progress!r}")
+    if progress in {"durable", "cleanup_complete"}:
+        return False
+    if progress == "planned":
+        for publication in plan.get("artifact_publications", []):
+            repository.publish_artifact(publication)
+        operation["progress"] = "copied"
+        repository.write_state(state)
+        progress = "copied"
+    if progress == "copied":
         code_plan = dict(plan["code_plan"])
         code_plan["remove_created"] = [
             repository.resolve_repo_path(path) for path in code_plan["remove_created"]
         ]
         repository.apply_code_lineage_decision(code_plan)
+        operation["progress"] = "code_applied"
+        repository.write_state(state)
+        progress = "code_applied"
+    if progress not in {"code_applied", "role_result_written"}:
+        raise RuntimeError(f"cannot write v4 closure roles from progress {progress!r}")
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
     state["retained_lineages"] = plan["retained"]
@@ -733,6 +761,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
         state["pending_analysis"] = None
     else:
         state["pending_researcher_decision"] = None
+    operation["progress"] = "role_result_written"
     repository.write_state(state)
     operation["progress"] = "durable"
     repository.write_state(state)
@@ -744,6 +773,10 @@ def finalize_pending_v4_closure(state: dict) -> None:
     operation = state.get("pending_closure_operation")
     if not isinstance(operation, dict):
         raise TypeError("there is no pending closure operation")
+    if operation.get("progress") not in {"durable", "cleanup_complete"}:
+        raise RuntimeError("cannot clean a v4 closure before durable publication")
+    if operation.get("progress") == "cleanup_complete":
+        return
     plan = operation["plan"]
     pending = plan["pending"]
     protected = repository.role_and_retention_artifacts(state)
@@ -757,6 +790,30 @@ def finalize_pending_v4_closure(state: dict) -> None:
             repository.remove_heavyweight_artifacts(artifact)
     operation["progress"] = "cleanup_complete"
     repository.write_state(state)
+
+
+def publish_v4_closure_completion(state: dict) -> None:
+    """Publish cleanup and clear the operation without losing retry state."""
+    operation = state.get("pending_closure_operation")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending closure operation")
+    experiment = int(operation["experiment"])
+    finalize_pending_v4_closure(state)
+    if not repository.commit_runner_memory(
+        f"complete experiment {experiment} lineage cleanup"
+    ):
+        repository.push_head()
+    try:
+        state["pending_closure_operation"] = None
+        repository.write_state(state)
+        if not repository.commit_runner_memory(
+            f"clear experiment {experiment} lineage operation"
+        ):
+            repository.push_head()
+    except BaseException:
+        state["pending_closure_operation"] = operation
+        repository.write_state(state)
+        raise
 
 
 def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
@@ -776,11 +833,9 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
         .lower(),
         state=state,
     )
-    if state.get("schema_version") == 4:
-        finalize_pending_v4_closure(state)
     paths.PROPOSAL_PATH.unlink(missing_ok=True)
-    state["pending_closure_operation"] = None
-    repository.write_state(state)
+    if state.get("schema_version") == 4:
+        publish_v4_closure_completion(state)
     return 0
 
 
@@ -1269,9 +1324,7 @@ def main() -> int:
             code_action=str(operation["code_action"]),
             state=state,
         )
-        finalize_pending_v4_closure(state)
-        state["pending_closure_operation"] = None
-        repository.write_state(state)
+        publish_v4_closure_completion(state)
         return 0
     if not paths.PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")

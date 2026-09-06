@@ -216,15 +216,19 @@ def stage_existing_or_tracked(candidates: list[str]) -> list[str]:
     return stageable
 
 
-def commit_and_push(message: str, scope: tuple[str, ...] = ()) -> None:
-    git("commit", "-m", message, *(("--", *scope) if scope else ()))
+def push_head() -> None:
     try:
         git("push", "origin", "HEAD")
     except RuntimeError as error:
         raise RuntimeError(
-            "commit created locally but push to origin failed; "
+            "local commits could not be pushed to origin; "
             "the research loop stopped to avoid unpublished history"
         ) from error
+
+
+def commit_and_push(message: str, scope: tuple[str, ...] = ()) -> None:
+    git("commit", "-m", message, *(("--", *scope) if scope else ()))
+    push_head()
 
 
 def commit_paths(message: str, scope: list[str]) -> bool:
@@ -274,7 +278,11 @@ def commit_lineage_decision(
         # been published, the rollback anchor must stay recoverable.
         state["pending_scientific_parent"] = None
         write_state(state)
-    commit_runner_memory(f"select experiment {experiment} lineage: {selected}")
+    if not commit_runner_memory(f"select experiment {experiment} lineage: {selected}"):
+        # A previous attempt may have committed this exact memory locally and
+        # failed only while pushing. Retrying must publish that commit before
+        # candidate cleanup can proceed.
+        push_head()
 
 
 # --- campaign state --------------------------------------------------------
@@ -419,9 +427,11 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
         for role in ("working_lineage", "best_known_lineage"):
             lineage = state.get(role)
             if lineage is not None:
-                require_complete_artifact(resolve_repo_path(lineage["artifact"]), role)
+                require_complete_inference_artifact(
+                    resolve_repo_path(lineage["artifact"]), role
+                )
         for lineage in retained:
-            require_complete_artifact(
+            require_complete_inference_artifact(
                 resolve_repo_path(lineage["artifact"]),
                 f"retained lineage {lineage['id']!r}",
             )
@@ -927,6 +937,12 @@ def require_complete_artifact(artifact: Path, description: str) -> None:
             raise ValueError(f"{description} is incomplete: {filename}")
 
 
+def require_complete_inference_artifact(artifact: Path, description: str) -> None:
+    for filename in INFERENCE_ARTIFACT_FILES:
+        if not (artifact / filename).is_file():
+            raise ValueError(f"{description} is incomplete: {filename}")
+
+
 def artifact_fingerprint(artifact: Path) -> str:
     digest = hashlib.sha256()
 
@@ -955,6 +971,68 @@ def copy_artifact(source: Path, destination: Path) -> None:
             shutil.copyfile(source_file, destination_file)
         else:
             destination_file.unlink(missing_ok=True)
+
+
+def durable_artifact_destination(
+    *,
+    campaign_id: str | None,
+    origin_experiment: int,
+    candidate: str,
+    fingerprint: str,
+) -> Path:
+    """Return the stable tracked archive location for one immutable artifact."""
+    checkpoint = hashlib.sha256(candidate.encode("utf-8")).hexdigest()[:8]
+    return paths.campaign_retained_root(campaign_id) / (
+        f"e{origin_experiment}-c{checkpoint}-{fingerprint}"
+    )
+
+
+def validate_artifact_publication(publication: dict) -> None:
+    source = resolve_repo_path(str(publication["source"]))
+    destination = resolve_repo_path(str(publication["destination"]))
+    expected = str(publication["fingerprint"])
+    require_complete_inference_artifact(source, "lineage source")
+    if artifact_fingerprint(source) != expected:
+        raise ValueError(f"lineage source fingerprint changed: {source}")
+    if destination.exists():
+        require_complete_inference_artifact(destination, "durable lineage destination")
+        if artifact_fingerprint(destination) != expected:
+            raise ValueError(
+                f"durable lineage destination collides with a different artifact: "
+                f"{destination}"
+            )
+
+
+def publish_artifact(publication: dict) -> None:
+    """Publish one complete artifact without overwriting a different one."""
+    source = resolve_repo_path(str(publication["source"]))
+    destination = resolve_repo_path(str(publication["destination"]))
+    expected = str(publication["fingerprint"])
+    if destination.exists():
+        require_complete_inference_artifact(destination, "durable lineage destination")
+        if artifact_fingerprint(destination) != expected:
+            raise ValueError(
+                "durable lineage destination collides with a different artifact: "
+                f"{destination}"
+            )
+        return
+    validate_artifact_publication(publication)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(f".{destination.name}.tmp")
+    try:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        copy_artifact(source, temporary)
+        require_complete_inference_artifact(temporary, "staged durable lineage")
+        if artifact_fingerprint(temporary) != expected:
+            raise ValueError("staged durable lineage fingerprint does not match")
+        if destination.exists():
+            validate_artifact_publication(publication)
+            return
+        temporary.replace(destination)
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
 
 
 def remove_heavyweight_artifacts(artifact: Path) -> None:

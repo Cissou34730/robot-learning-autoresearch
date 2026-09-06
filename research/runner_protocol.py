@@ -1350,7 +1350,11 @@ def _v4_lineage_record(
         "origin_experiment": int(pending["experiment"])
         if current
         else int(source["origin_experiment"]),
-        "candidate": str(source.get("name", source.get("candidate"))),
+        "candidate": str(
+            source.get("candidate")
+            if not current and source.get("candidate") is not None
+            else source.get("name", source.get("candidate"))
+        ),
         "parameters": source.get("parameters", pending["parameters"]),
         "scientific_commit": source.get("scientific_commit")
         or pending.get("scientific_commit"),
@@ -1362,6 +1366,69 @@ def _v4_lineage_record(
         else list(source.get("evaluation_artifacts", [])),
         "reason": reason,
     }
+
+
+def _v4_artifact_publications(
+    state: dict,
+    working_record: dict,
+    best_known_record: dict | None,
+    retained: list[dict],
+) -> list[dict]:
+    """Freeze complete durable-artifact work before closure mutation begins."""
+    campaign_id = repository.current_campaign_id(state)
+    records = [("working", working_record)]
+    if best_known_record is not None:
+        records.append(("best_known", best_known_record))
+    records.extend((f"retained:{item['id']}", item) for item in retained)
+    grouped: dict[str, list[tuple[str, dict, Path]]] = {}
+    for role, record in records:
+        source = repository.resolve_repo_path(record["artifact"])
+        fingerprint = str(record["fingerprint"])
+        repository.require_complete_inference_artifact(source, f"{role} lineage")
+        if repository.artifact_fingerprint(source) != fingerprint:
+            raise ValueError(f"{role} lineage fingerprint does not match its artifact")
+        grouped.setdefault(fingerprint, []).append((role, record, source))
+
+    publications: list[dict] = []
+    for fingerprint, aliases in grouped.items():
+        durable_alias = next(
+            (
+                alias
+                for alias in aliases
+                if repository.repo_relative_path(alias[2]).startswith(
+                    (
+                        "research/checkpoints/accepted/",
+                        "research/checkpoints/retained/",
+                    )
+                )
+            ),
+            None,
+        )
+        if durable_alias is not None:
+            destination = repository.repo_relative_path(durable_alias[2])
+            for _, record, _ in aliases:
+                record["artifact"] = destination
+            continue
+
+        _, source_record, source = aliases[0]
+        destination = repository.durable_artifact_destination(
+            campaign_id=campaign_id,
+            origin_experiment=int(source_record["origin_experiment"]),
+            candidate=str(source_record["candidate"]),
+            fingerprint=fingerprint,
+        )
+        publication = {
+            "source": repository.repo_relative_path(source),
+            "destination": repository.repo_relative_path(destination),
+            "fingerprint": fingerprint,
+            "resulting_records": {},
+        }
+        for role, record, _ in aliases:
+            record["artifact"] = publication["destination"]
+            publication["resulting_records"][role] = record
+        repository.validate_artifact_publication(publication)
+        publications.append(publication)
+    return publications
 
 
 def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]:
@@ -1552,7 +1619,9 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         code_plan["parent"] = parent
     best_decision, best_record, best_name = (
         decision.get("best_known"),
-        state.get("best_known_lineage"),
+        dict(state["best_known_lineage"])
+        if state.get("best_known_lineage") is not None
+        else None,
         None,
     )
     if best_decision is not None:
@@ -1626,7 +1695,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         best_record = _v4_lineage_record(
             best_source, pending, best_artifact, str(best_decision["reason"]).strip()
         )
-    retained = list(state.get("retained_lineages", []))
+    retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
     removal_ids = decision.get("remove_retained", [])
     if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):
         raise ValueError(
@@ -1677,22 +1746,30 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         raise TypeError("request_final_benchmark must be true or false")
     if request_final and best_record is None:
         raise ValueError("a final benchmark requires a designated best-known model")
+    retained_records = [
+        lineage for lineage in retained if lineage["id"] not in removal_ids
+    ] + new_retained
+    working_record = _v4_lineage_record(
+        working_source, pending, working_artifact, working_reason
+    )
+    publications = _v4_artifact_publications(
+        state,
+        working_record,
+        best_record,
+        retained_records,
+    )
     return {
         "pending": pending,
         "decision": decision,
         "working_name": working_name,
-        "working_record": _v4_lineage_record(
-            working_source, pending, working_artifact, working_reason
-        ),
+        "working_record": working_record,
         "best_known_record": best_record,
         "best_known_name": best_name,
         "code_action": code_action,
         "code_reason": code_reason,
         "code_plan": code_plan,
-        "retained": [
-            lineage for lineage in retained if lineage["id"] not in removal_ids
-        ]
-        + new_retained,
+        "retained": retained_records,
+        "artifact_publications": publications,
         "retentions": [],
         "removed_retained": removed,
         "request_final_benchmark": request_final,

@@ -67,9 +67,11 @@ human-only maintenance operation, never a Researcher experiment command.
 - `research/EXPERIMENTS.md` - generated human-readable history.
 - `research/brief.md` - generated current Researcher context.
 - `research/evaluations/` - durable detailed development measurements.
-- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - legacy
-  archive locations and reusable policy lineages. Version-4 campaign state names
-  the independent `working_lineage`, `best_known_lineage`, and retained IDs.
+- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - readable
+  legacy archive locations and durable reusable policy lineages. Version-4
+  campaign state names the independent `working_lineage`, `best_known_lineage`,
+  and retained IDs; selected challenger artifacts are published under the
+  campaign-scoped retained archive before cleanup.
 - `models/candidates/` - disposable training candidates.
 - `tests/benchmark/`, `tests/autoresearch/`, `tests/scenario/`,
   `tests/training/` - tests grouped by ownership domain.

@@ -263,6 +263,32 @@ def test_lineage_closure_separates_the_science_from_the_memory_commit(monkeypatc
     assert memory[2] == "select experiment 4 lineage: checkpoint-120832"
 
 
+def test_lineage_closure_retry_pushes_an_existing_local_commit(monkeypatch):
+    calls = record_git(monkeypatch, [])
+
+    commit_lineage_decision(4, "checkpoint-120832")
+
+    assert commits_of(calls) == []
+    assert calls[-1] == ("push", "origin", "HEAD")
+
+
+def test_lineage_science_push_failure_keeps_recovery_anchor(monkeypatch):
+    state = {
+        "pending_scientific_parent": "base",
+        "pending_closure_operation": {"progress": "durable"},
+    }
+    monkeypatch.setattr(
+        "research.runner_repository.commit_paths",
+        lambda message, scope: (_ for _ in ()).throw(RuntimeError("push failed")),
+    )
+
+    with pytest.raises(RuntimeError, match="push failed"):
+        commit_lineage_decision(4, "checkpoint-120832", state=state)
+
+    assert state["pending_scientific_parent"] == "base"
+    assert state["pending_closure_operation"]["progress"] == "durable"
+
+
 def test_evaluation_artifacts_are_evidence_and_never_restorable_science(monkeypatch):
     artifact = "research/evaluations/evaluation-experiment-4-champion.json"
     monkeypatch.setattr(

@@ -1,4 +1,5 @@
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -8,11 +9,19 @@ from research import runner_repository as repository
 from research.run_experiment import apply_previous_result_decision
 
 
+@pytest.fixture(autouse=True)
+def _redirect_research_dir(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+
+
 def _artifact(path: Path, marker: str) -> Path:
     path.mkdir(parents=True)
     path.joinpath("model.zip").write_bytes(marker.encode("ascii"))
     path.joinpath("artifact.json").write_text(
         json.dumps({"marker": marker}), encoding="utf-8"
+    )
+    path.joinpath("policy_runtime.pkl").write_bytes(
+        b"runtime:" + marker.encode("ascii")
     )
     return path
 
@@ -117,6 +126,44 @@ def test_v4_rejects_legacy_role_aliases(monkeypatch, tmp_path):
             raise AssertionError(f"legacy role {identifier!r} was accepted")
 
 
+def test_v4_reselecting_role_preserves_original_checkpoint_identity(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    working_lineage = _lineage(working, steps=100_352)
+    working_lineage["candidate"] = "checkpoint-100352"
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": working_lineage,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "working",
+                "reason": "Keep the current working model.",
+                "code": {"action": "keep", "reason": "Keep the recipe."},
+            }
+        },
+        state,
+    )
+
+    assert plan["working_record"]["candidate"] == "checkpoint-100352"
+    assert plan["working_record"]["training_steps"] == 100_352
+
+
 def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working", "working")
@@ -142,6 +189,7 @@ def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_pat
             "parent_training_steps": 120_000,
         },
     }
+    original_best_artifact = state["best_known_lineage"]["artifact"]
     plan = protocol.plan_previous_result_decision(
         {
             "previous_result_decision": {
@@ -154,9 +202,65 @@ def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_pat
         state,
     )
 
-    assert plan["working_record"]["artifact"] == candidate.name
+    assert plan["working_record"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
     assert plan["working_record"]["training_steps"] == 125_000
-    assert plan["best_known_record"]["artifact"] == best.name
+    assert plan["best_known_record"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
+    assert state["best_known_lineage"]["artifact"] == original_best_artifact
+
+
+def test_v4_planning_reuses_one_durable_artifact_for_matching_aliases(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    durable = _artifact(
+        tmp_path / "research" / "checkpoints" / "retained" / "existing",
+        "same",
+    )
+    candidate = _artifact(tmp_path / "candidate", "same")
+    best_known = _lineage(durable, steps=10_000)
+    best_known["artifact"] = repository.repo_relative_path(durable)
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": None,
+        "best_known_lineage": best_known,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint-5000",
+                    "artifact": repository.repo_relative_path(candidate),
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "checkpoint-5000",
+                "reason": "Use the identical candidate.",
+                "code": {"action": "keep", "reason": "Keep the recipe."},
+            }
+        },
+        state,
+    )
+
+    durable_path = repository.repo_relative_path(durable)
+    assert plan["working_record"]["artifact"] == durable_path
+    assert plan["best_known_record"]["artifact"] == durable_path
+    assert plan["artifact_publications"] == []
 
 
 def test_v4_best_known_requires_evidence_for_its_candidate(monkeypatch, tmp_path):
@@ -348,7 +452,9 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
 
     plan = protocol.plan_previous_result_decision(decision, state)
 
-    assert plan["best_known_record"]["artifact"] == candidate.name
+    assert plan["best_known_record"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
 
 
 def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_path):
@@ -458,9 +564,125 @@ def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):
 
     assert not apply_previous_result_decision(proposal, state)
 
-    assert state["working_lineage"]["artifact"] == candidate.name
+    assert state["working_lineage"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
     assert candidate.joinpath("model.zip").read_bytes() == b"candidate"
     assert candidate.joinpath("artifact.json").is_file()
+
+
+def test_v4_publication_copies_complete_artifact_and_reuses_matching_destination(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    source = tmp_path / "models" / "candidates" / "source"
+    source.mkdir(parents=True)
+    for filename, content in {
+        "model.zip": b"model",
+        "artifact.json": b"{}",
+        "policy_runtime.pkl": b"runtime",
+        "vecnormalize.pkl": b"normalization",
+        "replay_buffer.pkl": b"replay",
+    }.items():
+        (source / filename).write_bytes(content)
+    destination = tmp_path / "research" / "checkpoints" / "retained" / "lineage"
+    publication = {
+        "source": repository.repo_relative_path(source),
+        "destination": repository.repo_relative_path(destination),
+        "fingerprint": repository.artifact_fingerprint(source),
+    }
+
+    repository.validate_artifact_publication(publication)
+    repository.publish_artifact(publication)
+    for source_file in source.iterdir():
+        source_file.unlink()
+    source.rmdir()
+    repository.publish_artifact(publication)
+
+    assert repository.artifact_fingerprint(destination) == publication["fingerprint"]
+    assert (destination / "policy_runtime.pkl").read_bytes() == b"runtime"
+    assert (destination / "vecnormalize.pkl").read_bytes() == b"normalization"
+    assert (destination / "replay_buffer.pkl").read_bytes() == b"replay"
+
+
+def test_v4_publication_refuses_different_matching_destination(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    source = _artifact(tmp_path / "source", "source")
+    destination = _artifact(
+        tmp_path / "research" / "checkpoints" / "retained" / "lineage", "other"
+    )
+    publication = {
+        "source": repository.repo_relative_path(source),
+        "destination": repository.repo_relative_path(destination),
+        "fingerprint": repository.artifact_fingerprint(source),
+    }
+
+    with pytest.raises(ValueError, match="collides with a different artifact"):
+        repository.validate_artifact_publication(publication)
+
+
+def test_v4_publication_requires_saved_policy_runtime(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    source = tmp_path / "source"
+    source.mkdir()
+    source.joinpath("model.zip").write_bytes(b"model")
+    source.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    publication = {
+        "source": repository.repo_relative_path(source),
+        "destination": "research/checkpoints/retained/lineage",
+        "fingerprint": repository.artifact_fingerprint(source),
+    }
+
+    with pytest.raises(ValueError, match="policy_runtime.pkl"):
+        repository.validate_artifact_publication(publication)
+
+
+def test_v4_durable_artifact_path_is_compact_and_identity_derived(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    fingerprint = "a" * 64
+
+    first = repository.durable_artifact_destination(
+        campaign_id="campaign",
+        origin_experiment=123,
+        candidate="checkpoint-100352-" + "long-name-" * 20,
+        fingerprint=fingerprint,
+    )
+    second = repository.durable_artifact_destination(
+        campaign_id="campaign",
+        origin_experiment=123,
+        candidate="checkpoint-120832-" + "long-name-" * 20,
+        fingerprint=fingerprint,
+    )
+
+    assert first != second
+    assert first.name.startswith("e123-c")
+    assert first.name.endswith(f"-{fingerprint}")
+    assert len(first.name) == 79
+
+
+def test_v4_publication_failure_leaves_no_partial_destination(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    source = _artifact(tmp_path / "source", "source")
+    destination = tmp_path / "research" / "checkpoints" / "retained" / "lineage"
+    publication = {
+        "source": repository.repo_relative_path(source),
+        "destination": repository.repo_relative_path(destination),
+        "fingerprint": repository.artifact_fingerprint(source),
+    }
+    original_copy = repository.copy_artifact
+
+    def fail_after_staging(source_path, destination_path):
+        original_copy(source_path, destination_path)
+        raise OSError("injected publication failure")
+
+    monkeypatch.setattr(repository, "copy_artifact", fail_after_staging)
+    with pytest.raises(OSError, match="injected publication failure"):
+        repository.publish_artifact(publication)
+
+    assert not destination.exists()
+    assert not list(destination.parent.glob(".lineage-*.tmp"))
 
 
 def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
@@ -614,3 +836,271 @@ def test_v4_cleanup_completion_is_recorded_without_removed_retained(
     assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
     assert selected.joinpath("model.zip").is_file()
     assert not disposable.joinpath("model.zip").exists()
+
+
+def test_v4_cleanup_complete_resume_does_not_regress_progress(monkeypatch, tmp_path):
+    monkeypatch.setattr(repository, "write_state", lambda state: None)
+    state = {
+        "pending_closure_operation": {
+            "progress": "cleanup_complete",
+            "plan": {"pending": {}},
+        }
+    }
+
+    from research.run_experiment import apply_pending_v4_closure
+
+    assert not apply_pending_v4_closure(state)
+    assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
+
+
+def test_v4_cleanup_retries_after_partial_deletion(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(repository, "write_state", lambda state: None)
+    first = _artifact(tmp_path / "first", "first")
+    second = _artifact(tmp_path / "second", "second")
+    state = {
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_closure_operation": {
+            "progress": "durable",
+            "plan": {
+                "pending": {
+                    "candidates": [
+                        {"name": "first", "artifact": first.name},
+                        {"name": "second", "artifact": second.name},
+                    ]
+                },
+                "removed_retained": [],
+            },
+        },
+    }
+    original_remove = repository.remove_heavyweight_artifacts
+    interrupted = False
+
+    def interrupt_second(artifact):
+        nonlocal interrupted
+        if artifact == second and not interrupted:
+            interrupted = True
+            raise OSError("injected cleanup failure")
+        original_remove(artifact)
+
+    monkeypatch.setattr(repository, "remove_heavyweight_artifacts", interrupt_second)
+
+    from research.run_experiment import finalize_pending_v4_closure
+
+    with pytest.raises(OSError, match="cleanup failure"):
+        finalize_pending_v4_closure(state)
+
+    assert not first.joinpath("model.zip").exists()
+    assert second.joinpath("model.zip").exists()
+    assert state["pending_closure_operation"]["progress"] == "durable"
+
+    monkeypatch.setattr(repository, "remove_heavyweight_artifacts", original_remove)
+    finalize_pending_v4_closure(state)
+    assert not second.joinpath("model.zip").exists()
+    assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
+
+
+def test_v4_clearance_push_failure_restores_recoverable_operation(
+    monkeypatch, tmp_path
+):
+    operation = {
+        "experiment": 4,
+        "progress": "cleanup_complete",
+        "plan": {"pending": {"candidates": []}, "removed_retained": []},
+    }
+    state = {"pending_closure_operation": operation}
+    writes = []
+    calls = 0
+
+    def commit_memory(message):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise RuntimeError("injected push failure")
+        return True
+
+    monkeypatch.setattr(repository, "commit_runner_memory", commit_memory)
+    monkeypatch.setattr(
+        repository, "write_state", lambda value: writes.append(value.copy())
+    )
+
+    from research.run_experiment import publish_v4_closure_completion
+
+    with pytest.raises(RuntimeError, match="injected push failure"):
+        publish_v4_closure_completion(state)
+
+    assert state["pending_closure_operation"] is operation
+    assert writes[-1]["pending_closure_operation"] is operation
+
+
+def test_v4_clearance_interrupt_restores_recoverable_operation(monkeypatch):
+    operation = {
+        "experiment": 4,
+        "progress": "cleanup_complete",
+        "plan": {"pending": {"candidates": []}, "removed_retained": []},
+    }
+    state = {"pending_closure_operation": operation}
+    writes = []
+    interrupted = False
+
+    def write_state(value):
+        nonlocal interrupted
+        writes.append(value.copy())
+        if value["pending_closure_operation"] is None and not interrupted:
+            interrupted = True
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda message: True)
+    monkeypatch.setattr(repository, "write_state", write_state)
+
+    from research.run_experiment import publish_v4_closure_completion
+
+    with pytest.raises(KeyboardInterrupt):
+        publish_v4_closure_completion(state)
+
+    assert state["pending_closure_operation"] is operation
+    assert writes[-1]["pending_closure_operation"] is operation
+
+
+def test_published_v4_roles_survive_clean_clone(monkeypatch, tmp_path):
+    repository_root = tmp_path / "repository"
+    repository_root.mkdir()
+    monkeypatch.setattr("research.runner_paths.ROOT", repository_root)
+    monkeypatch.setattr(
+        "research.runner_paths.RESEARCH_DIR", repository_root / "research"
+    )
+    state_path = repository_root / "research" / "research_state.json"
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    working = _artifact(
+        repository_root / "research" / "checkpoints" / "challengers" / "working",
+        "working",
+    )
+    best = _artifact(
+        repository_root / "research" / "checkpoints" / "challengers" / "best",
+        "best",
+    )
+    alternative = _artifact(
+        repository_root / "research" / "checkpoints" / "challengers" / "alternative",
+        "alternative",
+    )
+    best_known = _lineage(best, steps=80_000)
+    best_known["artifact"] = repository.repo_relative_path(best)
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": None,
+        "best_known_lineage": best_known,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 3,
+            "candidates": [
+                {
+                    "name": "checkpoint-100352",
+                    "artifact": repository.repo_relative_path(working),
+                    "timesteps": 100_352,
+                    "evaluations": [],
+                },
+                {
+                    "name": "checkpoint-40960",
+                    "artifact": repository.repo_relative_path(alternative),
+                    "timesteps": 40_960,
+                    "evaluations": [],
+                },
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    repository.write_state(state)
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 3,
+            "continue_from": "checkpoint-100352",
+            "reason": "Continue the working model.",
+            "code": {"action": "keep", "reason": "Keep the recipe."},
+            "retain": [
+                {
+                    "candidate": "checkpoint-40960",
+                    "id": "alternative",
+                    "reason": "Preserve a distinct alternative.",
+                }
+            ],
+        }
+    }
+
+    assert not apply_previous_result_decision(proposal, state)
+    published = repository.read_state()
+    assert published["working_lineage"]["candidate"] == "checkpoint-100352"
+    assert published["best_known_lineage"]["candidate"] == best.name
+    assert published["retained_lineages"][0]["id"] == "alternative"
+
+    subprocess.run(
+        ["git", "init"], cwd=repository_root, check=True, capture_output=True
+    )
+    subprocess.run(
+        ["git", "config", "core.longpaths", "true"],
+        cwd=repository_root,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.invalid"],
+        cwd=repository_root,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Test Runner"],
+        cwd=repository_root,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "add", "research/checkpoints/retained", "research/research_state.json"],
+        cwd=repository_root,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-m", "publish lineage"],
+        cwd=repository_root,
+        check=True,
+        capture_output=True,
+    )
+    remote = tmp_path / "remote.git"
+    subprocess.run(
+        ["git", "init", "--bare", str(remote)],
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "remote", "add", "origin", str(remote)],
+        cwd=repository_root,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "push", "-u", "origin", "HEAD"],
+        cwd=repository_root,
+        check=True,
+        capture_output=True,
+    )
+    clone = tmp_path / "clone"
+    subprocess.run(
+        ["git", "-c", "core.longpaths=true", "clone", str(remote), str(clone)],
+        check=True,
+        capture_output=True,
+    )
+    cloned_state = json.loads(
+        clone.joinpath("research/research_state.json").read_text(encoding="utf-8")
+    )
+    cloned_records = [
+        cloned_state["working_lineage"],
+        cloned_state["best_known_lineage"],
+        *cloned_state["retained_lineages"],
+    ]
+    assert len({record["fingerprint"] for record in cloned_records}) == 3
+    for record in cloned_records:
+        cloned_artifact = clone / record["artifact"]
+        repository.require_complete_inference_artifact(
+            cloned_artifact, "cloned lineage"
+        )
+        assert repository.artifact_fingerprint(cloned_artifact) == record["fingerprint"]

@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from research import run_experiment
 from research import runner_repository as repository
 
@@ -9,6 +11,7 @@ def _artifact(path: Path) -> None:
     path.mkdir(parents=True)
     path.joinpath("model.zip").write_bytes(b"model")
     path.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    path.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
 
 
 def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, Path]:
@@ -18,6 +21,7 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, Path]:
     request_path = research / "evaluation_request.json"
     proposal_path = research / "proposal.json"
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", research)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr(
         "research.runner_paths.RESULTS_PATH", research / "results.jsonl"
@@ -241,6 +245,124 @@ def test_v4_closure_resume_clears_reloaded_pending_analysis(monkeypatch, tmp_pat
     persisted = repository.read_state()
     assert persisted["pending_analysis"] is None
     assert repository.result_records()[0]["status"] == "closed"
+
+
+def test_v4_closure_retries_after_copy_progress_write_failure(monkeypatch, tmp_path):
+    _configure(monkeypatch, tmp_path)
+    (tmp_path / "research" / "postmortems.md").write_text(
+        "## campaign / Experiment 1\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        encoding="utf-8",
+    )
+    state = repository.read_state()
+    plan = run_experiment.protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "checkpoint",
+                "reason": "Preserve the trained candidate.",
+                "code": {"action": "keep", "reason": "No recipe change."},
+            }
+        },
+        state,
+    )
+    state["pending_closure_operation"] = {
+        "experiment": 1,
+        "selected": plan["working_name"],
+        "code_action": plan["code_action"],
+        "plan": run_experiment._serialize_closure_plan(
+            plan, pending_field="pending_analysis"
+        ),
+        "progress": "planned",
+    }
+    repository.write_state(state)
+    destination = repository.resolve_repo_path(
+        plan["artifact_publications"][0]["destination"]
+    )
+    original_write = repository.write_state
+    failed = False
+
+    def fail_after_copy(value):
+        nonlocal failed
+        if value["pending_closure_operation"]["progress"] == "copied" and not failed:
+            failed = True
+            raise OSError("injected copied-progress failure")
+        original_write(value)
+
+    monkeypatch.setattr(repository, "write_state", fail_after_copy)
+    with pytest.raises(OSError, match="copied-progress"):
+        run_experiment.apply_pending_v4_closure(state)
+
+    assert destination.is_dir()
+    assert repository.read_state()["pending_closure_operation"]["progress"] == "planned"
+
+    monkeypatch.setattr(repository, "write_state", original_write)
+    reloaded = repository.read_state()
+    assert not run_experiment.apply_pending_v4_closure(reloaded)
+    assert repository.read_state()["pending_closure_operation"]["progress"] == "durable"
+
+
+def test_v4_closure_retries_role_result_write_without_duplicate_history(
+    monkeypatch, tmp_path
+):
+    _configure(monkeypatch, tmp_path)
+    (tmp_path / "research" / "postmortems.md").write_text(
+        "## campaign / Experiment 1\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        encoding="utf-8",
+    )
+    state = repository.read_state()
+    plan = run_experiment.protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "checkpoint",
+                "reason": "Preserve the trained candidate.",
+                "code": {"action": "keep", "reason": "No recipe change."},
+            }
+        },
+        state,
+    )
+    state["pending_closure_operation"] = {
+        "experiment": 1,
+        "selected": plan["working_name"],
+        "code_action": plan["code_action"],
+        "plan": run_experiment._serialize_closure_plan(
+            plan, pending_field="pending_analysis"
+        ),
+        "progress": "planned",
+    }
+    repository.write_state(state)
+    original_write = repository.write_state
+    failed = False
+
+    def fail_after_result(value):
+        nonlocal failed
+        if (
+            value["pending_closure_operation"]["progress"] == "role_result_written"
+            and not failed
+        ):
+            failed = True
+            raise OSError("injected role-result failure")
+        original_write(value)
+
+    monkeypatch.setattr(repository, "write_state", fail_after_result)
+    with pytest.raises(OSError, match="role-result"):
+        run_experiment.apply_pending_v4_closure(state)
+
+    assert (
+        repository.read_state()["pending_closure_operation"]["progress"]
+        == "code_applied"
+    )
+    assert len(repository.result_records()) == 1
+
+    monkeypatch.setattr(repository, "write_state", original_write)
+    reloaded = repository.read_state()
+    assert not run_experiment.apply_pending_v4_closure(reloaded)
+    assert len(repository.result_records()) == 1
+    persisted = repository.read_state()
+    assert persisted["working_lineage"]["candidate"] == "checkpoint"
+    assert persisted["pending_closure_operation"]["progress"] == "durable"
 
 
 def test_v4_resumed_measurement_rejects_changed_model_identity(monkeypatch, tmp_path):
