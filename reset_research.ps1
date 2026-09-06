@@ -131,28 +131,71 @@ function Add-BaselineCompatibilityFields($State, [string]$SourceCommit) {
     if ($State.schema_version -eq 3) {
         $artifact = [string]$State.accepted_artifact
         $evaluations = @($State.accepted_evaluations)
+        $selectedCandidate = [string]$State.last_lineage_decision.continue_from
+        if (-not $selectedCandidate) { $selectedCandidate = "legacy-accepted" }
+        $lineageReason = [string]$State.last_lineage_decision.reason
+        if (-not $lineageReason) { $lineageReason = "Migrated legacy measured baseline." }
         $lineage = [ordered]@{
             artifact = $artifact
             fingerprint = Get-ArtifactFingerprint $artifact
             origin_experiment = 1
-            candidate = "legacy-accepted"
+            candidate = $selectedCandidate
             parameters = if ($State.accepted_parameters) { $State.accepted_parameters } else { [ordered]@{} }
             scientific_commit = $SourceCommit
             training_steps = [int]$State.accepted_training_steps
             evaluation_artifacts = $evaluations
-            reason = "Migrated legacy measured baseline."
+            reason = $lineageReason
         }
         foreach ($name in @("accepted_artifact", "accepted_metrics", "accepted_parameters", "accepted_training_steps", "accepted_evaluations")) {
             $State.PSObject.Properties.Remove($name)
         }
         $State.schema_version = 4
-        $State | Add-Member -NotePropertyName working_lineage -NotePropertyValue $lineage
-        $State | Add-Member -NotePropertyName best_known_lineage -NotePropertyValue $lineage
-        $State | Add-Member -NotePropertyName pending_analysis -NotePropertyValue $null
-        $State | Add-Member -NotePropertyName pending_evaluation_request -NotePropertyValue $null
-        $State | Add-Member -NotePropertyName pending_researcher_decision -NotePropertyValue $null
+        $State | Add-Member -NotePropertyName working_lineage -NotePropertyValue $lineage -Force
+        $State | Add-Member -NotePropertyName best_known_lineage -NotePropertyValue $lineage -Force
+        $State | Add-Member -NotePropertyName pending_analysis -NotePropertyValue $null -Force
+        $State | Add-Member -NotePropertyName pending_evaluation_request -NotePropertyValue $null -Force
+        $State | Add-Member -NotePropertyName pending_researcher_decision -NotePropertyValue $null -Force
     }
     return $State
+}
+
+function Set-BaselineResultClosure($Record, $State) {
+    $Record | Add-Member -NotePropertyName schema_version -NotePropertyValue 4 -Force
+    $Record | Add-Member -NotePropertyName status -NotePropertyValue "closed" -Force
+    $Record | Add-Member -NotePropertyName verdict -NotePropertyValue ([string]$State.last_verdict) -Force
+    $Record | Add-Member -NotePropertyName decision_pending -NotePropertyValue $false -Force
+    $Record | Add-Member -NotePropertyName closure_decision -NotePropertyValue $State.last_lineage_decision -Force
+    $Record | Add-Member -NotePropertyName postmortem -NotePropertyValue "research/postmortems.md" -Force
+    $Record | Add-Member -NotePropertyName working_lineage -NotePropertyValue $State.working_lineage -Force
+    $Record | Add-Member -NotePropertyName best_known_lineage -NotePropertyValue $State.best_known_lineage -Force
+    return $Record
+}
+
+function Convert-ExperimentLogCell($Value) {
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string]$Value)) { return "-" }
+    return (([string]$Value -replace '\|', '/' -replace '\s+', ' ').Trim())
+}
+
+function Write-ExperimentLog($Records) {
+    $lines = @(
+        "# Experiment log",
+        "",
+        "| # | Date | Operation | Hypothesis | Candidate success | Seeds passed | Verdict |",
+        "|---:|---|---|---|---:|---:|---|"
+    )
+    foreach ($record in $Records) {
+        $operation = if ($record.kind -eq "continuation") {
+            "Continue training the unchanged method"
+        }
+        elseif ($record.kind -eq "replication") {
+            "Replicate the current method from fresh initialization"
+        }
+        else {
+            Convert-ExperimentLogCell $record.change
+        }
+        $lines += "| $(Convert-ExperimentLogCell $record.index) | $(Convert-ExperimentLogCell $record.recorded_at) | $operation | $(Convert-ExperimentLogCell $record.hypothesis) | $(Convert-ExperimentLogCell $record.candidate_success_percent) | $(Convert-ExperimentLogCell $record.candidate_seeds_passed) | $(Convert-ExperimentLogCell $record.verdict) |"
+    }
+    $lines | Set-Content -LiteralPath "research\EXPERIMENTS.md"
 }
 
 if ($Mode -eq "Baseline") {
@@ -175,14 +218,21 @@ if ($Mode -eq "Baseline") {
     }
     if ($state.last_experiment -ne 1 -or $state.last_allocated_experiment -ne 1 -or
         $null -eq $state.accepted_metrics -or $state.accepted_artifact -ne "research/checkpoints/accepted" -or
-        $state.pending_evaluation_request -or $state.pending_researcher_decision -or
+        $state.pending_analysis -or $state.pending_evaluation_request -or
+        $state.pending_researcher_decision -or $state.pending_closure_operation -or
         $state.pending_scientific_parent -or $state.pending_final_benchmark -or
-        $state.official_metrics -or @($state.retained_lineages).Count -gt 0) {
+        $state.terminal_campaign_status -or $state.official_metrics -or
+        $state.last_lineage_decision.experiment -ne 1 -or
+        -not $state.last_lineage_decision.continue_from -or
+        @($state.retained_lineages).Count -gt 0) {
         throw "BaselineRef must be a closed, measured baseline before experiment 2, without pending operations or retained alternatives."
     }
     $campaignId = [string]$state.campaign.id
     $parsedId = [guid]::Empty
     if (-not [guid]::TryParse($campaignId, [ref]$parsedId)) { throw "Baseline has no valid campaign UUID." }
+    if (-not $state.campaign.started_at -or -not $state.campaign.base_commit) {
+        throw "Baseline has incomplete campaign provenance."
+    }
     if ($state.campaign_experiment_counters -and $state.campaign_experiment_counters.$campaignId -gt 1) {
         throw "Baseline contains later experiment allocations."
     }
@@ -209,10 +259,29 @@ if ($Mode -eq "Baseline") {
     }
     Read-BaselineJson "research/current_params.json" | Out-Null
     $records = @(Invoke-ResetGit @("show", "${baselineCommit}:research/results.jsonl") |
-        Where-Object { $_.Trim() } | ForEach-Object { $_ | ConvertFrom-Json } |
-        Where-Object { $_.campaign_id -eq $campaignId })
-    if ($records.Count -eq 0 -or @($records | Where-Object { $_.index -ne 1 }).Count -gt 0) {
-        throw "Baseline history must contain only experiment 1 in its active campaign."
+        Where-Object { $_.Trim() } | ForEach-Object { $_ | ConvertFrom-Json })
+    if ($records.Count -ne 1 -or $records[0].campaign_id -ne $campaignId -or $records[0].index -ne 1) {
+        throw "Baseline history must contain exactly experiment 1 for its active campaign."
+    }
+    $selectedCandidate = [string]$state.last_lineage_decision.continue_from
+    if (@($records[0].candidates | Where-Object { $_.name -eq $selectedCandidate }).Count -ne 1) {
+        throw "Baseline history does not contain the selected candidate $selectedCandidate."
+    }
+    $recordJson = $records[0] | ConvertTo-Json -Depth 100 -Compress
+    foreach ($path in $state.accepted_evaluations) {
+        if (-not $recordJson.Contains([string]$path)) {
+            throw "Baseline history does not cite accepted evidence $path."
+        }
+    }
+    $postmortem = (Invoke-ResetGit @("show", "${baselineCommit}:research/postmortems.md")) -join "`n"
+    $campaignPattern = [regex]::Escape($campaignId)
+    if ($postmortem -notmatch "(?m)^##\s+$campaignPattern\s+/\s+Experiment\s+1\s*$") {
+        throw "Baseline postmortem does not contain its campaign's experiment 1 analysis."
+    }
+    foreach ($path in $state.accepted_evaluations) {
+        if (-not $postmortem.Contains([string]$path)) {
+            throw "Baseline postmortem does not cite accepted evidence $path."
+        }
     }
 
     # Scientific files and their tests travel together. Never restore the entire
@@ -236,7 +305,7 @@ if ($Mode -eq "Baseline") {
         throw "The human-defined task differs from this baseline. Use a baseline prepared for the current task."
     }
     $evidencePaths = @($baselineFiles | Where-Object { $_.StartsWith("research/evaluations/$campaignId/") })
-    $statePaths = @("research/research_state.json", "research/results.jsonl", "research/EXPERIMENTS.md",
+    $statePaths = @("research/research_state.json", "research/results.jsonl",
         "research/postmortems.md", "research/archive.md", "research/checkpoints")
     $restorePaths += @($statePaths | Where-Object {
         $prefix = $_
@@ -339,6 +408,9 @@ else {
     $restoredState.working_lineage.scientific_commit = $baselineCommit
     $restoredState.best_known_lineage.scientific_commit = $baselineCommit
     $restoredState | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath "research\research_state.json"
+    $restoredRecord = Set-BaselineResultClosure $records[0] $restoredState
+    $restoredRecord | ConvertTo-Json -Depth 100 -Compress | Set-Content -LiteralPath "research\results.jsonl"
+    Write-ExperimentLog @($restoredRecord)
     if ($logBackup) {
         $targetLogs = Get-ResetPath $logRelative
         New-Item -ItemType Directory -Path $targetLogs -Force | Out-Null

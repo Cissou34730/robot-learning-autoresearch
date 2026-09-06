@@ -93,11 +93,24 @@ def reset_template(tmp_path_factory):
         "schema_version": 3,
         "last_experiment": 1,
         "last_allocated_experiment": 1,
-        "campaign": {"id": CAMPAIGN},
+        "campaign": {
+            "id": CAMPAIGN,
+            "started_at": "2026-01-01T00:00:00Z",
+            "base_commit": "baseline-parent",
+        },
         "accepted_artifact": "research/checkpoints/accepted",
         "accepted_metrics": {"success_percent": 66},
         "accepted_evaluations": [EVALUATION],
         "retained_lineages": [],
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
+        "last_lineage_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint-100",
+            "reason": "Strongest measured baseline.",
+            "code": {"action": "keep", "reason": "No scientific change."},
+        },
+        "last_verdict": "researcher selected checkpoint-100",
     }
     write(root, "research/research_state.json", json.dumps(state))
     write(root, "research/checkpoints/accepted/artifact.json", '{"completed": true}')
@@ -105,7 +118,32 @@ def reset_template(tmp_path_factory):
     write(
         root,
         "research/results.jsonl",
-        json.dumps({"campaign_id": CAMPAIGN, "index": 1}) + "\n",
+        json.dumps(
+            {
+                "schema_version": 3,
+                "campaign_id": CAMPAIGN,
+                "index": 1,
+                "kind": "training",
+                "change": "Fresh baseline",
+                "hypothesis": "Measure the baseline.",
+                "candidate_success_percent": 66,
+                "candidates": [
+                    {
+                        "name": "checkpoint-100",
+                        "evaluations": [{"evaluation_artifact": EVALUATION}],
+                    }
+                ],
+                "status": "measured",
+                "verdict": "measured; awaiting researcher analysis",
+            }
+        )
+        + "\n",
+    )
+    write(
+        root,
+        "research/postmortems.md",
+        f"# Research postmortems\n\n## {CAMPAIGN} / Experiment 1\n\n"
+        f"**Evidence inspected:** `{EVALUATION}`\n",
     )
     for name in (
         "robot_learning/scenario/reward.py",
@@ -115,7 +153,6 @@ def reset_template(tmp_path_factory):
         "tests/scenario/test_reward.py",
         "tests/training/test_policy.py",
         "research/scenario.md",
-        "research/postmortems.md",
         "research/EXPERIMENTS.md",
         "research/checkpoints/accepted/model.zip",
         "research/checkpoints/accepted/vecnormalize.pkl",
@@ -260,12 +297,25 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
     assert state["campaign"]["id"] == CAMPAIGN
     assert state["schema_version"] == 4
     assert state["working_lineage"]["artifact"] == "research/checkpoints/accepted"
+    assert state["working_lineage"]["candidate"] == "checkpoint-100"
     expected_fingerprint = hashlib.sha256(
         b"baseline\n" + b'{"completed": true}' + b"baseline\n" * 2
     ).hexdigest()
     assert state["working_lineage"]["fingerprint"] == expected_fingerprint
     assert state["best_known_lineage"]["fingerprint"] == expected_fingerprint
     assert state["working_lineage"]["scientific_commit"] == baseline
+    record = json.loads((root / "research/results.jsonl").read_text())
+    assert record["schema_version"] == 4
+    assert record["status"] == "closed"
+    assert record["decision_pending"] is False
+    assert record["closure_decision"] == state["last_lineage_decision"]
+    assert record["postmortem"] == "research/postmortems.md"
+    experiment_log = (root / "research/EXPERIMENTS.md").read_text()
+    assert "researcher selected checkpoint-100" in experiment_log
+    assert "awaiting researcher analysis" not in experiment_log
+    assert f"## {CAMPAIGN} / Experiment 1" in (
+        root / "research/postmortems.md"
+    ).read_text()
     assert git(root, "ls-files", "--", LOG) == LOG
     assert (root / LOG).read_text() == "baseline raw training log\n"
     # Replay from the new commit needs no external source for ignored logs.
@@ -340,6 +390,12 @@ def test_baseline_accepts_measured_v4_roles(baseline_repository):
         pending_analysis=None,
         pending_evaluation_request=None,
         pending_researcher_decision=None,
+        last_lineage_decision={
+            "experiment": 1,
+            "continue_from": "baseline",
+            "reason": "Measured baseline.",
+            "code": {"action": "keep", "reason": "No scientific change."},
+        },
     )
     write(root, "research/research_state.json", json.dumps(state))
     git(root, "add", "research/research_state.json")
@@ -368,6 +424,9 @@ def test_baseline_accepts_measured_v4_roles(baseline_repository):
         "missing_logs",
         "missing_runtime",
         "missing_evidence",
+        "mismatched_history",
+        "mismatched_result_evidence",
+        "mismatched_postmortem",
         "changed_task",
     ],
 )
@@ -396,6 +455,33 @@ def test_refuses_before_mutation(baseline_repository, problem):
         )
         git(root, "rm", "--", missing)
         git(root, "commit", "-m", "incomplete fixture")
+        args[3] = git(root, "rev-parse", "HEAD")
+        git(root, "checkout", "development")
+    elif problem in {
+        "mismatched_history",
+        "mismatched_result_evidence",
+        "mismatched_postmortem",
+    }:
+        git(root, "checkout", "--detach", baseline)
+        if problem == "mismatched_history":
+            write(
+                root,
+                "research/results.jsonl",
+                json.dumps({"campaign_id": "another-campaign", "index": 1}) + "\n",
+            )
+        elif problem == "mismatched_result_evidence":
+            record = json.loads((root / "research/results.jsonl").read_text())
+            record["candidates"][0]["evaluations"] = []
+            write(root, "research/results.jsonl", json.dumps(record) + "\n")
+        else:
+            write(
+                root,
+                "research/postmortems.md",
+                f"## {CAMPAIGN} / Experiment 1\n\n"
+                "**Evidence inspected:** research/evaluations/unrelated.json\n",
+            )
+        git(root, "add", "research")
+        git(root, "commit", "-m", "incompatible scientific record")
         args[3] = git(root, "rev-parse", "HEAD")
         git(root, "checkout", "development")
     elif problem == "changed_task":
