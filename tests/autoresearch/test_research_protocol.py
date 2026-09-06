@@ -2226,6 +2226,55 @@ def test_unchanged_operation_history_uses_neutral_text():
     assert compact_result_record({"replication_of": "12"})["replication_of"] == 12
 
 
+def test_v4_history_keeps_distinct_checkpoint_panels_and_closure_decisions():
+    row = experiment_log_row(
+        {
+            "schema_version": 4,
+            "index": 3,
+            "kind": "continuation",
+            "training_parent": "working",
+            "candidates": [
+                {
+                    "name": "checkpoint-20",
+                    "evaluations": [
+                        {
+                            "instrument": "research_evaluation",
+                            "panel": "development-v1",
+                            "seed": 4,
+                            "episodes": 20,
+                            "success_percent": 65.0,
+                        }
+                    ],
+                },
+                {"name": "checkpoint-40", "evaluations": []},
+            ],
+            "task_reference_evaluations": [
+                {
+                    "candidate": "checkpoint-20",
+                    "instrument": "task_reference",
+                    "panel": "reference-v1",
+                    "episodes": 10,
+                    "success_percent": 70.0,
+                }
+            ],
+            "hypothesis_assessment": "The prediction is partly supported.",
+            "closure_decision": {
+                "continue_from": "checkpoint-20",
+                "best_known": {"candidate": "checkpoint-20"},
+                "code": {"action": "keep"},
+            },
+            "verdict": "stale awaiting analysis",
+        }
+    )
+
+    assert "checkpoint-20: research_evaluation/development-v1" in row
+    assert "checkpoint-20: task_reference/reference-v1" in row
+    assert "checkpoint-40: unmeasured" in row
+    assert "working checkpoint-20; best known checkpoint-20; code keep" in row
+    assert "The prediction is partly supported." in row
+    assert "stale awaiting analysis" not in row
+
+
 def test_training_proposal_has_no_postmortem_or_lineage_payload(scientific_reasoning):
     proposal = {
         "kind": "training",
@@ -2314,6 +2363,8 @@ def _attest(
         f"{heading}\n\n"
         "**Result:** measured.\n\n"
         "**Observed behavior:** recorded.\n\n"
+        "**Hypothesis assessment:** The prediction is partly supported, with "
+        "limited evidence from this panel.\n\n"
         "**Interpretation:** the candidate is the useful parent.\n\n"
         f"**{label}:** " + ", ".join(f"`{path}`" for path in paths) + "\n",
         encoding="utf-8",

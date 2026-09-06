@@ -60,6 +60,7 @@ def _postmortem_memory(
     labels = [
         ("Result", ("Result",)),
         ("Observed behavior", ("Observed behavior",)),
+        ("Hypothesis assessment", ("Hypothesis assessment",)),
         (
             "Interpretation",
             (
@@ -191,6 +192,13 @@ def _artifact_reference_list(value: str) -> str:
         if token.strip("`\"',;()[] ")
     ]
     return ", ".join(_existing_artifact_reference(path) for path in references)
+
+
+def _postmortem_reference(value: str | None) -> str:
+    if _existing_artifact_reference(value, kind="file") == "unavailable":
+        return "unavailable"
+    normalized = str(value).replace("\\", "/")
+    return f"[postmortem]({normalized})"
 
 
 def _experiment_outcome(result: dict) -> str:
@@ -401,6 +409,7 @@ def _render_v4_research_brief(
             f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",
             f"- Parent: {latest.get('training_parent', '-')}",
             f"- Intervention: {_change_details(latest)}",
+            f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
             f"- Final action: {(latest.get('closure_decision') or {}).get('continue_from', 'unmeasured')}",
         ])
     else:
@@ -408,13 +417,11 @@ def _render_v4_research_brief(
 
     lines.extend(["", "## Working lineage", ""])
     lines.extend(_v4_lineage_lines("Working", state.get("working_lineage")))
-    lines.extend(["", "## Available development evidence", ""])
-    lines.extend(_v4_evidence_lines(pending, results))
     strategy = scientific_strategy_section(postmortems, campaign_id)
     lines.extend(["", "## Current scientific direction", "", "Researcher-authored interpretation:", ""])
     lines.append("\n".join(strategy.splitlines()[1:]).strip() if strategy else "No scientific strategy recorded for this campaign yet.")
 
-    lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Final action | Detail |", "|---:|---|---|---|---|---|---|"])
+    lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |", "|---:|---|---|---|---|---|---|---|"])
     for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
         candidates = result.get("candidates") or []
         checkpoints = "; ".join(
@@ -425,11 +432,18 @@ def _render_v4_research_brief(
         lines.append(
             f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
             f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
-            f"{_compact(checkpoints, 140).replace('|', '/')} | {closure.get('continue_from', 'unmeasured')} | "
-            f"{_existing_artifact_reference(result.get('postmortem'), kind='file')} |"
+            f"{_compact(checkpoints, 140).replace('|', '/')} | "
+            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
+            f"working {closure.get('continue_from', 'unmeasured')}; "
+            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
+            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
+            f"{_postmortem_reference(result.get('postmortem'))} |"
         )
     if not results:
-        lines.append("| - | - | - | - | - | - | - |")
+        lines.append("| - | - | - | - | - | - | - | - |")
+
+    lines.extend(["", "## Available development evidence", ""])
+    lines.extend(_v4_evidence_lines(pending, results))
 
     lines.extend(["", "## Repeated operations", ""])
     groups = _replication_groups(results)

@@ -846,6 +846,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "removed_retained": plan["removed_retained"],
         "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
+        "hypothesis_assessment": plan.get("hypothesis_assessment"),
     }
 
 
@@ -925,6 +926,8 @@ def apply_pending_v4_closure(state: dict) -> bool:
                 "best_known_lineage": plan["best_known_record"],
             }
         )
+        if plan.get("hypothesis_assessment") is not None:
+            result["hypothesis_assessment"] = plan["hypothesis_assessment"]
         repository.upsert_result(result)
         state["pending_analysis"] = None
     else:

@@ -115,6 +115,7 @@ GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
+HYPOTHESIS_ASSESSMENT_LABEL = "Hypothesis assessment"
 # The researcher names the model; the panel behind this key is human-owned.
 RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "instrument",
@@ -1067,13 +1068,28 @@ def attested_evidence_paths(section: str) -> list[str]:
     return list(dict.fromkeys(listed_paths))
 
 
+def postmortem_field(section: str, label: str) -> str | None:
+    """Return one Researcher-authored labeled field without interpreting it."""
+    match = re.search(
+        rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)"
+        r"(?=^\*\*[^\r\n]+:\*\*|\Z)",
+        section,
+        flags=re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    value = match.group(1).strip()
+    return value or None
+
+
 def validate_postmortem_evidence(
     experiment: int,
     measured: list[str],
     *,
     campaign_id: str | None = None,
     pending: dict | None = None,
-) -> None:
+    require_hypothesis_assessment: bool = False,
+) -> str | None:
     """Require the decision to name existing evidence of this experiment.
 
     This shows only that the researcher session identified real artifacts of the
@@ -1087,6 +1103,12 @@ def validate_postmortem_evidence(
             else f"Experiment {experiment}"
         )
         raise ValueError(f"postmortems.md has no entry for {identity}")
+    assessment = postmortem_field(section, HYPOTHESIS_ASSESSMENT_LABEL)
+    if require_hypothesis_assessment and assessment is None:
+        raise ValueError(
+            f"the experiment {experiment} postmortem needs a non-empty "
+            f"'{HYPOTHESIS_ASSESSMENT_LABEL}:' field"
+        )
     attested = attested_evidence_paths(section)
     if not attested:
         raise ValueError(
@@ -1130,6 +1152,7 @@ def validate_postmortem_evidence(
     )
     if missing:
         raise ValueError(f"attested evaluation artifacts do not exist: {missing}")
+    return assessment
 
 
 # --- lineage decisions -----------------------------------------------------
@@ -1939,12 +1962,14 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         pending["experiment"]
     ):
         raise ValueError("previous_result_decision references the wrong experiment")
+    hypothesis_assessment = None
     if state.get("pending_analysis") is not None:
-        validate_postmortem_evidence(
+        hypothesis_assessment = validate_postmortem_evidence(
             int(pending["experiment"]),
             pending_evaluation_artifacts(pending),
             campaign_id=repository.current_campaign_id(state),
             pending=pending,
+            require_hypothesis_assessment=not bool(pending.get("baseline")),
         )
     allowed = {
         "experiment",
@@ -2210,4 +2235,5 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": [],
         "removed_retained": removed,
         "request_final_benchmark": request_final,
+        "hypothesis_assessment": hypothesis_assessment,
     }

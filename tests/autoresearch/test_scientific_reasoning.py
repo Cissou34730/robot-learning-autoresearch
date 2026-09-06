@@ -172,6 +172,75 @@ def test_memory_is_separate_from_experiment_attestations(
     assert protocol.postmortem_section(7, "current") == section
 
 
+def test_non_baseline_postmortem_requires_hypothesis_assessment(
+    monkeypatch, tmp_path
+):
+    evidence = tmp_path / "evidence.json"
+    evidence.write_text("{}", encoding="utf-8")
+    postmortem = tmp_path / "postmortems.md"
+    postmortem.write_text(
+        "## current / Experiment 7\n\n"
+        "**Result:** Measured progress.\n\n"
+        "**Observed behavior:** The candidate improved.\n\n"
+        "**Interpretation:** Continue investigating.\n\n"
+        "**Evidence inspected:** evidence.json\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", postmortem)
+
+    with pytest.raises(ValueError, match="Hypothesis assessment"):
+        protocol.validate_postmortem_evidence(
+            7,
+            ["evidence.json"],
+            campaign_id="current",
+            require_hypothesis_assessment=True,
+        )
+
+
+@pytest.mark.parametrize(
+    "assessment",
+    [
+        "The observations support the prediction within this panel.",
+        "The observations contradict the prediction, but not the broader family.",
+        "The evidence is mixed across checkpoints and remains limited.",
+        "The result is inconclusive because the predicted behavior was not measured.",
+    ],
+)
+def test_hypothesis_assessment_preserves_researcher_conclusions(assessment):
+    section = (
+        "## current / Experiment 7\n\n"
+        f"**Hypothesis assessment:** {assessment}\n\n"
+        "**Interpretation:** Competing explanations remain.\n"
+    )
+
+    assert protocol.postmortem_field(section, "Hypothesis assessment") == assessment
+
+
+def test_baseline_postmortem_is_exempt_from_hypothesis_assessment(
+    monkeypatch, tmp_path
+):
+    evidence = tmp_path / "evidence.json"
+    evidence.write_text("{}", encoding="utf-8")
+    postmortem = tmp_path / "postmortems.md"
+    postmortem.write_text(
+        "## current / Experiment 1\n\n**Evidence inspected:** evidence.json\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", postmortem)
+
+    assert (
+        protocol.validate_postmortem_evidence(
+            1,
+            ["evidence.json"],
+            campaign_id="current",
+            require_hypothesis_assessment=False,
+        )
+        is None
+    )
+
+
 def test_duplicate_strategy_is_ambiguous(scientific_memory):
     text = scientific_memory.read_text(encoding="utf-8")
     with pytest.raises(ValueError, match="duplicate"):

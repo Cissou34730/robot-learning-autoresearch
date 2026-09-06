@@ -81,8 +81,9 @@ OPTIONAL_ARTIFACT_FILES = (
 EXPERIMENT_LOG_HEADER = (
     "# Experiment log\n"
     "\n"
-    "| # | Date | Operation | Hypothesis | Candidate success | Seeds passed | Verdict |\n"
-    "|---:|---|---|---|---:|---:|---|\n"
+    "| # | Operation / parent | Intervention | Checkpoint / panel results | "
+    "Hypothesis assessment | Final decision |\n"
+    "|---:|---|---|---|---|---|\n"
 )
 
 
@@ -857,13 +858,78 @@ def experiment_log_row(record: dict) -> str:
     def cell(value: object) -> str:
         return " ".join(str(value).replace("|", "/").split())
 
+    def intervention() -> str:
+        parameter_changes = record.get("parameter_changes") or []
+        if parameter_changes:
+            return "; ".join(
+                f"{item['path']}: {item.get('before')} -> {item.get('after')}"
+                for item in parameter_changes
+            )
+        code_changes = record.get("code_changes") or []
+        if code_changes:
+            return f"{operation_description(record) or '-'}; files: {', '.join(code_changes)}"
+        return operation_description(record) or "-"
+
+    def measurement(evaluation: dict, default_instrument: str) -> str:
+        instrument = evaluation.get("instrument", default_instrument)
+        panel = evaluation.get("panel") or instrument
+        details = [f"{instrument}/{panel}"]
+        if evaluation.get("seed") is not None:
+            details.append(f"seed {evaluation['seed']}")
+        if evaluation.get("episodes") is not None:
+            details.append(f"{evaluation['episodes']} episodes")
+        if evaluation.get("success_percent") is not None:
+            details.append(f"success {float(evaluation['success_percent']):.2f}%")
+        return ", ".join(details)
+
+    measurements: list[str] = []
+    for candidate in record.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        evaluations = candidate.get("evaluations") or []
+        name = candidate.get("name", "checkpoint")
+        if evaluations:
+            measurements.extend(
+                f"{name}: {measurement(item, 'research_evaluation')}"
+                for item in evaluations
+                if isinstance(item, dict)
+            )
+        else:
+            measurements.append(f"{name}: unmeasured")
+    measurements.extend(
+        f"{item.get('candidate', 'checkpoint')}: {measurement(item, 'task_reference')}"
+        for item in record.get("task_reference_evaluations") or []
+        if isinstance(item, dict)
+    )
+    if not measurements and record.get("schema_version") != 4:
+        legacy_success = record.get("candidate_success_percent")
+        legacy_seeds = record.get("candidate_seeds_passed")
+        if legacy_success is not None or legacy_seeds is not None:
+            measurements.append(
+                f"legacy success {legacy_success if legacy_success is not None else '-'}; "
+                f"seeds passed {legacy_seeds if legacy_seeds is not None else '-'}"
+            )
+
+    closure = record.get("closure_decision") or {}
+    decisions = []
+    if closure.get("continue_from"):
+        decisions.append(f"working {closure['continue_from']}")
+    best_known = closure.get("best_known")
+    if isinstance(best_known, dict) and best_known.get("candidate"):
+        decisions.append(f"best known {best_known['candidate']}")
+    code = closure.get("code")
+    if isinstance(code, dict) and code.get("action"):
+        decisions.append(f"code {code['action']}")
+    if not decisions:
+        decisions.append(record.get("verdict", "-"))
+
+    operation = operation_description(record) or record.get("kind", "-")
+    parent = record.get("training_parent", "-")
     return (
-        f"| {record['index']} | {cell(record.get('recorded_at', '-'))} | "
-        f"{cell(operation_description(record) or '-')} | "
-        f"{cell(record.get('hypothesis', '-'))} | "
-        f"{cell(record.get('candidate_success_percent', '-'))} | "
-        f"{cell(record.get('candidate_seeds_passed', '-'))} | "
-        f"{cell(record.get('verdict', '-'))} |"
+        f"| {record['index']} | {cell(operation)} / parent {cell(parent)} | "
+        f"{cell(intervention())} | {cell('; '.join(measurements) or 'unmeasured')} | "
+        f"{cell(record.get('hypothesis_assessment', '-'))} | "
+        f"{cell('; '.join(str(item) for item in decisions))} |"
     )
 
 

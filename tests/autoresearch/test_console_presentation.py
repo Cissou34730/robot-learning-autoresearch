@@ -367,11 +367,15 @@ def test_v4_decision_card_keeps_working_and_best_known_distinct():
             "best_known_name": "baseline",
             "code_action": "keep",
             "request_final_benchmark": False,
+            "hypothesis_assessment": (
+                "The predicted behavior improved, with only one panel measured."
+            ),
         }
     )
 
     assert "Working lineage\ncheckpoint-120832" in card
     assert "Best-known model\nbaseline" in card
+    assert "Hypothesis assessment\nThe predicted behavior improved" in card
 
 
 def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_path):

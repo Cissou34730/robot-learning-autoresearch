@@ -232,6 +232,8 @@ Append to `research/postmortems.md`:
 
 **Observed behavior:** <factual observations>
 
+**Hypothesis assessment:** <compare the original prediction with what was observed; state whether the hypothesis is supported, partly supported, contradicted, or unresolved, and the limits of that conclusion>
+
 **Interpretation:** <scientific interpretation>
 
 **Evidence inspected:** <artifact paths from this experiment>
@@ -242,6 +244,11 @@ The heading format is `## <Campaign ID> / Experiment <integer>`, where `<Campaig
 At least one referenced source must exist and belong to the experiment. It may be
 a training log, checkpoint metadata, recorded training result, or completed
 evaluation artifact. An unmeasured checkpoint is unmeasured, not zero success.
+New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
+and conclusion belong to the Researcher; the Runner checks only that it is
+present. Fresh baselines have no intervention hypothesis and are exempt, and
+historical entries remain readable without rewriting. Keep `Interpretation` for
+competing explanations, unexpected evidence, and implications for future work.
 
 ## Resolve lineage
 

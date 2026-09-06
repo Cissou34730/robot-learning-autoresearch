@@ -31,6 +31,7 @@ _SECTION_HEADINGS = frozenset(
         "Retained alternatives",
         "Removed retained alternatives",
         "Final benchmark",
+        "Hypothesis assessment",
     }
 )
 
@@ -296,6 +297,9 @@ def render_decision_card(plan: dict) -> str:
             "",
             "Reason",
             str(plan["decision"]["reason"]).strip(),
+            "",
+            "Hypothesis assessment",
+            str(plan.get("hypothesis_assessment") or "baseline exempt"),
             "",
             "Best-known model",
             plan.get("best_known_name") or "unchanged",

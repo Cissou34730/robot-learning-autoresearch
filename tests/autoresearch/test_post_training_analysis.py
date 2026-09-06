@@ -305,7 +305,9 @@ def test_analysis_preflight_rejects_measurement_and_closure_conflict(
         }
     )
     (tmp_path / "research" / "postmortems.md").write_text(
-        "## campaign / Experiment 1\n\n**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        "## campaign / Experiment 1\n\n"
+        "**Hypothesis assessment:** Existing evidence leaves the prediction unresolved.\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
         encoding="utf-8",
     )
     request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
@@ -342,7 +344,10 @@ def test_v4_closure_updates_result_before_clearing_analysis(monkeypatch, tmp_pat
         }
     )
     (tmp_path / "research" / "postmortems.md").write_text(
-        "## campaign / Experiment 1\n\n**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        "## campaign / Experiment 1\n\n"
+        "**Hypothesis assessment:** The observed improvement supports the prediction, "
+        "within one development panel.\n\n"
+        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
         encoding="utf-8",
     )
     proposal = {
@@ -363,6 +368,9 @@ def test_v4_closure_updates_result_before_clearing_analysis(monkeypatch, tmp_pat
     record = repository.result_records()[0]
     assert record["status"] == "closed"
     assert record["closure_decision"] == proposal["previous_result_decision"]
+    assert record["hypothesis_assessment"] == (
+        "The observed improvement supports the prediction, within one development panel."
+    )
 
 
 def test_v4_closure_resume_clears_reloaded_pending_analysis(monkeypatch, tmp_path):
@@ -377,6 +385,7 @@ def test_v4_closure_resume_clears_reloaded_pending_analysis(monkeypatch, tmp_pat
     )
     (tmp_path / "research" / "postmortems.md").write_text(
         "## campaign / Experiment 1\n\n"
+        "**Hypothesis assessment:** The prediction remains unresolved.\n\n"
         "**Evidence inspected:** archive/checkpoint/artifact.json\n",
         encoding="utf-8",
     )
@@ -415,6 +424,7 @@ def test_v4_closure_retries_after_copy_progress_write_failure(monkeypatch, tmp_p
     _configure(monkeypatch, tmp_path)
     (tmp_path / "research" / "postmortems.md").write_text(
         "## campaign / Experiment 1\n\n"
+        "**Hypothesis assessment:** The prediction remains unresolved.\n\n"
         "**Evidence inspected:** archive/checkpoint/artifact.json\n",
         encoding="utf-8",
     )
@@ -472,6 +482,7 @@ def test_v4_closure_retries_role_result_write_without_duplicate_history(
     _configure(monkeypatch, tmp_path)
     (tmp_path / "research" / "postmortems.md").write_text(
         "## campaign / Experiment 1\n\n"
+        "**Hypothesis assessment:** The prediction remains unresolved.\n\n"
         "**Evidence inspected:** archive/checkpoint/artifact.json\n",
         encoding="utf-8",
     )

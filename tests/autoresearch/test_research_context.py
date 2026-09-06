@@ -269,7 +269,15 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
         encoding="utf-8",
     )
     results = [
-        {"campaign_id": "campaign", "index": index, "kind": "training", "family": "method", "candidates": []}
+        {
+            "campaign_id": "campaign",
+            "index": index,
+            "kind": "training",
+            "family": "method",
+            "candidates": [],
+            "hypothesis_assessment": f"Assessment {index}",
+            "postmortem": "research/postmortems.md",
+        }
         for index in range(1, 7)
     ]
     (research_dir / "results.jsonl").write_text(
@@ -301,6 +309,14 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     assert rendered.index("| 6 |") < rendered.index("| 1 |")
     assert rendered.count("unmeasured") >= 6
     assert "candidate_metrics" not in rendered
+    assert "- Hypothesis assessment: Assessment 6" in rendered
+    assert "[postmortem](research/postmortems.md)" in rendered
+    assert rendered.index("## Current scientific direction") < rendered.index(
+        "## Campaign experiment index"
+    )
+    assert rendered.index("## Campaign experiment index") < rendered.index(
+        "## Best-known model"
+    )
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
