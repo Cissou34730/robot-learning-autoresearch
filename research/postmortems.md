@@ -4,13 +4,13 @@ No experiments recorded.
 
 ## 5d4e159f-7fae-4a25-b885-b127042e894e / Scientific strategy
 
-**Direction:** Establish a reliable baseline for the reach-and-hold objective, then improve robustness from the strongest measured checkpoint rather than selecting by training reward alone.
+**Direction:** Establish a reliable baseline for the reach-and-hold objective, then improve robustness from the strongest measured checkpoint by covering the near-base target region that the baseline training distribution omitted.
 
-**Lessons and limits:** The fresh baseline learned the task late in training, reaching 97.0% on the research panel and 98.0% on the fixed task-reference panel at 100,352 steps. The later 120,832-step checkpoint declined to 96.5% and 97.0% on those same panels, so the measured peak is preferable to the final checkpoint. On the task-reference panel, the 100,352-step failures were concentrated at near-base targets with angles from about -116 to -128 degrees; this is a useful failure-mode clue, not evidence that all such targets fail. The research evaluation exposes no target geometry, and both panels are development evidence rather than the official verdict.
+**Lessons and limits:** The fresh baseline learned the task late in training, reaching 97.0% on the research panel and 98.0% on the fixed task-reference panel at 100,352 steps. The later 120,832-step checkpoint declined to 96.5% and 97.0% on those same panels, so the measured peak is preferable to the final checkpoint. The training environment sampled only 14–20 cm radii while the fixed task spans 6–20 cm; on the task-reference panel, the 100,352-step failures were concentrated at near-base targets with angles from about -116 to -128 degrees. This supports testing radius coverage, but the failures remain a small development sample and do not establish that all near-base targets fail. Both panels are development evidence rather than the official verdict.
 
 **Open questions:** Whether the 100,352-step checkpoint reaches the 98% objective on the official panel remains unknown. It is also unresolved whether the persistent negative-angle failures reflect a systematic control/coverage weakness or ordinary policy and panel variation, and whether additional training would improve them or reproduce the late-training decline.
 
-**Conditional next steps:** If the official result is below target, investigate robustness for the near-base, negative-angle region and prefer the 100,352-step lineage as the starting point; compare any later checkpoint against it rather than assuming more steps help. If a subsequent run changes the method, preserve this checkpoint as the baseline for development comparisons.
+**Conditional next steps:** Transfer from checkpoint 100,352 while training on the full 6–20 cm radius range, then compare the best measured checkpoint against the unchanged baseline on identical development panels. If performance declines or the near-base failures persist, treat distribution coverage as insufficient evidence and investigate control or representation causes rather than assuming more steps help.
 
 ## 5d4e159f-7fae-4a25-b885-b127042e894e / Experiment 1
 
