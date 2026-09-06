@@ -75,6 +75,65 @@ def test_reset_persists_a_canonical_accepted_artifact(tmp_path):
     assert state["best_known_lineage"] is None
 
 
+def test_fresh_reset_uses_linked_worktree_git_directory(tmp_path):
+    pwsh = shutil.which("pwsh")
+    if pwsh is None:
+        pytest.skip("PowerShell is unavailable")
+    primary = tmp_path / "primary"
+    linked = tmp_path / "linked"
+    remote = tmp_path / "remote.git"
+    primary.mkdir()
+    git(tmp_path, "init", "--bare", str(remote))
+    git(primary, "init", "-b", "primary")
+    git(primary, "config", "user.name", "Test Runner")
+    git(primary, "config", "user.email", "test@example.invalid")
+    git(primary, "config", "core.autocrlf", "false")
+    git(primary, "config", "core.longpaths", "true")
+    git(primary, "remote", "add", "origin", str(remote))
+    copy_reset_implementation(primary)
+    write(primary, ".gitignore", "__pycache__/\n*.pyc\n")
+    write(primary, "research/current_params.json", '{"seed": 0}\n')
+    git(primary, "add", ".")
+    git(primary, "commit", "-m", "seed")
+    git(primary, "push", "-u", "origin", "primary")
+    git(primary, "worktree", "add", "-b", "linked", str(linked), "HEAD")
+
+    result = subprocess.run(
+        [
+            pwsh,
+            "-NoProfile",
+            "-NonInteractive",
+            "-File",
+            str(linked / "reset_research.ps1"),
+            "-Mode",
+            "Fresh",
+            "-Force",
+        ],
+        cwd=linked,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert (linked / ".git").is_file()
+    backup_root = Path(
+        git(
+            linked,
+            "rev-parse",
+            "--path-format=absolute",
+            "--git-path",
+            "research-reset-backups",
+        )
+    )
+    assert len(list(backup_root.glob("*/operation.json"))) == 1
+    assert not (linked / ".git/research-reset-backups").exists()
+    assert not git(linked, "status", "--porcelain", "--untracked-files=all")
+    assert git(linked, "rev-parse", "HEAD") == git(
+        linked, "rev-parse", "origin/linked"
+    )
+
+
 SCRIPT = ROOT / "reset_research.ps1"
 HELPER = ROOT / "research" / "reset_campaign.py"
 CAMPAIGN = "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f"
@@ -605,7 +664,9 @@ def redirect_reset_paths(monkeypatch, root):
     for name, value in replacements.items():
         monkeypatch.setattr(runner_paths, name, value)
     monkeypatch.setattr(
-        reset_campaign, "BACKUP_ROOT", root / ".git/research-reset-backups"
+        reset_campaign,
+        "reset_backup_root",
+        lambda: root / ".git/research-reset-backups",
     )
 
 

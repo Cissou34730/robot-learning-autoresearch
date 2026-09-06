@@ -52,7 +52,9 @@ def redirect_paths(monkeypatch, root: Path) -> None:
         research_config, "CONFIG_PATH", research / "current_params.json"
     )
     monkeypatch.setattr(
-        reset_campaign, "BACKUP_ROOT", root / ".git" / "research-reset-backups"
+        reset_campaign,
+        "reset_backup_root",
+        lambda: root / ".git" / "research-reset-backups",
     )
 
 

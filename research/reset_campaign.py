@@ -26,7 +26,6 @@ from research import runner_paths as paths
 from research import runner_protocol as protocol
 from research import runner_repository as repository
 
-BACKUP_ROOT = paths.ROOT / ".git" / "research-reset-backups"
 EPHEMERAL_PATHS = (
     "research/GOAL_REACHED",
     "research/RECOVERY_PENDING",
@@ -81,6 +80,30 @@ def resolve_commit(reference: str, description: str) -> str:
     return str(
         git("rev-parse", "--verify", "--end-of-options", f"{reference}^{{commit}}")
     ).strip()
+
+
+def reset_backup_root() -> Path:
+    backup = Path(
+        str(
+            git(
+                "rev-parse",
+                "--path-format=absolute",
+                "--git-path",
+                "research-reset-backups",
+            )
+        ).strip()
+    ).resolve()
+    administrative_roots = {
+        Path(
+            str(git("rev-parse", "--path-format=absolute", option)).strip()
+        ).resolve()
+        for option in ("--git-dir", "--git-common-dir")
+    }
+    if backup.name != "research-reset-backups" or backup.parent not in administrative_roots:
+        raise RuntimeError(
+            f"Git resolved an unsafe reset-maintenance path: {backup}"
+        )
+    return backup
 
 
 def commit_files(commit: str) -> set[str]:
@@ -369,8 +392,9 @@ def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
 
 
 def create_backup(relative_paths: list[str], operation: dict) -> Path:
-    BACKUP_ROOT.mkdir(parents=True, exist_ok=True)
-    backup = BACKUP_ROOT / f"{int(time.time())}-{uuid.uuid4()}"
+    backup_root = reset_backup_root()
+    backup_root.mkdir(parents=True, exist_ok=True)
+    backup = backup_root / f"{int(time.time())}-{uuid.uuid4()}"
     files = backup / "files"
     files.mkdir(parents=True)
     manifest: list[str] = []

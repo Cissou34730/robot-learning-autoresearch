@@ -76,7 +76,9 @@ Neither mode creates a branch or worktree.
 Both require a clean Git working tree and hold the same machine-wide mutex as
 the research launcher. A recipe reset commits restored science separately from
 the new empty campaign state; all reset commits are pushed without rewriting
-history. See [reset details and baseline requirements](docs/reset-research.md).
+history. Recovery backups are stored through Git's resolved administrative path,
+so reset works from both primary checkouts and linked worktrees. See
+[reset details and baseline requirements](docs/reset-research.md).
 
 ## Tests and validation
 
