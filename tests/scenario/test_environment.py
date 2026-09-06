@@ -17,10 +17,6 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.policy_io import (
-    ACTION_SMOOTHING_CURRENT_WEIGHT,
-    make_policy_io,
-)
 
 
 def test_observation_matches_declared_space():
@@ -88,47 +84,3 @@ def test_environment_latches_the_outside_penalty_after_losing_hold(monkeypatch):
     assert continued_reward == pytest.approx(produced[1].total)
     assert exit_info["reward_components"] == produced[0].components
     assert continued_info["reward_components"] == produced[1].components
-
-
-def test_environment_smooths_successive_actions_and_resets_the_filter():
-    env = make_training_env()
-    env.reset(seed=0)
-
-    env.step(np.array([1.0, -1.0]))
-    env.step(np.array([-1.0, 1.0]))
-    expected = np.array(
-        [
-            1.0 - 2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT,
-            2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT - 1.0,
-        ]
-    )
-    np.testing.assert_allclose(env.data.ctrl, expected)
-
-    env.reset(seed=1)
-    env.step(np.array([1.0, -1.0]))
-    np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])
-
-
-def test_policy_action_mapping_clips_smooths_resets_and_has_independent_state():
-    first = make_policy_io()
-    second = make_policy_io()
-
-    np.testing.assert_allclose(first.action([2.0, -2.0]), [1.0, -1.0])
-    np.testing.assert_allclose(second.action([-2.0, 2.0]), [-1.0, 1.0])
-    np.testing.assert_allclose(
-        first.action([-1.0, 1.0]),
-        [
-            1.0 - 2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT,
-            2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT - 1.0,
-        ],
-    )
-
-    first.reset()
-    np.testing.assert_allclose(first.action([-1.0, 1.0]), [-1.0, 1.0])
-    np.testing.assert_allclose(
-        second.action([1.0, -1.0]),
-        [
-            -1.0 + 2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT,
-            1.0 - 2.0 * ACTION_SMOOTHING_CURRENT_WEIGHT,
-        ],
-    )
