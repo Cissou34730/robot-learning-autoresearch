@@ -703,6 +703,7 @@ def _semantics_tree(tmp_path):
         "evaluation.py",
         "final_benchmark.py",
         "observations.py",
+        "policy_io.py",
         "progress.py",
         "reward.py",
         "viewer.py",
@@ -713,6 +714,9 @@ def _semantics_tree(tmp_path):
     for name in ("algorithms.py", "normalization.py"):
         (training / name).write_text("original\n", encoding="utf-8")
     (tmp_path / "robot_learning" / "evaluate.py").write_text(
+        "original\n", encoding="utf-8"
+    )
+    (tmp_path / "robot_learning" / "policy_runtime.py").write_text(
         "original\n", encoding="utf-8"
     )
     research = tmp_path / "research"
@@ -730,12 +734,10 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
 
     assert evaluation_semantics_paths() == [
         "robot_learning/evaluate.py",
+        "robot_learning/policy_runtime.py",
         "robot_learning/scenario/environment.py",
         "robot_learning/scenario/evaluation.py",
-        "robot_learning/scenario/observations.py",
         "robot_learning/scenario/reward.py",
-        "robot_learning/training/algorithms.py",
-        "robot_learning/training/normalization.py",
     ]
 
     original = evaluation_semantics_fingerprint()
@@ -772,8 +774,7 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
     "relative",
     [
         "robot_learning/evaluate.py",
-        "robot_learning/training/algorithms.py",
-        "robot_learning/training/normalization.py",
+        "robot_learning/policy_runtime.py",
     ],
 )
 def test_non_scenario_evaluation_dependencies_change_measurement_identity(
@@ -786,6 +787,27 @@ def test_non_scenario_evaluation_dependencies_change_measurement_identity(
     (tmp_path / relative).write_text("changed\n", encoding="utf-8")
 
     assert evaluation_semantics_fingerprint() != original
+
+
+@pytest.mark.parametrize(
+    "relative",
+    [
+        "robot_learning/scenario/policy_io.py",
+        "robot_learning/scenario/observations.py",
+        "robot_learning/training/algorithms.py",
+        "robot_learning/training/normalization.py",
+    ],
+)
+def test_model_contained_sources_do_not_change_measurement_identity(
+    monkeypatch, tmp_path, relative
+):
+    _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+
+    original = evaluation_semantics_fingerprint()
+    (tmp_path / relative).write_text("changed\n", encoding="utf-8")
+
+    assert evaluation_semantics_fingerprint() == original
 
 
 def test_presentation_and_generated_files_stay_out_of_measurement_identity(

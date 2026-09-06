@@ -125,6 +125,13 @@ model fingerprints, instrument settings, panel semantics, and exact episode
 identities match. Reusing the same development panel does not create independent
 confirmation.
 
+The model fingerprint covers the complete saved artifact, including its policy
+I/O, loader, and normalization state. Research-evaluation context identity covers
+the current evaluator, environment/task mechanics, reward-derived evidence, and
+measurement instrumentation outside that artifact. Editing model-contained
+policy I/O does not retroactively change the context of an existing measurement;
+editing evaluator or environment semantics does.
+
 Each completed measurement round returns to post-training analysis. New requests
 do not use `need_more_evidence`; closing is a separate closure proposal in the
 same phase. Legacy accepted requests that contain it remain recoverable.

@@ -29,6 +29,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Historical evidence:** Existing evaluation evidence is reusable when policy
   identity and evaluation settings match. The Runner establishes compatibility;
   the Researcher decides whether and how the evidence supports a comparison.
+- **Evaluation identity:** Complete saved artifacts identify model behavior,
+  including frozen policy I/O, loader, and normalization state. Evaluation-context
+  identity separately covers current environment, evaluator, reward evidence,
+  and measurement instrumentation, so model-contained source edits do not create
+  false historical incompatibility.
 - **Inference contract:** Policy preprocessing belongs to the saved inference
   runtime, including mutable preprocessing state. Environments reset that state
   exactly once at each physical episode boundary; `PolicyRuntime.reset()` owns

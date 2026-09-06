@@ -104,13 +104,19 @@ PRESENTATION_ONLY_PATHS = {
     "robot_learning/scenario/progress.py",
     "robot_learning/scenario/viewer.py",
 }
+# These sources are serialized into policy_runtime.pkl and therefore belong to
+# model identity, not to the context in which that saved model is measured.
+MODEL_CONTAINED_RUNTIME_PATHS = {
+    "robot_learning/scenario/observations.py",
+    "robot_learning/scenario/policy_io.py",
+    "robot_learning/training/algorithms.py",
+    "robot_learning/training/normalization.py",
+}
 # The only files outside the scenario package that change how an already-trained
 # policy is replayed, observed and turned into a research measurement.
 EVALUATION_RUNTIME_PATHS = (
     "robot_learning/policy_runtime.py",
     "robot_learning/evaluate.py",
-    "robot_learning/training/algorithms.py",
-    "robot_learning/training/normalization.py",
 )
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
@@ -992,7 +998,11 @@ def evaluation_semantics_paths() -> list[str]:
         if not source.is_file() or is_generated_path(source.relative_to(root).parts):
             continue
         relative = source.relative_to(paths.ROOT).as_posix()
-        if is_protected_source(relative) or relative in PRESENTATION_ONLY_PATHS:
+        if (
+            is_protected_source(relative)
+            or relative in PRESENTATION_ONLY_PATHS
+            or relative in MODEL_CONTAINED_RUNTIME_PATHS
+        ):
             continue
         included.append(relative)
     return sorted(included)
