@@ -36,6 +36,8 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Replication summaries:** Completed replication measurements are reported
   from the experiment result's research and task-reference evidence, while
   genuinely empty result-level evidence remains unmeasured.
+- **Comparison-version compatibility:** Missing comparison-version metadata is
+  legacy version `0`; it remains distinct from explicit current semantics.
 
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 

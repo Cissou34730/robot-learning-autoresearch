@@ -803,6 +803,43 @@ def test_comparison_semantics_fingerprint_excludes_reward_and_diagnostics(
     assert comparison_semantics_fingerprint() != versioned
 
 
+def test_comparison_semantics_fingerprint_treats_missing_version_as_legacy(
+    monkeypatch, tmp_path
+):
+    scenario = _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+
+    explicit = comparison_semantics_fingerprint()
+    (scenario / "evaluation.py").write_text("legacy semantics\n", encoding="utf-8")
+    legacy = comparison_semantics_fingerprint()
+    assert legacy == comparison_semantics_fingerprint()
+    assert legacy != explicit
+
+    (scenario / "evaluation.py").write_text(
+        "legacy semantics\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 2\n",
+        encoding="utf-8",
+    )
+    assert comparison_semantics_fingerprint() != legacy
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "PRIMARY_COMPARISON_SEMANTICS_VERSION = 1\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 1\n",
+        "PRIMARY_COMPARISON_SEMANTICS_VERSION = malformed\n",
+    ],
+)
+def test_comparison_semantics_fingerprint_rejects_invalid_explicit_versions(
+    monkeypatch, tmp_path, content
+):
+    scenario = _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    (scenario / "evaluation.py").write_text(content, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="PRIMARY_COMPARISON_SEMANTICS_VERSION"):
+        comparison_semantics_fingerprint()
+
+
 def _comparison_record(
     broad_semantics: str,
     comparison_semantics: str | None,

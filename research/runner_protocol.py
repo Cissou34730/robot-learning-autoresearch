@@ -1053,27 +1053,26 @@ def comparison_semantics_fingerprint() -> str:
     assignments = re.findall(
         r"(?m)^PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=.*$", source_text
     )
-    if not assignments:
-        raise ValueError(
-            "PRIMARY_COMPARISON_SEMANTICS_VERSION is absent from "
-            f"{COMPARISON_SEMANTICS_VERSION_PATH}"
-        )
-    if len(assignments) != 1:
+    if len(assignments) > 1:
         raise ValueError(
             "PRIMARY_COMPARISON_SEMANTICS_VERSION must be assigned exactly once in "
             f"{COMPARISON_SEMANTICS_VERSION_PATH}"
         )
-    match = re.fullmatch(
-        r"PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=\s*(0|[1-9]\d*)",
-        assignments[0],
-    )
-    if match is None:
-        raise ValueError(
-            "PRIMARY_COMPARISON_SEMANTICS_VERSION must be a non-negative integer in "
-            f"{COMPARISON_SEMANTICS_VERSION_PATH}"
+    if assignments:
+        match = re.fullmatch(
+            r"PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=\s*(0|[1-9]\d*)",
+            assignments[0],
         )
+        if match is None:
+            raise ValueError(
+                "PRIMARY_COMPARISON_SEMANTICS_VERSION must be a non-negative integer in "
+                f"{COMPARISON_SEMANTICS_VERSION_PATH}"
+            )
+        version = match.group(1)
+    else:
+        version = "0"
     digest.update(COMPARISON_SEMANTICS_VERSION_PATH.encode("utf-8"))
-    digest.update(match.group(1).encode("ascii"))
+    digest.update(version.encode("ascii"))
     return digest.hexdigest()[:12]
 
 
