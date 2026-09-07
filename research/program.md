@@ -93,6 +93,15 @@ Prefer targeted extraction over loading complete artifacts or histories.
 
 ## Scientific memory and direction
 
+The campaign objective is always to improve learned behavior toward the
+human-defined objective in `research/scenario.md`; the Scientific strategy does
+not author or replace that objective. `Direction` is the current temporary
+investigation, not the campaign objective. `Lessons and limits` records what
+the current campaign evidence supports and does not support. `Open questions`
+records uncertainty, not a queue of experiments that must be completed.
+`Conditional next steps` describes alternatives available after the current
+investigation, not a commitment to continue the same family.
+
 Maintain the current campaign's **Scientific strategy** section in
 `research/postmortems.md`, using the format in `research/instruments.md`. Separate
 this revisable synthesis from the historical experiment entries. Preserve past
@@ -104,6 +113,8 @@ conditional follow-ups. Think beyond the next experiment without committing to a
 fixed sequence or number of experiments. Revise the strategy when new evidence
 changes it, including when an older lesson no longer applies. State uncertainty
 when there is not yet enough evidence for a lesson.
+The `reasoning.strategy_link` may advance, revise, or reject the current
+investigation; it does not need to preserve it.
 
 ## Lifecycle
 

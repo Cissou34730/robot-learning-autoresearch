@@ -27,6 +27,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Evidence sufficiency:** Evidence must support the current model/lineage
   decision and, when the campaign objective remains unmet, a rational next
   scientific direction; redundant evidence remains minimized.
+- **Objective and investigation:** The human-defined campaign objective remains
+  authoritative; Scientific strategy records a revisable current investigation,
+  not a replacement objective or mandatory queue.
 
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 

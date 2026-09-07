@@ -555,6 +555,7 @@ def _render_v4_research_brief(
         f"- Current phase: {phase}",
         f"- Current experiment: {latest_experiment}",
         f"- Latest event: {state.get('last_verdict', (latest or {}).get('verdict', 'none'))}",
+        "- Campaign objective: the human-defined objective in `research/scenario.md`.",
         "- Available deliverables: "
         + (
             "none; the campaign is complete"
@@ -605,7 +606,7 @@ def _render_v4_research_brief(
         else "- Working: unset"
     )
     strategy = scientific_strategy_section(postmortems, campaign_id)
-    lines.extend(["", "## Current scientific direction", "", "Researcher-authored interpretation:", ""])
+    lines.extend(["", "## Current scientific direction", "", "Revisable current investigation authored by the Researcher:", ""])
     lines.append("\n".join(strategy.splitlines()[1:]).strip() if strategy else "No scientific strategy recorded for this campaign yet.")
 
     lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |", "|---:|---|---|---|---|---|---|---|"])
@@ -883,7 +884,7 @@ def render_research_brief() -> str:
         [
             "## Current scientific direction",
             "",
-            "Researcher-authored, revisable interpretation from `research/postmortems.md`.",
+            "Revisable current investigation authored by the Researcher:",
             "",
             "\n".join(strategy.splitlines()[1:]).strip()
             if strategy
@@ -892,6 +893,8 @@ def render_research_brief() -> str:
                 "in `research/postmortems.md` when preparing the next experiment; "
                 "historical results have not been reinterpreted automatically."
             ),
+            "",
+            "- Campaign objective: the human-defined objective in `research/scenario.md`.",
             "",
             "## Immutable goal",
             "",

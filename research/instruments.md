@@ -255,6 +255,15 @@ also be edited during experiment preparation. The exact heading and labels are:
 **Conditional next steps:** <possible follow-ups depending on observations>
 ```
 
+The campaign objective remains the human-defined objective in
+`research/scenario.md`; it is not authored or replaced by this strategy.
+`Direction` is the current temporary investigation. `Lessons and limits`
+records what campaign evidence supports and does not support. `Open questions`
+records uncertainty rather than mandatory work. `Conditional next steps`
+describes alternatives after the current investigation rather than a commitment
+to continue its family. The proposal's `reasoning.strategy_link` may advance,
+revise, or reject the current investigation.
+
 Each entry must have content and may span multiple lines. This is researcher
 interpretation, not a Runner verdict. Keep historical experiment entries intact;
 revise this section as evidence changes. There is no cycle ID, experiment quota,
