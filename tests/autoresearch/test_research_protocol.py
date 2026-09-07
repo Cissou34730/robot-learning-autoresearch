@@ -220,6 +220,10 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", baseline_path)
+    monkeypatch.setattr(
+        "research.runner_protocol.comparison_semantics_fingerprint",
+        lambda: "comparison",
+    )
 
     def skip_result_recording(result):
         del result
@@ -330,6 +334,10 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
+    monkeypatch.setattr(
+        "research.runner_protocol.comparison_semantics_fingerprint",
+        lambda: "comparison",
+    )
 
     def skip_result_recording(result):
         del result
@@ -393,6 +401,10 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.comparison_semantics_fingerprint",
+        lambda: "comparison",
     )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
 
@@ -531,6 +543,10 @@ def _single_panel_evaluation_fixture(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", evaluations_dir)
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
+    monkeypatch.setattr(
+        "research.runner_protocol.comparison_semantics_fingerprint",
+        lambda: "comparison",
     )
     return state_path, request_path, evaluations_dir
 
@@ -2137,6 +2153,10 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
+    monkeypatch.setattr(
+        "research.runner_protocol.comparison_semantics_fingerprint",
+        lambda: "comparison",
+    )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
 
     def evaluator(artifact, seed, **kwargs):
@@ -2818,8 +2838,8 @@ def test_protocol_delegates_request_schemas_to_the_instrument_catalog():
     assert "```json" not in PROGRAM
     assert "request contract" in PROGRAM
     for field in ("training_parent", "training_seed", "params"):
-        assert field not in PROGRAM
-        assert field in instruments
+        assert f'"{field}"' not in PROGRAM
+        assert f'"{field}"' in instruments
 
 
 def test_baseline_protocol_wording_is_algorithm_neutral():
@@ -2884,14 +2904,14 @@ repeatedly rediscovering it."""
         in instruments
     )
 
-    assert LOOP.count("Start from the brief and instrument contract") == 2
-    assert LOOP.count("as needed to support the postmortem") == 2
+    assert LOOP.count("Start from the brief and instrument contract") == 1
+    assert LOOP.count("as needed to support the postmortem") == 1
     assert "Read the detailed evaluation artifacts" not in LOOP
 
 
 def test_experiment_preparation_retry_avoids_vague_repository_discovery():
     assert "inspect the relevant repository state" not in LOOP
-    assert LOOP.count("requires understanding the current code state or delta") == 2
+    assert LOOP.count("requires understanding the current code state or delta") == 1
 
 
 def test_post_training_refinement_is_optional_and_scoped_to_current_experiment():

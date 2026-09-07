@@ -263,7 +263,7 @@ def test_v4_replication_brief_reports_result_level_measurements(monkeypatch, tmp
                 {
                     "instrument": "research_evaluation",
                     "candidate": "checkpoint-c",
-                    "metrics": {"episodes": 40, "seed": 300, "success_percent": 75.0},
+                    "metrics": {"success_percent": 75.0},
                 }
             ],
         },
@@ -279,9 +279,9 @@ def test_v4_replication_brief_reports_result_level_measurements(monkeypatch, tmp
 
     rendered = render_research_brief()
 
-    assert "experiment 1, seed 10, checkpoint-a, research_evaluation, seed 100, 20 episodes, success 55.00%" in rendered
-    assert "experiment 2, seed 11, checkpoint-b, task_reference/held-out, seed 200, 30 episodes, success 65.00%" in rendered
-    assert "experiment 3, seed 12, checkpoint-c, research_evaluation, seed 300, 40 episodes, success 75.00%" in rendered
+    assert "experiment 1, seed 10, checkpoint-a, research_evaluation, 20 episodes, seed 100, success 55.00%" in rendered
+    assert "experiment 2, seed 11, checkpoint-b, task_reference/held-out, 30 episodes, seed 200, success 65.00%" in rendered
+    assert "experiment 3, seed 12, checkpoint-c, research_evaluation, success 75.00%" in rendered
     assert "experiment 4, seed 13, unmeasured" in rendered
 
 
@@ -530,6 +530,10 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
+    monkeypatch.setattr(
+        "research.runner_protocol.comparison_semantics_fingerprint",
+        lambda: "comparison",
+    )
 
     printed: list[str] = []
     monkeypatch.setattr("research.runner_console.announce", printed.append)

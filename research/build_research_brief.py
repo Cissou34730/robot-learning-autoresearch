@@ -276,14 +276,14 @@ def _v4_result_measurements(result: dict) -> str:
         instrument = evaluation.get("instrument", "research_evaluation")
         panel = evaluation.get("panel")
         measurement = f"{instrument}{f'/{panel}' if panel else ''}"
-        result = (
-            f"{evaluation.get('candidate', '-')}, {measurement}, "
-            f"seed {evaluation.get('seed', '-')}, "
-            f"{evaluation.get('episodes', '-')} episodes"
-        )
+        details = [str(evaluation.get("candidate", "-")), measurement]
+        if evaluation.get("episodes") is not None:
+            details.append(f"{evaluation['episodes']} episodes")
+        if evaluation.get("seed") is not None:
+            details.append(f"seed {evaluation['seed']}")
         if success is not None:
-            result += f", success {float(success):.2f}%"
-        panels.append(result)
+            details.append(f"success {float(success):.2f}%")
+        panels.append(", ".join(details))
     return "; ".join(panels)
 
 
@@ -666,7 +666,7 @@ def _render_v4_research_brief(
         for original, entries in groups:
             facts = "; ".join(
                 f"experiment {entry.get('index')}, seed {entry.get('training_seed', '-')}, "
-                f"{_compact(_v4_result_measurements(entry), 180)}"
+                f"{_v4_result_measurements(entry)}"
                 for entry in entries
             )
             lines.append(f"- Replication group `{original}`: {facts}")
