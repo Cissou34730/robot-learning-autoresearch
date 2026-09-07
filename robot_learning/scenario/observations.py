@@ -40,10 +40,10 @@ def reach_observation(data) -> np.ndarray:
             data.qvel,
             end_effector - data.mocap_pos[0],
             [
-                np.sin(wrap_to_pi(shoulder_open - float(data.qpos[0]))),
-                np.sin(wrap_to_pi(elbow_open - float(data.qpos[1]))),
-                np.sin(wrap_to_pi(shoulder_folded - float(data.qpos[0]))),
-                np.sin(wrap_to_pi(elbow_folded - float(data.qpos[1]))),
+                wrap_to_pi(shoulder_open - float(data.qpos[0])),
+                wrap_to_pi(elbow_open - float(data.qpos[1])),
+                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
+                wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
         ]
     ).astype(np.float32)
