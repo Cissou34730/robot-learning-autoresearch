@@ -2,28 +2,31 @@
 
 ## 6f3b5e54-dc1e-4502-bd86-3318074de79c / Scientific strategy
 
-**Direction:** Establish a reliable PPO baseline and use development evidence to
-choose the strongest saved policy before testing a new scientific intervention.
+**Direction:** Establish a reliable PPO baseline and use matched development
+evidence to choose the strongest saved policy before testing a new scientific
+intervention.
 
-**Lessons and limits:** Experiment 3 learned the task progressively: training
-success remained zero through 70,656 steps, rose to 0.93 by 95,232 steps, and
-peaked at 0.97 at checkpoint-100352. The later checkpoints remained strong but
-were lower, with 0.94 at 105,472, 0.93 at 110,592, and 0.95 at 120,832
-(`research/results.jsonl` and the experiment-3 checkpoint inventory). These are
-training-rollout facts, not independent development-panel measurements, so the
-selected checkpoint is a provisional working baseline and does not establish the
-98% official objective.
+**Lessons and limits:** Experiment 4 confirms progressive PPO learning and
+supports checkpoint-100352 as the working and best-known development policy.
+Training success peaks at 0.97 and reward at 117.32 there, while the final
+checkpoint reaches 0.95 and 112.02 (`research/results.jsonl` and the experiment
+4 training log). The matched research panel gives both checkpoints 98.0% over
+200 episodes with compatible comparison semantics; the paired comparison has
+zero discordant episodes, and both policies fail on the same four seeds
+(`research/evaluations/...experiment-4-checkpoint-100352-200ep-seed4000-...json`
+and its checkpoint-120832 counterpart). Thus the late training decline is not
+evidence of a measurable behavioral regression on this panel. Development
+evidence still does not establish the official objective.
 
-**Open questions:** Whether the late decline is a genuine policy regression,
-evaluation variance, or a training-metric artifact remains unresolved because
-the requested research measurement could not be validated while the evaluator
-does not expose the required primary-comparison semantics version.
+**Open questions:** Whether the shared four failures generalize beyond this
+research panel, and whether another training realization would reproduce the
+same late plateau, remain unknown.
 
-**Conditional next steps:** If a future experiment can add the required
-measurement semantics, compare the saved peak and final checkpoints on matched
-development panels before changing the method. Otherwise, use the selected
-peak checkpoint as the baseline for a new intervention and reassess with valid
-development evidence.
+**Conditional next steps:** Use checkpoint-100352 as the PPO baseline for a
+future intervention or continuation. Revisit the late-training question only
+if a future method changes the failure pattern or if independent development
+evidence is needed; do not treat the current 98% research result as the final
+benchmark verdict.
 
 ## 6f3b5e54-dc1e-4502-bd86-3318074de79c / Experiment 3
 
@@ -57,3 +60,36 @@ measurement.
 `research/checkpoints/challengers/6f3b5e54-dc1e-4502-bd86-3318074de79c/experiment-3/inventory.json`;
 `research/checkpoints/challengers/6f3b5e54-dc1e-4502-bd86-3318074de79c/experiment-3/checkpoint-100352/artifact.json`;
 `research/checkpoints/challengers/6f3b5e54-dc1e-4502-bd86-3318074de79c/experiment-3/checkpoint-120832/artifact.json`.
+
+## 6f3b5e54-dc1e-4502-bd86-3318074de79c / Experiment 4
+
+**Result:** Fresh PPO baseline reproduced the prior learning trajectory, and
+checkpoint-100352 is selected as the working and best-known development policy.
+
+**Observed behavior:** Training success rose from 0 through 70,656 steps to
+0.97 at checkpoint-100352, then stayed between 0.93 and 0.96 through
+checkpoint-120832; reward fell from 117.32 to 112.02 over the same late period.
+On matched research evaluations (seed 4000, 200 episodes), both checkpoint-
+100352 and checkpoint-120832 scored 98.0%. Their paired comparison had zero
+candidate wins, zero reference wins, zero discordant episodes, and a 0.0
+percentage-point success difference. The four failures were the same episode
+seeds (4030, 4040, 4049, and 4134), each truncated at 500 steps.
+
+**Hypothesis assessment:** As a fresh baseline there was no intervention
+hypothesis to test. The expected observation, progressive improvement toward
+the task objective, occurred. The contradicting observation, a late-training
+decline after the checkpoint-100352 peak, also occurred in training metrics,
+but the matched development comparison found no behavioral difference between
+the peak and final policies. The decline is therefore unresolved as a training
+statistic but is not supported as a policy regression by this development
+measurement.
+
+**Interpretation:** The peak checkpoint remains the best scientific choice
+because its training trajectory is stronger and the valid development
+comparison shows it is at least tied with the final checkpoint. The result is
+development evidence, not an official benchmark verdict, and the shared
+failure seeds leave generalization and run-to-run reproducibility open.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/evaluations/6f3b5e54-dc1e-4502-bd86-3318074de79c/evaluation-6f3b5e54-dc1e-4502-bd86-3318074de79c-experiment-4-checkpoint-100352-200ep-seed4000-a65343bc54c5.json`;
+`research/evaluations/6f3b5e54-dc1e-4502-bd86-3318074de79c/evaluation-6f3b5e54-dc1e-4502-bd86-3318074de79c-experiment-4-checkpoint-120832-200ep-seed4000-a65343bc54c5.json`.
