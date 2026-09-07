@@ -7,6 +7,24 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-07 - Research harness evidence and context
+
+- **Authoritative context:** The brief exposes current lineage identities,
+  complete scientific-recipe provenance, effective parameters, differences, and
+  evidence without duplicating identical lineage recipes.
+- **Incumbent evidence:** Best-known replacement resolves incumbent evidence
+  from persisted lineage state instead of requiring retranscription.
+- **Optional remeasurement:** Saved candidates and eligible lineages may be
+  remeasured while closing the current experiment when evidence is insufficient.
+- **Comparison semantics:** Broad evaluation identity remains distinct from the
+  narrower episode and primary-success semantics shared by paired comparison and
+  best-known evidence compatibility.
+- **Session reuse:** Validation retries retain same-session context and request
+  only correction of the invalid deliverable.
+- **Evaluation intent:** Requests begin with a scientific question and use the
+  smallest decision-relevant evidence set; comparison and task reference remain
+  optional rather than automatic.
+
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 
 - **Scope:** These decisions repair campaign execution, persistence, recovery,

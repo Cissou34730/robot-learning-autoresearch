@@ -524,6 +524,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
             "ppo": {"learning_rate": 0.0001},
         },
         "evaluation_artifacts": ["research/evaluations/working.json"],
+        "reason": "Continue the current line of research.",
     }
     state = {
         "schema_version": 4,
@@ -538,6 +539,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
             "scientific_commit": "best-commit",
             "parameters": current_params,
             "evaluation_artifacts": ["research/evaluations/best.json"],
+            "reason": "Best measured primary outcome.",
         },
         "retained_lineages": [
             {
@@ -592,12 +594,59 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
         "Scientific commit: working-commit",
         'Effective parameters: {"algorithm":{"name":"ppo"},"ppo":{"learning_rate":0.0001}}',
         "Recorded evaluation artifacts: `research/evaluations/working.json`",
+        "Researcher reason: Continue the current line of research.",
+        "Researcher reason: Best measured primary outcome.",
         "`alternate`",
         "`ppo.learning_rate`: lineage 0.0001; current 0.0003",
         "Parameter differences from `best_known`: none",
         "`checkpoint-current`: 3000 training steps",
     ):
         assert expected in section
+    assert section.count("Candidate: checkpoint-working") == 1
+    assert section.count("Candidate: checkpoint-best") == 1
+    assert "- See `working` under **Current lineages and scientific recipes**." in brief
+    assert "- See `best_known` under **Current lineages and scientific recipes**." in brief
+
+
+def test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe(
+    monkeypatch, tmp_path
+):
+    lineage = {
+        "candidate": "checkpoint-shared",
+        "origin_experiment": 2,
+        "training_steps": 2000,
+        "artifact": "research/checkpoints/shared",
+        "fingerprint": "shared-fingerprint",
+        "scientific_commit": "shared-commit",
+        "parameters": {"algorithm": {"name": "ppo"}},
+        "evaluation_artifacts": ["research/evaluations/shared.json"],
+    }
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "base_commit": "base"},
+        "working_lineage": {**lineage, "reason": "Continue training this lineage."},
+        "best_known_lineage": {**lineage, "reason": "Best measured outcome."},
+        "retained_lineages": [],
+    }
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+    section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
+        "## Latest experiment", 1
+    )[0]
+
+    assert "Valid `training_parent` identifiers: `working`, `best_known`" in section
+    assert "- `best_known`: alias of `working`" in section
+    assert section.count("Artifact: `research/checkpoints/shared`") == 1
+    assert section.count('Effective parameters: {"algorithm":{"name":"ppo"}}') == 1
+    assert "Researcher reason: Continue training this lineage." in section
+    assert "Researcher reason: Best measured outcome." in section
 
 
 def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(

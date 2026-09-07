@@ -2888,12 +2888,35 @@ def test_evaluation_requests_use_the_smallest_decision_relevant_evidence_set():
     assert "Task-reference measurement is optional" in normalized_program
     assert "comparison with `working` or `best_known` is likewise optional" in normalized_program
     assert "request the smallest sufficient set" in normalized_instruments
-    assert "For each requested measurement, explain in `reason`" in normalized_instruments
+    request_reason_contract = (
+        "Use the request-level `reason` to explain why every listed measurement "
+        "is needed to answer the question and how its possible outcomes could "
+        "change the interpretation or lineage decision."
+    )
+    assert request_reason_contract in normalized_instruments
+    assert LOOP.count(request_reason_contract) == 2
     assert LOOP.count("request the smallest sufficient set") == 2
     assert LOOP.count("Comparison and task-reference measurement are optional") == 2
     assert '"measurements": [' in instruments
     assert '"paired_comparisons": [' in instruments
     assert "decision_relevant_measurements" not in PROGRAM + instruments + LOOP
+
+    with pytest.raises(ValueError, match="unsupported fields.*reason"):
+        validate_evaluation_request(
+            {
+                "question": "Does the candidate preserve primary success?",
+                "reason": "The requested panel answers the stated question.",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "candidate",
+                        "episodes": 2,
+                        "seed": 1000,
+                        "reason": "Unsupported per-measurement reason.",
+                    }
+                ],
+            }
+        )
 
 
 def test_protocol_default_context_names_only_authoritative_context():

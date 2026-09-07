@@ -345,7 +345,7 @@ while ($true) {
             $analysisPhasePrompt
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Reason in this order: inspect what happened during training; state the scientific question; identify which measurement could change the interpretation; request that measurement, or close if current evidence is sufficient."
-            "For every requested measurement, explain why its possible outcomes can change the answer; reuse compatible existing evidence from the brief and request the smallest sufficient set. Comparison and task-reference measurement are optional and must be justified by the question, not phase convention."
+            'Use the request-level `reason` to explain why every listed measurement is needed to answer the question and how its possible outcomes could change the interpretation or lineage decision. Reuse compatible existing evidence from the brief and request the smallest sufficient set. Comparison and task-reference measurement are optional and must be justified by the question, not phase convention.'
             "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
             "Current candidates and eligible saved lineages can be remeasured through the existing request flow. If the relevant quantity is not currently emitted, you may modify researcher-owned measurement instrumentation before requesting it; no diagnostic code change or particular metric is required."
             "Additional measurement rounds are optional and available only while closing this current trained experiment."
@@ -401,7 +401,7 @@ while ($true) {
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
                 "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
-                "State the scientific question first. For every requested measurement, explain why its possible outcomes can change the answer; reuse compatible existing evidence and request the smallest sufficient set. Comparison and task-reference measurement are optional and must be justified by the question, not phase convention."
+                'State the scientific question first. Use the request-level `reason` to explain why every listed measurement is needed to answer the question and how its possible outcomes could change the interpretation or lineage decision. Reuse compatible existing evidence and request the smallest sufficient set. Comparison and task-reference measurement are optional and must be justified by the question, not phase convention.'
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "

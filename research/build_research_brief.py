@@ -274,29 +274,6 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
-def _v4_lineage_lines(label: str, lineage: dict | None) -> list[str]:
-    if not lineage:
-        return [f"- {label}: unset"]
-    return [
-        (
-            f"- {label}: `{lineage.get('candidate', '-')}` from experiment "
-            f"{lineage.get('origin_experiment', '-')}; "
-            f"{int(lineage.get('training_steps', 0)):,} cumulative steps"
-        ),
-        f"  - Artifact: {_existing_artifact_reference(lineage.get('artifact'), kind='checkpoint')}",
-        f"  - Scientific recipe: `{lineage.get('scientific_commit') or 'unmeasured provenance'}`",
-        "  - Measurements: "
-        + (
-            ", ".join(
-                _existing_artifact_reference(path, kind="file")
-                for path in lineage.get("evaluation_artifacts", [])
-            )
-            or "unmeasured"
-        ),
-        f"  - Researcher reason: {lineage.get('reason', '-')}",
-    ]
-
-
 def _stable_json(value: object) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
 
@@ -367,7 +344,54 @@ def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
         "  - Effective parameters: "
         + (_stable_json(parameters) if isinstance(parameters, dict) else "not recorded"),
         f"  - Recorded evaluation artifacts: {evidence}",
+        f"  - Researcher reason: {_recorded_value(lineage.get('reason'))}",
     ]
+
+
+def _lineage_fact_identity(lineage: dict) -> tuple | None:
+    parameters = lineage.get("parameters")
+    required = (
+        lineage.get("artifact"),
+        lineage.get("fingerprint"),
+        lineage.get("scientific_commit"),
+    )
+    if any(value is None or value == "" for value in required) or not isinstance(
+        parameters, dict
+    ):
+        return None
+    return (*required, _stable_json(parameters))
+
+
+def _authoritative_lineage_alias_lines(
+    identifier: str,
+    canonical_identifier: str,
+    lineage: dict,
+    canonical_lineage: dict,
+) -> list[str]:
+    lines = [
+        f"- `{identifier}`: alias of `{canonical_identifier}`",
+        f"  - Researcher reason: {_recorded_value(lineage.get('reason'))}",
+    ]
+    for label, field in (
+        ("Candidate", "candidate"),
+        ("Origin experiment", "origin_experiment"),
+        ("Accumulated training steps", "training_steps"),
+    ):
+        if lineage.get(field) != canonical_lineage.get(field):
+            lines.append(f"  - {label}: {_recorded_value(lineage.get(field))}")
+    if lineage.get("evaluation_artifacts") != canonical_lineage.get(
+        "evaluation_artifacts"
+    ):
+        evidence = lineage.get("evaluation_artifacts")
+        lines.append(
+            "  - Recorded evaluation artifacts: "
+            + (
+                ", ".join(_recorded_path(path) for path in evidence)
+                if isinstance(evidence, list) and evidence
+                else "not recorded"
+            )
+        )
+    return lines
 
 
 def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> list[str]:
@@ -393,8 +417,20 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         "",
     ]
     if lineages:
+        canonical_by_identity: dict[tuple, tuple[str, dict]] = {}
         for identifier, lineage in lineages:
-            lines.extend(_authoritative_lineage_lines(identifier, lineage))
+            identity = _lineage_fact_identity(lineage)
+            canonical = canonical_by_identity.get(identity) if identity else None
+            if canonical is None:
+                lines.extend(_authoritative_lineage_lines(identifier, lineage))
+                if identity is not None:
+                    canonical_by_identity[identity] = (identifier, lineage)
+            else:
+                lines.extend(
+                    _authoritative_lineage_alias_lines(
+                        identifier, canonical[0], lineage, canonical[1]
+                    )
+                )
     else:
         lines.append("No current lineage is recorded.")
     lines.extend(
@@ -563,7 +599,11 @@ def _render_v4_research_brief(
         lines.append("No experiment has completed in this campaign.")
 
     lines.extend(["", "## Working lineage", ""])
-    lines.extend(_v4_lineage_lines("Working", state.get("working_lineage")))
+    lines.append(
+        "- See `working` under **Current lineages and scientific recipes**."
+        if state.get("working_lineage")
+        else "- Working: unset"
+    )
     strategy = scientific_strategy_section(postmortems, campaign_id)
     lines.extend(["", "## Current scientific direction", "", "Researcher-authored interpretation:", ""])
     lines.append("\n".join(strategy.splitlines()[1:]).strip() if strategy else "No scientific strategy recorded for this campaign yet.")
@@ -605,14 +645,19 @@ def _render_v4_research_brief(
     retained = state.get("retained_lineages") or []
     if retained:
         for lineage in retained:
-            lines.extend(_v4_lineage_lines(f"`{lineage.get('id', '-')}`", lineage))
+            lines.append(
+                f"- See `{lineage.get('id', '-')}` under "
+                "**Current lineages and scientific recipes**."
+            )
     else:
         lines.append("No retained alternatives.")
     lines.extend(["", "## Best-known model", ""])
     best_known = state.get("best_known_lineage")
-    lines.extend(_v4_lineage_lines("Best known", best_known))
-    if best_known and state.get("working_lineage") and best_known.get("fingerprint") == state["working_lineage"].get("fingerprint"):
-        lines.append("- This is also the working model.")
+    lines.append(
+        "- See `best_known` under **Current lineages and scientific recipes**."
+        if best_known
+        else "- Best known: unset"
+    )
     official = state.get("official_metrics")
     if official is not None:
         official_model = state.get("official_benchmark_model") or {}
