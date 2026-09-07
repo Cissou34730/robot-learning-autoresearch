@@ -20,6 +20,8 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 3
+# Bumped when primary success-comparison semantics change.
+PRIMARY_COMPARISON_SEMANTICS_VERSION = 1
 
 
 def evaluate_research_model(
