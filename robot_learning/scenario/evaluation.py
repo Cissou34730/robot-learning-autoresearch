@@ -20,9 +20,6 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 3
-# Increment only when episode execution or primary-success extraction changes,
-# not for research_evidence, labels, summaries, progress output, or diagnostics.
-PRIMARY_COMPARISON_SEMANTICS_VERSION = 1
 
 
 def evaluate_research_model(
