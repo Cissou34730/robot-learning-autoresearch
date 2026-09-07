@@ -80,6 +80,57 @@ def effective_training_config(config: dict) -> dict:
     }
 
 
+def transfer_policy_parameters(source_policy, target_policy) -> None:
+    source_state = source_policy.state_dict()
+    target_state = target_policy.state_dict()
+    with torch.no_grad():
+        for name, target_value in target_state.items():
+            source_value = source_state.get(name)
+            if source_value is None or source_value.ndim != target_value.ndim:
+                continue
+            slices = tuple(
+                slice(0, min(source_size, target_size))
+                for source_size, target_size in zip(
+                    source_value.shape, target_value.shape
+                )
+            )
+            target_value[slices].copy_(source_value[slices])
+    target_policy.load_state_dict(target_state)
+
+
+def load_transfer_model(
+    resume: Path,
+    venv,
+    params: dict,
+    policy_kwargs: dict,
+    seed: int,
+    tensorboard_log: str,
+):
+    model = PPO.load(
+        resume,
+        env=venv,
+        seed=seed,
+        tensorboard_log=tensorboard_log,
+        **params,
+    )
+    requested_architecture = list(policy_kwargs["net_arch"])
+    loaded_architecture = list(getattr(model.policy, "net_arch", []))
+    if loaded_architecture == requested_architecture:
+        return model
+
+    expanded_model = PPO(
+        "MlpPolicy",
+        venv,
+        seed=seed,
+        verbose=1,
+        tensorboard_log=tensorboard_log,
+        policy_kwargs=policy_kwargs,
+        **params,
+    )
+    transfer_policy_parameters(model.policy, expanded_model.policy)
+    return expanded_model
+
+
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
@@ -117,12 +168,13 @@ def main() -> None:
 
     tensorboard_log = str(args.output_dir / "tensorboard")
     if args.resume is not None:
-        model = PPO.load(
+        model = load_transfer_model(
             args.resume,
-            env=venv,
-            seed=args.seed,
-            tensorboard_log=tensorboard_log,
-            **params,
+            venv,
+            params,
+            policy_kwargs,
+            args.seed,
+            tensorboard_log,
         )
     else:
         model = PPO(
