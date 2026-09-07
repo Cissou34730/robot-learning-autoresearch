@@ -12,6 +12,7 @@ from research.run_experiment import apply_previous_result_decision
 @pytest.fixture(autouse=True)
 def _redirect_research_dir(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "EXPERIMENTS.md")
 
 
 def _artifact(path: Path, marker: str) -> Path:
@@ -612,7 +613,7 @@ def test_v4_state_rejects_legacy_accepted_aliases(monkeypatch, tmp_path):
         raise AssertionError("schema-v4 state accepted a legacy role alias")
 
 
-def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
+def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
@@ -642,7 +643,7 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
             "parent_training_steps": 0,
         },
     }
-    state["best_known_lineage"]["evaluation_artifacts"] = []
+    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
     state["pending_researcher_decision"]["partial_evaluations"] = [
         {
             "candidate": "checkpoint",
@@ -680,7 +681,7 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Designate from comparable evidence.",
-                "evidence": [candidate_evidence.name, incumbent_evidence.name],
+                "evidence": [candidate_evidence.name],
             },
         }
     }
@@ -690,6 +691,69 @@ def test_v4_best_known_replacement_requires_and_accepts_both_evidence(
     assert plan["best_known_record"]["artifact"].startswith(
         "research/checkpoints/retained/"
     )
+
+
+def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    candidate_evidence = tmp_path / "candidate-evaluation.json"
+    candidate_evidence.write_text("{}", encoding="utf-8")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(incumbent, steps=10_000),
+        "best_known_lineage": _lineage(incumbent, steps=10_000),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+            "partial_evaluations": [
+                {
+                    "candidate": "checkpoint",
+                    "episodes": 200,
+                    "seed": 1,
+                    "evaluation_semantics": "semantics",
+                    "model_fingerprint": repository.artifact_fingerprint(candidate),
+                    "metrics": {
+                        "evaluation_artifact": candidate_evidence.name,
+                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                            candidate_evidence
+                        ),
+                    },
+                }
+            ],
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Continue exploring.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Designate from candidate evidence.",
+                "evidence": [candidate_evidence.name],
+            },
+        }
+    }
+
+    with pytest.raises(
+        ValueError, match="incumbent evidence in current lineage state"
+    ):
+        protocol.plan_previous_result_decision(proposal, state)
 
 
 def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_path):
@@ -762,7 +826,7 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Designate from comparable evidence.",
-                "evidence": [candidate_evidence.name, incumbent_evidence.name],
+                "evidence": [candidate_evidence.name],
             },
         }
     }

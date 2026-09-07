@@ -2136,22 +2136,23 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             catalog=evidence_catalog,
             description="best_known candidate",
         )
+        if cited != selected_evidence:
+            raise ValueError("best_known evidence includes an unrelated artifact")
         existing_best = state.get("best_known_lineage")
         if existing_best is not None and existing_best[
             "fingerprint"
         ] != repository.artifact_fingerprint(best_artifact):
-            incumbent_evidence = {
-                path
-                for path, record in evidence_catalog.items()
-                if record["model_fingerprint"] == existing_best["fingerprint"]
-            }
-            cited_incumbent_evidence = cited & incumbent_evidence
-            if not cited_incumbent_evidence:
+            recorded_incumbent_evidence = existing_best.get("evaluation_artifacts")
+            if not isinstance(recorded_incumbent_evidence, list) or not recorded_incumbent_evidence:
                 raise ValueError(
-                    "replacing best_known requires cited evidence for the incumbent"
+                    "replacing best_known requires incumbent evidence in current lineage state"
                 )
+            incumbent_evidence = {
+                repository.canonical_repo_path(str(path))
+                for path in recorded_incumbent_evidence
+            }
             incumbent_records = _validated_designation_evidence(
-                cited_incumbent_evidence,
+                incumbent_evidence,
                 expected_fingerprint=existing_best["fingerprint"],
                 catalog=evidence_catalog,
                 description="incumbent best_known",
@@ -2162,10 +2163,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 raise ValueError(
                     "replacing best_known requires compatible instrument and panel settings"
                 )
-            if cited - selected_evidence - cited_incumbent_evidence:
-                raise ValueError("best_known evidence includes an unrelated artifact")
-        elif cited != selected_evidence:
-            raise ValueError("best_known evidence includes an unrelated artifact")
         for path in cited:
             if not repository.resolve_repo_path(path).is_file():
                 raise ValueError(f"best_known evidence does not exist: {path}")

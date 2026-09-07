@@ -317,10 +317,12 @@ eligible lineage. For `restore`, `code.lineage` is required; for `keep` and
 `revert`, omit `code.lineage`. The exact currently valid parent and restore
 identifiers are listed in `research/brief.md`. `best_known` requires a candidate
 string, reason string, and non-empty string array of compatible
-development-evaluation artifact paths. Those paths may cite historical
-measurements for both the proposed model and incumbent. `retain` is an array of
-candidate/id/reason objects, `remove_retained` is an array of unique retained
-IDs, and `request_final_benchmark` is a boolean.
+development-evaluation artifact paths for the proposed best-known model. The
+Runner resolves incumbent evidence from the current best-known lineage state;
+the proposal does not repeat those paths. Comparable evidence is still required
+for both the proposed model and incumbent. `retain` is an array of
+candidate/id/reason objects, `remove_retained` is an array of unique retained IDs,
+and `request_final_benchmark` is a boolean.
 
 ## Request the official benchmark
 
