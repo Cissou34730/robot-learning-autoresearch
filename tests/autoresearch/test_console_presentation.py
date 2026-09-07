@@ -1,7 +1,9 @@
 """The AutoResearch console must read as a research loop of existing facts."""
 
 import json
+import re
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
@@ -51,6 +53,8 @@ TRAINING_LOG = """
 -----------------------------------------
 Model saved to models/candidates/experiment-2/model.zip
 """
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_runner_timestamp_uses_local_time(monkeypatch, capsys):
@@ -627,3 +631,34 @@ def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(
     assert "Parameter differences from `working`: not recorded" in section
     assert "Parameter differences from `best_known`: not recorded" in section
     assert "No current experiment checkpoints are recorded." in section
+
+
+def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded():
+    launcher = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+    grounding = (
+        "Read AGENTS.md, research/program.md, research/scenario.md, "
+        "research/instruments.md, and research/brief.md."
+    )
+
+    def prompt_block(name: str) -> str:
+        match = re.search(rf"\${name}\s*=\s*@\((.*?)\)\s*-join", launcher, re.DOTALL)
+        assert match is not None
+        return match.group(1)
+
+    for name in ("analysisPrompt", "evaluationPrompt", "decisionPrompt", "researchPrompt"):
+        assert grounding in prompt_block(name)
+
+    retry_deliverables = {
+        "analysisRetryPrompt": "research/evaluation_request.json",
+        "evaluationRetryPrompt": "research/evaluation_request.json",
+        "decisionRetryPrompt": "research/proposal.json",
+        "retryPrompt": "research/proposal.json",
+    }
+    for name, deliverable in retry_deliverables.items():
+        block = prompt_block(name)
+        assert grounding not in block
+        assert "same Researcher session context remains available" in block
+        assert "failed validation:" in block
+        assert "Correct only the invalid or missing" in block
+        assert deliverable in block
+        assert "Reread one relevant contract or state file only if" in block

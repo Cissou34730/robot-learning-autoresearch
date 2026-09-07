@@ -360,10 +360,8 @@ while ($true) {
             Write-Status "=== Analysis deliverable missing or invalid; retrying the same phase once ===" Yellow
             $analysisRetryPrompt = @(
                 "Current phase: post-training analysis for experiment $analysisExperiment. The previous deliverable failed validation: $analysisProblem."
-                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-                "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
-                "Revisit the original expected and contradicting observations, then update lessons, limits, open questions, and conditional next steps."
-                "Choose exactly one outcome: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json. Candidate-only measurement and closure without new measurements are valid."
+                "The same Researcher session context remains available. Correct only the invalid or missing deliverable: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json."
+                "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
             Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Continue
@@ -413,10 +411,9 @@ while ($true) {
                 Write-Status "=== Evaluation request missing or invalid; retrying the same phase once ===" Yellow
                 $evaluationRetryPrompt = @(
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. Do not exit without a corrected deliverable."
-                    "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-                    "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
-                    "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
-                    "Expected deliverable: complete research/evaluation_request.json using the contract in research/instruments.md."
+                    "The same Researcher session context remains available. Correct only the invalid or missing research/evaluation_request.json."
+                    "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
+                    "Expected deliverable: a complete research/evaluation_request.json."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
                 Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Continue
@@ -486,10 +483,8 @@ while ($true) {
             Write-Status "=== Lineage deliverable invalid; retrying the same phase once ===" Yellow
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage and scientific recipe. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
-                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-                "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
-                "Use the campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify the keep or revert decision."
-                "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json using the contracts in research/instruments.md."
+                "The same Researcher session context remains available. Correct only the invalid or missing experiment entry in research/postmortems.md and lineage-only research/proposal.json."
+                "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
             Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Continue
@@ -553,14 +548,9 @@ while ($true) {
         Write-Status "=== Research proposal missing or invalid; retrying the same phase once ===" Yellow
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
-            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
-            "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
-            "Code or configuration edits are required only when the selected operation calls for them."
-            "Preserve valid researcher-owned edits that belong to this unfinished experiment."
-            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment using the contract in research/instruments.md."
-            "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
+            "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, preserving valid researcher-owned edits that belong to this unfinished experiment."
+            "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
+            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Continue
