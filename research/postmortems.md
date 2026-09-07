@@ -12,23 +12,26 @@ Its matched research-panel result is 98.0% at both checkpoint-100352 and
 checkpoint-120832, with the same four failures. Experiment 5 used the
 unchanged recipe from a fresh seed but reached only 0.04 and 0.13 training
 success at those checkpoints, and 42.0% and 55.5% on the same 200-episode
-research panel. The episode-level comparison has 112 and 85 experiment-4-only
-successes and zero experiment-5-only successes at the two checkpoints; the
-four experiment-4 failures are shared. This makes a panel artifact or a
-late-checkpoint explanation unlikely, but one replication cannot distinguish
-an unusual seed from broader recipe or budget sensitivity. Development
-evidence still does not establish the official objective.
+research panel. Experiment 6 recovered more strongly, reaching 0.54 training
+success and 82.0% on that panel at checkpoint-120832, but it still learned
+late relative to experiment 4. Its 36 panel failures were all truncated at
+the episode horizon. The two fresh replications therefore show seed-sensitive
+outcomes, but do not distinguish an unusual seed from broader recipe or
+budget sensitivity. Development evidence still does not establish the
+official objective.
 
-**Open questions:** Whether experiment 5 is an unusually slow or failed
-training realization, or evidence that the current PPO recipe and budget are
-not reliably reproducible, remains unknown. Whether the shared four failures
-generalize beyond this research panel also remains unknown.
+**Open questions:** Whether experiments 5 and 6 are unusually slow training
+realizations, or evidence that the current PPO recipe and budget are not
+reliably reproducible, remains unknown. Whether the shared failure structure
+generalizes beyond this research panel also remains unknown.
 
 **Conditional next steps:** Keep experiment 4 checkpoint-100352 as the PPO
 baseline for a future intervention or continuation. If reproducibility is
 the next question, use another fresh seed or a longer continuation to separate
-seed variation from a budget or recipe limitation; do not treat either
-development result as the final benchmark verdict.
+seed variation from a budget or recipe limitation. A task-reference
+measurement could test panel dependence, but would not answer that
+training-process question or alter the current lineage decision. Do not treat
+development results as the final benchmark verdict.
 
 ## 6f3b5e54-dc1e-4502-bd86-3318074de79c / Experiment 3
 
@@ -95,6 +98,40 @@ failure seeds leave generalization and run-to-run reproducibility open.
 **Evidence inspected:** `research/results.jsonl`;
 `research/evaluations/6f3b5e54-dc1e-4502-bd86-3318074de79c/evaluation-6f3b5e54-dc1e-4502-bd86-3318074de79c-experiment-4-checkpoint-100352-200ep-seed4000-a65343bc54c5.json`;
 `research/evaluations/6f3b5e54-dc1e-4502-bd86-3318074de79c/evaluation-6f3b5e54-dc1e-4502-bd86-3318074de79c-experiment-4-checkpoint-120832-200ep-seed4000-a65343bc54c5.json`.
+
+## 6f3b5e54-dc1e-4502-bd86-3318074de79c / Experiment 6
+
+**Result:** Fresh replication partially recovered the PPO baseline but did not
+match experiment 4; the experiment-4 working and best-known lineages remain
+selected.
+
+**Observed behavior:** The training log stayed at zero success through 86,016
+steps, reached 0.06 at checkpoint-100352, 0.19 at checkpoint-110592, and
+0.54 at checkpoint-120832. The final checkpoint scored 82.0% on the compatible
+200-episode research panel with seed 4000. It had 36 failures, all truncated
+at 500 control steps.
+
+**Hypothesis assessment:** The expected observation was a comparable training
+trajectory and high matched-panel success, as in experiment 4. The late
+progressive recovery partly supports the expectation of eventual learning, but
+the delayed trajectory and 82.0% panel result contradict comparable
+performance at the fixed budget. The result is consistent with seed-sensitive
+learning speed and with a broader reproducibility or budget limitation; this
+single saved-policy measurement cannot distinguish them.
+
+**Interpretation:** The scientific evaluation question was whether experiment 6
+should replace the incumbent and whether its gap could be dismissed as a
+checkpoint or panel artifact. Its matched-panel result is below experiment 4's
+98.0% while above experiment 5's 55.5%, and the training log shows continued
+late improvement. This is sufficient to retain experiment 4 without another
+measurement round. A task-reference measurement could change the interpretation
+of panel dependence, but could not resolve the training-process question or
+justify replacing the incumbent. Another fresh seed or longer training belongs
+to a future experiment.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/evaluations/6f3b5e54-dc1e-4502-bd86-3318074de79c/evaluation-6f3b5e54-dc1e-4502-bd86-3318074de79c-experiment-6-checkpoint-120832-200ep-seed4000-a65343bc54c5.json`;
+`research/checkpoints/challengers/6f3b5e54-dc1e-4502-bd86-3318074de79c/experiment-6/checkpoint-120832/artifact.json`.
 
 ## 6f3b5e54-dc1e-4502-bd86-3318074de79c / Experiment 5
 
