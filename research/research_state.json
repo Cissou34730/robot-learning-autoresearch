@@ -7,9 +7,9 @@
     "started_at": "2026-09-07T07:52:13.260358+00:00"
   },
   "campaign_experiment_counters": {
-    "6f3b5e54-dc1e-4502-bd86-3318074de79c": 0
+    "6f3b5e54-dc1e-4502-bd86-3318074de79c": 1
   },
-  "last_allocated_experiment": 0,
+  "last_allocated_experiment": 1,
   "last_experiment": 0,
   "last_lineage_decision": null,
   "last_verdict": "fresh baseline pending after research reset",
@@ -21,7 +21,7 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "f1ed898d47569dfe4064eb6405dd3bf4cf568591",
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
