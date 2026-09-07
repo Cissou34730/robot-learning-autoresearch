@@ -47,6 +47,20 @@ def test_linear_hold_progress_reward_pays_completion():
     assert done - late == pytest.approx(HOLD_COMPLETE_BONUS)
 
 
+def test_stability_bonus_favors_deeper_tolerance(monkeypatch):
+    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "HOLD_PROGRESS_BONUS", 0.0)
+    monkeypatch.setattr(reward_module, "HOLD_COMPLETE_BONUS", 0.0)
+
+    centered = reach_reward(0.02, 0.002, 0.01).total
+    edge = reach_reward(0.02, 0.009, 0.01).total
+    outside = reach_reward(0.02, 0.011, 0.01).total
+
+    assert centered > edge > outside
+    assert outside == pytest.approx(0.0)
+
+
 def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
