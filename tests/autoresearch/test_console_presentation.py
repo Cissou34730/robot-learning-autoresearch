@@ -1,10 +1,11 @@
 """The AutoResearch console must read as a research loop of existing facts."""
 
 import json
+from datetime import datetime
 
 import pytest
 
-from research import run_experiment
+from research import run_experiment, runner_console
 from research.build_research_brief import render_research_brief
 from research.runner_console import (
     render_decision_card,
@@ -50,6 +51,20 @@ TRAINING_LOG = """
 -----------------------------------------
 Model saved to models/candidates/experiment-2/model.zip
 """
+
+
+def test_runner_timestamp_uses_local_time(monkeypatch, capsys):
+    class FixedLocalDateTime:
+        @classmethod
+        def now(cls, timezone=None):
+            assert timezone is None
+            return datetime(2026, 9, 7, 0, 12, 34)
+
+    monkeypatch.setattr(runner_console, "datetime", FixedLocalDateTime)
+
+    runner_console.announce("[checks] passed")
+
+    assert capsys.readouterr().out == "[00:12:34] [checks] passed\n"
 
 
 def test_extracted_parser_reads_every_snapshot():

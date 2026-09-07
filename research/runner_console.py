@@ -5,7 +5,7 @@ measured. It never adds a scientific conclusion of its own.
 """
 
 import sys
-from datetime import UTC, datetime
+from datetime import datetime
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
@@ -49,7 +49,7 @@ def _style_card_sections(text: str) -> str:
 def announce(message: str) -> None:
     leading_break = "\n" if message.startswith("\n") else ""
     text = message.lstrip("\n")
-    timestamp = f"[{datetime.now(UTC):%H:%M:%S}]"
+    timestamp = f"[{datetime.now():%H:%M:%S}]"
     if sys.stdout.isatty() and text.startswith("==="):
         title, separator, remainder = text.partition("\n")
         text = f"{_CYAN}{timestamp} {title}{_RESET}{separator}{_style_card_sections(remainder)}"
