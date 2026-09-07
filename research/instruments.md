@@ -304,18 +304,23 @@ Write a lineage-only `research/proposal.json`:
 `best_known`, `retain`, `remove_retained`, and `request_final_benchmark` are
 optional. Omitted `best_known` preserves the existing best-known lineage; it does
 not promote `continue_from`. This request selects the working model, chooses the
-code action, and manages retained lineages. Unretained model artifacts are
-removed; their recorded history and measurements remain.
+scientific recipe action, and manages retained lineages. Unretained model
+artifacts are removed; their recorded history and measurements remain.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
-non-empty strings. `code.action` is one of `keep`, `revert`, or `restore`.
-For `restore`, `code.lineage` is required and names `working`, `best_known`, or a
-retained lineage ID; for `keep` and `revert`, omit `code.lineage`. `best_known`
-requires a candidate string, reason string, and non-empty string array of
-compatible development-evaluation artifact paths. Those paths may cite
-historical measurements for both the proposed model and incumbent. `retain` is
-an array of candidate/id/reason objects, `remove_retained` is an array of unique
-retained IDs, and `request_final_benchmark` is a boolean.
+non-empty strings. The compatible field name `code.action` controls the complete
+researcher-owned scientific recipe: researcher-owned source, tests, and
+`research/current_params.json`. `keep` keeps the experiment's complete
+scientific recipe; `revert` restores the scientific parent's complete recipe;
+and `restore` restores the complete recipe associated with the explicitly named
+eligible lineage. For `restore`, `code.lineage` is required; for `keep` and
+`revert`, omit `code.lineage`. The exact currently valid parent and restore
+identifiers are listed in `research/brief.md`. `best_known` requires a candidate
+string, reason string, and non-empty string array of compatible
+development-evaluation artifact paths. Those paths may cite historical
+measurements for both the proposed model and incumbent. `retain` is an array of
+candidate/id/reason objects, `remove_retained` is an array of unique retained
+IDs, and `request_final_benchmark` is a boolean.
 
 ## Request the official benchmark
 

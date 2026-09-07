@@ -103,11 +103,16 @@ The phase order is:
 2. Runner training;
 3. post-training analysis, which may request and execute one or more measurement
    rounds or close directly from logs and existing evidence;
-4. close the experiment and resolve its working lineage, code decision, and
-   optional best-known designation;
+4. close the experiment and resolve its working lineage, scientific recipe
+   decision, and optional best-known designation;
 5. optional Runner execution of the final benchmark through the closure
    decision;
 6. prepare the next experiment.
+
+The lineage deliverable retains the compatible field name `code.action`, but the
+action applies to the complete researcher-owned scientific recipe: source,
+tests, and `research/current_params.json`. Keeping, reverting, or restoring that
+recipe never applies to source code alone.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Runner

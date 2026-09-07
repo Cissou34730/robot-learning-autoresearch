@@ -27,7 +27,7 @@ _SECTION_HEADINGS = frozenset(
         "Task reference",
         "Paired comparison",
         "Continue from",
-        "Code",
+        "Scientific recipe",
         "Retained alternatives",
         "Removed retained alternatives",
         "Final benchmark",
@@ -49,7 +49,7 @@ def _style_card_sections(text: str) -> str:
 def announce(message: str) -> None:
     leading_break = "\n" if message.startswith("\n") else ""
     text = message.lstrip("\n")
-    timestamp = f"[{datetime.now():%H:%M:%S}]"
+    timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
     if sys.stdout.isatty() and text.startswith("==="):
         title, separator, remainder = text.partition("\n")
         text = f"{_CYAN}{timestamp} {title}{_RESET}{separator}{_style_card_sections(remainder)}"
@@ -304,7 +304,7 @@ def render_decision_card(plan: dict) -> str:
             "Best-known model",
             plan.get("best_known_name") or "unchanged",
             "",
-            "Code",
+            "Scientific recipe",
             plan["code_action"],
             "",
             "Final benchmark",
@@ -324,7 +324,7 @@ def render_decision_card(plan: dict) -> str:
         "Reason",
         str(plan["decision"]["reason"]).strip(),
         "",
-        "Code",
+        "Scientific recipe",
         plan["code_action"],
         "",
         "Retained alternatives",

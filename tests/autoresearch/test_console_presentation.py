@@ -58,7 +58,7 @@ def test_runner_timestamp_uses_local_time(monkeypatch, capsys):
         @classmethod
         def now(cls, timezone=None):
             assert timezone is None
-            return datetime(2026, 9, 7, 0, 12, 34)
+            return datetime(2026, 9, 7, 0, 12, 34)  # noqa: DTZ001
 
     monkeypatch.setattr(runner_console, "datetime", FixedLocalDateTime)
 
@@ -351,7 +351,7 @@ def test_decision_card_shows_the_researcher_decision_only():
     assert card.startswith("=== Research decision · Experiment 2 ===")
     assert "Continue from\ncheckpoint-120832" in card
     assert "The candidate improves the measured behavior sufficiently." in card
-    assert "Code\nkeep" in card
+    assert "Scientific recipe\nkeep" in card
     assert "Retained alternatives\n  none" in card
     assert "Final benchmark\nnot requested" in card
     assert "Hypothesis supported" not in card
@@ -499,3 +499,131 @@ def test_brief_names_the_active_method_without_dumping_its_configuration(
     assert "## Current parameters" not in brief
     assert "learning_rate" not in brief
     assert "exploration_bonus" not in brief
+
+
+def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
+    monkeypatch, tmp_path
+):
+    current_params = {
+        "algorithm": {"name": "ppo"},
+        "ppo": {"learning_rate": 0.0003},
+    }
+    working = {
+        "candidate": "checkpoint-working",
+        "origin_experiment": 2,
+        "training_steps": 2000,
+        "artifact": "research/checkpoints/working",
+        "fingerprint": "working-fingerprint",
+        "scientific_commit": "working-commit",
+        "parameters": {
+            "algorithm": {"name": "ppo"},
+            "ppo": {"learning_rate": 0.0001},
+        },
+        "evaluation_artifacts": ["research/evaluations/working.json"],
+    }
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "base_commit": "base"},
+        "working_lineage": working,
+        "best_known_lineage": {
+            "candidate": "checkpoint-best",
+            "origin_experiment": 1,
+            "training_steps": 1000,
+            "artifact": "research/checkpoints/best",
+            "fingerprint": "best-fingerprint",
+            "scientific_commit": "best-commit",
+            "parameters": current_params,
+            "evaluation_artifacts": ["research/evaluations/best.json"],
+        },
+        "retained_lineages": [
+            {
+                "id": "alternate",
+                "candidate": "checkpoint-alternate",
+                "origin_experiment": 1,
+                "training_steps": 800,
+                "artifact": "research/checkpoints/alternate",
+                "fingerprint": "alternate-fingerprint",
+                "scientific_commit": "alternate-commit",
+                "parameters": current_params,
+                "evaluation_artifacts": ["research/evaluations/alternate.json"],
+            }
+        ],
+        "pending_analysis": {
+            "experiment": 3,
+            "result": {"index": 3},
+            "candidates": [
+                {
+                    "name": "checkpoint-current",
+                    "timesteps": 3000,
+                    "artifact": "models/candidates/current",
+                }
+            ],
+        },
+    }
+    (tmp_path / "current_params.json").write_text(
+        json.dumps(current_params), encoding="utf-8"
+    )
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+
+    section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
+        "## Latest experiment", 1
+    )[0]
+    assert "Valid `training_parent` identifiers: `working`, `best_known`, `alternate`" in section
+    assert "`checkpoint-current`" not in section.split(
+        "### Current experiment checkpoints available for measurement", 1
+    )[0]
+    for expected in (
+        "Candidate: checkpoint-working",
+        "Origin experiment: 2",
+        "Accumulated training steps: 2000",
+        "Artifact: `research/checkpoints/working`",
+        "Model fingerprint: working-fingerprint",
+        "Scientific commit: working-commit",
+        'Effective parameters: {"algorithm":{"name":"ppo"},"ppo":{"learning_rate":0.0001}}',
+        "Recorded evaluation artifacts: `research/evaluations/working.json`",
+        "`alternate`",
+        "`ppo.learning_rate`: lineage 0.0001; current 0.0003",
+        "Parameter differences from `best_known`: none",
+        "`checkpoint-current`: 3000 training steps",
+    ):
+        assert expected in section
+
+
+def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(
+    monkeypatch, tmp_path
+):
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "base_commit": "base"},
+        "working_lineage": {"candidate": "checkpoint-working"},
+    }
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+
+    section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
+        "## Latest experiment", 1
+    )[0]
+    assert "Valid `training_parent` identifiers: `working`" in section
+    assert "Origin experiment: not recorded" in section
+    assert "Artifact: not recorded" in section
+    assert "Model fingerprint: not recorded" in section
+    assert "Scientific commit: not recorded" in section
+    assert "Effective parameters: not recorded" in section
+    assert "Recorded evaluation artifacts: not recorded" in section
+    assert "Parameter differences from `working`: not recorded" in section
+    assert "Parameter differences from `best_known`: not recorded" in section
+    assert "No current experiment checkpoints are recorded." in section

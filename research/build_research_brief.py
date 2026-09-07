@@ -297,6 +297,139 @@ def _v4_lineage_lines(label: str, lineage: dict | None) -> list[str]:
     ]
 
 
+def _stable_json(value: object) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+
+
+def _recorded_value(value: object) -> str:
+    if value is None or value == "":
+        return "not recorded"
+    return str(value)
+
+
+def _recorded_path(value: object) -> str:
+    if value is None or value == "":
+        return "not recorded"
+    return f"`{str(value).replace('\\', '/')}`"
+
+
+def _flatten_parameters(parameters: dict, prefix: str = "") -> dict[str, object]:
+    flattened: dict[str, object] = {}
+    for key, value in parameters.items():
+        path = f"{prefix}.{key}" if prefix else str(key)
+        if isinstance(value, dict):
+            flattened.update(_flatten_parameters(value, path))
+        else:
+            flattened[path] = value
+    return flattened
+
+
+def _parameter_differences(current: dict, lineage: dict | None) -> str:
+    if not isinstance(lineage, dict) or not isinstance(lineage.get("parameters"), dict):
+        return "not recorded"
+    current_values = _flatten_parameters(current)
+    lineage_values = _flatten_parameters(lineage["parameters"])
+    missing = object()
+    differences = []
+    for path in sorted(current_values.keys() | lineage_values.keys()):
+        current_value = current_values.get(path, missing)
+        lineage_value = lineage_values.get(path, missing)
+        if current_value == lineage_value:
+            continue
+        rendered_lineage = (
+            "not recorded" if lineage_value is missing else _stable_json(lineage_value)
+        )
+        rendered_current = (
+            "not recorded" if current_value is missing else _stable_json(current_value)
+        )
+        differences.append(
+            f"`{path}`: lineage {rendered_lineage}; current {rendered_current}"
+        )
+    return "; ".join(differences) or "none"
+
+
+def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
+    evaluation_artifacts = lineage.get("evaluation_artifacts")
+    evidence = (
+        ", ".join(_recorded_path(path) for path in evaluation_artifacts)
+        if isinstance(evaluation_artifacts, list) and evaluation_artifacts
+        else "not recorded"
+    )
+    parameters = lineage.get("parameters")
+    return [
+        f"- `{identifier}`",
+        f"  - Candidate: {_recorded_value(lineage.get('candidate'))}",
+        f"  - Origin experiment: {_recorded_value(lineage.get('origin_experiment'))}",
+        f"  - Accumulated training steps: {_recorded_value(lineage.get('training_steps'))}",
+        f"  - Artifact: {_recorded_path(lineage.get('artifact'))}",
+        f"  - Model fingerprint: {_recorded_value(lineage.get('fingerprint'))}",
+        f"  - Scientific commit: {_recorded_value(lineage.get('scientific_commit'))}",
+        "  - Effective parameters: "
+        + (_stable_json(parameters) if isinstance(parameters, dict) else "not recorded"),
+        f"  - Recorded evaluation artifacts: {evidence}",
+    ]
+
+
+def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> list[str]:
+    working = state.get("working_lineage")
+    best_known = state.get("best_known_lineage")
+    retained = [
+        lineage
+        for lineage in state.get("retained_lineages", [])
+        if isinstance(lineage, dict) and lineage.get("id")
+    ]
+    lineages = [
+        *(([("working", working)]) if isinstance(working, dict) else []),
+        *(([("best_known", best_known)]) if isinstance(best_known, dict) else []),
+        *((str(lineage["id"]), lineage) for lineage in retained),
+    ]
+    identifiers = ", ".join(f"`{identifier}`" for identifier, _ in lineages)
+    lines = [
+        "## Current lineages and scientific recipes",
+        "",
+        f"- Valid `training_parent` identifiers: {identifiers or 'not recorded'}",
+        "",
+        "### Lineages",
+        "",
+    ]
+    if lineages:
+        for identifier, lineage in lineages:
+            lines.extend(_authoritative_lineage_lines(identifier, lineage))
+    else:
+        lines.append("No current lineage is recorded.")
+    lines.extend(
+        [
+            "",
+            "### Effective scientific recipe in the current worktree",
+            "",
+            "- Researcher-owned source and tests: current worktree",
+            f"- Effective parameters: {_stable_json(current_params)}",
+            "- Parameter differences from `working`: "
+            + _parameter_differences(current_params, working),
+            "- Parameter differences from `best_known`: "
+            + _parameter_differences(current_params, best_known),
+            "",
+            "### Current experiment checkpoints available for measurement",
+            "",
+        ]
+    )
+    candidates = (
+        state.get("pending_analysis", {}).get("candidates", [])
+        if isinstance(state.get("pending_analysis"), dict)
+        else []
+    )
+    if candidates:
+        for candidate in candidates:
+            lines.append(
+                f"- `{_recorded_value(candidate.get('name'))}`: "
+                f"{_recorded_value(candidate.get('timesteps'))} training steps; "
+                f"artifact {_recorded_path(candidate.get('artifact'))}"
+            )
+    else:
+        lines.append("No current experiment checkpoints are recorded.")
+    return lines
+
+
 def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
     records: dict[str, str] = {}
     if isinstance(pending, dict):
@@ -365,6 +498,7 @@ def _render_v4_research_brief(
     campaign_id: str | None,
     campaign_base_commit: str | None,
     current_method: str,
+    current_params: dict,
 ) -> str:
     pending = state.get("pending_analysis")
     latest = pending.get("result") if isinstance(pending, dict) else (results[-1] if results else None)
@@ -396,6 +530,8 @@ def _render_v4_research_brief(
     ]
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
+
+    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
@@ -535,7 +671,13 @@ def render_research_brief() -> str:
 
     if state.get("schema_version") == 4:
         return _render_v4_research_brief(
-            state, results, postmortems, campaign_id, campaign_base_commit, current_method
+            state,
+            results,
+            postmortems,
+            campaign_id,
+            campaign_base_commit,
+            current_method,
+            params,
         )
 
     accepted_metrics = state.get("accepted_metrics")

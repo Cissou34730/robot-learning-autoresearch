@@ -455,12 +455,12 @@ while ($true) {
 
     if ($null -ne $researchState.pending_researcher_decision) {
         Update-ResearchBrief
-        Write-Status "=== Researcher resolving lineage for experiment $($researchState.pending_researcher_decision.experiment) ==="
+        Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
-            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage. Do not exit without the required deliverables."
+            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
-            "Use those campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
+            "Use those campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify the keep or revert decision."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -472,10 +472,10 @@ while ($true) {
             $lineageProblem = $lineageStatus.Reason
             Write-Status "=== Lineage deliverable invalid; retrying the same phase once ===" Yellow
             $decisionRetryPrompt = @(
-                "Current phase: close experiment $pendingExperiment and resolve its lineage. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
+                "Current phase: close experiment $pendingExperiment and resolve its lineage and scientific recipe. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
-                "Use the campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's code delta is needed to justify the keep or revert decision."
+                "Use the campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify the keep or revert decision."
                 "Correct the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json using the contracts in research/instruments.md."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
