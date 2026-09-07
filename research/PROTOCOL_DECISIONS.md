@@ -33,6 +33,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Contradictory evidence:** The Researcher explicitly interprets resolved,
   still-useful, or inconclusive investigations; the Runner does not choose a
   scientific stop or continuation decision.
+- **Replication summaries:** Completed replication measurements are reported
+  from the experiment result's research and task-reference evidence, while
+  genuinely empty result-level evidence remains unmeasured.
 
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 

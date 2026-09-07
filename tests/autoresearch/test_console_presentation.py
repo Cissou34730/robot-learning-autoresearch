@@ -212,6 +212,79 @@ def test_v4_training_summary_advances_to_post_training_analysis():
     assert "Next\n  Researcher post-training analysis" in card
 
 
+def test_v4_replication_brief_reports_result_level_measurements(monkeypatch, tmp_path):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "research_state.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 4,
+                "campaign": {"id": "campaign", "base_commit": "base"},
+                "last_verdict": "awaiting analysis",
+            }
+        ),
+        encoding="utf-8",
+    )
+    results = [
+        {
+            "index": 1,
+            "replication_of": None,
+            "training_seed": 10,
+            "requested_evaluations": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "checkpoint-a",
+                    "metrics": {"episodes": 20, "seed": 100, "success_percent": 55.0},
+                }
+            ],
+        },
+        {
+            "index": 2,
+            "replication_of": 1,
+            "training_seed": 11,
+            "task_reference_evaluations": [
+                {
+                    "instrument": "task_reference",
+                    "candidate": "checkpoint-b",
+                    "panel": "held-out",
+                    "episodes": 30,
+                    "seed": 200,
+                    "success_percent": 65.0,
+                }
+            ],
+        },
+        {
+            "index": 3,
+            "replication_of": 1,
+            "training_seed": 12,
+            "requested_evaluations": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "checkpoint-c",
+                    "metrics": {"episodes": 40, "seed": 300, "success_percent": 75.0},
+                }
+            ],
+        },
+        {"index": 4, "replication_of": 1, "training_seed": 13},
+    ]
+    for result in results:
+        result["campaign_id"] = "campaign"
+    (research_dir / "results.jsonl").write_text(
+        "\n".join(json.dumps(result) for result in results) + "\n", encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    rendered = render_research_brief()
+
+    assert "experiment 1, seed 10, checkpoint-a, research_evaluation, seed 100, 20 episodes, success 55.00%" in rendered
+    assert "experiment 2, seed 11, checkpoint-b, task_reference/held-out, seed 200, 30 episodes, success 65.00%" in rendered
+    assert "experiment 3, seed 12, checkpoint-c, research_evaluation, seed 300, 40 episodes, success 75.00%" in rendered
+    assert "experiment 4, seed 13, unmeasured" in rendered
+
+
 def test_runner_no_longer_dumps_the_structured_result_to_the_console():
     source = run_experiment.__file__
     with open(source, encoding="utf-8") as handle:

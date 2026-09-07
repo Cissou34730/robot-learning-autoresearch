@@ -256,15 +256,28 @@ def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
     ]
 
 
-def _v4_measurements(candidate: dict) -> str:
-    evaluations = candidate.get("evaluations") or []
+def _v4_result_measurements(result: dict) -> str:
+    evaluations: list[dict] = []
+    for requested in result.get("requested_evaluations") or []:
+        metrics = requested.get("metrics") or {}
+        evaluations.append(
+            {
+                "candidate": requested.get("candidate", "-"),
+                "instrument": requested.get("instrument", "research_evaluation"),
+                **metrics,
+            }
+        )
+    evaluations.extend(result.get("task_reference_evaluations") or [])
     if not evaluations:
         return "unmeasured"
     panels = []
     for evaluation in evaluations:
         success = evaluation.get("success_percent")
+        instrument = evaluation.get("instrument", "research_evaluation")
+        panel = evaluation.get("panel")
+        measurement = f"{instrument}{f'/{panel}' if panel else ''}"
         result = (
-            f"{evaluation.get('panel', 'research_evaluation')}, "
+            f"{evaluation.get('candidate', '-')}, {measurement}, "
             f"seed {evaluation.get('seed', '-')}, "
             f"{evaluation.get('episodes', '-')} episodes"
         )
@@ -635,7 +648,7 @@ def _render_v4_research_brief(
         for original, entries in groups:
             facts = "; ".join(
                 f"experiment {entry.get('index')}, seed {entry.get('training_seed', '-')}, "
-                f"{_compact(_v4_measurements((entry.get('candidates') or [{}])[-1]), 100)}"
+                f"{_compact(_v4_result_measurements(entry), 180)}"
                 for entry in entries
             )
             lines.append(f"- Replication group `{original}`: {facts}")
