@@ -2707,7 +2707,7 @@ def test_researcher_guidance_keeps_git_out_of_the_scientific_evidence_surface():
     assert "inspect files and Git history" not in normalized_agents
 
     assert LOOP.count("evaluation design normally requires no Git inspection") == 2
-    assert LOOP.count("current experiment's code delta") == 2
+    assert LOOP.count("current experiment's scientific recipe delta") == 2
     assert LOOP.count("requires understanding the current code state or delta") == 2
     for routine_command in ("git log", "git show", "git blame"):
         assert routine_command not in LOOP.lower()
@@ -2747,6 +2747,25 @@ repeatedly rediscovering it."""
 def test_experiment_preparation_retry_avoids_vague_repository_discovery():
     assert "inspect the relevant repository state" not in LOOP
     assert LOOP.count("requires understanding the current code state or delta") == 2
+
+
+def test_post_training_refinement_is_optional_and_scoped_to_current_experiment():
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
+    normalized_instruments = " ".join(instruments.split())
+
+    assert "initial post-training analysis for trained experiment" in LOOP
+    assert "optional evaluation refinement while closing trained experiment" in LOOP
+    assert "request that measurement, or close if current evidence is sufficient" in LOOP
+    assert "eligible saved lineages can be remeasured" in LOOP
+    assert "no diagnostic code change or particular metric is required" in LOOP
+    assert "only while closing this current trained experiment" in LOOP
+    assert "No additional round is required" in PROGRAM
+    assert "existing `research/evaluation_request.json`" in PROGRAM
+    assert (
+        "No diagnostic code change or particular instrument is required"
+        in normalized_instruments
+    )
+    assert "mechanism_evaluation_request" not in PROGRAM + instruments + LOOP
 
 
 def test_protocol_default_context_names_only_authoritative_context():

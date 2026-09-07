@@ -331,10 +331,23 @@ while ($true) {
             continue
         }
         Remove-Item "research\evaluation_request.json", "research\proposal.json" -ErrorAction SilentlyContinue
+        $completedMeasurementCount = @($researchState.pending_analysis.requested_evaluations).Count +
+            @($researchState.pending_analysis.partial_evaluations).Count +
+            @($researchState.pending_analysis.task_reference_evaluations).Count +
+            @($researchState.pending_analysis.partial_task_reference_evaluations).Count
+        $analysisPhasePrompt = if ($completedMeasurementCount -gt 0) {
+            "Current phase: optional evaluation refinement while closing trained experiment $analysisExperiment."
+        }
+        else {
+            "Current phase: initial post-training analysis for trained experiment $analysisExperiment."
+        }
         $analysisPrompt = @(
-            "Current phase: post-training analysis for experiment $analysisExperiment. Completed training must now be understood before choosing the next scientific action."
+            $analysisPhasePrompt
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Reason in this order: inspect what happened during training; state the scientific question; identify which measurement could change the interpretation; request that measurement, or close if current evidence is sufficient."
             "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
+            "Current candidates and eligible saved lineages can be remeasured through the existing request flow. If the relevant quantity is not currently emitted, you may modify researcher-owned measurement instrumentation before requesting it; no diagnostic code change or particular metric is required."
+            "Additional measurement rounds are optional and available only while closing this current trained experiment."
             "Revisit the original expected and contradicting observations, then update lessons, limits, open questions, and conditional next steps."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
             "Further training is a valid next experiment after closure; do not prepare that proposal now. Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."

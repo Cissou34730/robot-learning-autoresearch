@@ -146,13 +146,23 @@ Researcher never launches training.
 
 ## Post-training analysis
 
-After training, determine what happened using checkpoint inventory, logs, and
-existing evidence. Request measurements only when they answer an unresolved
-scientific question by writing `research/evaluation_request.json`; the Runner
-validates and executes the request and preserves detailed artifacts. Analysis may
-instead close directly with a postmortem and closure proposal. A request may
-measure only a candidate or may compare models when comparison serves the
-question.
+After training, follow this reasoning order while closing the current trained
+experiment: inspect the training outcome and available evidence; formulate the
+scientific question for evaluation; request the measurement that can distinguish
+the competing explanations; if evidence remains insufficient, optionally modify
+researcher-owned instrumentation and request another measurement round on saved
+policies; close when the evidence supports a decision. Request measurements by
+writing the existing `research/evaluation_request.json`; the Runner validates and
+executes the request and preserves detailed artifacts. Current candidates and
+eligible saved lineages may be measured through this existing flow.
+
+Additional measurement rounds are available only during post-training analysis
+of the current trained experiment. If a proposed mechanism depends on an
+unmeasured quantity observable on saved policies, measure it before launching a
+mechanism-specific intervention. No additional round is required when available
+evidence already answers the scientific question, and analysis may close
+directly with a postmortem and closure proposal. A request may measure only a
+candidate or may compare models when comparison serves the question.
 
 Revisit the proposal's original expected and contradicting observations when
 writing the hypothesis assessment. Update the scientific strategy's lessons,
@@ -163,7 +173,8 @@ no particular diagnostic or action sequence is mandatory.
 
 The phase may contain multiple measurement rounds. Completed measurements remain
 available across rounds, and each completed round returns to analysis. There is
-no fake empty evaluation and no automatic next measurement.
+no fake empty evaluation, mandatory refinement round, required instrument, or
+automatic next measurement.
 
 Research and task-reference panels are development measurements and never
 declare the objective reached. They may inform research decisions, but repeated

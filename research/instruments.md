@@ -79,11 +79,21 @@ observation layout. Task mechanics and success measurement remain shared.
 
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
-During post-training analysis, the Researcher may modify researcher-owned measurement and analysis code before requesting another measurement round. Changes affecting training apply to the next experiment.
+During post-training analysis and its optional refinement rounds, the Researcher
+may modify researcher-owned measurement and analysis code before requesting
+another measurement round. The existing request flow can measure current
+candidates and eligible saved lineages. No diagnostic code change or particular
+instrument is required. Changes affecting training apply to the next experiment.
 
 ## Request measurements
 
 **Phase:** Post-training analysis.
+
+Use this existing request during initial analysis or an optional refinement round
+while closing the current trained experiment. State the scientific question,
+then select measurements that can change its interpretation; when the relevant
+quantity is not currently emitted, researcher-owned instrumentation may be
+changed before submitting the request.
 
 Write `research/evaluation_request.json`:
 
