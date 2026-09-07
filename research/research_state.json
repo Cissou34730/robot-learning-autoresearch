@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/115b9b38-87af-4418-b5e0-75ebc30019dc/e1-cada55eb5-16ca85dc0c6b2270f2c4dd6616bee48de1c473c9ee62d09444eebdc655845599",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-100352-200ep-seed0-d72ec900e7de.json",
-      "research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-100352-200ep-seed1-d72ec900e7de.json"
-    ],
-    "fingerprint": "16ca85dc0c6b2270f2c4dd6616bee48de1c473c9ee62d09444eebdc655845599",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the strongest measured candidate: 97.0% on both compatible 200-episode seeds versus 96.5% for the later checkpoint, with the paired comparison favoring it by two episodes.",
-    "scientific_commit": "65e82ee0d48b2fb03e5d3ea5cacc1a58b646b45a",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "5ed53f5e0f9ef4c034a081b340783d3125b625ce",
-    "id": "115b9b38-87af-4418-b5e0-75ebc30019dc",
+    "base_commit": "647f87ac9b40fa4cdc9aa7dab3c41f1548f12c51",
+    "id": "10469e2d-31ee-4afe-a37b-5a24da0d14bb",
     "recipe_source_commit": "c46ec8951612b03c8906045803e33f5f98f2cae7",
-    "started_at": "2026-09-07T14:50:45.349329+00:00"
+    "started_at": "2026-09-07T16:36:11.154460+00:00"
   },
   "campaign_experiment_counters": {
-    "115b9b38-87af-4418-b5e0-75ebc30019dc": 1
+    "10469e2d-31ee-4afe-a37b-5a24da0d14bb": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "This was a fresh baseline with no researcher-owned intervention to revert. Keep the current scientific recipe as the provenance for the selected baseline lineage."
-    },
-    "code_parent_commit": "65e82ee0d48b2fb03e5d3ea5cacc1a58b646b45a",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Use checkpoint-100352 as the working policy because it achieved 97.0% on both compatible 200-episode research evaluations, while checkpoint-120832 achieved 96.5% on both and lost one paired episode. The selected lineage is the strongest measured evidence and is the appropriate parent for a next experiment targeting the persistent difficult-target failures."
-  },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,51 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "65e82ee0d48b2fb03e5d3ea5cacc1a58b646b45a",
-    "experiment": 1,
-    "scientific_commit": "65e82ee0d48b2fb03e5d3ea5cacc1a58b646b45a"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/115b9b38-87af-4418-b5e0-75ebc30019dc/e1-cada55eb5-16ca85dc0c6b2270f2c4dd6616bee48de1c473c9ee62d09444eebdc655845599",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-100352-200ep-seed0-d72ec900e7de.json",
-      "research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-100352-200ep-seed1-d72ec900e7de.json"
-    ],
-    "fingerprint": "16ca85dc0c6b2270f2c4dd6616bee48de1c473c9ee62d09444eebdc655845599",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Use checkpoint-100352 as the working policy because it achieved 97.0% on both compatible 200-episode research evaluations, while checkpoint-120832 achieved 96.5% on both and lost one paired episode. The selected lineage is the strongest measured evidence and is the appropriate parent for a next experiment targeting the persistent difficult-target failures.",
-    "scientific_commit": "65e82ee0d48b2fb03e5d3ea5cacc1a58b646b45a",
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
