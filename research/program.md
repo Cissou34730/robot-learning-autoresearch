@@ -128,9 +128,8 @@ The phase order is:
    rounds or close directly from logs and existing evidence;
 4. close the experiment and resolve its working lineage, scientific recipe
    decision, and optional best-known designation;
-5. optional Runner execution of the final benchmark through the closure
-   decision;
-6. prepare the next experiment.
+5. either prepare the next experiment, or request Runner execution of the final
+   benchmark as a terminal campaign action through the closure decision.
 
 The lineage deliverable retains the compatible field name `code.action`, but the
 action applies to the complete researcher-owned scientific recipe: source,
@@ -239,7 +238,12 @@ every run.
 
 The final benchmark may be requested only through closure and targets the frozen
 best-known model. It is the terminal objective verdict and does not select a
-lineage or become routine evidence for a next hypothesis.
+lineage or become routine evidence for a next hypothesis. Requesting it ends the
+campaign after either verdict. Request it only when the Researcher intends no
+next experiment in this campaign; never use a failed verdict as a gate for
+choosing the next hypothesis. This states the operational consequence and does
+not give the Runner authority to decide whether another scientific path is
+useful.
 
 ## Validation and recovery
 
@@ -255,4 +259,6 @@ work and does not create a scientific decision or alter phase order.
 Continue while a scientifically useful path remains. Training metrics,
 development measurements, individual checkpoints, subsets and seeds are not
 success. Stop only when the official benchmark declares the objective reached
-or no scientifically useful path remains to report.
+or no scientifically useful path remains to report. When a useful next
+experiment remains, close the current experiment without requesting the terminal
+benchmark and proceed to experiment preparation.

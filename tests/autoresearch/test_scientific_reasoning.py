@@ -336,3 +336,16 @@ def test_documented_training_example_and_memory_match_the_contract(
         )
         == "training"
     )
+
+
+def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
+    root = Path(__file__).resolve().parents[2]
+    program = (root / "research/program.md").read_text(encoding="utf-8")
+    instruments = (root / "research/instruments.md").read_text(encoding="utf-8")
+
+    assert "Requesting it ends the\ncampaign after either verdict" in program
+    assert "When a useful next\nexperiment remains" in program
+    assert "does\nnot give the Runner authority" in program
+    assert "the campaign ends after either `goal_reached` or\n`goal_not_reached`" in instruments
+    assert "not a Runner judgment\nabout whether further research" in instruments
+    assert "not an experiment-selection probe" in instruments

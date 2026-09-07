@@ -33,6 +33,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Contradictory evidence:** The Researcher explicitly interprets resolved,
   still-useful, or inconclusive investigations; the Runner does not choose a
   scientific stop or continuation decision.
+- **Terminal assessment:** A closure either proceeds to another experiment or
+  requests the official benchmark as a terminal campaign action. The benchmark
+  ends the campaign after either verdict and is never a conditional probe for
+  selecting the next hypothesis; the Researcher retains authority over whether
+  a scientifically useful path remains.
 - **Replication summaries:** Completed replication measurements are reported
   from the experiment result's research and task-reference evidence, while
   genuinely empty result-level evidence remains unmeasured.

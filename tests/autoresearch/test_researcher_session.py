@@ -298,6 +298,13 @@ def test_launcher_stops_for_either_terminal_official_assessment():
     assert "break" in terminal_guard
 
 
+def test_post_training_prompt_distinguishes_continuation_from_terminal_assessment():
+    assert "Omit request_final_benchmark or set it to false" in LOOP
+    assert "ends this campaign after the official benchmark regardless" in LOOP
+    assert "goal_reached or goal_not_reached" in LOOP
+    assert "never use that terminal result as a gate" in LOOP
+
+
 # --- the evaluation-request preflight --------------------------------------
 
 

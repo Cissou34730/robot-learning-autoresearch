@@ -354,6 +354,13 @@ not promote `continue_from`. This request selects the working model, chooses the
 scientific recipe action, and manages retained lineages. Unretained model
 artifacts are removed; their recorded history and measurements remain.
 
+Omit `request_final_benchmark` or set it to `false` when the campaign should
+proceed to another experiment. Setting it to `true` requests the terminal
+campaign assessment: the campaign ends after either `goal_reached` or
+`goal_not_reached`. Do not use that result as a conditional gate for choosing a
+next hypothesis. This is an operational consequence, not a Runner judgment
+about whether further research is scientifically useful.
+
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
 researcher-owned scientific recipe: researcher-owned source, tests, and
@@ -377,4 +384,7 @@ Set `request_final_benchmark` to `true` in `previous_result_decision`.
 
 After applying the lineage decision, the Runner benchmarks the frozen best-known
 model. Read the verdict in `research/brief.md` under **Current status → Reported
-result**. This terminal assessment is not a routine input to another hypothesis.
+result**. Request this assessment only when no next experiment is intended in the
+campaign. The assessment ends the campaign whether the verdict is
+`goal_reached` or `goal_not_reached`; it is not an experiment-selection probe or
+a routine input to another hypothesis.
