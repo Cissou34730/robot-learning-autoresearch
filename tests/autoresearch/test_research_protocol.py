@@ -2846,6 +2846,26 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
     assert "mechanism_evaluation_request" not in PROGRAM + instruments + LOOP
 
 
+def test_evaluation_requests_use_the_smallest_decision_relevant_evidence_set():
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
+    normalized_program = " ".join(PROGRAM.split())
+    normalized_instruments = " ".join(instruments.split())
+
+    assert "not an automatic competition step" in normalized_program
+    assert "formulate the question before choosing models, panels, or instruments" in normalized_program
+    assert "possible outcomes could change the current interpretation or decision" in normalized_program
+    assert "Reuse compatible measurements already listed in the brief" in normalized_program
+    assert "Task-reference measurement is optional" in normalized_program
+    assert "comparison with `working` or `best_known` is likewise optional" in normalized_program
+    assert "request the smallest sufficient set" in normalized_instruments
+    assert "For each requested measurement, explain in `reason`" in normalized_instruments
+    assert LOOP.count("request the smallest sufficient set") == 2
+    assert LOOP.count("Comparison and task-reference measurement are optional") == 2
+    assert '"measurements": [' in instruments
+    assert '"paired_comparisons": [' in instruments
+    assert "decision_relevant_measurements" not in PROGRAM + instruments + LOOP
+
+
 def test_protocol_default_context_names_only_authoritative_context():
     opening = PROGRAM.split("## Roles", 1)[0]
 

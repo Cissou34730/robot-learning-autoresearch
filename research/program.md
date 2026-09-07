@@ -53,8 +53,15 @@ neither fresh initialization nor transfer is the default scientific preference.
 Every scientific action must be grounded in inspected evidence. A training
 proposal states one falsifiable hypothesis, a plausible alternative, and the
 evidence that would distinguish them. An evaluation request states the question
-its measurements answer and why they are sufficient. A lineage decision cites
-the detailed artifacts on which it relies.
+its measurements answer and why they are sufficient. Evaluation is a scientific
+measurement, not an automatic competition step: formulate the question before
+choosing models, panels, or instruments, and request only measurements whose
+possible outcomes could change the current interpretation or decision. Reuse
+compatible measurements already listed in the brief. Task-reference measurement
+is optional and is requested only when it answers the stated question;
+comparison with `working` or `best_known` is likewise optional and justified by
+the question, not by phase convention. A lineage decision cites the detailed
+artifacts on which it relies.
 
 Choose evidence according to the uncertainty being resolved. Distinguishing
 model behavior, learning-process effects, and stochastic variation may require

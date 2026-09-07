@@ -95,6 +95,14 @@ then select measurements that can change its interpretation; when the relevant
 quantity is not currently emitted, researcher-owned instrumentation may be
 changed before submitting the request.
 
+Formulate the question before choosing models, panels, and instruments. Reuse
+compatible measurements already listed in the brief, and request the smallest
+sufficient set for which each possible outcome could change the interpretation
+or lineage decision. For each requested measurement, explain in `reason` why it
+can change the answer. Task-reference measurement and comparison with `working`
+or `best_known` are optional and are requested only when they answer the stated
+question.
+
 Write `research/evaluation_request.json`:
 
 ```json
