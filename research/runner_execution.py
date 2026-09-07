@@ -653,7 +653,15 @@ def requested_paired_comparisons(
                     {
                         "episodes": panel["episodes"],
                         "seed": panel["seed"],
-                        "evaluation_semantics": panel["evaluation_semantics"],
+                        "comparison_semantics": panel.get("comparison_semantics"),
+                        "candidate_evaluation_semantics": panel.get(
+                            "candidate_evaluation_semantics",
+                            panel.get("evaluation_semantics"),
+                        ),
+                        "reference_evaluation_semantics": panel.get(
+                            "reference_evaluation_semantics",
+                            panel.get("evaluation_semantics"),
+                        ),
                         "source_artifacts": panel_sources,
                     }
                 )

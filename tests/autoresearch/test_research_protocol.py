@@ -19,6 +19,8 @@ from research.run_experiment import (
 )
 from research.runner_execution import training_budget
 from research.runner_protocol import (
+    _primary_comparison_compatible,
+    comparison_semantics_fingerprint,
     evaluation_artifact_name,
     evaluation_semantics_fingerprint,
     evaluation_semantics_paths,
@@ -768,6 +770,82 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
     assert with_data != edited
     config.write_text('{"window": 2}', encoding="utf-8")
     assert evaluation_semantics_fingerprint() != with_data
+
+
+def test_comparison_semantics_fingerprint_excludes_reward_and_diagnostics(
+    monkeypatch, tmp_path
+):
+    scenario = _semantics_tree(tmp_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+
+    original = comparison_semantics_fingerprint()
+    (scenario / "reward.py").write_text("changed reward\n", encoding="utf-8")
+    (scenario / "instrumentation.py").write_text("new diagnostic\n", encoding="utf-8")
+    assert comparison_semantics_fingerprint() == original
+
+    (scenario / "environment.py").write_text("changed task\n", encoding="utf-8")
+    assert comparison_semantics_fingerprint() != original
+
+
+def _comparison_record(
+    broad_semantics: str,
+    comparison_semantics: str | None,
+    *,
+    episodes: int = 200,
+    seed: int = 10,
+) -> dict:
+    record = {
+        "settings": (
+            "research_evaluation",
+            episodes,
+            seed,
+            broad_semantics,
+        )
+    }
+    if comparison_semantics is not None:
+        record["comparison_semantics"] = comparison_semantics
+    return record
+
+
+@pytest.mark.parametrize(
+    ("candidate", "reference", "compatible"),
+    [
+        (
+            _comparison_record("reward-a", "primary"),
+            _comparison_record("reward-b", "primary"),
+            True,
+        ),
+        (
+            _comparison_record("same-broad", "primary-a"),
+            _comparison_record("same-broad", "primary-b"),
+            False,
+        ),
+        (
+            _comparison_record("legacy", None),
+            _comparison_record("legacy", None),
+            True,
+        ),
+        (
+            _comparison_record("legacy-a", None),
+            _comparison_record("legacy-b", None),
+            False,
+        ),
+        (
+            _comparison_record("broad", "primary", episodes=100),
+            _comparison_record("broad", "primary", episodes=200),
+            False,
+        ),
+        (
+            _comparison_record("broad", "primary", seed=10),
+            _comparison_record("broad", "primary", seed=11),
+            False,
+        ),
+    ],
+)
+def test_primary_comparison_semantics_are_narrow_and_backward_compatible(
+    candidate, reference, compatible
+):
+    assert _primary_comparison_compatible(candidate, reference) is compatible
 
 
 @pytest.mark.parametrize(

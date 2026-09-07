@@ -119,6 +119,9 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(monkeypatch, tmp_p
     ] == [10]
     first_record = repository.result_records()[0]
     assert "candidate_metrics" not in first_record
+    first_evaluation = first_record["requested_evaluations"][0]
+    assert first_evaluation["comparison_semantics"]
+    assert first_evaluation["metrics"]["comparison_semantics"]
 
     request_path.write_text(json.dumps(_request(20)), encoding="utf-8")
     assert run_experiment.execute_pending_evaluations() == 0

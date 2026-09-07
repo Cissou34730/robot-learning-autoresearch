@@ -125,6 +125,12 @@ EVALUATION_RUNTIME_PATHS = (
     "robot_learning/policy_runtime.py",
     "robot_learning/evaluate.py",
 )
+COMPARISON_SEMANTICS_PATHS = (
+    "robot_learning/policy_runtime.py",
+    "robot_learning/evaluate.py",
+    "robot_learning/scenario/environment.py",
+    "robot_learning/scenario/evaluation.py",
+)
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
@@ -1028,6 +1034,17 @@ def evaluation_semantics_fingerprint() -> str:
     return digest.hexdigest()[:12]
 
 
+def comparison_semantics_fingerprint() -> str:
+    """Identify episode execution and primary-success extraction semantics."""
+    digest = hashlib.sha256()
+    for relative in COMPARISON_SEMANTICS_PATHS:
+        digest.update(relative.encode("utf-8"))
+        source = paths.ROOT / relative
+        if source.is_file():
+            digest.update(source.read_bytes())
+    return digest.hexdigest()[:12]
+
+
 # --- lineage evidence ------------------------------------------------------
 
 
@@ -1582,6 +1599,8 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
                         "evaluation_artifact_fingerprint"
                     )
                     or metrics.get("evaluation_artifact_fingerprint"),
+                    "comparison_semantics": evaluation.get("comparison_semantics")
+                    or metrics.get("comparison_semantics"),
                     "settings": (
                         "research_evaluation",
                         int(evaluation.get("episodes", metrics.get("episodes", -1))),
@@ -1690,6 +1709,53 @@ def _validated_historical_panel_records(
     return validated
 
 
+def _primary_comparison_compatible(candidate: dict, reference: dict) -> bool:
+    candidate_settings = candidate["settings"]
+    reference_settings = reference["settings"]
+    if candidate_settings[:3] != reference_settings[:3]:
+        return False
+    candidate_semantics = candidate.get("comparison_semantics")
+    reference_semantics = reference.get("comparison_semantics")
+    if candidate_semantics and reference_semantics:
+        return candidate_semantics == reference_semantics
+    return candidate_settings[3] == reference_settings[3]
+
+
+def _compatible_primary_panels(
+    candidate_records: list[dict], reference_records: list[dict]
+) -> list[tuple[tuple, list[dict], list[dict]]]:
+    panels: dict[tuple, tuple[list[dict], list[dict]]] = {}
+    for candidate in candidate_records:
+        for reference in reference_records:
+            if not _primary_comparison_compatible(candidate, reference):
+                continue
+            comparison_semantics = (
+                candidate.get("comparison_semantics")
+                if candidate.get("comparison_semantics")
+                and reference.get("comparison_semantics")
+                else None
+            )
+            key = (
+                candidate["settings"][0],
+                candidate["settings"][1],
+                candidate["settings"][2],
+                comparison_semantics,
+                candidate["settings"][3],
+                reference["settings"][3],
+            )
+            candidate_panel, reference_panel = panels.setdefault(key, ([], []))
+            if candidate not in candidate_panel:
+                candidate_panel.append(candidate)
+            if reference not in reference_panel:
+                reference_panel.append(reference)
+    return [
+        (settings, *records)
+        for settings, records in sorted(
+            panels.items(), key=lambda item: tuple(str(value) for value in item[0])
+        )
+    ]
+
+
 def _resolved_paired_evidence_plan(
     request: dict,
     pending: dict,
@@ -1700,6 +1766,7 @@ def _resolved_paired_evidence_plan(
     """Resolve comparisons to immutable models and exact evidence artifacts."""
     catalog = _development_evidence_catalog(pending, state)
     semantics = evaluation_semantics_fingerprint()
+    comparison_semantics = comparison_semantics_fingerprint()
     campaign_id = repository.current_campaign_id(state)
     experiment = int(pending["experiment"])
     for measurement in requested:
@@ -1718,6 +1785,7 @@ def _resolved_paired_evidence_plan(
             "model_fingerprint": resolved_models[name]["fingerprint"],
             "evaluation_artifact": canonical_path,
             "planned": True,
+            "comparison_semantics": comparison_semantics,
             "settings": (
                 "research_evaluation",
                 int(measurement["episodes"]),
@@ -1814,10 +1882,10 @@ def _resolved_paired_evidence_plan(
                 f"paired comparison {candidate!r} vs {reference!r} has no "
                 f"fingerprint-bound research-evaluation evidence for {missing!r}"
             )
-        candidate_settings = {record["settings"] for record in candidate_records}
-        reference_settings = {record["settings"] for record in reference_records}
-        common_settings = sorted(candidate_settings & reference_settings)
-        if not common_settings:
+        compatible_panels = _compatible_primary_panels(
+            candidate_records, reference_records
+        )
+        if not compatible_panels:
             candidate_contexts = sorted(
                 (record["evaluation_artifact"], record["settings"])
                 for record in candidate_records
@@ -1833,22 +1901,15 @@ def _resolved_paired_evidence_plan(
                 f"reference contexts: {reference_contexts}"
             )
         panels = []
-        for settings in common_settings:
+        for settings, candidate_panel, reference_panel in compatible_panels:
+            validation_settings = settings[:3]
             panel_candidate_records = _validated_historical_panel_records(
-                [
-                    record
-                    for record in candidate_records
-                    if record["settings"] == settings
-                ],
-                settings,
+                candidate_panel,
+                validation_settings,
             )
             panel_reference_records = _validated_historical_panel_records(
-                [
-                    record
-                    for record in reference_records
-                    if record["settings"] == settings
-                ],
-                settings,
+                reference_panel,
+                validation_settings,
             )
             candidate_identities = {
                 tuple(record["episode_identities"])
@@ -1882,7 +1943,9 @@ def _resolved_paired_evidence_plan(
                     "instrument": settings[0],
                     "episodes": settings[1],
                     "seed": settings[2],
-                    "evaluation_semantics": settings[3],
+                    "comparison_semantics": settings[3],
+                    "candidate_evaluation_semantics": settings[4],
+                    "reference_evaluation_semantics": settings[5],
                     "candidate_artifacts": candidate_paths,
                     "candidate_artifact_fingerprints": {
                         path: repository.file_fingerprint(

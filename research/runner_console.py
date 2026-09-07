@@ -274,9 +274,13 @@ def render_evidence_card(
             ]
         )
         for panel in comparison.get("panels", []):
+            semantics = panel.get(
+                "comparison_semantics",
+                panel.get("evaluation_semantics", "not recorded"),
+            )
             lines.append(
                 f"  panel seed {panel['seed']} · {panel['episodes']} episodes · "
-                f"semantics {panel['evaluation_semantics']}"
+                f"comparison semantics {semantics}"
             )
             lines.extend(
                 f"    source {path}" for path in panel.get("source_artifacts", [])

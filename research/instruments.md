@@ -131,9 +131,11 @@ Add one entry per model. Using identical `research_evaluation` settings measures
 
 A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must have identical `(seed, episode)` sets.
 Compatible historical measurements may supply either or both sides when their
-model fingerprints, instrument settings, panel semantics, and exact episode
-identities match. Reusing the same development panel does not create independent
-confirmation.
+model fingerprints, primary comparison semantics, instrument settings, and exact
+episode identities match. Detailed diagnostic artifacts retain their broader
+evaluation identity. Historical records without primary comparison semantics are
+paired conservatively only when their broader evaluation semantics match.
+Reusing the same development panel does not create independent confirmation.
 
 The model fingerprint covers the complete saved artifact, including its policy
 I/O, loader, and normalization state. Research-evaluation context identity covers
