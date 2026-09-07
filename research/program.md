@@ -47,8 +47,9 @@ hypotheses, interpretations or decisions.
 The campaign seeks a learned policy that satisfies the human objective. Improving
 robot behavior, attributing an intervention's effect, and establishing training
 reproducibility are distinct scientific questions. An experiment need not answer
-all three. Choose the question that advances the current research direction;
-neither fresh initialization nor transfer is the default scientific preference.
+all three. Choose the question that best advances the campaign objective; it may
+advance, revise, or reject the current investigation. Neither fresh
+initialization nor transfer is the default scientific preference.
 
 Every scientific action must be grounded in inspected evidence. A training
 proposal states one falsifiable hypothesis, a plausible alternative, and the
@@ -56,12 +57,12 @@ evidence that would distinguish them. An evaluation request states the question
 its measurements answer and why they are sufficient. Evaluation is a scientific
 measurement, not an automatic competition step: formulate the question before
 choosing models, panels, or instruments, and request only measurements whose
-possible outcomes could change the current interpretation or decision. Reuse
-compatible measurements already listed in the brief. Task-reference measurement
-is optional and is requested only when it answers the stated question;
-comparison with `working` or `best_known` is likewise optional and justified by
-the question, not by phase convention. A lineage decision cites the detailed
-artifacts on which it relies.
+possible outcomes could change the current interpretation, model/lineage
+decision, or next scientific direction. Reuse compatible measurements already
+listed in the brief. Task-reference measurement is optional and is requested
+only when it answers the stated question; comparison with `working` or
+`best_known` is likewise optional and justified by the question, not by phase
+convention. A lineage decision cites the detailed artifacts on which it relies.
 
 Evidence is sufficient when it supports the current model/lineage decision
 and, if the campaign objective has not been reached, supports a rational next
@@ -72,8 +73,9 @@ different evidence; use the form of evidence that can materially resolve the
 current scientific question.
 
 Use additional diagnosis, measurement, or replication only when it could
-materially change the scientific conclusion or lineage decision. Prefer the
-simplest evidence sufficient to distinguish between plausible explanations.
+materially change the current interpretation, model/lineage decision, or next
+scientific direction. Prefer the simplest evidence sufficient to distinguish
+between plausible explanations.
 
 Additional evaluation of an already-trained model provides evidence about that
 model's behavior. Replication provides evidence about the learning process when

@@ -101,12 +101,13 @@ campaign objective has not been reached, supports a rational next scientific
 direction. Minimize redundant or decision-irrelevant evidence, not evidence
 whose absence leaves the next direction arbitrary. Reuse compatible measurements
 already listed in the brief, and request only evidence for which each possible
-outcome could change the interpretation or lineage decision. Use the
-request-level `reason` to explain why every listed measurement is needed to
-answer the question and how its possible outcomes could change the
-interpretation or lineage decision. Task-reference measurement and
-comparison with `working` or `best_known` are optional and are requested only
-when they answer the stated question.
+outcome could change the current interpretation, model/lineage decision, or
+next scientific direction. Use the request-level `reason` to explain why every
+listed measurement is needed to answer the question and how its possible
+outcomes could change the current interpretation, model/lineage decision, or
+next scientific direction. Task-reference measurement and comparison with
+`working` or `best_known` are optional and are requested only when they answer
+the stated question.
 
 Write `research/evaluation_request.json`:
 
@@ -184,7 +185,7 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
     "expected_observation": "<evidence that supports the hypothesis and what would be learned>",
     "contradicting_observation": "<evidence that weakens the hypothesis and what would be learned>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
-    "strategy_link": "<how this experiment advances or revises the current direction>"
+    "strategy_link": "<how this experiment advances, revises, or rejects the current investigation>"
   },
   "change": "<non-empty scientific intervention; training only>",
   "training_parent": "<string; required for transfer, otherwise omit>",

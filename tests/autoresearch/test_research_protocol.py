@@ -2957,7 +2957,12 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
 
     assert "not an automatic competition step" in normalized_program
     assert "formulate the question before choosing models, panels, or instruments" in normalized_program
-    assert "possible outcomes could change the current interpretation or decision" in normalized_program
+    assert "best advances the campaign objective" in normalized_program
+    assert "may advance, revise, or reject the current investigation" in normalized_program
+    assert (
+        "possible outcomes could change the current interpretation, model/lineage "
+        "decision, or next scientific direction"
+    ) in normalized_program
     assert "Reuse compatible measurements already listed in the brief" in normalized_program
     assert "Task-reference measurement is optional" in normalized_program
     assert "comparison with `working` or `best_known` is likewise optional" in normalized_program
@@ -2972,12 +2977,18 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     request_reason_contract = (
         "Use the request-level `reason` to explain why every listed measurement "
         "is needed to answer the question and how its possible outcomes could "
-        "change the interpretation or lineage decision."
+        "change the current interpretation, model/lineage decision, or next "
+        "scientific direction."
     )
     assert request_reason_contract in normalized_instruments
     assert LOOP.count(request_reason_contract) == 2
     assert "Establish the model decision and, when further research is needed, a rational next scientific direction." in LOOP
     assert LOOP.count("Comparison and task-reference measurement are optional") == 2
+    assert "smallest sufficient set" not in LOOP
+    assert (
+        '"strategy_link": "<how this experiment advances, revises, or rejects '
+        'the current investigation>"'
+    ) in instruments
     assert '"measurements": [' in instruments
     assert '"paired_comparisons": [' in instruments
     assert "decision_relevant_measurements" not in PROGRAM + instruments + LOOP
