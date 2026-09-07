@@ -313,6 +313,22 @@ def anchored_scientific_delta(raw_state: dict) -> list[str]:
     return repository.scientific_delta(parent)
 
 
+def fresh_baseline_scientific_parent(state: dict) -> str:
+    """Adopt committed harness fixes before an unfrozen Fresh baseline starts."""
+    parent = repository.anchor_scientific_parent(state)
+    if isinstance(state.get("pending_training_operation"), dict):
+        return parent
+    changes = repository.scientific_delta(parent)
+    if not changes or not all(protocol.is_human_owned(path) for path in changes):
+        return parent
+    live_changes = repository.scientific_change_paths(repository.status_paths((".",)))
+    if live_changes:
+        return parent
+    parent = repository.git("rev-parse", "HEAD").strip()
+    state["pending_scientific_parent"] = parent
+    return parent
+
+
 def validate_research_delta(raw_state: dict) -> list[str]:
     """Reject changes outside the researcher-owned scientific surface."""
     code_changes = anchored_scientific_delta(raw_state)
@@ -1293,7 +1309,11 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     recoverable_continuation = args.reuse_candidate is not None
     # A fresh baseline has no hypothesis phase to anchor it, and a retry, restart
     # or recovery keeps the anchor the unfinished research already established.
-    code_parent_commit = repository.anchor_scientific_parent(state)
+    code_parent_commit = (
+        fresh_baseline_scientific_parent(state)
+        if fresh_baseline
+        else repository.anchor_scientific_parent(state)
+    )
     # Durable before validation or training can produce anything under this
     # identity, so a rejected, crashed or interrupted experiment consumes it.
     repository.write_state(state)

@@ -165,6 +165,13 @@ def is_protected_source(path: str) -> bool:
     )
 
 
+def is_human_owned(path: str) -> bool:
+    relative = path.replace("\\", "/")
+    return is_protected_source(relative) or relative.startswith(
+        PROTECTED_TEST_PREFIXES
+    )
+
+
 def is_researcher_owned(path: str) -> bool:
     """Protected paths lose first, so sharing a researcher prefix never frees them."""
     relative = path.replace("\\", "/")

@@ -2144,6 +2144,54 @@ def test_runner_generated_baseline_remains_valid():
     validate_training_proposal(_baseline_proposal(), baseline=True)
 
 
+def test_fresh_baseline_adopts_committed_human_owned_harness_fixes(monkeypatch):
+    from research import run_experiment
+
+    state = {"pending_scientific_parent": "reset-parent"}
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda parent: ["tests/autoresearch/test_scenario_boundary.py"]
+        if parent == "reset-parent"
+        else [],
+    )
+    monkeypatch.setattr(repository, "status_paths", lambda scope: [])
+    monkeypatch.setattr(repository, "git", lambda *args: "current-head\n")
+
+    parent = run_experiment.fresh_baseline_scientific_parent(state)
+
+    assert parent == "current-head"
+    assert state["pending_scientific_parent"] == "current-head"
+
+
+@pytest.mark.parametrize(
+    ("changes", "live_changes"),
+    [
+        (["robot_learning/scenario/reward.py"], []),
+        (
+            ["tests/autoresearch/test_scenario_boundary.py"],
+            ["tests/autoresearch/test_scenario_boundary.py"],
+        ),
+    ],
+)
+def test_fresh_baseline_does_not_adopt_science_or_live_changes(
+    monkeypatch, changes, live_changes
+):
+    from research import run_experiment
+
+    state = {"pending_scientific_parent": "reset-parent"}
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: changes)
+    monkeypatch.setattr(repository, "status_paths", lambda scope: live_changes)
+
+    def fail_if_head_is_resolved(*args):
+        pytest.fail(f"unexpected Git call: {args}")
+
+    monkeypatch.setattr(repository, "git", fail_if_head_is_resolved)
+
+    assert run_experiment.fresh_baseline_scientific_parent(state) == "reset-parent"
+    assert state["pending_scientific_parent"] == "reset-parent"
+
+
 def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
     monkeypatch, tmp_path
 ):
