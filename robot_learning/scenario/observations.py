@@ -15,13 +15,6 @@ def reach_observation(data) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
-    def joint_limit_margin(angle: float, limits: np.ndarray) -> float:
-        wrapped = wrap_to_pi(angle)
-        lower, upper = (float(value) for value in limits)
-        if lower <= wrapped <= upper:
-            return min(wrapped - lower, upper - wrapped)
-        return -min(abs(wrapped - lower), abs(wrapped - upper))
-
     def shoulder_for_elbow(elbow: float) -> float:
         return float(
             np.arctan2(target_y, target_x)
@@ -40,28 +33,12 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    shoulder_limits = data.model.jnt_range[0]
-    elbow_limits = data.model.jnt_range[1]
-    open_margin = min(
-        joint_limit_margin(shoulder_open, shoulder_limits),
-        joint_limit_margin(elbow_open, elbow_limits),
-    )
-    folded_margin = min(
-        joint_limit_margin(shoulder_folded, shoulder_limits),
-        joint_limit_margin(elbow_folded, elbow_limits),
-    )
-    branch_preference = float(
-        np.clip((folded_margin - open_margin) / np.pi, -1.0, 1.0)
-    )
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
-            [
-                *(end_effector - data.mocap_pos[0])[:2],
-                branch_preference,
-            ],
+            end_effector - data.mocap_pos[0],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
