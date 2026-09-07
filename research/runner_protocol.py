@@ -127,10 +127,9 @@ EVALUATION_RUNTIME_PATHS = (
 )
 COMPARISON_SEMANTICS_PATHS = (
     "robot_learning/policy_runtime.py",
-    "robot_learning/evaluate.py",
     "robot_learning/scenario/environment.py",
-    "robot_learning/scenario/evaluation.py",
 )
+COMPARISON_SEMANTICS_VERSION_PATH = "robot_learning/scenario/evaluation.py"
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
@@ -1042,6 +1041,32 @@ def comparison_semantics_fingerprint() -> str:
         source = paths.ROOT / relative
         if source.is_file():
             digest.update(source.read_bytes())
+    version_source = paths.ROOT / COMPARISON_SEMANTICS_VERSION_PATH
+    source_text = version_source.read_text(encoding="utf-8")
+    assignments = re.findall(
+        r"(?m)^PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=.*$", source_text
+    )
+    if not assignments:
+        raise ValueError(
+            "PRIMARY_COMPARISON_SEMANTICS_VERSION is absent from "
+            f"{COMPARISON_SEMANTICS_VERSION_PATH}"
+        )
+    if len(assignments) != 1:
+        raise ValueError(
+            "PRIMARY_COMPARISON_SEMANTICS_VERSION must be assigned exactly once in "
+            f"{COMPARISON_SEMANTICS_VERSION_PATH}"
+        )
+    match = re.fullmatch(
+        r"PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=\s*(0|[1-9]\d*)",
+        assignments[0],
+    )
+    if match is None:
+        raise ValueError(
+            "PRIMARY_COMPARISON_SEMANTICS_VERSION must be a non-negative integer in "
+            f"{COMPARISON_SEMANTICS_VERSION_PATH}"
+        )
+    digest.update(COMPARISON_SEMANTICS_VERSION_PATH.encode("utf-8"))
+    digest.update(match.group(1).encode("ascii"))
     return digest.hexdigest()[:12]
 
 
@@ -1709,16 +1734,30 @@ def _validated_historical_panel_records(
     return validated
 
 
-def _primary_comparison_compatible(candidate: dict, reference: dict) -> bool:
+def _evidence_records_compatible(candidate: dict, reference: dict) -> bool:
+    if candidate["instrument"] != reference["instrument"]:
+        return False
     candidate_settings = candidate["settings"]
     reference_settings = reference["settings"]
+    if candidate["instrument"] == "task_reference":
+        return candidate_settings == reference_settings
+    if candidate["instrument"] != "research_evaluation":
+        return False
     if candidate_settings[:3] != reference_settings[:3]:
         return False
     candidate_semantics = candidate.get("comparison_semantics")
     reference_semantics = reference.get("comparison_semantics")
     if candidate_semantics and reference_semantics:
-        return candidate_semantics == reference_semantics
-    return candidate_settings[3] == reference_settings[3]
+        semantics_match = candidate_semantics == reference_semantics
+    else:
+        semantics_match = candidate_settings[3] == reference_settings[3]
+    if not semantics_match:
+        return False
+    candidate_episodes = candidate.get("episode_identities")
+    reference_episodes = reference.get("episode_identities")
+    if candidate_episodes is None and reference_episodes is None:
+        return True
+    return candidate_episodes is not None and candidate_episodes == reference_episodes
 
 
 def _compatible_primary_panels(
@@ -1727,7 +1766,7 @@ def _compatible_primary_panels(
     panels: dict[tuple, tuple[list[dict], list[dict]]] = {}
     for candidate in candidate_records:
         for reference in reference_records:
-            if not _primary_comparison_compatible(candidate, reference):
+            if not _evidence_records_compatible(candidate, reference):
                 continue
             comparison_semantics = (
                 candidate.get("comparison_semantics")
@@ -2028,6 +2067,13 @@ def _validated_designation_evidence(
     return records
 
 
+def _designation_compatibility_record(record: dict) -> dict:
+    if record["instrument"] != "research_evaluation":
+        return record
+    settings = record["settings"]
+    return _validated_historical_panel_records([record], settings[:3])[0]
+
+
 def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     pending = state.get("pending_analysis") or state.get("pending_researcher_decision")
     if pending is None:
@@ -2220,9 +2266,19 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 catalog=evidence_catalog,
                 description="incumbent best_known",
             )
-            selected_settings = {record["settings"] for record in selected_records}
-            incumbent_settings = {record["settings"] for record in incumbent_records}
-            if not selected_settings & incumbent_settings:
+            selected_compatible = [
+                _designation_compatibility_record(record)
+                for record in selected_records
+            ]
+            incumbent_compatible = [
+                _designation_compatibility_record(record)
+                for record in incumbent_records
+            ]
+            if not any(
+                _evidence_records_compatible(selected, incumbent)
+                for selected in selected_compatible
+                for incumbent in incumbent_compatible
+            ):
                 raise ValueError(
                     "replacing best_known requires compatible instrument and panel settings"
                 )

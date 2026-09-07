@@ -41,6 +41,22 @@ def _lineage(path: Path, *, steps: int) -> dict:
     }
 
 
+def _research_evidence(path: Path, *, seed: int = 1) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "episodes": 2,
+                "seed": seed,
+                "episode_results": [
+                    {"episode": episode, "episode_seed": seed + episode, "success": True}
+                    for episode in range(2)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
 def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
@@ -621,8 +637,8 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
     candidate = _artifact(tmp_path / "candidate", "candidate")
     incumbent_evidence = tmp_path / "incumbent-evaluation.json"
     candidate_evidence = tmp_path / "candidate-evaluation.json"
-    incumbent_evidence.write_text("{}", encoding="utf-8")
-    candidate_evidence.write_text("{}", encoding="utf-8")
+    _research_evidence(incumbent_evidence)
+    _research_evidence(candidate_evidence)
     state = {
         "schema_version": 4,
         "working_lineage": _lineage(incumbent, steps=10_000),
@@ -647,9 +663,10 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
     state["pending_researcher_decision"]["partial_evaluations"] = [
         {
             "candidate": "checkpoint",
-            "episodes": 200,
+            "episodes": 2,
             "seed": 1,
-            "evaluation_semantics": "semantics",
+            "evaluation_semantics": "candidate-reward-semantics",
+            "comparison_semantics": "primary-semantics",
             "model_fingerprint": repository.artifact_fingerprint(candidate),
             "metrics": {
                 "evaluation_artifact": candidate_evidence.name,
@@ -660,9 +677,10 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
         },
         {
             "candidate": "best_known",
-            "episodes": 200,
+            "episodes": 2,
             "seed": 1,
-            "evaluation_semantics": "semantics",
+            "evaluation_semantics": "incumbent-reward-semantics",
+            "comparison_semantics": "primary-semantics",
             "model_fingerprint": repository.artifact_fingerprint(incumbent),
             "metrics": {
                 "evaluation_artifact": incumbent_evidence.name,
@@ -691,6 +709,12 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
     assert plan["best_known_record"]["artifact"].startswith(
         "research/checkpoints/retained/"
     )
+
+    state["pending_researcher_decision"]["partial_evaluations"][0][
+        "model_fingerprint"
+    ] = repository.artifact_fingerprint(incumbent)
+    with pytest.raises(ValueError, match="true fingerprint mismatch"):
+        protocol.plan_previous_result_decision(decision, state)
 
 
 def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
@@ -765,8 +789,8 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
     candidate = _artifact(tmp_path / "candidate", "candidate")
     incumbent_evidence = tmp_path / "incumbent-evaluation.json"
     candidate_evidence = tmp_path / "candidate-evaluation.json"
-    incumbent_evidence.write_text("{}", encoding="utf-8")
-    candidate_evidence.write_text("{}", encoding="utf-8")
+    _research_evidence(incumbent_evidence)
+    _research_evidence(candidate_evidence)
     state = {
         "schema_version": 4,
         "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
@@ -789,9 +813,10 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
             "partial_evaluations": [
                 {
                     "candidate": "checkpoint",
-                    "episodes": 200,
+                    "episodes": 2,
                     "seed": 1,
-                    "evaluation_semantics": "candidate-semantics",
+                    "evaluation_semantics": "same-broad-semantics",
+                    "comparison_semantics": "candidate-primary-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(candidate),
                     "metrics": {
                         "evaluation_artifact": candidate_evidence.name,
@@ -802,9 +827,10 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
                 },
                 {
                     "candidate": "best_known",
-                    "episodes": 200,
+                    "episodes": 2,
                     "seed": 1,
-                    "evaluation_semantics": "incumbent-semantics",
+                    "evaluation_semantics": "same-broad-semantics",
+                    "comparison_semantics": "incumbent-primary-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(incumbent),
                     "metrics": {
                         "evaluation_artifact": incumbent_evidence.name,
@@ -836,6 +862,29 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
 
     with pytest.raises(ValueError, match="compatible instrument and panel settings"):
         protocol.plan_previous_result_decision(proposal, state)
+
+
+def test_best_known_evidence_compatibility_keeps_task_reference_exact():
+    task_reference = {
+        "instrument": "task_reference",
+        "settings": ("task_reference", "fixed-panel", 1, 100, 42),
+    }
+
+    assert protocol._evidence_records_compatible(task_reference, dict(task_reference))
+    assert not protocol._evidence_records_compatible(
+        task_reference,
+        {
+            "instrument": "task_reference",
+            "settings": ("task_reference", "fixed-panel", 2, 100, 42),
+        },
+    )
+    assert not protocol._evidence_records_compatible(
+        task_reference,
+        {
+            "instrument": "research_evaluation",
+            "settings": ("research_evaluation", 100, 42, "broad-semantics"),
+        },
+    )
 
 
 def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):

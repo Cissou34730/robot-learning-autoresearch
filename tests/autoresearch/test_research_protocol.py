@@ -19,7 +19,7 @@ from research.run_experiment import (
 )
 from research.runner_execution import training_budget
 from research.runner_protocol import (
-    _primary_comparison_compatible,
+    _evidence_records_compatible,
     comparison_semantics_fingerprint,
     evaluation_artifact_name,
     evaluation_semantics_fingerprint,
@@ -710,7 +710,10 @@ def _semantics_tree(tmp_path):
         "reward.py",
         "viewer.py",
     ):
-        (scenario / name).write_text("original\n", encoding="utf-8")
+        content = "original\n"
+        if name == "evaluation.py":
+            content += "PRIMARY_COMPARISON_SEMANTICS_VERSION = 1\n"
+        (scenario / name).write_text(content, encoding="utf-8")
     training = tmp_path / "robot_learning" / "training"
     training.mkdir(parents=True)
     for name in ("algorithms.py", "normalization.py"):
@@ -780,11 +783,24 @@ def test_comparison_semantics_fingerprint_excludes_reward_and_diagnostics(
 
     original = comparison_semantics_fingerprint()
     (scenario / "reward.py").write_text("changed reward\n", encoding="utf-8")
-    (scenario / "instrumentation.py").write_text("new diagnostic\n", encoding="utf-8")
+    (scenario / "evaluation.py").write_text(
+        "changed diagnostic\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 1\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "robot_learning" / "evaluate.py").write_text(
+        "changed progress output\n", encoding="utf-8"
+    )
     assert comparison_semantics_fingerprint() == original
 
+    (scenario / "evaluation.py").write_text(
+        "changed diagnostic\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 2\n",
+        encoding="utf-8",
+    )
+    versioned = comparison_semantics_fingerprint()
+    assert versioned != original
+
     (scenario / "environment.py").write_text("changed task\n", encoding="utf-8")
-    assert comparison_semantics_fingerprint() != original
+    assert comparison_semantics_fingerprint() != versioned
 
 
 def _comparison_record(
@@ -793,8 +809,10 @@ def _comparison_record(
     *,
     episodes: int = 200,
     seed: int = 10,
+    episode_identities: list[tuple[int, int]] | None = None,
 ) -> dict:
     record = {
+        "instrument": "research_evaluation",
         "settings": (
             "research_evaluation",
             episodes,
@@ -804,6 +822,8 @@ def _comparison_record(
     }
     if comparison_semantics is not None:
         record["comparison_semantics"] = comparison_semantics
+    if episode_identities is not None:
+        record["episode_identities"] = episode_identities
     return record
 
 
@@ -840,12 +860,22 @@ def _comparison_record(
             _comparison_record("broad", "primary", seed=11),
             False,
         ),
+        (
+            _comparison_record("broad-a", "primary", episode_identities=[(0, 10)]),
+            _comparison_record("broad-b", "primary", episode_identities=[(0, 10)]),
+            True,
+        ),
+        (
+            _comparison_record("broad", "primary", episode_identities=[(0, 10)]),
+            _comparison_record("broad", "primary", episode_identities=[(0, 11)]),
+            False,
+        ),
     ],
 )
 def test_primary_comparison_semantics_are_narrow_and_backward_compatible(
     candidate, reference, compatible
 ):
-    assert _primary_comparison_compatible(candidate, reference) is compatible
+    assert _evidence_records_compatible(candidate, reference) is compatible
 
 
 @pytest.mark.parametrize(

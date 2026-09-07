@@ -143,6 +143,9 @@ model fingerprints, primary comparison semantics, instrument settings, and exact
 episode identities match. Detailed diagnostic artifacts retain their broader
 evaluation identity. Historical records without primary comparison semantics are
 paired conservatively only when their broader evaluation semantics match.
+The same compatibility rule determines whether research-evaluation evidence can
+support replacing `best_known`; task-reference evidence retains its exact panel
+compatibility rule and remains optional.
 Reusing the same development panel does not create independent confirmation.
 
 The model fingerprint covers the complete saved artifact, including its policy
