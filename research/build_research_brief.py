@@ -287,6 +287,24 @@ def _v4_result_measurements(result: dict) -> str:
     return "; ".join(panels)
 
 
+def _v4_measurements(candidate: dict) -> str:
+    evaluations = candidate.get("evaluations") or []
+    if not evaluations:
+        return "unmeasured"
+    panels = []
+    for evaluation in evaluations:
+        success = evaluation.get("success_percent")
+        result = (
+            f"{evaluation.get('panel', 'research_evaluation')}, "
+            f"seed {evaluation.get('seed', '-')}, "
+            f"{evaluation.get('episodes', '-')} episodes"
+        )
+        if success is not None:
+            result += f", success {float(success):.2f}%"
+        panels.append(result)
+    return "; ".join(panels)
+
+
 def _stable_json(value: object) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
 
