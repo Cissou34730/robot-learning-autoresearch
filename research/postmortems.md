@@ -1,3 +1,23 @@
 # Research postmortems
 
-No experiments recorded.
+## 5d754056-8a59-426e-8402-d4ba289cd965 / Scientific strategy
+
+**Direction:** Determine whether the fresh PPO baseline produces a sufficiently reliable reach-and-hold policy, and use its residual failures to choose a concrete next direction rather than extending training by default.
+
+**Lessons and limits:** The baseline learned successfully after roughly 71,000 steps: training success rose from 0.06 at 75,776 steps to 0.97 at 100,352 steps and then plateaued between 0.93 and 0.96 through 120,832 steps (`research/results.jsonl`, experiment 1; `research/query_training_log.py`, experiment 1). Matched 200-episode research panels measured 98.5% at 95,232 steps, 99.0% at 100,352 steps, and 98.5% at 120,832 steps. The 100,352-step policy also reached 98.0% on the fixed task-reference panel. Failures are sparse but geometrically concentrated: the repeated research panels include a target near 7.5 cm at about -125 degrees and a target near 18.7 cm at about -150 degrees; some other failures are interrupted holds. These are development measurements, not the official verdict, and the repeated research panels use the same seed, so they do not establish independent confirmation or training reproducibility.
+
+**Open questions:** Whether the negative-angle failure cluster is caused mainly by target-coverage and reach precision, by hold-control stability after reaching tolerance, or by stochastic variation is unresolved. The current evidence is nevertheless sufficient for the checkpoint and lineage decision; it is not sufficient to declare the human objective reached.
+
+**Conditional next steps:** If the official benchmark fails, the next experiment should target robustness in the negative-angle sector and continuous hold behavior, with a mechanism-specific change that can distinguish reach failures from hold failures. If the benchmark passes, retain this baseline as the reference and prefer a differently motivated efficiency or robustness experiment over simply extending the same PPO run.
+
+## 5d754056-8a59-426e-8402-d4ba289cd965 / Experiment 1
+
+**Result:** The fresh PPO baseline produced its strongest measured policy at checkpoint-100352: 99.0% on the 200-episode research panel and 98.0% on the fixed task-reference panel. The final checkpoint-120832 measured 98.5% on the same research panel, so additional training did not improve the selected policy.
+
+**Observed behavior:** Training success was 0 through 70,656 steps, first appeared at 71,680 steps, reached 0.93 at 95,232 steps, peaked at 0.98 at 99,328 steps, and finished at 0.95 at 120,832 steps. The 95,232, 100,352, and 120,832 research evaluations had 3, 2, and 3 failures respectively. The 100,352 failures were the 7.54 cm, -125.3 degree target and the 18.72 cm, -150.2 degree target; both reached tolerance briefly but held for only one step. The task-reference evaluation had four failures, all in the approximately -116 to -128 degree sector and at radii from 6.73 to 9.91 cm.
+
+**Hypothesis assessment:** This was an automatic fresh baseline, with no intervention-specific prediction or recorded expected/contradicting observation to test. It successfully established a strong reference policy and showed that the measured outcome is not monotonically improved by the final 20,000 training steps. The baseline supports selecting checkpoint-100352 for closure, while its repeated geometry-linked failures limit the conclusion to development evidence and motivate a targeted next direction if the official benchmark fails.
+
+**Interpretation:** The current investigation is resolved for closure and model selection, but remains useful as a concrete next investigation: improve robustness for the negative-angle target sector and distinguish reach precision from hold stability. No additional measurement is needed to choose the lineage because checkpoint-100352 is the best measured candidate and checkpoint-120832 is not better; the official benchmark is the only remaining objective-level assessment.
+
+**Evidence inspected:** `research/results.jsonl`; `research/evaluations/5d754056-8a59-426e-8402-d4ba289cd965/evaluation-5d754056-8a59-426e-8402-d4ba289cd965-experiment-1-checkpoint-95232-200ep-seed7000-d72ec900e7de.json`; `research/evaluations/5d754056-8a59-426e-8402-d4ba289cd965/evaluation-5d754056-8a59-426e-8402-d4ba289cd965-experiment-1-checkpoint-100352-200ep-seed7000-d72ec900e7de.json`; `research/evaluations/5d754056-8a59-426e-8402-d4ba289cd965/evaluation-5d754056-8a59-426e-8402-d4ba289cd965-experiment-1-checkpoint-120832-200ep-seed7000-d72ec900e7de.json`; `research/evaluations/5d754056-8a59-426e-8402-d4ba289cd965/task-reference-5d754056-8a59-426e-8402-d4ba289cd965-experiment-1-checkpoint-100352-task-reference-v1.json`.
