@@ -2876,6 +2876,23 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
     assert "mechanism_evaluation_request" not in PROGRAM + instruments + LOOP
 
 
+def test_post_training_reasoning_requires_a_revisable_investigation_interpretation():
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
+    normalized_program = " ".join(PROGRAM.split())
+    normalized_instruments = " ".join(instruments.split())
+
+    assert "Compare the proposal's recorded expected and contradicting observations" in LOOP
+    assert "the current investigation is resolved and the direction changes" in LOOP
+    assert "remains useful with a concrete next action that can differ" in LOOP
+    assert "genuinely inconclusive with the unresolved distinction and decision consequence" in LOOP
+    assert "`expected_observation` describes evidence that supports the hypothesis" in normalized_instruments
+    assert "`contradicting_observation` describes evidence that weakens the hypothesis" in normalized_instruments
+    assert "`strategy_link` explains how the proposed experiment advances, revises, or rejects" in normalized_instruments
+    assert "These are Researcher reasoning choices, not Runner-controlled states." in normalized_program
+    assert "next_if_expected" not in PROGRAM + instruments + LOOP
+    assert "next_if_contradicted" not in PROGRAM + instruments + LOOP
+
+
 def test_evaluation_requests_support_the_model_decision_and_next_direction():
     instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
     normalized_program = " ".join(PROGRAM.split())

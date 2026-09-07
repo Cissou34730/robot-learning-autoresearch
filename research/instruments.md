@@ -181,8 +181,8 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
       {"source": "<existing repository-relative file>", "observation": "<what was observed there>"}
     ],
     "alternative": "<plausible competing explanation>",
-    "expected_observation": "<observable result supporting the hypothesis>",
-    "contradicting_observation": "<observable result weakening or contradicting it>",
+    "expected_observation": "<evidence that supports the hypothesis and what would be learned>",
+    "contradicting_observation": "<evidence that weakens the hypothesis and what would be learned>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
     "strategy_link": "<how this experiment advances or revises the current direction>"
   },
@@ -225,6 +225,15 @@ apply a changed recipe to an existing parent with `initialization: "transfer"`.
 Fresh training alone does not prove that an intervention caused its outcome.
 Continuation, replication, and additional seeds remain available scientific
 choices, not mandatory controls or gates for accepting a model.
+
+`expected_observation` describes evidence that supports the hypothesis and what
+would be learned from it. `contradicting_observation` describes evidence that
+weakens the hypothesis and what would be learned from it. `strategy_link`
+explains how the proposed experiment advances, revises, or rejects the
+temporary current investigation. If contradictory evidence leaves the
+investigation unresolved, the postmortem and strategy must state the unresolved
+distinction and its decision consequence; another experiment or replication is
+appropriate only when its result can change the next scientific action.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 

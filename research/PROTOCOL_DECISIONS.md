@@ -30,6 +30,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Objective and investigation:** The human-defined campaign objective remains
   authoritative; Scientific strategy records a revisable current investigation,
   not a replacement objective or mandatory queue.
+- **Contradictory evidence:** The Researcher explicitly interprets resolved,
+  still-useful, or inconclusive investigations; the Runner does not choose a
+  scientific stop or continuation decision.
 
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 

@@ -193,6 +193,13 @@ observed. Mechanistic investigation may use logs, code inspection, lightweight
 analysis, scientific instrumentation, and development measurements as useful;
 no particular diagnostic or action sequence is mandatory.
 
+The postmortem and strategy must explicitly interpret contradictory evidence:
+state whether the current investigation is sufficiently resolved and the next
+direction changes; whether it remains useful, with what another experiment can
+change in the next scientific action; or whether the evidence is genuinely
+inconclusive, including the unresolved distinction and its decision consequence.
+These are Researcher reasoning choices, not Runner-controlled states.
+
 The phase may contain multiple measurement rounds. Completed measurements remain
 available across rounds, and each completed round returns to analysis. There is
 no fake empty evaluation, mandatory refinement round, required instrument, or
