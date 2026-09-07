@@ -17,6 +17,7 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
+JOINT_VELOCITY_COST_COEFFICIENT = 0.002
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -49,6 +50,7 @@ def reach_reward(
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
+    joint_velocity: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -95,6 +97,14 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    joint_velocity_cost = 0.0
+    if joint_velocity is not None:
+        joint_velocity_cost = -(
+            JOINT_VELOCITY_COST_COEFFICIENT
+            * float(np.sum(np.square(joint_velocity)))
+        )
+    reward += joint_velocity_cost
+
     return RewardResult(
         total=float(reward),
         components={
@@ -104,5 +114,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "joint_velocity_cost": float(joint_velocity_cost),
         },
     )

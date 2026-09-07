@@ -132,3 +132,20 @@ def test_action_cost_penalizes_large_actions(monkeypatch):
     gentle = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 0.1)).total
     violent = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 1.0)).total
     assert violent < gentle
+
+
+def test_joint_velocity_cost_penalizes_fast_motion(monkeypatch):
+    monkeypatch.setattr(reward_module, "JOINT_VELOCITY_COST_COEFFICIENT", 1.0)
+    slow = reach_reward(
+        0.05,
+        0.04,
+        0.03,
+        joint_velocity=np.full(2, 0.1),
+    ).total
+    fast = reach_reward(
+        0.05,
+        0.04,
+        0.03,
+        joint_velocity=np.full(2, 1.0),
+    ).total
+    assert fast < slow
