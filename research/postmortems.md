@@ -1,3 +1,23 @@
 # Research postmortems
 
-No experiments recorded.
+## 115b9b38-87af-4418-b5e0-75ebc30019dc / Scientific strategy
+
+**Direction:** The baseline established a capable but sub-target policy. The current direction is to improve robustness from the repeatable 97% research-evaluation level to the 98% objective threshold by reducing failures on difficult targets, rather than extending the unchanged run.
+
+**Lessons and limits:** The training log and experiment record show a sharp improvement from 0% to 97% training success by 100,352 steps, followed by 93-96% through 120,832 steps (`research/results.jsonl`). Research evaluation measured `checkpoint-100352` at 97.0% on both 200-episode seeds and `checkpoint-120832` at 96.5% on both seeds. The paired comparison had two wins for the earlier checkpoint, no wins for the later checkpoint, and only two discordant episodes. Both policies failed on the same six difficult episode seeds except that the later policy additionally failed seed 124. This supports selecting the earlier checkpoint and shows that additional unchanged training is not reliably beneficial. These are development measurements, not an official benchmark result, and the repeated seed panels are paired evidence rather than independent confirmation.
+
+**Open questions:** Which training or policy-design intervention can remove the persistent difficult-target failures without degrading the successes already learned? It remains unknown whether the failures are best addressed through reward shaping, target-conditioned representation, or a different optimization schedule.
+
+**Conditional next steps:** Start the next experiment from the selected 100,352-step lineage and test one concrete robustness intervention. If it improves paired research evaluation while preserving the common successes, continue that family; if it does not, inspect target-conditioned behavior and pursue a different representation or optimization direction. The official benchmark should remain deferred while a scientifically useful next experiment remains.
+
+## 115b9b38-87af-4418-b5e0-75ebc30019dc / Experiment 1
+
+**Result:** The fresh PPO baseline learned effective reaching behavior but remained below the 98% objective threshold. `checkpoint-100352` is the strongest measured policy at 97.0% and is selected over the final `checkpoint-120832` at 96.5%.
+
+**Observed behavior:** Training success rose from 0% through 70,656 steps to 97% at 100,352 steps, then fluctuated between 93% and 96% through 120,832 steps. The two research evaluations of `checkpoint-100352` each had 194/200 successes; the two evaluations of `checkpoint-120832` each had 193/200. All seven failures in the later evaluation were truncated at the horizon. Six difficult episode seeds (11, 25, 111, 167, 171, and 188) failed for both policies, while the later policy also failed seed 124. The paired comparison therefore favored the earlier checkpoint by two episodes with two discordant episodes.
+
+**Hypothesis assessment:** The baseline hypothesis, “Establish the initial baseline for the human-defined objective,” is supported in its narrow purpose: learning produced a strong, reproducible development baseline from zero success. The expected observation of a useful learning curve occurred. The limiting observation is that neither measured policy reached 98%, and later unchanged training slightly worsened the paired result; therefore the evidence does not support assuming that more training alone will close the remaining gap. The baseline investigation is resolved for lineage selection, while the objective itself remains unmet.
+
+**Interpretation:** The remaining gap is concentrated in a small, repeatable set of difficult targets rather than broad stochastic instability. The earlier checkpoint should be the working and best-known lineage. The next scientific action should change the learning recipe to target failure reduction, not select the final checkpoint or request another redundant evaluation.
+
+**Evidence inspected:** `research/results.jsonl`; `research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-100352-200ep-seed0-d72ec900e7de.json`; `research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-100352-200ep-seed1-d72ec900e7de.json`; `research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-120832-200ep-seed0-d72ec900e7de.json`; `research/evaluations/115b9b38-87af-4418-b5e0-75ebc30019dc/evaluation-115b9b38-87af-4418-b5e0-75ebc30019dc-experiment-1-checkpoint-120832-200ep-seed1-d72ec900e7de.json`.
