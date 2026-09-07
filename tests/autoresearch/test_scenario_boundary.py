@@ -230,12 +230,20 @@ def test_generic_core_may_only_use_the_scenario_package():
     assert "research/build_research_brief.py" not in users
 
 
-def test_every_researcher_session_loads_the_authoritative_context():
+def test_every_new_researcher_session_loads_the_authoritative_context():
     script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+    session_invocations = [
+        line
+        for line in script.splitlines()
+        if "Invoke-ResearcherSession -Prompt" in line
+    ]
+    new_sessions = [line for line in session_invocations if "-Continue" not in line]
+    continued_sessions = [line for line in session_invocations if "-Continue" in line]
     program_lines = [
         line for line in script.splitlines() if "research/program.md" in line
     ]
-    assert len(program_lines) == 8
+    assert len(new_sessions) == len(program_lines) == 4
+    assert len(continued_sessions) == 4
     for line in program_lines:
         for context in (
             "AGENTS.md",
