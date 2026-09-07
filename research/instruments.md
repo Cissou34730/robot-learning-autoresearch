@@ -95,12 +95,16 @@ then select measurements that can change its interpretation; when the relevant
 quantity is not currently emitted, researcher-owned instrumentation may be
 changed before submitting the request.
 
-Formulate the question before choosing models, panels, and instruments. Reuse
-compatible measurements already listed in the brief, and request the smallest
-sufficient set for which each possible outcome could change the interpretation
-or lineage decision. Use the request-level `reason` to explain why every listed
-measurement is needed to answer the question and how its possible outcomes could
-change the interpretation or lineage decision. Task-reference measurement and
+Formulate the question before choosing models, panels, and instruments. Evidence
+is sufficient when it supports the current model/lineage decision and, if the
+campaign objective has not been reached, supports a rational next scientific
+direction. Minimize redundant or decision-irrelevant evidence, not evidence
+whose absence leaves the next direction arbitrary. Reuse compatible measurements
+already listed in the brief, and request only evidence for which each possible
+outcome could change the interpretation or lineage decision. Use the
+request-level `reason` to explain why every listed measurement is needed to
+answer the question and how its possible outcomes could change the
+interpretation or lineage decision. Task-reference measurement and
 comparison with `working` or `best_known` are optional and are requested only
 when they answer the stated question.
 

@@ -24,6 +24,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Evaluation intent:** Requests begin with a scientific question and use the
   smallest decision-relevant evidence set; comparison and task reference remain
   optional rather than automatic.
+- **Evidence sufficiency:** Evidence must support the current model/lineage
+  decision and, when the campaign objective remains unmet, a rational next
+  scientific direction; redundant evidence remains minimized.
 
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 

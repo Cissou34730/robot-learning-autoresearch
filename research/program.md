@@ -63,7 +63,10 @@ comparison with `working` or `best_known` is likewise optional and justified by
 the question, not by phase convention. A lineage decision cites the detailed
 artifacts on which it relies.
 
-Choose evidence according to the uncertainty being resolved. Distinguishing
+Evidence is sufficient when it supports the current model/lineage decision
+and, if the campaign objective has not been reached, supports a rational next
+scientific direction. Minimize redundant or decision-irrelevant evidence, not
+evidence whose absence leaves the next direction arbitrary. Distinguishing
 model behavior, learning-process effects, and stochastic variation may require
 different evidence; use the form of evidence that can materially resolve the
 current scientific question.
@@ -158,7 +161,8 @@ experiment: inspect the training outcome and available evidence; formulate the
 scientific question for evaluation; request the measurement that can distinguish
 the competing explanations; if evidence remains insufficient, optionally modify
 researcher-owned instrumentation and request another measurement round on saved
-policies; close when the evidence supports a decision. Request measurements by
+policies; close when the evidence supports a decision and establish the next
+scientific direction when further research is needed. Request measurements by
 writing the existing `research/evaluation_request.json`; the Runner validates and
 executes the request and preserves detailed artifacts. Current candidates and
 eligible saved lineages may be measured through this existing flow.

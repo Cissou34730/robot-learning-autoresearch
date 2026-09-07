@@ -2876,7 +2876,7 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
     assert "mechanism_evaluation_request" not in PROGRAM + instruments + LOOP
 
 
-def test_evaluation_requests_use_the_smallest_decision_relevant_evidence_set():
+def test_evaluation_requests_support_the_model_decision_and_next_direction():
     instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
     normalized_program = " ".join(PROGRAM.split())
     normalized_instruments = " ".join(instruments.split())
@@ -2887,7 +2887,14 @@ def test_evaluation_requests_use_the_smallest_decision_relevant_evidence_set():
     assert "Reuse compatible measurements already listed in the brief" in normalized_program
     assert "Task-reference measurement is optional" in normalized_program
     assert "comparison with `working` or `best_known` is likewise optional" in normalized_program
-    assert "request the smallest sufficient set" in normalized_instruments
+    sufficiency_rule = (
+        "Evidence is sufficient when it supports the current model/lineage decision "
+        "and, if the campaign objective has not been reached, supports a rational next "
+        "scientific direction."
+    )
+    assert sufficiency_rule in normalized_program
+    assert sufficiency_rule in normalized_instruments
+    assert "evidence whose absence leaves the next direction arbitrary" in normalized_instruments
     request_reason_contract = (
         "Use the request-level `reason` to explain why every listed measurement "
         "is needed to answer the question and how its possible outcomes could "
@@ -2895,7 +2902,7 @@ def test_evaluation_requests_use_the_smallest_decision_relevant_evidence_set():
     )
     assert request_reason_contract in normalized_instruments
     assert LOOP.count(request_reason_contract) == 2
-    assert LOOP.count("request the smallest sufficient set") == 2
+    assert "Establish the model decision and, when further research is needed, a rational next scientific direction." in LOOP
     assert LOOP.count("Comparison and task-reference measurement are optional") == 2
     assert '"measurements": [' in instruments
     assert '"paired_comparisons": [' in instruments
