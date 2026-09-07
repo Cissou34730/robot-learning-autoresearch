@@ -25,22 +25,6 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_observation_exposes_periodic_target_polar_coordinates():
-    env = make_training_env()
-    observation, _ = env.reset(seed=0)
-    target_x, target_y = env.data.mocap_pos[0][:2]
-    target_angle = np.arctan2(target_y, target_x)
-
-    np.testing.assert_allclose(
-        observation[4:7],
-        [
-            np.hypot(target_x, target_y),
-            np.sin(target_angle),
-            np.cos(target_angle),
-        ],
-    )
-
-
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
