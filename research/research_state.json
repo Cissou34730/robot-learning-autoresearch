@@ -7,9 +7,9 @@
     "started_at": "2026-09-07T07:52:13.260358+00:00"
   },
   "campaign_experiment_counters": {
-    "6f3b5e54-dc1e-4502-bd86-3318074de79c": 1
+    "6f3b5e54-dc1e-4502-bd86-3318074de79c": 2
   },
-  "last_allocated_experiment": 1,
+  "last_allocated_experiment": 2,
   "last_experiment": 0,
   "last_lineage_decision": null,
   "last_verdict": "fresh baseline pending after research reset",
