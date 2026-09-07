@@ -119,10 +119,9 @@ def test_evaluation_exposes_only_the_minimal_baseline(stub_policy):
     assert -180.0 <= diagnostics["target_angle_degrees"] <= 180.0
     assert diagnostics["min_distance_cm"] >= 0.0
     assert diagnostics["final_distance_cm"] >= 0.0
-    first_reach_step = diagnostics["first_reach_step"]
-    assert first_reach_step is None or 1 <= first_reach_step <= episode["steps"]
-    assert diagnostics["max_held_steps"] >= 0
-    assert diagnostics["in_tolerance_steps"] >= diagnostics["max_held_steps"]
+    assert diagnostics["first_reach_step"] is None
+    assert diagnostics["max_held_steps"] == 0
+    assert diagnostics["in_tolerance_steps"] == 0
     assert diagnostics["hold_interruptions"] == 0
     assert result["research_evidence"]["units"] == {
         "distance": "cm",
