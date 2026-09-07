@@ -19,6 +19,6 @@
   },
   "training": {
     "n_envs": 1,
-    "checkpoint_every_steps": 5000
+    "checkpoint_every_steps": 2048
   }
 }
