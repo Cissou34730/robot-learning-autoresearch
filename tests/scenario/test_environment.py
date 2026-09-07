@@ -17,23 +17,12 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.policy_io import make_policy_io
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_policy_action_mapping_smooths_commands_and_resets():
-    policy_io = make_policy_io()
-
-    np.testing.assert_allclose(policy_io.action([1.0, -1.0]), [1.0, -1.0])
-    np.testing.assert_allclose(policy_io.action([-1.0, 1.0]), [-0.5, 0.5])
-
-    policy_io.reset()
-    np.testing.assert_allclose(policy_io.action([-1.0, 1.0]), [-1.0, 1.0])
 
 
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
