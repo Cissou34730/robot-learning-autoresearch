@@ -2784,9 +2784,9 @@ def test_researcher_guidance_keeps_git_out_of_the_scientific_evidence_surface():
     assert "routine workspace-discovery mechanism" in normalized_agents
     assert "inspect files and Git history" not in normalized_agents
 
-    assert LOOP.count("evaluation design normally requires no Git inspection") == 2
-    assert LOOP.count("current experiment's scientific recipe delta") == 2
-    assert LOOP.count("requires understanding the current code state or delta") == 2
+    assert LOOP.count("evaluation design normally requires no Git inspection") == 1
+    assert LOOP.count("current experiment's scientific recipe delta") == 1
+    assert LOOP.count("requires understanding the current code state or delta") == 1
     for routine_command in ("git log", "git show", "git blame"):
         assert routine_command not in LOOP.lower()
 
