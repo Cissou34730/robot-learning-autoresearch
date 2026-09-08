@@ -41,10 +41,12 @@ uv run --group researcher jello '_.metrics' -f <artifact.json>
 
 Another existing researcher-owned analysis tool may be used when it better fits
 the question. `research/instruments.md` is the operational contract for these
-instruments and request formats. Do not inspect instrument or Runner
-implementation merely to discover how to use an operation already documented
-here. Implementation inspection remains appropriate when the scientific
-question requires understanding researcher-owned measurement or learning code.
+instruments and request formats, and a starting point for understanding them.
+Inspect instrument, learning, measurement, or Runner implementations when useful
+to understand behavior, assumptions, coverage, outputs, or limitations and decide
+how to use a capability. Implementation inspection may help formulate the
+scientific question as well as answer it. Human-owned implementations remain
+read-only; inspection does not change execution or modification permissions.
 
 For the official benchmark result, use `research/brief.md` under **Current
 status -> Reported result**. Its durable metrics and artifact reference remain
@@ -127,7 +129,13 @@ One evaluation request may measure at most three distinct models. Multiple measu
 | Instrument            | Additional fields                                                       | Operation                                                          |
 | --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Runs the researcher-owned evaluator and writes one result artifact |
-| `task_reference`      | Optional `label`: string                                                | Runs the fixed task-reference panel and writes one result artifact |
+| `task_reference`      | Optional `label`: string                                                | Measures a saved policy on the protected original task using a fixed development panel distinct from the final benchmark |
+
+Task-reference measurement is independent of researcher-owned environments and
+evaluation code. It reports task success and per-episode target geometry and
+outcomes. The panel definition is in
+`robot_learning/benchmark/reference_contract.py`; its execution and reported
+quantities are in `robot_learning/benchmark/reference_evaluation.py`.
 
 Add one entry per model. Using identical `research_evaluation` settings measures several candidates or a selected lineage on a comparable panel.
 

@@ -2805,7 +2805,10 @@ def test_evidence_inspection_is_brief_first_and_targeted():
     assert "targeted extraction" in normalized
     assert "uv run --group researcher jello '_.metrics'" in normalized
     assert "relative to the repository" in normalized
-    assert "Do not inspect instrument or Runner implementation" in normalized
+    assert "Inspect instrument, learning, measurement, or Runner implementations when useful" in normalized
+    assert "Implementation inspection may help formulate the scientific question as well as answer it" in normalized
+    assert "Human-owned implementations remain read-only" in normalized
+    assert "Do not inspect instrument or Runner implementation" not in normalized
     assert "every JSON or JSONL artifact" not in normalized
     assert (
         """Detailed artifacts remain valid sources of scientific evidence, including for
@@ -2891,7 +2894,9 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     )
     assert sufficiency_rule in normalized_program
     assert sufficiency_rule not in normalized_instruments
-    assert "No comparison, replication, task-reference panel, diagnostic, or additional round is mandatory or preferred" in normalized_program
+    assert "No comparison, replication, task-reference panel, diagnostic, or additional round is required by phase convention" in normalized_program
+    assert "an instrument may be preferred when its capabilities fit that question" in normalized_program
+    assert "mandatory or preferred" not in normalized_program
     assert "`question` and `reason` are non-empty strings" in normalized_instruments
     assert "the revisable question or approach that best serves the human objective" in normalized_program
     evaluation_design_prompt = LOOP.split(
@@ -2910,7 +2915,7 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert "minimum measurement" not in LOOP.lower()
     assert "exploratory characterization when useful" in LOOP.lower()
     assert "campaign objective and current scientific strategy and available evidence" in LOOP.lower()
-    assert LOOP.count("Comparison and task-reference measurement are optional") == 2
+    assert LOOP.count("Choose instruments for their fit to the scientific question, not phase convention") == 2
     assert (
         '"strategy_link": "<how this experiment advances, revises, or rejects '
         'the current investigation>"'

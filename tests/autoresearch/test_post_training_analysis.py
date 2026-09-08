@@ -33,6 +33,45 @@ def test_post_training_prompt_supports_goal_directed_analysis_without_a_causal_g
         assert obsolete not in prompt
 
 
+@pytest.mark.parametrize("prompt_name", ["analysisPrompt", "evaluationPrompt"])
+def test_measurement_prompts_expose_task_reference_and_code_inspection(prompt_name):
+    launcher = Path("run_research.ps1").read_text(encoding="utf-8")
+    prompt = launcher.split(f"${prompt_name} = @(", 1)[1].split(') -join " "', 1)[0]
+
+    assert "inspect implementations to understand behavior" in prompt.lower()
+    assert "including when this helps formulate the question" in prompt
+    assert "Human-owned code remains read-only" in prompt
+    assert "Task-reference measurement assesses the protected original task" in prompt
+    assert "independently of researcher-owned evaluation" in prompt
+    assert "separate development panel" in prompt
+    assert "its implementation is identified in research/instruments.md" in prompt
+    if prompt_name == "analysisPrompt":
+        for capability in (
+            "checkpoint inventory and raw-log queries",
+            "structured-artifact analysis",
+            "lightweight local analysis",
+            "researcher-owned instrumentation",
+            "research evaluation",
+            "paired comparison",
+        ):
+            assert capability in prompt
+
+
+def test_task_reference_contract_exposes_its_purpose_and_implementation():
+    instruments = " ".join(Path("research/instruments.md").read_text(encoding="utf-8").split())
+
+    assert "protected original task" in instruments
+    assert "fixed development panel distinct from the final benchmark" in instruments
+    assert "independent of researcher-owned environments and evaluation code" in instruments
+    assert "task success and per-episode target geometry and outcomes" in instruments
+    for implementation in (
+        "robot_learning/benchmark/reference_contract.py",
+        "robot_learning/benchmark/reference_evaluation.py",
+    ):
+        assert implementation in instruments
+        assert Path(implementation).is_file()
+
+
 def test_post_training_prompt_preserves_measurement_and_closure_boundaries():
     launcher = Path("run_research.ps1").read_text(encoding="utf-8")
     prompt = launcher.split("$analysisPrompt = @(", 1)[1].split(

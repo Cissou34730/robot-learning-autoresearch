@@ -135,7 +135,9 @@ the question or uncertainty, then choose a useful, proportionate measurement
 scope. This may characterize unfamiliar behavior, compare policies, or examine
 learning dynamics across checkpoints. Reuse compatible evidence when it answers
 the question. No comparison, replication, task-reference panel, diagnostic, or
-additional round is mandatory or preferred.
+additional round is required by phase convention. Choose according to the
+scientific question; an instrument may be preferred when its capabilities fit
+that question.
 
 During this phase, request measurements of current candidates or eligible saved
 lineages through `research/evaluation_request.json`. Researcher-owned measurement
