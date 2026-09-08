@@ -1,380 +1,601 @@
-# Research Harness Reasoning Rebalance — Implementation Plan
+# Research Harness Reasoning Rebalance — Exact Implementation Specification
 
-## Purpose
+## Execution rule
 
-This change must correct the reasoning regressions observed after the recent
-memory and strategy improvements without rolling those improvements back.
+Implement exactly the edits specified below. Do not paraphrase the required
+wording, introduce adjacent improvements, refactor surrounding code, add schema
+fields, or invent tests. If an exact anchor is absent, stop and report the
+missing anchor instead of choosing an alternative implementation.
 
-The current harness correctly preserves scientific strategy, lineage recipes,
-evidence, and an explicit next direction. However, the Researcher can still:
+Do not run training, evaluation, a campaign, reset logic, Git-lineage simulation,
+or the full test suite.
 
-- promote a secondary training signal into the campaign's main question;
-- treat one failed intervention as if it resolved an entire mechanism class;
-- choose an intervention partly to preserve transfer compatibility;
-- defer the terminal benchmark merely because another experiment can be imagined.
+The implementation branch is `codex/research-reasoning-rebalance`.
 
-The desired reasoning order is:
+## Invariants that must not change
 
-1. identify the unresolved measured behavioral gap of the best-known policy;
-2. compare plausible causal explanations for that gap;
-3. choose the intervention that best discriminates between those explanations;
-4. only then choose fresh or transfer initialization based on scientific
-   compatibility;
-5. after training, distinguish what the exact intervention established from
-   what remains unknown about the broader mechanism;
-6. choose further research or terminal assessment according to information
-   value, not according to whether another experiment is merely possible.
+Do not change:
 
-This is a focused correction to documentation, prompts, and brief ordering. It
-must not create a new workflow, state, schema, validator, score, or instrument.
+- proposal, evaluation-request, postmortem, or lineage JSON schemas;
+- Runner states or phase transitions;
+- validation, fingerprints, model identity, evidence identity, or persistence;
+- `working`, `best_known`, retained-lineage, or scientific-recipe semantics;
+- recipe restoration or Git behavior;
+- available operations: training, continuation, replication, fresh, and transfer;
+- available evidence instruments or their execution;
+- benchmark implementation, secrecy, or terminal behavior;
+- scenario, training, reward, observation, environment, or evaluation code.
 
-## Required branch and commit workflow
+The next scientific direction, Scientific strategy, `strategy_link`, evidence
+sufficiency for the next direction, and initialization justification remain
+mandatory. This change adjusts their meaning and presentation; it does not
+remove them.
 
-Implementation starts from branch `codex/research-reasoning-rebalance`, where
-this plan is committed before implementation.
+## Commit sequence
 
-Use the following commits and push each commit immediately after it is created:
+Create and push exactly these three implementation commits, in this order:
 
 1. `rebalance research brief attention order`
 2. `clarify mechanism-driven research reasoning`
 3. `record research reasoning rebalance decision`
 
-Do not combine all implementation into one final commit. Do not amend or squash
-the plan commit. If the requested implementation cannot be completed without a
-design change outside this plan, stop and report the conflict before coding it.
-
-## Behavior that must remain unchanged
-
-The implementation must preserve all of the following:
-
-- the campaign objective and current investigation remain distinct;
-- every closed non-terminal experiment leaves a concrete next scientific
-  direction;
-- the Scientific strategy remains mandatory and revisable;
-- `reasoning.strategy_link` remains mandatory;
-- the Researcher must have enough evidence to choose a rational next direction,
-  not only enough evidence to select a model;
-- the existing `fresh`, `transfer`, `continuation`, and `replication` operations;
-- the existing fresh/transfer initialization justification;
-- `working` and `best_known` remain distinct lineages;
-- exact scientific recipe provenance and restoration remain intact;
-- existing evidence identity and model identity checks remain intact;
-- development measurements remain optional and reusable when compatible;
-- comparison and task-reference measurement remain optional rather than phase
-  defaults;
-- the official benchmark remains protected, secret, terminal, and unavailable
-  as development feedback;
-- the existing proposal, evaluation-request, postmortem, and lineage-decision
-  schemas remain unchanged;
-- the Runner executes and validates; it does not choose the scientific question.
-
-## 1. Reorder the generated research brief
-
-### File
-
-`research/build_research_brief.py`
-
-### Objective
-
-Put the latest scientific situation before durable lineage bookkeeping. The
-Researcher must first see what just happened and what behavioral gap remains,
-while still retaining complete access to lineage and recipe information.
-
-### Required change
-
-Change only the order in which existing brief sections are emitted. Do not
-remove, summarize further, rename, or change the data model of any section.
-
-The generated brief must present its main sections in this order:
-
-1. current phase and the immediately required deliverable;
-2. latest experiment or latest completed training/evaluation facts;
-3. current Scientific strategy;
-4. current lineages and scientific recipes;
-5. experiment index, available artifacts, and the remaining existing evidence
-   or operational sections in their current relative order.
-
-`Current lineages and scientific recipes` must no longer precede the latest
-result and Scientific strategy. Its complete identifiers, artifacts,
-parameters, recipe information, and restoration information must remain
-available after reordering.
-
-Do not introduce a second compact lineage summary near the top. Do not copy the
-strategy into another section.
-
-### Focused tests
-
-Update only the affected assertions in:
-
-- `tests/autoresearch/test_research_context.py`
-- `tests/autoresearch/test_console_presentation.py`
-- `tests/autoresearch/test_scientific_reasoning.py` if it asserts section order.
-
-Tests must prove that:
-
-- latest-result content appears before Scientific strategy;
-- Scientific strategy appears before current lineages and recipes;
-- lineage identifiers, recipe details, and artifact references are still
-  present;
-- no brief content was dropped because of the reorder.
-
-Run only the focused tests relevant to this commit, then commit and push.
-
-## 2. Clarify the scientific reasoning contract
-
-### Files
-
-- `research/program.md`
-- `research/instruments.md`
-- `run_research.ps1`
-- focused tests under `tests/autoresearch/`
-
-### 2.1 Anchor the next direction to measured behavior
-
-In `research/program.md`, retain the mandatory next scientific direction but
-clarify its subject.
-
-Add wording with this exact meaning:
-
-- the next direction must remain anchored to the campaign objective and the
-  most important unresolved measured behavioral gap of `best_known`;
-- a new training statistic, implementation observation, or secondary finding
-  does not automatically become the campaign's primary direction;
-- when training metrics conflict with measured policy behavior, measured policy
-  behavior governs the choice of the next scientific problem;
-- a training metric may motivate a hypothesis only when the Researcher states a
-  plausible causal link from that metric to the measured behavioral gap.
-
-Do not hard-code any robot-specific failure mode, metric name, algorithm, reward
-term, or scenario behavior.
-
-### 2.2 Require competing explanations before selecting an intervention
-
-In `research/program.md`, immediately before the existing proposal reasoning
-requirements, require the Researcher to:
-
-1. state the measured gap being addressed;
-2. consider at least one plausible competing causal explanation;
-3. explain why the selected intervention is the most discriminating reasonable
-   next experiment among the explanations considered.
-
-This must refine the existing `alternative`, `expected_observation`, and
-`contradicting_observation` contract. Do not add a proposal field and do not
-require a fixed number of hypotheses beyond the existing selected hypothesis
-and at least one plausible alternative.
-
-### 2.3 Separate intervention results from mechanism-class conclusions
-
-In both `research/program.md` and the Scientific strategy guidance in
-`research/instruments.md`, add wording with this exact meaning:
-
-- rejecting one parameter value, representation variant, schedule, or other
-  concrete intervention rejects that intervention under the tested conditions;
-- it resolves the broader mechanism class only when the observed evidence
-  actually discriminates against that class;
-- otherwise, the mechanism remains open, with the failed intervention recorded
-  as a scoped lesson;
-- secondary findings belong in `Open questions` when relevant but do not
-  automatically replace `Direction`.
-
-Do not require the Researcher to repeat the full experiment history or maintain
-a permanent list of every rejected intervention in the strategy.
-
-### 2.4 Keep the existing strategy structure and define its entries precisely
-
-In `research/instruments.md`, keep the existing four headings exactly:
-
-- `Direction`
-- `Lessons and limits`
-- `Open questions`
-- `Conditional next steps`
-
-Clarify them as follows:
-
-- `Direction`: the primary measured best-known behavioral gap and the current
-  causal question selected to address it;
-- `Lessons and limits`: scoped conclusions supported by completed evidence,
-  explicitly separating an exact intervention result from a mechanism-class
-  conclusion;
-- `Open questions`: plausible competing explanations and relevant secondary
-  findings that remain unresolved;
-- `Conditional next steps`: the preferred discriminating continuation or
-  bifurcation and the evidence that would cause the direction to change.
-
-The next direction remains mandatory. `Conditional next steps` must not become
-an excuse to provide no concrete next action.
-
-### 2.5 Choose mechanism and intervention before initialization
-
-In `research/program.md` and the experiment-proposal explanation in
-`research/instruments.md`, preserve `reasoning.initialization_reason` but state
-the required order explicitly:
-
-1. choose the scientific mechanism and intervention;
-2. determine whether the parent policy and its learned representation remain
-   scientifically compatible with that intervention;
-3. choose fresh or transfer initialization;
-4. record that rationale in `initialization_reason`.
-
-State explicitly that unchanged tensor dimensions alone do not establish
-semantic compatibility. Do not express a preference for fresh or transfer.
-
-In `run_research.ps1`, update the new-hypothesis prompt so it follows this same
-order. The prompt must not lead with the list of initialization modes before it
-asks for the gap, explanations, mechanism, and intervention. The operations may
-still be named, but only after that reasoning instruction.
-
-### 2.6 Update post-training reasoning prompts
-
-In the post-training analysis prompt in `run_research.ps1`, retain the existing
-requirement to establish a rational next scientific direction. Add concise,
-explicit instructions to:
-
-- compare the actual result with the proposal's expected and contradicting
-  observations;
-- state what the exact intervention established;
-- state separately whether the broader mechanism is resolved or remains open;
-- anchor the next direction to the primary measured best-known gap;
-- treat conflicting training proxies as subordinate to measured policy
-  behavior unless a causal link is justified;
-- keep secondary findings as open questions unless evidence makes one the new
-  primary gap.
-
-Apply the same scientific semantics to any separate lineage/closure prompt that
-asks the Researcher to update the postmortem or Scientific strategy. Do not
-duplicate the full protocol text in every prompt; use compact instructions that
-remove the current ambiguity.
-
-Retry prompts must remain correction-only prompts. Do not add the full reasoning
-contract to retry prompts.
-
-### 2.7 Correct the terminal benchmark decision criterion
-
-In `research/program.md`, `research/instruments.md`, and the relevant
-post-training/closure prompt in `run_research.ps1`, preserve these facts:
-
-- requesting the official benchmark terminates the campaign after either pass
-  or fail;
-- its result cannot be used to choose a later experiment;
-- it is not a development measurement.
-
-Replace the current rule that effectively permits a request only when no useful
-scientific path remains. The new criterion must have this exact meaning:
-
-- request the terminal benchmark when the available development evidence makes
-  terminal assessment the highest-value next action for the best-known model;
-- the mere existence of another imaginable or scientifically useful experiment
-  does not by itself prohibit terminal assessment;
-- the closure rationale must explain why terminal assessment is more valuable
-  now than further development research.
-
-Remove or replace all prompt/document wording equivalent to:
-
-- “request only when no next experiment remains”;
-- “omit while any scientifically useful path remains”;
-- “stop only when no scientifically useful path remains.”
-
-Do not add a numeric readiness threshold, automatic benchmark trigger, Runner
-approval policy, or access to benchmark results after failure.
-
-### Focused tests for section 2
-
-Update only focused contract/presentation tests in:
-
-- `tests/autoresearch/test_research_protocol.py`
-- `tests/autoresearch/test_researcher_session.py`
-- `tests/autoresearch/test_scientific_reasoning.py`
-- `tests/autoresearch/test_research_context.py` when documentation text is
-  asserted there.
-
-Tests must establish that:
-
-- a next scientific direction remains required;
-- the direction is tied to the measured best-known gap and campaign objective;
-- prompts require competing explanations before intervention selection;
-- prompts choose intervention before initialization;
-- same tensor shape is not described as sufficient semantic compatibility;
-- post-training reasoning separates exact intervention evidence from broader
-  mechanism conclusions;
-- measured behavior takes precedence over conflicting training proxies;
-- the official benchmark is still terminal and not development feedback;
-- the obsolete “no useful path may remain” restriction is absent;
-- proposal and lineage JSON schemas have not changed;
-- no new phase, request type, or instrument was introduced.
+Push immediately after each commit. Do not amend, squash, or combine them.
+
+---
+
+## Commit 1 — Rebalance research brief attention order
+
+### Modify `research/build_research_brief.py`
+
+In `_render_v4_research_brief`, do not change any helper function or rendered
+content. Change only the order of existing blocks.
+
+Remove this call from immediately after `Current phase and latest event`:
+
+```python
+    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
+```
+
+Keep the complete existing `## Latest experiment` block unchanged. Immediately
+after the `if isinstance(pending, dict) / elif latest / else` block that ends in:
+
+```python
+    else:
+        lines.append("No experiment has completed in this campaign.")
+```
+
+insert exactly:
+
+```python
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines.extend(
+        [
+            "",
+            "## Current scientific direction",
+            "",
+            "Revisable current investigation authored by the Researcher:",
+            "",
+        ]
+    )
+    lines.append(
+        "\n".join(strategy.splitlines()[1:]).strip()
+        if strategy
+        else "No scientific strategy recorded for this campaign yet."
+    )
+
+    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
+```
+
+Delete the old duplicate strategy block after `## Working lineage`, including
+its local `strategy = ...` assignment. Keep `## Working lineage` unchanged and
+after the lineage/recipe block.
+
+The resulting top-level order must be exactly:
+
+1. `## Current phase and latest event`
+2. `## Latest experiment`
+3. `## Current scientific direction`
+4. `## Current lineages and scientific recipes`
+5. `## Working lineage`
+6. `## Campaign experiment index`
+
+All later sections keep their current order and content.
+
+### Modify focused tests
+
+In
+`tests/autoresearch/test_research_context.py::test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics`,
+replace the current section-order assertions with exactly:
+
+```python
+    assert rendered.index("## Current phase and latest event") < rendered.index(
+        "## Latest experiment"
+    )
+    assert rendered.index("## Latest experiment") < rendered.index(
+        "## Current scientific direction"
+    )
+    assert rendered.index("## Current scientific direction") < rendered.index(
+        "## Current lineages and scientific recipes"
+    )
+    assert rendered.index("## Current lineages and scientific recipes") < rendered.index(
+        "## Working lineage"
+    )
+    assert rendered.index("## Working lineage") < rendered.index(
+        "## Campaign experiment index"
+    )
+```
+
+In these three tests in `tests/autoresearch/test_console_presentation.py`:
+
+- `test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints`
+- `test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe`
+- `test_v4_brief_renders_absent_lineage_facts_as_not_recorded`
+
+replace the lineage-section end delimiter:
+
+```python
+        "## Latest experiment", 1
+```
+
+with:
+
+```python
+        "## Working lineage", 1
+```
+
+In `test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints`, add:
+
+```python
+    assert brief.index("## Latest experiment") < brief.index(
+        "## Current scientific direction"
+    )
+    assert brief.index("## Current scientific direction") < brief.index(
+        "## Current lineages and scientific recipes"
+    )
+```
+
+Do not change assertions proving that lineage IDs, artifacts, fingerprints,
+scientific commits, parameters, evaluation artifacts, aliases, and checkpoints
+remain visible.
+
+### Validate, commit, and push
 
 Run only:
 
 ```text
-uv run pytest -q tests/autoresearch/test_research_context.py tests/autoresearch/test_scientific_reasoning.py tests/autoresearch/test_research_protocol.py tests/autoresearch/test_researcher_session.py tests/autoresearch/test_console_presentation.py
+uv run pytest -q tests/autoresearch/test_research_context.py tests/autoresearch/test_console_presentation.py tests/autoresearch/test_scientific_reasoning.py
+uv run ruff check research/build_research_brief.py tests/autoresearch/test_research_context.py tests/autoresearch/test_console_presentation.py
 ```
 
-Run Ruff only on Python files changed by this implementation. Do not run a
-campaign, training job, evaluation, Git lineage simulation, or repository-wide
-test suite.
+Commit with `rebalance research brief attention order`, then push.
 
-Commit and push this section after the focused tests pass.
+---
 
-## 3. Record the protocol decision
+## Commit 2 — Clarify mechanism-driven research reasoning
 
-### File
+### Modify `research/program.md`
 
-`research/PROTOCOL_DECISIONS.md`
+#### A. Replace the complete body of `## Scientific memory and direction`
 
-Append one concise decision entry that records:
+Replace everything after that heading and before `## Lifecycle` with exactly:
 
-- observed problem: persistent strategy could be captured by secondary signals,
-  exact failed interventions were overgeneralized, transfer compatibility could
-  influence intervention choice, and terminal assessment was deferred by an
-  overly strict stopping formulation;
-- decision: preserve mandatory strategy and next direction while anchoring them
-  to the measured best-known gap, require competing causal explanations, choose
-  intervention before initialization, scope conclusions to the evidence, and
-  select terminal assessment by information value;
-- explicit non-change: no new phase, schema, instrument, scoring rule, automatic
-  comparison, or automatic stopping condition;
-- validation method: focused prompt/document/brief tests followed by a separate
-  human-run campaign; the implementation itself must not launch that campaign.
+```markdown
+The campaign objective is always to improve learned behavior toward the
+human-defined objective in `research/scenario.md`; the Scientific strategy does
+not author or replace that objective. `Direction` is the current temporary
+investigation. When a measured `best_known` model exists, `Direction` must name
+its highest-priority unresolved behavioral gap and the causal question currently
+being tested against that gap. Before a best-known model exists, use the most
+relevant measured behavior available for the campaign objective.
 
-Do not rewrite earlier decision entries. Commit and push this documentation and
-any final focused test alignment as the third implementation commit.
+A training statistic, implementation observation, or secondary finding does not
+automatically become the primary direction. When a training metric conflicts
+with measured policy behavior, measured policy behavior governs the choice of
+the next scientific problem. A training metric may motivate an investigation
+only when the Researcher states a plausible causal link to the measured
+behavioral gap.
 
-## Out of scope
+Maintain the current campaign's **Scientific strategy** section in
+`research/postmortems.md`, using the exact format in `research/instruments.md`.
+Separate this revisable synthesis from the historical experiment entries.
+Preserve past observations and decisions; revise current interpretations with
+new evidence rather than rewriting what was believed at the time.
 
-Do not implement any of the following:
+`Lessons and limits` must scope every conclusion to the evidence. Failure of one
+concrete intervention rejects that intervention under the tested conditions; it
+rejects the broader mechanism class only when the evidence discriminates against
+that class. `Open questions` records plausible unresolved explanations and
+secondary findings, not a mandatory experiment queue. `Conditional next steps`
+states the concrete preferred next action and the observation that would instead
+change direction. The next direction remains mandatory when the campaign
+continues.
 
-- new proposal, evaluation, postmortem, or lineage fields;
-- a new lifecycle state or investigation phase;
-- a new measurement, comparison, benchmark, or analysis instrument;
-- automatic experiment ranking, mechanism scoring, or direction scoring;
-- hard experiment quotas, patience counters, or forced stopping rules;
-- automatic continuation, transfer, fresh, or replication selection;
-- an algorithm-specific or scenario-specific recommendation;
-- changes to training, reward, observations, environment, model architecture, or
-  evaluation semantics;
-- changes to lineage restoration, recipe restoration, model/evidence identity,
-  Git persistence, or campaign reset behavior;
-- removal of the current evidence sufficiency, strategy, or provenance work;
-- a general refactor of the Runner or research harness;
-- training or campaign execution as validation.
+Think beyond the next experiment without committing to a fixed sequence or
+number of experiments. Revise the strategy when evidence changes it and state
+uncertainty when evidence is insufficient. The `reasoning.strategy_link` may
+advance, revise, or reject the current investigation; it does not need to
+preserve it.
+```
 
-## Completion criteria
+#### B. Replace the first two paragraphs of `## Experiment preparation`
 
-The implementation is complete only when:
+Replace the text from `Inspect relevant repository state...` through
+`does not require a parameter or code modification.` with exactly:
 
-1. the brief presents current evidence and strategy before lineage bookkeeping;
-2. the Researcher is still required to provide a concrete next direction;
-3. that direction is explicitly grounded in the best-known model's measured
-   behavioral gap rather than the newest available proxy;
-4. the Researcher must compare plausible causal explanations before choosing an
-   intervention;
-5. fresh/transfer is selected after the intervention for compatibility reasons,
-   without a preference for either mode;
-6. post-training conclusions distinguish intervention evidence from broader
-   mechanism conclusions;
-7. terminal benchmark use is governed by highest next information value while
-   remaining terminal and secret;
-8. all existing schemas, phases, instruments, lineage semantics, and evidence
-   integrity mechanisms are unchanged;
-9. focused tests and targeted lint pass;
-10. the three implementation commits and this plan commit are visible on the
-    remote branch.
+```markdown
+Inspect relevant repository state and completed evidence. First identify the
+measured behavioral gap being addressed. Compare the selected causal explanation
+with at least one plausible alternative, then choose the intervention that most
+clearly distinguishes them. Only after choosing the mechanism and intervention,
+choose continuation, replication, or training with fresh or transfer
+initialization and write `research/proposal.json`. Make scientific code or
+parameter changes only when the selected operation calls for them. The phase is
+incomplete until that deliverable exists and satisfies the contract in
+`research/instruments.md`.
+
+Before submitting, establish or update the Scientific strategy. The proposal's
+existing `reasoning` fields record inspected evidence, the competing explanation,
+expected and contradicting observations, the initialization rationale, and the
+link to the strategy. Explain why the selected experiment discriminates between
+the causal explanations. Choose fresh or transfer from the semantic compatibility
+of the intervention with the parent policy and learned representation; unchanged
+tensor dimensions alone do not establish semantic compatibility. Continuing an
+unchanged method is a legitimate experiment and does not require a parameter or
+code modification.
+```
+
+#### C. Replace the scientific interpretation text in `## Post-training analysis`
+
+Keep all lifecycle and measurement-round mechanics. Replace the paragraphs
+beginning `Revisit the proposal's original expected...` and `The postmortem and
+strategy must explicitly...` with exactly:
+
+```markdown
+Compare the observed result with the proposal's original expected and
+contradicting observations. State separately what the exact intervention
+established and whether the broader causal mechanism is resolved or remains
+open. Failure of one intervention does not close its mechanism class unless the
+evidence actually discriminates against that class.
+
+Update the Scientific strategy from measured behavior. When training metrics
+and measured policy behavior disagree, use measured behavior to choose the next
+scientific problem unless an explicit causal link justifies the proxy. Keep a
+secondary finding in `Open questions` unless evidence shows that it is now the
+highest-priority behavioral gap. Establish a concrete next direction anchored to
+the campaign objective and the unresolved measured behavior of `best_known` when
+the campaign continues.
+
+Mechanistic investigation may use logs, code inspection, lightweight analysis,
+scientific instrumentation, and development measurements as useful; no
+particular diagnostic or action sequence is mandatory. State whether the current
+investigation is resolved and direction changes, remains useful with a concrete
+next action, or is genuinely inconclusive with the unresolved distinction and
+its decision consequence. These are Researcher reasoning choices, not
+Runner-controlled states.
+```
+
+#### D. Replace the final-benchmark paragraph before `## Validation and recovery`
+
+Replace the complete paragraph beginning `The final benchmark may be requested`
+with exactly:
+
+```markdown
+The final benchmark may be requested only through closure and targets the frozen
+best-known model. It is a terminal objective verdict, not a development
+measurement, lineage selector, or source for a later hypothesis. Requesting it
+ends the campaign after either verdict. Request it when the available development
+evidence makes terminal assessment of the best-known model the highest-value next
+action. The existence of another imaginable or scientifically useful experiment
+does not by itself prohibit the request. The closure rationale must explain why
+terminal assessment is more valuable now than further development research.
+```
+
+#### E. Replace the body of `## Stopping`
+
+Use exactly:
+
+```markdown
+Development measurements, training metrics, individual checkpoints, subsets and
+seeds are not the official result. Continue with another experiment when further
+development research is the highest-value next action. Request the official
+benchmark when terminal assessment is the highest-value next action. The Runner
+then ends the campaign after either `goal_reached` or `goal_not_reached`; a failed
+official verdict is never development feedback for another hypothesis.
+```
+
+### Modify `research/instruments.md`
+
+Do not change the proposal JSON example or any field name.
+
+#### A. Replace the proposal reasoning prose
+
+Replace the prose from `Maintain the campaign's Scientific strategy...` through
+the paragraph ending `another experiment or replication is appropriate only
+when its result can change the next scientific action.` with exactly:
+
+```markdown
+Maintain the campaign's Scientific strategy section before submitting. The
+Runner requires its four existing entries and snapshots it with `reasoning` in
+the experiment record. Existing historical records without these fields remain
+readable; a newly submitted proposal must satisfy this contract.
+
+An eligible `training_parent` must be exposed by the brief as `working`,
+`best_known`, or a retained lineage ID. `continuation` continues the selected
+recipe without a learning-method change. A `training` proposal may deliberately
+apply a changed recipe to an existing parent with `initialization: "transfer"`.
+Continuation, replication, and additional seeds are available scientific choices,
+not mandatory controls or gates for accepting a model.
+
+Use the existing reasoning fields in this order. `evidence` identifies the
+measured behavioral gap. `alternative` states a plausible competing causal
+explanation. `expected_observation` and `contradicting_observation` state how the
+experiment distinguishes those explanations and what each outcome would teach.
+`strategy_link` explains how that discriminating experiment advances, revises,
+or rejects the current investigation.
+
+Choose the mechanism and intervention before initialization. Then use
+`initialization_reason` to explain why fresh or the selected transfer parent is
+semantically compatible with that intervention. Unchanged tensor dimensions
+alone do not establish semantic compatibility. Neither fresh nor transfer is
+preferred by this contract.
+```
+
+#### B. Replace the paragraph after the Scientific strategy template
+
+Replace the paragraph beginning `The campaign objective remains...` and ending
+`may advance, revise, or reject the current investigation.` with exactly:
+
+```markdown
+The campaign objective remains the human-defined objective in
+`research/scenario.md`; this strategy cannot replace it. `Direction` names the
+highest-priority unresolved measured behavioral gap of `best_known` and the
+current causal question. Before a best-known model exists, it uses the most
+relevant measured campaign behavior. `Lessons and limits` records scoped
+conclusions: an exact intervention result is not a mechanism-class conclusion
+unless the evidence discriminates against that class. `Open questions` records
+plausible competing explanations and relevant secondary findings.
+`Conditional next steps` states the preferred concrete next action and the
+evidence that would change it. It does not remove the requirement for a next
+direction when the campaign continues. The proposal's `reasoning.strategy_link`
+may advance, revise, or reject the current investigation.
+```
+
+#### C. Replace both official-benchmark explanations
+
+Replace the paragraph beginning `Omit request_final_benchmark...` with exactly:
+
+```markdown
+Set `request_final_benchmark` to `false` when further development research is the
+highest-value next action. Set it to `true` when the available development
+evidence makes terminal assessment of `best_known` the highest-value next action.
+The existence of another possible experiment does not itself decide between
+these choices. A `true` value ends the campaign after either `goal_reached` or
+`goal_not_reached`; the result cannot select a later hypothesis.
+```
+
+Under `## Request the official benchmark`, replace the paragraph beginning
+`After applying the lineage decision...` with exactly:
+
+```markdown
+After applying the lineage decision, the Runner benchmarks the frozen best-known
+model. Read the terminal verdict in `research/brief.md` under **Current status →
+Reported result**. Request this assessment only when it is the highest-value next
+action according to the available development evidence. The closure rationale
+must explain why terminal assessment is more valuable now than further
+development research. The assessment ends the campaign after either verdict and
+is never an experiment-selection probe or input to another hypothesis.
+```
+
+### Modify `run_research.ps1`
+
+Do not change control flow, conditions, variables, function calls, or retry
+prompts. Replace only the three initial prompt arrays below.
+
+#### A. Replace `$analysisPrompt` exactly
+
+```powershell
+        $analysisPrompt = @(
+            $analysisPhasePrompt
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Inspect what happened during training and compare the result with the proposal's expected and contradicting observations. State separately what the exact intervention established and whether the broader causal mechanism is resolved or remains open."
+            "Use measured policy behavior, not a conflicting training proxy, to choose the next scientific problem unless you state a causal link from that proxy to the measured behavioral gap. Keep secondary findings as open questions unless evidence makes one the highest-priority gap."
+            "State the scientific question before requesting evidence. Request only measurements whose possible outcomes can change the interpretation, model/lineage decision, or next scientific direction. Reuse compatible existing evidence. Comparison and task-reference measurement are optional."
+            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
+            "Current candidates and eligible saved lineages can be remeasured through the existing request flow. If the relevant quantity is not currently emitted, you may modify researcher-owned measurement instrumentation before requesting it. Additional measurement rounds are optional and available only while closing this trained experiment."
+            "When the campaign continues, establish a concrete next direction anchored to the campaign objective and the highest-priority unresolved measured behavior of best_known. Preserve a broader mechanism as open when only one concrete intervention failed."
+            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
+            "Set request_final_benchmark to true only when terminal assessment of best_known is the highest-value next action according to the available development evidence, and explain why it is more valuable now than further research. A true value ends the campaign after either goal_reached or goal_not_reached and its result cannot select a later hypothesis."
+            "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
+        ) -join " "
+```
+
+#### B. Replace `$decisionPrompt` exactly
+
+```powershell
+        $decisionPrompt = @(
+            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
+            "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
+            "In the postmortem and Scientific strategy, state separately what the exact intervention established and whether its broader causal mechanism remains open. When the campaign continues, keep the next direction anchored to the highest-priority unresolved measured behavior of best_known."
+            "Set request_final_benchmark to true only when terminal assessment is the highest-value next action according to available development evidence; explain why it is more valuable now than further research. A true value ends the campaign after either verdict and cannot provide feedback for another hypothesis."
+            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
+            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
+        ) -join " "
+```
+
+#### C. Replace `$researchPrompt` exactly
+
+```powershell
+    $researchPrompt = @(
+        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. Do not exit without the required deliverable."
+        "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+        "Start from the campaign objective and the highest-priority unresolved measured behavioral gap of best_known. Compare the selected causal explanation with at least one plausible alternative, then choose the intervention that most clearly distinguishes them."
+        "Only after choosing the mechanism and intervention, choose continuation, replication, or training with fresh or transfer initialization. Base fresh or transfer on semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
+        "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
+        "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
+        "Code or configuration edits are required only when the selected operation calls for them."
+        "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the unchanged contract in research/instruments.md, plus any edits called for by the selected operation."
+        "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
+        "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
+    ) -join " "
+```
+
+### Modify focused tests
+
+Do not add a test file.
+
+In `tests/autoresearch/test_researcher_session.py`:
+
+1. In `test_phase_prompts_expose_choices_without_bounded_task_framing`, remove
+   the assertion counting the old `Available preparation operations...` sentence
+   and add exactly:
+
+```python
+    assert LOOP.count(
+        "Compare the selected causal explanation with at least one plausible alternative"
+    ) == 1
+    assert LOOP.count(
+        "Only after choosing the mechanism and intervention, choose continuation"
+    ) == 1
+    assert LOOP.count(
+        "unchanged tensor dimensions alone do not establish compatibility"
+    ) == 1
+```
+
+2. Replace
+`test_post_training_prompt_distinguishes_continuation_from_terminal_assessment`
+with exactly:
+
+```python
+def test_post_training_prompt_distinguishes_research_from_terminal_assessment():
+    assert "terminal assessment of best_known is the highest-value next action" in LOOP
+    assert "explain why it is more valuable now than further research" in LOOP
+    assert "ends the campaign after either goal_reached or goal_not_reached" in LOOP
+    assert "its result cannot select a later hypothesis" in LOOP
+    assert "when a scientifically useful next experiment remains" not in LOOP
+```
+
+In `tests/autoresearch/test_research_protocol.py`:
+
+1. Keep every schema and validator test unchanged.
+2. In
+   `test_post_training_reasoning_requires_a_revisable_investigation_interpretation`,
+   replace assertions for removed prompt text with:
+
+```python
+    assert "what the exact intervention established" in LOOP
+    assert "whether the broader causal mechanism is resolved or remains open" in LOOP
+    assert "Preserve a broader mechanism as open when only one concrete intervention failed" in LOOP
+    assert "These are Researcher reasoning choices, not Runner-controlled states." in normalized_program
+```
+
+3. In `test_evaluation_requests_support_the_model_decision_and_next_direction`,
+   preserve assertions about optional comparison, optional task-reference
+   measurement, reusable evidence, and evidence sufficiency. Add:
+
+```python
+    assert "measured policy behavior governs the choice of the next scientific problem" in normalized_program
+    assert "states a plausible causal link to the measured behavioral gap" in normalized_program
+    assert "highest-priority unresolved measured behavioral gap" in normalized_program
+```
+
+4. Add exactly:
+
+```python
+def test_experiment_choice_precedes_initialization_choice():
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
+    normalized_program = " ".join(PROGRAM.split())
+    normalized_instruments = " ".join(instruments.split())
+
+    assert "Compare the selected causal explanation with at least one plausible alternative" in LOOP
+    assert "Only after choosing the mechanism and intervention" in LOOP
+    assert "Choose the mechanism and intervention before initialization." in normalized_instruments
+    assert "unchanged tensor dimensions alone do not establish semantic compatibility" in normalized_program
+    assert "Neither fresh nor transfer is preferred by this contract." in normalized_instruments
+```
+
+5. Add exactly:
+
+```python
+def test_terminal_assessment_uses_information_value_without_becoming_feedback():
+    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
+    combined = " ".join((PROGRAM + "\n" + instruments + "\n" + LOOP).split())
+
+    assert "terminal assessment" in combined
+    assert "highest-value next action" in combined
+    assert "more valuable now than further development research" in combined
+    assert "ends the campaign after either verdict" in combined
+    assert "no next experiment is intended" not in combined
+    assert "no scientifically useful path remains" not in combined
+    assert "when a scientifically useful next experiment remains" not in combined
+```
+
+Do not add Runner execution or JSON validation tests because those mechanisms do
+not change.
+
+### Validate, commit, and push
+
+Run only:
+
+```text
+uv run pytest -q tests/autoresearch/test_research_protocol.py tests/autoresearch/test_researcher_session.py tests/autoresearch/test_scientific_reasoning.py tests/autoresearch/test_research_context.py
+```
+
+Do not run Ruff: no Python production file changes in this commit. Commit with
+`clarify mechanism-driven research reasoning`, then push.
+
+---
+
+## Commit 3 — Record research reasoning rebalance decision
+
+### Modify `research/PROTOCOL_DECISIONS.md`
+
+Append exactly:
+
+```markdown
+## 2026-09-08 — Anchor strategy to measured behavior before choosing initialization
+
+Decision: Keep the mandatory revisable Scientific strategy and concrete next
+direction, but anchor them to the campaign objective and the highest-priority
+unresolved measured behavior of the best-known model. Require the Researcher to
+compare a causal explanation with a plausible alternative and choose the
+discriminating intervention before choosing fresh, transfer, continuation, or
+replication. Treat the result of one concrete intervention as evidence about that
+intervention, not automatically as resolution of its broader mechanism class.
+
+Reason: Recent campaigns showed that persistent strategy could be captured by a
+secondary training signal, that transfer compatibility could influence the
+intervention itself, and that scoped negative results could be generalized too
+broadly. The existing strategy, evidence sufficiency, lineage provenance, and
+recipe restoration remain useful and are preserved.
+
+Terminal assessment: Keep the official benchmark secret and terminal. Choose it
+when available development evidence makes assessment of the best-known model the
+highest-value next action, rather than requiring every scientifically useful path
+to be exhausted first. A failed official verdict remains unavailable as feedback
+for another hypothesis.
+
+Scope: This changes brief ordering and Researcher-facing reasoning instructions
+only. It adds no schema field, phase, instrument, score, automatic comparison,
+automatic stopping rule, or Runner scientific decision.
+```
+
+Run only:
+
+```text
+git diff --check
+```
+
+Do not rerun tests passed in commits 1 and 2. Commit with
+`record research reasoning rebalance decision`, then push.
+
+## Final report required from the implementer
+
+Report only:
+
+- the three commit hashes;
+- the focused test commands and pass counts;
+- confirmation that no schema, state transition, instrument, scientific code,
+  training code, evaluation semantics, fingerprint, or Git behavior changed;
+- deviations from this specification. The expected deviation list is empty.
