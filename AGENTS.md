@@ -33,6 +33,7 @@ uv sync                                  # Human: install the fixed dependencies
 uv run python -m robot_learning.train    # Runner: train a policy
 uv run python -m robot_learning.play --model <model.zip>  # Human: open the viewer
 uv run pytest                            # Runner: complete test suite
+uv run pytest tests/e2e                  # Human: slow end-to-end lifecycle suite
 .\reset_research.ps1 -Mode Fresh -Force  # Human: reset campaign, preserve science
 ```
 
@@ -85,6 +86,10 @@ human-only maintenance operation, never a Researcher experiment command.
 - `models/candidates/` - disposable training candidates.
 - `tests/benchmark/`, `tests/autoresearch/`, `tests/scenario/`,
   `tests/training/` - tests grouped by ownership domain.
+- `tests/e2e/` - human-owned end-to-end lifecycle checks that drive real Git
+  repositories, the PowerShell entry points and complete runner runs. They are
+  minutes slow, so `pyproject.toml` keeps them out of the default `uv run
+  pytest` and out of every campaign-time suite selection.
 
 ## Human-owned paths
 
@@ -104,7 +109,7 @@ The Researcher may read but not modify these paths through an experiment:
   `robot_learning/scenario/__init__.py` (minimal protected package initializer);
 - `robot_learning/scenario/final_benchmark.py` and
   `robot_learning/scenario/task_reference.py`;
-- `tests/benchmark/` and `tests/autoresearch/`.
+- `tests/benchmark/`, `tests/autoresearch/` and `tests/e2e/`.
 
 Protection is enforced centrally by `research/runner_protocol.py`. A protected
 path takes precedence over any researcher-owned prefix.
@@ -142,6 +147,8 @@ AutoResearch tests remain method-neutral. Architecture guards derive the
 surface they protect rather than naming one implementation file.
 Adding harness regression tests does not itself broaden campaign-time suite
 selection for researcher-owned reward or parameter changes.
+A test that needs a real repository, a real PowerShell entry point or a
+complete runner run belongs in `tests/e2e/`, never in a campaign-time domain.
 
 ## Persistence and Git
 

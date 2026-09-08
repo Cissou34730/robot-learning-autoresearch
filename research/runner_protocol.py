@@ -62,6 +62,7 @@ PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
 PROTECTED_TEST_PREFIXES = (
     "tests/benchmark/",
     "tests/autoresearch/",
+    "tests/e2e/",
 )
 VALIDATED_TEST_PATHS = (
     "tests/benchmark",
