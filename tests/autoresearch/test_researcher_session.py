@@ -251,6 +251,21 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     ) == 1
 
 
+def test_closure_prompt_assesses_the_tested_question_without_preserving_a_direction():
+    prompt = LOOP.split("$decisionPrompt = @(", 1)[1].split(') -join " "', 1)[0]
+
+    assert "assess the question actually tested" in prompt
+    assert "scope causal claims to the evidence" in prompt
+    assert "provisional next direction" in prompt
+    assert "expected contribution to the human objective" in prompt
+    assert "it may replace the current investigation" in prompt
+    assert "best serves the current investigation" not in prompt
+    assert "exact intervention established" not in prompt
+    assert "research/postmortems.md and the lineage-only research/proposal.json" in prompt
+    assert "Do not design another evaluation" in prompt
+    assert "A true value ends the campaign after either verdict" in prompt
+
+
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
     for phase in ("proposalStatus", "evaluationStatus", "lineageStatus", "analysisStatus"):
         assert LOOP.count(f"if (-not ${phase}.Complete)") == 2
