@@ -89,25 +89,13 @@ instrument is required. Changes affecting training apply to the next experiment.
 
 **Phase:** Post-training analysis.
 
-Use this existing request during initial analysis or an optional refinement round
-while closing the current trained experiment. State the scientific question,
-then select measurements that can change its interpretation; when the relevant
-quantity is not currently emitted, researcher-owned instrumentation may be
+Use this request during initial analysis or an optional refinement round while
+closing the current trained experiment. Researcher-owned instrumentation may be
 changed before submitting the request.
 
-Formulate the question before choosing models, panels, and instruments. Evidence
-is sufficient when it supports the current model/lineage decision and, if the
-campaign objective has not been reached, supports a rational next scientific
-direction. Minimize redundant or decision-irrelevant evidence, not evidence
-whose absence leaves the next direction arbitrary. Reuse compatible measurements
-already listed in the brief, and request only evidence for which each possible
-outcome could change the current interpretation, model/lineage decision, or
-next scientific direction. Use the request-level `reason` to explain why every
-listed measurement is needed to answer the question and how its possible
-outcomes could change the current interpretation, model/lineage decision, or
-next scientific direction. Task-reference measurement and comparison with
-`working` or `best_known` are optional and are requested only when they answer
-the stated question.
+`question` and `reason` are non-empty strings describing the request as a whole.
+`measurements` selects the instruments and models to run. `paired_comparisons`
+selects comparisons to compute from compatible measurements and is optional.
 
 Write `research/evaluation_request.json`:
 
@@ -214,30 +202,21 @@ The Runner checks file existence and confinement to this repository, not the
 scientific conclusion or proof of inspection. This contract applies equally to
 training, continuation and replication, not to the automatic baseline.
 
-Maintain the campaign's Scientific strategy section before submitting. The
-Runner requires its four existing entries and snapshots it with `reasoning` in
+The campaign's Scientific strategy section must exist before submission. The
+Runner validates its four labels and snapshots the section with `reasoning` in
 the experiment record. Existing historical records without these fields remain
-readable; a newly submitted proposal must satisfy this contract.
+readable.
 
 An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. `continuation` continues the selected
 recipe without a learning-method change. A `training` proposal may deliberately
 apply a changed recipe to an existing parent with `initialization: "transfer"`.
-Continuation, replication, and additional seeds are available scientific choices,
-not mandatory controls or gates for accepting a model.
 
-Use the existing reasoning fields in this order. `evidence` identifies the
-measured behavioral gap. `alternative` states a plausible competing causal
-explanation. `expected_observation` and `contradicting_observation` state how the
-experiment distinguishes those explanations and what each outcome would teach.
-`strategy_link` explains how that discriminating experiment advances, revises,
-or rejects the current investigation.
-
-Choose the mechanism and intervention before initialization. Then use
-`initialization_reason` to explain why fresh or the selected transfer parent is
-semantically compatible with that intervention. Unchanged tensor dimensions
-alone do not establish semantic compatibility. Neither fresh nor transfer is
-preferred by this contract.
+The `reasoning` object contains the fields shown in the schema. `evidence` is a
+non-empty array of source/observation objects. `alternative`,
+`expected_observation`, `contradicting_observation`, `initialization_reason`, and
+`strategy_link` are non-empty strings. Their scientific use is defined in
+`research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -268,28 +247,11 @@ also be edited during experiment preparation. The exact heading and labels are:
 **Conditional next steps:** <possible follow-ups depending on observations>
 ```
 
-The campaign objective remains the human-defined objective in
-`research/scenario.md`; this strategy cannot replace it. `Direction` names the
-highest-priority unresolved measured behavioral gap of `best_known` and the
-current causal question. Before a best-known model exists, it uses the most
-relevant measured campaign behavior. `Lessons and limits` records scoped
-conclusions: an exact intervention result is not a mechanism-class conclusion
-unless the evidence discriminates against that class. `Open questions` records
-plausible competing explanations and relevant secondary findings.
-`Conditional next steps` states the preferred concrete next action and the
-evidence that would change it. It does not remove the requirement for a next
-direction when the campaign continues. The proposal's `reasoning.strategy_link`
-may advance, revise, or reject the current investigation.
-
-Each entry must have content and may span multiple lines. This is researcher
-interpretation, not a Runner verdict. Keep historical experiment entries intact;
-revise this section as evidence changes. There is no cycle ID, experiment quota,
-or obligation to execute the anticipated follow-ups. The brief displays this
-campaign's section without generating conclusions or importing another campaign's
-strategy. Historical `Reconsider when` content remains part of the readable
-synthesis but is not required in new sections. On adopting this protocol in an
-existing campaign, write the synthesis from inspected history; the Runner does
-not fabricate one.
+All four labeled entries must contain text and may span multiple lines. Their
+scientific meaning is defined in `research/program.md`. The Runner checks the
+section's structure, associates the active campaign section with the proposal,
+and displays it in the brief. It does not author scientific content. Historical
+experiment entries and strategy sections remain readable.
 
 Append to `research/postmortems.md`:
 
@@ -314,9 +276,7 @@ a training log, checkpoint metadata, recorded training result, or completed
 evaluation artifact. An unmeasured checkpoint is unmeasured, not zero success.
 New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
 and conclusion belong to the Researcher; the Runner checks only that it is
-present. Fresh baselines have no intervention hypothesis and are exempt, and
-historical entries remain readable without rewriting. Keep `Interpretation` for
-competing explanations, unexpected evidence, and implications for future work.
+present. Fresh baselines are exempt, and historical entries remain readable.
 
 ## Resolve lineage
 
@@ -361,12 +321,12 @@ not promote `continue_from`. This request selects the working model, chooses the
 scientific recipe action, and manages retained lineages. Unretained model
 artifacts are removed; their recorded history and measurements remain.
 
-Set `request_final_benchmark` to `false` when further development research is the
-highest-value next action. Set it to `true` when the available development
-evidence makes terminal assessment of `best_known` the highest-value next action.
-The existence of another possible experiment does not itself decide between
-these choices. A `true` value ends the campaign after either `goal_reached` or
-`goal_not_reached`; the result cannot select a later hypothesis.
+Omitting `request_final_benchmark` or setting it to `false` allows the campaign
+to proceed after closure. Setting it to `true` requests terminal assessment of
+`best_known`; the Runner ends the campaign after either `goal_reached` or
+`goal_not_reached`. The result is not available to a later hypothesis. The
+scientific decision rule for requesting assessment is defined in
+`research/program.md`.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
@@ -389,10 +349,7 @@ and `request_final_benchmark` is a boolean.
 
 Set `request_final_benchmark` to `true` in `previous_result_decision`.
 
-After applying the lineage decision, the Runner benchmarks the frozen best-known
-model. Read the terminal verdict in `research/brief.md` under **Current status →
-Reported result**. Request this assessment only when it is the highest-value next
-action according to the available development evidence. The closure rationale
-must explain why terminal assessment is more valuable now than further
-development research. The assessment ends the campaign after either verdict and
-is never an experiment-selection probe or input to another hypothesis.
+After applying the lineage decision, the Runner assesses the frozen best-known
+model and writes the terminal verdict to `research/brief.md`. The campaign ends
+after either verdict. This operation does not produce evidence for another
+hypothesis.

@@ -353,11 +353,12 @@ def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
         "a failed\nofficial verdict is never development feedback for another "
         "hypothesis."
     ) in program
+    assert "highest-value next action" not in instruments
     assert (
-        "The existence of another possible experiment does not itself decide "
-        "between\nthese choices."
+        "The\nscientific decision rule for requesting assessment is defined in\n"
+        "`research/program.md`."
     ) in instruments
     assert (
-        "The assessment ends the campaign after either verdict and\nis never an "
-        "experiment-selection probe or input to another hypothesis."
+        "The campaign ends\nafter either verdict. This operation does not produce "
+        "evidence for another\nhypothesis."
     ) in instruments

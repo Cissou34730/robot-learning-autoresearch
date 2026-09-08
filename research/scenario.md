@@ -16,11 +16,8 @@ steps.
 ## Success criterion
 
 An episode succeeds only when the complete uninterrupted hold is achieved. The
-campaign objective is at least 98% episode success under the official task
-distribution.
-
-The Researcher's mission is to discover a learning method and a policy capable
-of satisfying this criterion on the official task.
+campaign objective is a learned policy that achieves at least 98% episode
+success under the official task distribution.
 
 ## Immutable task boundary
 

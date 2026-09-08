@@ -2949,15 +2949,11 @@ def test_post_training_reasoning_requires_a_revisable_investigation_interpretati
     assert "whether the broader causal mechanism is resolved or remains open" in LOOP
     assert "Preserve a broader mechanism as open when only one concrete intervention failed" in LOOP
     assert "These are Researcher reasoning choices, not Runner-controlled states." in normalized_program
-    assert "`evidence` identifies the measured behavioral gap" in normalized_instruments
-    assert (
-        "`expected_observation` and `contradicting_observation` state how the "
-        "experiment distinguishes those explanations and what each outcome would teach"
-    ) in normalized_instruments
-    assert (
-        "`strategy_link` explains how that discriminating experiment advances, "
-        "revises, or rejects the current investigation"
-    ) in normalized_instruments
+    assert "Failure of one concrete intervention rejects that intervention" in normalized_program
+    assert "The `reasoning` object contains the fields shown in the schema." in normalized_instruments
+    assert "Their scientific use is defined in `research/program.md`." in normalized_instruments
+    assert "measured behavioral gap" not in normalized_instruments
+    assert "broader causal mechanism" not in normalized_instruments
     assert "next_if_expected" not in PROGRAM + instruments + LOOP
     assert "next_if_contradicted" not in PROGRAM + instruments + LOOP
 
@@ -2984,16 +2980,10 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
         "scientific direction."
     )
     assert sufficiency_rule in normalized_program
-    assert sufficiency_rule in normalized_instruments
-    assert "evidence whose absence leaves the next direction arbitrary" in normalized_instruments
-    request_reason_contract = (
-        "Use the request-level `reason` to explain why every listed measurement "
-        "is needed to answer the question and how its possible outcomes could "
-        "change the current interpretation, model/lineage decision, or next "
-        "scientific direction."
-    )
-    assert request_reason_contract in normalized_instruments
-    assert LOOP.count(request_reason_contract) == 1
+    assert sufficiency_rule not in normalized_instruments
+    assert "evidence whose absence leaves the next direction arbitrary" in normalized_program
+    assert "evidence whose absence leaves the next direction arbitrary" not in normalized_instruments
+    assert "`question` and `reason` are non-empty strings" in normalized_instruments
     assert (
         "When the campaign continues, establish a concrete next direction anchored "
         "to the campaign objective and the highest-priority unresolved measured "
@@ -3037,19 +3027,26 @@ def test_experiment_choice_precedes_initialization_choice():
 
     assert "Compare the selected causal explanation with at least one plausible alternative" in LOOP
     assert "Only after choosing the mechanism and intervention" in LOOP
-    assert "Choose the mechanism and intervention before initialization." in normalized_instruments
+    assert "Only after choosing the mechanism and intervention" in normalized_program
     assert "unchanged tensor dimensions alone do not establish semantic compatibility" in normalized_program
-    assert "Neither fresh nor transfer is preferred by this contract." in normalized_instruments
+    assert "Neither fresh initialization nor transfer is the default scientific preference." in normalized_program
+    assert "Choose the mechanism and intervention before initialization." not in normalized_instruments
+    assert "semantic compatibility" not in normalized_instruments
 
 
 def test_terminal_assessment_uses_information_value_without_becoming_feedback():
     instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
-    combined = " ".join((PROGRAM + "\n" + instruments + "\n" + LOOP).split())
+    normalized_program = " ".join(PROGRAM.split())
+    normalized_instruments = " ".join(instruments.split())
+    combined = " ".join((PROGRAM + "\n" + LOOP).split())
 
     assert "terminal assessment" in combined
     assert "highest-value next action" in combined
     assert "more valuable now than further development research" in combined
     assert "ends the campaign after either verdict" in combined
+    assert "highest-value next action" not in normalized_instruments
+    assert "The scientific decision rule for requesting assessment is defined in `research/program.md`." in normalized_instruments
+    assert "Request it when the available development evidence" in normalized_program
     assert "no next experiment is intended" not in combined
     assert "no scientifically useful path remains" not in combined
     assert "when a scientifically useful next experiment remains" not in combined
