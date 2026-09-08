@@ -599,8 +599,6 @@ def _render_v4_research_brief(
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
 
-    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
-
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
         result = pending.get("result", {})
@@ -630,15 +628,30 @@ def _render_v4_research_brief(
     else:
         lines.append("No experiment has completed in this campaign.")
 
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines.extend(
+        [
+            "",
+            "## Current scientific direction",
+            "",
+            "Revisable current investigation authored by the Researcher:",
+            "",
+        ]
+    )
+    lines.append(
+        "\n".join(strategy.splitlines()[1:]).strip()
+        if strategy
+        else "No scientific strategy recorded for this campaign yet."
+    )
+
+    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
+
     lines.extend(["", "## Working lineage", ""])
     lines.append(
         "- See `working` under **Current lineages and scientific recipes**."
         if state.get("working_lineage")
         else "- Working: unset"
     )
-    strategy = scientific_strategy_section(postmortems, campaign_id)
-    lines.extend(["", "## Current scientific direction", "", "Revisable current investigation authored by the Researcher:", ""])
-    lines.append("\n".join(strategy.splitlines()[1:]).strip() if strategy else "No scientific strategy recorded for this campaign yet.")
 
     lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |", "|---:|---|---|---|---|---|---|---|"])
     for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):

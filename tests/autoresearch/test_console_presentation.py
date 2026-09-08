@@ -656,7 +656,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     brief = render_research_brief()
 
     section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
-        "## Latest experiment", 1
+        "## Working lineage", 1
     )[0]
     assert "Valid `training_parent` identifiers: `working`, `best_known`, `alternate`" in section
     assert "`checkpoint-current`" not in section.split(
@@ -683,6 +683,12 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     assert section.count("Candidate: checkpoint-best") == 1
     assert "- See `working` under **Current lineages and scientific recipes**." in brief
     assert "- See `best_known` under **Current lineages and scientific recipes**." in brief
+    assert brief.index("## Latest experiment") < brief.index(
+        "## Current scientific direction"
+    )
+    assert brief.index("## Current scientific direction") < brief.index(
+        "## Current lineages and scientific recipes"
+    )
 
 
 def test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe(
@@ -715,7 +721,7 @@ def test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe(
 
     brief = render_research_brief()
     section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
-        "## Latest experiment", 1
+        "## Working lineage", 1
     )[0]
 
     assert "Valid `training_parent` identifiers: `working`, `best_known`" in section
@@ -745,7 +751,7 @@ def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(
     brief = render_research_brief()
 
     section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
-        "## Latest experiment", 1
+        "## Working lineage", 1
     )[0]
     assert "Valid `training_parent` identifiers: `working`" in section
     assert "Origin experiment: not recorded" in section

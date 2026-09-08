@@ -311,11 +311,20 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     assert "candidate_metrics" not in rendered
     assert "- Hypothesis assessment: Assessment 6" in rendered
     assert "[postmortem](research/postmortems.md)" in rendered
-    assert rendered.index("## Current scientific direction") < rendered.index(
-        "## Campaign experiment index"
+    assert rendered.index("## Current phase and latest event") < rendered.index(
+        "## Latest experiment"
     )
-    assert rendered.index("## Campaign experiment index") < rendered.index(
-        "## Best-known model"
+    assert rendered.index("## Latest experiment") < rendered.index(
+        "## Current scientific direction"
+    )
+    assert rendered.index("## Current scientific direction") < rendered.index(
+        "## Current lineages and scientific recipes"
+    )
+    assert rendered.index("## Current lineages and scientific recipes") < rendered.index(
+        "## Working lineage"
+    )
+    assert rendered.index("## Working lineage") < rendered.index(
+        "## Campaign experiment index"
     )
 
 
