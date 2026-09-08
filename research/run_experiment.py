@@ -1679,6 +1679,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             (int(candidate["timesteps"]) for candidate in archived_candidates),
             default=0,
         )
+        result["completed_training_steps"] = completed_steps
         console.announce(
             "\n"
             + console.render_training_summary_card(
@@ -1697,6 +1698,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             "parameters": effective_config,
             "initialization": initialization,
             "training_budget_steps": effective_timesteps,
+            "completed_training_steps": completed_steps,
             "parent_training_steps": int(parent_training_steps),
             "baseline": baseline,
             "code_parent_commit": code_parent_commit,

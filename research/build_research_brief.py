@@ -715,6 +715,24 @@ def _render_v4_research_brief(
     else:
         lines.append("No experiment has completed in this campaign.")
 
+    if latest:
+        training_record = {**(pending or {}), **latest}
+        requested_steps = training_record.get("training_budget_steps")
+        completed_steps = training_record.get("completed_training_steps")
+        if completed_steps is None:
+            completed_steps = max(
+                (
+                    int(candidate["timesteps"])
+                    for candidate in training_record.get("candidates", [])
+                    if candidate.get("timesteps") is not None
+                ),
+                default=None,
+            )
+        if requested_steps is not None:
+            lines.append(f"- Requested training budget: {int(requested_steps):,} steps")
+        if completed_steps is not None:
+            lines.append(f"- Completed training steps: {int(completed_steps):,}")
+
     strategy = scientific_strategy_section(postmortems, campaign_id)
     lines.extend(
         [

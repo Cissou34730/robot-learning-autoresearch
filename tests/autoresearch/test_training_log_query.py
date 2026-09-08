@@ -157,7 +157,10 @@ def test_runner_passes_the_correct_active_attempt_to_training(
         lambda experiment, scope: "scientific-commit",
     )
     monkeypatch.setattr(
-        "research.runner_repository.archive_candidates", lambda *args, **kwargs: []
+        "research.runner_repository.archive_candidates",
+        lambda *args, **kwargs: [
+            {"name": "checkpoint-120832", "timesteps": 120_832}
+        ],
     )
     monkeypatch.setattr(
         "research.runner_protocol.next_experiment_index", lambda *args, **kwargs: 2
@@ -175,7 +178,9 @@ def test_runner_passes_the_correct_active_attempt_to_training(
         "research.runner_protocol.validation_test_paths", lambda *args, **kwargs: ()
     )
     monkeypatch.setattr("research.runner_execution.validate_active_configuration", dict)
-    monkeypatch.setattr("research.runner_execution.training_budget", lambda *args: 10)
+    monkeypatch.setattr(
+        "research.runner_execution.training_budget", lambda *args: 120_000
+    )
     monkeypatch.setattr(
         "research.runner_execution.candidate_directories", lambda path: []
     )
@@ -203,12 +208,17 @@ def test_runner_passes_the_correct_active_attempt_to_training(
         "initialization": "fresh",
     }
     assert (
-        run_training_experiment(proposal, Namespace(timesteps=10, reuse_candidate=None))
+        run_training_experiment(
+            proposal, Namespace(timesteps=120_000, reuse_candidate=None)
+        )
         == 0
     )
 
     assert captured_logs == [training_logs / "current" / expected_name]
     result = state["pending_evaluation_request"]["result"]
+    assert result["training_budget_steps"] == 120_000
+    assert result["completed_training_steps"] == 120_832
+    assert state["pending_evaluation_request"]["completed_training_steps"] == 120_832
     assert result["reasoning"] == scientific_reasoning
     assert "Investigate the plateau" in result["scientific_strategy"]
     scientific_memory.write_text("Revised later", encoding="utf-8")

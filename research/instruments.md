@@ -199,6 +199,12 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 a non-negative integer when present. `params` is optional for ordinary training
 and is omitted for unchanged operations.
 
+Experiment records distinguish `training_budget_steps` (requested) from
+`completed_training_steps` (actually completed in that experiment). Rollout
+boundaries may make the completed count exceed the request. A selected lineage's
+`training_steps` instead records its accumulated training through the selected
+checkpoint.
+
 All `reasoning` strings must be non-empty; `evidence` contains at least one
 source/observation pair. Cite inspected campaign artifacts, logs, postmortems or
 code with precise observations; these are not restricted to evaluation results.
