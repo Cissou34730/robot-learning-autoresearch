@@ -135,7 +135,7 @@ A paired comparison uses the accumulated `research_evaluation` outcomes for the 
 Compatible historical measurements may supply either or both sides when their
 model fingerprints, evaluation semantics, instrument settings, and exact episode
 identities match. Detailed diagnostic artifacts retain the same evaluation
-identity. Legacy comparison-semantics fields are ignored when records are read.
+identity. Legacy compatibility fields are ignored when records are read.
 The same compatibility rule determines whether research-evaluation evidence can
 support replacing `best_known`; task-reference evidence retains its exact panel
 compatibility rule and remains optional.
@@ -143,10 +143,13 @@ Reusing the same development panel does not create independent confirmation.
 
 The model fingerprint covers the complete saved artifact, including its policy
 I/O, loader, and normalization state. Research-evaluation context identity covers
-the current evaluator, environment/task mechanics, reward-derived evidence, and
-measurement instrumentation outside that artifact. Editing model-contained
+the current evaluator, environment/task mechanics, and measurement
+instrumentation outside that artifact. Editing model-contained
 policy I/O does not retroactively change the context of an existing measurement;
-editing evaluator or environment semantics does.
+editing evaluator or environment semantics does. Training-only code, including
+the reward, is excluded because it changes neither replay nor success. Pooled
+comparison uses success only; per-episode `reward_total` in the detailed
+artifacts is not comparable across a reward change.
 
 Each completed measurement round returns to post-training analysis. New requests
 do not use `need_more_evidence`; closing is a separate closure proposal in the

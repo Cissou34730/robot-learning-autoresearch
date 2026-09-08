@@ -1194,3 +1194,51 @@ for another hypothesis.
 Scope: This changes brief ordering and Researcher-facing reasoning instructions
 only. It adds no schema field, phase, instrument, score, automatic comparison,
 automatic stopping rule, or Runner scientific decision.
+
+## 2026-09-08 - Targeted harness corrections and final coherence
+
+Decision: Apply the final remediation corrections as a documentation and
+contract-coherence lot. The active protocol now uses one evaluation compatibility
+identity, resolves `best_known` measurements internally from the selected model,
+and leaves scientific evidence comparability to the Researcher. Historical
+records remain readable without reintroducing the deleted contracts or adding a
+new control surface.
+
+Deviation A: Deleting `comparison_semantics` alone would have been a regression.
+`evaluation_semantics` covers the whole researcher-owned scenario package, so a
+single identity would otherwise make every reward edit invalidate every
+historical comparison. That is precisely the friction that
+`comparison_semantics` was created to avoid; experiments 4 and 5 reused
+experiment 1 evidence because of it. The correction therefore also narrows
+`evaluation_semantics` through the named `TRAINING_ONLY_PATHS` exclusion.
+
+The exclusion is justified by the execution contract: `robot_learning/scenario/
+environment.py` derives `is_success` from `held_steps >= hold_steps_required`,
+not from the reward. The reward and training-environment code therefore
+determine neither replay nor success of a saved policy. The exclusion is a small
+named set containing only the training-only paths, while every other
+researcher-owned scenario file remains included by default.
+
+The caveat is recorded: pooled comparison uses success only, so the exclusion is
+sound for the primary outcome. Per-episode `reward_total` stays in the detailed
+artifacts and is not comparable across a reward change. Judging that is the
+Researcher's responsibility, not a Runner gate.
+
+Deviation B: Removing the Runner's challenger/incumbent comparability check is
+deliberate. Evidence comparability for a `best_known` designation is the
+Researcher's scientific responsibility. The Runner still verifies model
+identity and artifact integrity, but it does not compare scores or decide
+whether the evidence supports the designation. `research/program.md` states
+this responsibility explicitly.
+
+Deviation C: The remediation issue asked to remove a rule requiring an
+independent panel below 98% success. No such rule exists anywhere in the
+harness. The figure appears only in Researcher-authored prose in
+`research/postmortems.md`. There was therefore nothing to remove, and no such
+rule must be introduced.
+
+Reason: These deviations preserve the intended separation between executable
+harness guarantees and Researcher scientific judgment. They prevent a deleted
+compatibility layer from being replaced by an overly broad identity, prevent
+manual evidence transcription from becoming a Runner-side scientific gate, and
+avoid inventing a panel requirement that the harness never enforced.
