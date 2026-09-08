@@ -1,7 +1,8 @@
-"""Scenario-owned environment mechanics shared by training and evaluation.
+"""Scenario-owned training environment.
 
-The MuJoCo model, target sampling, success and hold semantics, observations,
-and reward behavior live here because both training and evaluation use them.
+Generic training code only calls `make_training_env()`; every mechanic below
+(MuJoCo model, target sampling, success and hold semantics, observations,
+reward) belongs to this scenario and may be replaced wholesale.
 
 The benchmark constants are training defaults, not a contract: research may
 train on a different distribution, tolerance or horizon. The human-defined task
@@ -22,14 +23,11 @@ from robot_learning.benchmark.spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
-from robot_learning.scenario.observations import (
-    OBSERVATION_SIZE,
-    inverse_kinematics_branches,
-)
+from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
-JOINT_LIMIT_RADIANS = np.deg2rad(170.0)
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -71,8 +69,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = 0.0
-        self._branch_target = np.zeros(2, dtype=np.float64)
-        self._previous_branch_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
 
@@ -82,33 +78,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def _distance_to_target(self) -> float:
         return float(
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
-        )
-
-    @staticmethod
-    def _wrapped_joint_error(current: np.ndarray, target: np.ndarray) -> np.ndarray:
-        return (current - target + np.pi) % (2.0 * np.pi) - np.pi
-
-    def _select_branch_target(self) -> np.ndarray:
-        target_x, target_y = self.data.mocap_pos[0][:2]
-        branches = inverse_kinematics_branches(float(target_x), float(target_y))
-        valid_branches = [
-            branch
-            for branch in branches
-            if np.all(np.abs(branch) <= JOINT_LIMIT_RADIANS)
-        ]
-        candidates = valid_branches or list(branches)
-        return min(
-            candidates,
-            key=lambda branch: float(
-                np.linalg.norm(self._wrapped_joint_error(self.data.qpos, branch))
-            ),
-        ).copy()
-
-    def _branch_distance(self) -> float:
-        return float(
-            np.linalg.norm(
-                self._wrapped_joint_error(self.data.qpos, self._branch_target)
-            )
         )
 
     def _sample_target_position(self) -> None:
@@ -146,8 +115,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
-        self._branch_target = self._select_branch_target()
-        self._previous_branch_distance = self._branch_distance()
         self._held_steps = 0
         self._outside_after_hold = False
         return self._observation(), {}
@@ -165,7 +132,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
-        branch_distance = self._branch_distance()
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -185,11 +151,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            previous_branch_distance=self._previous_branch_distance,
-            branch_distance=branch_distance,
         )
         self._previous_distance = distance
-        self._previous_branch_distance = branch_distance
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
@@ -203,6 +166,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "reward_components": reward.components,
         }
         return self._observation(), float(reward.total), terminated, truncated, info
+
+
+def make_training_env() -> gym.Env:
+    """Build the Gymnasium environment used for training this scenario."""
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:

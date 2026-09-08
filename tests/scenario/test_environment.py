@@ -11,10 +11,10 @@ import robot_learning.scenario.environment as environment_module
 import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
-from robot_learning.scenario.environment import TwoJointArmReachEnv, make_evaluation_env
-from robot_learning.scenario.observations import inverse_kinematics_branches
-from robot_learning.scenario.training_environment import (
+from robot_learning.scenario.environment import (
     TRAINING_TARGET_RADIUS_RANGE,
+    TwoJointArmReachEnv,
+    make_evaluation_env,
     make_training_env,
 )
 
@@ -84,36 +84,3 @@ def test_environment_latches_the_outside_penalty_after_losing_hold(monkeypatch):
     assert continued_reward == pytest.approx(produced[1].total)
     assert exit_info["reward_components"] == produced[0].components
     assert continued_info["reward_components"] == produced[1].components
-
-
-def test_environment_selects_a_joint_limit_safe_ik_branch():
-    env = make_training_env()
-    env.reset(seed=11)
-
-    branches = inverse_kinematics_branches(
-        float(env.data.mocap_pos[0][0]), float(env.data.mocap_pos[0][1])
-    )
-
-    assert np.all(np.abs(env._branch_target) <= np.deg2rad(170.0))
-    assert any(np.allclose(env._branch_target, branch) for branch in branches)
-
-
-def test_branch_progress_reward_is_forwarded_and_updates(monkeypatch):
-    env = make_training_env()
-    env.reset(seed=0)
-    previous_branch_distance = env._previous_branch_distance
-    recorded: list[tuple[float, float]] = []
-    original_reward = reward_module.reach_reward
-
-    def record(*args, **kwargs):
-        recorded.append(
-            (kwargs["previous_branch_distance"], kwargs["branch_distance"])
-        )
-        return original_reward(*args, **kwargs)
-
-    monkeypatch.setattr(environment_module, "reach_reward", record)
-    env.step(np.zeros(2))
-
-    assert len(recorded) == 1
-    assert recorded[0][0] == pytest.approx(previous_branch_distance)
-    assert recorded[0][1] >= 0.0

@@ -23,7 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-BRANCH_PROGRESS_COEFFICIENT = 1.0
 
 
 @dataclass(frozen=True)
@@ -54,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    previous_branch_distance: float | None = None,
-    branch_distance: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -93,17 +90,6 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    branch_progress = 0.0
-    if (previous_branch_distance is None) != (branch_distance is None):
-        raise ValueError(
-            "previous_branch_distance and branch_distance must be provided together"
-        )
-    if previous_branch_distance is not None and branch_distance is not None:
-        branch_progress = BRANCH_PROGRESS_COEFFICIENT * (
-            previous_branch_distance - branch_distance
-        )
-    reward += branch_progress
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -117,7 +103,6 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
-            "branch_progress": float(branch_progress),
             "action_cost": float(action_cost),
         },
     )
