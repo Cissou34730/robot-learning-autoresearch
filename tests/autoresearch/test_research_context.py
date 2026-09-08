@@ -732,15 +732,14 @@ def test_research_contract_exposes_choices_and_exact_closure_conditions():
     assert "continuation, replication, or\n   training" in combined
     assert "fresh training does not by itself establish" in combined
     assert "repeated evidence from that panel" in combined
-    assert "runner requires its four existing entries" in combined
+    assert "best_known` requires exactly a" in combined
+    assert "candidate string and reason string" in combined
     assert '"action": "<keep | revert | restore>"' in instruments
     assert "For `restore`, `code.lineage` is required" in instruments
     assert "omit `code.lineage`" in instruments
-    assert (
-        "Comparable evidence is still required\nfor both the proposed model and "
-        "incumbent."
-    ) in instruments
-    assert "benchmarks the frozen best-known" in instruments
+    assert "the Runner resolves that\nmodel's recorded measurements" in instruments
+    assert "the researcher is responsible for judging whether the evidence backing a" in combined
+    assert "assesses the frozen best-known" in instruments
 
 
 def test_researcher_retries_resume_this_phase_own_session():
@@ -774,3 +773,5 @@ def test_v4_analysis_prompt_offers_measurement_or_closure_with_one_preflight():
     assert "--check-analysis-deliverable" in script
     assert "Choose exactly one outcome" in script
     assert "Candidate-only measurement and closure without new measurements are valid." in script
+    assert "If best_known remains unchanged, omit the best_known field." in script
+    assert "Do not restate or reselect it." in script

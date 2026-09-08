@@ -93,6 +93,10 @@ Experiment history and prior postmortems are evidence, not authority. Older
 records may use superseded schemas, and prior interpretations may be revisited.
 Prefer targeted extraction over loading complete artifacts or histories.
 
+The Researcher is responsible for judging whether the evidence backing a
+`best_known` designation is scientifically comparable. The Runner verifies model
+identity and recorded measurement integrity, but does not make that comparison.
+
 ## Scientific memory and direction
 
 The campaign objective is always to improve learned behavior toward the

@@ -2018,13 +2018,6 @@ def _validated_designation_evidence(
     return records
 
 
-def _designation_compatibility_record(record: dict) -> dict:
-    if record["instrument"] != "research_evaluation":
-        return record
-    settings = record["settings"]
-    return _validated_historical_panel_records([record], settings[:3])[0]
-
-
 def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     pending = state.get("pending_analysis") or state.get("pending_researcher_decision")
     if pending is None:
@@ -2125,123 +2118,67 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         None,
     )
     if best_decision is not None:
+        available_names = sorted(sources)
+        requested_name = (
+            str(best_decision.get("candidate", "")).strip()
+            if isinstance(best_decision, dict)
+            else ""
+        )
         if not isinstance(best_decision, dict) or set(best_decision) != {
             "candidate",
             "reason",
-            "evidence",
         }:
-            raise ValueError("best_known requires candidate, reason, and evidence")
-        best_name, evidence = (
-            str(best_decision["candidate"]).strip(),
-            best_decision["evidence"],
-        )
-        if (
-            best_name not in sources
-            or not str(best_decision["reason"]).strip()
-            or not isinstance(evidence, list)
-            or not evidence
-        ):
             raise ValueError(
-                "best_known requires an available candidate, reason, and evidence"
+                f"best_known request for model identifier {requested_name!r} is invalid; "
+                "it requires exactly candidate and reason; "
+                f"available model identifiers: {available_names}"
+            )
+        best_name = str(best_decision["candidate"]).strip()
+        if best_name not in sources or not str(best_decision["reason"]).strip():
+            raise ValueError(
+                f"best_known candidate {best_name!r} is unavailable or has no reason; "
+                f"requested model identifier: {best_name!r}; "
+                f"available model identifiers: {available_names}"
             )
         best_source = sources[best_name]
         best_artifact = repository.resolve_repo_path(best_source["artifact"])
         repository.require_complete_artifact(best_artifact, "best-known lineage")
         evidence_catalog = _development_evidence_catalog(pending, state)
         best_fingerprint = repository.artifact_fingerprint(best_artifact)
-        available_evidence = {
+        selected_evidence = {
             path
             for path, record in evidence_catalog.items()
             if record["model_fingerprint"] == best_fingerprint
         }
-        cited = {repository.canonical_repo_path(str(path)) for path in evidence}
-        selected_evidence = cited & available_evidence
-        if not selected_evidence:
-            unavailable = sorted(path for path in cited if path not in evidence_catalog)
-            unverifiable = [
-                path
-                for path in cited
-                if path in evidence_catalog
-                and not evidence_catalog[path]["model_fingerprint"]
-            ]
-            mismatched = sorted(
-                (
-                    path,
-                    evidence_catalog[path]["model_fingerprint"],
-                )
-                for path in cited
-                if path in evidence_catalog
-                and evidence_catalog[path]["model_fingerprint"]
-                and evidence_catalog[path]["model_fingerprint"] != best_fingerprint
-            )
-            if unavailable:
-                raise ValueError(
-                    "best_known evidence has unavailable measurement provenance: "
-                    f"{unavailable}"
-                )
-            if unverifiable:
-                raise ValueError(
-                    "best_known evidence lacks model identity metadata: "
-                    f"{sorted(unverifiable)}"
-                )
-            if mismatched:
-                raise ValueError(
-                    "best_known evidence has a true fingerprint mismatch; "
-                    f"expected {best_fingerprint}, found {mismatched}"
-                )
-            raise ValueError("best_known evidence must measure its selected candidate")
-        selected_records = _validated_designation_evidence(
-            selected_evidence,
-            expected_fingerprint=best_fingerprint,
-            catalog=evidence_catalog,
-            description="best_known candidate",
-        )
-        if cited != selected_evidence:
-            raise ValueError("best_known evidence includes an unrelated artifact")
         existing_best = state.get("best_known_lineage")
-        if existing_best is not None and existing_best[
-            "fingerprint"
-        ] != repository.artifact_fingerprint(best_artifact):
-            recorded_incumbent_evidence = existing_best.get("evaluation_artifacts")
-            if not isinstance(recorded_incumbent_evidence, list) or not recorded_incumbent_evidence:
-                raise ValueError(
-                    "replacing best_known requires incumbent evidence in current lineage state"
-                )
-            incumbent_evidence = {
-                repository.canonical_repo_path(str(path))
-                for path in recorded_incumbent_evidence
-            }
-            incumbent_records = _validated_designation_evidence(
-                incumbent_evidence,
-                expected_fingerprint=existing_best["fingerprint"],
-                catalog=evidence_catalog,
-                description="incumbent best_known",
+        same_model = (
+            existing_best is not None
+            and existing_best.get("fingerprint") == best_fingerprint
+        )
+        if not same_model and not selected_evidence:
+            raise ValueError(
+                f"best_known candidate {best_name!r} has no recorded measurement "
+                "in the current campaign state; "
+                f"requested model identifier: {best_name!r}; "
+                f"available model identifiers: {available_names}. "
+                "Record a measurement for this model before designating it."
             )
-            selected_compatible = [
-                _designation_compatibility_record(record)
-                for record in selected_records
-            ]
-            incumbent_compatible = [
-                _designation_compatibility_record(record)
-                for record in incumbent_records
-            ]
-            if not any(
-                _evidence_records_compatible(selected, incumbent)
-                for selected in selected_compatible
-                for incumbent in incumbent_compatible
-            ):
-                raise ValueError(
-                    "replacing best_known requires compatible instrument and panel settings"
-                )
-        for path in cited:
-            if not repository.resolve_repo_path(path).is_file():
-                raise ValueError(f"best_known evidence does not exist: {path}")
-        best_record = _v4_lineage_record(
-            best_source, pending, best_artifact, str(best_decision["reason"]).strip()
-        )
-        best_record["evaluation_artifacts"] = sorted(
-            set(best_record["evaluation_artifacts"]) | selected_evidence
-        )
+        if same_model:
+            best_record = dict(existing_best)
+        else:
+            selected_records = _validated_designation_evidence(
+                selected_evidence,
+                expected_fingerprint=best_fingerprint,
+                catalog=evidence_catalog,
+                description=f"best_known candidate {best_name!r}",
+            )
+            best_record = _v4_lineage_record(
+                best_source, pending, best_artifact, str(best_decision["reason"]).strip()
+            )
+            best_record["evaluation_artifacts"] = sorted(
+                set(best_record["evaluation_artifacts"])
+                | {record["evaluation_artifact"] for record in selected_records}
+            )
     retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
     removal_ids = decision.get("remove_retained", [])
     if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):

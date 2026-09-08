@@ -296,8 +296,7 @@ Write a lineage-only `research/proposal.json`:
     },
     "best_known": {
       "candidate": "<available model ID>",
-      "reason": "<non-empty designation reason>",
-      "evidence": ["<development-evaluation artifact path>"]
+      "reason": "<non-empty designation reason>"
     },
     "retain": [
       {
@@ -320,6 +319,13 @@ not promote `continue_from`. This request selects the working model, chooses the
 scientific recipe action, and manages retained lineages. Unretained model
 artifacts are removed; their recorded history and measurements remain.
 
+If `best_known` names the current best-known model, the designation is accepted
+idempotently. If it names another available model, the Runner resolves that
+model's recorded measurements from the current campaign state. A new designation
+requires at least one recorded measurement for the selected model; the Runner
+checks only that a measurement exists, not whether the evidence is scientifically
+sufficient and not whether scores compare favorably.
+
 Omitting `request_final_benchmark` or setting it to `false` allows the campaign
 to proceed after closure. Setting it to `true` requests terminal assessment of
 `best_known`; the Runner ends the campaign after either `goal_reached` or
@@ -335,12 +341,10 @@ scientific recipe; `revert` restores the scientific parent's complete recipe;
 and `restore` restores the complete recipe associated with the explicitly named
 eligible lineage. For `restore`, `code.lineage` is required; for `keep` and
 `revert`, omit `code.lineage`. The exact currently valid parent and restore
-identifiers are listed in `research/brief.md`. `best_known` requires a candidate
-string, reason string, and non-empty string array of compatible
-development-evaluation artifact paths for the proposed best-known model. The
-Runner resolves incumbent evidence from the current best-known lineage state;
-the proposal does not repeat those paths. Comparable evidence is still required
-for both the proposed model and incumbent. `retain` is an array of
+identifiers are listed in `research/brief.md`. `best_known` requires exactly a
+candidate string and reason string. The candidate must be an available model
+identifier. When a new model is selected, the Runner resolves its recorded
+measurements and stores those paths in the lineage. `retain` is an array of
 candidate/id/reason objects, `remove_retained` is an array of unique retained IDs,
 and `request_final_benchmark` is a boolean.
 

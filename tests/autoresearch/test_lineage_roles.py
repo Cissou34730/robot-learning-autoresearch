@@ -366,7 +366,9 @@ def test_v4_planning_reuses_one_durable_artifact_for_matching_aliases(
     assert plan["artifact_publications"] == []
 
 
-def test_v4_best_known_requires_evidence_for_its_candidate(monkeypatch, tmp_path):
+def test_v4_best_known_requires_a_recorded_measurement_for_a_new_model(
+    monkeypatch, tmp_path
+):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     candidate = _artifact(tmp_path / "candidate", "candidate")
     state = {
@@ -398,7 +400,6 @@ def test_v4_best_known_requires_evidence_for_its_candidate(monkeypatch, tmp_path
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Measured well.",
-                "evidence": ["missing.json"],
             },
         }
     }
@@ -406,9 +407,131 @@ def test_v4_best_known_requires_evidence_for_its_candidate(monkeypatch, tmp_path
     try:
         protocol.plan_previous_result_decision(proposal, state)
     except ValueError as error:
-        assert "best_known evidence" in str(error)
+        assert "checkpoint" in str(error)
+        assert "available model identifiers" in str(error)
+        assert "no recorded measurement" in str(error)
     else:
         raise AssertionError("best-known designation accepted unrelated evidence")
+
+
+def test_v4_omitted_best_known_keeps_the_incumbent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    existing = _lineage(incumbent, steps=10_000)
+    state = {
+        "schema_version": 4,
+        "working_lineage": existing.copy(),
+        "best_known_lineage": existing.copy(),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "best_known",
+                "reason": "Keep the incumbent.",
+                "code": {"action": "keep", "reason": "No code change."},
+            }
+        },
+        state,
+    )
+
+    assert plan["best_known_record"]["fingerprint"] == existing["fingerprint"]
+    assert plan["best_known_record"]["candidate"] == existing["candidate"]
+    assert plan["best_known_record"]["evaluation_artifacts"] == existing[
+        "evaluation_artifacts"
+    ]
+
+
+def test_v4_same_best_known_model_is_idempotent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    existing = _lineage(incumbent, steps=10_000)
+    state = {
+        "schema_version": 4,
+        "working_lineage": existing.copy(),
+        "best_known_lineage": existing.copy(),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "best_known",
+                "reason": "Keep the incumbent.",
+                "code": {"action": "keep", "reason": "No code change."},
+                "best_known": {
+                    "candidate": "best_known",
+                    "reason": "Confirm the incumbent.",
+                },
+            }
+        },
+        state,
+    )
+
+    assert plan["best_known_record"]["fingerprint"] == existing["fingerprint"]
+    assert plan["best_known_record"]["candidate"] == existing["candidate"]
+
+
+def test_v4_unknown_best_known_identifier_lists_available_models(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "missing-model",
+                "reason": "Try an unavailable model.",
+            },
+        }
+    }
+
+    with pytest.raises(ValueError) as error:
+        protocol.plan_previous_result_decision(proposal, state)
+    message = str(error.value)
+    assert "missing-model" in message
+    assert "available model identifiers" in message
+    assert "checkpoint" in message
 
 
 def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
@@ -474,7 +597,6 @@ def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Historical evidence measures these exact weights.",
-                "evidence": [evidence.name],
             },
         }
     }
@@ -541,12 +663,11 @@ def test_v4_best_known_reports_missing_legacy_model_identity(monkeypatch, tmp_pa
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Try to use imported legacy evidence.",
-                "evidence": [evidence.name],
             },
         }
     }
 
-    with pytest.raises(ValueError, match="lacks model identity metadata"):
+    with pytest.raises(ValueError, match="no recorded measurement"):
         protocol.plan_previous_result_decision(proposal, state)
 
 
@@ -697,7 +818,6 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Designate from comparable evidence.",
-                "evidence": [candidate_evidence.name],
             },
         }
     }
@@ -711,7 +831,7 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
     state["pending_researcher_decision"]["partial_evaluations"][0][
         "model_fingerprint"
     ] = repository.artifact_fingerprint(incumbent)
-    with pytest.raises(ValueError, match="true fingerprint mismatch"):
+    with pytest.raises(ValueError, match="no recorded measurement"):
         protocol.plan_previous_result_decision(decision, state)
 
 
@@ -767,18 +887,15 @@ def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Designate from candidate evidence.",
-                "evidence": [candidate_evidence.name],
             },
         }
     }
 
-    with pytest.raises(
-        ValueError, match="incumbent evidence in current lineage state"
-    ):
-        protocol.plan_previous_result_decision(proposal, state)
+    plan = protocol.plan_previous_result_decision(proposal, state)
+    assert plan["best_known_record"]["candidate"] == "checkpoint"
 
 
-def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_path):
+def test_v4_best_known_replacement_ignores_incompatible_panels(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr(
         "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
@@ -848,7 +965,6 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
             "best_known": {
                 "candidate": "checkpoint",
                 "reason": "Designate from comparable evidence.",
-                "evidence": [candidate_evidence.name],
             },
         }
     }
@@ -856,8 +972,10 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
         protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
     )
 
-    with pytest.raises(ValueError, match="compatible instrument and panel settings"):
-        protocol.plan_previous_result_decision(proposal, state)
+    plan = protocol.plan_previous_result_decision(proposal, state)
+    assert plan["best_known_record"]["evaluation_artifacts"] == [
+        candidate_evidence.name
+    ]
 
 
 def test_best_known_evidence_compatibility_keeps_task_reference_exact():
