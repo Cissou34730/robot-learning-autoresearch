@@ -2922,8 +2922,8 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
     assert "initial post-training analysis for trained experiment" in LOOP
     assert "optional evaluation refinement while closing trained experiment" in LOOP
     assert (
-        "State the scientific question before requesting evidence. Request only "
-        "measurements whose possible outcomes can change the interpretation"
+        "State the scientific question before requesting evidence. Scope the "
+        "requested measurements from scientific uncertainty"
     ) in LOOP
     assert "eligible saved lineages can be remeasured" in LOOP
     assert (
@@ -2968,8 +2968,7 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert "best advances the campaign objective" in normalized_program
     assert "may advance, revise, or reject the current investigation" in normalized_program
     assert (
-        "possible outcomes could change the current interpretation, model/lineage "
-        "decision, or next scientific direction"
+        "choose the measurement scope from scientific uncertainty"
     ) in normalized_program
     assert "Reuse compatible measurements already listed in the brief" in normalized_program
     assert "Task-reference measurement is optional" in normalized_program
@@ -2981,16 +2980,25 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     )
     assert sufficiency_rule in normalized_program
     assert sufficiency_rule not in normalized_instruments
-    assert "evidence whose absence leaves the next direction arbitrary" in normalized_program
-    assert "evidence whose absence leaves the next direction arbitrary" not in normalized_instruments
+    assert "genuinely redundant measurements are avoided" in normalized_program
+    assert "no comparison, replication, or task-reference measurement is mandatory or preferred" in normalized_program
     assert "`question` and `reason` are non-empty strings" in normalized_instruments
-    assert (
-        "When the campaign continues, establish a concrete next direction anchored "
-        "to the campaign objective and the highest-priority unresolved measured "
-        "behavior of best_known."
-    ) in LOOP
-    assert LOOP.count("Comparison and task-reference measurement are optional") == 2
+    assert "current temporary scientific question" in normalized_program
+    evaluation_design_prompt = LOOP.split(
+        "Current phase: design the research evaluation", 1
+    )[1].split("Do not start training or evaluation", 1)[0]
+    assert "best_known" not in evaluation_design_prompt.lower()
+    assert "best_known" not in LOOP.split("Current phase: optional evaluation refinement", 1)[0]
+    new_hypothesis_prompt = LOOP.split(
+        "Current phase: prepare experiment", 1
+    )[1].split("Do not exit after analysis or diagnosis", 1)[0]
+    assert "best_known" not in new_hypothesis_prompt.lower()
+    assert "same development panel" not in LOOP.lower()
     assert "smallest sufficient set" not in LOOP
+    assert "minimum measurement" not in LOOP.lower()
+    assert "evaluation scope may be broadened" in LOOP.lower()
+    assert "campaign objective and current scientific strategy and available evidence" in LOOP.lower()
+    assert LOOP.count("Comparison and task-reference measurement are optional") == 2
     assert (
         '"strategy_link": "<how this experiment advances, revises, or rejects '
         'the current investigation>"'
@@ -3000,7 +3008,10 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert "decision_relevant_measurements" not in PROGRAM + instruments + LOOP
     assert "measured policy behavior governs the choice of the next scientific problem" in normalized_program
     assert "states a plausible causal link to the measured behavioral gap" in normalized_program
-    assert "highest-priority unresolved behavioral gap" in normalized_program
+    assert "temporary scientific question" in normalized_program
+    assert (
+        "`working`, `best_known`, candidates and their behaviors are available evidence"
+    ) in normalized_program
 
     with pytest.raises(ValueError, match="unsupported fields.*reason"):
         validate_evaluation_request(

@@ -7,6 +7,17 @@ from research import run_experiment
 from research import runner_repository as repository
 
 
+def test_post_training_prompt_requires_diagnostic_evidence_before_closure():
+    prompt = Path("run_research.ps1").read_text(encoding="utf-8").lower()
+
+    assert (
+        "if the next proposed intervention depends on an unmeasured behavior of a saved policy, "
+        "obtain that evidence during the current analysis phase before closing."
+    ) in prompt
+    assert "partial or unexpected signals" in prompt
+    assert "what remains unknown about the broader mechanism" in prompt
+
+
 def _artifact(path: Path) -> None:
     path.mkdir(parents=True)
     path.joinpath("model.zip").write_bytes(b"model")

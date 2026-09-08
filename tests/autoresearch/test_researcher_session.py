@@ -212,6 +212,21 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     assert "this is the complete task" not in lower
     assert "bounded task" not in lower
     assert "bounded context" not in lower
+    assert "best_known" not in lower.split("current phase: optional evaluation refinement", 1)[0]
+    assert "highest-priority unresolved measured behavior of best_known" not in lower
+    assert "campaign objective and the highest-priority unresolved measured behavioral gap of best_known" not in lower
+    assert "current scientific strategy" in lower
+    assert "available evidence" in lower
+    assert "expected_observation and contradicting_observation" in lower
+    assert "partial or unexpected signals" in lower
+    assert "what remains unknown about the broader mechanism" in lower
+    assert (
+        "if the next proposed intervention depends on an unmeasured behavior of a saved policy, "
+        "obtain that evidence during the current analysis phase before closing."
+    ) in lower
+    assert "same development panel" not in lower
+    assert "minimum" not in lower
+    assert "smallest possible set" not in lower
     assert LOOP.count(
         "Code or configuration edits are required only when the selected operation "
         "calls for them."

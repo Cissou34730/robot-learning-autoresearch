@@ -262,7 +262,7 @@ Append to `research/postmortems.md`:
 
 **Observed behavior:** <factual observations>
 
-**Hypothesis assessment:** <compare the original prediction with what was observed; state whether the hypothesis is supported, partly supported, contradicted, or unresolved, and the limits of that conclusion>
+**Hypothesis assessment:** <compare the original prediction with what was observed; state whether the hypothesis is supported, partially supported, weakened, contradicted, or inconclusive, and the limits of that conclusion>
 
 **Interpretation:** <scientific interpretation>
 

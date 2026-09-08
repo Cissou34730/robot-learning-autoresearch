@@ -56,26 +56,26 @@ proposal states one falsifiable hypothesis, a plausible alternative, and the
 evidence that would distinguish them. An evaluation request states the question
 its measurements answer and why they are sufficient. Evaluation is a scientific
 measurement, not an automatic competition step: formulate the question before
-choosing models, panels, or instruments, and request only measurements whose
-possible outcomes could change the current interpretation, model/lineage
-decision, or next scientific direction. Reuse compatible measurements already
-listed in the brief. Task-reference measurement is optional and is requested
-only when it answers the stated question; comparison with `working` or
-`best_known` is likewise optional and justified by the question, not by phase
-convention. A lineage decision cites the detailed artifacts on which it relies.
+choosing models, panels, or instruments, and choose the measurement scope from
+scientific uncertainty. Reuse compatible measurements already listed in the
+brief when they address the question; genuinely redundant measurements are
+avoided. Task-reference measurement is optional and is requested only when it
+answers the stated question; comparison with `working` or `best_known` is
+likewise optional and justified by the question, not by phase convention. A
+lineage decision cites the detailed artifacts on which it relies.
 
 Evidence is sufficient when it supports the current model/lineage decision
 and, if the campaign objective has not been reached, supports a rational next
-scientific direction. Minimize redundant or decision-irrelevant evidence, not
-evidence whose absence leaves the next direction arbitrary. Distinguishing
-model behavior, learning-process effects, and stochastic variation may require
-different evidence; use the form of evidence that can materially resolve the
-current scientific question.
+scientific direction. Distinguishing model behavior, learning-process effects,
+and stochastic variation may require different evidence; use the form of
+evidence that can materially resolve the current scientific question. Several
+checkpoints, panels, or rounds are legitimate when they can reveal a dynamic, a
+panel dependency, or a poorly identified mechanism; no comparison,
+replication, or task-reference measurement is mandatory or preferred.
 
 Use additional diagnosis, measurement, or replication only when it could
 materially change the current interpretation, model/lineage decision, or next
-scientific direction. Prefer the simplest evidence sufficient to distinguish
-between plausible explanations.
+scientific direction.
 
 Additional evaluation of an already-trained model provides evidence about that
 model's behavior. Replication provides evidence about the learning process when
@@ -98,10 +98,11 @@ Prefer targeted extraction over loading complete artifacts or histories.
 The campaign objective is always to improve learned behavior toward the
 human-defined objective in `research/scenario.md`; the Scientific strategy does
 not author or replace that objective. `Direction` is the current temporary
-investigation. When a measured `best_known` model exists, `Direction` must name
-its highest-priority unresolved behavioral gap and the causal question currently
-being tested against that gap. Before a best-known model exists, use the most
-relevant measured behavior available for the campaign objective.
+scientific question that best serves the campaign objective. `working`,
+`best_known`, candidates and their behaviors are available evidence, and none
+of them mandates the next direction. A direction may deepen a problem, step
+back, or change the level of explanation. A next direction remains required
+while the campaign continues, but it stays revisable.
 
 A training statistic, implementation observation, or secondary finding does not
 automatically become the primary direction. When a training metric conflicts
@@ -176,6 +177,12 @@ tensor dimensions alone do not establish semantic compatibility. Continuing an
 unchanged method is a legitimate experiment and does not require a parameter or
 code modification.
 
+Each intervention must manipulate one identifiable causal mechanism. Several
+files may be changed when they jointly implement that same manipulation. This is
+a scientific rule for interpreting an intervention, not a Runner control; the
+Runner must not count changed files or reject an intervention because of their
+number.
+
 The Runner checks structure and source existence, not scientific merit or
 whether the Researcher truly understood the evidence. It preserves the proposal
 reasoning and the strategy at training submission in the experiment record.
@@ -201,24 +208,33 @@ eligible saved lineages may be measured through this existing flow.
 Additional measurement rounds are available only during post-training analysis
 of the current trained experiment. If a proposed mechanism depends on an
 unmeasured quantity observable on saved policies, measure it before launching a
-mechanism-specific intervention. No additional round is required when available
-evidence already answers the scientific question, and analysis may close
-directly with a postmortem and closure proposal. A request may measure only a
-candidate or may compare models when comparison serves the question.
+mechanism-specific intervention. When the next hypothesis depends on a behavior
+not yet observed on a saved policy, the Researcher must first obtain that
+information through inspection, logs, instrumentation, or another measurement
+round. Do not launch a training intervention merely to discover whether the
+assumed mechanism exists. Request another measurement round for evidence that is
+not already available. No additional round is required when available evidence
+already answers the scientific question, and analysis may close directly with a
+postmortem and closure proposal. A request may measure only a candidate or may
+compare models when comparison serves the question.
 
-Compare the observed result with the proposal's original expected and
-contradicting observations. State separately what the exact intervention
-established and whether the broader causal mechanism is resolved or remains
-open. Failure of one intervention does not close its mechanism class unless the
-evidence actually discriminates against that class.
+Assess every result with one observation vocabulary: `supported`, `partially
+supported`, `weakened`, `contradicted`, or `inconclusive`. Explain where the
+result falls between the proposal's `expected_observation` and
+`contradicting_observation`, which partial or unexpected signals were observed,
+and preserve significant directional changes even when the success rate does not
+move. State separately what the exact intervention established and whether the
+broader causal mechanism is resolved or remains open. Failure of one intervention
+does not close its mechanism class unless the evidence actually discriminates
+against that class.
 
 Update the Scientific strategy from measured behavior. When training metrics
 and measured policy behavior disagree, use measured behavior to choose the next
 scientific problem unless an explicit causal link justifies the proxy. Keep a
 secondary finding in `Open questions` unless evidence shows that it is now the
-highest-priority behavioral gap. Establish a concrete next direction anchored to
-the campaign objective and the unresolved measured behavior of `best_known` when
-the campaign continues.
+most useful next direction. When the campaign continues, establish a concrete
+next direction anchored to the campaign objective and to the measured behavior
+that best serves the current investigation.
 
 Mechanistic investigation may use logs, code inspection, lightweight analysis,
 scientific instrumentation, and development measurements as useful; no

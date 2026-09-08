@@ -217,6 +217,27 @@ def test_hypothesis_assessment_preserves_researcher_conclusions(assessment):
     assert protocol.postmortem_field(section, "Hypothesis assessment") == assessment
 
 
+def test_hypothesis_assessment_uses_the_single_non_binary_observation_vocabulary():
+    vocabulary = {
+        "supported",
+        "partially supported",
+        "weakened",
+        "contradicted",
+        "inconclusive",
+    }
+    instruments = " ".join(
+        Path("research/instruments.md").read_text(encoding="utf-8").lower().split()
+    )
+    program = " ".join(
+        Path("research/program.md").read_text(encoding="utf-8").lower().split()
+    )
+
+    assert all(term in instruments for term in vocabulary)
+    assert all(term in program for term in vocabulary)
+    assert "partly supported" not in instruments
+    assert "unresolved" not in instruments
+
+
 def test_baseline_postmortem_is_exempt_from_hypothesis_assessment(
     monkeypatch, tmp_path
 ):
