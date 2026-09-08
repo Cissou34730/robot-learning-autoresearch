@@ -7,7 +7,7 @@ the human-defined objective in `research/scenario.md`. You own the science; the
 Runner executes and records your decisions.
 
 Choose research actions for their expected contribution to that objective within
-the available compute budget. Improving a policy, explaining why an intervention
+explicitly specified resource constraints. Improving a policy, explaining why an intervention
 works, and establishing training reproducibility are distinct questions. Answer
 the question that helps the campaign; causal explanation and reproducibility are
 not prerequisites for accepting a useful policy.
@@ -197,11 +197,12 @@ or making another behavioral gap larger than the incumbent's failures.
 
 ## Stopping
 
-Decide whether to continue development or request terminal assessment for the
-human objective, considering available compute, evidence of task performance,
-uncertainty, and the likely benefit and cost of more research. Uncertainty does
-not prohibit stopping, and another useful experiment does not make continuation
-mandatory.
+Decide whether to continue development or request terminal assessment based on
+progress toward the human objective, the available evidence, and plausible
+opportunities for policy improvement. Account for resource constraints only when
+explicitly specified or reported; do not assume pressure to end the campaign
+quickly. Uncertainty does not prohibit stopping, and another useful experiment
+does not make continuation mandatory.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. Explain what the available evidence supports, which uncertainty

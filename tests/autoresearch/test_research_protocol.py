@@ -2973,7 +2973,10 @@ def test_terminal_assessment_requires_a_reason_without_mandating_continuation():
     assert "ends the campaign after either verdict" in combined
     assert "highest-value next action" not in normalized_instruments
     assert "The scientific decision rule for requesting assessment is defined in `research/program.md`." in normalized_instruments
-    assert "considering available compute, evidence of task performance, uncertainty" in normalized_program
+    assert "progress toward the human objective, the available evidence, and plausible opportunities for policy improvement" in normalized_program
+    assert "Account for resource constraints only when explicitly specified or reported" in normalized_program
+    assert "do not assume pressure to end the campaign quickly" in normalized_program
+    assert "likely benefit and cost of more research" not in normalized_program
     assert "no next experiment is intended" not in combined
     assert "no scientifically useful path remains" not in combined
     assert "when a scientifically useful next experiment remains" not in combined

@@ -264,6 +264,9 @@ def test_closure_prompt_assesses_the_tested_question_without_preserving_a_direct
     assert "research/postmortems.md and the lineage-only research/proposal.json" in prompt
     assert "Do not design another evaluation" in prompt
     assert "terminal assessment of best_known through request_final_benchmark" in prompt
+    assert "progress toward the human objective, the available evidence, and plausible opportunities for policy improvement" in prompt
+    assert "Account for resource constraints only when explicitly specified or reported" in prompt
+    assert "do not assume pressure to end the campaign quickly" in prompt
     assert "Selecting best_known does not decide when to stop" in prompt
     assert "Uncertainty does not prohibit stopping" in prompt
     assert "another useful experiment does not make continuation mandatory" in prompt
@@ -350,6 +353,9 @@ def test_post_training_prompt_distinguishes_research_from_terminal_assessment():
     prompt = LOOP.split("$analysisPrompt = @(", 1)[1].split(') -join " "', 1)[0]
 
     assert "terminal assessment of best_known through request_final_benchmark" in prompt
+    assert "progress toward the human objective, the available evidence, and plausible opportunities for policy improvement" in prompt
+    assert "Account for resource constraints only when explicitly specified or reported" in prompt
+    assert "do not assume pressure to end the campaign quickly" in prompt
     assert "Selecting best_known does not decide when to stop" in prompt
     assert "Uncertainty does not prohibit stopping" in prompt
     assert "another useful experiment does not make continuation mandatory" in prompt
