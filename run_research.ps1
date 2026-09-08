@@ -554,7 +554,7 @@ while ($true) {
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
             "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, preserving valid researcher-owned edits that belong to this unfinished experiment."
-            "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
+            "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
