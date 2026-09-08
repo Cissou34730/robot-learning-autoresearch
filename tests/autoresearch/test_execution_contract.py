@@ -1300,6 +1300,40 @@ def test_continuation_restoration_failure_keeps_frozen_operation(monkeypatch, tm
     assert recovered["pending_training_operation"]["parent"] == operation["parent"]
 
 
+def test_restored_parent_ignores_equivalent_parameter_key_order(monkeypatch, tmp_path):
+    from research import run_experiment
+    from robot_learning.training import research_config
+
+    config_path = tmp_path / "current_params.json"
+    config_path.write_text(
+        '{"ppo":{"n_steps":2048},"algorithm":{"name":"ppo"}}\n',
+        encoding="utf-8",
+    )
+    parent_parameters = {
+        "algorithm": {"name": "ppo"},
+        "ppo": {"n_steps": 2048},
+    }
+    operation = {
+        "progress": "parent_frozen",
+        "code_parent_commit": "parent",
+        "parent": {"artifact": "artifact", "parameters": parent_parameters},
+        "recipe_restore": {"restore": [], "remove_created": []},
+    }
+
+    monkeypatch.setattr(research_config, "CONFIG_PATH", config_path)
+    monkeypatch.setattr(
+        repository, "scientific_delta", lambda _parent: ["research/current_params.json"]
+    )
+    monkeypatch.setattr(repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(repository, "require_complete_artifact", lambda *_args: None)
+    monkeypatch.setattr(repository, "apply_code_lineage_decision", lambda _plan: None)
+
+    run_experiment._apply_training_parent_operation(operation, {})
+
+    assert operation["progress"] == "recipe_restored"
+    assert research_config.load_experiment_config() == parent_parameters
+
+
 @pytest.mark.parametrize(
     ("crashed_completed", "expected_training_steps"),
     [(True, [10]), (False, [10, 6])],

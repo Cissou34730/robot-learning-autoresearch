@@ -73,7 +73,13 @@ def _scientific_manifest(relative_paths: list[str]) -> list[dict]:
 
 
 def _current_scientific_manifest(code_parent_commit: str) -> list[dict]:
-    return _scientific_manifest(repository.scientific_delta(code_parent_commit))
+    return _scientific_manifest(
+        [
+            path
+            for path in repository.scientific_delta(code_parent_commit)
+            if path.replace("\\", "/") not in protocol.PARAMETER_ONLY_PATHS
+        ]
+    )
 
 
 def _require_matching_manifest(
@@ -281,15 +287,21 @@ def _apply_training_parent_operation(
             repository.write_state(state)
         repository.apply_code_lineage_decision(plan)
         research_config.write_experiment_config(copy.deepcopy(parent["parameters"]))
-        operation["restored_config_fingerprint"] = _canonical_fingerprint(
+        restored_config = research_config.load_experiment_config()
+        operation["restored_config_fingerprint"] = _canonical_fingerprint(restored_config)
+        if operation["restored_config_fingerprint"] != _canonical_fingerprint(
             parent["parameters"]
-        )
+        ):
+            raise FrozenOperationMismatch(
+                "restored training configuration differs from frozen parent"
+            )
         restored_manifest = _current_scientific_manifest(
             str(operation["code_parent_commit"])
         )
         planned_paths = {
             repository.canonical_repo_path(path)
             for path in [*restore["restore"], *restore["remove_created"]]
+            if path.replace("\\", "/") not in protocol.PARAMETER_ONLY_PATHS
         }
         if {entry["path"] for entry in restored_manifest} != planned_paths:
             raise FrozenOperationMismatch(
