@@ -173,6 +173,57 @@ Commit with `rebalance research brief attention order`, then push.
 
 ## Commit 2 — Clarify mechanism-driven research reasoning
 
+### Replace `research/scenario.md` completely
+
+Replace the complete file with exactly:
+
+```markdown
+# Current scenario: two-joint arm reach-and-hold
+
+This file defines the official scientific task, what counts as success, and the
+immutable task boundary. It does not define the research process or describe
+research instruments.
+
+## Official task
+
+A learned policy controls the repository's two-joint arm. Official situations
+sample a target uniformly from 6–20 cm from the robot base over the full angular
+range. The end effector must enter a 1 cm tolerance around the target and remain
+continuously within it for 2 seconds. Duration is authoritative; under the
+current official control timing this corresponds to 100 consecutive control
+steps.
+
+## Success criterion
+
+An episode succeeds only when the complete uninterrupted hold is achieved. The
+campaign objective is at least 98% episode success under the official task
+distribution.
+
+The Researcher's mission is to discover a learning method and a policy capable
+of satisfying this criterion on the official task.
+
+## Immutable task boundary
+
+The official robot, physics, task distribution, interaction semantics, and
+success definition are human-owned. The Researcher must not redefine them to
+make the result easier to achieve.
+
+## Scientific freedom
+
+The Researcher owns the learning method and training conditions, including the
+training target distribution and curriculum. Training conditions may differ
+from the official task; the resulting learned policy must still operate on the
+unchanged official task.
+```
+
+This replacement deliberately contains no `task_reference`, task-reference
+panel, final benchmark, Runner, evaluator, panel seed, or episode-count wording.
+Do not move the removed scenario-specific panel values into `research/program.md`
+or `research/instruments.md`. Do not change any implementation of those
+instruments. `research/instruments.md` continues to document the generic
+`task_reference` capability without adding scenario values such as distance,
+tolerance, hold duration, or panel size.
+
 ### Modify `research/program.md`
 
 #### A. Replace the complete body of `## Scientific memory and direction`
@@ -534,12 +585,29 @@ def test_terminal_assessment_uses_information_value_without_becoming_feedback():
 Do not add Runner execution or JSON validation tests because those mechanisms do
 not change.
 
+In
+`tests/autoresearch/test_scenario_boundary.py::test_scenario_document_defines_the_current_problem`,
+keep the existing assertions that `6–20 cm`, `1 cm`, `2 seconds`, and `98%`
+appear only in `scenario.md`. Add exactly:
+
+```python
+    normalized_scenario = " ".join(scenario_text.split())
+    assert "training target distribution and curriculum" in normalized_scenario
+    assert "Training conditions may differ from the official task" in normalized_scenario
+    assert "task-reference" not in scenario_text.lower()
+    assert "task_reference" not in scenario_text.lower()
+    assert "final benchmark" not in scenario_text.lower()
+    assert "200-episode" not in scenario_text.lower()
+```
+
+Do not add a scenario-specific assertion to `program.md` or `instruments.md`.
+
 ### Validate, commit, and push
 
 Run only:
 
 ```text
-uv run pytest -q tests/autoresearch/test_research_protocol.py tests/autoresearch/test_researcher_session.py tests/autoresearch/test_scientific_reasoning.py tests/autoresearch/test_research_context.py
+uv run pytest -q tests/autoresearch/test_research_protocol.py tests/autoresearch/test_researcher_session.py tests/autoresearch/test_scientific_reasoning.py tests/autoresearch/test_research_context.py tests/autoresearch/test_scenario_boundary.py
 ```
 
 Do not run Ruff: no Python production file changes in this commit. Commit with
