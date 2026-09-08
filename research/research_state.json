@@ -1,133 +1,30 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/60ab6970-22ca-42f3-91de-94ef2a90d349/e1-cada55eb5-8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/60ab6970-22ca-42f3-91de-94ef2a90d349/evaluation-60ab6970-22ca-42f3-91de-94ef2a90d349-experiment-1-checkpoint-100352-100ep-seed0-e602a32560ea.json",
-      "research/evaluations/60ab6970-22ca-42f3-91de-94ef2a90d349/evaluation-60ab6970-22ca-42f3-91de-94ef2a90d349-experiment-1-checkpoint-100352-500ep-seed1-e602a32560ea.json"
-    ],
-    "fingerprint": "8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the strongest measured candidate: 98.1667% pooled success over 600 compatible development episodes, compared with 97.5% for checkpoint-120832 and 95.0% for checkpoint-86016.",
-    "scientific_commit": "df769178b875c237fbf4bd28f04142082159c03e",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "95ec26ab2dafad37b71692c556788c4c5f6a874c",
-    "id": "60ab6970-22ca-42f3-91de-94ef2a90d349",
+    "base_commit": "4b39458f5b8c865f7ab1f6c09b5ad6aaec7690d5",
+    "id": "bfd2ba5d-29c7-4c64-bf19-54cbd743ae39",
     "recipe_source_commit": "c46ec8951612b03c8906045803e33f5f98f2cae7",
-    "started_at": "2026-09-08T21:01:50.056606+00:00"
+    "started_at": "2026-09-08T21:46:02.470225+00:00"
   },
   "campaign_experiment_counters": {
-    "60ab6970-22ca-42f3-91de-94ef2a90d349": 1
+    "bfd2ba5d-29c7-4c64-bf19-54cbd743ae39": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "Keep the unchanged baseline scientific recipe associated with the selected checkpoint; no recipe change is needed for terminal assessment."
-    },
-    "code_parent_commit": "df769178b875c237fbf4bd28f04142082159c03e",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Select checkpoint-100352 because it achieved 98.0% on the 100-episode panel and 98.2% on the 500-episode panel, with 589/600 pooled successes, while the later 120,832-step checkpoint fell to 97.4% on the larger matched panel. The evidence supports terminal assessment of this candidate but remains development-only, sampled, and without task-reference or official benchmark confirmation; I accept that uncertainty because the candidate is at the objective threshold and another repeated development measurement is less useful than the frozen official assessment. Development ends here because the strongest available policy has been identified and additional training showed degradation rather than reliable improvement."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/60ab6970-22ca-42f3-91de-94ef2a90d349/e1-cada55eb5-8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-    "fingerprint": "8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "df769178b875c237fbf4bd28f04142082159c03e",
-    "experiment": 1,
-    "scientific_commit": "df769178b875c237fbf4bd28f04142082159c03e"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/60ab6970-22ca-42f3-91de-94ef2a90d349/e1-cada55eb5-8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/60ab6970-22ca-42f3-91de-94ef2a90d349/evaluation-60ab6970-22ca-42f3-91de-94ef2a90d349-experiment-1-checkpoint-100352-100ep-seed0-e602a32560ea.json",
-      "research/evaluations/60ab6970-22ca-42f3-91de-94ef2a90d349/evaluation-60ab6970-22ca-42f3-91de-94ef2a90d349-experiment-1-checkpoint-100352-500ep-seed1-e602a32560ea.json"
-    ],
-    "fingerprint": "8d2dcfe02d81d76f5bbb64c91392c2043d2513e7820f4a790033ccf655ff2c49",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Select checkpoint-100352 because it achieved 98.0% on the 100-episode panel and 98.2% on the 500-episode panel, with 589/600 pooled successes, while the later 120,832-step checkpoint fell to 97.4% on the larger matched panel. The evidence supports terminal assessment of this candidate but remains development-only, sampled, and without task-reference or official benchmark confirmation; I accept that uncertainty because the candidate is at the objective threshold and another repeated development measurement is less useful than the frozen official assessment. Development ends here because the strongest available policy has been identified and additional training showed degradation rather than reliable improvement.",
-    "scientific_commit": "df769178b875c237fbf4bd28f04142082159c03e",
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
