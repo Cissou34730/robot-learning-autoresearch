@@ -239,9 +239,12 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     assert LOOP.count("closure without new measurements") == 1
     question = LOOP.index("State the scientific question, then choose the fitting operation")
     operation = LOOP.index("choose the fitting operation among continuation, replication or training")
-    mechanism = LOOP.index("define the manipulated causal mechanism and manipulation")
+    prediction = LOOP.index("describe the recipe change and predicted benefit")
     initialization = LOOP.index("Only then justify the parent and fresh-or-transfer initialization")
-    assert question < operation < mechanism < initialization
+    assert question < operation < prediction < initialization
+    assert "When causal attribution is the question" in LOOP
+    assert "expected benefit for the question as well as semantic compatibility" in LOOP
+    assert "define the manipulated causal mechanism and manipulation" not in LOOP
     assert "Only after choosing the mechanism and intervention" not in LOOP
     assert LOOP.count(
         "unchanged tensor dimensions alone do not establish compatibility"
