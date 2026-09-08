@@ -117,6 +117,7 @@ FORBIDDEN_MODULES = frozenset(
 SCENARIO_OWNING_MODULES = frozenset(
     {
         "robot_learning.scenario.environment",
+        "robot_learning.scenario.training_environment",
         "robot_learning.scenario.evaluation",
         "robot_learning.scenario.final_benchmark",
         "robot_learning.scenario.progress",

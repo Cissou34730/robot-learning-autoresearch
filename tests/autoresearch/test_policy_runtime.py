@@ -258,10 +258,8 @@ def test_real_sb3_checkpoint_preserves_normalization_and_prediction(
     from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
     from robot_learning.scenario import observations
-    from robot_learning.scenario.environment import (
-        make_evaluation_env,
-        make_training_env,
-    )
+    from robot_learning.scenario.environment import make_evaluation_env
+    from robot_learning.scenario.training_environment import make_training_env
     from robot_learning.training.checkpoint import save_checkpoint
 
     venv = VecNormalize(DummyVecEnv([make_training_env]), norm_reward=False)

@@ -11,13 +11,12 @@ import robot_learning.scenario.environment as environment_module
 import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
-from robot_learning.scenario.environment import (
+from robot_learning.scenario.environment import TwoJointArmReachEnv, make_evaluation_env
+from robot_learning.scenario.observations import inverse_kinematics_branches
+from robot_learning.scenario.training_environment import (
     TRAINING_TARGET_RADIUS_RANGE,
-    TwoJointArmReachEnv,
-    make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import inverse_kinematics_branches
 
 
 def test_observation_matches_declared_space():

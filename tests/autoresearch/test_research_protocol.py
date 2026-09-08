@@ -724,6 +724,7 @@ def _semantics_tree(tmp_path):
         "policy_io.py",
         "progress.py",
         "reward.py",
+        "training_environment.py",
         "viewer.py",
     ):
         content = "original\n"
@@ -796,6 +797,10 @@ def test_evaluation_semantics_fingerprint_excludes_training_only_reward(
 
     original = evaluation_semantics_fingerprint()
     (scenario / "reward.py").write_text("changed reward\n", encoding="utf-8")
+    assert evaluation_semantics_fingerprint() == original
+    (scenario / "training_environment.py").write_text(
+        "changed training environment\n", encoding="utf-8"
+    )
     assert evaluation_semantics_fingerprint() == original
 
     (scenario / "evaluation.py").write_text("changed evaluator\n", encoding="utf-8")
