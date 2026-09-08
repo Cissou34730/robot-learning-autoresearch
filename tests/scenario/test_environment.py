@@ -17,12 +17,23 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.policy_io import physical_action
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_action_response_expands_subsaturated_commands_without_changing_sign():
+    action = np.array([-0.25, 0.5], dtype=np.float32)
+
+    transformed = physical_action(action)
+
+    np.testing.assert_array_less(np.abs(action), np.abs(transformed))
+    np.testing.assert_array_equal(np.sign(action), np.sign(transformed))
+    np.testing.assert_allclose(physical_action(np.array([-1.0, 1.0])), [-1.0, 1.0])
 
 
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
