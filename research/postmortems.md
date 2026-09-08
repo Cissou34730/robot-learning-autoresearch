@@ -1,3 +1,23 @@
 # Research postmortems
 
-No experiments recorded.
+## e9b968c4-3137-4bd2-ac09-05422a64bcc2 / Scientific strategy
+
+**Direction:** Improve the highest-priority measured gap of `checkpoint-100352`: failures on lower-left targets, concentrated at target angles from about -122 to -145 degrees. The next causal question is whether expanding training target coverage from the baseline's 14-20 cm radial range to the official 6-20 cm range removes this reach blind spot, rather than assuming that the training success proxy represents official behavior.
+
+**Lessons and limits:** The exact intervention was the fresh, unchanged PPO baseline trained for 120,000 steps. It established a near-threshold measured policy (97.0% on both 200-episode research panels at `checkpoint-100352`) but not the 98% objective; the final checkpoint measured 96.5%. This establishes a baseline and a candidate model, not a causal effect for any broader mechanism. The lower-left failure pattern is measured evidence, but the baseline alone does not distinguish radial coverage, angular asymmetry, dynamics, or optimization as its cause. The later training proxy peak is not used to override the measured policy behavior.
+
+**Open questions:** Whether the lower-left failures are caused by the training radial support, by angular coverage or representation, or by a control/dynamics limitation remains unresolved. The additional positive-angle failure at `checkpoint-120832` is a secondary hold-stability question: it may reflect late-training drift, but the available evidence does not make it the primary gap.
+
+**Conditional next steps:** Continue from `checkpoint-100352` with a training intervention that covers the official 6-20 cm radial range while preserving the full angular range. If lower-left reach failures persist, investigate angular or control asymmetry; if reach improves but positive-angle hold failures increase, make hold stability the next measured problem. Further development is higher value than terminal assessment while the measured policy remains below 98%.
+
+## e9b968c4-3137-4bd2-ac09-05422a64bcc2 / Experiment 1
+
+**Result:** The fresh baseline produced a best measured checkpoint at 100,352 steps with 97.0% success, below the 98% campaign objective. Continuing to 120,832 steps reduced measured success to 96.5%.
+
+**Observed behavior:** Training logs report a proxy success of 0.97 at 100,352 steps and 0.95 at 120,832 steps, with the proxy reaching 0.98 earlier; these are training facts on the training setup, not the official-task result. On each 200-episode research panel for `checkpoint-100352`, six episodes failed. The same six deterministic failures were mostly reach failures at target angles between -122.1 and -145.4 degrees; five never entered tolerance and one entered for only one step. `checkpoint-120832` had those same six failures plus one positive-angle target at 102.7 degrees that reached tolerance briefly but held for at most five steps. Both evaluation seeds agreed on these outcomes.
+
+**Hypothesis assessment:** The baseline proposal's expected observation was an initial reference policy and reference performance; that expectation was supported. It had no mechanism-specific expected or contradicting observation, so this experiment does not resolve a broader causal mechanism. The exact baseline intervention establishes that the unchanged recipe can reach about 97% measured success and that the 100,352-step checkpoint is preferable to the final checkpoint under the measured behavior. It does not establish that radial coverage, late training, or any other single mechanism caused the remaining failures.
+
+**Interpretation:** Select `checkpoint-100352` as both working and best-known because it has the strongest compatible measured outcome. The measured lower-left reach gap is the primary next scientific problem; the isolated late positive-angle hold failure remains open and secondary.
+
+**Evidence inspected:** `research/results.jsonl`; `research/evaluations/e9b968c4-3137-4bd2-ac09-05422a64bcc2/evaluation-e9b968c4-3137-4bd2-ac09-05422a64bcc2-experiment-1-checkpoint-100352-200ep-seed0-d72ec900e7de.json`; `research/evaluations/e9b968c4-3137-4bd2-ac09-05422a64bcc2/evaluation-e9b968c4-3137-4bd2-ac09-05422a64bcc2-experiment-1-checkpoint-100352-200ep-seed1-d72ec900e7de.json`; `research/evaluations/e9b968c4-3137-4bd2-ac09-05422a64bcc2/evaluation-e9b968c4-3137-4bd2-ac09-05422a64bcc2-experiment-1-checkpoint-120832-200ep-seed0-d72ec900e7de.json`; `research/evaluations/e9b968c4-3137-4bd2-ac09-05422a64bcc2/evaluation-e9b968c4-3137-4bd2-ac09-05422a64bcc2-experiment-1-checkpoint-120832-200ep-seed1-d72ec900e7de.json`.
