@@ -2879,17 +2879,17 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
     normalized_instruments = " ".join(instruments.split())
 
     assert "initial post-training analysis for trained experiment" in LOOP
-    assert "optional evaluation refinement while closing trained experiment" in LOOP
+    assert "New measurement results are available" in LOOP
     assert (
-        "State the scientific question before requesting evidence. Scope the "
-        "requested measurements from scientific uncertainty"
+        "State the question or uncertainty, then select measurements "
+        "proportionate to the uncertainty and their cost"
     ) in LOOP
     assert "eligible saved lineages can be remeasured" in LOOP
     assert (
         "If the relevant quantity is not currently emitted, you may modify "
         "researcher-owned measurement instrumentation before requesting it."
     ) in LOOP
-    assert "only while closing this trained experiment" in LOOP
+    assert "only in this post-training phase" in LOOP
     assert "Closure without new measurements is valid" in PROGRAM
     assert "through `research/evaluation_request.json`" in PROGRAM
     assert (
@@ -2904,9 +2904,9 @@ def test_post_training_reasoning_requires_a_revisable_investigation_interpretati
     normalized_program = " ".join(PROGRAM.split())
     normalized_instruments = " ".join(instruments.split())
 
-    assert "what the exact intervention established" in LOOP
-    assert "whether the broader causal mechanism is resolved or remains open" in LOOP
-    assert "Preserve a broader mechanism as open when only one concrete intervention failed" in LOOP
+    assert "assess the question actually tested" in LOOP
+    assert "Scope causal claims to the evidence" in LOOP
+    assert "That direction may replace the current investigation" in LOOP
     assert "That operational boundary does not prescribe the scientific decision." in normalized_program
     assert "An unsuccessful run does not automatically reject an intervention" in normalized_program
     assert "The `reasoning` object contains the fields shown in the schema." in normalized_instruments
@@ -2940,7 +2940,7 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
         "Current phase: design the research evaluation", 1
     )[1].split("Do not start training or evaluation", 1)[0]
     assert "best_known" not in evaluation_design_prompt.lower()
-    assert "best_known" not in LOOP.split("Current phase: optional evaluation refinement", 1)[0]
+    assert "best_known" not in LOOP.split("$analysisPrompt = @(", 1)[0]
     new_hypothesis_prompt = LOOP.split(
         "Current phase: prepare experiment", 1
     )[1].split("Do not exit after analysis or diagnosis", 1)[0]
@@ -2948,7 +2948,7 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert "same development panel" not in LOOP.lower()
     assert "smallest sufficient set" not in LOOP
     assert "minimum measurement" not in LOOP.lower()
-    assert "evaluation scope may be broadened" in LOOP.lower()
+    assert "exploratory characterization when useful" in LOOP.lower()
     assert "campaign objective and current scientific strategy and available evidence" in LOOP.lower()
     assert LOOP.count("Comparison and task-reference measurement are optional") == 2
     assert (

@@ -7,15 +7,48 @@ from research import run_experiment
 from research import runner_repository as repository
 
 
-def test_post_training_prompt_requires_diagnostic_evidence_before_closure():
-    prompt = Path("run_research.ps1").read_text(encoding="utf-8").lower()
+def test_post_training_prompt_supports_goal_directed_analysis_without_a_causal_gate():
+    launcher = Path("run_research.ps1").read_text(encoding="utf-8")
+    prompt = launcher.split("$analysisPrompt = @(", 1)[1].split(
+        ') -join " "', 1
+    )[0].lower()
 
-    assert (
-        "if the next proposed intervention depends on an unmeasured behavior of a saved policy, "
-        "obtain that evidence during the current analysis phase before closing."
-    ) in prompt
+    assert "learned policy satisfying the human objective" in prompt
+    assert "baseline, changed recipe, continuation, or replication" in prompt
     assert "partial or unexpected signals" in prompt
-    assert "what remains unknown about the broader mechanism" in prompt
+    assert "scope causal claims to the evidence" in prompt
+    assert "training/evaluation discrepancies may all guide investigation" in prompt
+    assert "exploratory characterization when useful" in prompt
+    assert "may replace the current investigation" in prompt
+    assert "may be revised during preparation" in prompt
+    assert "closing does not require resolving every assumption" in prompt
+    assert "new measurement results are available" in launcher.lower()
+    for obsolete in (
+        "highest-priority gap",
+        "best serves the current investigation",
+        "obtain that evidence during the current analysis phase before closing",
+        "preserve a broader mechanism as open when only one",
+        "optional evaluation refinement while closing",
+    ):
+        assert obsolete not in prompt
+
+
+def test_post_training_prompt_preserves_measurement_and_closure_boundaries():
+    launcher = Path("run_research.ps1").read_text(encoding="utf-8")
+    prompt = launcher.split("$analysisPrompt = @(", 1)[1].split(
+        ') -join " "', 1
+    )[0]
+
+    assert "Choose exactly one outcome" in prompt
+    assert "research/evaluation_request.json" in prompt
+    assert "closure-only research/proposal.json" in prompt
+    assert "append the experiment postmortem" in prompt
+    assert "Candidate-only measurement and closure without new measurements are valid" in prompt
+    assert "If best_known remains unchanged, omit the best_known field" in prompt
+    assert "only in this post-training phase" in prompt
+    assert "either goal_reached or goal_not_reached" in prompt
+    assert "the result cannot inform a later hypothesis" in prompt
+    assert "Do not run training, measurements, Git mutations, final assessment" in prompt
 
 
 def _artifact(path: Path) -> None:

@@ -212,18 +212,18 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     assert "this is the complete task" not in lower
     assert "bounded task" not in lower
     assert "bounded context" not in lower
-    assert "best_known" not in lower.split("current phase: optional evaluation refinement", 1)[0]
+    assert "best_known" not in lower.split("$analysisprompt = @(", 1)[0]
     assert "highest-priority unresolved measured behavior of best_known" not in lower
     assert "campaign objective and the highest-priority unresolved measured behavioral gap of best_known" not in lower
     assert "current scientific strategy" in lower
     assert "available evidence" in lower
     assert "expected_observation and contradicting_observation" in lower
     assert "partial or unexpected signals" in lower
-    assert "what remains unknown about the broader mechanism" in lower
+    assert "scope causal claims to the evidence" in lower
     assert (
         "if the next proposed intervention depends on an unmeasured behavior of a saved policy, "
         "obtain that evidence during the current analysis phase before closing."
-    ) in lower
+    ) not in lower
     assert "same development panel" not in lower
     assert "minimum" not in lower
     assert "smallest possible set" not in lower
@@ -320,11 +320,15 @@ def test_launcher_stops_for_either_terminal_official_assessment():
 
 
 def test_post_training_prompt_distinguishes_research_from_terminal_assessment():
-    assert "terminal assessment of best_known is the highest-value next action" in LOOP
-    assert "explain why it is more valuable now than further research" in LOOP
-    assert "ends the campaign after either goal_reached or goal_not_reached" in LOOP
-    assert "its result cannot select a later hypothesis" in LOOP
-    assert "when a scientifically useful next experiment remains" not in LOOP
+    prompt = LOOP.split("$analysisPrompt = @(", 1)[1].split(') -join " "', 1)[0]
+
+    assert "terminal assessment of best_known through request_final_benchmark" in prompt
+    assert "more valuable now than further research" in prompt
+    assert "task evidence, uncertainty, available compute, and likely benefit" in prompt
+    assert "Explain that choice" in prompt
+    assert "ends the campaign after either goal_reached or goal_not_reached" in prompt
+    assert "the result cannot inform a later hypothesis" in prompt
+    assert "when a scientifically useful next experiment remains" not in prompt
 
 
 # --- the evaluation-request preflight --------------------------------------
