@@ -791,4 +791,17 @@ def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded(
         assert "failed validation:" in block
         assert "Correct only the invalid or missing" in block
         assert deliverable in block
-        assert "Reread one relevant contract or state file only if" in block
+        assert "Reread" in block
+        assert "contract" in block and "state" in block
+
+
+def test_retries_allow_enough_context_to_resolve_the_validation_error():
+    launcher = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+
+    for name in ("analysisRetryPrompt",):
+        match = re.search(rf"\${name}\s*=\s*@\((.*?)\)\s*-join", launcher, re.DOTALL)
+        assert match is not None
+        block = match.group(1)
+        assert "Reread relevant contract and state files as needed" in block
+        assert "reuse the existing context for everything else" in block
+        assert "Reread one" not in block

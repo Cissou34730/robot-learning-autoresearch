@@ -362,7 +362,7 @@ while ($true) {
             $analysisRetryPrompt = @(
                 "Current phase: post-training analysis for experiment $analysisExperiment. The previous deliverable failed validation: $analysisProblem."
                 "The same Researcher session context remains available. Correct only the invalid or missing deliverable: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json."
-                "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
+                "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
             Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Continue
