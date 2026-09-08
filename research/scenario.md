@@ -1,48 +1,36 @@
 # Current scenario: two-joint arm reach-and-hold
 
-This file defines the current scientific problem and its immutable boundary.
-The protocol and available instruments are defined separately in
-`research/program.md` and `research/instruments.md`.
+This file defines the official scientific task, what counts as success, and the
+immutable task boundary. It does not define the research process or describe
+research instruments.
 
-## Objective
+## Official task
 
-The robot must reach targets sampled uniformly from 6–20 cm from its base over
-the full angular range. Its end effector must enter a 1 cm tolerance and remain
-continuously within it for 2 seconds, currently 100 control steps under the
-official timing. Success requires at least 98% over the fixed 200-episode
-official benchmark.
+A learned policy controls the repository's two-joint arm. Official situations
+sample a target uniformly from 6–20 cm from the robot base over the full angular
+range. The end effector must enter a 1 cm tolerance around the target and remain
+continuously within it for 2 seconds. Duration is authoritative; under the
+current official control timing this corresponds to 100 consecutive control
+steps.
 
-Only the human-owned official benchmark can declare this objective reached.
+## Success criterion
 
-## Robot and task
+An episode succeeds only when the complete uninterrupted hold is achieved. The
+campaign objective is at least 98% episode success under the official task
+distribution.
 
-The task uses the repository's two-joint arm. Its geometry, joints, actuators,
-actuator limits, action semantics and control limits are fixed. The MuJoCo
-timestep, frame skip, reset behavior, initial state, target distribution,
-success tolerance, hold duration, episode horizon and success computation are
-also fixed.
+The Researcher's mission is to discover a learning method and a policy capable
+of satisfying this criterion on the official task.
 
-These properties define the physical problem. A learned policy may preprocess
-its observations or actions, but it must control the same robot under these
-semantics.
+## Immutable task boundary
 
-## Human-owned panels
+The official robot, physics, task distribution, interaction semantics, and
+success definition are human-owned. The Researcher must not redefine them to
+make the result easier to achieve.
 
-The official benchmark evaluates the objective on its fixed 200-episode panel.
+## Scientific freedom
 
-The task-reference panel is a separate fixed 200-episode development panel with
-its own seed. It measures the same 6–20 cm uniform target radius, full angular
-range, 1 cm tolerance, 2 seconds of continuous hold, official control timing and
-episode horizon. Its result is not the objective verdict.
-
-The panels, their seeds, distributions, episode counts, timing and success rules
-are immutable parts of this scenario.
-
-## Mutable scientific choices
-
-Training conditions and learned-policy design are outside the fixed task
-boundary. They may differ from the official task provided the resulting policy
-still controls the official robot without redefining its physics or objective.
-
-Research measurements are development evidence. They do not alter the fixed
-objective or declare it reached.
+The Researcher owns the learning method and training conditions, including the
+training target distribution and curriculum. Training conditions may differ
+from the official task; the resulting learned policy must still operate on the
+unchanged official task.

@@ -268,6 +268,13 @@ def test_scenario_document_defines_the_current_problem():
         assert scenario_fact not in instruments_text
     for repository_path in ("research/run_experiment.py", "tests/benchmark/"):
         assert repository_path not in scenario_text
+    normalized_scenario = " ".join(scenario_text.split())
+    assert "training target distribution and curriculum" in normalized_scenario
+    assert "Training conditions may differ from the official task" in normalized_scenario
+    assert "task-reference" not in scenario_text.lower()
+    assert "task_reference" not in scenario_text.lower()
+    assert "final benchmark" not in scenario_text.lower()
+    assert "200-episode" not in scenario_text.lower()
 
 
 def test_protocol_uses_scenario_independent_wording():

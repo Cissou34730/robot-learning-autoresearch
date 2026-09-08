@@ -343,9 +343,21 @@ def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
     program = (root / "research/program.md").read_text(encoding="utf-8")
     instruments = (root / "research/instruments.md").read_text(encoding="utf-8")
 
-    assert "Requesting it ends the\ncampaign after either verdict" in program
-    assert "When a useful next\nexperiment remains" in program
-    assert "does\nnot give the Runner authority" in program
-    assert "the campaign ends after either `goal_reached` or\n`goal_not_reached`" in instruments
-    assert "not a Runner judgment\nabout whether further research" in instruments
-    assert "not an experiment-selection probe" in instruments
+    assert "Requesting it\nends the campaign after either verdict." in program
+    assert "does not by itself prohibit the request." in program
+    assert (
+        "Continue with another experiment when further\ndevelopment research is "
+        "the highest-value next action."
+    ) in program
+    assert (
+        "a failed\nofficial verdict is never development feedback for another "
+        "hypothesis."
+    ) in program
+    assert (
+        "The existence of another possible experiment does not itself decide "
+        "between\nthese choices."
+    ) in instruments
+    assert (
+        "The assessment ends the campaign after either verdict and\nis never an "
+        "experiment-selection probe or input to another hypothesis."
+    ) in instruments

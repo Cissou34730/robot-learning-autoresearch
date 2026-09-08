@@ -671,13 +671,14 @@ def test_research_contract_exposes_choices_and_exact_closure_conditions():
     assert "choose continuation" in combined
     assert "fresh training does not by itself establish" in combined
     assert "repeated evidence from that panel" in combined
-    assert "runner requires its four entries" in combined
+    assert "runner requires its four existing entries" in combined
     assert '"action": "<keep | revert | restore>"' in instruments
     assert "For `restore`, `code.lineage` is required" in instruments
     assert "omit `code.lineage`" in instruments
-    assert "historical measurements for both the proposed model and incumbent" in (
-        instruments
-    )
+    assert (
+        "Comparable evidence is still required\nfor both the proposed model and "
+        "incumbent."
+    ) in instruments
     assert "benchmarks the frozen best-known" in instruments
 
 

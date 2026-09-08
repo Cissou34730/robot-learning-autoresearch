@@ -213,18 +213,24 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     assert "bounded task" not in lower
     assert "bounded context" not in lower
     assert LOOP.count(
-        "Available preparation operations: continuation, training with fresh or "
-        "transfer initialization, and replication."
-    ) == 2
-    assert LOOP.count(
         "Code or configuration edits are required only when the selected operation "
         "calls for them."
-    ) == 2
+    ) == 1
     assert LOOP.count(
-        "Revisit the original expected and contradicting observations"
-    ) == 2
-    assert LOOP.count("Candidate-only measurement") == 2
-    assert LOOP.count("closure without new measurements") == 2
+        "a valid research/evaluation_request.json for another measurement round, "
+        "or the required postmortem plus a closure-only research/proposal.json."
+    ) == 1
+    assert LOOP.count("Candidate-only measurement") == 1
+    assert LOOP.count("closure without new measurements") == 1
+    assert LOOP.count(
+        "Compare the selected causal explanation with at least one plausible alternative"
+    ) == 1
+    assert LOOP.count(
+        "Only after choosing the mechanism and intervention, choose continuation"
+    ) == 1
+    assert LOOP.count(
+        "unchanged tensor dimensions alone do not establish compatibility"
+    ) == 1
 
 
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
@@ -298,11 +304,12 @@ def test_launcher_stops_for_either_terminal_official_assessment():
     assert "break" in terminal_guard
 
 
-def test_post_training_prompt_distinguishes_continuation_from_terminal_assessment():
-    assert "Omit request_final_benchmark or set it to false" in LOOP
-    assert "ends this campaign after the official benchmark regardless" in LOOP
-    assert "goal_reached or goal_not_reached" in LOOP
-    assert "never use that terminal result as a gate" in LOOP
+def test_post_training_prompt_distinguishes_research_from_terminal_assessment():
+    assert "terminal assessment of best_known is the highest-value next action" in LOOP
+    assert "explain why it is more valuable now than further research" in LOOP
+    assert "ends the campaign after either goal_reached or goal_not_reached" in LOOP
+    assert "its result cannot select a later hypothesis" in LOOP
+    assert "when a scientifically useful next experiment remains" not in LOOP
 
 
 # --- the evaluation-request preflight --------------------------------------

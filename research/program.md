@@ -98,25 +98,38 @@ Prefer targeted extraction over loading complete artifacts or histories.
 The campaign objective is always to improve learned behavior toward the
 human-defined objective in `research/scenario.md`; the Scientific strategy does
 not author or replace that objective. `Direction` is the current temporary
-investigation, not the campaign objective. `Lessons and limits` records what
-the current campaign evidence supports and does not support. `Open questions`
-records uncertainty, not a queue of experiments that must be completed.
-`Conditional next steps` describes alternatives available after the current
-investigation, not a commitment to continue the same family.
+investigation. When a measured `best_known` model exists, `Direction` must name
+its highest-priority unresolved behavioral gap and the causal question currently
+being tested against that gap. Before a best-known model exists, use the most
+relevant measured behavior available for the campaign objective.
+
+A training statistic, implementation observation, or secondary finding does not
+automatically become the primary direction. When a training metric conflicts
+with measured policy behavior, measured policy behavior governs the choice of
+the next scientific problem. A training metric may motivate an investigation
+only when the Researcher states a plausible causal link to the measured
+behavioral gap.
 
 Maintain the current campaign's **Scientific strategy** section in
-`research/postmortems.md`, using the format in `research/instruments.md`. Separate
-this revisable synthesis from the historical experiment entries. Preserve past
-observations and decisions; correct earlier interpretations in the synthesis
-with evidence rather than silently rewriting what was believed at the time.
+`research/postmortems.md`, using the exact format in `research/instruments.md`.
+Separate this revisable synthesis from the historical experiment entries.
+Preserve past observations and decisions; revise current interpretations with
+new evidence rather than rewriting what was believed at the time.
 
-Record direction, lessons with their sources and limits, open questions, and
-conditional follow-ups. Think beyond the next experiment without committing to a
-fixed sequence or number of experiments. Revise the strategy when new evidence
-changes it, including when an older lesson no longer applies. State uncertainty
-when there is not yet enough evidence for a lesson.
-The `reasoning.strategy_link` may advance, revise, or reject the current
-investigation; it does not need to preserve it.
+`Lessons and limits` must scope every conclusion to the evidence. Failure of one
+concrete intervention rejects that intervention under the tested conditions; it
+rejects the broader mechanism class only when the evidence discriminates against
+that class. `Open questions` records plausible unresolved explanations and
+secondary findings, not a mandatory experiment queue. `Conditional next steps`
+states the concrete preferred next action and the observation that would instead
+change direction. The next direction remains mandatory when the campaign
+continues.
+
+Think beyond the next experiment without committing to a fixed sequence or
+number of experiments. Revise the strategy when evidence changes it and state
+uncertainty when evidence is insufficient. The `reasoning.strategy_link` may
+advance, revise, or reject the current investigation; it does not need to
+preserve it.
 
 ## Lifecycle
 
@@ -143,19 +156,25 @@ scientific continuation experiment.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence, choose continuation,
-an intervention with fresh or transfer initialization, or replication, and write
-`research/proposal.json`. Make scientific code or parameter changes only when
-the selected operation calls for them. The phase is incomplete until that deliverable exists
-and satisfies the contract in `research/instruments.md`.
+Inspect relevant repository state and completed evidence. First identify the
+measured behavioral gap being addressed. Compare the selected causal explanation
+with at least one plausible alternative, then choose the intervention that most
+clearly distinguishes them. Only after choosing the mechanism and intervention,
+choose continuation, replication, or training with fresh or transfer
+initialization and write `research/proposal.json`. Make scientific code or
+parameter changes only when the selected operation calls for them. The phase is
+incomplete until that deliverable exists and satisfies the contract in
+`research/instruments.md`.
 
-Before submitting, establish or update the scientific strategy. The proposal's
-`reasoning` records inspected sources and observations, the alternative
-explanation, expected and contradicting observations, the initialization/parent
-rationale and its contribution to that strategy. Explain why a fresh start or
-the selected transfer parent serves this question, not merely that it isolates
-an effect. Continuing an unchanged method is a legitimate experiment and does
-not require a parameter or code modification.
+Before submitting, establish or update the Scientific strategy. The proposal's
+existing `reasoning` fields record inspected evidence, the competing explanation,
+expected and contradicting observations, the initialization rationale, and the
+link to the strategy. Explain why the selected experiment discriminates between
+the causal explanations. Choose fresh or transfer from the semantic compatibility
+of the intervention with the parent policy and learned representation; unchanged
+tensor dimensions alone do not establish semantic compatibility. Continuing an
+unchanged method is a legitimate experiment and does not require a parameter or
+code modification.
 
 The Runner checks structure and source existence, not scientific merit or
 whether the Researcher truly understood the evidence. It preserves the proposal
@@ -187,19 +206,27 @@ evidence already answers the scientific question, and analysis may close
 directly with a postmortem and closure proposal. A request may measure only a
 candidate or may compare models when comparison serves the question.
 
-Revisit the proposal's original expected and contradicting observations when
-writing the hypothesis assessment. Update the scientific strategy's lessons,
-limits, open questions, and conditional next steps from the evidence actually
-observed. Mechanistic investigation may use logs, code inspection, lightweight
-analysis, scientific instrumentation, and development measurements as useful;
-no particular diagnostic or action sequence is mandatory.
+Compare the observed result with the proposal's original expected and
+contradicting observations. State separately what the exact intervention
+established and whether the broader causal mechanism is resolved or remains
+open. Failure of one intervention does not close its mechanism class unless the
+evidence actually discriminates against that class.
 
-The postmortem and strategy must explicitly interpret contradictory evidence:
-state whether the current investigation is sufficiently resolved and the next
-direction changes; whether it remains useful, with what another experiment can
-change in the next scientific action; or whether the evidence is genuinely
-inconclusive, including the unresolved distinction and its decision consequence.
-These are Researcher reasoning choices, not Runner-controlled states.
+Update the Scientific strategy from measured behavior. When training metrics
+and measured policy behavior disagree, use measured behavior to choose the next
+scientific problem unless an explicit causal link justifies the proxy. Keep a
+secondary finding in `Open questions` unless evidence shows that it is now the
+highest-priority behavioral gap. Establish a concrete next direction anchored to
+the campaign objective and the unresolved measured behavior of `best_known` when
+the campaign continues.
+
+Mechanistic investigation may use logs, code inspection, lightweight analysis,
+scientific instrumentation, and development measurements as useful; no
+particular diagnostic or action sequence is mandatory. State whether the current
+investigation is resolved and direction changes, remains useful with a concrete
+next action, or is genuinely inconclusive with the unresolved distinction and
+its decision consequence. These are Researcher reasoning choices, not
+Runner-controlled states.
 
 The phase may contain multiple measurement rounds. Completed measurements remain
 available across rounds, and each completed round returns to analysis. There is
@@ -237,13 +264,13 @@ neither requires indefinite loyalty to a model or immediate competition after
 every run.
 
 The final benchmark may be requested only through closure and targets the frozen
-best-known model. It is the terminal objective verdict and does not select a
-lineage or become routine evidence for a next hypothesis. Requesting it ends the
-campaign after either verdict. Request it only when the Researcher intends no
-next experiment in this campaign; never use a failed verdict as a gate for
-choosing the next hypothesis. This states the operational consequence and does
-not give the Runner authority to decide whether another scientific path is
-useful.
+best-known model. It is a terminal objective verdict, not a development
+measurement, lineage selector, or source for a later hypothesis. Requesting it
+ends the campaign after either verdict. Request it when the available development
+evidence makes terminal assessment of the best-known model the highest-value next
+action. The existence of another imaginable or scientifically useful experiment
+does not by itself prohibit the request. The closure rationale must explain why
+terminal assessment is more valuable now than further development research.
 
 ## Validation and recovery
 
@@ -256,9 +283,9 @@ work and does not create a scientific decision or alter phase order.
 
 ## Stopping
 
-Continue while a scientifically useful path remains. Training metrics,
-development measurements, individual checkpoints, subsets and seeds are not
-success. Stop only when the official benchmark declares the objective reached
-or no scientifically useful path remains to report. When a useful next
-experiment remains, close the current experiment without requesting the terminal
-benchmark and proceed to experiment preparation.
+Development measurements, training metrics, individual checkpoints, subsets and
+seeds are not the official result. Continue with another experiment when further
+development research is the highest-value next action. Request the official
+benchmark when terminal assessment is the highest-value next action. The Runner
+then ends the campaign after either `goal_reached` or `goal_not_reached`; a failed
+official verdict is never development feedback for another hypothesis.

@@ -215,26 +215,29 @@ scientific conclusion or proof of inspection. This contract applies equally to
 training, continuation and replication, not to the automatic baseline.
 
 Maintain the campaign's Scientific strategy section before submitting. The
-Runner requires its four entries below and snapshots it with `reasoning` in the
-experiment record. Existing historical records without these fields remain
+Runner requires its four existing entries and snapshots it with `reasoning` in
+the experiment record. Existing historical records without these fields remain
 readable; a newly submitted proposal must satisfy this contract.
 
 An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. `continuation` continues the selected
 recipe without a learning-method change. A `training` proposal may deliberately
 apply a changed recipe to an existing parent with `initialization: "transfer"`.
-Fresh training alone does not prove that an intervention caused its outcome.
-Continuation, replication, and additional seeds remain available scientific
-choices, not mandatory controls or gates for accepting a model.
+Continuation, replication, and additional seeds are available scientific choices,
+not mandatory controls or gates for accepting a model.
 
-`expected_observation` describes evidence that supports the hypothesis and what
-would be learned from it. `contradicting_observation` describes evidence that
-weakens the hypothesis and what would be learned from it. `strategy_link`
-explains how the proposed experiment advances, revises, or rejects the
-temporary current investigation. If contradictory evidence leaves the
-investigation unresolved, the postmortem and strategy must state the unresolved
-distinction and its decision consequence; another experiment or replication is
-appropriate only when its result can change the next scientific action.
+Use the existing reasoning fields in this order. `evidence` identifies the
+measured behavioral gap. `alternative` states a plausible competing causal
+explanation. `expected_observation` and `contradicting_observation` state how the
+experiment distinguishes those explanations and what each outcome would teach.
+`strategy_link` explains how that discriminating experiment advances, revises,
+or rejects the current investigation.
+
+Choose the mechanism and intervention before initialization. Then use
+`initialization_reason` to explain why fresh or the selected transfer parent is
+semantically compatible with that intervention. Unchanged tensor dimensions
+alone do not establish semantic compatibility. Neither fresh nor transfer is
+preferred by this contract.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -266,13 +269,17 @@ also be edited during experiment preparation. The exact heading and labels are:
 ```
 
 The campaign objective remains the human-defined objective in
-`research/scenario.md`; it is not authored or replaced by this strategy.
-`Direction` is the current temporary investigation. `Lessons and limits`
-records what campaign evidence supports and does not support. `Open questions`
-records uncertainty rather than mandatory work. `Conditional next steps`
-describes alternatives after the current investigation rather than a commitment
-to continue its family. The proposal's `reasoning.strategy_link` may advance,
-revise, or reject the current investigation.
+`research/scenario.md`; this strategy cannot replace it. `Direction` names the
+highest-priority unresolved measured behavioral gap of `best_known` and the
+current causal question. Before a best-known model exists, it uses the most
+relevant measured campaign behavior. `Lessons and limits` records scoped
+conclusions: an exact intervention result is not a mechanism-class conclusion
+unless the evidence discriminates against that class. `Open questions` records
+plausible competing explanations and relevant secondary findings.
+`Conditional next steps` states the preferred concrete next action and the
+evidence that would change it. It does not remove the requirement for a next
+direction when the campaign continues. The proposal's `reasoning.strategy_link`
+may advance, revise, or reject the current investigation.
 
 Each entry must have content and may span multiple lines. This is researcher
 interpretation, not a Runner verdict. Keep historical experiment entries intact;
@@ -354,12 +361,12 @@ not promote `continue_from`. This request selects the working model, chooses the
 scientific recipe action, and manages retained lineages. Unretained model
 artifacts are removed; their recorded history and measurements remain.
 
-Omit `request_final_benchmark` or set it to `false` when the campaign should
-proceed to another experiment. Setting it to `true` requests the terminal
-campaign assessment: the campaign ends after either `goal_reached` or
-`goal_not_reached`. Do not use that result as a conditional gate for choosing a
-next hypothesis. This is an operational consequence, not a Runner judgment
-about whether further research is scientifically useful.
+Set `request_final_benchmark` to `false` when further development research is the
+highest-value next action. Set it to `true` when the available development
+evidence makes terminal assessment of `best_known` the highest-value next action.
+The existence of another possible experiment does not itself decide between
+these choices. A `true` value ends the campaign after either `goal_reached` or
+`goal_not_reached`; the result cannot select a later hypothesis.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
@@ -383,8 +390,9 @@ and `request_final_benchmark` is a boolean.
 Set `request_final_benchmark` to `true` in `previous_result_decision`.
 
 After applying the lineage decision, the Runner benchmarks the frozen best-known
-model. Read the verdict in `research/brief.md` under **Current status → Reported
-result**. Request this assessment only when no next experiment is intended in the
-campaign. The assessment ends the campaign whether the verdict is
-`goal_reached` or `goal_not_reached`; it is not an experiment-selection probe or
-a routine input to another hypothesis.
+model. Read the terminal verdict in `research/brief.md` under **Current status →
+Reported result**. Request this assessment only when it is the highest-value next
+action according to the available development evidence. The closure rationale
+must explain why terminal assessment is more valuable now than further
+development research. The assessment ends the campaign after either verdict and
+is never an experiment-selection probe or input to another hypothesis.
