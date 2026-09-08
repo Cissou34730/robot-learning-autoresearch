@@ -305,6 +305,81 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
+def _training_proxy_trajectory(candidates: list[dict]) -> str:
+    ordered = sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
+    proxy_key = (
+        "training_success"
+        if any(item.get("training_success") is not None for item in ordered)
+        else "ep_rew_mean"
+    )
+    proxy_label = {
+        "training_success": "training success",
+        "ep_rew_mean": "episode reward",
+    }[proxy_key]
+    observations = [
+        (int(item.get("timesteps", 0)), item.get(proxy_key))
+        for item in ordered
+        if item.get(proxy_key) is not None
+    ]
+    if not observations:
+        return (
+            f"- Training proxy trajectory: unavailable ({proxy_label} proxy, "
+            "not a training evaluation result)"
+        )
+    initial_steps, initial_value = observations[0]
+    final_steps, final_value = observations[-1]
+    best_steps, best_value = max(observations, key=lambda item: item[1])
+    return (
+        f"- Training proxy trajectory: initial {initial_value:g} at "
+        f"{initial_steps:,} steps; best {best_value:g} at {best_steps:,} steps; "
+        f"final {final_value:g} at {final_steps:,} steps "
+        f"({proxy_label} training proxy, not an evaluation result)"
+    )
+
+
+def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
+    artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
+    parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
+    common_parts = list(parents[0].parts) if parents else []
+    for parent in parents[1:]:
+        common_length = 0
+        for left, right in zip(common_parts, parent.parts):
+            if left != right:
+                break
+            common_length += 1
+        common_parts = common_parts[:common_length]
+    common_parent = Path(*common_parts) if common_parts else None
+    lines = []
+    if common_parent is not None:
+        lines.append(f"- Artifact base path: {_recorded_path(common_parent.as_posix())}")
+        lines.append(
+            f"- {len(candidates)} checkpoints available for measurement; steps "
+            f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
+            f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}; "
+            "each artifact is "
+            f"{_recorded_path((common_parent / '<identifier>').as_posix())}"
+        )
+    else:
+        lines.append(
+            f"- {len(candidates)} checkpoints available for measurement; steps "
+            f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
+            f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}"
+        )
+    identifiers = ", ".join(
+        f"`{_recorded_value(candidate.get('name'))}` "
+        f"({int(candidate.get('timesteps', 0)):,} steps)"
+        for candidate in candidates
+    )
+    lines.append(f"- Identifiers: {identifiers}")
+    for candidate, artifact, parent in zip(candidates, artifacts, parents):
+        if common_parent is None or parent != common_parent:
+            lines.append(
+                f"- `{_recorded_value(candidate.get('name'))}` artifact: "
+                f"{_recorded_path(artifact)}"
+            )
+    return lines
+
+
 def _stable_json(value: object) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
 
@@ -486,12 +561,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         else []
     )
     if candidates:
-        for candidate in candidates:
-            lines.append(
-                f"- `{_recorded_value(candidate.get('name'))}`: "
-                f"{_recorded_value(candidate.get('timesteps'))} training steps; "
-                f"artifact {_recorded_path(candidate.get('artifact'))}"
-            )
+        lines.extend(_checkpoint_inventory_lines(candidates))
     else:
         lines.append("No current experiment checkpoints are recorded.")
     return lines
@@ -602,6 +672,12 @@ def _render_v4_research_brief(
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
         result = pending.get("result", {})
+        candidates = sorted(
+            pending.get("candidates", []),
+            key=lambda item: int(item.get("timesteps", 0)),
+        )
+        measured = [candidate for candidate in candidates if candidate.get("evaluations")]
+        unmeasured = [candidate for candidate in candidates if not candidate.get("evaluations")]
         lines.extend([
             f"- Operation: {operation_description(result) or result.get('kind', '-')}",
             f"- Parent: {result.get('training_parent', pending.get('training_parent', '-'))}",
@@ -610,13 +686,24 @@ def _render_v4_research_brief(
                 _existing_artifact_reference(path, kind="file")
                 for path in pending.get("training_log_paths", [])
             ) if pending.get("training_log_paths") else "- Raw training logs: unmeasured",
-            "",
-            "| Checkpoint | Steps | Training facts | Measurements |",
-            "|---|---:|---|---|",
+            _training_proxy_trajectory(candidates),
         ])
-        for candidate in sorted(pending.get("candidates", []), key=lambda item: int(item.get("timesteps", 0))):
-            facts = f"success {_candidate_metric(candidate, 'training_success')}; reward {_candidate_metric(candidate, 'ep_rew_mean')}"
-            lines.append(f"| `{candidate.get('name', '-')}` | {int(candidate.get('timesteps', 0)):,} | {facts} | {_v4_measurements(candidate)} |")
+        if unmeasured:
+            steps = [int(candidate.get("timesteps", 0)) for candidate in candidates]
+            lines.append(
+                f"- Unmeasured checkpoints: {len(unmeasured)} of {len(candidates)}; "
+                f"steps {min(steps):,}-{max(steps):,}; see the raw training logs above "
+                "for the full trajectory"
+            )
+        if measured:
+            lines.extend([
+                "",
+                "| Checkpoint | Steps | Training facts | Measurements |",
+                "|---|---:|---|---|",
+            ])
+            for candidate in measured:
+                facts = f"success {_candidate_metric(candidate, 'training_success')}; reward {_candidate_metric(candidate, 'ep_rew_mean')}"
+                lines.append(f"| `{candidate.get('name', '-')}` | {int(candidate.get('timesteps', 0)):,} | {facts} | {_v4_measurements(candidate)} |")
     elif latest:
         lines.extend([
             f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",

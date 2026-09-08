@@ -412,6 +412,66 @@ def test_v4_brief_groups_long_campaign_checkpoint_and_evidence_detail(
     assert len(expanded) - len(compact) < 250
 
 
+def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
+    monkeypatch, tmp_path
+):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "base_commit": "base"},
+        "pending_analysis": {
+            "experiment": 3,
+            "result": {"index": 3},
+            "candidates": [
+                {
+                    "name": f"checkpoint-{steps}",
+                    "timesteps": steps,
+                    "training_success": value,
+                    "ep_rew_mean": value * 10,
+                    "artifact": f"research/checkpoints/checkpoint-{steps}",
+                    "evaluations": (
+                        [{"panel": "development", "episodes": 20}]
+                        if steps == 10240
+                        else []
+                    ),
+                }
+                for index in range(24)
+                for steps, value in [
+                    (
+                        (index + 1) * 5120,
+                        {0: 0.1, 1: 0.4, 2: 0.3}.get(index, 0.2),
+                    )
+                ]
+            ],
+        },
+    }
+    (research_dir / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    brief = render_research_brief()
+    latest = brief.split("## Latest experiment", 1)[1].split(
+        "## Current scientific direction", 1
+    )[0]
+
+    assert latest.count("| `checkpoint-") == 1
+    assert "| `checkpoint-10240` | 10,240 |" in latest
+    assert "Unmeasured checkpoints: 23 of 24; steps 5,120-122,880" in latest
+    assert "Training proxy trajectory: initial 0.1 at 5,120 steps; best 0.4 at 10,240 steps; final 0.2 at 122,880 steps (training success training proxy" in latest
+    inventory = brief.split(
+        "### Current experiment checkpoints available for measurement", 1
+    )[1].split("## Working lineage", 1)[0]
+    assert inventory.count("checkpoint-") == 24
+    assert "Artifact base path: `research/checkpoints`" in inventory
+    assert "24 checkpoints available for measurement; steps 5,120-122,880" in inventory
+
+
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()
