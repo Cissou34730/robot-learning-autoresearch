@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/10469e2d-31ee-4afe-a37b-5a24da0d14bb/e11-c8cf701d5-a3fde9c21e2d0fe0d57d7fa18c92817790d46a454fcb757f791d865e089c156e",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/10469e2d-31ee-4afe-a37b-5a24da0d14bb/evaluation-10469e2d-31ee-4afe-a37b-5a24da0d14bb-experiment-11-checkpoint-120832-200ep-seed2000-d72ec900e7de.json",
-      "research/evaluations/10469e2d-31ee-4afe-a37b-5a24da0d14bb/evaluation-10469e2d-31ee-4afe-a37b-5a24da0d14bb-experiment-11-checkpoint-120832-200ep-seed2200-d72ec900e7de.json"
-    ],
-    "fingerprint": "a3fde9c21e2d0fe0d57d7fa18c92817790d46a454fcb757f791d865e089c156e",
-    "origin_experiment": 11,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 2048
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the best measured candidate in this experiment: 98.0% on both compatible research panels, one success point above the retained baseline on seed 2000 and tied on seed 2200, with no new outside-sector failures.",
-    "scientific_commit": "078c1d3e4e7c11de1bf1c71ea21c9dbdbd71b740",
-    "training_steps": 221184
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "647f87ac9b40fa4cdc9aa7dab3c41f1548f12c51",
-    "id": "10469e2d-31ee-4afe-a37b-5a24da0d14bb",
+    "base_commit": "f5e95d537e0bc7ce7e9cc7bcdd923b681c5bd449",
+    "id": "e9b968c4-3137-4bd2-ac09-05422a64bcc2",
     "recipe_source_commit": "c46ec8951612b03c8906045803e33f5f98f2cae7",
-    "started_at": "2026-09-07T16:36:11.154460+00:00"
+    "started_at": "2026-09-08T10:44:02.405130+00:00"
   },
   "campaign_experiment_counters": {
-    "10469e2d-31ee-4afe-a37b-5a24da0d14bb": 22
+    "e9b968c4-3137-4bd2-ac09-05422a64bcc2": 0
   },
-  "last_allocated_experiment": 22,
-  "last_experiment": 21,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "restore",
-      "reason": "Restore the complete scientific recipe associated with the working lineage so the rejected static action-authority intervention does not carry into the distinct-seed transfer replication."
-    },
-    "code_parent_commit": "905a5a93c956689c69dea8f21ff9644539314375",
-    "continue_from": "working",
-    "experiment": 21,
-    "reason": "The 0.8 static action scale is rejected: the 100352-step and 120832-step candidates scored only 96.0%/93.5% and 96.0%/95.0% on the matched research panels, retained every incumbent experiment-11 failure identity, and added failures. Experiment 11 checkpoint-120832 remains the strongest compatible development model, so the next experiment should start from its retained policy and investigate seed robustness."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,137 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "905a5a93c956689c69dea8f21ff9644539314375",
-    "experiment": 21,
-    "scientific_commit": "398203360cb485066030bd1040eba1ff64e4a7c6"
-  },
-  "pending_scientific_parent": "010ec992c984660dd612e1ef1ce77e20b7f07014",
-  "pending_training_operation": {
-    "code_parent_commit": "010ec992c984660dd612e1ef1ce77e20b7f07014",
-    "effective_config_fingerprint": null,
-    "effective_scientific_manifest": null,
-    "experiment": 22,
-    "frozen_proposal": {
-      "family": "continuation.transfer_seed_robustness",
-      "hypothesis": "Continuing the retained experiment-11 policy with the unchanged PPO recipe under a distinct training seed will preserve at least 98% matched-panel reliability and the localized negative-angle failure pattern rather than produce a materially different failure distribution.",
-      "initialization": "transfer",
-      "kind": "continuation",
-      "reasoning": {
-        "alternative": "The recurring failures may be a stochastic realization of the retained policy and may change substantially under a distinct continuation seed, even without changing the learning method.",
-        "contradicting_observation": "The continuation falls below 98% or materially changes or broadens the failure identities across the matched panels. This would support stochastic training variation as a major contributor and shift the next direction toward seed-robust training or checkpoint selection before another mechanism-specific change.",
-        "evidence": [
-          {
-            "observation": "Experiment 11's transferred checkpoint-120832 is the strongest compatible development model at 98.0% on both matched research panels, while experiments 19-21 retained its four failure identities and the tested interventions either failed to repair them or reduced reliability.",
-            "source": "research/brief.md"
-          },
-          {
-            "observation": "The current scientific direction states that physical or geometric limitation versus stochastic policy realization remains unresolved and that a distinct-seed transfer replication is the next useful experiment.",
-            "source": "research/brief.md"
-          },
-          {
-            "observation": "The experiment-21 postmortem concludes that static action scaling is rejected and specifically directs a distinct-seed matched transfer replication before another mechanism-specific intervention.",
-            "source": "research/postmortems.md"
-          },
-          {
-            "observation": "The active recipe is PPO with n_steps 2048, one environment, 64x64 tanh policy, and the unchanged experiment-11 parameter set.",
-            "source": "research/current_params.json"
-          }
-        ],
-        "expected_observation": "A continuation evaluated at comparable checkpoints reaches at least 98% on both matched panels and retains predominantly the established negative-angle failures. This would support a stable method or geometry/control limitation and justify a behavior-preserving mechanism-focused intervention rather than another seed-only probe.",
-        "initialization_reason": "Transfer from working is required because the question is whether the retained experiment-11 realization and its known failure pattern remain stable under a distinct stochastic continuation; fresh initialization would confound that question with the already observed fresh-run failure mode.",
-        "strategy_link": "This advances the current seed-robustness attribution direction while preserving the complete experiment-11 scientific recipe. Its two possible outcomes determine whether the next experiment should target a stable control or geometry limitation or instead prioritize stochastic robustness and selection."
-      },
-      "training_parent": "working",
-      "training_seed": 22
-    },
-    "kind": "continuation",
-    "last_error": "restored recipe contains paths outside its frozen restoration plan",
-    "parent": {
-      "artifact": "research/checkpoints/retained/10469e2d-31ee-4afe-a37b-5a24da0d14bb/e11-c8cf701d5-a3fde9c21e2d0fe0d57d7fa18c92817790d46a454fcb757f791d865e089c156e",
-      "candidate": "checkpoint-120832",
-      "fingerprint": "a3fde9c21e2d0fe0d57d7fa18c92817790d46a454fcb757f791d865e089c156e",
-      "identifier": "working",
-      "origin_experiment": 11,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 2048
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "scientific_commit": "078c1d3e4e7c11de1bf1c71ea21c9dbdbd71b740",
-      "training_steps": 221184
-    },
-    "progress": "recipe_restoring",
-    "proposal_fingerprint": "0f60973412e5739a7ce60d0cc6418f8a5b9f09efb9fe5a8fe2167ee6a71bb621",
-    "recipe_restore": {
-      "parent": "078c1d3e4e7c11de1bf1c71ea21c9dbdbd71b740",
-      "remove_created": [],
-      "restore": []
-    },
-    "requested_parent": "working",
-    "researcher_changes": [],
-    "researcher_delta_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "researcher_delta_manifest": [],
-    "restored_config_fingerprint": "cb75ff1b764cf663ee8b3dbc78c9ab9722f18f7570af89d76b76de40c10921f8",
-    "restored_recipe_manifest": null
-  },
+  "pending_scientific_parent": null,
+  "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/10469e2d-31ee-4afe-a37b-5a24da0d14bb/e11-c8cf701d5-a3fde9c21e2d0fe0d57d7fa18c92817790d46a454fcb757f791d865e089c156e",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/10469e2d-31ee-4afe-a37b-5a24da0d14bb/evaluation-10469e2d-31ee-4afe-a37b-5a24da0d14bb-experiment-11-checkpoint-120832-200ep-seed2000-d72ec900e7de.json",
-      "research/evaluations/10469e2d-31ee-4afe-a37b-5a24da0d14bb/evaluation-10469e2d-31ee-4afe-a37b-5a24da0d14bb-experiment-11-checkpoint-120832-200ep-seed2200-d72ec900e7de.json"
-    ],
-    "fingerprint": "a3fde9c21e2d0fe0d57d7fa18c92817790d46a454fcb757f791d865e089c156e",
-    "origin_experiment": 11,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 2048
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The 0.8 static action scale is rejected: the 100352-step and 120832-step candidates scored only 96.0%/93.5% and 96.0%/95.0% on the matched research panels, retained every incumbent experiment-11 failure identity, and added failures. Experiment 11 checkpoint-120832 remains the strongest compatible development model, so the next experiment should start from its retained policy and investigate seed robustness.",
-    "scientific_commit": "078c1d3e4e7c11de1bf1c71ea21c9dbdbd71b740",
-    "training_steps": 221184
-  }
+  "working_lineage": null
 }
