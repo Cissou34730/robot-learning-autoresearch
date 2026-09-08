@@ -137,20 +137,27 @@ def _request(seed: int) -> dict:
     }
 
 
-def test_v4_measurements_return_to_analysis_and_upsert_result(monkeypatch, tmp_path):
+@pytest.mark.parametrize("second_seed", [20, 11])
+def test_v4_measurements_return_to_analysis_and_upsert_result(
+    monkeypatch, tmp_path, second_seed
+):
     state_path, request_path, _ = _configure(monkeypatch, tmp_path)
     calls: list[int] = []
 
     def evaluate(artifact, seed, output_path, **kwargs):
         del artifact, kwargs
         calls.append(seed)
-        output_path.write_text("{}", encoding="utf-8")
-        return {
+        payload = {
             "episodes": 2,
             "seed": seed,
             "success_percent": 50.0,
-            "episode_results": [True, False],
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": seed % 2 == 0},
+                {"episode": 1, "episode_seed": seed + 1, "success": seed % 2 != 0},
+            ],
         }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
 
     monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
     request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
@@ -167,12 +174,18 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(monkeypatch, tmp_p
     assert first_evaluation["evaluation_semantics"]
     assert first_evaluation["metrics"]["evaluation_semantics"]
 
-    request_path.write_text(json.dumps(_request(20)), encoding="utf-8")
+    request_path.write_text(json.dumps(_request(second_seed)), encoding="utf-8")
     assert run_experiment.execute_pending_evaluations() == 0
-    assert calls == [10, 20]
+    assert calls == [10, second_seed]
     records = repository.result_records()
     assert len(records) == 1
-    assert [item["seed"] for item in records[0]["requested_evaluations"]] == [10, 20]
+    assert [item["seed"] for item in records[0]["requested_evaluations"]] == [10, second_seed]
+    summary = records[0]["candidates"][0]["summary"]
+    distinct_episodes = 3 if second_seed == 11 else 4
+    assert summary["episodes"] == distinct_episodes
+    assert summary["episode_executions"] == 4
+    assert summary["repeated_episodes"] == 4 - distinct_episodes
+    assert summary["success_percent"] == pytest.approx(100 * 2 / distinct_episodes)
 
 
 def test_v4_paired_comparison_reuses_historical_working_evidence(
@@ -695,7 +708,10 @@ def test_v4_resumed_measurement_accepts_relocated_identical_model(
             "episodes": 2,
             "seed": seed,
             "success_percent": 50.0,
-            "episode_results": [True, False],
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
         }
         output_path.write_text(json.dumps(payload), encoding="utf-8")
         return payload

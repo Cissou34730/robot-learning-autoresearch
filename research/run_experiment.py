@@ -814,12 +814,18 @@ def execute_pending_evaluations() -> int:
     for candidate in candidates:
         evaluations = candidate.get("evaluations", [])
         candidate["summary"] = (
-            summarize_research_evaluations(evaluations) if evaluations else None
+            summarize_research_evaluations(
+                [repository.measurement_evidence(item) for item in evaluations]
+            )
+            if evaluations
+            else None
         )
 
     champion_evaluations = available.get("champion", {}).get("evaluations", [])
     champion_summary = (
-        summarize_research_evaluations(champion_evaluations)
+        summarize_research_evaluations(
+            [repository.measurement_evidence(item) for item in champion_evaluations]
+        )
         if champion_evaluations
         else None
     )

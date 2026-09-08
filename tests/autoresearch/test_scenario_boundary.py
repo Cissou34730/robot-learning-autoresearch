@@ -438,8 +438,20 @@ def test_ordinary_research_evaluation_ignores_the_final_threshold():
 
     summary = summarize_research_evaluations(
         [
-            {"episodes": 1, "seed": 1, "success_percent": 98.0},
-            {"episodes": 1, "seed": 2, "success_percent": 97.9},
+            {
+                "episodes": episodes,
+                "seed": seed,
+                "success_percent": 100 * successes / episodes,
+                "episode_results": [
+                    {
+                        "episode": episode,
+                        "episode_seed": seed + episode,
+                        "success": episode < successes,
+                    }
+                    for episode in range(episodes)
+                ],
+            }
+            for seed, episodes, successes in [(1, 100, 98), (1000, 1000, 979)]
         ]
     )
 

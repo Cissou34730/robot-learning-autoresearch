@@ -807,6 +807,21 @@ def evaluation_reference(evaluation: dict) -> dict:
     return reference
 
 
+def measurement_evidence(record: dict) -> dict:
+    """Restore detailed outcomes for scientific accounting, keeping record identity."""
+    if "episode_results" in record:
+        return record
+    artifact = resolve_repo_path(record["evaluation_artifact"])
+    expected_fingerprint = record.get("evaluation_artifact_fingerprint")
+    if expected_fingerprint and file_fingerprint(artifact) != expected_fingerprint:
+        raise ValueError("measurement artifact content changed after recording")
+    evidence = json.loads(artifact.read_text(encoding="utf-8"))
+    for field in ("episodes", "seed"):
+        if evidence.get(field) != record.get(field):
+            raise ValueError(f"measurement artifact {field} differs from its record")
+    return {**evidence, **record}
+
+
 def measurement_record(metrics: dict) -> dict:
     """State keeps the episode outcomes paired comparison needs, nothing more.
 

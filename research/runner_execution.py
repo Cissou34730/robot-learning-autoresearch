@@ -783,4 +783,4 @@ def _load_frozen_panel(
         selected = measurement
     if selected is None:
         raise ValueError(f"paired comparison has no evidence artifacts for {model_name!r}")
-    return selected
+    return {**selected, "evaluation_semantics": panel.get("evaluation_semantics", "")}

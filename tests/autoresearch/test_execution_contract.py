@@ -109,6 +109,43 @@ def _write_evaluation(path: Path, outcomes: list[tuple[int, bool]]) -> None:
     )
 
 
+def test_compact_measurement_restores_outcomes_and_recorded_semantics(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    artifact = tmp_path / "measurement.json"
+    _write_evaluation(artifact, [(10, True), (11, False)])
+    record = {
+        "episodes": 2,
+        "seed": 10,
+        "evaluation_semantics": "recorded",
+        "evaluation_artifact": artifact.name,
+        "evaluation_artifact_fingerprint": repository.file_fingerprint(artifact),
+    }
+
+    evidence = repository.measurement_evidence(record)
+
+    assert [item["episode_seed"] for item in evidence["episode_results"]] == [10, 11]
+    assert evidence["evaluation_semantics"] == "recorded"
+    assert "episode_results" not in record
+    _write_evaluation(artifact, [(10, False), (11, False)])
+    with pytest.raises(ValueError, match="content changed after recording"):
+        repository.measurement_evidence(record)
+
+
+def test_compact_measurement_rejects_mismatched_artifact_metadata(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    artifact = tmp_path / "measurement.json"
+    _write_evaluation(artifact, [(10, True), (11, False)])
+
+    with pytest.raises(ValueError, match="seed differs from its record"):
+        repository.measurement_evidence(
+            {"episodes": 2, "seed": 11, "evaluation_artifact": artifact.name}
+        )
+
+
 def test_frozen_paired_evidence_requires_exact_episode_identities(
     monkeypatch, tmp_path
 ):

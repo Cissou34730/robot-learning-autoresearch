@@ -131,7 +131,7 @@ One evaluation request may measure at most three distinct models. Multiple measu
 
 Add one entry per model. Using identical `research_evaluation` settings measures several candidates or a selected lineage on a comparable panel.
 
-A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must have identical `(seed, episode)` sets.
+A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must cover identical recorded episode identities within matching evaluation semantics.
 Compatible historical measurements may supply either or both sides when their
 model fingerprints, evaluation semantics, instrument settings, and exact episode
 identities match. Detailed diagnostic artifacts retain the same evaluation
@@ -139,6 +139,10 @@ identity. Legacy compatibility fields are ignored when records are read.
 The same compatibility rule determines whether research-evaluation evidence can
 support replacing `best_known`; task-reference evidence retains its exact panel
 compatibility rule and remains optional.
+Overlapping or repeated episodes count once in pooled summaries and paired
+comparisons. Summary `episodes` reports distinct coverage; `episode_executions`
+and `repeated_episodes` report execution count and repeated coverage separately.
+Conflicting outcomes for the same deterministic episode are rejected.
 Reusing the same development panel does not create independent confirmation.
 
 The model fingerprint covers the complete saved artifact, including its policy
