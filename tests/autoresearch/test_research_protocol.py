@@ -2939,6 +2939,8 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     evaluation_design_prompt = LOOP.split(
         "Current phase: design the research evaluation", 1
     )[1].split("Do not start training or evaluation", 1)[0]
+    assert "measurements are useful and proportionate to the uncertainty" in evaluation_design_prompt
+    assert "every listed measurement is needed" not in evaluation_design_prompt
     assert "best_known" not in evaluation_design_prompt.lower()
     assert "best_known" not in LOOP.split("$analysisPrompt = @(", 1)[0]
     new_hypothesis_prompt = LOOP.split(
