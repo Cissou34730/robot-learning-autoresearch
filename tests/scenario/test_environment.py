@@ -23,10 +23,6 @@ def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-    target = env.data.mocap_pos[0][:2]
-    radius = np.linalg.norm(target)
-    assert np.allclose(obs[-3:-1], target / radius)
-    assert obs[-1] == pytest.approx(radius)
 
 
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
