@@ -106,6 +106,22 @@ def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
     assert "one falsifiable hypothesis, a plausible alternative" in PROGRAM
 
 
+def test_experiment_preparation_orders_question_operation_and_initialization():
+    normalized_program = " ".join(PROGRAM.split())
+    question = normalized_program.index("1. State the scientific question.")
+    operation = normalized_program.index("2. Choose the operation that fits that question")
+    mechanism = normalized_program.index(
+        "3. If the operation is an intervention, define the manipulated causal mechanism"
+    )
+    initialization = normalized_program.index(
+        "6. Justify the training parent and the initialization, fresh or transfer."
+    )
+
+    assert question < operation < mechanism < initialization
+    assert "Only after choosing the mechanism and intervention" not in PROGRAM
+    assert "continuation, replication, or training with fresh or transfer" not in PROGRAM
+
+
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
     return {
         "episodes": len(outcomes),
@@ -3031,16 +3047,19 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
         )
 
 
-def test_experiment_choice_precedes_initialization_choice():
+def test_experiment_preparation_uses_the_question_and_operation_before_initialization():
     instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
     normalized_program = " ".join(PROGRAM.split())
     normalized_instruments = " ".join(instruments.split())
 
-    assert "Compare the selected causal explanation with at least one plausible alternative" in LOOP
-    assert "Only after choosing the mechanism and intervention" in LOOP
-    assert "Only after choosing the mechanism and intervention" in normalized_program
+    assert "State the scientific question, then choose the fitting operation" in LOOP
+    assert "Only then justify the parent and fresh-or-transfer initialization" in LOOP
+    assert "1. State the scientific question." in normalized_program
+    assert "2. Choose the operation that fits that question" in normalized_program
+    assert "3. If the operation is an intervention" in normalized_program
+    assert "6. Justify the training parent and the initialization" in normalized_program
+    assert "Only after choosing the mechanism and intervention" not in LOOP + PROGRAM
     assert "unchanged tensor dimensions alone do not establish semantic compatibility" in normalized_program
-    assert "Neither fresh initialization nor transfer is the default scientific preference." in normalized_program
     assert "Choose the mechanism and intervention before initialization." not in normalized_instruments
     assert "semantic compatibility" not in normalized_instruments
 

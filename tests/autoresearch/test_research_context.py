@@ -728,7 +728,8 @@ def test_research_contract_exposes_choices_and_exact_closure_conditions():
         "iterative optimization surface",
     ):
         assert forbidden not in combined
-    assert "choose continuation" in combined
+    assert "choose the operation that fits that question" in combined
+    assert "continuation, replication, or\n   training" in combined
     assert "fresh training does not by itself establish" in combined
     assert "repeated evidence from that panel" in combined
     assert "runner requires its four existing entries" in combined

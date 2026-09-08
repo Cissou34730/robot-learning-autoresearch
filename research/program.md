@@ -157,25 +157,33 @@ scientific continuation experiment.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence. First identify the
-measured behavioral gap being addressed. Compare the selected causal explanation
-with at least one plausible alternative, then choose the intervention that most
-clearly distinguishes them. Only after choosing the mechanism and intervention,
-choose continuation, replication, or training with fresh or transfer
-initialization and write `research/proposal.json`. Make scientific code or
-parameter changes only when the selected operation calls for them. The phase is
-incomplete until that deliverable exists and satisfies the contract in
-`research/instruments.md`.
+Inspect relevant repository state and completed evidence. Prepare the experiment
+in this order:
+
+1. State the scientific question.
+2. Choose the operation that fits that question: continuation, replication, or
+   training.
+3. If the operation is an intervention, define the manipulated causal mechanism
+   and the manipulation.
+4. If the operation is `continuation`, state a hypothesis about the learning
+   trajectory or the training budget.
+5. If the operation is `replication`, state a hypothesis about process
+   variability.
+6. Justify the training parent and the initialization, fresh or transfer.
+
+Then write `research/proposal.json`. Make scientific code or parameter changes
+only when the selected operation calls for them. The phase is incomplete until
+that deliverable exists and satisfies the contract in `research/instruments.md`.
 
 Before submitting, establish or update the Scientific strategy. The proposal's
 existing `reasoning` fields record inspected evidence, the competing explanation,
 expected and contradicting observations, the initialization rationale, and the
-link to the strategy. Explain why the selected experiment discriminates between
-the causal explanations. Choose fresh or transfer from the semantic compatibility
-of the intervention with the parent policy and learned representation; unchanged
-tensor dimensions alone do not establish semantic compatibility. Continuing an
-unchanged method is a legitimate experiment and does not require a parameter or
-code modification.
+link to the strategy. For an intervention, explain why the selected experiment
+discriminates between the causal explanations. Choose fresh or transfer from the
+semantic compatibility of the intervention with the parent policy and learned
+representation; unchanged tensor dimensions alone do not establish semantic
+compatibility. Continuing an unchanged method is a legitimate experiment and
+does not require a parameter or code modification.
 
 Each intervention must manipulate one identifiable causal mechanism. Several
 files may be changed when they jointly implement that same manipulation. This is

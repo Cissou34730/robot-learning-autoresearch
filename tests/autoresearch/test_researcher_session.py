@@ -237,12 +237,12 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     ) == 1
     assert LOOP.count("Candidate-only measurement") == 1
     assert LOOP.count("closure without new measurements") == 1
-    assert LOOP.count(
-        "Compare the selected causal explanation with at least one plausible alternative"
-    ) == 1
-    assert LOOP.count(
-        "Only after choosing the mechanism and intervention, choose continuation"
-    ) == 1
+    question = LOOP.index("State the scientific question, then choose the fitting operation")
+    operation = LOOP.index("choose the fitting operation among continuation, replication or training")
+    mechanism = LOOP.index("define the manipulated causal mechanism and manipulation")
+    initialization = LOOP.index("Only then justify the parent and fresh-or-transfer initialization")
+    assert question < operation < mechanism < initialization
+    assert "Only after choosing the mechanism and intervention" not in LOOP
     assert LOOP.count(
         "unchanged tensor dimensions alone do not establish compatibility"
     ) == 1

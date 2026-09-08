@@ -528,8 +528,8 @@ while ($true) {
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. Do not exit without the required deliverable."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-        "Start from the campaign objective and current scientific strategy and available evidence. Compare the selected causal explanation with at least one plausible alternative, then choose the intervention that most clearly distinguishes them."
-        "Only after choosing the mechanism and intervention, choose continuation, replication, or training with fresh or transfer initialization. Base fresh or transfer on semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
+        "Start from the campaign objective and current scientific strategy and available evidence. State the scientific question, then choose the fitting operation among continuation, replication or training. For continuation, state a hypothesis about the learning trajectory or training budget; for replication, state a hypothesis about process variability; for training, define the manipulated causal mechanism and manipulation."
+        "Only then justify the parent and fresh-or-transfer initialization based on semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         "Code or configuration edits are required only when the selected operation calls for them."
