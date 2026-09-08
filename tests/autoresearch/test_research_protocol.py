@@ -993,7 +993,7 @@ def test_pending_result_requires_an_explicit_researcher_decision():
         apply_previous_result_decision({}, state)
 
 
-def _attested_lineage_state(monkeypatch, tmp_path):
+def _measured_lineage_state(monkeypatch, tmp_path):
     """A pending decision whose experiment produced one detailed artifact."""
     _artifact(tmp_path / "archive" / "candidate")
     artifacts = tmp_path / "research" / "evaluations"
@@ -1012,68 +1012,26 @@ def _attested_lineage_state(monkeypatch, tmp_path):
     )
 
 
-def test_lineage_decision_requires_attested_current_experiment_evidence(
+def test_lineage_decision_accepts_postmortem_without_evidence_attestation(
     monkeypatch, tmp_path
 ):
-    state, artifact = _attested_lineage_state(monkeypatch, tmp_path)
-    _attest(monkeypatch, tmp_path, 8, [artifact])
+    state, _ = _measured_lineage_state(monkeypatch, tmp_path)
+    _attest(monkeypatch, tmp_path, 8, ["not evidence"], label="Notes")
 
     assert not apply_previous_result_decision(_lineage_decision(), state)
 
 
-@pytest.mark.parametrize(
-    ("paths", "label", "message"),
-    [
-        # No attestation line at all.
-        ([], "Notes", "Evidence inspected"),
-        # Names an artifact that was never written.
-        (
-            ["research/evaluations/evaluation-experiment-8-ghost-2ep-seed44-ab.json"],
-            "Evidence inspected",
-            "at least one detailed source",
-        ),
-        # Names a real artifact belonging to a different experiment.
-        (
-            ["research/evaluations/evaluation-experiment-2-other-2ep-seed44-ab.json"],
-            "Evidence inspected",
-            "at least one detailed source",
-        ),
-    ],
-)
-def test_unattested_lineage_decision_is_rejected(
-    monkeypatch, tmp_path, paths, label, message
+def test_lineage_evidence_preflight_requires_current_experiment_postmortem(
+    monkeypatch, tmp_path
 ):
-    state, _ = _attested_lineage_state(monkeypatch, tmp_path)
-    (
-        tmp_path
-        / "research"
-        / "evaluations"
-        / "evaluation-experiment-2-other-2ep-seed44-ab.json"
-    ).write_text("{}", encoding="utf-8")
-    _attest(monkeypatch, tmp_path, 8, paths or ["none"], label=label)
-
-    with pytest.raises(ValueError, match=message):
-        apply_previous_result_decision(_lineage_decision(), state)
-
-
-def test_attested_artifact_must_exist_on_disk(monkeypatch, tmp_path):
-    state, artifact = _attested_lineage_state(monkeypatch, tmp_path)
-    _attest(monkeypatch, tmp_path, 8, [artifact])
-    (tmp_path / artifact).unlink()
-
-    with pytest.raises(ValueError, match="do not exist"):
-        apply_previous_result_decision(_lineage_decision(), state)
-
-
-def test_lineage_evidence_preflight_matches_the_runner_decision(monkeypatch, tmp_path):
-    state, artifact = _attested_lineage_state(monkeypatch, tmp_path)
+    state, _ = _measured_lineage_state(monkeypatch, tmp_path)
     state_path = tmp_path / "state.json"
     state_path.write_text(json.dumps(state), encoding="utf-8")
 
-    _attest(monkeypatch, tmp_path, 8, ["research/evaluations/absent.json"])
+    _attest(monkeypatch, tmp_path, 2, ["not evidence"], label="Notes")
     assert check_lineage_evidence(8) == 1
 
-    _attest(monkeypatch, tmp_path, 8, [artifact])
+    _attest(monkeypatch, tmp_path, 8, ["not evidence"], label="Notes")
     assert check_lineage_evidence(8) == 0
     # A lineage decision is only checkable for the experiment actually pending.
     assert check_lineage_evidence(9) == 1

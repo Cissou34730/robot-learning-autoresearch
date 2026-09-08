@@ -393,8 +393,7 @@ def test_v4_closure_updates_result_before_clearing_analysis(monkeypatch, tmp_pat
     (tmp_path / "research" / "postmortems.md").write_text(
         "## campaign / Experiment 1\n\n"
         "**Hypothesis assessment:** The observed improvement supports the prediction, "
-        "within one development panel.\n\n"
-        "**Evidence inspected:** archive/checkpoint/artifact.json\n",
+        "within one development panel.\n",
         encoding="utf-8",
     )
     proposal = {

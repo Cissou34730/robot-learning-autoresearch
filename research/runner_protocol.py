@@ -1124,11 +1124,7 @@ def validate_postmortem_evidence(
     pending: dict | None = None,
     require_hypothesis_assessment: bool = False,
 ) -> str | None:
-    """Require the decision to name existing evidence of this experiment.
-
-    This shows only that the researcher session identified real artifacts of the
-    experiment it is resolving; it cannot show that they were understood.
-    """
+    """Require the experiment postmortem and return its hypothesis assessment."""
     section = postmortem_section(experiment, campaign_id)
     if not section.strip():
         identity = (
@@ -1143,49 +1139,6 @@ def validate_postmortem_evidence(
             f"the experiment {experiment} postmortem needs a non-empty "
             f"'{HYPOTHESIS_ASSESSMENT_LABEL}:' field"
         )
-    attested = attested_evidence_paths(section)
-    if not attested:
-        raise ValueError(
-            f"the experiment {experiment} postmortem needs an "
-            f"'{EVIDENCE_ATTESTATION_LABEL}:' line listing the detailed "
-            "evaluation artifacts the decision relied on"
-        )
-    owned = {path.replace("\\", "/") for path in measured}
-    if pending is not None:
-        for candidate in pending.get("candidates", []):
-            if not isinstance(candidate, dict) or not candidate.get("artifact"):
-                continue
-            metadata = (
-                repository.resolve_repo_path(str(candidate["artifact"]))
-                / "artifact.json"
-            )
-            if metadata.is_file():
-                owned.add(repository.repo_relative_path(metadata))
-        if paths.RESULTS_PATH.is_file():
-            owned.add(repository.repo_relative_path(paths.RESULTS_PATH))
-        log_root = (
-            paths.TRAINING_LOG_DIR / campaign_id
-            if campaign_id
-            else paths.TRAINING_LOG_DIR
-        )
-        if log_root.is_dir():
-            owned.update(
-                repository.repo_relative_path(path)
-                for path in log_root.glob(f"experiment-{experiment}-attempt-*.log")
-                if path.is_file()
-            )
-    matched = [path for path in attested if path.replace("\\", "/") in owned]
-    if not matched:
-        raise ValueError(
-            f"{EVIDENCE_ATTESTATION_LABEL} must name at least one detailed "
-            f"source belonging to experiment {experiment}: "
-            f"{sorted(owned)}"
-        )
-    missing = sorted(
-        path for path in matched if not repository.resolve_repo_path(path).is_file()
-    )
-    if missing:
-        raise ValueError(f"attested evaluation artifacts do not exist: {missing}")
     return assessment
 
 

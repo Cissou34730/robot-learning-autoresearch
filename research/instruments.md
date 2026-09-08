@@ -273,9 +273,10 @@ Append to `research/postmortems.md`:
 
 The heading format is `## <Campaign ID> / Experiment <integer>`, where `<Campaign ID>` is the current campaign UUID. This format allows experiments with the same number from different campaigns to be uniquely identified in the postmortem history.
 
-At least one referenced source must exist and belong to the experiment. It may be
-a training log, checkpoint metadata, recorded training result, or completed
-evaluation artifact. An unmeasured checkpoint is unmeasured, not zero success.
+Evidence references are Researcher-authored scientific content. The Runner does
+not validate cited path tokens because naming an artifact cannot establish that
+it was inspected or understood. An unmeasured checkpoint is unmeasured, not zero
+success.
 New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
 and conclusion belong to the Researcher; the Runner checks only that it is
 present. Fresh baselines are exempt, and historical entries remain readable.
