@@ -170,24 +170,6 @@ def test_evaluation_summary_pools_the_actual_panel_sizes():
     assert summary["seed_success_percent"] == {"3000": 50.0, "4000": 100.0}
 
 
-def test_evaluation_summary_counts_overlapping_episodes_once():
-    summary = summarize_research_evaluations(
-        [evaluation(0, [True, False]), evaluation(1, [False, True, True])]
-    )
-
-    assert summary["episodes"] == 4
-    assert summary["episode_executions"] == 5
-    assert summary["repeated_episodes"] == 1
-    assert summary["pooled_success_percent"] == 75.0
-
-
-def test_evaluation_summary_rejects_conflicting_overlap():
-    with pytest.raises(ValueError, match="conflicting deterministic measurements"):
-        summarize_research_evaluations(
-            [evaluation(0, [True, False]), evaluation(1, [True, True])]
-        )
-
-
 def test_research_evaluation_does_not_depend_on_the_final_threshold():
     summary = summarize_research_evaluations([evaluation(3000, [True, True])])
 

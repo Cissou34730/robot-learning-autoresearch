@@ -17,10 +17,9 @@ import numpy as np
 
 from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
-from robot_learning.training.comparison import episode_outcomes
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 3
 
 
 def evaluate_research_model(
@@ -31,7 +30,7 @@ def evaluate_research_model(
     algorithm: str | None = None,
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> dict:
-    """Measure a deterministic panel with episode seeds starting at ``seed``."""
+    """Measure one model over the requested deterministic evaluation panel."""
     if episodes < 1:
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
@@ -137,20 +136,19 @@ def summarize_research_evaluations(
     """
     if not evaluations:
         raise ValueError("an evaluation summary requires at least one evaluation")
-    outcomes = episode_outcomes(evaluations)
-    total_episodes = len(outcomes)
-    total_successes = sum(outcomes.values())
-    episode_executions = sum(int(item["episodes"]) for item in evaluations)
+    total_episodes = sum(int(item["episodes"]) for item in evaluations)
+    total_successes = sum(
+        float(item["success_percent"]) * int(item["episodes"]) / 100
+        for item in evaluations
+    )
     seed_success = {
         str(item["seed"]): float(item["success_percent"]) for item in evaluations
     }
     pooled_success = 100 * total_successes / total_episodes
     return {
-        "schema_version": 4,
+        "schema_version": 3,
         "evaluation_summary_version": summary_version,
         "episodes": total_episodes,
-        "episode_executions": episode_executions,
-        "repeated_episodes": episode_executions - total_episodes,
         "seed_count": len(evaluations),
         "seed_success_percent": seed_success,
         "worst_seed_success_percent": min(seed_success.values()),

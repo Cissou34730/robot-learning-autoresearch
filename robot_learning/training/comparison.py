@@ -13,30 +13,18 @@ def exact_mcnemar_pvalue(candidate_wins: int, reference_wins: int) -> float:
     return min(1.0, 2 * tail / (2**discordant))
 
 
-def episode_outcomes(evaluations: list[dict]) -> dict[tuple[str, int], bool]:
-    """Count each deterministic episode once within its evaluation semantics."""
-    outcomes: dict[tuple[str, int], bool] = {}
-    for evaluation in evaluations:
-        episodes = evaluation.get("episode_results")
-        if not episodes or len(episodes) != int(evaluation["episodes"]):
-            raise ValueError("evaluation requires complete detailed episode outcomes")
-        semantics = str(evaluation.get("evaluation_semantics", ""))
-        for episode in episodes:
-            identity = semantics, int(episode["episode_seed"])
-            success = bool(episode["success"])
-            if identity in outcomes and outcomes[identity] != success:
-                raise ValueError(
-                    "conflicting deterministic measurements for episode "
-                    f"{identity[1]}"
-                )
-            outcomes[identity] = success
-    return outcomes
-
-
 def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
-    """Compare policies on distinct, matching recorded episode identities."""
-    candidate_outcomes = episode_outcomes(candidate)
-    reference_outcomes = episode_outcomes(reference)
+    """Compare policies evaluated on identical seed/episode pairs."""
+
+    def outcomes(evaluations: list[dict]) -> dict[tuple[int, int], bool]:
+        return {
+            (int(evaluation["seed"]), int(episode["episode"])): bool(episode["success"])
+            for evaluation in evaluations
+            for episode in evaluation.get("episode_results", [])
+        }
+
+    candidate_outcomes = outcomes(candidate)
+    reference_outcomes = outcomes(reference)
     if not candidate_outcomes or candidate_outcomes.keys() != reference_outcomes.keys():
         raise ValueError("paired evaluations do not cover identical episodes")
     candidate_wins = sum(
