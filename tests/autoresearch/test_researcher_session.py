@@ -263,7 +263,16 @@ def test_closure_prompt_assesses_the_tested_question_without_preserving_a_direct
     assert "exact intervention established" not in prompt
     assert "research/postmortems.md and the lineage-only research/proposal.json" in prompt
     assert "Do not design another evaluation" in prompt
+    assert "terminal assessment of best_known through request_final_benchmark" in prompt
+    assert "Selecting best_known does not decide when to stop" in prompt
+    assert "Uncertainty does not prohibit stopping" in prompt
+    assert "another useful experiment does not make continuation mandatory" in prompt
+    assert "use previous_result_decision.reason to explain the policy selection" in prompt
+    assert "what the available evidence supports, which uncertainty you accept" in prompt
+    assert "why you are ending development now" in prompt
     assert "A true value ends the campaign after either verdict" in prompt
+    assert "cannot provide feedback for another hypothesis" in prompt
+    assert "Do not plan further work conditional on benchmark failure" in prompt
 
 
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
