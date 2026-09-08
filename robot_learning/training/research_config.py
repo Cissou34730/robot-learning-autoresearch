@@ -51,6 +51,4 @@ def load_experiment_config() -> dict:
 
 def write_experiment_config(config: dict) -> None:
     validate_param_overrides(config)
-    CONFIG_PATH.write_text(
-        json.dumps(config, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
