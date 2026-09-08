@@ -361,17 +361,17 @@ def test_documented_training_example_and_memory_match_the_contract(
 
 def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
     root = Path(__file__).resolve().parents[2]
-    program = (root / "research/program.md").read_text(encoding="utf-8")
+    program = " ".join((root / "research/program.md").read_text(encoding="utf-8").split())
     instruments = (root / "research/instruments.md").read_text(encoding="utf-8")
 
-    assert "Requesting it\nends the campaign after either verdict." in program
-    assert "does not by itself prohibit the request." in program
+    assert "Requesting it ends the campaign after either verdict" in program
+    assert "does not by itself prohibit the request for terminal assessment" in program
     assert (
-        "Continue with another experiment when further\ndevelopment research is "
+        "Continue with another experiment when further development research is "
         "the highest-value next action."
     ) in program
     assert (
-        "a failed\nofficial verdict is never development feedback for another "
+        "a failed official verdict is never development feedback for another "
         "hypothesis."
     ) in program
     assert "highest-value next action" not in instruments

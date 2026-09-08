@@ -107,18 +107,37 @@ def test_new_hypothesis_boundary_uses_phase_aware_proposal_preflight():
 
 def test_experiment_preparation_orders_question_operation_and_initialization():
     normalized_program = " ".join(PROGRAM.split())
-    question = normalized_program.index("1. State the scientific question.")
+    question = normalized_program.index("1. State the scientific question and how it serves the human objective.")
     operation = normalized_program.index("2. Choose the operation that fits that question")
-    mechanism = normalized_program.index(
-        "3. If the operation is an intervention, define the manipulated causal mechanism"
+    hypothesis = normalized_program.index(
+        "3. State one falsifiable hypothesis, a plausible alternative"
     )
     initialization = normalized_program.index(
-        "6. Justify the training parent and the initialization, fresh or transfer."
+        "4. Justify the training parent and fresh-or-transfer initialization"
     )
 
-    assert question < operation < mechanism < initialization
+    assert question < operation < hypothesis < initialization
     assert "Only after choosing the mechanism and intervention" not in PROGRAM
     assert "continuation, replication, or training with fresh or transfer" not in PROGRAM
+
+
+def test_program_keeps_scientific_methods_subordinate_to_the_objective():
+    normalized_program = " ".join(PROGRAM.split())
+
+    assert "Your goal is a learned policy that satisfies the human-defined objective" in normalized_program
+    assert "causal explanation and reproducibility are not prerequisites" in normalized_program
+    assert "A coherent recipe may change several components" in normalized_program
+    assert "All relevant evidence may inform the next investigation" in normalized_program
+    assert "not a requirement to resolve every assumption before training" in normalized_program
+    assert "An unsuccessful run does not automatically reject an intervention" in normalized_program
+    assert "may be revised during preparation" in normalized_program
+    for obsolete in (
+        "Each intervention must manipulate one identifiable causal mechanism",
+        "best serves the current investigation",
+        "must first obtain that information",
+        "measured policy behavior governs the choice of the next scientific problem",
+    ):
+        assert obsolete not in normalized_program
 
 
 def evaluation(seed: int, outcomes: list[bool]) -> dict:
@@ -2871,8 +2890,8 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
         "researcher-owned measurement instrumentation before requesting it."
     ) in LOOP
     assert "only while closing this trained experiment" in LOOP
-    assert "No additional round is required" in PROGRAM
-    assert "existing `research/evaluation_request.json`" in PROGRAM
+    assert "Closure without new measurements is valid" in PROGRAM
+    assert "through `research/evaluation_request.json`" in PROGRAM
     assert (
         "No diagnostic code change or particular instrument is required"
         in normalized_instruments
@@ -2888,8 +2907,8 @@ def test_post_training_reasoning_requires_a_revisable_investigation_interpretati
     assert "what the exact intervention established" in LOOP
     assert "whether the broader causal mechanism is resolved or remains open" in LOOP
     assert "Preserve a broader mechanism as open when only one concrete intervention failed" in LOOP
-    assert "These are Researcher reasoning choices, not Runner-controlled states." in normalized_program
-    assert "Failure of one concrete intervention rejects that intervention" in normalized_program
+    assert "That operational boundary does not prescribe the scientific decision." in normalized_program
+    assert "An unsuccessful run does not automatically reject an intervention" in normalized_program
     assert "The `reasoning` object contains the fields shown in the schema." in normalized_instruments
     assert "Their scientific use is defined in `research/program.md`." in normalized_instruments
     assert "measured behavioral gap" not in normalized_instruments
@@ -2903,27 +2922,20 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     normalized_program = " ".join(PROGRAM.split())
     normalized_instruments = " ".join(instruments.split())
 
-    assert "not an automatic competition step" in normalized_program
-    assert "formulate the question before choosing models, panels, or instruments" in normalized_program
-    assert "best advances the campaign objective" in normalized_program
+    assert "State the question or uncertainty, then choose" in normalized_program
+    assert "expected contribution to that objective" in normalized_program
     assert "may advance, revise, or reject the current investigation" in normalized_program
-    assert (
-        "choose the measurement scope from scientific uncertainty"
-    ) in normalized_program
-    assert "Reuse compatible measurements already listed in the brief" in normalized_program
-    assert "Task-reference measurement is optional" in normalized_program
-    assert "comparison with `working` or `best_known` is likewise optional" in normalized_program
+    assert "useful, proportionate measurement scope" in normalized_program
+    assert "Reuse compatible evidence when it answers the question" in normalized_program
     sufficiency_rule = (
-        "Evidence is sufficient when it supports the current model/lineage decision "
-        "and, if the campaign objective has not been reached, supports a rational next "
-        "scientific direction."
+        "Close when the evidence supports a lineage decision and a reasoned next action, "
+        "without requiring a complete explanation of the outcome."
     )
     assert sufficiency_rule in normalized_program
     assert sufficiency_rule not in normalized_instruments
-    assert "genuinely redundant measurements are avoided" in normalized_program
-    assert "no comparison, replication, or task-reference measurement is mandatory or preferred" in normalized_program
+    assert "No comparison, replication, task-reference panel, diagnostic, or additional round is mandatory or preferred" in normalized_program
     assert "`question` and `reason` are non-empty strings" in normalized_instruments
-    assert "current temporary scientific question" in normalized_program
+    assert "the revisable question or approach that best serves the human objective" in normalized_program
     evaluation_design_prompt = LOOP.split(
         "Current phase: design the research evaluation", 1
     )[1].split("Do not start training or evaluation", 1)[0]
@@ -2946,11 +2958,10 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert '"measurements": [' in instruments
     assert '"paired_comparisons": [' in instruments
     assert "decision_relevant_measurements" not in PROGRAM + instruments + LOOP
-    assert "measured policy behavior governs the choice of the next scientific problem" in normalized_program
-    assert "states a plausible causal link to the measured behavioral gap" in normalized_program
-    assert "temporary scientific question" in normalized_program
+    assert "Measured task behavior governs claims of policy progress" in normalized_program
+    assert "All relevant evidence may inform the next investigation" in normalized_program
     assert (
-        "`working`, `best_known`, candidates and their behaviors are available evidence"
+        "not a commitment to the current investigation or incumbent policy"
     ) in normalized_program
 
     with pytest.raises(ValueError, match="unsupported fields.*reason"):
@@ -2978,12 +2989,12 @@ def test_experiment_preparation_uses_the_question_and_operation_before_initializ
 
     assert "State the scientific question, then choose the fitting operation" in LOOP
     assert "Only then justify the parent and fresh-or-transfer initialization" in LOOP
-    assert "1. State the scientific question." in normalized_program
+    assert "1. State the scientific question and how it serves the human objective." in normalized_program
     assert "2. Choose the operation that fits that question" in normalized_program
-    assert "3. If the operation is an intervention" in normalized_program
-    assert "6. Justify the training parent and the initialization" in normalized_program
+    assert "3. State one falsifiable hypothesis" in normalized_program
+    assert "4. Justify the training parent and fresh-or-transfer initialization" in normalized_program
     assert "Only after choosing the mechanism and intervention" not in LOOP + PROGRAM
-    assert "unchanged tensor dimensions alone do not establish semantic compatibility" in normalized_program
+    assert "Unchanged tensor dimensions alone do not establish semantic compatibility" in normalized_program
     assert "Choose the mechanism and intervention before initialization." not in normalized_instruments
     assert "semantic compatibility" not in normalized_instruments
 
@@ -2996,11 +3007,11 @@ def test_terminal_assessment_uses_information_value_without_becoming_feedback():
 
     assert "terminal assessment" in combined
     assert "highest-value next action" in combined
-    assert "more valuable now than further development research" in combined
+    assert "more valuable now than further research" in combined
     assert "ends the campaign after either verdict" in combined
     assert "highest-value next action" not in normalized_instruments
     assert "The scientific decision rule for requesting assessment is defined in `research/program.md`." in normalized_instruments
-    assert "Request it when the available development evidence" in normalized_program
+    assert "considering available compute, evidence of task performance, uncertainty" in normalized_program
     assert "no next experiment is intended" not in combined
     assert "no scientifically useful path remains" not in combined
     assert "when a scientifically useful next experiment remains" not in combined
