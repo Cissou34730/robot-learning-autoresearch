@@ -2959,15 +2959,17 @@ def test_experiment_preparation_uses_the_question_and_operation_before_initializ
     assert "semantic compatibility" not in normalized_instruments
 
 
-def test_terminal_assessment_uses_information_value_without_becoming_feedback():
+def test_terminal_assessment_requires_a_reason_without_mandating_continuation():
     instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
     normalized_program = " ".join(PROGRAM.split())
     normalized_instruments = " ".join(instruments.split())
     combined = " ".join((PROGRAM + "\n" + LOOP).split())
 
     assert "terminal assessment" in combined
-    assert "highest-value next action" in combined
-    assert "more valuable now than further research" in combined
+    assert "Uncertainty does not prohibit stopping" in normalized_program
+    assert "another useful experiment does not make continuation mandatory" in normalized_program
+    assert "why you are ending development now" in normalized_program
+    assert "Do not plan further work conditional on benchmark failure" in normalized_program
     assert "ends the campaign after either verdict" in combined
     assert "highest-value next action" not in normalized_instruments
     assert "The scientific decision rule for requesting assessment is defined in `research/program.md`." in normalized_instruments

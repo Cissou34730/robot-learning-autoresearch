@@ -368,11 +368,14 @@ def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
     instruments = (root / "research/instruments.md").read_text(encoding="utf-8")
 
     assert "Requesting it ends the campaign after either verdict" in program
-    assert "does not by itself prohibit the request for terminal assessment" in program
+    assert "Uncertainty does not prohibit stopping" in program
+    assert "another useful experiment does not make continuation mandatory" in program
     assert (
-        "Continue with another experiment when further development research is "
-        "the highest-value next action."
+        "Selecting it does not decide whether to end development or request final assessment."
     ) in program
+    assert "what the available evidence supports, which uncertainty you accept" in program
+    assert "why you are ending development now, not only why this policy was selected" in program
+    assert "Do not plan further work conditional on benchmark failure" in program
     assert (
         "a failed official verdict is never development feedback for another "
         "hypothesis."

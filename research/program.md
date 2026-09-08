@@ -168,7 +168,8 @@ Choose a working policy and whether to keep, revert, or restore the complete
 scientific recipe. Retain reusable alternatives when justified; unretained model
 artifacts are removed by the Runner. A promising working policy need not be best
 known. A separate explicit, evidence-backed `best_known` designation identifies
-the policy selected for terminal assessment, not a required training parent.
+the selected policy, not a required training parent. Selecting it does not decide
+whether to end development or request final assessment.
 
 The Researcher is responsible for judging whether the evidence backing a
 `best_known` designation is scientifically comparable and sufficient. The Runner
@@ -196,15 +197,16 @@ or making another behavioral gap larger than the incumbent's failures.
 
 ## Stopping
 
-Compare further development with terminal assessment by their expected value for
-the human objective, considering available compute, evidence of task performance,
-uncertainty, and the likely benefit and cost of more research. Continue with
-another experiment when further development research is the highest-value next
-action. Another scientifically useful experiment does not by itself prohibit the
-request for terminal assessment.
+Decide whether to continue development or request terminal assessment for the
+human objective, considering available compute, evidence of task performance,
+uncertainty, and the likely benefit and cost of more research. Uncertainty does
+not prohibit stopping, and another useful experiment does not make continuation
+mandatory.
 
 Request the official benchmark only through closure, targeting the frozen
-best-known model, and explain why assessment is more valuable now than further
-research. Requesting it ends the campaign after either verdict: `goal_reached` or
-`goal_not_reached`. Only this benchmark declares the official result; a failed
-official verdict is never development feedback for another hypothesis.
+best-known model. Explain what the available evidence supports, which uncertainty
+you accept, and why you are ending development now, not only why this policy was
+selected. Requesting it ends the campaign after either verdict: `goal_reached` or
+`goal_not_reached`. Do not plan further work conditional on benchmark failure.
+Only this benchmark declares the official result; a failed official verdict is
+never development feedback for another hypothesis.
