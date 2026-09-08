@@ -488,7 +488,7 @@ while ($true) {
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage and scientific recipe. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
                 "The same Researcher session context remains available. Correct only the invalid or missing experiment entry in research/postmortems.md and lineage-only research/proposal.json."
-                "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
+                "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
             Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Continue

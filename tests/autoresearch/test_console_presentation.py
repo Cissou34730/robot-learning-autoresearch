@@ -798,7 +798,7 @@ def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded(
 def test_retries_allow_enough_context_to_resolve_the_validation_error():
     launcher = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
 
-    for name in ("analysisRetryPrompt", "evaluationRetryPrompt"):
+    for name in ("analysisRetryPrompt", "evaluationRetryPrompt", "decisionRetryPrompt"):
         match = re.search(rf"\${name}\s*=\s*@\((.*?)\)\s*-join", launcher, re.DOTALL)
         assert match is not None
         block = match.group(1)
