@@ -1168,3 +1168,29 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Safety:** Retain explicit force confirmation, clean-tree protection and the
   existing automatic reset commit/push. Validate source/paths/locks before cleanup.
   No campaign launch, change to training budget or lineage decision policy.
+
+## 2026-09-08 — Anchor strategy to measured behavior before choosing initialization
+
+Decision: Keep the mandatory revisable Scientific strategy and concrete next
+direction, but anchor them to the campaign objective and the highest-priority
+unresolved measured behavior of the best-known model. Require the Researcher to
+compare a causal explanation with a plausible alternative and choose the
+discriminating intervention before choosing fresh, transfer, continuation, or
+replication. Treat the result of one concrete intervention as evidence about that
+intervention, not automatically as resolution of its broader mechanism class.
+
+Reason: Recent campaigns showed that persistent strategy could be captured by a
+secondary training signal, that transfer compatibility could influence the
+intervention itself, and that scoped negative results could be generalized too
+broadly. The existing strategy, evidence sufficiency, lineage provenance, and
+recipe restoration remain useful and are preserved.
+
+Terminal assessment: Keep the official benchmark secret and terminal. Choose it
+when available development evidence makes assessment of the best-known model the
+highest-value next action, rather than requiring every scientifically useful path
+to be exhausted first. A failed official verdict remains unavailable as feedback
+for another hypothesis.
+
+Scope: This changes brief ordering and Researcher-facing reasoning instructions
+only. It adds no schema field, phase, instrument, score, automatic comparison,
+automatic stopping rule, or Runner scientific decision.
