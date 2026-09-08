@@ -391,11 +391,10 @@ def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
     ) in instruments
     normalized_instruments = " ".join(instruments.split())
     assert (
-        "When `request_final_benchmark` is `true`, the existing "
-        "`previous_result_decision.reason` must explain both the policy selection "
-        "and the terminal decision"
+        "When `request_final_benchmark` is `true`, include the terminal rationale "
+        "in the existing `previous_result_decision.reason` field."
     ) in normalized_instruments
     assert (
         "what the available evidence supports, which uncertainty is accepted, "
         "and why development is ending now"
-    ) in normalized_instruments
+    ) not in normalized_instruments
