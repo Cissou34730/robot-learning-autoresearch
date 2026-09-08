@@ -414,7 +414,7 @@ while ($true) {
                 $evaluationRetryPrompt = @(
                     "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. Do not exit without a corrected deliverable."
                     "The same Researcher session context remains available. Correct only the invalid or missing research/evaluation_request.json."
-                    "Reread one relevant contract or state file only if the validator error indicates that current state changed or an exact field definition is needed."
+                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                     "Expected deliverable: a complete research/evaluation_request.json."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
