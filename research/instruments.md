@@ -187,7 +187,7 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
-| `training` | Trains a scientific intervention. The hypothesis is a causal prediction about the intervention being made. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
+| `training` | Trains a changed scientific recipe. The hypothesis is a falsifiable prediction about the changed recipe; it need not isolate a causal mechanism. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
 | `continuation` | Trains the unchanged method further from an eligible lineage. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes, parameter overrides and `change` are forbidden. |
 | `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The hypothesis is a prediction about reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
