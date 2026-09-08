@@ -341,11 +341,15 @@ def test_post_training_prompt_distinguishes_research_from_terminal_assessment():
     prompt = LOOP.split("$analysisPrompt = @(", 1)[1].split(') -join " "', 1)[0]
 
     assert "terminal assessment of best_known through request_final_benchmark" in prompt
-    assert "more valuable now than further research" in prompt
-    assert "task evidence, uncertainty, available compute, and likely benefit" in prompt
-    assert "Explain that choice" in prompt
+    assert "Selecting best_known does not decide when to stop" in prompt
+    assert "Uncertainty does not prohibit stopping" in prompt
+    assert "another useful experiment does not make continuation mandatory" in prompt
+    assert "use previous_result_decision.reason to explain the policy selection" in prompt
+    assert "what the available evidence supports, which uncertainty you accept" in prompt
+    assert "why you are ending development now" in prompt
     assert "ends the campaign after either goal_reached or goal_not_reached" in prompt
     assert "the result cannot inform a later hypothesis" in prompt
+    assert "Do not plan further work conditional on benchmark failure" in prompt
     assert "when a scientifically useful next experiment remains" not in prompt
 
 
