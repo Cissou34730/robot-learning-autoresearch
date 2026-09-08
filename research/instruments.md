@@ -337,6 +337,11 @@ to proceed after closure. Setting it to `true` requests terminal assessment of
 scientific decision rule for requesting assessment is defined in
 `research/program.md`.
 
+When `request_final_benchmark` is `true`, the existing
+`previous_result_decision.reason` must explain both the policy selection and the
+terminal decision: what the available evidence supports, which uncertainty is
+accepted, and why development is ending now.
+
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
 researcher-owned scientific recipe: researcher-owned source, tests, and

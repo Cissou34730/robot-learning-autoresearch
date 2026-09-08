@@ -389,3 +389,13 @@ def test_official_benchmark_contract_is_terminal_without_deciding_the_science():
         "The campaign ends\nafter either verdict. This operation does not produce "
         "evidence for another\nhypothesis."
     ) in instruments
+    normalized_instruments = " ".join(instruments.split())
+    assert (
+        "When `request_final_benchmark` is `true`, the existing "
+        "`previous_result_decision.reason` must explain both the policy selection "
+        "and the terminal decision"
+    ) in normalized_instruments
+    assert (
+        "what the available evidence supports, which uncertainty is accepted, "
+        "and why development is ending now"
+    ) in normalized_instruments
