@@ -57,55 +57,30 @@
     "experiment": 1,
     "reason": "The final checkpoint matches the best observed direct task success at 98% on the compatible development panel. The earlier 100352 checkpoint ties it on that reused panel, while 86016 is lower at 95%; selecting the final artifact is therefore a tie-based working choice, not a claim that later training improved the policy."
   },
-  "last_verdict": "researcher selected checkpoint-120832 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
-  "pending_analysis": null,
-  "pending_closure_operation": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "d673442aae5609a3be77a123ce5e43a9f539a99714c0c9831f03d113dfefdfd3",
+  "official_benchmark_model": {
     "artifact": "research/checkpoints/retained/b3580338-2b0b-4025-b9d7-1e64b5c9ef94/e1-c8cf701d5-d673442aae5609a3be77a123ce5e43a9f539a99714c0c9831f03d113dfefdfd3",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/b3580338-2b0b-4025-b9d7-1e64b5c9ef94/e1-c8cf701d5-d673442aae5609a3be77a123ce5e43a9f539a99714c0c9831f03d113dfefdfd3",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/b3580338-2b0b-4025-b9d7-1e64b5c9ef94/evaluation-b3580338-2b0b-4025-b9d7-1e64b5c9ef94-experiment-1-checkpoint-120832-100ep-seed0-e602a32560ea.json"
-      ],
-      "fingerprint": "d673442aae5609a3be77a123ce5e43a9f539a99714c0c9831f03d113dfefdfd3",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has a recorded 98% research-evaluation result, ties the other 98% checkpoint on the same episode panel, and is the terminal artifact of the completed baseline.",
-      "scientific_commit": "9648b1642a84bcf84ed41fdc1bd287495078d21d",
-      "training_steps": 120832
-    },
-    "experiment": 1,
     "fingerprint": "d673442aae5609a3be77a123ce5e43a9f539a99714c0c9831f03d113dfefdfd3",
     "selected": "best_known"
   },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.4814738540250999,
+      "median": 0.4507993979383524,
+      "worst": 2.243587292322636
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
+  "pending_analysis": null,
+  "pending_closure_operation": null,
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "9648b1642a84bcf84ed41fdc1bd287495078d21d",
@@ -116,7 +91,7 @@
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/b3580338-2b0b-4025-b9d7-1e64b5c9ef94/e1-c8cf701d5-d673442aae5609a3be77a123ce5e43a9f539a99714c0c9831f03d113dfefdfd3",
     "candidate": "checkpoint-120832",
