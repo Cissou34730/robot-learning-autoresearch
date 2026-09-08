@@ -111,6 +111,13 @@ PRESENTATION_ONLY_PATHS = {
     "robot_learning/scenario/progress.py",
     "robot_learning/scenario/viewer.py",
 }
+# Researcher-owned files that shape training only. They determine neither how a
+# saved policy is replayed nor whether an episode is a success, so editing them
+# must not invalidate completed measurements.
+TRAINING_ONLY_PATHS = {
+    "robot_learning/scenario/reward.py",
+    "robot_learning/scenario/training_environment.py",
+}
 # These sources are serialized into policy_runtime.pkl and therefore belong to
 # model identity, not to the context in which that saved model is measured.
 MODEL_CONTAINED_RUNTIME_PATHS = {
@@ -125,11 +132,6 @@ EVALUATION_RUNTIME_PATHS = (
     "robot_learning/policy_runtime.py",
     "robot_learning/evaluate.py",
 )
-COMPARISON_SEMANTICS_PATHS = (
-    "robot_learning/policy_runtime.py",
-    "robot_learning/scenario/environment.py",
-)
-COMPARISON_SEMANTICS_VERSION_PATH = "robot_learning/scenario/evaluation.py"
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
@@ -1020,6 +1022,7 @@ def evaluation_semantics_paths() -> list[str]:
         if (
             is_protected_source(relative)
             or relative in PRESENTATION_ONLY_PATHS
+            or relative in TRAINING_ONLY_PATHS
             or relative in MODEL_CONTAINED_RUNTIME_PATHS
         ):
             continue
@@ -1037,42 +1040,6 @@ def evaluation_semantics_fingerprint() -> str:
     for relative in evaluation_semantics_paths():
         digest.update(relative.encode("utf-8"))
         digest.update((paths.ROOT / relative).read_bytes())
-    return digest.hexdigest()[:12]
-
-
-def comparison_semantics_fingerprint() -> str:
-    """Identify episode execution and primary-success extraction semantics."""
-    digest = hashlib.sha256()
-    for relative in COMPARISON_SEMANTICS_PATHS:
-        digest.update(relative.encode("utf-8"))
-        source = paths.ROOT / relative
-        if source.is_file():
-            digest.update(source.read_bytes())
-    version_source = paths.ROOT / COMPARISON_SEMANTICS_VERSION_PATH
-    source_text = version_source.read_text(encoding="utf-8")
-    assignments = re.findall(
-        r"(?m)^PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=.*$", source_text
-    )
-    if len(assignments) > 1:
-        raise ValueError(
-            "PRIMARY_COMPARISON_SEMANTICS_VERSION must be assigned exactly once in "
-            f"{COMPARISON_SEMANTICS_VERSION_PATH}"
-        )
-    if assignments:
-        match = re.fullmatch(
-            r"PRIMARY_COMPARISON_SEMANTICS_VERSION\s*=\s*(0|[1-9]\d*)",
-            assignments[0],
-        )
-        if match is None:
-            raise ValueError(
-                "PRIMARY_COMPARISON_SEMANTICS_VERSION must be a non-negative integer in "
-                f"{COMPARISON_SEMANTICS_VERSION_PATH}"
-            )
-        version = match.group(1)
-    else:
-        version = "0"
-    digest.update(COMPARISON_SEMANTICS_VERSION_PATH.encode("utf-8"))
-    digest.update(version.encode("ascii"))
     return digest.hexdigest()[:12]
 
 
@@ -1630,8 +1597,6 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
                         "evaluation_artifact_fingerprint"
                     )
                     or metrics.get("evaluation_artifact_fingerprint"),
-                    "comparison_semantics": evaluation.get("comparison_semantics")
-                    or metrics.get("comparison_semantics"),
                     "settings": (
                         "research_evaluation",
                         int(evaluation.get("episodes", metrics.get("episodes", -1))),
@@ -1749,15 +1714,7 @@ def _evidence_records_compatible(candidate: dict, reference: dict) -> bool:
         return candidate_settings == reference_settings
     if candidate["instrument"] != "research_evaluation":
         return False
-    if candidate_settings[:3] != reference_settings[:3]:
-        return False
-    candidate_semantics = candidate.get("comparison_semantics")
-    reference_semantics = reference.get("comparison_semantics")
-    if candidate_semantics and reference_semantics:
-        semantics_match = candidate_semantics == reference_semantics
-    else:
-        semantics_match = candidate_settings[3] == reference_settings[3]
-    if not semantics_match:
+    if candidate_settings != reference_settings:
         return False
     candidate_episodes = candidate.get("episode_identities")
     reference_episodes = reference.get("episode_identities")
@@ -1774,19 +1731,11 @@ def _compatible_primary_panels(
         for reference in reference_records:
             if not _evidence_records_compatible(candidate, reference):
                 continue
-            comparison_semantics = (
-                candidate.get("comparison_semantics")
-                if candidate.get("comparison_semantics")
-                and reference.get("comparison_semantics")
-                else None
-            )
             key = (
                 candidate["settings"][0],
                 candidate["settings"][1],
                 candidate["settings"][2],
-                comparison_semantics,
                 candidate["settings"][3],
-                reference["settings"][3],
             )
             candidate_panel, reference_panel = panels.setdefault(key, ([], []))
             if candidate not in candidate_panel:
@@ -1811,7 +1760,6 @@ def _resolved_paired_evidence_plan(
     """Resolve comparisons to immutable models and exact evidence artifacts."""
     catalog = _development_evidence_catalog(pending, state)
     semantics = evaluation_semantics_fingerprint()
-    comparison_semantics = comparison_semantics_fingerprint()
     campaign_id = repository.current_campaign_id(state)
     experiment = int(pending["experiment"])
     for measurement in requested:
@@ -1830,7 +1778,6 @@ def _resolved_paired_evidence_plan(
             "model_fingerprint": resolved_models[name]["fingerprint"],
             "evaluation_artifact": canonical_path,
             "planned": True,
-            "comparison_semantics": comparison_semantics,
             "settings": (
                 "research_evaluation",
                 int(measurement["episodes"]),
@@ -1988,9 +1935,7 @@ def _resolved_paired_evidence_plan(
                     "instrument": settings[0],
                     "episodes": settings[1],
                     "seed": settings[2],
-                    "comparison_semantics": settings[3],
-                    "candidate_evaluation_semantics": settings[4],
-                    "reference_evaluation_semantics": settings[5],
+                    "evaluation_semantics": settings[3],
                     "candidate_artifacts": candidate_paths,
                     "candidate_artifact_fingerprints": {
                         path: repository.file_fingerprint(

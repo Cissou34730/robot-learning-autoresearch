@@ -20,7 +20,6 @@ from research.run_experiment import (
 from research.runner_execution import training_budget
 from research.runner_protocol import (
     _evidence_records_compatible,
-    comparison_semantics_fingerprint,
     evaluation_artifact_name,
     evaluation_semantics_fingerprint,
     evaluation_semantics_paths,
@@ -237,10 +236,6 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr("research.runner_paths.BASELINE_PENDING_PATH", baseline_path)
-    monkeypatch.setattr(
-        "research.runner_protocol.comparison_semantics_fingerprint",
-        lambda: "comparison",
-    )
 
     def skip_result_recording(result):
         del result
@@ -351,10 +346,6 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
-    monkeypatch.setattr(
-        "research.runner_protocol.comparison_semantics_fingerprint",
-        lambda: "comparison",
-    )
 
     def skip_result_recording(result):
         del result
@@ -418,10 +409,6 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
-    )
-    monkeypatch.setattr(
-        "research.runner_protocol.comparison_semantics_fingerprint",
-        lambda: "comparison",
     )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
 
@@ -560,10 +547,6 @@ def _single_panel_evaluation_fixture(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", evaluations_dir)
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
-    )
-    monkeypatch.setattr(
-        "research.runner_protocol.comparison_semantics_fingerprint",
-        lambda: "comparison",
     )
     return state_path, request_path, evaluations_dir
 
@@ -744,8 +727,6 @@ def _semantics_tree(tmp_path):
         "viewer.py",
     ):
         content = "original\n"
-        if name == "evaluation.py":
-            content += "PRIMARY_COMPARISON_SEMANTICS_VERSION = 1\n"
         (scenario / name).write_text(content, encoding="utf-8")
     training = tmp_path / "robot_learning" / "training"
     training.mkdir(parents=True)
@@ -775,7 +756,6 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
         "robot_learning/policy_runtime.py",
         "robot_learning/scenario/environment.py",
         "robot_learning/scenario/evaluation.py",
-        "robot_learning/scenario/reward.py",
     ]
 
     original = evaluation_semantics_fingerprint()
@@ -808,74 +788,22 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
     assert evaluation_semantics_fingerprint() != with_data
 
 
-def test_comparison_semantics_fingerprint_excludes_reward_and_diagnostics(
+def test_evaluation_semantics_fingerprint_excludes_training_only_reward(
     monkeypatch, tmp_path
 ):
     scenario = _semantics_tree(tmp_path)
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
-    original = comparison_semantics_fingerprint()
+    original = evaluation_semantics_fingerprint()
     (scenario / "reward.py").write_text("changed reward\n", encoding="utf-8")
-    (scenario / "evaluation.py").write_text(
-        "changed diagnostic\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 1\n",
-        encoding="utf-8",
-    )
-    (tmp_path / "robot_learning" / "evaluate.py").write_text(
-        "changed progress output\n", encoding="utf-8"
-    )
-    assert comparison_semantics_fingerprint() == original
+    assert evaluation_semantics_fingerprint() == original
 
-    (scenario / "evaluation.py").write_text(
-        "changed diagnostic\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 2\n",
-        encoding="utf-8",
-    )
-    versioned = comparison_semantics_fingerprint()
-    assert versioned != original
-
-    (scenario / "environment.py").write_text("changed task\n", encoding="utf-8")
-    assert comparison_semantics_fingerprint() != versioned
-
-
-def test_comparison_semantics_fingerprint_treats_missing_version_as_legacy(
-    monkeypatch, tmp_path
-):
-    scenario = _semantics_tree(tmp_path)
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-
-    explicit = comparison_semantics_fingerprint()
-    (scenario / "evaluation.py").write_text("legacy semantics\n", encoding="utf-8")
-    legacy = comparison_semantics_fingerprint()
-    assert legacy == comparison_semantics_fingerprint()
-    assert legacy != explicit
-
-    (scenario / "evaluation.py").write_text(
-        "legacy semantics\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 2\n",
-        encoding="utf-8",
-    )
-    assert comparison_semantics_fingerprint() != legacy
-
-
-@pytest.mark.parametrize(
-    "content",
-    [
-        "PRIMARY_COMPARISON_SEMANTICS_VERSION = 1\nPRIMARY_COMPARISON_SEMANTICS_VERSION = 1\n",
-        "PRIMARY_COMPARISON_SEMANTICS_VERSION = malformed\n",
-    ],
-)
-def test_comparison_semantics_fingerprint_rejects_invalid_explicit_versions(
-    monkeypatch, tmp_path, content
-):
-    scenario = _semantics_tree(tmp_path)
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    (scenario / "evaluation.py").write_text(content, encoding="utf-8")
-
-    with pytest.raises(ValueError, match="PRIMARY_COMPARISON_SEMANTICS_VERSION"):
-        comparison_semantics_fingerprint()
+    (scenario / "evaluation.py").write_text("changed evaluator\n", encoding="utf-8")
+    assert evaluation_semantics_fingerprint() != original
 
 
 def _comparison_record(
-    broad_semantics: str,
-    comparison_semantics: str | None,
+    evaluation_semantics: str,
     *,
     episodes: int = 200,
     seed: int = 10,
@@ -887,11 +815,9 @@ def _comparison_record(
             "research_evaluation",
             episodes,
             seed,
-            broad_semantics,
+            evaluation_semantics,
         )
     }
-    if comparison_semantics is not None:
-        record["comparison_semantics"] = comparison_semantics
     if episode_identities is not None:
         record["episode_identities"] = episode_identities
     return record
@@ -901,48 +827,45 @@ def _comparison_record(
     ("candidate", "reference", "compatible"),
     [
         (
-            _comparison_record("reward-a", "primary"),
-            _comparison_record("reward-b", "primary"),
+            _comparison_record("same-semantics"),
+            _comparison_record("same-semantics"),
             True,
         ),
         (
-            _comparison_record("same-broad", "primary-a"),
-            _comparison_record("same-broad", "primary-b"),
+            _comparison_record("semantics-a"),
+            _comparison_record("semantics-b"),
             False,
         ),
         (
-            _comparison_record("legacy", None),
-            _comparison_record("legacy", None),
+            _comparison_record("legacy", episode_identities=[(0, 10)]),
+            _comparison_record(
+                "legacy", episode_identities=[(0, 10)],
+            ),
             True,
         ),
         (
-            _comparison_record("legacy-a", None),
-            _comparison_record("legacy-b", None),
+            _comparison_record("legacy-a"),
+            _comparison_record("legacy-b"),
             False,
         ),
         (
-            _comparison_record("broad", "primary", episodes=100),
-            _comparison_record("broad", "primary", episodes=200),
+            _comparison_record("same", episodes=100),
+            _comparison_record("same", episodes=200),
             False,
         ),
         (
-            _comparison_record("broad", "primary", seed=10),
-            _comparison_record("broad", "primary", seed=11),
+            _comparison_record("same", seed=10),
+            _comparison_record("same", seed=11),
             False,
         ),
         (
-            _comparison_record("broad-a", "primary", episode_identities=[(0, 10)]),
-            _comparison_record("broad-b", "primary", episode_identities=[(0, 10)]),
-            True,
-        ),
-        (
-            _comparison_record("broad", "primary", episode_identities=[(0, 10)]),
-            _comparison_record("broad", "primary", episode_identities=[(0, 11)]),
+            _comparison_record("same", episode_identities=[(0, 10)]),
+            _comparison_record("same", episode_identities=[(0, 11)]),
             False,
         ),
     ],
 )
-def test_primary_comparison_semantics_are_narrow_and_backward_compatible(
+def test_evaluation_semantics_are_the_compatibility_identity(
     candidate, reference, compatible
 ):
     assert _evidence_records_compatible(candidate, reference) is compatible
@@ -2169,10 +2092,6 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
     )
     monkeypatch.setattr(
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
-    )
-    monkeypatch.setattr(
-        "research.runner_protocol.comparison_semantics_fingerprint",
-        lambda: "comparison",
     )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
 

@@ -530,10 +530,6 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
         "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
     )
     monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
-    monkeypatch.setattr(
-        "research.runner_protocol.comparison_semantics_fingerprint",
-        lambda: "comparison",
-    )
 
     printed: list[str] = []
     monkeypatch.setattr("research.runner_console.announce", printed.append)

@@ -665,8 +665,7 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
             "candidate": "checkpoint",
             "episodes": 2,
             "seed": 1,
-            "evaluation_semantics": "candidate-reward-semantics",
-            "comparison_semantics": "primary-semantics",
+            "evaluation_semantics": "shared-evaluation-semantics",
             "model_fingerprint": repository.artifact_fingerprint(candidate),
             "metrics": {
                 "evaluation_artifact": candidate_evidence.name,
@@ -679,8 +678,7 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
             "candidate": "best_known",
             "episodes": 2,
             "seed": 1,
-            "evaluation_semantics": "incumbent-reward-semantics",
-            "comparison_semantics": "primary-semantics",
+            "evaluation_semantics": "shared-evaluation-semantics",
             "model_fingerprint": repository.artifact_fingerprint(incumbent),
             "metrics": {
                 "evaluation_artifact": incumbent_evidence.name,
@@ -815,8 +813,7 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
                     "candidate": "checkpoint",
                     "episodes": 2,
                     "seed": 1,
-                    "evaluation_semantics": "same-broad-semantics",
-                    "comparison_semantics": "candidate-primary-semantics",
+                    "evaluation_semantics": "candidate-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(candidate),
                     "metrics": {
                         "evaluation_artifact": candidate_evidence.name,
@@ -829,8 +826,7 @@ def test_v4_best_known_replacement_rejects_incompatible_panels(monkeypatch, tmp_
                     "candidate": "best_known",
                     "episodes": 2,
                     "seed": 1,
-                    "evaluation_semantics": "same-broad-semantics",
-                    "comparison_semantics": "incumbent-primary-semantics",
+                    "evaluation_semantics": "incumbent-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(incumbent),
                     "metrics": {
                         "evaluation_artifact": incumbent_evidence.name,

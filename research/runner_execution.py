@@ -642,6 +642,18 @@ def requested_paired_comparisons(
                     panel,
                     reference_name,
                 )
+                candidate_identities = {
+                    (int(item["episode"]), int(item["episode_seed"]))
+                    for item in candidate_evaluation["episode_results"]
+                }
+                reference_identities = {
+                    (int(item["episode"]), int(item["episode_seed"]))
+                    for item in reference_evaluation["episode_results"]
+                }
+                if candidate_identities != reference_identities:
+                    raise ValueError(
+                        "paired comparison evidence must use identical episodes"
+                    )
                 candidate_evaluations.append(candidate_evaluation)
                 reference_evaluations.append(reference_evaluation)
                 panel_sources = [
@@ -653,15 +665,7 @@ def requested_paired_comparisons(
                     {
                         "episodes": panel["episodes"],
                         "seed": panel["seed"],
-                        "comparison_semantics": panel.get("comparison_semantics"),
-                        "candidate_evaluation_semantics": panel.get(
-                            "candidate_evaluation_semantics",
-                            panel.get("evaluation_semantics"),
-                        ),
-                        "reference_evaluation_semantics": panel.get(
-                            "reference_evaluation_semantics",
-                            panel.get("evaluation_semantics"),
-                        ),
+                        "evaluation_semantics": panel.get("evaluation_semantics"),
                         "source_artifacts": panel_sources,
                     }
                 )

@@ -663,7 +663,6 @@ def execute_pending_evaluations() -> int:
         pending.get("partial_task_reference_evaluations", [])
     )
     semantics = protocol.evaluation_semantics_fingerprint()
-    comparison_semantics = protocol.comparison_semantics_fingerprint()
     panel = task_reference_panel()
     # The persisted measurement ledger is the sole source of truth across
     # successive rounds and interrupted resumes.
@@ -725,7 +724,6 @@ def execute_pending_evaluations() -> int:
                 paths.ROOT
             ).as_posix()
             clean_metrics["evaluation_semantics"] = semantics
-            clean_metrics["comparison_semantics"] = comparison_semantics
             if is_v4:
                 clean_metrics["evaluation_artifact_fingerprint"] = (
                     repository.file_fingerprint(output_path)
@@ -742,7 +740,6 @@ def execute_pending_evaluations() -> int:
                     "seed": seed,
                     "label": label,
                     "evaluation_semantics": semantics,
-                    "comparison_semantics": comparison_semantics,
                     "metrics": clean_metrics,
                     **(
                         {"model_fingerprint": resolved_models[name]["fingerprint"]}
