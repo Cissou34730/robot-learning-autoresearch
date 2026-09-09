@@ -3,42 +3,39 @@
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Scientific strategy
 
 **Direction:** Improve official-distribution reach-and-hold robustness beyond
-the 98% development result while making the learning process reliable enough
-that later reward interventions are interpretable. The fresh replications and
-the transferred lower-learning-rate run now make implementation and
-optimization-trajectory diagnostics more useful than another unisolated
-hold-focused reward change.
+the 98% development result, using the stable late trajectory from the
+2048-step-rollout recipe as the working platform for a targeted improvement of
+the remaining localized hold failures.
 
-**Lessons and limits:** Experiment 6 changed only PPO learning rate from
-0.0003 to 0.0001 while transferring the retained experiment-1 policy. Both
-development instruments scored its 35,840-step checkpoint at 97.5%, but both
-scored the 100,352- and 120,832-step checkpoints at 91.0%. Research diagnostics
-went from five failures, all in the short negative-angle sector, to 18 failures
-at each late checkpoint, mostly short-range; 12 failed episodes at each late
-checkpoint had reached tolerance but did not complete the hold. The training
-proxy reached 1.0 at 35,840 and remained near 0.97 at the end, so it again did
-not predict task performance. This weakens lower update magnitude as a remedy
-for late drift under this transferred recipe. Across experiments 4--6, fresh
-and transferred trajectories remain materially different, but the current
-evidence does not identify initialization, optimizer schedule, or
-implementation behavior as the cause. All measurements are development-panel
-evidence, not official confirmation.
+**Lessons and limits:** Experiment 7 changed only PPO `n_steps` from 1024 to
+2048 while transferring the retained experiment-1 policy. Its task-reference
+score was 96% at 36,864 steps and 98% at both 100,352 and 120,832 steps; the
+research panel scored the final checkpoint 98% and 98.5% on two seeds. The late
+research failures preserved the incumbent's four short-range negative-angle
+cases, with three reaching tolerance but holding for only a few steps. The
+final candidate tied the incumbent with zero discordant episodes across 400
+compatible research episodes, so it is a useful stable working policy but not
+evidence for replacing best-known. The high training proxy (0.99 early and
+0.96 at the end) still did not predict the early measured score. The
+2048-step result supports rollout/update-frequency stability under this
+transferred recipe and development panels, but does not establish a general
+causal explanation or official success; fresh-seed variability and the
+representation/runtime contribution remain unresolved.
 
-**Open questions:** Which implementation or training-process condition causes
-policies with strong training proxies to lose official-task reach-and-hold
-success, and can the retained baseline's localized failures be preserved while
-that condition is corrected? It is also unknown whether the late failure
-expansion reflects optimization drift or a representation/measurement
-interaction.
+**Open questions:** Can a hold-aware intervention remove the four localized
+short-range negative-angle failures without recreating the broad late
+degradation seen in experiments 3 and 6? Is the stable 2048-step trajectory
+reproducible beyond the measured seeds, and does it preserve the same behavior
+when the reward is changed?
 
-**Conditional next steps:** Keep the retained experiment-1 checkpoint-100352
-policy and its unchanged recipe as working and best-known. If research
-continues, inspect the training/evaluation and policy-runtime path, then test a
-controlled process or schedule intervention informed by that inspection. A
-future stable late checkpoint would justify returning to hold-specific reward
-work; another broad degradation should prioritize implementation or
-representation diagnostics instead. Do not treat proxy success or the early
-97.5% checkpoint as evidence that the human objective is reached.
+**Conditional next steps:** Continue from experiment 7 checkpoint-120832 with
+the 2048-step rollout recipe and test a narrowly scoped hold-specific reward
+change, measuring both the research and task-reference panels. If that
+intervention broadens failures or loses late stability, restore the unchanged
+experiment-1 best-known lineage and prioritize representation/runtime or
+training-process diagnostics. Do not request the official benchmark until a
+candidate has evidence beyond this development-panel tie and the remaining
+failures are addressed.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 4
 
@@ -320,3 +317,53 @@ variability before investing in another shaping intervention.
 `research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-3-checkpoint-100352-task-reference-v1.json`;
 `research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-3-checkpoint-120832-task-reference-v1.json`;
 `robot_learning/scenario/reward.py`.
+
+## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 7
+
+**Result:** The 2048-step PPO rollout transfer produced a late-stable
+challenger. It becomes the working lineage with its recipe kept; the
+experiment-1 checkpoint remains best-known because the compatible comparison
+was a tie rather than an improvement.
+
+**Observed behavior:** This was a changed-recipe transfer from the retained
+experiment-1 checkpoint, changing only PPO `n_steps` from 1024 to 2048. The
+training proxy was 0.99 at 36,864 steps, 0.98 at 100,352, and 0.96 at
+120,832. Research evaluation scored 96.0% at 36,864, then 98.0% at 100,352
+and 120,832 on seed 7300, and 98.5% at 120,832 on seed 9100. The independent
+task-reference panel scored 96.0% early and 98.0% at both late checkpoints.
+At the late seed-7300 research checkpoint, the four failures were the same
+short-range negative-angle cases as the incumbent (approximately 6.7--9.9 cm
+and -116--128 degrees); three reached tolerance but held for only 2--3 steps.
+The final candidate and incumbent had zero discordant episodes across 400
+compatible research episodes. The final development results remain
+non-official.
+
+**Hypothesis assessment:** **Supported under the tested conditions, with
+limits.** The expected preservation of at least 98% late success and the
+incumbent's localized failure pattern occurred, while the broad late
+degradation seen after the lower learning rate did not. The 96.0% early
+measurement is a partial negative signal, and the exact paired tie provides
+stability rather than improvement evidence. This does not prove that rollout
+length alone caused the difference or establish performance across fresh
+training seeds, and the human objective has not been officially assessed.
+
+**Interpretation:** Increasing rollout length is a useful process intervention
+for this transferred recipe: it supplied a stable late working checkpoint
+without changing the saved policy I/O, normalization, task mechanics, or
+runtime contract. The independent task-reference agreement and the unchanged
+localized failures make another measurement round unlikely to change the
+lineage decision. The stable late platform makes a narrowly scoped hold-aware
+reward experiment more informative than another unisolated optimizer change,
+but proxy success must not select the next policy.
+
+**Evidence inspected:** `research/brief.md`; `research/results.jsonl`;
+`research/training_logs/03a3c9ad-ec65-4780-bee5-ada9a02320a5/experiment-7-attempt-1.log`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-7-checkpoint-36864-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-7-checkpoint-100352-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-7-checkpoint-120832-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-7-checkpoint-120832-200ep-seed9100-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-7-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-7-checkpoint-120832-task-reference-v1.json`;
+`robot_learning/train.py`; `robot_learning/scenario/environment.py`;
+`robot_learning/scenario/evaluation.py`; `robot_learning/scenario/policy_io.py`;
+`robot_learning/policy_runtime.py`.
