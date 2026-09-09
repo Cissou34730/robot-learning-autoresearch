@@ -132,3 +132,22 @@ def test_action_cost_penalizes_large_actions(monkeypatch):
     gentle = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 0.1)).total
     violent = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 1.0)).total
     assert violent < gentle
+
+
+def test_action_delta_cost_penalizes_command_changes(monkeypatch):
+    monkeypatch.setattr(reward_module, "ACTION_DELTA_COST_COEFFICIENT", 1.0)
+    steady = reach_reward(
+        0.05,
+        0.05,
+        0.03,
+        action=np.full(2, 0.3),
+        previous_action=np.full(2, 0.3),
+    ).total
+    changing = reach_reward(
+        0.05,
+        0.05,
+        0.03,
+        action=np.full(2, 0.3),
+        previous_action=np.zeros(2),
+    ).total
+    assert changing < steady
