@@ -17,7 +17,7 @@ def test_reward_encourages_progress():
     assert reach_reward(0.08, 0.10, 0.03).total < 0
 
 
-def test_convex_hold_progress_reward_pays_late_completion():
+def test_linear_hold_progress_reward_pays_completion():
     early = reach_reward(
         0.005,
         0.005,
@@ -42,9 +42,9 @@ def test_convex_hold_progress_reward_pays_late_completion():
         previous_held_steps=99,
         hold_steps_required=100,
     ).total
-    assert late > early
+    assert early == pytest.approx(late)
     assert early > 0
-    assert done - late > HOLD_COMPLETE_BONUS
+    assert done - late == pytest.approx(HOLD_COMPLETE_BONUS)
 
 
 def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
