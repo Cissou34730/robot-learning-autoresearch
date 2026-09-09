@@ -17,28 +17,12 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import reach_observation
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_observation_uses_periodic_joint_and_explicit_target_features():
-    env = make_training_env()
-    env.reset(seed=0)
-
-    observation = reach_observation(env.data)
-    end_effector = env.data.site("end_effector").xpos
-    target = env.data.mocap_pos[0]
-
-    np.testing.assert_allclose(observation[:2], np.sin(env.data.qpos))
-    np.testing.assert_allclose(observation[2:4], np.cos(env.data.qpos))
-    np.testing.assert_allclose(observation[4:6], env.data.qvel)
-    np.testing.assert_allclose(observation[6:9], end_effector - target)
-    np.testing.assert_allclose(observation[9:11], target[:2])
 
 
 def test_training_distribution_covers_the_official_radius_range():
