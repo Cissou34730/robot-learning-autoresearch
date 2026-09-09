@@ -18,10 +18,6 @@ def test_post_training_prompt_supports_goal_directed_analysis_without_a_causal_g
     assert "partial or unexpected signals" in prompt
     assert "scope causal claims to the evidence" in prompt
     assert "training/evaluation discrepancies may all guide investigation" in prompt
-    assert "exploratory characterization when useful" in prompt
-    assert "may replace the current investigation" in prompt
-    assert "may be revised during preparation" in prompt
-    assert "closing does not require resolving every assumption" in prompt
     assert "new measurement results are available" in launcher.lower()
     for obsolete in (
         "highest-priority gap",
@@ -29,32 +25,31 @@ def test_post_training_prompt_supports_goal_directed_analysis_without_a_causal_g
         "obtain that evidence during the current analysis phase before closing",
         "preserve a broader mechanism as open when only one",
         "optional evaluation refinement while closing",
+        "may replace the current investigation",
+        "not necessarily the incumbent's largest failure group",
+        "update the scientific strategy",
     ):
         assert obsolete not in prompt
 
 
 @pytest.mark.parametrize("prompt_name", ["analysisPrompt", "evaluationPrompt"])
-def test_measurement_prompts_expose_task_reference_and_code_inspection(prompt_name):
+def test_measurement_prompts_defer_instrument_detail_to_the_contract(prompt_name):
     launcher = Path("run_research.ps1").read_text(encoding="utf-8")
     prompt = launcher.split(f"${prompt_name} = @(", 1)[1].split(') -join " "', 1)[0]
 
-    assert "inspect implementations to understand behavior" in prompt.lower()
-    assert "including when this helps formulate the question" in prompt
+    assert "formulate the question" in prompt
     assert "Human-owned code remains read-only" in prompt
-    assert "Task-reference measurement assesses the protected original task" in prompt
-    assert "independently of researcher-owned evaluation" in prompt
-    assert "separate development panel" in prompt
-    assert "its implementation is identified in research/instruments.md" in prompt
-    if prompt_name == "analysisPrompt":
-        for capability in (
-            "checkpoint inventory and raw-log queries",
-            "structured-artifact analysis",
-            "lightweight local analysis",
-            "researcher-owned instrumentation",
-            "research evaluation",
-            "paired comparison",
-        ):
-            assert capability in prompt
+    assert "research/instruments.md" in prompt
+    # Naming instrument capabilities here made task-reference measurement look
+    # routinely required; the contract is the single place that describes them.
+    for advertised in (
+        "Task-reference measurement assesses the protected original task",
+        "separate development panel",
+        "checkpoint inventory and raw-log queries",
+        "paired comparison",
+        "broaden the evaluation scope",
+    ):
+        assert advertised not in prompt
 
 
 def test_task_reference_contract_exposes_its_purpose_and_implementation():

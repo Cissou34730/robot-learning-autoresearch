@@ -2843,7 +2843,7 @@ def test_post_training_refinement_is_optional_and_scoped_to_current_experiment()
     assert "New measurement results are available" in LOOP
     assert (
         "State the question or uncertainty, then select measurements "
-        "proportionate to the uncertainty and their cost"
+        "proportionate to it and to their cost"
     ) in LOOP
     assert "eligible saved lineages can be remeasured" in LOOP
     assert (
@@ -2867,7 +2867,6 @@ def test_post_training_reasoning_requires_a_revisable_investigation_interpretati
 
     assert "assess the question actually tested" in LOOP
     assert "Scope causal claims to the evidence" in LOOP
-    assert "That direction may replace the current investigation" in LOOP
     assert "That operational boundary does not prescribe the scientific decision." in normalized_program
     assert "An unsuccessful run does not automatically reject an intervention" in normalized_program
     assert "The `reasoning` object contains the fields shown in the schema." in normalized_instruments
