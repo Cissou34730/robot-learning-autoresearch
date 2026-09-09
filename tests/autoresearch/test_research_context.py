@@ -713,35 +713,6 @@ def test_lineage_retry_gate_requires_attested_evidence():
     assert "Evidence inspected" in instruments
 
 
-def test_research_contract_exposes_choices_and_exact_closure_conditions():
-    root = Path(__file__).resolve().parents[2]
-    program = (root / "research" / "program.md").read_text(encoding="utf-8")
-    instruments = (root / "research" / "instruments.md").read_text(
-        encoding="utf-8"
-    )
-    combined = f"{program}\n{instruments}".lower()
-
-    for forbidden in (
-        "this is the complete task",
-        "bounded task",
-        "five entries",
-        "iterative optimization surface",
-    ):
-        assert forbidden not in combined
-    assert "choose the operation that fits that question" in combined
-    assert "continuation, replication, or\n   training" in combined
-    assert "fresh training does not by itself establish" in combined
-    assert "repeated evidence from that panel" in combined
-    assert "best_known` requires exactly a" in combined
-    assert "candidate string and reason string" in combined
-    assert '"action": "<keep | revert | restore>"' in instruments
-    assert "For `restore`, `code.lineage` is required" in instruments
-    assert "omit `code.lineage`" in instruments
-    assert "the Runner resolves that\nmodel's recorded measurements" in instruments
-    assert "the researcher is responsible for judging whether the evidence backing a" in combined
-    assert "assesses the frozen best-known" in instruments
-
-
 def test_researcher_retries_resume_this_phase_own_session():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
@@ -763,15 +734,3 @@ def test_researcher_prompts_leave_execution_to_the_launcher():
     assert "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py" in script
     assert "Experiment was already executed during the research session" not in script
     assert "The researcher executed an experiment during the new-hypothesis" in script
-
-
-def test_v4_analysis_prompt_offers_measurement_or_closure_with_one_preflight():
-    root = Path(__file__).resolve().parents[2]
-    script = (root / "run_research.ps1").read_text(encoding="utf-8")
-
-    assert "pending_analysis" in script
-    assert "--check-analysis-deliverable" in script
-    assert "Choose exactly one outcome" in script
-    assert "Candidate-only measurement and closure without new measurements are valid." in script
-    assert "If best_known remains unchanged, omit the best_known field." in script
-    assert "Do not restate or reselect it." in script

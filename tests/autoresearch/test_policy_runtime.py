@@ -34,6 +34,43 @@ def scientific_module(monkeypatch, size, scale=0.1):
     return module
 
 
+def stateful_module(monkeypatch, size, weight=0.75):
+    """A disposable scientific module whose action mapping carries episode state."""
+    name = "robot_learning.scenario.runtime_test_stateful_policy"
+    module = types.ModuleType(name)
+    exec(  # noqa: S102 -- a disposable scientific module tests by-value capture
+        "import numpy as np\n"
+        "from gymnasium.spaces import Box\n"
+        "from robot_learning.policy_runtime import PolicyIO\n"
+        f"SIZE = {size}\nWEIGHT = {weight}\n"
+        "def observe(data): return np.full(SIZE, 0.25, dtype=np.float32)\n"
+        "def make_io():\n"
+        " state = {}\n"
+        " def action(value):\n"
+        "  current = np.asarray(value, dtype=float)\n"
+        "  previous = state.get('previous')\n"
+        "  if previous is None:\n"
+        "   blended = current\n"
+        "  else:\n"
+        "   blended = WEIGHT * current + (1 - WEIGHT) * previous\n"
+        "  state['previous'] = blended\n"
+        "  return blended\n"
+        " def reset(): state.pop('previous', None)\n"
+        " return PolicyIO(observe, action, reset)\n"
+        "class Model:\n"
+        " def __init__(self):\n"
+        "  self.observation_space = Box(-np.inf, np.inf, (SIZE,), dtype=np.float32)\n"
+        "  self.action_space = Box(-1, 1, (2,), dtype=np.float32)\n"
+        " def predict(self, obs, **kwargs):\n"
+        "  assert obs.shape == (SIZE,)\n"
+        "  return np.ones(2) * obs[0], None\n"
+        "def load(path, algorithm=None): return Model()\n",
+        module.__dict__,
+    )
+    monkeypatch.setitem(sys.modules, name, module)
+    return module
+
+
 def artifact(tmp_path, module):
     tmp_path.mkdir(parents=True, exist_ok=True)
     path = tmp_path / "model.zip"
@@ -49,15 +86,13 @@ def artifact(tmp_path, module):
 
 
 def stateful_artifact(tmp_path, module):
-    from robot_learning.scenario.policy_io import make_policy_io
-
     tmp_path.mkdir(parents=True, exist_ok=True)
     path = tmp_path / "model.zip"
     path.write_bytes(b"stateful weights")
     (tmp_path / "artifact.json").write_text("{}")
     save_runtime(
         path,
-        policy_io=make_policy_io(),
+        policy_io=module.make_io(),
         loader=module.load,
         normalizer=None,
     )
@@ -93,10 +128,9 @@ def test_same_shape_semantic_changes_are_isolated(monkeypatch, tmp_path):
 def test_stateful_action_mapping_is_frozen_independent_and_resettable(
     monkeypatch, tmp_path
 ):
-    from robot_learning.scenario import policy_io
-
-    path = stateful_artifact(tmp_path, scientific_module(monkeypatch, 3))
-    monkeypatch.setattr(policy_io, "ACTION_SMOOTHING_CURRENT_WEIGHT", 0.1)
+    module = stateful_module(monkeypatch, 3)
+    path = stateful_artifact(tmp_path, module)
+    monkeypatch.setattr(module, "WEIGHT", 0.1)
     first = load_runtime(path)
     second = load_runtime(path)
 
@@ -123,7 +157,7 @@ def test_environment_owns_each_policy_io_episode_reset(monkeypatch, tmp_path):
         make_evaluation_env,
     ):
         path = stateful_artifact(
-            tmp_path / factory.__name__, scientific_module(monkeypatch, 3)
+            tmp_path / factory.__name__, stateful_module(monkeypatch, 3)
         )
         runtime = load_runtime(path)
         reset_count = 0
@@ -183,7 +217,7 @@ def test_all_evaluation_environments_apply_saved_action_mapping_once(
     )
     from robot_learning.scenario.environment import make_evaluation_env
 
-    path = stateful_artifact(tmp_path, scientific_module(monkeypatch, 3))
+    path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))
     for factory in (
         official_environment,
         task_reference_environment,
@@ -258,8 +292,10 @@ def test_real_sb3_checkpoint_preserves_normalization_and_prediction(
     from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
     from robot_learning.scenario import observations
-    from robot_learning.scenario.environment import make_evaluation_env
-    from robot_learning.scenario.training_environment import make_training_env
+    from robot_learning.scenario.environment import (
+        make_evaluation_env,
+        make_training_env,
+    )
     from robot_learning.training.checkpoint import save_checkpoint
 
     venv = VecNormalize(DummyVecEnv([make_training_env]), norm_reward=False)

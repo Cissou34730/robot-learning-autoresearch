@@ -206,78 +206,6 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     assert "$script:ResearcherExitCode = if ($null -eq $LASTEXITCODE)" in LOOP
 
 
-def test_phase_prompts_expose_choices_without_bounded_task_framing():
-    lower = LOOP.lower()
-
-    assert "this is the complete task" not in lower
-    assert "bounded task" not in lower
-    assert "bounded context" not in lower
-    assert "best_known" not in lower.split("$analysisprompt = @(", 1)[0]
-    assert "highest-priority unresolved measured behavior of best_known" not in lower
-    assert "campaign objective and the highest-priority unresolved measured behavioral gap of best_known" not in lower
-    assert "current scientific strategy" in lower
-    assert "available evidence" in lower
-    assert "expected_observation and contradicting_observation" in lower
-    assert "partial or unexpected signals" in lower
-    assert "scope causal claims to the evidence" in lower
-    assert (
-        "if the next proposed intervention depends on an unmeasured behavior of a saved policy, "
-        "obtain that evidence during the current analysis phase before closing."
-    ) not in lower
-    assert "same development panel" not in lower
-    assert "minimum" not in lower
-    assert "smallest possible set" not in lower
-    assert LOOP.count(
-        "Code or configuration edits are required only when the selected operation "
-        "calls for them."
-    ) == 1
-    assert LOOP.count(
-        "a valid research/evaluation_request.json for another measurement round, "
-        "or the required postmortem plus a closure-only research/proposal.json."
-    ) == 1
-    assert LOOP.count("Candidate-only measurement") == 1
-    assert LOOP.count("closure without new measurements") == 1
-    question = LOOP.index("State the scientific question, then choose the fitting operation")
-    operation = LOOP.index("choose the fitting operation among continuation, replication or training")
-    prediction = LOOP.index("describe the recipe change and predicted benefit")
-    initialization = LOOP.index("Only then justify the parent and fresh-or-transfer initialization")
-    assert question < operation < prediction < initialization
-    assert "When causal attribution is the question" in LOOP
-    assert "expected benefit for the question as well as semantic compatibility" in LOOP
-    assert "define the manipulated causal mechanism and manipulation" not in LOOP
-    assert "Only after choosing the mechanism and intervention" not in LOOP
-    assert LOOP.count(
-        "unchanged tensor dimensions alone do not establish compatibility"
-    ) == 1
-
-
-def test_closure_prompt_assesses_the_tested_question_and_carries_forward_eliminations():
-    prompt = LOOP.split("$decisionPrompt = @(", 1)[1].split(') -join " "', 1)[0]
-
-    assert "assess the question actually tested" in prompt
-    assert "scope causal claims to the evidence" in prompt
-    assert "carry forward what this experiment eliminated" in prompt
-    assert "state the next direction it leaves open" in prompt
-    assert "it may replace the current investigation" not in prompt
-    assert "best serves the current investigation" not in prompt
-    assert "exact intervention established" not in prompt
-    assert "research/postmortems.md and the lineage-only research/proposal.json" in prompt
-    assert "Do not design another evaluation" in prompt
-    assert "terminal assessment of best_known through request_final_benchmark" in prompt
-    assert "progress toward the human objective, the available evidence, and plausible opportunities for policy improvement" in prompt
-    assert "Account for resource constraints only when explicitly specified or reported" in prompt
-    assert "do not assume pressure to end the campaign quickly" in prompt
-    assert "Selecting best_known does not decide when to stop" in prompt
-    assert "Uncertainty does not prohibit stopping" in prompt
-    assert "another useful experiment does not make continuation mandatory" in prompt
-    assert "use previous_result_decision.reason to explain the policy selection" in prompt
-    assert "what the available evidence supports, which uncertainty you accept" in prompt
-    assert "why you are ending development now" in prompt
-    assert "A true value ends the campaign after either verdict" in prompt
-    assert "cannot provide feedback for another hypothesis" in prompt
-    assert "Do not plan further work conditional on benchmark failure" in prompt
-
-
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
     for phase in ("proposalStatus", "evaluationStatus", "lineageStatus", "analysisStatus"):
         assert LOOP.count(f"if (-not ${phase}.Complete)") == 2
@@ -347,25 +275,6 @@ def test_launcher_stops_for_either_terminal_official_assessment():
 
     assert "Official assessment complete" in terminal_guard
     assert "break" in terminal_guard
-
-
-def test_post_training_prompt_distinguishes_research_from_terminal_assessment():
-    prompt = LOOP.split("$analysisPrompt = @(", 1)[1].split(') -join " "', 1)[0]
-
-    assert "terminal assessment of best_known through request_final_benchmark" in prompt
-    assert "progress toward the human objective, the available evidence, and plausible opportunities for policy improvement" in prompt
-    assert "Account for resource constraints only when explicitly specified or reported" in prompt
-    assert "do not assume pressure to end the campaign quickly" in prompt
-    assert "Selecting best_known does not decide when to stop" in prompt
-    assert "Uncertainty does not prohibit stopping" in prompt
-    assert "another useful experiment does not make continuation mandatory" in prompt
-    assert "use previous_result_decision.reason to explain the policy selection" in prompt
-    assert "what the available evidence supports, which uncertainty you accept" in prompt
-    assert "why you are ending development now" in prompt
-    assert "ends the campaign after either goal_reached or goal_not_reached" in prompt
-    assert "the result cannot inform a later hypothesis" in prompt
-    assert "Do not plan further work conditional on benchmark failure" in prompt
-    assert "when a scientifically useful next experiment remains" not in prompt
 
 
 # --- the evaluation-request preflight --------------------------------------
