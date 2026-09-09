@@ -4,11 +4,12 @@
 
 **Direction:** Improve robust official-task success from the experiment-6
 100,352-step full-radius policy by changing the residual control behavior around
-negative-angle inner-radius reaches and interrupted holds. The explicit polar
-observation intervention and a global applied-command rate limit are not useful
-practical directions under their tested recipes; the mild transition penalty
-remains a foundation, but any future control intervention should preserve fast
-initial reaches while targeting the angle-specific residual behavior.
+negative-angle inner-radius reaches and interrupted holds. The next test applies
+action smoothing only near those targets, preserving the unchanged observation
+representation, full-radius training distribution, and fast commands during the
+initial reach. The explicit polar observation intervention and a global applied-
+command rate limit are not useful practical directions under their tested
+recipes; the mild transition penalty remains a foundation.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -43,24 +44,21 @@ remaining gap is control, observation, inverse kinematics, or training
 variability. All measurements remain development evidence rather than the
 official final benchmark.
 
-**Open questions:** Can a targeted, state- or angle-conditioned control change
-improve the recurring negative-angle inner-radius reaches and interrupted holds
-without imposing the global reach slowdown seen in experiment 8? The evidence
-does not distinguish a control limitation from an observation or inverse-
-kinematics limitation, and experiment 7 does not establish whether its
-catastrophic failure arose from the representation itself or its fresh training
-dynamics. Robust 98% official-task success remains unestablished.
+**Open questions:** Can near-target smoothing conditioned on negative angle and
+inner radius reduce interrupted holds without adding never-reached or
+outer-radius failures? If it does not, the residual gap is less consistent with
+a local action-trajectory explanation and remains plausibly an observation,
+inverse-kinematics, or training-variability issue. Robust 98% official-task
+success remains unestablished.
 
 **Conditional next steps:** Keep the experiment-6 100,352-step policy and its
-full-radius, mild-transition-penalty recipe as the comparison reference. If
-research continues, the strongest supported opportunity is a materially
-targeted state- or angle-conditioned action intervention aimed at the measured
-negative-angle inner-radius and hold failures, with paired research and
-independent task-reference evidence. It should not repeat a uniform global
-rate limit or the failed polar-observation, angle-oversampling, hold-forfeiture,
-or comparable reward-only recipes. If no such targeted intervention can be
-specified, retain the current policy rather than treating additional comparable
-measurement as progress.
+full-radius, mild-transition-penalty recipe as the comparison reference. Measure
+the targeted near-hold intervention on paired research episodes and the
+independent task-reference panel. Support it only if it reduces the localized
+hold failures while preserving non-target reaches and reaches at least 98%;
+otherwise retain the incumbent and do not repeat a uniform global rate limit or
+the failed polar-observation, angle-oversampling, hold-forfeiture, or comparable
+reward-only recipes.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
