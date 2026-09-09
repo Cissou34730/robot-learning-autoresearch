@@ -260,7 +260,7 @@ also be edited during experiment preparation. The exact heading and labels are:
 ```markdown
 ## <Campaign ID> / Scientific strategy
 
-**Direction:** <current research question and direction>
+**Direction:** <current research question and direction, and the mechanisms campaign evidence has already eliminated>
 
 **Lessons and limits:** <reusable findings, source references and scope; or what remains unknown>
 

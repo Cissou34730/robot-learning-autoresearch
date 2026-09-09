@@ -251,14 +251,14 @@ def test_phase_prompts_expose_choices_without_bounded_task_framing():
     ) == 1
 
 
-def test_closure_prompt_assesses_the_tested_question_without_preserving_a_direction():
+def test_closure_prompt_assesses_the_tested_question_and_carries_forward_eliminations():
     prompt = LOOP.split("$decisionPrompt = @(", 1)[1].split(') -join " "', 1)[0]
 
     assert "assess the question actually tested" in prompt
     assert "scope causal claims to the evidence" in prompt
-    assert "provisional next direction" in prompt
-    assert "expected contribution to the human objective" in prompt
-    assert "it may replace the current investigation" in prompt
+    assert "carry forward what this experiment eliminated" in prompt
+    assert "state the next direction it leaves open" in prompt
+    assert "it may replace the current investigation" not in prompt
     assert "best serves the current investigation" not in prompt
     assert "exact intervention established" not in prompt
     assert "research/postmortems.md and the lineage-only research/proposal.json" in prompt

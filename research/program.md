@@ -74,11 +74,14 @@ Use additional diagnosis, measurement, or replication only when it could
 materially change the scientific conclusion or lineage decision. Prefer the
 simplest evidence sufficient to distinguish between plausible explanations.
 
-An unsuccessful run does not automatically reject an intervention or its broader
-mechanism. Distinguish lack of improvement in that run, evidence against a
-hypothesis, and a practical decision not to pursue it. Scope conclusions to the
-tested conditions and uncertainty; neither preserving nor rejecting a mechanism
-is determined by experiment count alone.
+Distinguish lack of improvement in a run, evidence against a hypothesis, and a
+practical decision not to pursue an intervention. Scope conclusions to the tested
+conditions and uncertainty.
+
+Carry those outcomes forward. The strategy records which interventions and
+mechanisms have already failed, and that record constrains what is worth trying
+next. Proposing another instance of a mechanism that has already failed requires
+a reason the earlier failures do not already cover.
 
 Experiment history and prior postmortems are evidence, not authority. Their
 interpretations may be revisited. Prefer targeted extraction over loading
@@ -188,8 +191,8 @@ Maintain the active campaign's **Scientific strategy** in
 `research/postmortems.md` using the format in `research/instruments.md`. Keep it a
 compact decision aid, not a second experiment history:
 
-- `Direction`: the revisable question or approach that best serves the human
-   objective, not a commitment to the current investigation or incumbent policy.
+- `Direction`: the current line of investigation and the mechanisms campaign
+   evidence has already eliminated, so that it narrows as the campaign proceeds.
 - `Lessons and limits`: reusable findings, their sources, and uncertainty.
 - `Open questions`: useful uncertainties, not a mandatory experiment queue.
 - `Conditional next steps`: a provisional preferred next action and what would
@@ -197,10 +200,9 @@ compact decision aid, not a second experiment history:
    be revised during preparation as understanding improves.
 
 Preserve historical observations and decisions; revise current interpretations
-in the synthesis rather than rewriting what was believed at the time. The
-strategy and `reasoning.strategy_link` may advance, revise, or reject the current
-investigation. Changing direction does not require resolving every open question
-or making another behavioral gap larger than the incumbent's failures.
+in the synthesis rather than rewriting what was believed at the time. Choose the
+question that advances the current research direction, and state the evidence
+when changing it.
 
 ## Stopping
 

@@ -129,7 +129,7 @@ def test_program_keeps_scientific_methods_subordinate_to_the_objective():
     assert "A coherent recipe may change several components" in normalized_program
     assert "All relevant evidence may inform the next investigation" in normalized_program
     assert "not a requirement to resolve every assumption before training" in normalized_program
-    assert "An unsuccessful run does not automatically reject an intervention" in normalized_program
+    assert "requires a reason the earlier failures do not already cover" in normalized_program
     assert "may be revised during preparation" in normalized_program
     for obsolete in (
         "Each intervention must manipulate one identifiable causal mechanism",
@@ -2868,7 +2868,7 @@ def test_post_training_reasoning_requires_a_revisable_investigation_interpretati
     assert "assess the question actually tested" in LOOP
     assert "Scope causal claims to the evidence" in LOOP
     assert "That operational boundary does not prescribe the scientific decision." in normalized_program
-    assert "An unsuccessful run does not automatically reject an intervention" in normalized_program
+    assert "requires a reason the earlier failures do not already cover" in normalized_program
     assert "The `reasoning` object contains the fields shown in the schema." in normalized_instruments
     assert "Their scientific use is defined in `research/program.md`." in normalized_instruments
     assert "measured behavioral gap" not in normalized_instruments
@@ -2884,7 +2884,7 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
 
     assert "State the question or uncertainty, then choose" in normalized_program
     assert "expected contribution to that objective" in normalized_program
-    assert "may advance, revise, or reject the current investigation" in normalized_program
+    assert "Choose the question that advances the current research direction" in normalized_program
     assert "useful, proportionate measurement scope" in normalized_program
     assert "Reuse compatible evidence when it answers the question" in normalized_program
     sufficiency_rule = (
@@ -2912,7 +2912,6 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert "same development panel" not in LOOP.lower()
     assert "smallest sufficient set" not in LOOP
     assert "minimum measurement" not in LOOP.lower()
-    assert "exploratory characterization when useful" in LOOP.lower()
     assert "campaign objective and current scientific strategy and available evidence" in LOOP.lower()
     assert LOOP.count("Choose instruments for their fit to the scientific question, not phase convention") == 2
     assert (
@@ -2925,7 +2924,7 @@ def test_evaluation_requests_support_the_model_decision_and_next_direction():
     assert "Measured task behavior governs claims of policy progress" in normalized_program
     assert "All relevant evidence may inform the next investigation" in normalized_program
     assert (
-        "not a commitment to the current investigation or incumbent policy"
+        "the mechanisms campaign evidence has already eliminated"
     ) in normalized_program
 
     with pytest.raises(ValueError, match="unsupported fields.*reason"):
