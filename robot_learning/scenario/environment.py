@@ -28,9 +28,6 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
-HARD_TARGET_RADIUS_RANGE = (0.067, 0.099)
-HARD_TARGET_ANGLE_RANGE = (np.deg2rad(-128.0), np.deg2rad(-116.0))
-FOCUSED_TARGET_PROBABILITY = 0.5
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -44,16 +41,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
-        focused_target_probability: float = 0.0,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        if not 0.0 <= focused_target_probability <= 1.0:
-            raise ValueError("focused_target_probability must be between 0 and 1")
-        self.focused_target_probability = focused_target_probability
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -88,16 +81,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        if self.np_random.random() < self.focused_target_probability:
-            angle = float(self.np_random.uniform(*HARD_TARGET_ANGLE_RANGE))
-            radius = float(self.np_random.uniform(*HARD_TARGET_RADIUS_RANGE))
-        else:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
-            radius = float(
-                self.np_random.uniform(
-                    self.target_radius_range[0], self.target_radius_range[1]
-                )
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        radius = float(
+            self.np_random.uniform(
+                self.target_radius_range[0], self.target_radius_range[1]
             )
+        )
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.
         target_z = float(self._end_effector_position()[2])
@@ -181,10 +170,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(
-        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        focused_target_probability=FOCUSED_TARGET_PROBABILITY,
-    )
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
