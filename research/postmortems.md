@@ -9,10 +9,12 @@ failure, and the lower-learning-rate challenger retained all three recurring
 failures while scoring below the working policy at every measured checkpoint.
 Full hold-progress forfeiture, unchanged continuation, fresh full-range runs,
 the tested angular curriculum, and the tested lower learning rate are
-deprioritized under their tested transfer conditions. The remaining
-investigation should separate hold/control behavior from representation before
-another targeted training intervention; this is not a causal conclusion about
-any one mechanism.
+deprioritized under their tested transfer conditions. Research-evaluation
+diagnostics now show that failures 84 and 102 reach the band but hold for only
+4 and 1 steps, while failure 175 repeatedly enters and exits (242 in-band
+steps and 235 interruptions). The next intervention therefore tests hold
+credit assignment before changing the representation; this is not a causal
+conclusion about any one mechanism.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -41,9 +43,12 @@ was 0.99 around 70,656-100,352 steps, 0.98 at 105,472 and 110,592, and 0.96
 at 120,832, while training reward peaked before the final checkpoint.
 Experiments 6 and 7 likewise show that training proxy and reward do not select
 the best measured task checkpoint. All measured failures in experiments 5-7
-truncated at 500 steps. The artifacts do not emit first band entry, hold
-duration, or hold-exit counts, so hold-specific explanations remain
-unmeasured. Unmeasured checkpoints remain unknown rather than failed policies.
+truncated at 500 steps. The task-reference artifacts do not emit first band
+entry, hold duration, or hold-exit counts, so those historical measurements
+remain limited. The experiment-7 research-evaluation artifact does provide
+these diagnostics for the working policy and identifies brief or unstable
+holds at all three recurring failures. Unmeasured checkpoints remain unknown
+rather than failed policies.
 
 Experiment 7's task-reference measurements were 194/200 at checkpoint-105472
 (54/57 near, 48/48 middle, 92/95 far) and 188/200 at checkpoint-120832
@@ -71,26 +76,21 @@ training proxy was 0.99 at 25600 steps, 0.99 at 100352, 0.98 at 105472, and
 observations are from the same fixed development panel, not independent
 held-out confirmation or official benchmark evidence.
 
-**Open questions:** Do the persistent failures arise from hold stability,
-target-relative representation, or PPO trajectory drift rather than angular
-coverage? The unchanged continuation, hold-forfeiture intervention, and
-angular oversampling all failed to improve the working policy under their
-tested transfer conditions, and lower-learning-rate transfer also failed under
-its tested condition, but none separates hold stability from representation or
-other control effects. The available task-reference artifacts still cannot
-determine whether a failure enters the tolerance band and exits during the hold
-or never achieves a stable entry.
+**Open questions:** Can a convex hold-progress signal improve stability after
+band entry without sacrificing the learned reach controller? If not, are the
+remaining failures caused by target-relative representation or control
+dynamics rather than reward credit assignment? The unchanged continuation,
+hold-forfeiture intervention, angular oversampling, and lower-learning-rate
+transfer all failed under their tested conditions, but none isolated these
+remaining alternatives.
 
-**Conditional next steps:** If development continues, add researcher-owned
-diagnostics for first tolerance-band entry, achieved hold duration, and
-hold-exit counts, then use those measurements to choose between a hold/control
-and representation-focused intervention. The next training intervention should
-not be another unchanged, angular-only, hold-forfeiture, or lower-rate transfer
-under the tested recipes without a new reason those results do not apply. Any
-future intervention should be compared with the retained working policy on
-total success, radial strata, and the three recurring identities; only a
-measured task improvement would justify changing lineage. Do not treat the
-fixed-panel evidence as official attainment.
+**Conditional next steps:** Run experiment 9 by transferring the working
+policy into the convex hold-progress reward. Compare total success, radial
+strata, the three recurring identities, and the new hold diagnostics against
+the working policy; only measured task improvement justifies changing lineage.
+If the recurring failures retain their brief or interrupted hold signatures,
+move to a representation/control intervention with an explicit compatibility
+assessment. Do not treat the fixed-panel evidence as official attainment.
 
 Experiment 6 adds a continuation test of checkpoint stability. Its three
 task-reference measurements reached 194/200 (97.0%) at checkpoint-100352,
