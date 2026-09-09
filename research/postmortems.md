@@ -3,13 +3,13 @@
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Scientific strategy
 
 **Direction:** Improve robust official-task success from the experiment-6
-100,352-step full-radius policy by changing the residual control behavior around
-negative-angle inner-radius reaches and interrupted holds. The next test applies
-action smoothing only near those targets, preserving the unchanged observation
-representation, full-radius training distribution, and fast commands during the
-initial reach. The explicit polar observation intervention and a global applied-
-command rate limit are not useful practical directions under their tested
-recipes; the mild transition penalty remains a foundation.
+100,352-step full-radius policy with a new, narrowly scoped representation or
+control intervention for the recurring negative-angle failures. Experiment 9
+did not support the local action-trajectory explanation, so the next preparation
+should inspect the target-relative and inverse-kinematics information available
+to the policy and avoid repeating either a global limiter or the failed
+14-feature polar extension. The unchanged full-radius distribution and mild
+transition penalty remain the foundation.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -41,24 +41,35 @@ parent's 99.0%, adding failures at 7.24 cm and 19.21 cm while retaining the two
 negative-angle inner-radius failures. This rejects the tested global limiter as
 a useful intervention, but one transferred run does not identify whether the
 remaining gap is control, observation, inverse kinematics, or training
-variability. All measurements remain development evidence rather than the
-official final benchmark.
+variability. Experiment 9 then transferred that policy and smoothed commands
+only for negative-angle targets within 12 cm while the end effector was within
+4 cm. Its two checkpoints both scored 96.5% on the same 400-episode research
+panel. At 100,352 steps it had the parent's 13 failed episode identities plus
+episode 327, with 11 reached-then-failed-hold cases versus 9 for the parent;
+at 120,832 steps it retained the same 14 failed identities. Task-reference
+success was 97.5% and 98.0%, respectively, versus 99.0% for the parent. The
+later checkpoint repaired one task-reference episode but did not provide a
+paired research improvement. The training proxy peaked at 0.99 near 20,480
+steps and ended at 0.95, again failing to predict held-out success. All
+measurements remain development evidence rather than the official final
+benchmark.
 
-**Open questions:** Can near-target smoothing conditioned on negative angle and
-inner radius reduce interrupted holds without adding never-reached or
-outer-radius failures? If it does not, the residual gap is less consistent with
-a local action-trajectory explanation and remains plausibly an observation,
-inverse-kinematics, or training-variability issue. Robust 98% official-task
-success remains unestablished.
+**Open questions:** Which target-relative or kinematic information is missing
+from the unchanged 11-feature policy input, and can it be introduced without
+the collapse seen in the fresh 14-feature polar experiment? The remaining
+research-panel failures are concentrated in negative-angle reaches, but
+experiment 9's targeted postprocessing did not repair them; observation,
+inverse kinematics, and training variability therefore remain alternatives.
+Robust 98% official-task success remains unestablished.
 
 **Conditional next steps:** Keep the experiment-6 100,352-step policy and its
-full-radius, mild-transition-penalty recipe as the comparison reference. Measure
-the targeted near-hold intervention on paired research episodes and the
-independent task-reference panel. Support it only if it reduces the localized
-hold failures while preserving non-target reaches and reaches at least 98%;
-otherwise retain the incumbent and do not repeat a uniform global rate limit or
-the failed polar-observation, angle-oversampling, hold-forfeiture, or comparable
-reward-only recipes.
+full-radius, mild-transition-penalty recipe as the comparison reference. If
+development continues, test one concrete target-relative or kinematics-aware
+change with an explicit prediction about the negative-angle failure categories,
+while preserving the saved-policy contract and official task semantics. Do not
+repeat the tested local smoother, uniform global rate limit, failed
+polar-observation recipe, angle oversampling, hold forfeiture, or comparable
+reward-only change without new evidence that distinguishes it.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
@@ -394,3 +405,51 @@ are development panels, not the final benchmark.
 `research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-8-checkpoint-100352-task-reference-v1.json`,
 `research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-8-checkpoint-120832-task-reference-v1.json`,
 `robot_learning/scenario/policy_io.py`, and `research/postmortems.md`.
+
+## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 9
+
+**Result:** Targeted near-hold action smoothing did not improve the transferred
+experiment-6 policy. Both checkpoints scored 96.5% on the paired 400-episode
+research panel; task-reference success was 97.5% at 100,352 steps and 98.0% at
+120,832 steps, below or only at threshold on one development instrument.
+
+**Observed behavior:** The candidate was a transfer run that preserved the
+11-feature observation, full-radius training distribution, transition penalty,
+and official task semantics, while smoothing the applied command only for
+negative-angle targets within 12 cm and end-effector distance within 4 cm. The
+100,352-step candidate retained all 13 parent research failures and added
+episode 327. Its failed research episodes included 11 reached-then-failed-hold
+cases and 3 never-reached cases, compared with 9 and 4 for the parent. The
+120,832-step candidate had the same 14 failed research episode identities, with
+10 hold interruptions and 4 never-reached cases. On the independent panel, the
+100,352-step candidate retained the parent failures near 9.91 and 9.36 cm and
+added failures near 6.73, 7.24, and 19.21 cm; the later checkpoint repaired the
+6.73 cm case but retained the other four. The training proxy peaked at 0.99
+near 20,480 steps and ended at 0.95, unlike the held-out research result.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe.
+The expected reduction in localized hold failures, preservation of non-target
+reaches, and at least 98% success on both development instruments were not
+observed. The small change in failure composition was not a reduction in total
+failures, and the later task-reference result reaching 98.0% was accompanied by
+unchanged 96.5% research success and identical failed episode identities. This
+weakens the practical local action-trajectory hypothesis, but does not establish
+that observation, inverse kinematics, or training variability is causal, since
+only this smoothing rule and transferred run were tested.
+
+**Interpretation:** The experiment-6 100,352-step policy remains the best-known
+and working lineage. Further measurement of the remaining experiment-9
+checkpoints is not proportionate: the two measured checkpoints agree on the
+research outcome, and the independent panel shows no robust improvement. The
+campaign should continue only through a new concrete target-relative or
+kinematics-aware intervention, rather than another comparable postprocessing
+variant. The official objective remains unestablished because all evidence is
+from development panels.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/training_logs/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/experiment-9-attempt-1.log`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-9-checkpoint-100352-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-9-checkpoint-120832-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-9-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-9-checkpoint-120832-task-reference-v1.json`,
+and `robot_learning/scenario/policy_io.py`.
