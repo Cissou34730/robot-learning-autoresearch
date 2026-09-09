@@ -67,6 +67,7 @@ def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
         * 0.9**reward_module.HOLD_PROGRESS_EXPONENT
     )
     assert reward == pytest.approx(expected_forfeit)
+    assert reward_module.HOLD_EXIT_FORFEIT_FRACTION > 0
 
 
 def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
