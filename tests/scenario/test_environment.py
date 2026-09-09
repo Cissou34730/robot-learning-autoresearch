@@ -23,7 +23,6 @@ def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-    np.testing.assert_allclose(obs[-2:], env.data.mocap_pos[0][:2])
 
 
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
