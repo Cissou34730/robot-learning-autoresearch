@@ -25,6 +25,15 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
+def test_observation_uses_continuous_inverse_kinematics_encoding():
+    env = make_training_env()
+    observation, _ = env.reset(seed=0)
+
+    assert observation.shape == (15,)
+    assert np.all(np.abs(observation[7::2]) <= 1.0)
+    assert np.all(np.abs(observation[8::2]) <= 1.0)
+
+
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
