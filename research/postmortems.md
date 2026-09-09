@@ -4,9 +4,10 @@
 
 **Direction:** Improve robust official-task success by addressing the
 angle-conditioned reach and hold instability that remains after matching
-training coverage to the official 6-20 cm radius range. Use the
-experiment-3 checkpoint at 100,352 steps as the current working policy while
-testing that next direction.
+training coverage to the official 6-20 cm radius range. The focused
+angle-oversampling intervention is rejected; use the experiment-3 checkpoint
+at 100,352 steps as the current working policy while testing a concrete
+hold-stability or angle-conditioned control/representation intervention.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -21,21 +22,81 @@ candidate. The remaining and paired-panel failures are concentrated in a
 negative-angle region and often involve unstable or interrupted holds. Full
 radius coverage therefore has a useful but limited signal: it can repair some
 inner-radius cases, but the single transferred run does not establish a
-causal effect or robustly satisfy the objective. Development panels are not
-the official final benchmark.
+causal effect or robustly satisfy the objective. Experiment 4's 50%
+hard-sector angle oversampling reduced comparable research success from 96.5%
+to 91.5% and produced 34 rather than 14 failures, with most candidate
+failures involving interrupted holds; task-reference success also fell below
+98% at both measured checkpoints. Training proxy success is not a sufficient
+selection signal. Development panels are not the official final benchmark.
 
-**Open questions:** Can angle-conditioned control or hold-stability changes
-remove the recurring negative-angle failures while preserving the candidate’s
-inner-radius gains and larger-radius behavior? Is the residual limitation in
-the observation representation, the reward, or the control trajectory?
+**Open questions:** Can a hold-stability or angle-conditioned
+observation/control intervention remove the recurring negative-angle failures
+while preserving the full-radius gains? Is the residual limitation in the
+observation representation, the reward, or the control trajectory, and can
+the next intervention avoid the broad degradation seen from angle
+oversampling?
 
-**Conditional next steps:** In the next preparation phase, inspect the
-angle-conditioned reach and hold diagnostics and test one concrete
-researcher-owned intervention aimed at the recurring negative-angle failure
-region, starting from the retained 100,352-step policy. Preserve the full
-radius training coverage unless the new intervention shows a clear tradeoff;
-reconsider the direction if it does not improve the paired-panel failure
-pattern without sacrificing the task-reference result.
+**Conditional next steps:** In the next preparation phase, start from the
+restored experiment-3 checkpoint at 100,352 steps, preserve full-radius
+training coverage, and test one concrete researcher-owned change to
+hold-stability reward, observation, or control trajectory. Prefer an
+intervention that directly targets the interrupted holds and evaluate it
+against the paired negative-angle failures without sacrificing the
+task-reference result. Reconsider this direction if a concrete intervention
+does not improve the paired failure pattern.
+
+## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
+
+**Result:** Oversampling the observed hard angle sector did not improve the
+transferred full-radius policy. Both measured candidates scored 91.5% on the
+400-episode paired research panel, versus 96.5% for the working parent, and
+the task-reference candidates scored 94.5% and 93.5% at 115,712 and 120,832
+steps respectively.
+
+**Observed behavior:** The intervention was a transfer training run from the
+experiment-3 checkpoint at 100,352 steps, with 50% of targets sampled from
+-160 to -110 degrees and the remaining targets sampled uniformly over the
+full angle range. On the identical research episodes, the 115,712-step
+candidate had one win and 21 parent wins among 22 discordant episodes
+(net wins -20); the 120,832-step candidate had two wins and 22 parent wins
+among 24 discordant episodes (net wins -20). Each candidate had 34 research
+failures, compared with 14 for the parent. In the diagnostic artifacts, 28
+of the candidate failures involved reaching tolerance and then interrupting
+the hold, while six never reached tolerance; the parent had nine interrupted
+and five never-reached failures. The candidate therefore retained failures
+in the targeted negative-angle region while adding failures at other angles
+and radii. Training proxy success peaked at 0.94, but did not predict the
+held-out research or task-reference result. The remaining 22 checkpoints
+were not measured.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe.
+The expected reduction in negative-angle reach and hold failures, paired
+success near or above 98%, and preservation of the experiment-3 gains were
+not observed. The paired comparison strongly favors the parent on this
+development panel, and both task-reference results are below the 98% target.
+This weakens targeted angular exposure as a useful standalone intervention in
+this recipe; it does not identify whether observation, reward, control
+trajectory, or training variability caused the degradation, and one run does
+not rule out every angular curriculum.
+
+**Interpretation:** The experiment-3 full-radius policy remains the strongest
+available working and best-known lineage. More comparable angle-oversampling
+measurement is not justified before changing the intervention. The strongest
+supported development opportunity is a concrete researcher-owned change
+aimed at hold stability or angle-conditioned control/representation, starting
+from experiment 3 and retaining full-radius coverage. The official objective
+remains unestablished because all current evidence is development evidence
+and the candidate results are below threshold.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`, `research/training_logs/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/experiment-4-attempt-1.log`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-4-working-400ep-seed9200-6b923ebb0d16.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-4-checkpoint-115712-400ep-seed9200-6b923ebb0d16.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-4-checkpoint-120832-400ep-seed9200-6b923ebb0d16.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-4-checkpoint-115712-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-4-checkpoint-120832-task-reference-v1.json`,
+`robot_learning/scenario/environment.py`, and
+`robot_learning/scenario/evaluation.py`.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 2
 
