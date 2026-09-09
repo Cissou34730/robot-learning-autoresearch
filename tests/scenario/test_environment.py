@@ -4,6 +4,8 @@ These describe the scenario as it is implemented today. A scenario experiment
 that changes the training mechanics is expected to update them.
 """
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 
@@ -17,6 +19,7 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.policy_io import make_policy_io
 
 
 def test_observation_matches_declared_space():
@@ -84,3 +87,29 @@ def test_environment_latches_the_outside_penalty_after_losing_hold(monkeypatch):
     assert continued_reward == pytest.approx(produced[1].total)
     assert exit_info["reward_components"] == produced[0].components
     assert continued_info["reward_components"] == produced[1].components
+
+
+def test_policy_io_smooths_only_targeted_near_target_commands():
+    def target_data(x, y, end_effector):
+        target = np.array([x, y, 0.0])
+        return SimpleNamespace(
+            mocap_pos=np.array([target]),
+            qpos=np.zeros(2),
+            qvel=np.zeros(2),
+            site=lambda name: SimpleNamespace(xpos=np.asarray(end_effector)),
+        )
+
+    policy_io = make_policy_io()
+    policy_io.observe(target_data(0.09, -0.04, [0.09, -0.04, 0.0]))
+    np.testing.assert_allclose(policy_io.action([1.0, -1.0]), [1.0, -1.0])
+    np.testing.assert_allclose(policy_io.action([-1.0, 1.0]), [-0.5, 0.5])
+
+    policy_io.reset()
+    policy_io.observe(target_data(0.09, -0.04, [0.0, 0.0, 0.0]))
+    np.testing.assert_allclose(policy_io.action([1.0, -1.0]), [1.0, -1.0])
+    np.testing.assert_allclose(policy_io.action([-1.0, 1.0]), [-1.0, 1.0])
+
+    policy_io.reset()
+    policy_io.observe(target_data(0.09, 0.04, [0.09, 0.04, 0.0]))
+    np.testing.assert_allclose(policy_io.action([1.0, -1.0]), [1.0, -1.0])
+    np.testing.assert_allclose(policy_io.action([-1.0, 1.0]), [-1.0, 1.0])
