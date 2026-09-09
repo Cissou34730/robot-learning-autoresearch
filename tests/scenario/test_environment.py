@@ -11,6 +11,7 @@ import robot_learning.scenario.environment as environment_module
 import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
+from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import (
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
@@ -23,6 +24,51 @@ def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_observation_includes_inverse_kinematics_branch_margin():
+    env = make_training_env()
+    obs, _ = env.reset(seed=0)
+
+    target_x, target_y = env.data.mocap_pos[0][:2]
+    cos_elbow = (
+        target_x**2
+        + target_y**2
+        - UPPER_ARM_LENGTH**2
+        - FOREARM_LENGTH**2
+    ) / (
+        2.0
+        * UPPER_ARM_LENGTH
+        * FOREARM_LENGTH
+    )
+    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
+    target_angle = float(np.arctan2(target_y, target_x))
+
+    def shoulder_for_elbow(elbow):
+        return target_angle - np.arctan2(
+            FOREARM_LENGTH * np.sin(elbow),
+            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+        )
+
+    def wrap_to_pi(angle):
+        return (angle + np.pi) % (2.0 * np.pi) - np.pi
+
+    open_error = np.array(
+        [
+            wrap_to_pi(shoulder_for_elbow(elbow_open) - env.data.qpos[0]),
+            wrap_to_pi(elbow_open - env.data.qpos[1]),
+        ]
+    )
+    folded_error = np.array(
+        [
+            wrap_to_pi(shoulder_for_elbow(-elbow_open) - env.data.qpos[0]),
+            wrap_to_pi(-elbow_open - env.data.qpos[1]),
+        ]
+    )
+
+    expected_margin = np.linalg.norm(open_error) - np.linalg.norm(folded_error)
+
+    assert obs[6] == pytest.approx(expected_margin)
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
