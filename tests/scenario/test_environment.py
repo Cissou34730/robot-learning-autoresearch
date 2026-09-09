@@ -17,12 +17,29 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.policy_io import ACTION_DELTA_LIMIT, make_policy_io
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_policy_action_mapping_limits_command_changes_and_resets():
+    policy_io = make_policy_io()
+
+    policy_io.reset()
+    first = policy_io.action(np.ones(2))
+    second = policy_io.action(-np.ones(2))
+
+    assert first == pytest.approx(np.full(2, ACTION_DELTA_LIMIT))
+    assert second == pytest.approx(np.zeros(2))
+
+    policy_io.reset()
+    restarted = policy_io.action(-np.ones(2))
+
+    assert restarted == pytest.approx(np.full(2, -ACTION_DELTA_LIMIT))
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
