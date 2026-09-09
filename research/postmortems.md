@@ -3,39 +3,39 @@
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Scientific strategy
 
 **Direction:** Improve official-distribution reach-and-hold robustness beyond
-the 98% development result, using the stable late trajectory from the
-2048-step-rollout recipe as the working platform for a targeted improvement of
-the remaining localized hold failures.
+the 98% development result by investigating representation/runtime or
+training-process limits on the stable 2048-step platform, rather than adding
+stronger hold shaping before the failure mechanism is better characterized.
 
 **Lessons and limits:** Experiment 7 changed only PPO `n_steps` from 1024 to
 2048 while transferring the retained experiment-1 policy. Its task-reference
 score was 96% at 36,864 steps and 98% at both 100,352 and 120,832 steps; the
 research panel scored the final checkpoint 98% and 98.5% on two seeds. The late
 research failures preserved the incumbent's four short-range negative-angle
-cases, with three reaching tolerance but holding for only a few steps. The
-final candidate tied the incumbent with zero discordant episodes across 400
-compatible research episodes, so it is a useful stable working policy but not
-evidence for replacing best-known. The high training proxy (0.99 early and
-0.96 at the end) still did not predict the early measured score. The
-2048-step result supports rollout/update-frequency stability under this
-transferred recipe and development panels, but does not establish a general
-causal explanation or official success; fresh-seed variability and the
-representation/runtime contribution remain unresolved.
+cases, so it remains a useful stable working policy but not evidence for
+replacing best-known. Experiment 8 changed only the hold-progress exponent from
+1.0 to 1.5 on that platform. Both development instruments scored 95.5%,
+96.5%, and 91.0% at 90,112, 100,352, and 120,832 steps, while the final
+research failures broadened across target geometry; the compatible final
+comparison favored working 15-1. The training proxy still reached 0.98, so it
+does not select a policy. These are development results: they weaken this
+transferred shaping recipe, but without an unchanged concurrent control they do
+not isolate reward shaping from trajectory variability or explain the
+representation/runtime contribution.
 
-**Open questions:** Can a hold-aware intervention remove the four localized
-short-range negative-angle failures without recreating the broad late
-degradation seen in experiments 3 and 6? Is the stable 2048-step trajectory
-reproducible beyond the measured seeds, and does it preserve the same behavior
-when the reward is changed?
+**Open questions:** Which representation, runtime, or training-process factor
+allows the unchanged transferred recipe to retain localized failures while
+fresh and reward-modified trajectories broaden failures? Can a process-focused
+intervention improve the incumbent without relying on the misleading training
+proxy?
 
-**Conditional next steps:** Continue from experiment 7 checkpoint-120832 with
-the 2048-step rollout recipe and test a narrowly scoped hold-specific reward
-change, measuring both the research and task-reference panels. If that
-intervention broadens failures or loses late stability, restore the unchanged
-experiment-1 best-known lineage and prioritize representation/runtime or
-training-process diagnostics. Do not request the official benchmark until a
-candidate has evidence beyond this development-panel tie and the remaining
-failures are addressed.
+**Conditional next steps:** Keep the experiment-7 2048-step working policy and
+the experiment-1 best-known policy unchanged. Prefer a targeted
+representation/runtime or training-process diagnostic, with task behavior as
+the selection signal; revisit hold-specific shaping only if that investigation
+supports a better-scoped intervention. Do not request the official benchmark
+until a candidate exceeds the current development evidence and addresses the
+residual failures.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 4
 
@@ -367,3 +367,54 @@ but proxy success must not select the next policy.
 `robot_learning/train.py`; `robot_learning/scenario/environment.py`;
 `robot_learning/scenario/evaluation.py`; `robot_learning/scenario/policy_io.py`;
 `robot_learning/policy_runtime.py`.
+
+## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 8
+
+**Result:** The convex hold-progress shaping intervention was contradicted
+under the tested transfer and budget. It did not improve the localized hold
+failures, degraded late task performance, and produced no reusable challenger.
+The experiment-7 working lineage and experiment-1 best-known lineage remain
+selected.
+
+**Observed behavior:** This was a changed-recipe transfer from the experiment-7
+working checkpoint, changing only `HOLD_PROGRESS_EXPONENT` from 1.0 to 1.5.
+The training proxy was 0.953 at 6,144 steps, 0.98 at 30,720 and 120,832
+steps, but measured success was 95.5% at 90,112, 96.5% at 100,352, and 91.0%
+at 120,832 on both the research panel and the independent task-reference
+panel. At the final research checkpoint, 18 episodes failed; 17 reached
+tolerance but none completed the 100-step hold, and the failures covered
+multiple radii and angles rather than only the incumbent's four short-range
+negative-angle cases. On the identical research panel, the final candidate
+lost to working 15 times and won once across 16 discordant episodes, for a
+7-point deficit. The 100,352-step checkpoint was also below working by 1.5
+points.
+
+**Hypothesis assessment:** **Contradicted under the tested conditions.** The
+expected late success of at least 98%, fewer localized failures or
+interruptions, and preservation of the stable late trajectory did not occur.
+The intermediate checkpoints already missed the success target, and the final
+checkpoint showed broad degradation rather than a localized hold improvement.
+Agreement between research and task-reference panels strengthens the behavioral
+finding. The conclusion is limited to this transferred policy, exponent
+change, training trajectory, budget, and development panels; it does not prove
+that the reward term alone caused the regression because there was no
+concurrent unchanged training control.
+
+**Interpretation:** Convexly delaying existing hold-progress credit is not a
+useful intervention under this transfer and budget, and its late training
+proxy is not a reliable substitute for task measurement. Additional
+measurement of this candidate is unlikely to change the lineage decision:
+three checkpoints, two instruments, and paired comparison all reject it.
+Restore the unchanged experiment-7 working recipe and retain experiment 1 as
+best-known. A useful path remains through representation/runtime or
+training-process diagnostics before another reward change.
+
+**Evidence inspected:** `research/brief.md`; `research/results.jsonl`;
+`research/training_logs/03a3c9ad-ec65-4780-bee5-ada9a02320a5/experiment-8-attempt-1.log`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-8-checkpoint-90112-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-8-checkpoint-100352-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-8-checkpoint-120832-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-8-checkpoint-90112-task-reference-v1.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-8-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-8-checkpoint-120832-task-reference-v1.json`;
+`robot_learning/scenario/reward.py`; `robot_learning/scenario/evaluation.py`.
