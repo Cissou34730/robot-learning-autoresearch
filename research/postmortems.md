@@ -44,12 +44,11 @@ The official objective remains unestablished, and the development panels do
 not show robust 98% success.
 
 **Conditional next steps:** Restore the experiment-3 working recipe and
-checkpoint at 100,352 steps. If research continues, test one concrete
-observation or control-trajectory intervention against the paired
-negative-angle failures while preserving full-radius coverage and requiring
-independent task-reference evidence; do not repeat the rejected angle
-oversampling or full hold-exit-forfeit recipe unless a materially different
-mechanism is introduced.
+checkpoint at 100,352 steps. Test a mild action-transition penalty against the
+paired negative-angle and interrupted-hold failures while preserving full-radius
+coverage and requiring independent task-reference evidence; do not repeat the
+rejected angle oversampling or full hold-exit-forfeit recipe unless a materially
+different mechanism is introduced.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
