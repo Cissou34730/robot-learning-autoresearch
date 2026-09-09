@@ -1,15 +1,15 @@
 {
   "best_known_lineage": null,
   "campaign": {
-    "base_commit": "3749941e878b141a9d56802e75bf5e42dd58e31d",
-    "id": "748fd10d-362b-4cd9-aed1-018a7f5dce40",
+    "base_commit": "95e884ebe1d25898a4abb11d4c8a64b30d46507f",
+    "id": "aceb9fe8-b43f-4f58-b5ff-dab4ce7434b7",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-09T20:57:12.635203+00:00"
+    "started_at": "2026-09-09T21:00:01.320383+00:00"
   },
   "campaign_experiment_counters": {
-    "748fd10d-362b-4cd9-aed1-018a7f5dce40": 1
+    "aceb9fe8-b43f-4f58-b5ff-dab4ce7434b7": 0
   },
-  "last_allocated_experiment": 1,
+  "last_allocated_experiment": 0,
   "last_experiment": 0,
   "last_lineage_decision": null,
   "last_verdict": "fresh baseline pending after research reset",
@@ -21,7 +21,7 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_parent": "210818aefa42d9ce49664334054af26c0e599c74",
+  "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
