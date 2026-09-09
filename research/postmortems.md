@@ -2,57 +2,65 @@
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
-**Direction:** Retain full-range target exposure as a plausible but
-unvalidated recipe component, but shift from asking whether one fresh seed was
-an unstable draw to testing recurring angular/control failures and training
-stability. Two fresh seeds now weaken the claim that the experiment-2 result is
-reliably produced by the unchanged full-range recipe. Checkpoint selection and
-the training proxy remain unreliable selectors, and no causal mechanism has
-been isolated.
+**Direction:** Keep experiment-2 checkpoint-120832 as working and best-known,
+and deprioritize full forfeiture of accumulated hold reward as a fix under the
+tested transfer conditions. Full-range target exposure remains plausible but
+unvalidated. The two fresh runs and experiment 5 point the investigation toward
+recurring angular/control or representation limitations, PPO trajectory
+stability, and checkpoint selection rather than another unchanged fresh run.
+No single mechanism has been causally isolated.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
-with 55/57 successes below 10 cm and 94/95 at 14-20 cm on
-task-reference-v1. Experiment 3's fresh seed reached 127/200, 131/200, and
-133/200 at checkpoints 105472, 110592, and 120832; experiment 4's fresh seed
-reached 128/200, 127/200, and 127/200 at the same checkpoints. Experiment
-4's strata were 38/57 below 10 cm, 32/48, 33/48, and 32/48 at 10-14 cm, and
-58/95, 56/95, and 57/95 at 14-20 cm. The expected experiment-4 observation
-(at least 196/200, at least 55/57 near-target successes, and at least 94/95
-far-target successes at a late checkpoint) therefore did not occur; the
-contradicting observation occurred at all three measured checkpoints.
+with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
+on task-reference-v1. Experiments 3 and 4 reached only 63.5-66.5% and
+63.5-64.0% respectively at their measured late checkpoints, with 61 failed
+episode identities shared at checkpoint-120832. These are repeated outcomes on
+one fixed development panel, not independent held-out confirmation or official
+benchmark evidence.
 
-The factual failure sets overlap substantially across the two fresh seeds:
-61 failed episode identities are shared at checkpoint-120832, while the
-angle-sign balance differs (experiment 3: 36 negative-angle and 31
-nonnegative-angle failures; experiment 4: 30 and 43). Failures therefore recur
-across radii and angle signs, but these are repeated measurements of one fixed
-development panel, not independent held-out confirmation or official benchmark
-evidence. The second fresh run makes seed variance alone a less adequate
-explanation, but cannot distinguish initialization, PPO trajectory, reward
-interaction, representation, or control limitations. Twenty-one checkpoints in
-each fresh run remain unmeasured and are not failed policies.
+Experiment 5's task-reference measurements were 191/200 (95.5%), 192/200
+(96.0%), and 187/200 (93.5%) at checkpoints 105472, 110592, and 120832.
+The corresponding strata were 49/57, 50/57, and 47/57 below 10 cm; 48/48,
+48/48, and 47/48 at 10-14 cm; and 94/95, 94/95, and 93/95 at 14-20 cm.
+Thus the expected observation--exceeding 197/200, reducing recurring failures,
+and preserving at least 94/95 far-radius success--did not occur. The
+contradicting observation occurred at every measured checkpoint for total and
+near-target success; far-radius preservation held at the first two checkpoints
+but failed at the final one. The experiment-5 final checkpoint retained all
+three parent failure identities (84, 102, and 175), so it did not repair the
+parent's residual panel failures. Its final failures overlapped only 4 of
+experiment 3's and 3 of experiment 4's failed identities; this difference is
+descriptive and does not establish a changed failure mechanism.
 
-Experiment 4's training proxy rose from 0 to 0.26 and its training reward
-peaked before the final checkpoint, yet task-reference success stayed between
-63.5% and 64.0%. This is a partial learning signal in the training process,
-not measured policy progress, and provides no reliable checkpoint selector.
+The training log supplies partial but non-task signals: the training proxy was
+0.99 around 70,656-100,352 steps, 0.98 at 105,472 and 110,592, and 0.96 at
+120,832, while training reward peaked before the final checkpoint. The
+task-reference scores did not follow that proxy and the final task score
+regressed, so neither is a reliable checkpoint selector. All experiment-5
+failures in the three measured artifacts truncated at 500 steps. The artifacts
+do not emit first band entry, hold duration, or hold-exit counts; consequently
+the proposed long-partial-hold mechanism was not directly measured. Twenty-one
+of 24 checkpoints remain unmeasured and are not failed policies.
 
-**Open questions:** Do the recurring fixed-panel failures reflect an angular
-or control/representation limitation that survives seed changes, or a
-training-recipe interaction that the successful transferred policy happened
-to avoid? Can an intervention improve both task success and the shared failure
-geometry without sacrificing the far-radius behavior? What training
-diagnostic would separate optimization instability from a systematic
-control limitation? The current evidence does not support causal attribution
-to full-range exposure, fresh initialization, or any single PPO component.
+**Open questions:** Do the residual failures reflect angular/control or
+representation limits, PPO trajectory instability, or an interaction between
+reward shaping and transfer? Can a future intervention repair the parent
+failure identities while preserving the middle and far-radius strata? Which
+lightweight trajectory diagnostics (band-entry time, longest in-band run, and
+post-entry exits) would distinguish hold instability from a failure to reach
+the target? The current evidence does not support causal attribution to the
+full-forfeiture coefficient, full-range exposure, transfer, or any single PPO
+component.
 
-**Conditional next steps:** Keep experiment-2 checkpoint-120832 as working and
-best-known, and do not request official assessment from either fresh
-replication. If development continues, prioritize an angular-robustness or
-representation/control intervention, evaluated with paired task success and
-failure-geometry evidence. An unchanged fresh run is lower value unless it
-adds diagnostics capable of changing the seed-versus-mechanism decision.
-Do not claim radial causality from the repeated fixed-panel measurements.
+**Conditional next steps:** Close experiment 5 by restoring the experiment-2
+scientific recipe and retain experiment-2 checkpoint-120832 as working and
+best-known; do not request official assessment from this challenger. If
+development continues, add the missing hold-trajectory diagnostics before
+testing a targeted angular/control or representation intervention, and compare
+task success plus failure geometry against the working policy. An unchanged
+fresh run remains lower value unless it includes diagnostics that can change
+the seed-versus-mechanism decision. Do not treat this fixed-panel evidence as
+official attainment or claim that the reward change caused the regression.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 1
 
@@ -225,3 +233,54 @@ candidate.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-4-checkpoint-105472-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-4-checkpoint-110592-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-4-checkpoint-120832-task-reference-v1.json`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 5
+
+**Result:** Full forfeiture of accumulated hold-progress reward did not improve
+the transferred policy. The best measured challenger checkpoint reached only
+192/200, below the working policy's 197/200, so the experiment-2 working and
+best-known lineage is preserved and the experiment-5 recipe is not retained.
+
+**Observed behavior:** On the same 200-episode task-reference-v1 panel,
+checkpoint-105472 achieved 191/200 (95.5%), checkpoint-110592 achieved
+192/200 (96.0%), and checkpoint-120832 achieved 187/200 (93.5%). Their
+below-10-cm, 10-14-cm, and 14-20-cm strata were respectively 49/57, 48/48,
+94/95; 50/57, 48/48, 94/95; and 47/57, 47/48, 93/95. All failures in these
+three artifacts truncated at 500 steps. The final checkpoint retained the
+parent's failures on episodes 84, 102, and 175 and did not exceed the parent
+in any measured total or near-target result. The first two checkpoints
+preserved the parent's far-radius count, but the final checkpoint lost one
+additional far-radius success. The training proxy reached 0.99 at measured
+training points around 70,656-100,352 steps and ended at 0.96; these are
+training-process measurements, not task-reference performance.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected observation was a transfer checkpoint above 197/200,
+with fewer recurring failures and at least 94/95 far-radius success. No
+checkpoint exceeded 197/200 or improved the near-target stratum; far-radius
+preservation occurred only at the two earlier measured checkpoints and failed
+at the final checkpoint. The partial preservation of the middle stratum and
+early far-radius behavior is an unexpected limited signal, not policy progress
+relative to the working lineage. The hold-specific expectation about failures
+after long partial holds is inconclusive because the task-reference artifacts
+do not emit hold-entry or hold-exit trajectories.
+
+**Interpretation:** Under this single transfer trajectory and fixed development
+panel, full hold-progress forfeiture is not a useful replacement for the
+working recipe. The unchanged parent failures and late regression are
+consistent with a control, representation, PPO-trajectory, or reward
+interaction limitation, but the run has no control arm or hold-trajectory
+diagnostic that identifies the cause. The task evidence supports rejecting
+this intervention for lineage selection, not a causal claim that all hold
+feedback changes are ineffective.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-5-attempt-1.log`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-5/inventory.json`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-5/parameters.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-5-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-5-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-5-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-2-checkpoint-120832-task-reference-v1.json`;
+`robot_learning/scenario/reward.py`.
