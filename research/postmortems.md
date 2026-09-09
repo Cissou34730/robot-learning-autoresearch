@@ -8,7 +8,7 @@
 
 **Open questions:** Whether the persistent negative-angle failures arise from observation/representation limits, control precision, or the hold objective; whether a targeted intervention can reduce interrupted holds without harming far-target behavior; and how the selected policy performs on the official benchmark.
 
-**Conditional next steps:** Continue from the baseline `working` lineage and investigate one targeted observation/control or hold-objective change. Prefer a future measurement that separates reach failures from hold interruptions; revise this direction if a new intervention improves the lower-left failure cluster without sacrificing overall success.
+**Conditional next steps:** Continue from the baseline `working` lineage with a moderate hold-exit forfeiture to test whether interrupted holds are a reward-shaping problem. Prefer a future measurement that separates reach failures from hold interruptions; revise this direction toward observation or control if interruptions fall without reducing the persistent lower-left no-reach failures.
 
 ## 76a0e44c-15e1-4f0a-aad3-e75ef2d20c09 / Experiment 1
 
