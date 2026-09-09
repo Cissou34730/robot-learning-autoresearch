@@ -348,7 +348,7 @@ while ($true) {
             "Measured task performance is what supports a claim of policy progress; logs, code, and training/evaluation discrepancies guide the investigation."
             "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it. Additional measurement rounds are optional and available only in this phase."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid. Omit best_known when it is unchanged."
-            "Further training is an ordinary next experiment after closure; do not prepare that proposal now. If the protocol's stopping rule leads you to request terminal assessment of best_known through request_final_benchmark, use previous_result_decision.reason to explain the selection and why no scientifically useful path remains."
+            "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
         Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis"
@@ -468,10 +468,8 @@ while ($true) {
         $decisionPrompt = @(
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
             "In the postmortem and Scientific strategy, assess the question actually tested against the proposal's expected_observation and contradicting_observation, separate observations from interpretations, and scope causal claims to the evidence. Carry forward what this experiment eliminated and state the next direction it leaves open."
-            "If the protocol's stopping rule leads you to request terminal assessment of best_known through request_final_benchmark, use previous_result_decision.reason to explain the selection and why no scientifically useful path remains."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -521,14 +519,14 @@ while ($true) {
     )
     $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
-        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. Do not exit without the required deliverable."
+        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
         "Start from the campaign objective and available evidence, and state the scientific question. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
         "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         "Code or configuration edits are required only when the selected operation calls for them."
-        "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the unchanged contract in research/instruments.md, plus any edits called for by the selected operation."
+        "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md, plus any edits called for by the selected operation."
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
