@@ -8,7 +8,7 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 11
+OBSERVATION_SIZE = 13
 
 
 def reach_observation(data) -> np.ndarray:
@@ -45,5 +45,6 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
+            data.mocap_pos[0][:2],
         ]
     ).astype(np.float32)
