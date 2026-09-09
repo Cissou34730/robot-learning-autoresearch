@@ -35,11 +35,12 @@ trajectory or optimization failure, and training reward/proxy success is not
 an adequate substitute for task measurement.
 
 **Conditional next steps:** Keep the retained 100,352-step baseline as working
-and best-known and keep its unchanged scientific recipe. A future experiment
-should characterize or reduce baseline training variance before adding reward
-complexity; if an unchanged run again recovers the baseline range, a weaker
-localized hold intervention becomes interpretable, while repeated failure
-would favor investigating the training implementation or optimization schedule.
+and best-known and keep its unchanged scientific recipe. Experiment 5 should
+run a second fresh replication with a distinct seed under the same recipe and
+budget: recovery toward the baseline range would support seed or trajectory
+variance, while another broad reach failure would weaken a seed-only explanation
+and favor investigating the training implementation or optimization schedule
+before adding reward complexity.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 4
 
