@@ -3,44 +3,40 @@
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Scientific strategy
 
 **Direction:** Improve official-distribution reach-and-hold robustness beyond
-the 98% development result, but first make the baseline learning process
-reliable enough that reward interventions are interpretable. The fresh
-replication did not recover the retained policy, so the immediate direction is
-training-process variance rather than another hold-focused reward change.
+the 98% development result, while making the baseline learning process reliable
+enough that reward interventions are interpretable. The second fresh
+replication recovered partway but not to the baseline range, so the next
+investigation should examine training-process or optimization conditions before
+another hold-focused reward change.
 
-**Lessons and limits:** Experiment 4 used the unchanged PPO recipe from fresh
-initialization with training seed 1, directly testing reproducibility rather
-than a changed recipe or continuation. Its training proxy stayed at 0 through
-90,112 steps and reached only 0.13 by 120,832 steps. On the identical
-200-episode research panel, measured checkpoints scored 32.0% at 90,112,
-30.5% at 95,232, 32.0% at 100,352, 31.0% at 105,472, and 49.5% at 120,832;
-the protected task-reference panel independently reported 32.0% and 49.5% at
-the two measured checkpoints. The final improvement is an unexpected partial
-signal, but it remains far below the retained baseline's 98%. At 100,352
-steps, 136 of 200 research episodes failed and most were reach failures across
-the target geometry; at 120,832, 101 failed, with only five of those failures
-ever entering tolerance and then interrupting the hold. This differs from the
-baseline's four localized short-range negative-angle hold interruptions.
-Agreement between the two instruments makes an evaluator-specific explanation
-less likely, but this single replication does not identify whether the source
-is initialization, optimization trajectory, or another training-process
-factor. Development panels are not held-out confirmation or the official
-benchmark.
+**Lessons and limits:** Experiment 5 was a fresh replication of the unchanged
+PPO recipe with training seed 2, not a continuation or changed recipe. Its
+100,352- and 120,832-step checkpoints both scored 74.5% on the same 200-episode
+research panel, and the independent protected task-reference panel reported
+74.5% for both as well. This is materially above experiment 4's 32.0% and
+49.5% at the corresponding checkpoints, but well below experiment 1's 98.0%
+and 97.0%. On the research diagnostics, 2 of 51 failed episodes had reached
+tolerance and then interrupted at 100,352 steps, versus 17 of 51 at 120,832;
+the remainder did not reach tolerance. The training proxy rose from 0.06 to
+0.54, but it is not task success. The task-reference panel is independent of
+research evaluation and is development evidence, not official confirmation.
+Together these results provide partial evidence of training-process variance,
+but do not establish that seed variance alone explains the baseline gap.
 
-**Open questions:** What training-process condition determines whether the
-unchanged recipe reaches the 98% development range, and can that condition be
-made reliable without sacrificing the retained policy's residual hold
-behavior? The current evidence does not distinguish seed variance from a
-trajectory or optimization failure, and training reward/proxy success is not
-an adequate substitute for task measurement.
+**Open questions:** Which training or optimization condition separates the
+98%-range trajectory from the 74.5% and 32--49.5% trajectories, and can it be
+made reliable without worsening the retained policy's residual hold failures?
+The current evidence does not identify whether the relevant factor is
+initialization, optimization trajectory, implementation behavior, or schedule.
 
 **Conditional next steps:** Keep the retained 100,352-step baseline as working
-and best-known and keep its unchanged scientific recipe. Experiment 5 should
-run a second fresh replication with a distinct seed under the same recipe and
-budget: recovery toward the baseline range would support seed or trajectory
-variance, while another broad reach failure would weaken a seed-only explanation
-and favor investigating the training implementation or optimization schedule
-before adding reward complexity.
+and best-known and preserve its unchanged scientific recipe. If research
+continues, inspect and test a training-process or optimization-schedule
+intervention that targets reproducibility before adding reward complexity. A
+future recovery toward the baseline range would support process variance,
+whereas another low trajectory would justify prioritizing implementation
+diagnostics; neither outcome should be inferred from the current training
+proxy alone.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 4
 
@@ -93,6 +89,61 @@ localized hold deficit and the proxy improvement did not predict task success.
 `robot_learning/scenario/evaluation.py`;
 `robot_learning/scenario/environment.py`;
 `robot_learning/scenario/reward.py`.
+
+## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 5
+
+**Result:** The second fresh unchanged-recipe replication partially recovered
+from experiment 4's failure but did not reproduce the retained baseline or meet
+the human objective. The retained experiment-1 checkpoint remains the strongest
+measured policy and no challenger is retained.
+
+**Observed behavior:** This was a fresh replication with training seed 2, not a
+changed recipe, continuation, or transfer. The training proxy was 0 through
+86,016 steps, reached 0.06 at 100,352 and 0.54 at 120,832, and the recorded
+training reward rose from 114.5 to 169.9 over those measured checkpoints.
+Research evaluation scored both checkpoints at 74.5% (149/200 successes and
+51 failures). The protected task-reference panel independently scored both at
+74.5%. Research diagnostics classified 2 of the 51 failures as reaching
+tolerance before an interrupted hold at 100,352 steps and 17 as doing so at
+120,832; the other failures never reached tolerance. The task-reference
+failures span the sampled radius and angle ranges rather than matching the
+retained baseline's four localized short-range negative-angle failures.
+Compatible paired comparisons strongly favored the retained working policy:
+49 wins to 2 at 100,352 and 47 wins to 0 at 120,832.
+
+**Hypothesis assessment:** **Inconclusive with a partial, unexpected signal.**
+The prediction's recovery branch (at least 90% success) was not observed, so
+seed 2 did not recover near the baseline range. The prediction's broad-failure
+branch (below 60% at both late checkpoints, like experiment 4) was also not
+observed. The intermediate 74.5% result, agreement between independent
+instruments, and change from mostly unreached failures to more interrupted
+holds provide partial evidence that fresh training trajectories vary, but do
+not support a seed-only explanation or identify the responsible training
+condition. The conclusion is limited to the tested unchanged recipe, seeds and
+budget; these are development measurements, not an official benchmark result.
+
+**Interpretation:** Experiment 5 makes process variance practically relevant:
+the unchanged recipe can produce substantially different policies, yet the
+second fresh run still does not reliably reach the human objective. Additional
+measurement of the two already measured checkpoints is unlikely to change the
+working-lineage decision, because both instruments agree and paired comparisons
+decisively favor the retained baseline. Training proxy and reward improved
+without reaching the objective, so they should not substitute for task
+measurement. A useful next experiment remains through a controlled
+training-process or optimization investigation before another reward
+intervention.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/postmortems.md`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-5-checkpoint-100352-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-5-checkpoint-120832-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-5-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-5-checkpoint-120832-task-reference-v1.json`;
+`research/query_training_log.py`;
+`robot_learning/scenario/evaluation.py`;
+`robot_learning/benchmark/reference_evaluation.py`;
+`robot_learning/benchmark/reference_contract.py`;
+`research/current_params.json`.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 1
 
