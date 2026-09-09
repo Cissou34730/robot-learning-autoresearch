@@ -2,41 +2,46 @@
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
-**Direction:** Retain full-range target exposure as the current recipe and
-establish whether its partial near-target improvement is robust. The remaining
-failures are concentrated in negative-angle geometries, while checkpoint
-selection and training stability remain plausible alternatives to a purely
-radial explanation.
+**Direction:** Retain full-range target exposure as a plausible but unvalidated
+recipe component, and shift the investigation toward seed and training
+stability plus angular robustness. The fresh replication weakens a reproducible
+radial-exposure claim; checkpoint selection and the training proxy are not
+reliable explanations or selectors yet, and no causal mechanism has been
+isolated.
 
-**Lessons and limits:** On the same 200-episode task-reference-v1 panel, the
-experiment-2 parent achieved 196/200 (98%), checkpoint-105472 achieved 196/200
-(98%), and checkpoint-120832 achieved 197/200 (98.5%). Relative to the parent,
-the final checkpoint fixed the failures at 6.7 cm/-116.4 degrees and 7.2
-cm/-125.4 degrees, retained failures at 9.9 cm/-122.9 degrees and 9.4
-cm/-127.9 degrees, and added one failure at 18.2 cm/-154.8 degrees. The
-under-10-cm stratum therefore rose from 53/57 (93.0%) to 55/57 (96.5%), while
-14-20 cm fell from 95/95 (100%) to 94/95 (98.9%); 10-14 cm remained 48/48.
-These observations partially support the expected radial-robustness signal but
-also match the proposal's contradicting signal of a new far-target failure.
-They are repeated development-panel evidence, not official benchmark evidence
-or independent confirmation. Training proxy success peaked at 1.0 at
-105472 steps and ended at 0.94, so it did not identify task performance or the
-best checkpoint.
+**Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
+with 55/57 successes below 10 cm and 94/95 at 14-20 cm on
+task-reference-v1. The experiment-3 fresh seed reached only 127/200 (63.5%),
+131/200 (65.5%), and 133/200 (66.5%) at checkpoints 105472, 110592, and
+120832, respectively. Their strata were 33/57, 35/57, and 35/57 below 10 cm;
+30/48, 33/48, and 32/48 at 10-14 cm; and 64/95, 63/95, and 66/95 at 14-20
+cm. Thus the replication did not reproduce either the near-target improvement
+or far-target preservation expected by its proposal. Its failures covered
+multiple radii and both angle signs, an unexpected broad deficit relative to
+experiment 2's concentrated negative-angle failures. These are three
+measurements from one fixed development panel: they inform seed/process
+variability but are not independent held-out confirmation, official benchmark
+evidence, or proof that the full-range recipe is intrinsically ineffective.
+Twenty-one other experiment-3 checkpoints remain unmeasured, and the training
+proxy stayed near zero, so neither the unmeasured checkpoints nor the proxy
+supports a broader claim.
 
-**Open questions:** Will the near-target improvement and the single far-target
-regression persist on a fresh evaluation panel or another seed? Are the two
-remaining near-target failures and the new far-target failure an angular
-robustness pattern, transient PPO drift, or checkpoint-specific behavior? The
-single transfer run and fixed panel cannot establish generalization, seed
-variance, or that radius alone caused the improvement.
+**Open questions:** Is the large fresh-seed deficit recoverable with another
+seed or longer/stabler optimization, or does it expose a recipe interaction
+that the transferred experiment-2 run masked? Can angular failure geometry and
+checkpoint dynamics distinguish seed variance from a systematic control
+limitation? A single fresh replication cannot attribute the discrepancy to
+initialization, PPO stochasticity, checkpoint choice, or any one training
+component.
 
-**Conditional next steps:** Use checkpoint-120832 as the working and
-best-known policy. If development continues, preserve full-range exposure and
-test angular or training-stability robustness with task success and failure
-geometry measured together; do not attribute gains to radial sampling without a
-comparable fresh evaluation or control. Consider official assessment only after
-a candidate improves both the residual near-target cluster and the 14-20 cm
-behavior without a new concentration.
+**Conditional next steps:** Keep experiment-2 checkpoint-120832 as working and
+best-known, and do not request official assessment from this replication. If
+development continues, prioritize an unchanged full-range run with
+task-reference checkpoint measurements and training diagnostics that can test
+seed/process stability; alternatively test an angular-robustness intervention
+only with paired task-success and failure-geometry evidence. Treat another
+fresh run as useful only if it could change that distinction, and do not claim
+radial causality from the fixed-panel results.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 1
 
@@ -123,3 +128,45 @@ parent on this panel, not official attainment of the campaign objective.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-2-checkpoint-120832-task-reference-v1.json`;
 `robot_learning/scenario/environment.py`;
 `robot_learning/scenario/evaluation.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 3
+
+**Result:** The fresh replication contradicted its reproducibility hypothesis.
+None of the three measured checkpoints approached the experiment-2 task
+behavior, so the experiment-2 working and best-known lineage is preserved.
+
+**Observed behavior:** The seed-1 full-range run completed 120832 training
+steps. On the same 200-episode task-reference-v1 panel, checkpoint-105472
+achieved 127/200 (63.5%), checkpoint-110592 achieved 131/200 (65.5%), and
+checkpoint-120832 achieved 133/200 (66.5%). Below 10 cm the checkpoints
+achieved 33/57, 35/57, and 35/57; at 10-14 cm they achieved 30/48, 33/48,
+and 32/48; at 14-20 cm they achieved 64/95, 63/95, and 66/95. The measured
+failures span near, middle, and far radii and include positive and negative
+angles. The training proxy was 0.01 at its best reported point and at the
+end. Three checkpoints were measured and 21 remained unmeasured; an
+unmeasured checkpoint is not treated as a failed policy.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected observation was at least 55/57 below 10 cm while
+preserving 95/95 at 14-20 cm, with a similar qualitative failure pattern.
+The observed checkpoints instead reached 33-35/57 and 63-66/95, with a broad
+failure pattern. This establishes that the experiment-2 behavior was not
+reproduced by this fresh seed at the measured checkpoints. It does not
+establish whether seed variance, optimization trajectory, checkpoint timing,
+or another coupled factor caused the discrepancy.
+
+**Interpretation:** The replication weakens the claim that full-range target
+exposure reliably produces the experiment-2 improvement and makes process
+stability a higher-value question. The modest increase from 63.5% to 66.5%
+across the measured checkpoints is an unexpected partial learning signal, but
+it remains far below the parent result and cannot support policy progress
+relative to the selected working lineage. Because the run was a fresh
+initialization and only one seed, the evidence is diagnostic of
+non-reproducibility in these tested conditions, not a causal comparison of
+initialization or a refutation of the recipe in general.
+
+**Evidence inspected:** `research/research_state.json`;
+`research/brief.md`; `research/results.jsonl`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-3-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-3-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-3-checkpoint-120832-task-reference-v1.json`.
