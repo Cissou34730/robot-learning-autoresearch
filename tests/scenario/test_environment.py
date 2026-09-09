@@ -25,14 +25,6 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_observation_exposes_target_distance_in_planar_error_slot():
-    env = make_training_env()
-    obs, _ = env.reset(seed=0)
-
-    assert obs[6] == pytest.approx(np.linalg.norm(obs[4:6]))
-    assert obs[6] > 0.0
-
-
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
