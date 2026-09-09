@@ -70,6 +70,10 @@ controls that distinguish the proposed explanation from alternatives. A coherent
 recipe may change several components when testing its overall usefulness;
 component-level attribution then remains limited.
 
+Use additional diagnosis, measurement, or replication only when it could
+materially change the scientific conclusion or lineage decision. Prefer the
+simplest evidence sufficient to distinguish between plausible explanations.
+
 An unsuccessful run does not automatically reject an intervention or its broader
 mechanism. Distinguish lack of improvement in that run, evidence against a
 hypothesis, and a practical decision not to pursue it. Scope conclusions to the
@@ -100,19 +104,16 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence, then:
+Inspect relevant repository state and completed evidence, choose continuation,
+an intervention with fresh or transfer initialization, or replication, and state
+the scientific question and how it serves the human objective. State one
+falsifiable hypothesis, a plausible alternative, and the observations that would
+support or weaken it.
 
-1. State the scientific question and how it serves the human objective.
-2. Choose the operation that fits that question: continuation, replication, or
-   training.
-3. State one falsifiable hypothesis, a plausible alternative, and observations
-   that would support or weaken the hypothesis. For training, describe the recipe
-   change and predicted benefit; for continuation, the learning trajectory; for
-   replication, reproducibility or variability.
-4. Justify the training parent and fresh-or-transfer initialization by their
-   expected value for the question and semantic compatibility with the policy
-   and learned representation. Unchanged tensor dimensions alone do not establish
-   semantic compatibility. Neither fresh initialization nor transfer is preferred.
+Justify the training parent and fresh-or-transfer initialization by their
+expected value for the question and semantic compatibility with the policy and
+learned representation. Unchanged tensor dimensions alone do not establish
+semantic compatibility. Neither fresh initialization nor transfer is preferred.
 
 Establish or update the Scientific strategy, make only the code or parameter
 changes the selected operation calls for, and write `research/proposal.json`.

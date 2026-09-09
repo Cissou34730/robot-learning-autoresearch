@@ -527,8 +527,8 @@ while ($true) {
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. Do not exit without the required deliverable."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-        "Start from the campaign objective and current scientific strategy and available evidence. State the scientific question, then choose the fitting operation among continuation, replication or training. For continuation, state a hypothesis about the learning trajectory or training budget; for replication, state a hypothesis about process variability; for training, describe the recipe change and predicted benefit. When causal attribution is the question, explain how the experiment distinguishes competing explanations."
-        "Only then justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
+        "Start from the campaign objective and available evidence, and state the scientific question. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
+        "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         "Code or configuration edits are required only when the selected operation calls for them."

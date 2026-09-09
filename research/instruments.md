@@ -231,6 +231,8 @@ An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. `continuation` continues the selected
 recipe without a learning-method change. A `training` proposal may deliberately
 apply a changed recipe to an existing parent with `initialization: "transfer"`.
+Continuation, replication, and additional seeds remain available scientific
+choices, not mandatory controls or gates for accepting a model.
 
 The `reasoning` object contains the fields shown in the schema. `evidence` is a
 non-empty array of source/observation objects. `alternative`,
