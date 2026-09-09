@@ -12,8 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    TRAINING_HARD_ANGLE_PROBABILITY,
-    TRAINING_HARD_ANGLE_RANGE,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -33,24 +31,7 @@ def test_training_distribution_covers_the_official_radius_range():
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
     assert training.target_radius_range == (0.06, 0.20)
-    assert training.hard_angle_range == TRAINING_HARD_ANGLE_RANGE
-    assert training.hard_angle_probability == TRAINING_HARD_ANGLE_PROBABILITY
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-    assert evaluation.hard_angle_range is None
-
-
-def test_hard_angle_curriculum_can_focus_on_the_recurrent_failure_sector():
-    training = TwoJointArmReachEnv(
-        hard_angle_range=TRAINING_HARD_ANGLE_RANGE,
-        hard_angle_probability=1.0,
-    )
-
-    training.reset(seed=0)
-    angle = float(
-        np.arctan2(training.data.mocap_pos[0][1], training.data.mocap_pos[0][0])
-    )
-
-    assert TRAINING_HARD_ANGLE_RANGE[0] <= angle <= TRAINING_HARD_ANGLE_RANGE[1]
 
 
 def test_training_environment_may_diverge_from_the_official_task():
