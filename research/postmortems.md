@@ -3,12 +3,13 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known,
-and deprioritize full forfeiture of accumulated hold reward as a fix under the
-tested transfer conditions. Full-range target exposure remains plausible but
-unvalidated. The two fresh runs and experiment 5 point the investigation toward
-recurring angular/control or representation limitations, PPO trajectory
-stability, and checkpoint selection rather than another unchanged fresh run.
-No single mechanism has been causally isolated.
+and deprioritize both full forfeiture of accumulated hold reward and unchanged
+continuation as routes beyond that policy under the tested transfer conditions.
+Full-range target exposure remains a useful but not reliably reproducible
+intervention. The two fresh runs, experiment 5, and experiment 6 point the
+investigation toward recurring angular/control or representation limitations,
+PPO trajectory stability, and checkpoint selection rather than another
+unchanged fresh run. No single mechanism has been causally isolated.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -61,6 +62,41 @@ task success plus failure geometry against the working policy. An unchanged
 fresh run remains lower value unless it includes diagnostics that can change
 the seed-versus-mechanism decision. Do not treat this fixed-panel evidence as
 official attainment or claim that the reward change caused the regression.
+
+Experiment 6 adds a continuation test of checkpoint stability. Its three
+task-reference measurements reached 194/200 (97.0%) at checkpoint-100352,
+195/200 (97.5%) at checkpoint-105472, and 195/200 (97.5%) at
+checkpoint-120832. The strata were respectively 55/57, 45/48, and 94/95;
+53/57, 48/48, and 94/95; and 54/57, 48/48, and 93/95 for near, middle, and
+far radii. Each measured checkpoint retained parent failures 84, 102, and
+175. The first checkpoint additionally failed episodes 17, 76, and 173; the
+second additionally failed 67 and 176; and the final additionally failed 10
+and 196. All failures truncated at 500 steps. These are observations on the
+same fixed development panel, not official or independent held-out evidence.
+
+The continuation therefore contradicted its expected observation: no measured
+checkpoint reached 197/200 or repaired either persistent near-target failure,
+and the final checkpoint lost one far-radius success. Preserving 94/95 at the
+first two checkpoints and preserving 48/48 in the middle stratum at the latter
+two are partial stability signals, but not progress relative to the working
+197/200 policy. The training proxy reached 1.0 around 102,400-105,472 steps
+and ended at 0.98, while task success remained below the parent; training
+proxy and reward remain unreliable checkpoint selectors. Twenty-one of 24
+continuation checkpoints were not measured and remain unknown rather than
+failed.
+
+Under the sampled continuation checkpoints, additional unchanged PPO updates
+did not produce a better task policy and are consistent with plateau or drift,
+but the run does not identify whether the limitation is angular/control,
+representation, hold behavior, or optimization. The absence of repaired
+failure identities is descriptive and does not establish a causal
+representation or control deficit. Close experiment 6 by restoring the
+working experiment-2 recipe and preserve its checkpoint-120832 lineage. If
+development continues, add the missing hold-trajectory diagnostics before a
+targeted angular/control or representation intervention, and compare total
+success, radial strata, and failure identities against the working policy.
+Do not infer official attainment from this repeated fixed-panel evidence or
+request final assessment from this challenger.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 1
 
@@ -284,3 +320,53 @@ feedback changes are ineffective.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-5-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-2-checkpoint-120832-task-reference-v1.json`;
 `robot_learning/scenario/reward.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 6
+
+**Result:** Continuing the unchanged PPO recipe did not improve the working
+policy on the measured task-reference checkpoints. The continuation hypothesis
+was contradicted under its stated conditions, so the experiment-2
+checkpoint-120832 working and best-known lineage is preserved.
+
+**Observed behavior:** On task-reference-v1's fixed 200-episode panel,
+checkpoint-100352 achieved 194/200 (97.0%), checkpoint-105472 achieved
+195/200 (97.5%), and checkpoint-120832 achieved 195/200 (97.5%). Their
+near/middle/far strata were 55/57, 45/48, 94/95; 53/57, 48/48, 94/95; and
+54/57, 48/48, 93/95. All three retained the working policy's failures on
+episodes 84, 102, and 175. The first checkpoint also failed 17, 76, and 173;
+the second also failed 67 and 176; and the final also failed 10 and 196. All
+listed failures truncated at 500 steps. The training log reported a proxy
+success of 1.0 around 102,400-105,472 steps and 0.98 at 120,832, but these
+are training measurements rather than task-reference results. Of 24 available
+checkpoints, only these three were measured; the other 21 remain unmeasured.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected observation was a checkpoint at least 197/200 that
+repaired one or more of episodes 84 and 102 without losing far-radius
+performance. No measured checkpoint reached 197/200 or repaired either
+failure. Far-radius performance was preserved at the first two measured
+checkpoints but fell to 93/95 at the final checkpoint, while the middle
+stratum reached 48/48 only at the latter two. These partial preservation
+signals do not support policy progress relative to the working 197/200
+policy. The result weakens unchanged continuation as a practical route under
+this transfer trajectory, but does not prove that every unmeasured checkpoint
+fails or that any representation or control component is causally
+insufficient.
+
+**Interpretation:** The measured continuation checkpoints stayed close to, but
+below, the parent and did not change its recurring failure identities. This is
+consistent with a plateau or optimization drift after transfer and with the
+existing angular/control, representation, or hold-stability alternatives, but
+the fixed panel, three sampled checkpoints, and missing entry/hold/exit
+trajectory diagnostics prevent causal attribution. The mismatch between
+training proxy and task success further argues against using the proxy or
+training reward as a checkpoint selector.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-6-attempt-1.log`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-6/inventory.json`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-6/parameters.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-6-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-6-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-6-checkpoint-120832-task-reference-v1.json`.
