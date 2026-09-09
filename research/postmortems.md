@@ -3,14 +3,16 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
-Experiment 7 contradicted the focused angular-exposure route: neither measured
-checkpoint repaired any of the working policy's three recurring failures, and
-both lost full-range task success. Full hold-progress forfeiture, unchanged
-continuation, fresh full-range runs, and the tested angular curriculum are
-deprioritized under their tested conditions. The remaining investigation should
-separate hold/control behavior, representation, and PPO trajectory effects
-before another targeted training intervention; this is not a causal conclusion
-about any one of those mechanisms.
+Experiments 7 and 8 contradicted the focused angular-exposure and conservative
+PPO-update routes: neither measured angular challenger repaired a recurring
+failure, and the lower-learning-rate challenger retained all three recurring
+failures while scoring below the working policy at every measured checkpoint.
+Full hold-progress forfeiture, unchanged continuation, fresh full-range runs,
+the tested angular curriculum, and the tested lower learning rate are
+deprioritized under their tested transfer conditions. The remaining
+investigation should separate hold/control behavior from representation before
+another targeted training intervention; this is not a causal conclusion about
+any one mechanism.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -55,22 +57,40 @@ candidate wins and 9 reference wins at 120832. These observations are
 descriptive evidence from one fixed panel and one transfer trajectory, not
 independent held-out confirmation or official benchmark evidence.
 
+Experiment 8 tested a lower PPO learning rate by transfer from the working
+policy. Task-reference measurements reached 195/200 at checkpoints 100352 and
+105472, with 53/57 near-radius, 48/48 middle-radius, and 94/95 far-radius
+successes at both checkpoints. Checkpoint 120832 reached 190/200, with 48/57,
+48/48, and 94/95 respectively. The two earlier checkpoints failed on
+episodes 10, 84, 102, 167, and 175; the final checkpoint failed those episodes
+plus 18, 26, 53, 60, and 62. Thus every measured checkpoint retained the
+working policy's recurring failures 84, 102, and 175, and none repaired a
+working-policy failure. All measured failures truncated at 500 steps. The
+training proxy was 0.99 at 25600 steps, 0.99 at 100352, 0.98 at 105472, and
+0.98 at 120832, which again did not identify the best task checkpoint. These
+observations are from the same fixed development panel, not independent
+held-out confirmation or official benchmark evidence.
+
 **Open questions:** Do the persistent failures arise from hold stability,
 target-relative representation, or PPO trajectory drift rather than angular
 coverage? The unchanged continuation, hold-forfeiture intervention, and
 angular oversampling all failed to improve the working policy under their
-tested transfer conditions, but none separates those explanations. The
-available artifacts still cannot determine whether a failure enters the
-tolerance band and exits during the hold or never achieves a stable entry.
+tested transfer conditions, and lower-learning-rate transfer also failed under
+its tested condition, but none separates hold stability from representation or
+other control effects. The available task-reference artifacts still cannot
+determine whether a failure enters the tolerance band and exits during the hold
+or never achieves a stable entry.
 
 **Conditional next steps:** If development continues, add researcher-owned
 diagnostics for first tolerance-band entry, achieved hold duration, and
 hold-exit counts, then use those measurements to choose between a hold/control
-and representation-focused intervention. A future intervention should be
-compared with the retained working policy on total success, radial strata, and
-the three recurring identities; only a measured task improvement would justify
-changing lineage. Do not treat the fixed-panel evidence as official
-attainment.
+and representation-focused intervention. The next training intervention should
+not be another unchanged, angular-only, hold-forfeiture, or lower-rate transfer
+under the tested recipes without a new reason those results do not apply. Any
+future intervention should be compared with the retained working policy on
+total success, radial strata, and the three recurring identities; only a
+measured task improvement would justify changing lineage. Do not treat the
+fixed-panel evidence as official attainment.
 
 Experiment 6 adds a continuation test of checkpoint stability. Its three
 task-reference measurements reached 194/200 (97.0%) at checkpoint-100352,
@@ -431,3 +451,49 @@ the strongest development result and is not official benchmark evidence.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-7-checkpoint-105472-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-7-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-7-working-task-reference-v1.json`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 8
+
+**Result:** The lower-learning-rate hypothesis was contradicted under the
+tested transfer conditions. No measured checkpoint improved the working policy,
+so the experiment-2 checkpoint-120832 lineage remains working and best-known.
+
+**Observed behavior:** The proposal expected at least one checkpoint to reach
+197/200 or better, repair one or more of episodes 84, 102, and 175, and
+preserve at least 94/95 far-radius successes. Checkpoints 100352 and 105472
+each reached 195/200, with 53/57 near-radius, 48/48 middle-radius, and 94/95
+far-radius successes. Checkpoint 120832 reached 190/200, with 48/57, 48/48,
+and 94/95 respectively. The earlier checkpoints failed on episodes 10, 84,
+102, 167, and 175; the final checkpoint failed those episodes plus 18, 26, 53,
+60, and 62. All measured checkpoints retained recurring failures 84, 102, and
+175, and all listed failures truncated at 500 steps. The training proxy was
+high at sampled checkpoints, including 0.99 at 100352 and 0.98 at 120832, but
+did not track task-reference ordering. The unmeasured checkpoints remain
+unknown rather than failed.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected total improvement and repair of recurring failures did
+not occur at any measured checkpoint. Preservation of 94/95 far-radius success
+at all three checkpoints and 48/48 middle-radius success are partial
+preservation signals, but they are not policy progress relative to the
+197/200 working policy. The evidence weakens conservative PPO updates as the
+next practical route for this parent and learning-rate change; it does not
+establish that learning rate is universally ineffective or identify whether
+the residual failures are caused by hold behavior, representation, or control.
+
+**Interpretation:** Lowering the learning rate did not overcome the working
+policy's three recurring failures in this transfer trajectory. The late
+checkpoint's additional failures are consistent with continued PPO trajectory
+drift despite the smaller update scale, while the unchanged far-radius count
+shows limited behavioral preservation. Because this is one transfer trajectory
+on one fixed development panel and task-reference artifacts lack
+hold-entry/hold-exit measurements, these observations support rejecting the
+challenger for lineage selection but do not support a causal explanation.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/postmortems.md`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-8-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-8-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-8-checkpoint-120832-task-reference-v1.json`;
+`robot_learning/scenario/evaluation.py`.
