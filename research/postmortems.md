@@ -5,10 +5,10 @@
 **Direction:** Improve robust official-task success from the experiment-6
 100,352-step full-radius policy by changing the residual control behavior around
 negative-angle inner-radius reaches and interrupted holds. The explicit polar
-observation intervention is not a useful practical direction under its tested
-fresh recipe; the mild transition penalty remains a foundation, but the next
-experiment should target control trajectory or action conditioning rather than
-repeat this representation change.
+observation intervention and a global applied-command rate limit are not useful
+practical directions under their tested recipes; the mild transition penalty
+remains a foundation, but any future control intervention should preserve fast
+initial reaches while targeting the angle-specific residual behavior.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -29,26 +29,38 @@ normalized radius and sine/cosine target-angle features from scratch; its
 independent task-reference panels, while the training proxy remained 0%.
 The independent instruments agree that this candidate is unusable, although
 fresh initialization prevents attributing the failure uniquely to the added
-features. All measurements remain development evidence rather than the
+features. Experiment 8 transferred the experiment-6 policy and imposed a
+global 0.15 normalized-action change limit. Both measured checkpoints scored
+96.75% on the same 400-episode research panel, with two discordant episodes and
+no net paired advantage. The 100,352-step candidate shifted failed research
+episodes from 4 never-reached and 9 reached-then-failed-hold cases in the parent
+to 9 never-reached and 4 reached-then-failed-hold cases, without reducing total
+failures. On the independent task-reference panel it scored 98.0% versus the
+parent's 99.0%, adding failures at 7.24 cm and 19.21 cm while retaining the two
+negative-angle inner-radius failures. This rejects the tested global limiter as
+a useful intervention, but one transferred run does not identify whether the
+remaining gap is control, observation, inverse kinematics, or training
+variability. All measurements remain development evidence rather than the
 official final benchmark.
 
-**Open questions:** Can a concrete action-trajectory or angle-conditioned
-control change improve the recurring negative-angle inner-radius reaches and
-interrupted holds without sacrificing the experiment-6 outer-radius repair?
-The evidence does not distinguish a control limitation from training
-variability, and experiment 7 does not establish whether its catastrophic
-failure arose from the representation itself or its fresh training dynamics.
-Robust 98% official-task success remains unestablished.
+**Open questions:** Can a targeted, state- or angle-conditioned control change
+improve the recurring negative-angle inner-radius reaches and interrupted holds
+without imposing the global reach slowdown seen in experiment 8? The evidence
+does not distinguish a control limitation from an observation or inverse-
+kinematics limitation, and experiment 7 does not establish whether its
+catastrophic failure arose from the representation itself or its fresh training
+dynamics. Robust 98% official-task success remains unestablished.
 
 **Conditional next steps:** Keep the experiment-6 100,352-step policy and its
-full-radius, mild-transition-penalty recipe as the comparison reference. The
-strongest supported development opportunity is a new, concrete
-control-trajectory or action-conditioning intervention aimed at the measured
+full-radius, mild-transition-penalty recipe as the comparison reference. If
+research continues, the strongest supported opportunity is a materially
+targeted state- or angle-conditioned action intervention aimed at the measured
 negative-angle inner-radius and hold failures, with paired research and
-independent task-reference evidence. If preparation cannot specify a
-materially targeted intervention, retain the current policy rather than repeat
-the failed polar-observation, angle-oversampling, hold-forfeiture, or
-comparable reward-only recipes.
+independent task-reference evidence. It should not repeat a uniform global
+rate limit or the failed polar-observation, angle-oversampling, hold-forfeiture,
+or comparable reward-only recipes. If no such targeted intervention can be
+specified, retain the current policy rather than treating additional comparable
+measurement as progress.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
@@ -340,3 +352,47 @@ the experiment-7 research-evaluation and task-reference artifacts under
 `robot_learning/scenario/environment.py`,
 `robot_learning/scenario/policy_io.py`, and
 `robot_learning/training/checkpoint.py`.
+
+## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 8
+
+**Result:** A global applied-command rate limit did not improve the transferred
+experiment-6 policy. Both measured checkpoints scored 96.75% on the 400-episode
+research panel, while the independent task-reference panel scored 98.0% versus
+99.0% for the parent.
+
+**Observed behavior:** The intervention limited each applied normalized joint
+command change to 0.15 and reset that state at episode boundaries. At
+100,352 steps, the candidate and parent had 12 shared research failures, one
+candidate-only failure, and one parent-only failure, producing no aggregate
+success change. The candidate's failed research episodes comprised 9
+never-reached cases and 4 reached-then-failed-hold cases, compared with 4 and 9
+for the parent. The task-reference candidate retained the parent's failures at
+9.915 cm and 9.355 cm and added failures at 7.243 cm and 19.210 cm. The
+120,832-step checkpoint had the same 96.75% research and 98.0% task-reference
+success rates. Training proxy success rose to 0.94, but it did not predict a
+research improvement.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe. The
+expected reduction in hold interruptions and at least 98% success on both
+development instruments were not observed. The intervention did reduce the
+count of reached-then-failed-hold cases in this panel, but it increased
+never-reached failures enough to leave research success unchanged and lowered
+task-reference success relative to the parent. This weakens the usefulness of
+the tested global rate limit; one transferred run on one research seed does not
+establish a causal explanation for the residual failures.
+
+**Interpretation:** The rate limit changed the failure mix rather than repairing
+the residual task gap, and its added outer-radius task-reference failure is a
+practical regression. The experiment-6 100,352-step policy remains the best
+available measured lineage. Further development is justified only by a more
+targeted state- or angle-conditioned control intervention that does not slow all
+initial reaches. The official objective remains unestablished because these
+are development panels, not the final benchmark.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/training_logs/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/experiment-8-attempt-1.log`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-8-checkpoint-100352-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-8-checkpoint-120832-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-8-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-8-checkpoint-120832-task-reference-v1.json`,
+`robot_learning/scenario/policy_io.py`, and `research/postmortems.md`.
