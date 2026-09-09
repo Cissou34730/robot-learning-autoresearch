@@ -3,11 +3,11 @@
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Scientific strategy
 
 **Direction:** Improve robust official-task success from the experiment-6
-100,352-step full-radius policy by addressing the remaining negative-angle
-reach and hold failures with an observation or control-trajectory intervention.
-The action-transition penalty is retained as a useful foundation, but the next
-change should target the residual behavior rather than repeat reward-only
-variants.
+100,352-step full-radius policy by making target geometry explicit in the
+observation, especially for the remaining negative-angle inner-radius reach and
+hold failures. The action-transition penalty is retained as a useful foundation,
+but the next change should target the residual representation/control behavior
+rather than repeat reward-only variants.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -37,14 +37,14 @@ inverse-kinematics observation limitation from angle-conditioned control
 behavior or training variability, and it does not establish robust 98% success
 outside the development panels.
 
-**Conditional next steps:** Continue from and retain the experiment-6
-100,352-step candidate, keeping the full-radius recipe and mild transition
-penalty. Test one concrete observation or control-trajectory intervention,
-requiring paired research evaluation and independent task-reference evidence.
-If that intervention does not materially improve the negative-angle failures
-without broad degradation, revisit the representation/control hypothesis
-instead of repeating angle oversampling, hold-exit forfeiture, or comparable
-action-penalty measurement.
+**Conditional next steps:** Retain the experiment-6 100,352-step policy as the
+comparison reference, keep the full-radius recipe and mild transition penalty,
+and test a fresh policy with explicit normalized target radius and sine/cosine
+angle features. Require paired research evaluation and independent task-reference
+evidence. If this representation does not materially improve negative-angle
+failures without broad degradation, revisit angle-conditioned control or
+training variability instead of repeating angle oversampling, hold-exit
+forfeiture, or comparable action-penalty measurement.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
