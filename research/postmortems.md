@@ -6,8 +6,8 @@
 angle-conditioned reach and hold instability that remains after matching
 training coverage to the official 6-20 cm radius range. The focused
 angle-oversampling intervention is rejected; use the experiment-3 checkpoint
-at 100,352 steps as the current working policy while testing a concrete
-hold-stability or angle-conditioned control/representation intervention.
+at 100,352 steps as the current working policy while testing a hold-stability
+reward that forfeits accumulated hold credit when tolerance is lost.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -29,21 +29,18 @@ failures involving interrupted holds; task-reference success also fell below
 98% at both measured checkpoints. Training proxy success is not a sufficient
 selection signal. Development panels are not the official final benchmark.
 
-**Open questions:** Can a hold-stability or angle-conditioned
-observation/control intervention remove the recurring negative-angle failures
-while preserving the full-radius gains? Is the residual limitation in the
-observation representation, the reward, or the control trajectory, and can
-the next intervention avoid the broad degradation seen from angle
+**Open questions:** Can forfeiting accumulated hold credit remove the recurring
+negative-angle failures while preserving the full-radius gains? If not, is the
+residual limitation in the observation representation or control trajectory,
+and can a later intervention avoid the broad degradation seen from angle
 oversampling?
 
-**Conditional next steps:** In the next preparation phase, start from the
-restored experiment-3 checkpoint at 100,352 steps, preserve full-radius
-training coverage, and test one concrete researcher-owned change to
-hold-stability reward, observation, or control trajectory. Prefer an
-intervention that directly targets the interrupted holds and evaluate it
-against the paired negative-angle failures without sacrificing the
-task-reference result. Reconsider this direction if a concrete intervention
-does not improve the paired failure pattern.
+**Conditional next steps:** Start from the restored experiment-3 checkpoint at
+100,352 steps, preserve full-radius training coverage, and test the hold-exit
+forfeit reward against the paired negative-angle failures without sacrificing
+the task-reference result. If interrupted holds fall without broad degradation,
+retain the reward direction; otherwise investigate observation or control
+trajectory changes rather than repeating angle oversampling.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
