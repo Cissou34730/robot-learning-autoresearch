@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "algorithm": "ppo",
+  "seed": 0,
+  "timesteps": 120832,
+  "requested_timesteps": 120000,
+  "completed": true,
+  "resumed_from": "C:\\Users\\cyril.beurier\\code\\robot-learning-reasoning-memory\\research\\checkpoints\\retained\\3f02f914-505c-481f-b995-e040c009974f\\e1-cada55eb5-67f7eeab0cdd253eead0769160e302956cf123c02c7fcfb8da6141f23636de31\\model.zip",
+  "effective_config": {
+    "runtime_config": {
+      "ppo": {
+        "n_steps": 1024,
+        "batch_size": 64,
+        "gamma": 0.99,
+        "learning_rate": 0.0003,
+        "gae_lambda": 0.95,
+        "ent_coef": 0.01
+      },
+      "policy": {
+        "net_arch": [
+          64,
+          64
+        ],
+        "activation": "tanh"
+      },
+      "algorithm": {
+        "name": "ppo"
+      },
+      "training": {
+        "n_envs": 1,
+        "checkpoint_every_steps": 5000
+      }
+    },
+    "n_envs": 1,
+    "model_parameters": {
+      "n_steps": 1024,
+      "batch_size": 64,
+      "gamma": 0.99,
+      "learning_rate": 0.0003,
+      "gae_lambda": 0.95,
+      "ent_coef": 0.01
+    },
+    "policy": {
+      "net_arch": [
+        64,
+        64
+      ],
+      "activation": "tanh"
+    }
+  },
+  "training_success": 0.94,
+  "ep_rew_mean": 110.99259077999999
+}

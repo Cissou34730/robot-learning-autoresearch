@@ -2,38 +2,41 @@
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
-**Direction:** Establish a reliable policy for the full 6-20 cm official target
-distribution, then address the residual failures concentrated at near targets.
-The baseline provides no intervention control, so no mechanism is eliminated yet;
-it does show that a high training proxy alone is not sufficient to select a
-robust late checkpoint.
+**Direction:** Retain full-range target exposure as the current recipe and
+establish whether its partial near-target improvement is robust. The remaining
+failures are concentrated in negative-angle geometries, while checkpoint
+selection and training stability remain plausible alternatives to a purely
+radial explanation.
 
-**Lessons and limits:** The baseline task-reference panel measured
-checkpoint-100352 and checkpoint-110592 at 196/200 successes (98%), while the
-final checkpoint measured 194/200 (97%). The four failures shared by the first
-two checkpoints were all truncated at 500 steps and had radii 6.7-9.9 cm with
-angles -116 to -128 degrees. This is development-panel evidence, not official
-benchmark evidence, and the repeated panel is not independent confirmation.
-Training used radii 14-20 cm (`robot_learning/scenario/environment.py`) while
-the reference task covers 6-20 cm, so the near-target pattern is consistent
-with a training-distribution gap, but the baseline cannot establish causality.
-Training success and reward are proxies: the log reached a 0.97 proxy at
-100352 steps, fell to 0.93 at 110592, and ended at 0.95, without proving task
-progress.
+**Lessons and limits:** On the same 200-episode task-reference-v1 panel, the
+experiment-2 parent achieved 196/200 (98%), checkpoint-105472 achieved 196/200
+(98%), and checkpoint-120832 achieved 197/200 (98.5%). Relative to the parent,
+the final checkpoint fixed the failures at 6.7 cm/-116.4 degrees and 7.2
+cm/-125.4 degrees, retained failures at 9.9 cm/-122.9 degrees and 9.4
+cm/-127.9 degrees, and added one failure at 18.2 cm/-154.8 degrees. The
+under-10-cm stratum therefore rose from 53/57 (93.0%) to 55/57 (96.5%), while
+14-20 cm fell from 95/95 (100%) to 94/95 (98.9%); 10-14 cm remained 48/48.
+These observations partially support the expected radial-robustness signal but
+also match the proposal's contradicting signal of a new far-target failure.
+They are repeated development-panel evidence, not official benchmark evidence
+or independent confirmation. Training proxy success peaked at 1.0 at
+105472 steps and ended at 0.94, so it did not identify task performance or the
+best checkpoint.
 
-**Open questions:** Does training on the full official radial range remove the
-near-target failures without sacrificing performance at 14-20 cm? Are the
-additional final-checkpoint failures transient PPO drift or evidence of a
-broader robustness problem? The current fixed panel is too small and repeated
-to establish generalization or seed variance.
+**Open questions:** Will the near-target improvement and the single far-target
+regression persist on a fresh evaluation panel or another seed? Are the two
+remaining near-target failures and the new far-target failure an angular
+robustness pattern, transient PPO drift, or checkpoint-specific behavior? The
+single transfer run and fixed panel cannot establish generalization, seed
+variance, or that radius alone caused the improvement.
 
-**Conditional next steps:** Use checkpoint-100352 as the working and best-known
-policy for the next experiment. Prefer a targeted change that exposes training
-to the missing 6-14 cm radial region, retaining the official task and hold
-semantics; compare task success and the same failure geometry before attributing
-an improvement to that change. If a later candidate clearly exceeds the
-development threshold with no new concentrated failures, consider official
-assessment; otherwise continue targeted robustness work.
+**Conditional next steps:** Use checkpoint-120832 as the working and
+best-known policy. If development continues, preserve full-range exposure and
+test angular or training-stability robustness with task success and failure
+geometry measured together; do not attribute gains to radial sampling without a
+comparable fresh evaluation or control. Consider official assessment only after
+a candidate improves both the residual near-target cluster and the 14-20 cm
+behavior without a new concentration.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 1
 
@@ -75,5 +78,48 @@ of one baseline and one repeated development panel, not a causal conclusion.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-1-checkpoint-110592-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-1-checkpoint-120832-task-reference-v1.json`;
 `research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-1/inventory.json`;
+`robot_learning/scenario/environment.py`;
+`robot_learning/scenario/evaluation.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 2
+
+**Result:** Full-range target-radius training partially supported the
+intervention hypothesis. The final checkpoint reached 197/200 (98.5%) on the
+fixed development panel and is selected as the working and best-known policy.
+
+**Observed behavior:** The transferred parent reached 196/200 (98%). The
+experiment-2 checkpoint at 105472 steps also reached 196/200, with 54/57
+under-10-cm successes and 94/95 at 14-20 cm. The final checkpoint at 120832
+steps reached 197/200, with 55/57 under-10-cm successes, 48/48 at 10-14 cm,
+and 94/95 at 14-20 cm. It changed the parent outcomes on three episodes: it
+fixed parent failures at 6.7 cm/-116.4 degrees and 7.2 cm/-125.4 degrees,
+left the 9.9 cm/-122.9 degrees and 9.4 cm/-127.9 degrees failures unchanged,
+and changed a successful 18.2 cm/-154.8 degrees episode to failure. All
+failures truncated at 500 steps. The training proxy peaked at 1.0 at 105472
+steps and ended at 0.94; this is not task-reference performance.
+
+**Hypothesis assessment:** The hypothesis is **partially supported**. The
+expected reduction in the shared near-target failures occurred and the final
+panel score improved by one episode, while 10-14 cm performance was preserved.
+However, the final checkpoint did not eliminate the near-target geometry and
+introduced a far-target failure, reducing 14-20 cm performance by one episode.
+The result supports retaining full-range exposure as a useful intervention
+under this panel, but does not establish that radius alone caused the change or
+that the 98.5% result generalizes.
+
+**Interpretation:** Exposure to 6-14 cm targets plausibly addressed part of the
+baseline's radial gap because two of four shared near-target failures were
+repaired. The persistent negative-angle failures and the new far-target
+failure mean angular control, PPO drift, and checkpoint selection remain viable
+explanations. The selected checkpoint is better measured task behavior than the
+parent on this panel, not official attainment of the campaign objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-2-attempt-1.log`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-2/inventory.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-2-working-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-2-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-2-checkpoint-120832-task-reference-v1.json`;
 `robot_learning/scenario/environment.py`;
 `robot_learning/scenario/evaluation.py`.
