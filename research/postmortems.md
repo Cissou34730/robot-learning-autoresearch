@@ -3,48 +3,52 @@
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Scientific strategy
 
 **Direction:** Improve robust official-task success from the experiment-6
-100,352-step full-radius policy by making target geometry explicit in the
-observation, especially for the remaining negative-angle inner-radius reach and
-hold failures. The action-transition penalty is retained as a useful foundation,
-but the next change should target the residual representation/control behavior
-rather than repeat reward-only variants.
+100,352-step full-radius policy by changing the residual control behavior around
+negative-angle inner-radius reaches and interrupted holds. The explicit polar
+observation intervention is not a useful practical direction under its tested
+fresh recipe; the mild transition penalty remains a foundation, but the next
+experiment should target control trajectory or action conditioning rather than
+repeat this representation change.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
 experiment-3 radius-coverage candidate reached 98.5% on the same
 task-reference panel, reducing some inner-radius failures but adding one
 outer-radius failure; its paired 400-episode research result remained 96.5%.
-Experiment 4's focused angle oversampling and experiment 5's full hold-exit
-forfeiture both degraded paired research and task-reference success, so those
-tested recipes are not useful practical directions. Experiment 6's
+Experiments 4 and 5 degraded paired research and task-reference success, so
+focused angle oversampling and full hold-exit forfeiture are not useful
+directions under their tested recipes. Experiment 6's
 ACTION_DELTA_COST_COEFFICIENT=0.02 candidate at 100,352 steps scored 96.75%
 and 96.5% on the two paired research panels versus 96.5% and 96.25% for the
-working parent, with one candidate win and no parent wins on each panel. It
-also scored 99% on the protected task-reference panel versus the parent's
-98.5%, fixing the parent's outer-radius failure while retaining two
-negative-angle inner-radius failures. However, interrupted holds stayed at
-nine on each comparable research panel, and the 120,832-step candidate
-regressed to 96.5% while keeping the same 99% task-reference result. The
-intervention therefore supplies a modest practical improvement signal but does
-not establish that command jitter caused the failures. Training proxy success
-is not a sufficient selection signal, and all measurements remain development
-evidence rather than the official final benchmark.
+working parent, and 99% on the independent task-reference panel versus 98.5%
+for the parent. It retained two negative-angle inner-radius failures and did
+not reduce interrupted holds, so the improvement is practical but modest and
+does not establish a causal jitter explanation. Experiment 7 then added
+normalized radius and sine/cosine target-angle features from scratch; its
+100,352- and 120,832-step checkpoints scored 0% on both the research and
+independent task-reference panels, while the training proxy remained 0%.
+The independent instruments agree that this candidate is unusable, although
+fresh initialization prevents attributing the failure uniquely to the added
+features. All measurements remain development evidence rather than the
+official final benchmark.
 
-**Open questions:** Can an observation or control-trajectory change improve the
-remaining negative-angle inner-radius cases without sacrificing the
-experiment-6 outer-radius repair? The current evidence does not distinguish an
-inverse-kinematics observation limitation from angle-conditioned control
-behavior or training variability, and it does not establish robust 98% success
-outside the development panels.
+**Open questions:** Can a concrete action-trajectory or angle-conditioned
+control change improve the recurring negative-angle inner-radius reaches and
+interrupted holds without sacrificing the experiment-6 outer-radius repair?
+The evidence does not distinguish a control limitation from training
+variability, and experiment 7 does not establish whether its catastrophic
+failure arose from the representation itself or its fresh training dynamics.
+Robust 98% official-task success remains unestablished.
 
-**Conditional next steps:** Retain the experiment-6 100,352-step policy as the
-comparison reference, keep the full-radius recipe and mild transition penalty,
-and test a fresh policy with explicit normalized target radius and sine/cosine
-angle features. Require paired research evaluation and independent task-reference
-evidence. If this representation does not materially improve negative-angle
-failures without broad degradation, revisit angle-conditioned control or
-training variability instead of repeating angle oversampling, hold-exit
-forfeiture, or comparable action-penalty measurement.
+**Conditional next steps:** Keep the experiment-6 100,352-step policy and its
+full-radius, mild-transition-penalty recipe as the comparison reference. The
+strongest supported development opportunity is a new, concrete
+control-trajectory or action-conditioning intervention aimed at the measured
+negative-angle inner-radius and hold failures, with paired research and
+independent task-reference evidence. If preparation cannot specify a
+materially targeted intervention, retain the current policy rather than repeat
+the failed polar-observation, angle-oversampling, hold-forfeiture, or
+comparable reward-only recipes.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
@@ -288,3 +292,51 @@ all evidence is from development panels.
 `robot_learning/scenario/reward.py`,
 `robot_learning/scenario/environment.py`, and
 `robot_learning/scenario/evaluation.py`.
+
+## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 7
+
+**Result:** Adding normalized target radius and sine/cosine target-angle
+features to the 11-feature observation failed decisively under the tested fresh
+recipe. Both measured checkpoints scored 0% on the 400-episode research panel
+and 0% on the independent 200-episode task-reference panel.
+
+**Observed behavior:** This was a fresh training run changing the saved
+observation contract from 11 to 14 features while preserving the full-radius
+training distribution and experiment-6 transition penalty. The training proxy
+success stayed at 0 from the first logged checkpoint through 120,832 steps.
+The 100,352- and 120,832-step research evaluations each recorded 400 failures,
+and both task-reference evaluations recorded 200 failures. Task-reference
+failures were broad across angles and radii, with episodes terminating by the
+500-step horizon rather than showing the prior localized negative-angle
+inner-radius pattern. The independent task-reference execution used the saved
+14-feature runtime contract, so the agreement is not evidence of a
+research-evaluator-only discrepancy.
+
+**Hypothesis assessment:** Contradicted under the tested fresh recipe. The
+expected reduction in negative-angle inner-radius failures, at least a
+one-percentage-point paired improvement, and at least 98% task-reference
+success were not observed; instead, the candidate failed every measured
+episode. This strongly weakens the practical representation hypothesis for
+this recipe. Because the run was fresh and changed the learned observation
+semantics, the result does not isolate whether the added features, their
+interaction with normalization and optimization, or fresh-training
+variability caused the collapse.
+
+**Interpretation:** No further measurement of the two zero-success checkpoints
+is proportionate: the research and independent panels already agree and the
+training trajectory provides no recovery signal. Revert the experiment-7
+scientific recipe and keep the experiment-6 100,352-step policy as working and
+best-known. If development continues, the evidence supports a concrete
+control-trajectory or action-conditioning experiment against the recurring
+negative-angle inner-radius and hold failures, not another polar-observation
+variant or a terminal benchmark request.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/research_state.json`,
+`research/training_logs/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/experiment-7-attempt-1.log`,
+the experiment-7 research-evaluation and task-reference artifacts under
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/`,
+`robot_learning/scenario/observations.py`,
+`robot_learning/scenario/environment.py`,
+`robot_learning/scenario/policy_io.py`, and
+`robot_learning/training/checkpoint.py`.
