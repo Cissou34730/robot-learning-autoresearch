@@ -3,40 +3,42 @@
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Scientific strategy
 
 **Direction:** Improve official-distribution reach-and-hold robustness beyond
-the 98% development result, while making the baseline learning process reliable
-enough that reward interventions are interpretable. The second fresh
-replication recovered partway but not to the baseline range, so the next
-investigation should examine training-process or optimization conditions before
-another hold-focused reward change.
+the 98% development result while making the learning process reliable enough
+that later reward interventions are interpretable. The fresh replications and
+the transferred lower-learning-rate run now make implementation and
+optimization-trajectory diagnostics more useful than another unisolated
+hold-focused reward change.
 
-**Lessons and limits:** Experiment 5 was a fresh replication of the unchanged
-PPO recipe with training seed 2, not a continuation or changed recipe. Its
-100,352- and 120,832-step checkpoints both scored 74.5% on the same 200-episode
-research panel, and the independent protected task-reference panel reported
-74.5% for both as well. This is materially above experiment 4's 32.0% and
-49.5% at the corresponding checkpoints, but well below experiment 1's 98.0%
-and 97.0%. On the research diagnostics, 2 of 51 failed episodes had reached
-tolerance and then interrupted at 100,352 steps, versus 17 of 51 at 120,832;
-the remainder did not reach tolerance. The training proxy rose from 0.06 to
-0.54, but it is not task success. The task-reference panel is independent of
-research evaluation and is development evidence, not official confirmation.
-Together these results provide partial evidence of training-process variance,
-but do not establish that seed variance alone explains the baseline gap.
+**Lessons and limits:** Experiment 6 changed only PPO learning rate from
+0.0003 to 0.0001 while transferring the retained experiment-1 policy. Both
+development instruments scored its 35,840-step checkpoint at 97.5%, but both
+scored the 100,352- and 120,832-step checkpoints at 91.0%. Research diagnostics
+went from five failures, all in the short negative-angle sector, to 18 failures
+at each late checkpoint, mostly short-range; 12 failed episodes at each late
+checkpoint had reached tolerance but did not complete the hold. The training
+proxy reached 1.0 at 35,840 and remained near 0.97 at the end, so it again did
+not predict task performance. This weakens lower update magnitude as a remedy
+for late drift under this transferred recipe. Across experiments 4--6, fresh
+and transferred trajectories remain materially different, but the current
+evidence does not identify initialization, optimizer schedule, or
+implementation behavior as the cause. All measurements are development-panel
+evidence, not official confirmation.
 
-**Open questions:** Which training or optimization condition separates the
-98%-range trajectory from the 74.5% and 32--49.5% trajectories, and can it be
-made reliable without worsening the retained policy's residual hold failures?
-The current evidence does not identify whether the relevant factor is
-initialization, optimization trajectory, implementation behavior, or schedule.
+**Open questions:** Which implementation or training-process condition causes
+policies with strong training proxies to lose official-task reach-and-hold
+success, and can the retained baseline's localized failures be preserved while
+that condition is corrected? It is also unknown whether the late failure
+expansion reflects optimization drift or a representation/measurement
+interaction.
 
-**Conditional next steps:** Keep the retained 100,352-step baseline as working
-and best-known and preserve its unchanged scientific recipe. If research
-continues, inspect and test a training-process or optimization-schedule
-intervention that targets reproducibility before adding reward complexity. A
-future recovery toward the baseline range would support process variance,
-whereas another low trajectory would justify prioritizing implementation
-diagnostics; neither outcome should be inferred from the current training
-proxy alone.
+**Conditional next steps:** Keep the retained experiment-1 checkpoint-100352
+policy and its unchanged recipe as working and best-known. If research
+continues, inspect the training/evaluation and policy-runtime path, then test a
+controlled process or schedule intervention informed by that inspection. A
+future stable late checkpoint would justify returning to hold-specific reward
+work; another broad degradation should prioritize implementation or
+representation diagnostics instead. Do not treat proxy success or the early
+97.5% checkpoint as evidence that the human objective is reached.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 4
 
@@ -89,6 +91,53 @@ localized hold deficit and the proxy improvement did not predict task success.
 `robot_learning/scenario/evaluation.py`;
 `robot_learning/scenario/environment.py`;
 `robot_learning/scenario/reward.py`.
+
+## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 6
+
+**Result:** The lower-learning-rate transfer did not preserve the retained
+baseline's late performance. The retained experiment-1 checkpoint remains the
+strongest measured policy and no challenger is retained.
+
+**Observed behavior:** This was a changed-recipe transfer from the retained
+working checkpoint, changing only PPO learning rate from 0.0003 to 0.0001.
+Research evaluation and the independent task-reference panel both scored
+checkpoint-35840 at 97.5%, then scored checkpoints 100352 and 120832 at 91.0%.
+The early checkpoint had five failures, all short negative-angle targets. Each
+late checkpoint had 18 failures, predominantly short-range; research
+diagnostics classified 12 late failures as reaching tolerance without
+completing the hold. The training proxy reached 1.0 at 35840 and ended at 0.97,
+while task success declined.
+
+**Hypothesis assessment:** **Contradicted under the tested conditions.** The
+expected late preservation at or above 98% and avoidance of late regression did
+not occur. The early 97.5% result is a partial, below-target signal, and the
+agreement between independent instruments confirms the observed degradation on
+their development panels. This does not establish that learning rate caused
+the regression in isolation, nor does it explain the divergence among fresh
+replications; the conclusion is limited to this transferred policy, parameter
+change, budget, and development panel.
+
+**Interpretation:** Reducing the update magnitude was not a useful remedy for
+late policy drift in this run. The mismatch between training proxy and measured
+task success recurs, so proxy metrics should not select a lineage. Since the
+candidate is below the retained policy at both late checkpoints and the late
+failure pattern is broader than the baseline's localized failures, more
+measurement of this candidate is unlikely to change the lineage decision.
+Implementation and policy-runtime behavior should be inspected before another
+reward intervention or optimization schedule change.
+
+**Evidence inspected:** `research/brief.md`; `research/results.jsonl`;
+`research/postmortems.md`;
+`research/query_training_log.py`;
+`robot_learning/train.py`;
+`robot_learning/scenario/evaluation.py`;
+`robot_learning/scenario/environment.py`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-6-checkpoint-35840-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-6-checkpoint-100352-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/evaluation-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-6-checkpoint-120832-200ep-seed7300-6ba3ba6d7654.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-6-checkpoint-35840-task-reference-v1.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-6-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/03a3c9ad-ec65-4780-bee5-ada9a02320a5/task-reference-03a3c9ad-ec65-4780-bee5-ada9a02320a5-experiment-6-checkpoint-120832-task-reference-v1.json`.
 
 ## 03a3c9ad-ec65-4780-bee5-ada9a02320a5 / Experiment 5
 
