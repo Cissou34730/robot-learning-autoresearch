@@ -3,13 +3,13 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known,
-and deprioritize both full forfeiture of accumulated hold reward and unchanged
-continuation as routes beyond that policy under the tested transfer conditions.
-Full-range target exposure remains a useful but not reliably reproducible
-intervention. The two fresh runs, experiment 5, and experiment 6 point the
-investigation toward recurring angular/control or representation limitations,
-PPO trajectory stability, and checkpoint selection rather than another
-unchanged fresh run. No single mechanism has been causally isolated.
+and test whether focused exposure to its recurrent negative-angle failure sector
+can improve the policy without sacrificing full-range behavior. Full forfeiture
+of accumulated hold reward and unchanged continuation are deprioritized under
+the tested transfer conditions; fresh full-range runs were also poor. The
+angular curriculum is a targeted test of the remaining angular/control
+explanation, not a causal claim that representation or hold behavior is
+adequate.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -43,25 +43,21 @@ do not emit first band entry, hold duration, or hold-exit counts; consequently
 the proposed long-partial-hold mechanism was not directly measured. Twenty-one
 of 24 checkpoints remain unmeasured and are not failed policies.
 
-**Open questions:** Do the residual failures reflect angular/control or
-representation limits, PPO trajectory instability, or an interaction between
-reward shaping and transfer? Can a future intervention repair the parent
-failure identities while preserving the middle and far-radius strata? Which
-lightweight trajectory diagnostics (band-entry time, longest in-band run, and
-post-entry exits) would distinguish hold instability from a failure to reach
-the target? The current evidence does not support causal attribution to the
-full-forfeiture coefficient, full-range exposure, transfer, or any single PPO
-component.
+**Open questions:** Can oversampling the sector spanning the working policy's
+recurring failures near -155 to -116 degrees repair those identities while
+preserving the middle and far-radius strata? If not, do the failures instead
+reflect representation, hold stability, or PPO trajectory limits? The current
+evidence does not support causal attribution to the full-forfeiture
+coefficient, full-range exposure, transfer, or any single PPO component.
 
-**Conditional next steps:** Close experiment 5 by restoring the experiment-2
-scientific recipe and retain experiment-2 checkpoint-120832 as working and
-best-known; do not request official assessment from this challenger. If
-development continues, add the missing hold-trajectory diagnostics before
-testing a targeted angular/control or representation intervention, and compare
-task success plus failure geometry against the working policy. An unchanged
-fresh run remains lower value unless it includes diagnostics that can change
-the seed-versus-mechanism decision. Do not treat this fixed-panel evidence as
-official attainment or claim that the reward change caused the regression.
+**Conditional next steps:** Run experiment 7 by transferring from the working
+policy and sampling the full radius range with a 50% mixture focused on
+-165 to -105 degrees. Compare total success, radial strata, recurring failure
+identities, and available hold-trajectory diagnostics against the working
+policy. If the sector is repaired without far-radius loss, retain angular
+exposure as a useful route; otherwise deprioritize it and investigate
+representation or hold/control diagnostics. Do not treat fixed-panel evidence
+as official attainment.
 
 Experiment 6 adds a continuation test of checkpoint stability. Its three
 task-reference measurements reached 194/200 (97.0%) at checkpoint-100352,
