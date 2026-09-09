@@ -3,13 +3,14 @@
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Scientific strategy
 
 **Direction:** Improve robust official-task success from the experiment-6
-100,352-step full-radius policy with a new, narrowly scoped representation or
-control intervention for the recurring negative-angle failures. Experiment 9
-did not support the local action-trajectory explanation, so the next preparation
-should inspect the target-relative and inverse-kinematics information available
-to the policy and avoid repeating either a global limiter or the failed
-14-feature polar extension. The unchanged full-radius distribution and mild
-transition penalty remain the foundation.
+100,352-step full-radius policy with a semantically compatible target-relative
+or kinematics-aware intervention for the recurring negative-angle failures.
+Experiment 10 gives a modest signal that an explicit distance cue can repair
+some transferred failure episodes, but it is not sufficient by itself. If
+development continues, the next experiment should preserve full-radius
+coverage, the mild transition penalty, and the saved-policy contract while
+testing a concrete branch- or hold-aware change against the remaining failure
+set.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
@@ -52,24 +53,30 @@ later checkpoint repaired one task-reference episode but did not provide a
 paired research improvement. The training proxy peaked at 0.99 near 20,480
 steps and ended at 0.95, again failing to predict held-out success. All
 measurements remain development evidence rather than the official final
-benchmark.
+benchmark. Experiment 10 replaced the redundant planar z-error slot with
+explicit Euclidean distance and scored 97.0% on both measured research
+checkpoints versus 96.5% for the parent, repairing two parent failure
+identities without adding research-panel failures. It remained below 98%,
+shifted task-reference failures at 100,352 steps, and fell to 98.5% at
+120,832 steps, so this is a useful but non-robust representation signal rather
+than evidence of a causal mechanism.
 
-**Open questions:** Which target-relative or kinematic information is missing
-from the unchanged 11-feature policy input, and can it be introduced without
-the collapse seen in the fresh 14-feature polar experiment? The remaining
-research-panel failures are concentrated in negative-angle reaches, but
-experiment 9's targeted postprocessing did not repair them; observation,
-inverse kinematics, and training variability therefore remain alternatives.
-Robust 98% official-task success remains unestablished.
+**Open questions:** Whether the modest experiment-10 repair signal is
+reproducible, and which branch- or hold-aware information can remove the
+remaining negative-angle failures without shifting failures to outer or
+inner radii. Observation, inverse kinematics, control, and training
+variability remain competing explanations. Robust 98% official-task success
+remains unestablished.
 
 **Conditional next steps:** Keep the experiment-6 100,352-step policy and its
-full-radius, mild-transition-penalty recipe as the comparison reference. If
-development continues, test one concrete target-relative or kinematics-aware
-change with an explicit prediction about the negative-angle failure categories,
-while preserving the saved-policy contract and official task semantics. Do not
-repeat the tested local smoother, uniform global rate limit, failed
-polar-observation recipe, angle oversampling, hold forfeiture, or comparable
-reward-only change without new evidence that distinguishes it.
+full-radius, mild-transition-penalty recipe as working and best-known. If
+development continues, test one concrete branch- or hold-aware
+target-relative change with an explicit prediction that reduces the shared
+negative-angle failure set without adding task-reference failures at other
+radii. Do not repeat the tested distance-only replacement, local smoother,
+uniform global rate limit, failed polar-observation recipe, angle oversampling,
+hold forfeiture, or comparable reward-only change without new evidence that
+distinguishes it.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
@@ -453,3 +460,58 @@ from development panels.
 `research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-9-checkpoint-100352-task-reference-v1.json`,
 `research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-9-checkpoint-120832-task-reference-v1.json`,
 and `robot_learning/scenario/policy_io.py`.
+
+## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 10
+
+**Result:** Replacing the redundant planar z-error observation slot with
+explicit end-effector-to-target distance produced a modest, panel-specific
+research improvement at both measured checkpoints, but did not establish
+robust 98% task success.
+
+**Observed behavior:** This was a transferred run from the experiment-6
+working policy. The 100,352- and 120,832-step candidates both scored 97.0% on
+the identical 400-episode research panel, compared with 96.5% for the parent.
+Each candidate had one paired win and no parent wins, with only one discordant
+episode. The candidate failure set was the parent's 14 failures minus episodes
+209 and 327, leaving 12 failures; the remaining failures stayed concentrated
+at negative target angles. Failure diagnostics changed from five
+never-reached and nine reached-then-failed cases for the parent to three
+never-reached and nine reached-then-failed cases for the candidate, so the
+repaired identities did not reduce the reached-then-failed count overall.
+Task-reference success was 99.0% at 100,352 steps and 98.5% at 120,832 steps.
+The earlier checkpoint repaired the parent's 9.91 cm failure but added an
+18.24 cm failure; the later checkpoint also failed at 7.24 cm. Training
+proxy success reached 0.99, which did not establish held-out improvement.
+
+**Hypothesis assessment:** Partially supported under the tested transferred
+recipe. The distance cue produced the predicted small paired research gain
+and repaired two parent research episodes without adding failures on that
+panel, but it did not reach 98%, did not reduce the aggregate
+reached-then-failed category, and shifted or added task-reference failures.
+The two checkpoints agree on the research result, but one research panel,
+one transferred run, and near-threshold task-reference panels cannot
+distinguish a useful representation effect from training or panel
+variability. The result weakens the stronger prediction that the cue would
+preserve all geometry coverage.
+
+**Interpretation:** The experiment-6 100,352-step policy remains the best
+working and best-known lineage because its evidence is broader and its
+task-reference result is at least as strong, while experiment 10 is worth
+retaining as a reusable alternative because it repairs two compatible-panel
+failures and preserves 99% task-reference success at the earlier checkpoint.
+Further measurement of experiment 10 is not proportionate: the measured
+checkpoints have identical research failures and the available evidence
+already supports restoring the parent recipe while pursuing a new
+branch- or hold-aware intervention. The official objective remains
+unestablished.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/research_state.json`, `research/postmortems.md`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-working-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-10-checkpoint-100352-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-10-checkpoint-120832-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-10-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-10-checkpoint-120832-task-reference-v1.json`,
+`robot_learning/scenario/observations.py`, and
+`robot_learning/scenario/evaluation.py`.
