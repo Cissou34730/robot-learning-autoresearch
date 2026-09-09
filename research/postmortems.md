@@ -4,17 +4,17 @@
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
 Experiments 7 and 8 contradicted the focused angular-exposure and conservative
-PPO-update routes: neither measured angular challenger repaired a recurring
-failure, and the lower-learning-rate challenger retained all three recurring
-failures while scoring below the working policy at every measured checkpoint.
-Full hold-progress forfeiture, unchanged continuation, fresh full-range runs,
-the tested angular curriculum, and the tested lower learning rate are
-deprioritized under their tested transfer conditions. Research-evaluation
-diagnostics now show that failures 84 and 102 reach the band but hold for only
-4 and 1 steps, while failure 175 repeatedly enters and exits (242 in-band
-steps and 235 interruptions). The next intervention therefore tests hold
-credit assignment before changing the representation; this is not a causal
-conclusion about any one mechanism.
+PPO-update routes, and experiment 9 contradicted the tested convex hold-progress
+route. The experiment-9 checkpoint at 100352 reached 195/200 and the final
+checkpoint reached 184/200; neither repaired recurring failures 84, 102, or
+175, and the final checkpoint added failures across all radial strata. Full
+hold-progress forfeiture, unchanged continuation, fresh full-range runs, the
+tested angular curriculum, the tested lower learning rate, and convex hold
+shaping are therefore deprioritized under their tested transfer conditions.
+The evidence does not identify representation or control as causal, but the
+tested reward-only hold route did not improve the measured task. The next
+practical direction is a representation/control intervention with an explicit
+compatibility assessment against the parent policy I/O.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -76,21 +76,45 @@ training proxy was 0.99 at 25600 steps, 0.99 at 100352, 0.98 at 105472, and
 observations are from the same fixed development panel, not independent
 held-out confirmation or official benchmark evidence.
 
-**Open questions:** Can a convex hold-progress signal improve stability after
-band entry without sacrificing the learned reach controller? If not, are the
-remaining failures caused by target-relative representation or control
-dynamics rather than reward credit assignment? The unchanged continuation,
-hold-forfeiture intervention, angular oversampling, and lower-learning-rate
-transfer all failed under their tested conditions, but none isolated these
-remaining alternatives.
+Experiment 9's task-reference measurements were 195/200 at checkpoint-100352
+(54/57 near, 48/48 middle, 93/95 far) and 184/200 at checkpoint-120832
+(52/57, 48/48, 84/95), versus 197/200 (55/57, 48/48, 94/95) for the working
+policy. Both checkpoints retained failures 84, 102, and 175; the early
+checkpoint also failed 67 and 160, while the final added 13 further failures.
+Paired research-evaluation comparisons had zero challenger wins and two
+reference wins at 100352, then zero challenger wins and thirteen reference
+wins at 120832. The early checkpoint's preserved middle stratum is a partial
+preservation signal, not measured task progress; the final checkpoint's
+far-radius regression and expanded failure set are contrary signals. These
+results are descriptive evidence from one fixed panel and one transfer
+trajectory, not independent held-out confirmation or official benchmark
+evidence.
 
-**Conditional next steps:** Run experiment 9 by transferring the working
-policy into the convex hold-progress reward. Compare total success, radial
-strata, the three recurring identities, and the new hold diagnostics against
-the working policy; only measured task improvement justifies changing lineage.
-If the recurring failures retain their brief or interrupted hold signatures,
-move to a representation/control intervention with an explicit compatibility
-assessment. Do not treat the fixed-panel evidence as official attainment.
+Research-evaluation diagnostics show that the convex reward did not repair the
+hold signatures: for failures 84, 102, and 175, maximum consecutive holds
+were 4, 2, and 1 at 100352 and 5, 1, and 0 at 120832, versus 4, 1, and 6 for
+the working policy. Episode 175 never entered the band at the final checkpoint,
+and aggregate interruptions rose from 240 for the working policy to 1100.
+Task-reference artifacts still do not emit these hold diagnostics, so this
+mechanistic evidence is limited to the research-evaluation context. The
+experiment-9 proxy reached 1.0 earlier, was 0.99 at 100352, and ended at 0.96;
+this reinforces that training proxy and reward are not task-policy selectors.
+
+**Open questions:** Can a target-relative representation or control intervention
+repair the persistent negative-angle and far-radius failures without sacrificing
+the parent radial strata? Which changes remain semantically compatible with the
+parent observation and action contract? The unchanged continuation,
+hold-forfeiture intervention, angular oversampling, lower-learning-rate
+transfer, and convex hold shaping all failed under their tested conditions, but
+none isolates representation from control dynamics or PPO trajectory effects.
+
+**Conditional next steps:** Close experiment 9 by reverting its reward change and
+keeping the experiment-2 working and best-known lineage. If development
+continues, test one representation/control change at a time from that lineage,
+with an explicit policy-I/O compatibility assessment and the same comparison of
+total success, radial strata, failure identities, and hold diagnostics. Require
+measured task improvement before changing lineage; do not treat the fixed-panel
+evidence as official attainment.
 
 Experiment 6 adds a continuation test of checkpoint stability. Its three
 task-reference measurements reached 194/200 (97.0%) at checkpoint-100352,
@@ -169,6 +193,68 @@ of one baseline and one repeated development panel, not a causal conclusion.
 `research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-1/inventory.json`;
 `robot_learning/scenario/environment.py`;
 `robot_learning/scenario/evaluation.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 9
+
+**Result:** The convex hold-progress reward hypothesis was contradicted under
+the tested transfer conditions. Checkpoint-100352 reached 195/200 and
+checkpoint-120832 reached 184/200 on task-reference-v1, both below the
+working policy's 197/200, so the experiment-2 working and best-known lineage
+remains selected.
+
+**Observed behavior:** On the fixed 200-episode task-reference panel,
+checkpoint-100352 achieved 54/57 near-radius, 48/48 middle-radius, and 93/95
+far-radius successes. Checkpoint-120832 achieved 52/57, 48/48, and 84/95.
+Both retained recurring failures 84, 102, and 175. The early checkpoint also
+failed 67 and 160; the final checkpoint also failed 26, 29, 44, 55, 57, 65,
+99, 123, 129, 146, 148, 155, and 196. Research-evaluation measurements
+matched the task-reference totals: 97.5% and 92.0%. Paired research-evaluation
+comparisons had zero challenger wins versus two working-policy wins at 100352,
+and zero challenger wins versus thirteen working-policy wins at 120832.
+
+The research-evaluation diagnostics showed no repair of the targeted hold
+deficits. For episodes 84, 102, and 175, the early checkpoint had maximum
+consecutive holds of 4, 2, and 1 with one interruption each; the final had 5,
+1, and 0, with episode 175 never entering the band. The working policy had
+maximum holds of 4, 1, and 6, while episode 175 accumulated 242 in-tolerance
+steps across 235 interruptions. The early increase for episode 102 was not a
+success, and the final aggregate interruptions were 1100 versus 240 for the
+working policy. All task-reference failures truncated at 500 steps. The
+training proxy was 0.99 at checkpoint-100352 and 0.96 at checkpoint-120832,
+despite the proxy reaching 1.0 earlier; these are training facts, not task
+performance.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected observation was at least 197/200, repair of one or
+more of episodes 84, 102, and 175, and at least 94/95 far-radius success.
+Neither measured checkpoint met the total-success threshold or repaired a
+recurring failure. The early checkpoint preserved 48/48 middle-radius success
+and remained close to the parent in total success, which is an unexpected
+partial preservation signal, but it lost one far-radius success and did not
+improve the task. The final checkpoint lost ten far-radius successes and
+expanded the failure set. This weakens convex hold shaping as a practical route
+under this transfer condition; it does not prove that reward shaping is
+universally ineffective or establish a representation/control cause.
+
+**Interpretation:** Increasing the exponent changed the learned policy's
+post-entry behavior inconsistently: the early checkpoint slightly changed one
+brief hold but did not complete it, while the final checkpoint failed to enter
+one recurring target and accumulated substantially more interruptions overall.
+The measured task regression and unfavorable paired comparisons justify
+rejecting this challenger for lineage selection. The fixed panel, single
+transfer trajectory, unmeasured checkpoints, and differing reward semantics
+limit causal claims; the new hold diagnostics are development-evaluator
+evidence, not official benchmark evidence.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-9-attempt-1.log`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-9-checkpoint-100352-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-9-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-9-working-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-9-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-9-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-9-working-task-reference-v1.json`;
+`robot_learning/scenario/reward.py`.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 2
 
