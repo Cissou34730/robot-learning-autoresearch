@@ -17,12 +17,26 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.observations import TARGET_RADIUS_NORMALIZATION
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_observation_exposes_normalized_target_polar_geometry():
+    env = make_training_env()
+    obs, _ = env.reset(seed=0)
+    target = env.data.mocap_pos[0]
+    angle = np.arctan2(target[1], target[0])
+
+    assert obs[-3] == pytest.approx(
+        np.hypot(target[0], target[1]) / TARGET_RADIUS_NORMALIZATION
+    )
+    assert obs[-2] == pytest.approx(np.sin(angle))
+    assert obs[-1] == pytest.approx(np.cos(angle))
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
