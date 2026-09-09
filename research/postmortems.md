@@ -2,53 +2,49 @@
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Scientific strategy
 
-**Direction:** Improve robust official-task success by addressing the
-angle-conditioned reach and hold instability that remains after matching
-training coverage to the official 6-20 cm radius range. The focused
-angle-oversampling and full hold-exit-forfeit interventions are rejected; keep
-the experiment-3 checkpoint at 100,352 steps as the working policy and next
-investigate an observation or control-trajectory change targeted at the
-remaining negative-angle failures.
+**Direction:** Improve robust official-task success from the experiment-6
+100,352-step full-radius policy by addressing the remaining negative-angle
+reach and hold failures with an observation or control-trajectory intervention.
+The action-transition penalty is retained as a useful foundation, but the next
+change should target the residual behavior rather than repeat reward-only
+variants.
 
 **Lessons and limits:** The fresh baseline reached 98.0% on the protected
 development panel at 100,352 steps, but fell to 97.0% at 120,832 steps. The
-experiment-3 radius-coverage candidate reached 98.5% on that same
-task-reference panel, reducing the parent’s four failures to two inner-radius
-failures but adding one outer-radius failure. On the new 400-episode research
-panel, candidate and parent had the identical 14 failures and both scored
-96.5%; across the candidate’s three research panels it scored 97.25% pooled.
-The 105,472-step candidate scored 98.0% on both 200-episode research panels
-and the task-reference panel, so it did not improve on the 100,352-step
-candidate. The remaining and paired-panel failures are concentrated in a
-negative-angle region and often involve unstable or interrupted holds. Full
-radius coverage therefore has a useful but limited signal: it can repair some
-inner-radius cases, but the single transferred run does not establish a
-causal effect or robustly satisfy the objective. Experiment 4's 50%
-hard-sector angle oversampling reduced comparable research success from 96.5%
-to 91.5% and produced 34 rather than 14 failures, with most candidate
-failures involving interrupted holds; task-reference success also fell below
-98% at both measured checkpoints. Experiment 5's full hold-exit forfeiture
-produced 24 failures (19 interrupted, 5 never-reached) at 100,352 steps and
-19 failures (16 interrupted, 3 never-reached) at 120,832, versus 14 for the
-parent (9 interrupted, 5 never-reached). Its task-reference results were
-95.5% and 96.0%. The later checkpoint fixed two parent research failures but
-added seven others and remained below the parent, so the reward direction is
-not a useful practical intervention under this recipe. Training proxy success
-is not a sufficient selection signal. Development panels are not the official
-final benchmark.
+experiment-3 radius-coverage candidate reached 98.5% on the same
+task-reference panel, reducing some inner-radius failures but adding one
+outer-radius failure; its paired 400-episode research result remained 96.5%.
+Experiment 4's focused angle oversampling and experiment 5's full hold-exit
+forfeiture both degraded paired research and task-reference success, so those
+tested recipes are not useful practical directions. Experiment 6's
+ACTION_DELTA_COST_COEFFICIENT=0.02 candidate at 100,352 steps scored 96.75%
+and 96.5% on the two paired research panels versus 96.5% and 96.25% for the
+working parent, with one candidate win and no parent wins on each panel. It
+also scored 99% on the protected task-reference panel versus the parent's
+98.5%, fixing the parent's outer-radius failure while retaining two
+negative-angle inner-radius failures. However, interrupted holds stayed at
+nine on each comparable research panel, and the 120,832-step candidate
+regressed to 96.5% while keeping the same 99% task-reference result. The
+intervention therefore supplies a modest practical improvement signal but does
+not establish that command jitter caused the failures. Training proxy success
+is not a sufficient selection signal, and all measurements remain development
+evidence rather than the official final benchmark.
 
-**Open questions:** Is the residual limitation in the observation
-representation or control trajectory, and can a targeted change avoid the
-broad degradation seen from angle oversampling and the hold-forfeit reward?
-The official objective remains unestablished, and the development panels do
-not show robust 98% success.
+**Open questions:** Can an observation or control-trajectory change improve the
+remaining negative-angle inner-radius cases without sacrificing the
+experiment-6 outer-radius repair? The current evidence does not distinguish an
+inverse-kinematics observation limitation from angle-conditioned control
+behavior or training variability, and it does not establish robust 98% success
+outside the development panels.
 
-**Conditional next steps:** Restore the experiment-3 working recipe and
-checkpoint at 100,352 steps. Test a mild action-transition penalty against the
-paired negative-angle and interrupted-hold failures while preserving full-radius
-coverage and requiring independent task-reference evidence; do not repeat the
-rejected angle oversampling or full hold-exit-forfeit recipe unless a materially
-different mechanism is introduced.
+**Conditional next steps:** Continue from and retain the experiment-6
+100,352-step candidate, keeping the full-radius recipe and mild transition
+penalty. Test one concrete observation or control-trajectory intervention,
+requiring paired research evaluation and independent task-reference evidence.
+If that intervention does not materially improve the negative-angle failures
+without broad degradation, revisit the representation/control hypothesis
+instead of repeating angle oversampling, hold-exit forfeiture, or comparable
+action-penalty measurement.
 
 ## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 4
 
@@ -237,5 +233,58 @@ and avoids the latter’s additional inner-radius failure.
 `research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-3-working-400ep-seed9200-ffdccdbf3357.json`,
 the experiment-3 task-reference artifacts, the experiment-2
 100,352-step task-reference artifact, `research/scenario.md`,
+`robot_learning/scenario/environment.py`, and
+`robot_learning/scenario/evaluation.py`.
+
+## 812f1297-8535-4e4b-befe-eaaeb7f3ad5d / Experiment 6
+
+**Result:** The mild action-transition penalty produced a modest improvement
+signal at the 100,352-step checkpoint, but did not establish robust 98%
+research success or the predicted reduction in hold interruptions.
+
+**Observed behavior:** This was a transferred training run from the
+experiment-3 working policy, changing only the reward with a
+`ACTION_DELTA_COST_COEFFICIENT=0.02` term on consecutive clipped physical
+actions. On the two comparable 400-episode research panels, the 100,352-step
+candidate scored 96.75% and 96.5%, versus 96.5% and 96.25% for the parent.
+Each paired panel had one candidate win and no parent wins. Candidate failures
+were 13 and 14 versus 14 and 15 for the parent; interrupted holds remained at
+nine on each panel, while never-reached failures fell from five to four on each.
+The 120,832-step candidate scored 96.5% on its research panel, with 11
+interrupted and three never-reached failures. Both candidate checkpoints scored
+99% on the independent task-reference development panel, versus 98.5% for the
+parent. The candidate fixed the parent's failure at radius 18.240 cm but
+retained the two negative-angle inner-radius failures at 9.915 and 9.355 cm.
+Training proxy success reached 1.0 at an intermediate checkpoint and ended at
+0.96; this did not predict the held-out research result.
+
+**Hypothesis assessment:** Partially supported under the tested transferred
+recipe. The 100,352-step policy improved every comparable aggregate outcome
+slightly and reached 99% on the task-reference panel, supporting a practical
+benefit from the change. However, it remained below 98% on both research
+panels, did not reduce interrupted holds, and the later checkpoint regressed on
+research evaluation. The evidence therefore does not support the stronger
+claim that command jitter was the main cause of the residual hold failures,
+and one transferred run cannot establish a causal effect.
+
+**Interpretation:** The 100,352-step candidate is the strongest measured policy
+and is preferable to the prior working lineage, while the mild transition term
+is worth retaining as a foundation. The remaining failures are still
+negative-angle and inner-radius cases, so another comparable reward or
+measurement round is less useful than a concrete observation or control-
+trajectory intervention. The official objective remains unestablished because
+all evidence is from development panels.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/postmortems.md`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-checkpoint-100352-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-checkpoint-100352-400ep-seed9300-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-checkpoint-120832-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-working-400ep-seed9200-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/evaluation-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-working-400ep-seed9300-479599417eaf.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-3-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/812f1297-8535-4e4b-befe-eaaeb7f3ad5d/task-reference-812f1297-8535-4e4b-befe-eaaeb7f3ad5d-experiment-6-checkpoint-120832-task-reference-v1.json`,
+`robot_learning/scenario/reward.py`,
 `robot_learning/scenario/environment.py`, and
 `robot_learning/scenario/evaluation.py`.
