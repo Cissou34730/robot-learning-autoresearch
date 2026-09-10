@@ -214,13 +214,26 @@ when changing it.
 
 ## Stopping
 
-Continue while a scientifically useful path remains. Training metrics,
-development measurements, individual checkpoints, subsets and seeds are not
-success. Stop only when the official benchmark declares the objective reached
-or no scientifically useful path remains to report.
+Compare ending development with the single strongest development experiment the
+current evidence supports. An opportunity supports continuation when it names a
+concrete intervention, is grounded in observed behavior, has a credible path to
+materially improving the human objective, and is proportionate in cost. Continue
+when that opportunity has greater expected value than terminal assessment.
+
+Consider only that strongest opportunity, not every open question. Do not
+continue merely to reduce uncertainty, repeat comparable evidence, exhaust every
+hypothesis, or pursue an intervention that can only be described abstractly.
+
+Request terminal assessment only when development evidence gives a reasonable
+expectation that the official objective is satisfied and no supported material
+opportunity has greater expected value. Reaching the target on a development
+panel does not by itself justify terminal assessment. Explain why the strongest
+apparent opportunity is absent, weakened, immaterial, or disproportionate.
 
 Request the official benchmark only through closure, targeting the frozen
-best-known model. Requesting it ends the campaign after either verdict:
-`goal_reached` or `goal_not_reached`. Do not plan further work conditional on
-benchmark failure. Only this benchmark declares the official result; a failed
-official verdict is never development feedback for another hypothesis.
+best-known model. It is the terminal verdict on a policy already expected to
+satisfy the objective, not a way to resolve development uncertainty. Requesting
+it ends the campaign after either verdict: `goal_reached` or `goal_not_reached`.
+Do not plan further work conditional on benchmark failure. Only this benchmark
+declares the official result; a failed official verdict is never development
+feedback for another hypothesis.

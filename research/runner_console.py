@@ -21,6 +21,7 @@ _SECTION_HEADINGS = frozenset(
         "Next",
         "Question",
         "Plan",
+        "Selections",
         "Reason",
         "Candidate",
         "Champion",
