@@ -52,7 +52,7 @@ For the official benchmark result, use `research/brief.md` under **Current
 status -> Reported result**. Its durable metrics and artifact reference remain
 in `research/research_state.json`.
 
-Candidate training success and reward shown in the brief are training facts, not evaluation results.
+Candidate training success and reward shown in the brief are training facts, not evaluation results. They cannot establish that a policy improved, but they are the intended basis for deciding which checkpoints to measure.
 
 ### Query Stable-Baselines3 logs
 

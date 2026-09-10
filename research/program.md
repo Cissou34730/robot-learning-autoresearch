@@ -62,6 +62,12 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
+That restriction governs claims, not selection. Before measurement the training
+proxy is the only signal that distinguishes one checkpoint from another, so
+ranking candidates by it and measuring the ones it favors is sound practice. What
+the proxy cannot do is settle the outcome: a checkpoint it ranks highest is a
+measurement target, never a demonstrated result.
+
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
 variability. Fresh training does not by itself establish that an intervention
