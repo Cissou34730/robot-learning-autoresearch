@@ -1929,7 +1929,10 @@ def test_each_measurement_requires_a_selection_justification(selection):
     }
     if selection is not None:
         entry["selection"] = selection
-    with pytest.raises(ValueError, match="requires a non-empty selection"):
+    with pytest.raises(
+        ValueError,
+        match="requires a non-empty selection stating why this model is useful",
+    ):
         validate_evaluation_request(
             {
                 "question": "question",

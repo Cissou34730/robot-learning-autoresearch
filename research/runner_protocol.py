@@ -793,12 +793,12 @@ def validate_evaluation_request(
             )
         if "label" in entry and not isinstance(entry["label"], str):
             raise ValueError("measurement label must be a string")
-        # Naming a candidate obliges the researcher to say why it beat the alternatives.
+        # Record scientific usefulness without asking the Runner to rank candidates.
         selection = entry.get("selection")
         if not isinstance(selection, str) or not selection.strip():
             raise ValueError(
                 f"{instrument} requires a non-empty selection stating why this "
-                "candidate was chosen over the other available checkpoints"
+                "model is useful for the current scientific question"
             )
         normalized_selection = selection.strip()
         previous_selection = selections.setdefault(candidate.strip(), normalized_selection)

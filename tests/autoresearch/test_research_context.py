@@ -844,3 +844,19 @@ def test_researcher_prompts_leave_execution_to_the_launcher():
     assert "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py" in script
     assert "Experiment was already executed during the research session" not in script
     assert "The researcher executed an experiment during the new-hypothesis" in script
+
+
+def test_researcher_prompts_are_objective_first_and_direction_neutral():
+    root = Path(__file__).resolve().parents[2]
+    script = (root / "run_research.ps1").read_text(encoding="utf-8")
+    policy = (root / "researcher_copilot.py").read_text(encoding="utf-8")
+
+    objective = "Assess progress toward a learned policy satisfying the human objective."
+    prediction = "relate relevant findings to the proposal's expected_observation"
+    assert script.count(objective) >= 2
+    assert script.index(objective) < script.index(prediction)
+    assert "a direction you are expected to continue" in script
+    assert "Continue, revise, broaden, replace, or abandon it" in script
+    assert "most informative to measure rather than the alternatives" not in script
+    assert "chosen over the other available checkpoints" not in script
+    assert "Context efficiency does not determine which" in policy

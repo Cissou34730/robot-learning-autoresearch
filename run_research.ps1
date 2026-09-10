@@ -344,9 +344,9 @@ while ($true) {
         $analysisPrompt = @(
             $analysisPhasePrompt
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Revisit the proposal's expected_observation and contradicting_observation, then update lessons, limits, open questions, and conditional next steps. Record partial or unexpected signals, separate observations from interpretations, and scope causal claims to the evidence."
+            "Assess progress toward a learned policy satisfying the human objective. Begin with the observed training and measurement evidence, including partial, unexpected, or orthogonal signals. Then relate relevant findings to the proposal's expected_observation and contradicting_observation without treating them as policy-acceptance thresholds. Separate observations from interpretations and scope causal claims to the evidence."
             "Measured task performance is what supports a claim of policy progress; logs, code, and training/evaluation discrepancies guide the investigation."
-            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it. Additional measurement rounds are optional and available only in this phase."
+            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison. Evidence gathering may discover or refine the scientific question. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it. Additional measurement rounds are optional and available only in this phase."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid. Omit best_known when it is unchanged."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
@@ -398,9 +398,9 @@ while ($true) {
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
                 "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
-                "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
-                'State the scientific question first, and use the request-level `reason` to explain how the possible outcomes could change the interpretation, the lineage decision, or the next direction. Reuse compatible existing evidence.'
-                'Every measurement also requires its own `selection`: compare the available checkpoints before naming one, and state why that candidate is the most informative to measure rather than the alternatives.'
+                "Start from the campaign objective and available evidence. Inspection may formulate, refine, or answer the scientific question; targeted extraction and full-artifact inspection are both available."
+                'State the scientific question and use the request-level `reason` to explain why the measurement round is useful. Reuse compatible existing evidence when it answers the question.'
+                'Every measurement also requires its own `selection`: state why measuring that model is useful for the current scientific question. The harness does not prescribe a checkpoint-ranking criterion.'
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -470,7 +470,9 @@ while ($true) {
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "In the postmortem and Scientific strategy, assess the tested question against the proposal's expected_observation and contradicting_observation, separate observations from interpretations, and scope claims to the evidence. Synthesize current and prior evidence to identify a provisional most promising direction for the next hypothesis phase. Record what is supported, weakened, or unresolved, without treating unresolved questions as work that must be completed."
+            "Assess progress toward a learned policy satisfying the human objective. Begin with observed behavior, then relate relevant findings to the proposal's expected_observation and contradicting_observation. Record partial and unexpected findings, separate observations from interpretations, and scope claims to the evidence."
+            "Resolve hypothesis assessment, saved-policy usefulness, recipe action, working lineage, retention, optional best-known designation, and terminal readiness as distinct scientific decisions. A weakened prediction does not by itself reject a useful policy."
+            "Treat the Scientific strategy as a provisional synthesis, not an instruction for the next session. Record supported, weakened, and unresolved findings without making its Direction or Conditional next steps a mandatory continuation path."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -522,7 +524,8 @@ while ($true) {
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-        "Start from the campaign objective and available evidence, and state the scientific question. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
+        "Start from the campaign objective and available evidence, then reassess the Scientific strategy as provisional memory rather than a direction you are expected to continue. Continue, revise, broaden, replace, or abandon it according to scientific judgment."
+        "State the scientific question, decide whether the investigation is confirmatory, diagnostic, or exploratory, and choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
         "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
