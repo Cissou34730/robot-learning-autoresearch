@@ -204,13 +204,16 @@ comparable policy? Does any development-panel gain generalize to the official
 task distribution?
 
 **Conditional next steps:** Restore the experiment-16 raw Cartesian-velocity
-recipe and retain checkpoint-110592 as the development best-known policy. A
-future experiment should target the remaining task failures while preserving
-the 13-slot raw-velocity semantics; use research diagnostics when the
-intervention predicts entry or hold changes. If a candidate again shows broad
-task degradation, reject it on measured task success regardless of training
-proxy or reward. All current results remain fixed-panel development evidence
-rather than official attainment.
+recipe and retain checkpoint-110592 as the development best-known policy.
+First replicate that unchanged recipe from a different fresh PPO seed to test
+whether the 198/200 result is reproducible rather than a favorable
+optimization trajectory. If replication is strong, use the same 13-slot
+raw-velocity semantics for a targeted residual-failure intervention; if it is
+weak, treat experiment 16 as an outlier and prioritize variance-aware recipe
+changes. Use research diagnostics when a candidate predicts entry or hold
+changes, and reject broad task degradation regardless of training proxy or
+reward. All current results remain fixed-panel development evidence rather than
+official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
