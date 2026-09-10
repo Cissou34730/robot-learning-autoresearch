@@ -2,33 +2,34 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Improve official-task success by addressing the persistent
--150 to -120 degree failure sector, using full-radius training coverage as a
-retained condition but no longer treating it as the leading explanation for
-that sector.
+**Direction:** Diagnose whether a representation that exposes continuous
+absolute target geometry can remove the persistent -150 to -120 degree failure
+sector, while retaining full-radius training coverage; if not, redirect toward
+control or hold-stability shaping rather than treating geometry visibility as
+the sole explanation.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
-success from 98.0% to 98.5%. In the same research panel, its 6-10 cm bin
-improved from 97.2% to 98.2%, while the 18-20 cm bin fell from 98.2% to 97.3%.
-The hard sector remained dominant and slightly worsened from 23/74 to 24/74
-failures. The task-reference failures changed from four short-radius failures
-to two short-radius failures plus one 18.24 cm failure. The completed
+success from 98.0% to 98.5%, but its hard sector still contained 24 of 25
+research failures and included both never-reached targets and repeated hold
+interruptions. In the same research panel, its 6-10 cm bin improved from 97.2%
+to 98.2%, while the 18-20 cm bin fell from 98.2% to 97.3%. The completed
 checkpoint regressed to 97.2% research success while retaining 98.5% on the
 task-reference panel. These are development measurements, not the official
 verdict; the single transferred run and fixed panels do not establish a causal
 effect of radius coverage.
 
-**Open questions:** Whether the negative-angle sector is caused by observation
-or control generalization, whether checkpoint selection or late-training
-regression is the more useful intervention, and whether the modest short-radius
-gain persists on new coverage.
+**Open questions:** Whether direct absolute target geometry helps the policy
+select and stabilize the appropriate reach behavior in the negative-angle
+sector, or whether the residual is primarily a control/reward issue. Whether
+the representation change preserves far-radius competence also remains unknown.
 
-**Conditional next steps:** A future experiment may inspect observation or
-control generalization while retaining broad-radius training, or test a
-checkpoint-aware training schedule. The measured early challenger is useful
-progress but is not ready for terminal assessment while the large structured
-failure sector remains.
+**Conditional next steps:** If the representation test reduces both
+never-reached cases and hold interruptions without sacrificing other geometry,
+measure and compare its best checkpoint against the current working lineage.
+If the sector persists, test hold-stability reward shaping or checkpoint-aware
+selection. The current measured policies remain useful progress but are not
+ready for terminal assessment while the structured failure sector remains.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
