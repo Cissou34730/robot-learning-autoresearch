@@ -28,6 +28,9 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+HARD_TARGET_FRACTION = 0.25
+HARD_TARGET_RADIUS_RANGE = (0.07, 0.11)
+HARD_TARGET_ANGLE_RANGE_DEGREES = (-135.0, -115.0)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -81,12 +84,30 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        angle = float(self.np_random.uniform(-np.pi, np.pi))
-        radius = float(
-            self.np_random.uniform(
-                self.target_radius_range[0], self.target_radius_range[1]
+        if (
+            self.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
+            and self.np_random.random() < HARD_TARGET_FRACTION
+        ):
+            angle = float(
+                np.deg2rad(
+                    self.np_random.uniform(
+                        HARD_TARGET_ANGLE_RANGE_DEGREES[0],
+                        HARD_TARGET_ANGLE_RANGE_DEGREES[1],
+                    )
+                )
             )
-        )
+            radius = float(
+                self.np_random.uniform(
+                    HARD_TARGET_RADIUS_RANGE[0], HARD_TARGET_RADIUS_RANGE[1]
+                )
+            )
+        else:
+            angle = float(self.np_random.uniform(-np.pi, np.pi))
+            radius = float(
+                self.np_random.uniform(
+                    self.target_radius_range[0], self.target_radius_range[1]
+                )
+            )
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.
         target_z = float(self._end_effector_position()[2])
