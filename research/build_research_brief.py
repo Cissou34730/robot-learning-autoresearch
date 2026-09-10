@@ -383,15 +383,15 @@ def _training_proxy_trajectory(candidates: list[dict]) -> str:
             f"- Training proxy observations: unavailable ({proxy_label} proxy, "
             "not a training evaluation result)"
         )
-    initial_steps, initial_value = observations[0]
-    final_steps, final_value = observations[-1]
+    first_steps = observations[0][0]
+    last_steps = observations[-1][0]
     values = [value for _, value in observations]
     return (
         f"- Training proxy observations: {len(observations)} checkpoints from "
-        f"{initial_steps:,}-{final_steps:,} local steps; {proxy_label} range "
-        f"{min(values):g}-{max(values):g}, initial {initial_value:g}, final "
-        f"{final_value:g}. These are descriptive training facts, not a checkpoint "
-        "ranking or evaluation result."
+        f"{first_steps:,}-{last_steps:,} local steps; observed {proxy_label} "
+        f"range {min(values):g}-{max(values):g}. These are descriptive training "
+        "facts, not a checkpoint ranking or evaluation result. Per-checkpoint "
+        "values remain available through the training log query."
     )
 
 
