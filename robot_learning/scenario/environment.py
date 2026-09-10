@@ -28,6 +28,7 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+TRAINING_NEGATIVE_ANGLE_PROBABILITY = 0.5
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -37,6 +38,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self,
         *,
         target_radius_range: tuple[float, float] = TARGET_RADIUS_RANGE,
+        negative_angle_probability: float = 0.0,
         success_threshold: float = SUCCESS_THRESHOLD,
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
@@ -47,6 +49,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        if not 0.0 <= negative_angle_probability <= 1.0:
+            raise ValueError("negative_angle_probability must be between 0 and 1")
+        self.negative_angle_probability = negative_angle_probability
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -81,7 +86,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        if self.np_random.random() < self.negative_angle_probability:
+            angle = float(self.np_random.uniform(-np.pi, 0.0))
+        else:
+            angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
@@ -170,7 +178,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return TwoJointArmReachEnv(
+        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
+        negative_angle_probability=TRAINING_NEGATIVE_ANGLE_PROBABILITY,
+    )
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
