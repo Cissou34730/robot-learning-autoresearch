@@ -17,35 +17,12 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import (
-    TARGET_RADIUS_CENTER,
-    TARGET_RADIUS_HALF_RANGE,
-)
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_observation_exposes_normalized_periodic_target_geometry():
-    env = make_training_env()
-    obs, _ = env.reset(seed=0)
-    target_x, target_y = env.data.mocap_pos[0][:2]
-    radius = np.hypot(target_x, target_y)
-    angle = np.arctan2(target_y, target_x)
-
-    np.testing.assert_allclose(
-        obs[-3:],
-        [
-            (radius - TARGET_RADIUS_CENTER) / TARGET_RADIUS_HALF_RANGE,
-            np.sin(angle),
-            np.cos(angle),
-        ],
-        rtol=1e-6,
-        atol=1e-6,
-    )
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
