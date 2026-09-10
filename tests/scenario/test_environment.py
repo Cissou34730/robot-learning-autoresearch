@@ -17,12 +17,29 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.observations import (
+    ANGLE_SCALE,
+    JOINT_VELOCITY_SCALE,
+    POSITION_ERROR_SCALE,
+)
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
+
+
+def test_observation_uses_explicit_physical_feature_scales():
+    env = make_training_env()
+    obs, _ = env.reset(seed=0)
+    expected_position_error = (
+        env.data.site("end_effector").xpos - env.data.mocap_pos[0]
+    ) / POSITION_ERROR_SCALE
+
+    np.testing.assert_allclose(obs[:2], env.data.qpos / ANGLE_SCALE)
+    np.testing.assert_allclose(obs[2:4], env.data.qvel / JOINT_VELOCITY_SCALE)
+    np.testing.assert_allclose(obs[4:7], expected_position_error)
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
