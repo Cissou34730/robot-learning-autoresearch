@@ -2,46 +2,46 @@
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Scientific strategy
 
-**Direction:** The baseline establishes a near-target policy, so the next
-investigation should address its measured short-radius blind spot rather than
-replace the method speculatively. The strongest current lead is to broaden or
-reweight training targets below 14 cm, with attention to the negative-angle
-sector where the selected policy failed. The measurements do not establish that
-the training distribution caused the failures, and they do not support a causal
-claim about late training degradation.
+**Direction:** Broadening training radii below 14 cm is retained as a promising
+but incomplete direction. The experiment-2 checkpoint-100352 is the practical
+parent for a focused follow-up on the remaining negative-angle failures,
+especially the short-radius cases, rather than a speculative method change.
+The evidence does not establish that radius coverage alone caused the gain or
+that the training-proxy decline caused task degradation.
 
-**Lessons and limits:** The selected checkpoint-100352 reached 98% (196/200) on
-the protected development task-reference panel, while checkpoint-95232 reached
-96% and checkpoint-120832 reached 97%
-(`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-1-checkpoint-100352-task-reference-v1.json`,
-`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-1-checkpoint-95232-task-reference-v1.json`, and
-`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-1-checkpoint-120832-task-reference-v1.json`). This is
-development evidence, not the official result. The baseline proposal snapshot
-did not state explicit expected or contradicting observations; its implicit
-expectation was that the highest training-success checkpoint would be the
-strongest measurement candidate. That expectation was partially supported:
-checkpoint-100352 was the best of the three measured checkpoints, but the
-training proxy did not establish task success and the later checkpoint scored
-lower on the same panel. On checkpoint-100352, all four failures truncated at
-500 steps and had radii 6.7-9.9 cm and angles -116 to -128 degrees. The training
-environment samples radii 14-20 cm while the protected task samples 6-20 cm
-(`robot_learning/scenario/environment.py` and
-`robot_learning/benchmark/final_contract.py`), so the radius mismatch is a
-testable explanation, not an established cause.
+**Lessons and limits:** On the identical 200-episode development
+task-reference panel, experiment-2 checkpoint-100352 scored 98.5% (197/200),
+checkpoint-105472 scored 98% (196/200), and checkpoint-120832 scored 98.5%
+(197/200). Relative to the experiment-1 parent checkpoint-100352 at 98%
+(196/200), the experiment-2 parent-horizon policy repaired two prior failures
+(episodes 0 and 10), retained failures at episodes 84 and 102, and added one
+failure at episode 175. The remaining failures were all negative-angle targets:
+9.9 and 9.4 cm at about -123 and -128 degrees, plus an 18.2 cm target at about
+-155 degrees. Thus the expected short-radius improvement and at-least-parent
+overall success were observed, while the no-material-far-target-regression
+condition was only partially met. This supports the broadened recipe as useful
+under the tested transfer and run conditions, not a causal claim about the
+radius distribution. The proxy peak at 105472 was not the strongest measured
+policy, and the final proxy decline to 0.94 did not lower total task success
+relative to checkpoint-100352; proxy ranking and late-proxy behavior therefore
+remain insufficient for task claims. All measurements are development-panel
+evidence, not the official result.
 
-**Open questions:** Does including 6–14 cm targets improve the short-radius
-failures without reducing performance elsewhere? Is the negative-angle
-cluster a genuine geometry-dependent weakness or a small-panel artifact? Does
-the selected checkpoint meet the 98% threshold on the separate official panel?
+**Open questions:** Can targeted training coverage or another intervention
+remove the persistent negative-angle failures without trading away far-target
+success? Is the episode-175 failure a genuine far-target geometry weakness or
+panel-specific variability? Does the 98.5% development result transfer to the
+separate official panel? The single transfer run and fixed panel do not isolate
+the causal contribution of radius broadening from continued training.
 
-**Conditional next steps:** Close this baseline with checkpoint-100352 as the
-working and best-known lineage, then make the next training experiment target
-the observed short-radius gap, preferably by changing the training target
-distribution while keeping the protected task unchanged. If a subsequent
-development measurement still misses 98% with the same geometry pattern,
-increase targeted coverage of the failing radius/angle region; if it reaches
-the target without a material residual gap, request terminal assessment rather
-than treating another proxy increase as progress.
+**Conditional next steps:** Continue from experiment-2 checkpoint-100352 with
+the broadened-radius recipe and target the observed negative-angle/radius
+region, while keeping the protected task unchanged. If a focused development
+measurement removes the residual failures without a new far-target loss,
+terminal assessment becomes reasonable; if the same cluster persists, pursue
+geometry-aware coverage or control changes rather than further proxy-driven
+checkpoint selection. Do not treat the current development score as official
+confirmation.
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 1
 
@@ -85,3 +85,46 @@ or support causal attribution.
 the three task-reference artifacts under
 `research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/`; and
 `robot_learning/scenario/environment.py`.
+
+## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 2
+
+**Result:** Broadening training target radii from 14-20 cm to 6-20 cm produced
+a partial improvement on the fixed development panel. The
+parent-horizon checkpoint-100352 is the strongest measured experiment-2
+candidate at 98.5% (197/200), but it still has three negative-angle failures
+and does not establish the official objective.
+
+**Observed behavior:** Checkpoint-100352 repaired experiment-1 parent failures
+at episodes 0 and 10, retained failures at episodes 84 and 102, and added a
+failure at episode 175 (9.9, 9.4, and 18.2 cm; approximately -123, -128, and
+-155 degrees); all three episodes truncated at 500 steps. Checkpoint-105472
+failed at episodes 0, 84, 102, and 175 for 98%, while checkpoint-120832 had
+the same three failures as checkpoint-100352 for 98.5%. The training log
+peaked at 1.0 success at 105472 steps and ended at 0.94, but the measured
+task ranking favored checkpoint-100352 and checkpoint-120832.
+
+**Hypothesis assessment:** Partially supported. The expected observation was
+partly present: short-radius failures decreased from four to two at the
+parent-horizon checkpoint, and overall success exceeded the parent's 98% on
+the same development panel. The contradicting observation was also partly
+present: one far-target failure appeared, and the negative-angle cluster
+persisted. The result is consistent with a useful broadened-coverage recipe
+under this transfer run, but the single run and fixed panel cannot attribute
+the change specifically to radius coverage or establish generalization to the
+official task.
+
+**Interpretation:** The intervention likely moved the residual error pattern
+from an exclusively short-radius cluster toward a persistent negative-angle
+weakness with one far-radius case. That makes targeted geometry/angle coverage
+a stronger next investigation than more proxy-ranked checkpoint selection.
+The equal task score of checkpoint-120832 despite its lower training proxy
+also weakens any claim that the late proxy decline directly caused task
+degradation.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/training_logs/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-2-attempt-1.log`;
+`research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-2/inventory.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-120832-task-reference-v1.json`;
+and `robot_learning/scenario/environment.py`.
