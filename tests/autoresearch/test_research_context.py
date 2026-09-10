@@ -3,6 +3,7 @@ from pathlib import Path
 
 from research.build_research_brief import (
     _change_details,
+    _training_proxy_trajectory,
     _v4_evidence_lines,
     render_research_brief,
 )
@@ -879,3 +880,55 @@ def test_researcher_prompts_are_objective_first_and_direction_neutral():
     assert "most informative to measure rather than the alternatives" not in script
     assert "chosen over the other available checkpoints" not in script
     assert "Context efficiency does not determine which" in policy
+
+
+def test_researcher_contract_preserves_investigative_freedom_across_layers():
+    root = Path(__file__).resolve().parents[2]
+    program = (root / "research" / "program.md").read_text(encoding="utf-8")
+    instruments = (root / "research" / "instruments.md").read_text(
+        encoding="utf-8"
+    )
+    launcher = (root / "run_research.ps1").read_text(encoding="utf-8")
+    brief_builder = (root / "research" / "build_research_brief.py").read_text(
+        encoding="utf-8"
+    )
+    protocol = (root / "research" / "runner_protocol.py").read_text(
+        encoding="utf-8"
+    )
+    combined = "\n".join(
+        (program, instruments, launcher, brief_builder, protocol)
+    ).lower()
+    normalized_program = " ".join(program.lower().split())
+    normalized_instruments = " ".join(instruments.lower().split())
+    normalized_brief_builder = " ".join(brief_builder.lower().split())
+    normalized_protocol = " ".join(protocol.lower().split())
+
+    for scientific_preference in (
+        "use additional diagnosis, measurement, or replication only when",
+        "prefer the simplest evidence sufficient",
+        "training proxy is the only signal",
+        "chosen over the other available checkpoints",
+        "most informative to measure rather than the alternatives",
+        "choose the question that advances the current research direction",
+        "single strongest development experiment",
+        "no supported material opportunity",
+    ):
+        assert scientific_preference not in combined
+
+    assert "assess progress toward a learned policy satisfying the human objective" in launcher.lower()
+    assert "revisable question or approach that best serves the human" in normalized_program
+    assert "not a commitment to the current investigation or incumbent policy" in normalized_program
+    assert "diagnostic and exploratory hypotheses are valid" in normalized_program
+    assert "a weakened hypothesis does not by itself reject a useful" in normalized_program
+    assert "another useful investigation does not prohibit stopping" in normalized_program
+    assert "why measuring that model is useful for the scientific question" in normalized_instruments
+    assert "provisional scientific synthesis" in normalized_brief_builder
+    proxy_summary = _training_proxy_trajectory(
+        [
+            {"timesteps": 100, "training_success": 0.5},
+            {"timesteps": 200, "training_success": 0.9},
+        ]
+    )
+    assert "not a checkpoint ranking or evaluation result" in proxy_summary
+    assert "best" not in proxy_summary
+    assert "model is useful for the current scientific question" in normalized_protocol

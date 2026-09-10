@@ -96,8 +96,8 @@ later Researcher may continue, revise, broaden, replace, or abandon the current
 direction as the evidence warrants.
 
 Experiment history and prior postmortems are evidence, not authority. Their
-interpretations may be revisited. Prefer targeted extraction over loading
-complete artifacts or histories, without omitting detail needed for the question.
+interpretations may be revisited. Targeted extraction and complete artifact or
+history inspection are both available according to the investigation.
 
 ## Lifecycle
 
