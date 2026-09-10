@@ -2,11 +2,11 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Test whether bounded in-tolerance margin shaping can improve the
-retained full-radius policy's hold completion, especially in the residual
--150 to -120 degree sector, without changing its policy interface or sacrificing
-non-sector reach performance. This is a targeted diagnostic of hold stability,
-not a commitment to reward shaping if the tradeoff persists.
+**Direction:** Test whether the retained full-radius policy's residual
+negative-angle reach and hold behavior can be improved through control, action,
+or compatible observation changes. Preserve the full-radius recipe and use
+matched task measurements for checkpoint selection; reward shaping is now a
+diagnostic alternative rather than the primary route.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -32,23 +32,31 @@ Experiment 5's focused-angle transfer run did not improve the hard sector and
 introduced broad non-sector and hold-interruption regressions, so this result
 weakens insufficient angular coverage as the leading explanation under the
 tested recipe. Training proxy success remained non-monotonic and did not
-predict held-out task performance.
+predict held-out task performance. Experiment 6's early margin-shaped
+checkpoint matched the working policy at 975/1,000 research successes and
+197/200 task-reference successes, with 51/74 versus 50/74 hard-sector success
+and 924/926 versus 925/926 non-sector success. It reduced total recorded hold
+interruptions from 256 to 35, but failed-episode interruption counts were only
+13 versus 14 and never-reach counts were 12 versus 11; the late checkpoint
+returned to 251 total interruptions and scored 974/1,000. These are diagnostic
+signals from one transferred run and fixed development panels, not evidence
+that the reward caused a task-success improvement.
 
-**Open questions:** Whether the remaining failures are primarily never-reach
-events or control/hold dynamics remains unresolved. Whether checkpoint-aware
-selection can reliably improve the current recipe remains uncertain. The
-experiment does not show whether a geometry representation could help with
-transfer or with a different encoding, nor whether a different coverage
-schedule could avoid the regression observed here.
+**Open questions:** Whether the remaining negative-angle failures are primarily
+never-reach events or control/hold dynamics remains unresolved. It is also
+unclear whether the early reduction in repeated interruption events is robust
+enough to support a future hold intervention, since it did not convert into
+more successful episodes. Whether checkpoint-aware selection can reliably
+improve the current recipe remains uncertain.
 
-**Conditional next steps:** A future experiment may test control or hold
-shaping, or a compatible observation/control intervention, using the retained
-working policy as the comparison. If margin shaping fails, broaden the
-investigation beyond hold stability toward action/control dynamics or a new
-representation. Checkpoint selection should be measurement led rather than
-inferred from training proxy metrics. Terminal assessment remains inappropriate
-until a selected development policy has stronger evidence against the
-structured failure sector.
+**Conditional next steps:** A future experiment may test action/control dynamics
+or a compatible observation/control intervention using the retained working
+policy and the retained margin-shaped checkpoint as controls. A repeat
+measurement could establish whether the interruption reduction generalizes,
+but it is not required to close this reward experiment. Checkpoint selection
+should remain measurement led rather than inferred from training proxies.
+Terminal assessment remains inappropriate until a selected development policy
+has stronger evidence against the structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -332,3 +340,68 @@ the three experiment-5 research-evaluation artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, the three
 experiment-5 task-reference artifacts under that directory, and
 `research/query_training_log.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 6
+
+**Result:** Bounded hold-margin shaping produced a useful hold-diagnostic
+signal but no measured task-success improvement. The experiment is closed with
+the existing `working` and `best_known` lineages unchanged, the margin-shaped
+reward recipe reverted, the early margin-shaped checkpoint retained as a
+diagnostic alternative, and the official benchmark not requested.
+
+**Observed behavior:** The transferred run completed 120,832 local steps.
+Training proxy success ranged from 0.92 to 1.00: it was 0.9737 at 5,120
+steps, reached 1.00 around 18,432-22,528 steps, and was 0.94 at both
+100,352 and 120,832 steps. Logged mean reward rose to 169.07 at 110,592
+steps and fell to 157.15 at completion. These are training facts, not task
+performance measurements. On the matched 1,000-episode research panel,
+checkpoint-100352 scored 975/1,000 (97.5%), checkpoint-120832 scored
+974/1,000 (97.4%), and `working` scored 975/1,000 (97.5%). The early
+checkpoint had 1 paired win and 1 paired loss against `working`; the late
+checkpoint had 1 paired win and 2 paired losses.
+
+The early checkpoint had 51/74 successes in the -150 to -120 degree sector
+versus 50/74 for `working`, 924/926 non-sector successes versus 925/926,
+278/283 short-radius successes for both, and 108/111 far-radius successes
+for both. Its failed episodes included 12 never-reach cases versus 11 for
+`working`, and 13 with an interruption versus 14; total recorded interruption
+events were 35 versus 256. The late checkpoint had 51/74 hard-sector,
+923/926 non-sector, 278/283 short-radius, and 107/111 far-radius successes,
+with 17 never-reach cases, 9 failed episodes with interruptions, and 251
+total interruption events. On the fixed task-reference panel, both
+checkpoints and `working` scored 197/200 (98.5%), with identical 15/17
+hard-sector, 182/183 non-sector, 55/57 short-radius, and 31/32 far-radius
+results. Their three task-reference failures were the same targets near
+9.91 cm at -122.90 degrees, 9.36 cm at -127.91 degrees, and 18.24 cm at
+-154.79 degrees.
+
+**Hypothesis assessment:** Partially supported, with important limits. The
+expected diagnostic branch appeared at the early checkpoint: repeated
+interruption events were much fewer, hard-sector success increased by one
+episode, and radius-bin performance was preserved. However, the measured
+research success was unchanged, the count of failed episodes with
+interruptions changed only from 14 to 13 while never-reach failures increased
+from 11 to 12, and the task-reference outcomes were identical. The late
+checkpoint lost one research success, regressed outside the hard sector and
+at far radius, and did not preserve the early interruption reduction. Thus
+the intervention's hold-margin signal is informative, but the contradicting
+observation of no aggregate task-success gain is also present. This is
+evidence about one transferred reward intervention on these development
+panels, not a causal conclusion about all hold shaping.
+
+**Interpretation:** The early policy appears to avoid repeated excursions
+within some failed trajectories without converting those trajectories into
+successful uninterrupted holds. The unchanged task-reference failure set and
+the persistent negative-angle concentration leave reachability or control
+dynamics as plausible limiting factors. The training proxy and reward
+trajectory again did not identify a superior held-out checkpoint. The early
+candidate is worth retaining as a diagnostic control because its task success
+matches `working` while its interruption-event profile differs, but it is not
+supported as the new working or best-known policy. Neither development panel
+supports requesting the official benchmark for this closure.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, the experiment-6 research-evaluation
+artifacts for `checkpoint-100352`, `checkpoint-120832`, and `working` under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the three
+corresponding experiment-6 task-reference artifacts.
