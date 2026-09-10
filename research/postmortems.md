@@ -2,11 +2,11 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Determine whether the residual -150 to -120 degree failures are
-primarily an angular training-coverage problem by focusing half of transfer
-training episodes on that sector while retaining full-radius coverage and the
-unchanged policy interface. If this does not improve the sector without broad
-regression, shift attention from coverage to control or hold dynamics.
+**Direction:** Investigate the residual -150 to -120 degree failures through
+control or hold-stability interventions that preserve the successful full-radius
+recipe and unchanged policy interface. Treat targeted angular oversampling as
+unhelpful under the tested transferred recipe unless a future design changes the
+identified tradeoff.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -28,21 +28,25 @@ Its task-reference scores were also lower (96.5% and 96.0% versus 98.5%),
 although this remains development evidence rather than an official verdict.
 The available evidence still cannot distinguish whether all hard-sector
 failures are caused by reachability, control, or hold stability.
+Experiment 5's focused-angle transfer run did not improve the hard sector and
+introduced broad non-sector and hold-interruption regressions, so this result
+weakens insufficient angular coverage as the leading explanation under the
+tested recipe. Training proxy success remained non-monotonic and did not
+predict held-out task performance.
 
 **Open questions:** Whether the remaining failures are primarily never-reach
 events or control/hold dynamics remains unresolved. Whether checkpoint-aware
 selection can reliably improve the current recipe remains uncertain. The
 experiment does not show whether a geometry representation could help with
-transfer or with a different encoding, nor whether targeted angular coverage
-can improve the existing representation.
+transfer or with a different encoding, nor whether a different coverage
+schedule could avoid the regression observed here.
 
-**Conditional next steps:** Measure the focused-angle transfer run by sector,
-radius, never-reached outcomes, and hold interruptions. If the sector improves
-while the rest remains stable, retain targeted coverage as a useful training
-condition; if not, investigate control or hold shaping rather than another
-representation change. Terminal assessment remains inappropriate until a
-selected development policy has stronger evidence against the structured
-failure sector.
+**Conditional next steps:** A future experiment may test control or hold
+shaping, or a compatible observation/control intervention, using the retained
+working policy as the comparison. Checkpoint selection should be measurement
+led rather than inferred from training proxy metrics. Terminal assessment
+remains inappropriate until a selected development policy has stronger evidence
+against the structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -269,3 +273,60 @@ working or best-known policies.
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-checkpoint-120832-task-reference-v1.json`,
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-working-task-reference-v1.json`,
 `robot_learning/scenario/reward.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 5
+
+**Result:** Focused angular training coverage did not improve the measured
+policy. The experiment is closed with the existing `working` and `best_known`
+lineages unchanged, the focused-angle training recipe reverted, and the
+official benchmark not requested.
+
+**Observed behavior:** The transferred run completed 120,832 local steps.
+Training proxy success was 0.9429 at 5,120 steps, declined to 0.78 at 75,776,
+and recovered to 0.82 at completion; mean reward peaked at 108.63 at
+checkpoint-100352 and was 98.51 at completion. These are training facts, not
+task-performance measurements. On the compatible 1,000-episode research panel,
+checkpoint-100352 scored 88.7% and checkpoint-120832 scored 87.9%, versus
+97.0% for `working`. Paired comparisons favored `working` by 83 and 91
+successes, respectively, with no challenger wins. The task-reference panel
+similarly measured 95.5% and 91.0% for the two checkpoints versus 98.5% for
+`working`.
+
+The research diagnostics showed hard-sector success of 46/70 and 47/70 for
+the two focused-coverage checkpoints, versus 48/70 for `working`. Non-sector
+success was 841/930 and 832/930, versus 922/930 for `working`; short-radius
+success was 239/265 and 243/265, versus 256/265; far-radius success was
+155/164 for both, versus 156/164. Among failed research episodes, never-reach
+counts were 13 and 15, versus 10, while episodes with hold interruptions were
+100 and 106, versus 20. On the smaller task-reference panel, the early
+checkpoint matched `working` in the hard sector at 15/17 and far radius at
+31/32, but regressed outside the sector; the completed checkpoint fell to
+14/17 in the hard sector and 168/183 outside it.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe
+and development panels. The expected observation—improved hard-sector reach
+and hold success while preserving non-sector and radius-bin performance—was
+not observed. The hard sector was unchanged or slightly worse, while
+non-sector success and hold-interruption outcomes regressed substantially.
+The contradicting observation was therefore present. This weakens simple
+angular under-coverage as the explanation for the residual failures in this
+recipe, but one transfer run does not disprove every coverage schedule or
+establish that control or hold dynamics is causal.
+
+**Interpretation:** The measured task behavior does not support retaining the
+focused-angle candidates: both were materially worse than the incumbent on
+the matched research panel and the protected development panel. The early
+candidate's preserved far-radius result and matched small-panel hard-sector
+count are partial, orthogonal signals, not evidence of overall progress.
+The non-monotonic training proxy and reward trajectory also show that training
+logs did not identify a useful policy checkpoint here. The increased
+hold-interruption count is consistent with degraded hold stability, while the
+never-reach counts remain similar; neither observation isolates the mechanism.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/training_logs/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-5-attempt-1.log`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-5/inventory.json`,
+the three experiment-5 research-evaluation artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, the three
+experiment-5 task-reference artifacts under that directory, and
+`research/query_training_log.py`.
