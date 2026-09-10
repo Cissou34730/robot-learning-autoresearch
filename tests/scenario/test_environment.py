@@ -27,7 +27,7 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_observation_includes_planar_end_effector_velocity():
+def test_observation_includes_target_relative_planar_velocity():
     env = make_training_env()
     env.reset(seed=0)
     env.data.qvel[:] = [0.4, -0.2]
@@ -37,9 +37,20 @@ def test_observation_includes_planar_end_effector_velocity():
     jacobian = np.zeros((3, env.model.nv))
     site_id = env.model.site("end_effector").id
     mujoco.mj_jacSite(env.model, env.data, jacobian, None, site_id)
+    velocity = (jacobian @ env.data.qvel)[:2]
+    relative_xy = (
+        env.data.site("end_effector").xpos[:2] - env.data.mocap_pos[0][:2]
+    )
+    radial_unit = relative_xy / np.linalg.norm(relative_xy)
+    expected = np.array(
+        [
+            np.dot(velocity, radial_unit),
+            -radial_unit[1] * velocity[0] + radial_unit[0] * velocity[1],
+        ]
+    )
 
     assert OBSERVATION_SIZE == 13
-    np.testing.assert_allclose(observation[7:9], (jacobian @ env.data.qvel)[:2])
+    np.testing.assert_allclose(observation[7:9], expected)
 
 
 def test_training_distribution_covers_the_official_radius_range():

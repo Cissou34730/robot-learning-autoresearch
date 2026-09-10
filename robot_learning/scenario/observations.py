@@ -45,12 +45,24 @@ def reach_observation(data) -> np.ndarray:
         site_id,
     )
     end_effector_velocity = end_effector_jacobian @ data.qvel
+    relative_xy = (end_effector - data.mocap_pos[0])[:2]
+    relative_norm = float(np.linalg.norm(relative_xy))
+    if relative_norm > np.finfo(np.float64).eps:
+        radial_unit = relative_xy / relative_norm
+        radial_velocity = float(np.dot(end_effector_velocity[:2], radial_unit))
+        tangential_velocity = float(
+            -radial_unit[1] * end_effector_velocity[0]
+            + radial_unit[0] * end_effector_velocity[1]
+        )
+    else:
+        radial_velocity = 0.0
+        tangential_velocity = 0.0
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
-            end_effector_velocity[:2],
+            [radial_velocity, tangential_velocity],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
