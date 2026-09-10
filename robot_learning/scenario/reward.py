@@ -22,6 +22,8 @@ HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
+TOLERANCE_BOUNDARY_WIDTH = 0.005
+TOLERANCE_BOUNDARY_COEFFICIENT = 4.0
 HOLD_COMPLETE_BONUS = 50.0
 
 
@@ -42,6 +44,16 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
         raise ValueError("hold_steps_required must be positive")
     progress = np.clip(held_steps / hold_steps_required, 0.0, 1.0)
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
+
+
+def _tolerance_boundary_potential(
+    distance: float, success_threshold: float
+) -> float:
+    if TOLERANCE_BOUNDARY_WIDTH <= 0:
+        raise ValueError("TOLERANCE_BOUNDARY_WIDTH must be positive")
+    outside_distance = max(distance - success_threshold, 0.0)
+    outside_fraction = min(outside_distance / TOLERANCE_BOUNDARY_WIDTH, 1.0)
+    return -TOLERANCE_BOUNDARY_COEFFICIENT * float(outside_fraction)
 
 
 def reach_reward(
@@ -74,6 +86,11 @@ def reach_reward(
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
 
+    tolerance_boundary = _tolerance_boundary_potential(
+        current_distance, success_threshold
+    ) - _tolerance_boundary_potential(previous_distance, success_threshold)
+    reward += tolerance_boundary
+
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
         if OUTSIDE_BAND_WIDTH <= 0:
@@ -101,6 +118,7 @@ def reach_reward(
             "progress": float(progress),
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
+            "tolerance_boundary": float(tolerance_boundary),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),

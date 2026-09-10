@@ -50,6 +50,7 @@ def test_linear_hold_progress_reward_pays_completion():
 def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "TOLERANCE_BOUNDARY_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "OUTSIDE_BAND_PENALTY", 0.0)
     reward = reach_reward(
         0.005,
@@ -72,6 +73,7 @@ def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
 def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "TOLERANCE_BOUNDARY_COEFFICIENT", 0.0)
     just_outside = reach_reward(0.0105, 0.0105, 0.01, penalize_outside=True).total
     far_outside = reach_reward(0.10, 0.10, 0.01, penalize_outside=True).total
 
@@ -84,6 +86,7 @@ def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
 def test_outside_penalty_is_steady_while_the_lost_hold_stays_outside(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "TOLERANCE_BOUNDARY_COEFFICIENT", 0.0)
     expected = -(
         reward_module.OUTSIDE_BAND_PENALTY * 0.0001 / reward_module.OUTSIDE_BAND_WIDTH
     )
@@ -108,6 +111,17 @@ def test_outside_penalty_is_steady_while_the_lost_hold_stays_outside(monkeypatch
 
     assert exiting == pytest.approx(expected)
     assert still_outside == pytest.approx(expected)
+
+
+def test_tolerance_boundary_shaping_rewards_crossing_into_tolerance(monkeypatch):
+    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "HOLD_COMPLETE_BONUS", 0.0)
+    monkeypatch.setattr(reward_module, "OUTSIDE_BAND_PENALTY", 0.0)
+    result = reach_reward(0.012, 0.009, 0.01)
+
+    assert result.components["tolerance_boundary"] == pytest.approx(1.6)
+    assert result.total == pytest.approx(1.6)
 
 
 def test_reward_components_are_free_form_and_sum_to_the_scalar():
