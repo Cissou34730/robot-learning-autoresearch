@@ -8,11 +8,12 @@ both measured checkpoints matched the working policy at 197/200 and retained
 all three recurring failures. Together with experiment 12 and the earlier
 hold, reward, learning-rate, action-cost, representation, and angular-mixture
 results, target-frequency resampling is now deprioritized as a practical route
-under the tested conditions. The evidence does not identify representation,
-control, or optimization as a universal causal explanation. If development
-continues, return to the working recipe and test only a semantically
-compatible, explicitly justified intervention with task-based checkpoint
-selection.
+under the tested conditions. Experiment 14 tests whether a stronger
+post-hold outside-band penalty can improve complete holds without changing the
+11-element policy semantics or physical control mapping. The evidence does not
+identify representation, control, or optimization as a universal causal
+explanation, so this remains a focused transfer intervention with task-based
+checkpoint selection.
 
 **Lessons and limits:** Experiment 13's checkpoints at 105472 and 120832 each
 reached 197/200 (98.5%) with 55/57 near-radius, 48/48 middle-radius, and
@@ -158,21 +159,20 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Which combination of angular/control dynamics,
-optimization variance, and observation semantics causes the three persistent
-failures when both ordinary and oversampled target mixtures leave them
-unchanged? Can a semantically compatible intervention improve complete holds
-without trading away the working policy's radial performance? Does any
-development-panel improvement generalize to the official task distribution?
+**Open questions:** Can stronger feedback after leaving tolerance repair the
+three persistent failures, or do they require different angular control or
+optimization dynamics? Can a semantically compatible intervention improve
+complete holds without trading away the working policy's radial performance?
+Does any development-panel improvement generalize to the official task
+distribution?
 
-**Conditional next steps:** Close experiment 13 by reverting its sampler and
-keeping experiment-2 checkpoint-120832 as working and best-known; no further
-measurement round is needed because neither measured candidate repaired a
-recurring failure and both matched the parent on every reported stratum.
-If development continues, do not repeat the tested angular target-frequency
-interventions. Prefer one separately justified, semantically compatible
-control-or-hold intervention with task-based checkpoint selection, and treat
-any result as fixed-panel development evidence rather than official attainment.
+**Conditional next steps:** Measure experiment 14 checkpoints on the task panel
+and use hold diagnostics for any repaired recurring case. If the stronger
+penalty repairs at least one recurring failure while preserving radial
+performance, retain the best task checkpoint for further development; if it
+does not, deprioritize reward-only hold penalties and retain the experiment-2
+working recipe. Treat either result as fixed-panel development evidence rather
+than official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
