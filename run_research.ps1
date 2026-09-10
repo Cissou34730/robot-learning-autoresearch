@@ -400,6 +400,7 @@ while ($true) {
                 "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
                 "Start from the brief and instrument contract; inspect additional evidence only when the scientific question requires it, preferring targeted extraction over full-artifact reads."
                 'State the scientific question first, and use the request-level `reason` to explain how the possible outcomes could change the interpretation, the lineage decision, or the next direction. Reuse compatible existing evidence.'
+                'Every measurement also requires its own `selection`: compare the available checkpoints before naming one, and state why that candidate is the most informative to measure rather than the alternatives.'
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "

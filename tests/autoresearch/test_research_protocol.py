@@ -189,6 +189,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
                         "episodes": 2,
                         "seed": 1000,
                         "label": "first panel",
+                        "selection": "the only checkpoint in the pool",
                     },
                     {
                         "instrument": "research_evaluation",
@@ -196,6 +197,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
                         "episodes": 2,
                         "seed": 2000,
                         "label": "second panel",
+                        "selection": "the only checkpoint in the pool",
                     },
                 ],
             }
@@ -298,6 +300,7 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "label": "first",
+                        "selection": "the only checkpoint in the pool",
                     },
                     {
                         "instrument": "research_evaluation",
@@ -305,6 +308,7 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "label": "renamed",
+                        "selection": "the only checkpoint in the pool",
                     },
                 ],
             }
@@ -407,6 +411,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
                         "candidate": "checkpoint",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "the only checkpoint in the pool",
                     },
                 ],
                 "need_more_evidence": True,
@@ -437,6 +442,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
                         "episodes": 2,
                         "seed": 1000,
                         "label": "reused A",
+                        "selection": "the only checkpoint in the pool",
                     },
                     {
                         "instrument": "research_evaluation",
@@ -444,6 +450,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
                         "episodes": 2,
                         "seed": 2000,
                         "label": "new B",
+                        "selection": "the only checkpoint in the pool",
                     },
                 ],
                 "need_more_evidence": False,
@@ -507,6 +514,7 @@ def _single_panel_evaluation_fixture(monkeypatch, tmp_path):
                         "candidate": "checkpoint",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "the only checkpoint in the pool",
                     }
                 ],
             }
@@ -654,6 +662,7 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
                             "candidate": "checkpoint",
                             "episodes": 2,
                             "seed": 1000,
+                            "selection": "the only checkpoint in the pool",
                         }
                     ],
                     "need_more_evidence": more_evidence,
@@ -794,7 +803,7 @@ def _comparison_record(
             episodes,
             seed,
             evaluation_semantics,
-        )
+        ),
     }
     if episode_identities is not None:
         record["episode_identities"] = episode_identities
@@ -817,7 +826,8 @@ def _comparison_record(
         (
             _comparison_record("legacy", episode_identities=[(0, 10)]),
             _comparison_record(
-                "legacy", episode_identities=[(0, 10)],
+                "legacy",
+                episode_identities=[(0, 10)],
             ),
             True,
         ),
@@ -1460,7 +1470,10 @@ def test_v4_final_benchmark_rejects_a_pending_request_that_does_not_match_best_k
         json.dumps(
             {
                 "schema_version": 4,
-                "best_known_lineage": {"artifact": "archive/best", "fingerprint": "best"},
+                "best_known_lineage": {
+                    "artifact": "archive/best",
+                    "fingerprint": "best",
+                },
                 "pending_final_benchmark": {
                     "selected": "best_known",
                     "artifact": "archive/other",
@@ -1590,6 +1603,7 @@ def test_evaluation_request_accepts_up_to_three_distinct_models(
                         "candidate": f"model-{i}",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "one of the models under test",
                     }
                     for i in range(distinct_count)
                 ],
@@ -1647,6 +1661,7 @@ def test_evaluation_request_rejects_more_than_three_distinct_models(
                         "candidate": f"model-{i}",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "one of the models under test",
                     }
                     for i in range(4)
                 ],
@@ -1698,18 +1713,21 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
                         "candidate": "single-model",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "the only model in the pool",
                     },
                     {
                         "instrument": "research_evaluation",
                         "candidate": "single-model",
                         "episodes": 2,
                         "seed": 2000,
+                        "selection": "the only model in the pool",
                     },
                     {
                         "instrument": "research_evaluation",
                         "candidate": "single-model",
                         "episodes": 4,
                         "seed": 3000,
+                        "selection": "the only model in the pool",
                     },
                 ],
             }
@@ -1763,8 +1781,13 @@ def test_different_instruments_same_model_count_once(monkeypatch, tmp_path):
                         "candidate": "candidate",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "the only model in the pool",
                     },
-                    {"instrument": "task_reference", "candidate": "candidate"},
+                    {
+                        "instrument": "task_reference",
+                        "candidate": "candidate",
+                        "selection": "the only model in the pool",
+                    },
                 ],
             }
         ),
@@ -1823,12 +1846,14 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
                         "candidate": "model-a",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "one side of the comparison",
                     },
                     {
                         "instrument": "research_evaluation",
                         "candidate": "model-b",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "the other side of the comparison",
                     },
                 ],
                 "paired_comparisons": [
@@ -1856,6 +1881,7 @@ def test_evaluation_request_allows_omitted_need_more_evidence():
                     "candidate": "candidate",
                     "episodes": 2,
                     "seed": 1000,
+                    "selection": "the only model in the pool",
                 }
             ],
         }
@@ -1889,6 +1915,26 @@ def test_evaluation_request_still_requires_a_measurement():
                 "question": "question",
                 "reason": "reason",
                 "measurements": [],
+            }
+        )
+
+
+@pytest.mark.parametrize("selection", [None, "", "   ", 7])
+def test_each_measurement_requires_a_selection_justification(selection):
+    entry = {
+        "instrument": "research_evaluation",
+        "candidate": "candidate",
+        "episodes": 2,
+        "seed": 1000,
+    }
+    if selection is not None:
+        entry["selection"] = selection
+    with pytest.raises(ValueError, match="requires a non-empty selection"):
+        validate_evaluation_request(
+            {
+                "question": "question",
+                "reason": "reason",
+                "measurements": [entry],
             }
         )
 
@@ -1932,6 +1978,7 @@ def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path
                         "candidate": f"model-{i}",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "one of the models under test",
                     }
                     for i in range(4)
                 ],
@@ -2011,6 +2058,7 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
                         "candidate": f"model-{i}",
                         "episodes": 2,
                         "seed": 1000,
+                        "selection": "one of the models under test",
                     }
                     for i in range(3)
                 ],
@@ -2068,6 +2116,7 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
                         "candidate": f"model-{i}",
                         "episodes": 2,
                         "seed": 2000,
+                        "selection": "one of the models under test",
                     }
                     for i in range(3, 6)
                 ],

@@ -279,9 +279,18 @@ def test_v4_replication_brief_reports_result_level_measurements(monkeypatch, tmp
 
     rendered = render_research_brief()
 
-    assert "experiment 1, seed 10, checkpoint-a, research_evaluation, 20 episodes, seed 100, success 55.00%" in rendered
-    assert "experiment 2, seed 11, checkpoint-b, task_reference/held-out, 30 episodes, seed 200, success 65.00%" in rendered
-    assert "experiment 3, seed 12, checkpoint-c, research_evaluation, success 75.00%" in rendered
+    assert (
+        "experiment 1, seed 10, checkpoint-a, research_evaluation, 20 episodes, seed 100, success 55.00%"
+        in rendered
+    )
+    assert (
+        "experiment 2, seed 11, checkpoint-b, task_reference/held-out, 30 episodes, seed 200, success 65.00%"
+        in rendered
+    )
+    assert (
+        "experiment 3, seed 12, checkpoint-c, research_evaluation, success 75.00%"
+        in rendered
+    )
     assert "experiment 4, seed 13, unmeasured" in rendered
 
 
@@ -306,12 +315,14 @@ def evaluation_request() -> dict:
                 "episodes": 200,
                 "seed": 2000,
                 "label": "checkpoint-120832",
+                "selection": "highest training proxy of the pool",
             },
             {
                 "instrument": "research_evaluation",
                 "candidate": "champion",
                 "episodes": 200,
                 "seed": 2000,
+                "selection": "the incumbent this candidate must beat",
             },
         ],
         "paired_comparisons": [
@@ -478,7 +489,7 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
             {
                 "schema_version": 2,
                 "accepted_artifact": "accepted",
-                    "pending_scientific_parent": "test-parent",
+                "pending_scientific_parent": "test-parent",
                 "pending_evaluation_request": {
                     "experiment": 2,
                     "candidates": [
@@ -507,6 +518,7 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
             "candidate": "checkpoint-120832",
             "episodes": 2,
             "seed": 2000,
+            "selection": "highest training proxy of the pool",
         }
     ]
     request["paired_comparisons"] = []
@@ -688,9 +700,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     )
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(
-        json.dumps(state), encoding="utf-8"
-    )
+    (tmp_path / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
@@ -698,10 +708,16 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     section = brief.split("## Current lineages and scientific recipes", 1)[1].split(
         "## Working lineage", 1
     )[0]
-    assert "Valid `training_parent` identifiers: `working`, `best_known`, `alternate`" in section
-    assert "`checkpoint-current`" not in section.split(
-        "### Current experiment checkpoints available for measurement", 1
-    )[0]
+    assert (
+        "Valid `training_parent` identifiers: `working`, `best_known`, `alternate`"
+        in section
+    )
+    assert (
+        "`checkpoint-current`"
+        not in section.split(
+            "### Current experiment checkpoints available for measurement", 1
+        )[0]
+    )
     for expected in (
         "Candidate: checkpoint-working",
         "Origin experiment: 2",
@@ -724,7 +740,9 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     assert section.count("Candidate: checkpoint-working") == 1
     assert section.count("Candidate: checkpoint-best") == 1
     assert "- See `working` under **Current lineages and scientific recipes**." in brief
-    assert "- See `best_known` under **Current lineages and scientific recipes**." in brief
+    assert (
+        "- See `best_known` under **Current lineages and scientific recipes**." in brief
+    )
     assert brief.index("## Latest experiment") < brief.index(
         "## Current scientific direction"
     )
@@ -756,9 +774,7 @@ def test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe(
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(
-        json.dumps(state), encoding="utf-8"
-    )
+    (tmp_path / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
@@ -774,9 +790,7 @@ def test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe(
     assert "Researcher reason: Best measured outcome." in section
 
 
-def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(
-    monkeypatch, tmp_path
-):
+def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(monkeypatch, tmp_path):
     state = {
         "schema_version": 4,
         "campaign": {"id": "campaign", "base_commit": "base"},
@@ -785,9 +799,7 @@ def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
-    (tmp_path / "research_state.json").write_text(
-        json.dumps(state), encoding="utf-8"
-    )
+    (tmp_path / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
@@ -819,7 +831,12 @@ def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded(
         assert match is not None
         return match.group(1)
 
-    for name in ("analysisPrompt", "evaluationPrompt", "decisionPrompt", "researchPrompt"):
+    for name in (
+        "analysisPrompt",
+        "evaluationPrompt",
+        "decisionPrompt",
+        "researchPrompt",
+    ):
         assert grounding in prompt_block(name)
 
     retry_deliverables = {

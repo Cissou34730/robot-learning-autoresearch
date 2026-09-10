@@ -207,7 +207,12 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
 
 
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
-    for phase in ("proposalStatus", "evaluationStatus", "lineageStatus", "analysisStatus"):
+    for phase in (
+        "proposalStatus",
+        "evaluationStatus",
+        "lineageStatus",
+        "analysisStatus",
+    ):
         assert LOOP.count(f"if (-not ${phase}.Complete)") == 2
 
     assert "ResearcherExitCode -ne" not in LOOP
@@ -291,6 +296,7 @@ def _valid_request() -> dict:
                 "candidate": "experiment-3",
                 "episodes": 200,
                 "seed": 1000,
+                "selection": "the only model the hypothesis is about",
             }
         ],
     }
@@ -391,6 +397,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "candidate": "experiment-9",
                         "episodes": 200,
                         "seed": 1,
+                        "selection": "the model under test",
                     }
                 ],
             ),
@@ -405,6 +412,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "candidate": "experiment-3",
                         "episodes": 0,
                         "seed": 1,
+                        "selection": "the model under test",
                     }
                 ],
             ),
@@ -419,6 +427,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "candidate": "experiment-3",
                         "episodes": "many",
                         "seed": 1,
+                        "selection": "the model under test",
                     }
                 ],
             ),
@@ -432,6 +441,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "instrument": "research_evaluation",
                         "candidate": "experiment-3",
                         "episodes": 200,
+                        "selection": "the model under test",
                     }
                 ],
             ),
@@ -460,7 +470,11 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
             dict(
                 _valid_request(),
                 measurements=[
-                    {"instrument": "task_reference", "candidate": "experiment-9"}
+                    {
+                        "instrument": "task_reference",
+                        "candidate": "experiment-9",
+                        "selection": "the model under test",
+                    }
                 ],
             ),
             "unknown measurement candidate 'experiment-9'",
@@ -468,7 +482,9 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
         (
             dict(
                 _valid_request(),
-                measurements=[{"instrument": "official_benchmark", "candidate": "champion"}],
+                measurements=[
+                    {"instrument": "official_benchmark", "candidate": "champion"}
+                ],
             ),
             "unknown measurement instrument 'official_benchmark'",
         ),
@@ -490,12 +506,14 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "candidate": "experiment-3",
                         "episodes": 200,
                         "seed": 1,
+                        "selection": "the model under test",
                     },
                     {
                         "instrument": "research_evaluation",
                         "candidate": "experiment-3",
                         "episodes": -5,
                         "seed": 2,
+                        "selection": "a second panel on the same model",
                     },
                 ],
             ),
@@ -531,8 +549,13 @@ def test_evaluation_preflight_rejects_the_legacy_champion_alias(
                     "candidate": "champion",
                     "episodes": 200,
                     "seed": 1000,
+                    "selection": "the incumbent under the legacy alias",
                 },
-                {"instrument": "task_reference", "candidate": "champion"},
+                {
+                    "instrument": "task_reference",
+                    "candidate": "champion",
+                    "selection": "the incumbent under the legacy alias",
+                },
             ],
         ),
     )
@@ -577,9 +600,7 @@ def test_invalid_paired_comparison_runs_no_evaluator_and_writes_no_state(
 ):
     request = dict(
         _valid_request(),
-        paired_comparisons=[
-            {"candidate": "experiment-3", "reference": "champion"}
-        ],
+        paired_comparisons=[{"candidate": "experiment-3", "reference": "champion"}],
     )
     state_path = _preflight_files(monkeypatch, tmp_path, request)
     original_state = state_path.read_bytes()
@@ -589,7 +610,9 @@ def test_invalid_paired_comparison_runs_no_evaluator_and_writes_no_state(
     assert "unknown paired comparison reference 'champion'" in reason
     assert state_path.read_bytes() == original_state
 
-    with pytest.raises(ValueError, match="unknown paired comparison reference 'champion'"):
+    with pytest.raises(
+        ValueError, match="unknown paired comparison reference 'champion'"
+    ):
         execute_pending_evaluations()
     assert state_path.read_bytes() == original_state
 

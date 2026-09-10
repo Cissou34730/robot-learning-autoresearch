@@ -110,6 +110,7 @@ Write `research/evaluation_request.json`:
     {
       "instrument": "<research_evaluation | task_reference>",
       "candidate": "<model exposed by the brief>",
+      "selection": "<non-empty reason this candidate was chosen over the other available checkpoints>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -123,6 +124,8 @@ Write `research/evaluation_request.json`:
 ```
 
 `measurements` must contain at least one entry, and at most three distinct models. `paired_comparisons` is optional.
+
+Every measurement requires its own non-empty `selection`. The request-level `reason` justifies the round; `selection` justifies this candidate against the other checkpoints the brief exposes. Naming a checkpoint without having examined the alternatives cannot produce a truthful `selection`.
 
 One evaluation request may measure at most three distinct models. Multiple measurements of the same model count as one. This includes different seeds, episode counts, labels, or instruments applied to the same model.
 

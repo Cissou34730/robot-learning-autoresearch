@@ -145,8 +145,9 @@ RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "episodes",
     "seed",
     "label",
+    "selection",
 }
-TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label"}
+TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label", "selection"}
 SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
@@ -170,9 +171,7 @@ def is_protected_source(path: str) -> bool:
 
 def is_human_owned(path: str) -> bool:
     relative = path.replace("\\", "/")
-    return is_protected_source(relative) or relative.startswith(
-        PROTECTED_TEST_PREFIXES
-    )
+    return is_protected_source(relative) or relative.startswith(PROTECTED_TEST_PREFIXES)
 
 
 def is_researcher_owned(path: str) -> bool:
@@ -784,6 +783,13 @@ def validate_evaluation_request(
             )
         if "label" in entry and not isinstance(entry["label"], str):
             raise ValueError("measurement label must be a string")
+        # Naming a candidate obliges the researcher to say why it beat the alternatives.
+        selection = entry.get("selection")
+        if not isinstance(selection, str) or not selection.strip():
+            raise ValueError(
+                f"{instrument} requires a non-empty selection stating why this "
+                "candidate was chosen over the other available checkpoints"
+            )
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]
             if missing:
@@ -1629,9 +1635,7 @@ def _validated_historical_panel_records(
             ) from error
         outcomes = dict(identified_outcomes)
         if len(outcomes) != len(identified_outcomes):
-            raise ValueError(
-                f"historical evidence repeats an episode identity: {path}"
-            )
+            raise ValueError(f"historical evidence repeats an episode identity: {path}")
         if (
             int(measurement.get("episodes", -1)) != int(settings[1])
             or int(measurement.get("seed", -1)) != int(settings[2])
@@ -1770,9 +1774,12 @@ def _resolved_paired_evidence_plan(
             and record["model_fingerprint"] == reference_fingerprint
         ]
         for record in [*candidate_records, *reference_records]:
-            if not record.get("planned") and not repository.resolve_repo_path(
-                record["evaluation_artifact"]
-            ).is_file():
+            if (
+                not record.get("planned")
+                and not repository.resolve_repo_path(
+                    record["evaluation_artifact"]
+                ).is_file()
+            ):
                 raise ValueError(
                     "paired comparison evidence artifact does not exist: "
                     f"{record['evaluation_artifact']}"
@@ -1786,9 +1793,7 @@ def _resolved_paired_evidence_plan(
             )
             missing_source = available_evaluation_candidates(pending, state)[missing]
             associated_paths = set(
-                repository.evaluation_artifact_paths(
-                    missing_source.get("evaluations")
-                )
+                repository.evaluation_artifact_paths(missing_source.get("evaluations"))
             ) | {
                 repository.canonical_repo_path(str(path))
                 for path in missing_source.get("evaluation_artifacts", [])
@@ -1877,12 +1882,10 @@ def _resolved_paired_evidence_plan(
                     f"nonmatching historical episode identities for seed {settings[2]}"
                 )
             candidate_paths = sorted(
-                record["evaluation_artifact"]
-                for record in panel_candidate_records
+                record["evaluation_artifact"] for record in panel_candidate_records
             )
             reference_paths = sorted(
-                record["evaluation_artifact"]
-                for record in panel_reference_records
+                record["evaluation_artifact"] for record in panel_reference_records
             )
             panels.append(
                 {
@@ -2127,7 +2130,10 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 description=f"best_known candidate {best_name!r}",
             )
             best_record = _v4_lineage_record(
-                best_source, pending, best_artifact, str(best_decision["reason"]).strip()
+                best_source,
+                pending,
+                best_artifact,
+                str(best_decision["reason"]).strip(),
             )
             best_record["evaluation_artifacts"] = sorted(
                 set(best_record["evaluation_artifacts"])

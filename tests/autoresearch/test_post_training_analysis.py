@@ -88,6 +88,7 @@ def _request(seed: int) -> dict:
                 "candidate": "checkpoint",
                 "episodes": 2,
                 "seed": seed,
+                "selection": "the only checkpoint this experiment produced",
             }
         ],
     }
@@ -135,7 +136,10 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(
     assert calls == [10, second_seed]
     records = repository.result_records()
     assert len(records) == 1
-    assert [item["seed"] for item in records[0]["requested_evaluations"]] == [10, second_seed]
+    assert [item["seed"] for item in records[0]["requested_evaluations"]] == [
+        10,
+        second_seed,
+    ]
     summary = records[0]["candidates"][0]["summary"]
     distinct_episodes = 3 if second_seed == 11 else 4
     assert summary["episodes"] == distinct_episodes
@@ -144,9 +148,7 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(
     assert summary["success_percent"] == pytest.approx(100 * 2 / distinct_episodes)
 
 
-def test_v4_paired_comparison_reuses_historical_working_evidence(
-    monkeypatch, tmp_path
-):
+def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tmp_path):
     state_path, request_path, _ = _configure(monkeypatch, tmp_path)
     working_artifact = tmp_path / "archive" / "working"
     _artifact(working_artifact)
@@ -238,9 +240,7 @@ def test_v4_paired_comparison_reuses_historical_working_evidence(
     comparison = persisted["pending_analysis"]["result"]["paired_comparisons"][0]
     assert comparison["candidate_model_fingerprint"] == candidate_fingerprint
     assert comparison["reference_model_fingerprint"] == working_fingerprint
-    assert comparison["source_artifacts"][0].endswith(
-        "checkpoint-2ep-seed10-test.json"
-    )
+    assert comparison["source_artifacts"][0].endswith("checkpoint-2ep-seed10-test.json")
     assert comparison["source_artifacts"][1] == "research/evaluations/working.json"
 
 
@@ -678,9 +678,7 @@ def test_v4_resumed_measurement_accepts_relocated_identical_model(
     assert calls == [relocated]
 
 
-def test_v4_resumed_measurement_rejects_edited_accepted_request(
-    monkeypatch, tmp_path
-):
+def test_v4_resumed_measurement_rejects_edited_accepted_request(monkeypatch, tmp_path):
     state_path, request_path, _ = _configure(monkeypatch, tmp_path)
     state = repository.read_state()
     pending = state["pending_analysis"]
