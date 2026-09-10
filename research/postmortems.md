@@ -2,10 +2,11 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Improve the residual negative-angle behavior through reach or
-control shaping while preserving the full-radius training recipe. The tested
-hold-exit forfeiture did not address the structured failures, so hold-progress
-forfeiture is deprioritized under the measured conditions.
+**Direction:** Determine whether the residual -150 to -120 degree failures are
+primarily an angular training-coverage problem by focusing half of transfer
+training episodes on that sector while retaining full-radius coverage and the
+unchanged policy interface. If this does not improve the sector without broad
+regression, shift attention from coverage to control or hold dynamics.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -32,15 +33,16 @@ failures are caused by reachability, control, or hold stability.
 events or control/hold dynamics remains unresolved. Whether checkpoint-aware
 selection can reliably improve the current recipe remains uncertain. The
 experiment does not show whether a geometry representation could help with
-transfer or with a different encoding.
+transfer or with a different encoding, nor whether targeted angular coverage
+can improve the existing representation.
 
-**Conditional next steps:** A future experiment may investigate reach/control
-shaping while retaining the full-radius recipe, and should inspect the
-negative-angle sector together with never-reached and hold-interruption
-outcomes. Another representation test would require a compatible transfer or
-an explicitly different question. Terminal assessment remains inappropriate
-until a selected development policy has stronger evidence against the
-structured failure sector.
+**Conditional next steps:** Measure the focused-angle transfer run by sector,
+radius, never-reached outcomes, and hold interruptions. If the sector improves
+while the rest remains stable, retain targeted coverage as a useful training
+condition; if not, investigate control or hold shaping rather than another
+representation change. Terminal assessment remains inappropriate until a
+selected development policy has stronger evidence against the structured
+failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
