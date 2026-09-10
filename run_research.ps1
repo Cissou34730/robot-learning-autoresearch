@@ -469,7 +469,7 @@ while ($true) {
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "In the postmortem and Scientific strategy, assess the question actually tested against the proposal's expected_observation and contradicting_observation, separate observations from interpretations, and scope causal claims to the evidence. Carry forward what this experiment eliminated and state the next direction it leaves open."
+            "In the postmortem and Scientific strategy, assess the tested question against the proposal's expected_observation and contradicting_observation, separate observations from interpretations, and scope claims to the evidence. Synthesize current and prior evidence to identify a provisional most promising direction for the next hypothesis phase. Record what is supported, weakened, or unresolved, without treating unresolved questions as work that must be completed."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "

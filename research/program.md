@@ -78,10 +78,11 @@ Distinguish lack of improvement in a run, evidence against a hypothesis, and a
 practical decision not to pursue an intervention. Scope conclusions to the tested
 conditions and uncertainty.
 
-Carry those outcomes forward. The strategy records which interventions and
-mechanisms have already failed, and that record constrains what is worth trying
-next. Proposing another instance of a mechanism that has already failed requires
-a reason the earlier failures do not already cover.
+Carry evidence and practical prioritization forward. The strategy records what
+is supported, weakened, or unresolved and which directions are currently most
+promising. A route may be deprioritized without being disproven when another
+direction is a better use of experimental effort. Revisit that prioritization
+when new evidence changes its relative value.
 
 Experiment history and prior postmortems are evidence, not authority. Their
 interpretations may be revisited. Prefer targeted extraction over loading
@@ -191,8 +192,9 @@ Maintain the active campaign's **Scientific strategy** in
 `research/postmortems.md` using the format in `research/instruments.md`. Keep it a
 compact decision aid, not a second experiment history:
 
-- `Direction`: the current line of investigation and the mechanisms campaign
-   evidence has already eliminated, so that it narrows as the campaign proceeds.
+- `Direction`: a provisional synthesis of the most promising current line of
+   investigation. It guides the next hypothesis phase but does not select or
+   commit its intervention.
 - `Lessons and limits`: reusable findings, their sources, and uncertainty.
 - `Open questions`: useful uncertainties, not a mandatory experiment queue.
 - `Conditional next steps`: a provisional preferred next action and what would
