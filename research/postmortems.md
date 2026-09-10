@@ -3,16 +3,18 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
-Experiment 10 contradicted the tested periodic-target representation under fresh
-training: its measured checkpoints reached only 4.0% and 4.5%, versus 98.5% for
-the working policy. Experiments 6-9 also failed to improve the working policy,
-so unchanged continuation, fresh full-range runs, the tested angular
-curriculum, lower learning rate, hold forfeiture, convex hold shaping, and this
-exact replacement representation are deprioritized under their tested
-conditions. The evidence does not identify representation or control as a
-universal causal explanation. If development continues, return to the working
-recipe and test only a semantically compatible, explicitly justified control or
-observation change.
+Experiment 11 contradicted the action-regularization hypothesis: its measured
+checkpoints reached at most 196/200, repaired none of the recurring failures,
+and the late checkpoint regressed to 195/200. Together with experiments 5, 8,
+and 9, this makes the tested hold and reward modifications poor practical
+routes under their transfer conditions. Experiments 6-7 and 10 also failed to
+improve the working policy, so unchanged continuation, fresh full-range runs,
+the tested angular curriculum, lower learning rate, hold forfeiture, convex
+hold shaping, increased action cost, and the exact replacement representation
+are deprioritized under their tested conditions. The evidence does not
+identify representation or control as a universal causal explanation. If
+development continues, return to the working recipe and test only a
+semantically compatible, explicitly justified control or observation change.
 
 **Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -113,21 +115,42 @@ coordinates are intrinsically causal failures: initialization, optimization,
 and changed observation semantics were not separately controlled. Twenty-two
 checkpoints remain unmeasured and unknown rather than failed.
 
+Experiment 11's task-reference checkpoints reached 196/200 at 100352 and
+115712 (54/57 near, 48/48 middle, 94/95 far), then 195/200 at 120832
+(54/57, 48/48, 93/95). All three retained recurring failures 84, 102, and
+175, and all added episode 10; the final also added episode 100. Thus the
+expected 197/200 result, repair of a recurring failure, and stable far-radius
+preservation did not occur. Research evaluation reported 8, 10, and 251 total
+hold interruptions at those checkpoints versus 240 for the working policy.
+The early reduction coincided with episode 175 never entering the band rather
+than completing a hold; at the final checkpoint interruptions increased and
+the added failure appeared. These are descriptive diagnostics, not evidence
+that action cost caused either outcome. The training proxy peaked at 0.99 and
+ended at 0.96, while the best logged reward was at 25600 steps, so neither
+selected the measured task checkpoint. The fixed panel, single transfer run,
+three measured checkpoints, and unmeasured checkpoints limit the conclusion;
+the task-reference panel remains development evidence rather than official
+benchmark evidence.
+
 **Open questions:** Can a target-relative representation or control intervention
 repair the persistent negative-angle and far-radius failures without sacrificing
 the parent radial strata? Does a representation that preserves the parent's
 feature meanings while adding target-relative information avoid the catastrophic
 fresh-learning failure seen in experiment 10? Which control changes can be
 tested without conflating action semantics, optimization, and representation?
+Can a compatible intervention improve the recurring failures without merely
+preventing band entry, as the early experiment-11 interruption signal did?
 
-**Conditional next steps:** Close experiment 10 by reverting its observation
+**Conditional next steps:** Close experiment 11 by reverting its action-cost
 change and keeping experiment-2 checkpoint-120832 as working and best-known.
-If development continues, start from that lineage and test one semantically
-compatible control or observation intervention at a time, comparing total
-success, radial strata, failure identities, and hold diagnostics. Require
-measured task improvement before changing lineage; the fixed-panel evidence is
-not official attainment, and no further measurement round is needed to resolve
-experiment 10's lineage decision.
+No further measurement round is needed for this lineage decision because all
+three requested task-reference measurements failed to improve the working
+policy and the research-evaluation diagnostics did not show a repaired hold.
+If development continues, start from the working recipe and test one
+semantically compatible control or observation intervention at a time,
+comparing total success, radial strata, failure identities, and hold
+diagnostics. Require measured task improvement before changing lineage; the
+fixed-panel evidence is not official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 1
 
@@ -617,3 +640,59 @@ corresponding successful policy.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-10-working-200ep-seed7300-ffdccdbf3357.json`;
 `robot_learning/scenario/observations.py`;
 `robot_learning/scenario/policy_io.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 11
+
+**Result:** The action-regularization hypothesis was contradicted under the
+tested transfer conditions. No measured checkpoint improved the working policy,
+so experiment-2 checkpoint-120832 remains working and best-known and the
+action-cost change will be reverted.
+
+**Observed behavior:** On task-reference-v1, checkpoints 100352 and 115712
+each achieved 196/200 (98.0%), with 54/57 near-radius, 48/48 middle-radius,
+and 94/95 far-radius successes. Checkpoint 120832 achieved 195/200 (97.5%),
+with 54/57, 48/48, and 93/95. The first two checkpoints failed episodes
+10, 84, 102, and 175; the final retained those failures and added episode
+100. All three retained recurring working-policy failures 84, 102, and 175.
+Research-evaluation totals matched the task-reference results. Aggregate hold
+interruptions were 8, 10, and 251 at the three checkpoints, compared with 240
+for the working policy. At the early checkpoints episode 175 never entered the
+band; at the final it reached at most two consecutive held steps, while the
+working policy reached six but still failed that episode. The training proxy
+was 0.99 at its best sampled point and 0.96 at the end; the best logged reward
+was at 25600 steps. These are training-process facts, not task performance.
+Twenty-one of 24 checkpoints were unmeasured and remain unknown rather than
+failed.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected observation was a checkpoint at least 197/200,
+repair of one of episodes 84, 102, or 175, preservation of at least 94/95
+far-radius and 48/48 middle-radius success, and improved hold diagnostics for
+a repaired case. No checkpoint reached 197/200 or repaired a recurring failure.
+The first two checkpoints preserved the middle and far strata but added the
+same near-radius failure, so that is an unexpected partial preservation signal,
+not policy progress. The final checkpoint lost one far-radius success and
+added another failure. The lower early interruption totals reflect failure to
+enter the band, not a completed or stabilized hold; the final total exceeded
+the working-policy total. This weakens action regularization as a practical
+route under this transfer condition, but does not prove that action cost,
+control, or representation is causally responsible for the residual failures.
+
+**Interpretation:** Increasing the action cost did not produce the predicted
+hold-stability improvement. The measured task regression and unchanged
+recurring failures justify rejecting this challenger for lineage selection.
+The matching task-reference and research-evaluation totals make another
+measurement round unnecessary for that decision. Causal claims remain limited
+by the single transfer trajectory, fixed development panel, reward change
+without a paired training control, and incomplete checkpoint coverage.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-11-attempt-1.log`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-100352-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-115712-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-115712-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-9-working-200ep-seed7300-ffdccdbf3357.json`;
+`robot_learning/scenario/reward.py`.
