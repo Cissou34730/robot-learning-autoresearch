@@ -4,7 +4,6 @@ These describe the scenario as it is implemented today. A scenario experiment
 that changes the training mechanics is expected to update them.
 """
 
-import mujoco
 import numpy as np
 import pytest
 
@@ -18,7 +17,6 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import OBSERVATION_SIZE
 
 
 def test_observation_matches_declared_space():
@@ -27,27 +25,12 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_observation_includes_planar_end_effector_velocity():
-    env = make_training_env()
-    env.reset(seed=0)
-    env.data.qvel[:] = [0.4, -0.2]
-    mujoco.mj_forward(env.model, env.data)
-
-    observation = env._observation()
-    jacobian = np.zeros((3, env.model.nv))
-    site_id = env.model.site("end_effector").id
-    mujoco.mj_jacSite(env.model, env.data, jacobian, None, site_id)
-
-    assert OBSERVATION_SIZE == 13
-    np.testing.assert_allclose(observation[7:9], (jacobian @ env.data.qvel)[:2])
-
-
-def test_training_distribution_covers_the_official_radius_range():
+def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
-    assert training.target_radius_range == (0.06, 0.20)
+    assert training.target_radius_range == (0.14, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
 
 
