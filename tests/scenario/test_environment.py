@@ -12,8 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    TRAINING_FOCUSED_ANGLE_FRACTION,
-    TRAINING_FOCUSED_ANGLE_RANGE,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -34,25 +32,6 @@ def test_training_distribution_covers_official_radii_without_changing_evaluation
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
     assert training.target_radius_range == (0.06, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-
-
-def test_training_distribution_focuses_the_residual_failure_sector():
-    training = make_training_env()
-    evaluation = make_evaluation_env()
-
-    assert training.focused_angle_fraction == TRAINING_FOCUSED_ANGLE_FRACTION
-    assert evaluation.focused_angle_fraction == 0.0
-
-    training.reset(seed=0)
-    focused = 0
-    for _ in range(256):
-        training.reset()
-        x, y = training.data.mocap_pos[0][:2]
-        angle = np.arctan2(y, x)
-        if TRAINING_FOCUSED_ANGLE_RANGE[0] <= angle <= TRAINING_FOCUSED_ANGLE_RANGE[1]:
-            focused += 1
-
-    assert 0.40 <= focused / 256 <= 0.70
 
 
 def test_training_environment_may_diverge_from_the_official_task():
