@@ -19441,7 +19441,7 @@
         "training_steps": 110592
       }
     },
-    "progress": "durable",
+    "progress": "cleanup_complete",
     "selected": "checkpoint-110592"
   },
   "pending_evaluation_request": null,
