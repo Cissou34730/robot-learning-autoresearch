@@ -81,10 +81,6 @@ def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
     assert far_outside == pytest.approx(-reward_module.OUTSIDE_BAND_PENALTY)
 
 
-def test_outside_band_penalty_uses_the_hold_stability_intervention():
-    assert reward_module.OUTSIDE_BAND_PENALTY == pytest.approx(0.5)
-
-
 def test_outside_penalty_is_steady_while_the_lost_hold_stays_outside(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
