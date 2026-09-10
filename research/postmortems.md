@@ -38,14 +38,16 @@ transfer run cannot distinguish those explanations or establish a causal
 effect of angle sampling.
 
 **Conditional next steps:** Do not pursue another angle-reweighting run solely
-from this evidence. If a specific geometry-aware control or representation
-intervention is identified, test it from the retained broadened-radius lineage
-with the protected task unchanged; terminal assessment becomes reasonable only
-if measured performance at least matches the parent while removing the
-residual cluster without new far-target losses. If no such concrete
-intervention is available, retain the experiment-2 policy and investigate
-panel variability or evaluation transfer rather than treating the current
-scores as official confirmation.
+from this evidence. If a specific geometry-aware control intervention is
+identified, test it from the retained broadened-radius lineage with the
+protected task unchanged. A representation intervention should instead use
+fresh initialization when its input semantics are not compatible with the
+retained policy, while using that policy as the behavioral comparator. Terminal
+assessment becomes reasonable only if measured performance at least matches the
+parent while removing the residual cluster without new far-target losses. If no
+such concrete intervention is available, retain the experiment-2 policy and
+investigate panel variability or evaluation transfer rather than treating the
+current scores as official confirmation.
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 1
 
