@@ -25,6 +25,13 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
+def test_observation_includes_absolute_target_coordinates():
+    env = make_training_env()
+    obs, _ = env.reset(seed=0)
+
+    np.testing.assert_allclose(obs[7:9], env.data.mocap_pos[0][:2])
+
+
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
