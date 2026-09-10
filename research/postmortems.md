@@ -3,31 +3,38 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
-Experiment 13 contradicted the mild hard-sector target-frequency hypothesis:
-both measured checkpoints matched the working policy at 197/200 and retained
-all three recurring failures. Together with experiment 12 and the earlier
-hold, reward, learning-rate, action-cost, representation, and angular-mixture
-results, target-frequency resampling is now deprioritized as a practical route
-under the tested conditions. Experiment 14 tests whether a stronger
-post-hold outside-band penalty can improve complete holds without changing the
-11-element policy semantics or physical control mapping. The evidence does not
-identify representation, control, or optimization as a universal causal
-explanation, so this remains a focused transfer intervention with task-based
-checkpoint selection.
+Experiment 14 contradicted the stronger post-hold outside-band penalty
+hypothesis: its final measured checkpoint matched the working policy at
+197/200 and retained all three recurring failures. Reward-only hold penalties,
+including earlier hold forfeiture, convex hold credit, and this outside-band
+penalty, are now deprioritized as practical routes under the tested transfer
+conditions. The evidence still does not identify representation, angular
+control, or optimization as a universal causal explanation; a future
+experiment should target one of those unresolved alternatives rather than
+repeat this reward-only intervention.
 
-**Lessons and limits:** Experiment 13's checkpoints at 105472 and 120832 each
-reached 197/200 (98.5%) with 55/57 near-radius, 48/48 middle-radius, and
-94/95 far-radius successes, exactly matching the working-policy measurement.
-All three recurring failures (84, 102, and 175) remained failures at both
-candidate checkpoints and for the working policy. This is preservation, not
-measured policy progress: the expected repair did not occur. The training
-proxy peaked at 0.97 near 15360 steps and ended at 0.88, while the late
-task-reference result remained 98.5%; this is another reminder that training
-proxy and reward do not select task checkpoints. Only two of 24 candidate
-checkpoints were measured, so the others remain unknown rather than failed.
-All measurements use one fixed development panel and are not independent
-held-out confirmation or official benchmark evidence; task-reference artifacts
-do not provide hold-trajectory diagnostics for this run.
+**Lessons and limits:** Experiment 14's checkpoint-100352 reached 196/200
+(54/57 near-radius, 48/48 middle-radius, 94/95 far-radius) and added failure
+10 to the recurring failures. Checkpoint-120832 reached 197/200 with
+55/57 near-radius, 48/48 middle-radius, and 94/95 far-radius, exactly matching
+the working policy and retaining failures 84, 102, and 175. This is
+preservation, not measured policy progress: the expected observation of at
+least 198/200 plus a repaired recurring case did not occur, while the
+contradicting radial-regression condition did not occur at the final
+checkpoint. Research diagnostics likewise found no complete repaired hold:
+at checkpoints 100352 and 120832, the maximum consecutive holds for episodes
+84, 102, and 175 were respectively 4/2/2 and 4/2/3 steps, after first
+reaching tolerance at step 17. The final checkpoint removed the transient
+episode-10 failure, but this was not a repair of a recurring case.
+
+The training proxy reached 1.0 near 20480 steps and ended at 0.99; logged
+reward was 111.592 at 100352 and 108.548 at 120832. These are training
+signals, not task performance or checkpoint-selection evidence. Only two of
+24 candidate checkpoints were measured, so the others remain unknown rather
+than failed. All measurements use one fixed development panel and are not
+independent held-out confirmation or official benchmark evidence. The
+research-evaluation hold diagnostics are available for this run, but the
+task-reference artifacts still do not provide hold-trajectory diagnostics.
 
 Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -159,20 +166,19 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Can stronger feedback after leaving tolerance repair the
-three persistent failures, or do they require different angular control or
-optimization dynamics? Can a semantically compatible intervention improve
-complete holds without trading away the working policy's radial performance?
-Does any development-panel improvement generalize to the official task
-distribution?
+**Open questions:** Do the three persistent failures require different angular
+control or richer state feedback rather than altered reward credit? Can an
+intervention that changes control or optimization improve complete holds
+without trading away the working policy's radial performance? Does any
+development-panel improvement generalize to the official task distribution?
 
-**Conditional next steps:** Measure experiment 14 checkpoints on the task panel
-and use hold diagnostics for any repaired recurring case. If the stronger
-penalty repairs at least one recurring failure while preserving radial
-performance, retain the best task checkpoint for further development; if it
-does not, deprioritize reward-only hold penalties and retain the experiment-2
-working recipe. Treat either result as fixed-panel development evidence rather
-than official attainment.
+**Conditional next steps:** After closure, prefer a new, explicitly scoped
+angular-control, state-feedback, or optimization experiment only if it predicts
+a repair of a named recurring episode and preserves the radial strata. If a
+future candidate repairs a recurring case with a complete 100-step hold and
+does not regress the panel, it can replace the working lineage; otherwise keep
+experiment-2 checkpoint-120832. Treat all such results as fixed-panel
+development evidence rather than official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -819,3 +825,54 @@ interruption diagnostics; unmeasured checkpoints remain unknown.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-13-checkpoint-105472-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-13-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-13-working-task-reference-v1.json`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 14
+
+**Result:** The stronger post-hold outside-band penalty hypothesis was
+contradicted under the tested transfer conditions. Checkpoint-120832 matched
+the working policy at 197/200 but repaired none of its recurring failures, so
+experiment-2 checkpoint-120832 remains working and best-known.
+
+**Observed behavior:** The proposal expected at least 198/200 task-reference
+success, repair of episode 84, 102, or 175 through a complete 100-step hold,
+preservation of 48/48 middle-radius and at least 94/95 far-radius success, and
+no concentrated new failure group. Checkpoint-100352 measured 196/200 with
+54/57 near-radius, 48/48 middle-radius, and 94/95 far-radius successes; its
+failures were 10, 84, 102, and 175. Checkpoint-120832 measured 197/200 with
+55/57, 48/48, and 94/95 successes; its failures were 84, 102, and 175,
+exactly matching the working policy's task-reference result.
+
+Research evaluation reported the same totals. For recurring failures 84, 102,
+and 175, all candidates first reached tolerance at step 17, but maximum
+consecutive holds were 4, 2, and 2 steps at 100352 and 4, 2, and 3 steps at
+120832; no recurring case achieved the required 100-step hold. The final
+checkpoint removed the extra episode-10 failure seen at 100352. The training
+proxy peaked at 1.0 near 20480 steps and ended at 0.99, while reward was
+111.592 at 100352 and 108.548 at 120832.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The final checkpoint preserved the middle- and far-radius
+thresholds and avoided a lasting new failure group, which is an unexpected
+preservation signal, but it did not reach 198/200 or repair any recurring
+failure. The absence of a complete repaired hold directly fails the proposed
+mechanistic success criterion. The result weakens stronger post-hold reward
+feedback as a practical route for this transfer recipe and budget; it does not
+show that the penalty is intrinsically non-causal or that angular control,
+state information, or optimization is the universal explanation. The
+conclusion is limited to two measured checkpoints from one transfer trajectory
+on one fixed development panel; the 22 unmeasured checkpoints remain unknown.
+
+**Interpretation:** Increasing the outside-band penalty from 0.1 to 0.5 did not
+change the measured residual failure set or improve complete task success
+relative to the working policy. The final candidate is therefore not retained.
+Training proxy and reward again did not distinguish the measured task
+checkpoint. This closure selects the existing working recipe, not an official
+98% result.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-14-checkpoint-100352-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-14-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-14-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-14-checkpoint-120832-task-reference-v1.json`;
+`robot_learning/scenario/reward.py`;
+`robot_learning/scenario/environment.py`.
