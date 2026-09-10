@@ -2,41 +2,33 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Improve official-task success by testing whether the incumbent's
-structured residual failures arise from missing short-radius training coverage,
-while preserving the measured checkpoint-100352 policy as the comparison point.
-This is a provisional diagnostic direction, not a commitment to radius
-coverage if the hard negative-angle sector persists.
+**Direction:** Improve official-task success by addressing the persistent
+-150 to -120 degree failure sector, using full-radius training coverage as a
+retained condition but no longer treating it as the leading explanation for
+that sector.
 
-**Lessons and limits:** The baseline learned the task late in training: logged
-training success rose from 0 through 70,656 steps to 0.97 at 100,352 steps,
-then fluctuated and ended at 0.95 at 120,832 steps. These are training facts,
-not policy rankings. Checkpoint-100352 measured 97.4% on a 1,000-episode
-research panel and 98.0% on the 200-episode task-reference development panel;
-checkpoint-120832 measured 96.9% and 97.0% on those respective panels, while
-checkpoint-95232 measured 96.0% on the task-reference panel. The
-research-evaluation diagnostics for checkpoint-100352 show 51/74 success in the
--150 to -120 degree sector and at least 97.8% in every other 30-degree sector.
-Its 26 research-panel failures are all in that sector, with 17 never reaching
-tolerance and 9 losing the hold; the four task-reference failures are 6-10 cm
-targets in the same negative-angle sector. The training environment sampled
-14-20 cm while the official task samples 6-20 cm, but these measurements do not
-establish that radius coverage caused either failure pattern. The development
-panels are not independent confirmation or the official verdict.
+**Lessons and limits:** Experiment 2's transferred full-radius policy improved
+checkpoint-100352 research success from 97.4% to 97.5% and task-reference
+success from 98.0% to 98.5%. In the same research panel, its 6-10 cm bin
+improved from 97.2% to 98.2%, while the 18-20 cm bin fell from 98.2% to 97.3%.
+The hard sector remained dominant and slightly worsened from 23/74 to 24/74
+failures. The task-reference failures changed from four short-radius failures
+to two short-radius failures plus one 18.24 cm failure. The completed
+checkpoint regressed to 97.2% research success while retaining 98.5% on the
+task-reference panel. These are development measurements, not the official
+verdict; the single transferred run and fixed panels do not establish a causal
+effect of radius coverage.
 
-**Open questions:** Whether full-radius training improves short-radius
-performance without sacrificing the already strong far-radius behavior; whether
-it also reduces the negative-angle failures; and whether that sector instead
-reflects an observation or control-generalization problem. Checkpoint selection
-and the late-training regression remain separate uncertainties.
+**Open questions:** Whether the negative-angle sector is caused by observation
+or control generalization, whether checkpoint selection or late-training
+regression is the more useful intervention, and whether the modest short-radius
+gain persists on new coverage.
 
-**Conditional next steps:** Measure the transferred full-radius challenger at
-an early high-performing checkpoint and at completion with the same geometry
-diagnostics. If short-radius failures improve, continue refining coverage or a
-curriculum; if the negative-angle concentration remains, prioritize an
-observation/control investigation rather than assuming radius coverage solved
-the task. Preserve checkpoint-100352 until a measured successor is available,
-and defer the official benchmark until terminal readiness is judged.
+**Conditional next steps:** A future experiment may inspect observation or
+control generalization while retaining broad-radius training, or test a
+checkpoint-aware training schedule. The measured early challenger is useful
+progress but is not ready for terminal assessment while the large structured
+failure sector remains.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -86,3 +78,61 @@ the five experiment-1 artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and
 `robot_learning/scenario/environment.py`,
 `robot_learning/scenario/evaluation.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 2
+
+**Result:** Broader target-radius training produced a useful but non-terminal
+success improvement at checkpoint-100352. That checkpoint becomes the working
+and best-known lineage; the completed checkpoint is not selected.
+
+**Observed behavior:** The transferred run completed 120,832 local steps.
+Training success was 0.966 at 5,120 steps, reached 0.99 at 100,352 steps,
+then fell to 0.94 at completion; mean training reward fell from 113.72 at
+100,352 to 110.99 at completion. These are training facts, not policy
+rankings. Research evaluation measured checkpoint-100352 at 975/1,000
+(97.5%), checkpoint-120832 at 972/1,000 (97.2%), and the incumbent at
+974/1,000 (97.4%). On the task-reference panel, both experiment-2
+checkpoints scored 197/200 (98.5%), versus 196/200 (98.0%) for the incumbent.
+This unchanged task-reference result at the completed checkpoint is an
+orthogonal cross-panel signal because its research-panel success was lower than
+the early checkpoint's.
+For checkpoint-100352, 11 of 25 research failures never reached tolerance and
+14 lost the hold after reaching it. Its -150 to -120 degree sector had 24/74
+failures; all other sectors had at most one failure. In the research
+radius bins, success was 98.2% at 6-10 cm and 97.3% at 18-20 cm. The three
+task-reference failures were two targets at 9.92 and 9.36 cm in the hard
+sector and one target at 18.24 cm and -154.79 degrees.
+
+**Hypothesis assessment:** Partially supported. The expected observation was
+partly present: the early transferred checkpoint improved overall measured
+success modestly and reduced short-radius failures, while task-reference
+success increased to 98.5%. The contradicting observation was also present:
+the concentrated negative-angle failures persisted and were slightly worse,
+far-radius research success declined relative to the incumbent, and the
+completed checkpoint was weaker than the early checkpoint. Therefore the
+measurements support missing-radius coverage as a useful contributor to the
+short-radius behavior under these panels, but weaken it as an explanation for
+the dominant negative-angle failures. The comparison is limited to one
+transferred run and compatible fixed development panels; it does not establish
+causality or official-task attainment.
+
+**Interpretation:** Full-radius coverage is worth retaining because it produced
+a measured short-radius improvement without a broad collapse in performance,
+but it did not resolve the residual failure pattern that limits readiness.
+The early checkpoint is more useful than the completed checkpoint on the
+research panel, so the lineage decision preserves that checkpoint. Future
+scientific effort should prioritize observation or control generalization and
+checkpoint selection rather than assume that adding radius coverage alone
+will satisfy the objective.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-2-checkpoint-100352-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-2-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-2-working-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-2-checkpoint-100352-task-reference-v1.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-2-checkpoint-120832-task-reference-v1.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-2-working-task-reference-v1.json`,
+`robot_learning/scenario/environment.py`,
+`robot_learning/scenario/evaluation.py`, and
+`research/query_training_log.py`.
