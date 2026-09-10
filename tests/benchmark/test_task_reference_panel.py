@@ -288,9 +288,16 @@ def test_request_accepts_research_only_reference_only_and_both():
             "candidate": "checkpoint-1",
             "episodes": 10,
             "seed": 5,
+            "selection": "the candidate under test",
         }
     ]
-    reference = [{"instrument": "task_reference", "candidate": "champion"}]
+    reference = [
+        {
+            "instrument": "task_reference",
+            "candidate": "champion",
+            "selection": "the incumbent to compare against",
+        }
+    ]
 
     validate_evaluation_request(_request(measurements=research))
     validate_evaluation_request(_request(measurements=reference))
@@ -340,7 +347,12 @@ def test_request_rejects_a_malformed_reference_list():
 
 
 def test_reference_entry_fields_stay_minimal():
-    assert TASK_REFERENCE_ENTRY_FIELDS == {"instrument", "candidate", "label"}
+    assert TASK_REFERENCE_ENTRY_FIELDS == {
+        "instrument",
+        "candidate",
+        "label",
+        "selection",
+    }
 
 
 def test_reference_artifacts_cannot_collide_with_research_artifacts():
