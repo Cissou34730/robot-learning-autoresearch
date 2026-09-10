@@ -6,12 +6,13 @@
 recipe with checkpoint-110592 as working and best-known. Experiments 20, 21,
 and 22 show that fresh runs with the same representation can range from a
 194-195/200 tradeoff to 59-63/200 collapses, so direct velocity is a useful
-state signal but not a reliably sufficient recipe. Unchanged fresh replication
-is now evidence of run instability rather than a promising intervention. The
-remaining direction is a targeted or variance-aware improvement within the
-raw-velocity semantics, without repeating reward-only hold penalties, global
-command attenuation, the failed target-relative representation, or an
-unchanged continuation that has already been unstable.
+state signal but not a reliably sufficient recipe. Experiment 23 deliberately
+quantifies this run-condition variance with a fourth fresh seed before another
+targeted intervention is chosen. The remaining direction is a targeted or
+variance-aware improvement within the raw-velocity semantics, without repeating
+reward-only hold penalties, global command attenuation, the failed
+target-relative representation, or an unchanged continuation that has already
+been unstable.
 
 **Lessons and limits:** Experiment 21 measured 95/200, 95/200, and 85/200 on
 task-reference-v1 at checkpoints 100352, 110592, and 120832, with radial
@@ -45,21 +46,23 @@ results do not identify seed as the cause and do not establish a causal
 representation claim or an official-task claim. Twenty-one experiment-22
 checkpoints remain unmeasured and unknown.
 
-**Open questions:** Which run-condition or optimization factors explain the
-large spread between the useful experiment-20 tradeoff and the broad
-experiment-21/22 collapses? Can a targeted change within the raw-velocity
-semantics improve the recurring non-entry and hold-instability failures without
-trading away the middle and far strata? The fixed development panel and the
-coupled fresh-training conditions do not answer either question.
+**Open questions:** Does a fourth independent fresh run reproduce the broad
+spread seen in experiments 20-22, or can the unchanged recipe again produce a
+checkpoint near experiment 16's 198/200 profile? Which run-condition or
+optimization factors explain the spread? Can a targeted change within the
+raw-velocity semantics improve the recurring non-entry and hold-instability
+failures without trading away the middle and far strata? The fixed development
+panel and the coupled fresh-training conditions do not answer the causal
+question.
 
-**Conditional next steps:** If development continues, prefer a targeted
-raw-velocity intervention or an explicitly designed variance-aware comparison,
-with task success and radial strata as the decision criteria and diagnostics
-used only to explain failures. Do not spend another run on unchanged fresh
-replication unless the question is specifically to quantify run-condition
-variance. If a future candidate does not materially exceed the current
-198/200 development result, retain the experiment-16 lineage and do not infer
-progress from reward or proxy metrics.
+**Conditional next steps:** Use experiment 23's task success and radial strata
+to decide whether the unchanged raw-velocity recipe has enough run
+reliability to justify a targeted intervention. If its measured checkpoints
+again fail to approach 198/200, retain the experiment-16 lineage and investigate
+an explicitly variance-aware or semantically compatible targeted change; do not
+infer progress from reward or proxy metrics. If it reproduces the strong
+profile, treat that as evidence for a useful but still development-only
+replication and compare its failure identities before selecting a lineage.
 
 Experiment 5's task-reference measurements were 191/200 (95.5%), 192/200
 (96.0%), and 187/200 (93.5%) at checkpoints 105472, 110592, and 120832.
