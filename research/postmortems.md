@@ -3,44 +3,35 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep the experiment-16 raw Cartesian end-effector-velocity
-recipe with checkpoint-110592 as working and best-known. Experiment 20's fresh
-replication did not reproduce its 198/200 total, but it repaired experiment
-16's residual panel failures with complete holds while creating a different
-failure set. This keeps direct velocity as a useful but trajectory-sensitive
-state signal, not a reliably sufficient recipe. The remaining direction is a
-targeted or variance-aware improvement within the raw-velocity semantics,
+recipe with checkpoint-110592 as working and best-known. Experiments 20 and 21
+show that fresh runs with the same representation can range from a 194-195/200
+tradeoff to a 95/200 collapse on this panel, so direct velocity is a useful
+state signal but not a reliably sufficient recipe. The remaining direction is
+a targeted or variance-aware improvement within the raw-velocity semantics,
 without repeating reward-only hold penalties, global command attenuation, the
 failed target-relative representation, or an unchanged continuation that has
 already been unstable.
 
-**Lessons and limits:** Experiment 20 measured 194/200, 195/200, and 195/200
-on task-reference-v1 at checkpoints 100352, 110592, and 120832. The radial
-strata were respectively 55/57, 47/48, 92/95; 55/57, 47/48, 93/95; and
-55/57, 47/48, 93/95. Thus the proposal's expected 198/200 result and
-preservation of experiment 16's 56/57, 48/48, and 94/95 thresholds did not
-occur. The final two checkpoints retained failures 41, 120, 124, 142, and
-172, while the early checkpoint also failed 92. In contrast, all three
-recurring residual cases named in the proposal (84, 102, and 175) were task
-successes for experiment 20.
+**Lessons and limits:** Experiment 21 measured 95/200, 95/200, and 85/200 on
+task-reference-v1 at checkpoints 100352, 110592, and 120832, with radial
+strata 23/57, 26/48, 46/95; 24/57, 26/48, 45/95; and 22/57, 26/48, 37/95.
+Research evaluation matched those totals. Its diagnostics recorded 95, 95, and
+85 complete holds and 25, 72, and 299 aggregate hold interruptions; episodes
+84, 102, and 175 never entered the tolerance band at any measured checkpoint.
+These are observations from one fresh seed and one fixed development panel, not
+evidence that seed alone caused the collapse. The training proxy stayed at
+zero while logged reward increased from 2.868 to 17.436 to 38.438, reinforcing
+that training logs and reward do not establish task progress or select a
+checkpoint. Twenty-one checkpoints remain unmeasured and unknown.
 
-Research evaluation matched those task totals. The experiment-20 failures
-mostly never entered the tolerance band or held it for more than 2-5 steps;
-aggregate hold interruptions fell from 13 to 9 to 4 across the three measured
-checkpoints. Episodes 102 and 175, which failed for experiment 16, completed
-100 held steps in the replication diagnostics, and episode 84 also remained a
-complete hold. These are partial and unexpected mechanistic signals from one
-development panel, not proof that velocity caused the repairs or that fewer
-interruptions imply better control. The training proxy rose from 0.93-0.94 at
-100352-110592 to 0.97 at 120832 while logged reward fell from 121.092 to
-107.319; these training facts again do not select a task-policy checkpoint.
-Twenty-one checkpoints were unmeasured and remain unknown rather than failed.
-
-Experiment 16 still has the strongest measured task behavior at 198/200 with
-56/57, 48/48, and 94/95. Experiment 20 therefore partially supports the
-practical usefulness of the raw velocity route, but its primary repeatability
-criterion is contradicted under the tested fresh seed and budget. Fresh
-initialization, PPO trajectory, checkpoint selection, and the fixed panel
-remain coupled; no causal representation claim or official-task claim follows.
+Experiment 20's 194-195/200 result and complete holds on experiment-16's
+recurring cases remain a partial signal that the raw-velocity route can support
+useful behavior, but experiment 21 provides no corresponding repair and
+strongly weakens practical repeatability at this seed and budget. Experiment
+16 remains the strongest measured policy at 198/200 with 56/57, 48/48, and
+94/95. Fresh initialization, PPO trajectory, checkpoint timing, and the fixed
+panel are still coupled; neither a causal representation claim nor an
+official-task claim follows.
 
 Experiment 5's task-reference measurements were 191/200 (95.5%), 192/200
 (96.0%), and 187/200 (93.5%) at checkpoints 105472, 110592, and 120832.
@@ -164,26 +155,26 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Does experiment 20's repair of episodes 84, 102, and 175
-reflect a repeatable capability of the raw velocity representation, or only a
-different optimization trajectory that traded those cases for failures 41,
-120, 124, 142, and 172? Can a targeted residual intervention preserve the
-experiment-16 radial thresholds while reducing that tradeoff? Would
-variance-aware checkpoint or seed selection improve the chance of obtaining
-198/200 without changing observation semantics? Which failure geometries
-generalize beyond the fixed development panel?
+**Open questions:** Why did the unchanged raw-velocity recipe fail broadly in
+experiment 21 while experiment 20 reached 194-195/200: seed-sensitive
+optimization, a training/runtime discrepancy, or another coupled condition?
+Can a targeted residual intervention preserve experiment 16's radial
+thresholds without trading away other panel cases? Would a variance-aware
+selection study need multiple fresh seeds before it can identify a reliable
+checkpoint? Which failure geometries generalize beyond the fixed development
+panel?
 
 **Conditional next steps:** Continue from experiment 16 checkpoint-110592 and
-keep it as best-known; do not treat experiment 20's 195/200 as progress or
-request the official benchmark. For the next ordinary experiment, prefer a
-raw-velocity-compatible targeted residual change or an explicitly
-variance-aware selection study, with task-reference and research diagnostics
-when entry or hold behavior is predicted. If a candidate reaches at least
-198/200 while preserving 56/57, 48/48, and 94/95, it becomes eligible for
-serious lineage consideration; if it only repairs named cases while adding
-failures or losing a stratum, reject it regardless of proxy, reward, or
-interruption count. Any conclusion remains development evidence until the
-official benchmark.
+keep it as best-known; do not retain experiment 21 or request the official
+benchmark. If another ordinary experiment is pursued, first prefer a
+raw-velocity-compatible targeted residual change or a deliberately
+variance-aware study that can distinguish broad training collapse from
+checkpoint variation, with task-reference and research diagnostics when entry
+or hold behavior is predicted. A candidate reaching at least 198/200 while
+preserving 56/57, 48/48, and 94/95 merits lineage consideration; a candidate
+that only repairs named cases while adding failures or losing a stratum should
+be rejected regardless of proxy, reward, or interruption count. All conclusions
+remain development evidence until the official benchmark.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -1090,6 +1081,51 @@ official assessment or a causal claim about braking or hold stability.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-16-checkpoint-110592-task-reference-v1.json`;
 `robot_learning/scenario/observations.py`; `research/scenario.md`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 21
+
+**Result:** The fresh replication was **contradicted** under the tested seed
+and budget. No measured checkpoint approached the expected 198/200 profile;
+experiment-16 checkpoint-110592 remains working and best-known, and experiment
+21 is not retained.
+
+**Observed behavior:** Task-reference-v1 measured 95/200, 95/200, and 85/200
+at checkpoints 100352, 110592, and 120832. The near/middle/far strata were
+23/57, 26/48, and 46/95; then 24/57, 26/48, and 45/95; and finally 22/57,
+26/48, and 37/95. Research evaluation matched these totals. Its diagnostics
+reported 95, 95, and 85 complete holds and 25, 72, and 299 total hold
+interruptions. Episodes 84, 102, and 175 never entered the tolerance band at
+the measured checkpoints. The training log reported proxy success 0 at all
+three checkpoints, with logged reward increasing from 2.868 to 17.436 to
+38.438. Three of 24 checkpoints were measured; the other 21 remain unknown.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected observation--a checkpoint at least 198/200 while
+preserving 56/57, 48/48, and 94/95--did not occur; all measured checkpoints
+lost every experiment-16 radial threshold and the named residual cases were
+not repaired. This weakens the claim that the 198/200 result is practically
+repeatable under the unchanged recipe. Because representation semantics,
+fresh initialization, PPO trajectory, checkpoint timing, and the fixed panel
+are coupled, this single collapse does not prove that raw velocity is
+causally responsible.
+
+**Interpretation:** Experiment 21 is evidence of severe learning-process
+variability or another coupled run-condition discrepancy, rather than measured
+policy progress. The increasing reward did not correspond to task success, and
+the broad failure pattern provides no basis for a hold-stability or residual
+repair claim. Together with experiment 20, the result supports treating raw
+velocity as potentially useful but insufficiently reliable, while leaving
+targeted residual changes and variance-aware investigation open.
+
+**Evidence inspected:** `research/brief.md`; `research/research_state.json`;
+`research/results.jsonl`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-21-attempt-1.log`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-21-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-21-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-21-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-21-checkpoint-100352-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-21-checkpoint-110592-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-21-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 20
 
