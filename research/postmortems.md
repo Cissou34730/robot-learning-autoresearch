@@ -2,48 +2,54 @@
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Scientific strategy
 
-**Direction:** The broadened 6-20 cm radius recipe remains the strongest
-development direction, while focused angle reweighting and the tested
-geometry-feature representation are both deprioritized. Experiment 4's fresh
-14-feature policy regressed broadly on the task-reference panel, so the
-experiment-2 checkpoint-100352 policy and complete recipe should remain the
-working and best-known lineage. A further experiment should require a concrete
-geometry-aware control mechanism or an explicit preservation mechanism, not
-another proxy-driven weighting or unvalidated representation expansion.
+**Direction:** The broadened 6-20 cm radius recipe and its experiment-2
+checkpoint-100352 policy remain the strongest development direction and the
+working and best-known lineage. Focused angle reweighting, the tested
+geometry-feature representation, and the tested tolerance-boundary reward
+shaping did not repair the residual geometry cluster. A further experiment
+should require a concrete geometry-aware control mechanism with an explicit
+preservation mechanism, not another proxy-driven weighting, unvalidated
+representation expansion, or repeat of the same local potential.
 
 **Lessons and limits:** On the same 200-episode development task-reference
 panel, experiment-2 checkpoint-100352 scored 98.5% (197/200). Experiment 3
 scored 94.5%, 93.5%, and 94.5% at 100352, 105472, and 120832 steps. Experiment
-4 scored only 58.0% (116/200) at 100352 and 57.5% (115/200) at 120832. At the
-experiment-4 parent horizon, all three experiment-2 failures persisted and 81
-new failures appeared; the failures covered both short and far radii and both
-negative and nonnegative angles. The final checkpoint had 85 failures versus
-84 at 100352, with 78 failures shared between the two checkpoints. Every
-experiment-4 failure truncated at 500 steps. These are observations, not proof
-that the three added features alone caused the regression: the run was fresh
-and the task-reference panel was repeated. The high 0.21 training proxy at
-120832 therefore did not support task progress, and proxy ranking remains
-insufficient for task claims. All measurements are development evidence, not
-official validation.
+4 scored 58.0% (116/200) at 100352 and 57.5% (115/200) at 120832, with broad
+failures across radius and angle. Experiment 5 scored 99.0% at 95232 and
+98.5% at both 100352 and 120832. At the established 100352-step horizon and
+at the final checkpoint, all three experiment-2 failures (episodes 84, 102,
+and 175) persisted; the 95232 checkpoint removed episode 175 but retained
+episodes 84 and 102. There were no new failures outside that residual set in
+the three experiment-5 measurements, so broad behavior was preserved but the
+planned repair of at least two failures was not observed. All experiment-5
+failures truncated at 500 steps and ended around 1.0-1.2 cm from the target.
+The training proxy reached 1.0 across several checkpoints including 95232,
+then was 0.97 at 100352 and 0.98 at 120832, while measured task success
+favored 95232; proxy ranking remains insufficient for task claims. These are
+observations from repeated development-panel measurements, not official
+validation. The single transfer run and fixed panel do not establish that the
+reward change caused either the preservation or the lack of repair.
 
-**Open questions:** Is the persistent approximately 1.0-1.2 cm truncation
-behavior a geometry-specific control limitation, a representation limitation,
-or partly a panel artifact? Can a concrete control change repair the residual
-negative-angle cases while preserving the broadened-radius policy's behavior?
-Does the retained 98.5% development result transfer to the separate official
-panel? The fresh experiment-4 regression does not isolate representation from
-optimization variance or establish a causal explanation for the failure.
+**Open questions:** Is the persistent approximately 1.0-1.2 cm truncation a
+geometry-specific action-control limitation, a representation limitation, or
+partly a panel artifact? Can a different concrete control intervention repair
+episodes 84 and 102 while preserving the broadened-radius policy? Does the
+retained 98.5% development result transfer to the separate official panel?
+Experiment 5 makes the tested local boundary potential less promising, but it
+does not isolate why it failed or establish a general negative result for
+other control mechanisms.
 
-**Conditional next steps:** Restore and retain the experiment-2 policy; do not
-request terminal assessment from the experiment-4 result. Do not run another
-angle-reweighting or feature-append experiment solely from the current
-evidence. If a specific geometry-aware control intervention with a credible
-preservation mechanism is identified, test it from the retained broadened-radius
-lineage with the protected task unchanged. Otherwise, use the retained policy
-for a deliberate panel-transfer investigation rather than treating 98.5% as
-official confirmation. Terminal assessment should remain conditional on a
-measured policy at least matching the parent while removing the residual
-cluster without new broad regressions.
+**Conditional next steps:** Close experiment 5 by restoring the experiment-2
+working and best-known recipe; do not request terminal assessment while the
+residual cluster remains and the official panel is unmeasured. Do not repeat
+the tested tolerance-boundary potential, angle reweighting, or feature
+appendage from proxy evidence alone. If a specific geometry-aware control
+intervention with a credible preservation mechanism is identified, test it
+from the retained broadened-radius lineage with the protected task unchanged.
+Otherwise, prefer a deliberate panel-transfer investigation of the retained
+policy. Terminal assessment remains conditional on a measured policy matching
+or exceeding the parent while removing the residual cluster without broad
+regressions.
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 1
 
@@ -217,3 +223,53 @@ by this experiment.
 `research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-4-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json`;
 and `robot_learning/scenario/observations.py`.
+
+## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 5
+
+**Result:** The tolerance-boundary reward intervention preserved the
+experiment-2 parent-level task performance but did not deliver the predicted
+repair of the residual negative-angle truncations. The experiment-2
+checkpoint-100352 policy remains working and best-known.
+
+**Observed behavior:** On the repeated 200-episode task-reference panel,
+experiment-5 checkpoint-95232 scored 99.0% (198/200), while checkpoint-100352
+and checkpoint-120832 each scored 98.5% (197/200). The two later checkpoints
+failed at episodes 84, 102, and 175, exactly the three failures of the
+experiment-2 checkpoint-100352 parent. The 95232 checkpoint failed only at
+episodes 84 and 102, so it removed episode 175 but did not remove the two
+near-boundary short-radius failures. Every failure truncated at 500 steps;
+the final distances were approximately 1.01-1.18 cm for episodes 84 and 102,
+and 0.97-1.03 cm for episode 175 across the measured checkpoints. The
+training proxy reached 1.0 at multiple checkpoints including 95232, then was
+0.97 at 100352 and 0.98 at 120832.
+
+**Hypothesis assessment:** Weakened under this transfer run and repeated
+development panel. The expected preservation signal was observed: the
+established-horizon and final checkpoints matched the parent's 98.5% success
+and introduced no broad new failure set. The expected repair signal was not
+observed: neither checkpoint repaired any of the three parent failures, and
+the earlier 95232 checkpoint repaired only one rather than at least two. The
+contradicting signal was therefore partly present through persistence of the
+same residual failures, but not through the predicted broad regression or
+sub-parent success. This weakens the tested boundary-shaping recipe; it does
+not prove that the reward term alone caused the outcome or that every
+geometry-aware control intervention will fail.
+
+**Interpretation:** The local potential was sufficient to preserve the
+parent's measured behavior in this run, but it did not reliably change the
+near-boundary hold behavior that motivated it. The 95232 task result exceeded
+the parent by one episode despite a lower training horizon, while the
+100352 and final results tied the parent; this checkpoint variation further
+limits claims based on the training proxy. The repeated failure identities and
+truncation distances are consistent with an unresolved geometry/control
+limitation, but the fixed panel and single transfer run cannot distinguish
+that explanation from optimization variance or panel effects.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/training_logs/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-5-attempt-1.log`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-5-checkpoint-95232-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-5-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-5-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json`;
+and `robot_learning/scenario/reward.py`.
