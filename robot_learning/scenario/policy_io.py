@@ -7,9 +7,11 @@ before export (module-level imports or captured objects, not runtime imports).
 from robot_learning.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
 
+ACTION_SCALE = 0.75
+
 
 def physical_action(action):
-    return action
+    return ACTION_SCALE * action
 
 
 def make_policy_io():
