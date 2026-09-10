@@ -513,7 +513,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "candidate": "experiment-3",
                         "episodes": -5,
                         "seed": 2,
-                        "selection": "a second panel on the same model",
+                            "selection": "the model under test",
                     },
                 ],
             ),
