@@ -2,11 +2,11 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Test whether the retained full-radius policy's residual
-negative-angle reach and hold behavior can be improved through control, action,
-or compatible observation changes. Preserve the full-radius recipe and use
-matched task measurements for checkpoint selection; reward shaping is now a
-diagnostic alternative rather than the primary route.
+**Direction:** Improve the current policy toward the 98% objective by testing
+whether temporal action control can convert the residual negative-angle
+reach/hold failures into completed holds. Preserve the full-radius recipe and
+use matched task measurements for checkpoint selection; reward shaping remains
+a diagnostic alternative rather than the primary route.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -43,20 +43,22 @@ signals from one transferred run and fixed development panels, not evidence
 that the reward caused a task-success improvement.
 
 **Open questions:** Whether the remaining negative-angle failures are primarily
-never-reach events or control/hold dynamics remains unresolved. It is also
-unclear whether the early reduction in repeated interruption events is robust
-enough to support a future hold intervention, since it did not convert into
-more successful episodes. Whether checkpoint-aware selection can reliably
-improve the current recipe remains uncertain.
+never-reach events or control/hold dynamics remains unresolved. The early
+margin-shaped policy reduced total interruptions from 256 to 35, but failed
+episode interruption counts changed only from 14 to 13 and success did not
+increase, so it is not yet clear whether temporal control can improve task
+outcomes. Whether checkpoint-aware selection can reliably improve the current
+recipe remains uncertain.
 
-**Conditional next steps:** A future experiment may test action/control dynamics
-or a compatible observation/control intervention using the retained working
-policy and the retained margin-shaped checkpoint as controls. A repeat
-measurement could establish whether the interruption reduction generalizes,
-but it is not required to close this reward experiment. Checkpoint selection
-should remain measurement led rather than inferred from training proxies.
-Terminal assessment remains inappropriate until a selected development policy
-has stronger evidence against the structured failure sector.
+**Conditional next steps:** First test a minimal, compatible action-smoothing
+intervention from the retained working policy; compare it against the matched
+working policy and, if useful, the retained margin-shaped diagnostic. If
+smoothing increases never-reach failures or leaves hard-sector success
+unchanged, deprioritize this control explanation and consider a different
+action or observation representation. Checkpoint selection should remain
+measurement led rather than inferred from training proxies. Terminal
+assessment remains inappropriate until a selected development policy has
+stronger evidence against the structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
