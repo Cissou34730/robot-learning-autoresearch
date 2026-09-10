@@ -472,6 +472,51 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     assert "24 checkpoints available for measurement; steps 5,120-122,880" in inventory
 
 
+def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "base_commit": "base"},
+        "pending_analysis": {
+            "experiment": 3,
+            "result": {"index": 3},
+            "candidates": [
+                {
+                    "name": f"checkpoint-{steps}",
+                    "timesteps": steps,
+                    "training_success": 0.9,
+                    "ep_rew_mean": 100.0,
+                    "artifact": f"research/checkpoints/checkpoint-{steps}",
+                    "evaluations": [],
+                }
+                for steps in (100352, 10240, 105472, 120832, 5120)
+            ],
+        },
+    }
+    (research_dir / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+
+    inventory = render_research_brief().split(
+        "### Current experiment checkpoints available for measurement", 1
+    )[1].split("## Working lineage", 1)[0]
+    identifiers = next(
+        line for line in inventory.splitlines() if line.startswith("- Identifiers:")
+    )
+
+    positions = [
+        identifiers.index(f"`checkpoint-{steps}`")
+        for steps in (5120, 10240, 100352, 105472, 120832)
+    ]
+    assert positions == sorted(positions)
+
+
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()

@@ -338,6 +338,8 @@ def _training_proxy_trajectory(candidates: list[dict]) -> str:
 
 
 def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
+    # Training records the pool in lexicographic name order, which interleaves step counts.
+    candidates = sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
     parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
     common_parts = list(parents[0].parts) if parents else []
