@@ -3,38 +3,39 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
-Experiment 14 contradicted the stronger post-hold outside-band penalty
-hypothesis: its final measured checkpoint matched the working policy at
-197/200 and retained all three recurring failures. Reward-only hold penalties,
-including earlier hold forfeiture, convex hold credit, and this outside-band
-penalty, are now deprioritized as practical routes under the tested transfer
-conditions. The evidence still does not identify representation, angular
-control, or optimization as a universal causal explanation; a future
-experiment should target one of those unresolved alternatives rather than
-repeat this reward-only intervention.
+Experiment 15 contradicted the global command-damping hypothesis under the
+tested transfer conditions: scaling both physical commands to 0.75 produced
+196/200 at both measured checkpoints, retained failures 84, 102, and 175, and
+repaired neither recurring hold. Reward-only hold penalties and global command
+attenuation are now deprioritized as practical routes under the tested transfer
+conditions. The lower interruption count is a diagnostic signal, not evidence
+of policy progress. The evidence still does not identify representation, state
+feedback, angular control, or optimization as a universal causal explanation;
+future work should target one unresolved alternative rather than repeat these
+interventions without a new control or prediction.
 
-**Lessons and limits:** Experiment 14's checkpoint-100352 reached 196/200
-(54/57 near-radius, 48/48 middle-radius, 94/95 far-radius) and added failure
-10 to the recurring failures. Checkpoint-120832 reached 197/200 with
-55/57 near-radius, 48/48 middle-radius, and 94/95 far-radius, exactly matching
-the working policy and retaining failures 84, 102, and 175. This is
-preservation, not measured policy progress: the expected observation of at
-least 198/200 plus a repaired recurring case did not occur, while the
-contradicting radial-regression condition did not occur at the final
-checkpoint. Research diagnostics likewise found no complete repaired hold:
-at checkpoints 100352 and 120832, the maximum consecutive holds for episodes
-84, 102, and 175 were respectively 4/2/2 and 4/2/3 steps, after first
-reaching tolerance at step 17. The final checkpoint removed the transient
-episode-10 failure, but this was not a repair of a recurring case.
+**Lessons and limits:** Experiment 15's checkpoints 100352 and 120832 both
+reached 196/200 on task-reference-v1, with 54/57 near-radius, 48/48
+middle-radius, and 94/95 far-radius success. Both failed episodes 10, 84, 102,
+and 175; the working policy reached 197/200 with 55/57 near-radius and failed
+only 84, 102, and 175. Thus radial middle and far performance was preserved,
+but the expected at-least-198/200 result and complete repair of a named
+recurring case did not occur. Research evaluation found first reach at steps
+22, 22, and 21 for episodes 84, 102, and 175, versus step 17 for the working
+policy. Maximum consecutive holds were 3/2/4 at checkpoint-100352 and 3/1/4
+at checkpoint-120832, versus 4/1/6 for the working policy; no candidate
+completed the required 100-step hold.
 
-The training proxy reached 1.0 near 20480 steps and ended at 0.99; logged
-reward was 111.592 at 100352 and 108.548 at 120832. These are training
-signals, not task performance or checkpoint-selection evidence. Only two of
-24 candidate checkpoints were measured, so the others remain unknown rather
-than failed. All measurements use one fixed development panel and are not
-independent held-out confirmation or official benchmark evidence. The
-research-evaluation hold diagnostics are available for this run, but the
-task-reference artifacts still do not provide hold-trajectory diagnostics.
+Aggregate hold interruptions were 5 and 7 for the two candidates versus 240
+for the working policy. This partial and unexpected signal may indicate fewer
+repeated tolerance exits, but it coincided with later entry and only brief
+holds, so it is not a repaired stability mechanism. The training proxy reached
+1.0 near 20480 steps and ended at 0.98; logged reward varied across the run
+and did not select a measured task improvement. Only two of 24 checkpoints
+were measured, so the remainder are unknown rather than failed. All
+measurements use one fixed development panel and one transfer trajectory, are
+not independent held-out confirmation or official benchmark evidence, and
+task-reference artifacts do not provide hold-trajectory diagnostics.
 
 Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
@@ -166,19 +167,22 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Do the three persistent failures require different angular
-control or richer state feedback rather than altered reward credit? Can an
-intervention that changes control or optimization improve complete holds
-without trading away the working policy's radial performance? Does any
-development-panel improvement generalize to the official task distribution?
+**Open questions:** Do the three persistent failures require richer state
+feedback or a different representation, or can a targeted optimization change
+repair them without sacrificing radial performance? Is the lower interruption
+count from command damping a real reduction in oscillation that is separated
+from its slower, still-incomplete reaches? Does any development-panel
+improvement generalize to the official task distribution?
 
 **Conditional next steps:** After closure, prefer a new, explicitly scoped
-angular-control, state-feedback, or optimization experiment only if it predicts
-a repair of a named recurring episode and preserves the radial strata. If a
-future candidate repairs a recurring case with a complete 100-step hold and
-does not regress the panel, it can replace the working lineage; otherwise keep
-experiment-2 checkpoint-120832. Treat all such results as fixed-panel
-development evidence rather than official attainment.
+state-feedback, representation, or optimization experiment only if it predicts
+a complete 100-step repair of a named recurring episode while preserving the
+55/57, 48/48, and 94/95 radial strata. Do not repeat global command damping or
+reward-only hold changes under the same transfer conditions without a new
+mechanistic control. A candidate meeting the repair and non-regression criteria
+can replace the working lineage; otherwise keep experiment-2 checkpoint-120832.
+Treat all such results as fixed-panel development evidence rather than official
+attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -876,3 +880,55 @@ checkpoint. This closure selects the existing working recipe, not an official
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-14-checkpoint-120832-task-reference-v1.json`;
 `robot_learning/scenario/reward.py`;
 `robot_learning/scenario/environment.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 15
+
+**Result:** The global command-damping hypothesis was contradicted under the
+tested transfer conditions. Checkpoints 100352 and 120832 both measured
+196/200, below the working policy's 197/200, and repaired none of its recurring
+failures. Experiment-2 checkpoint-120832 remains working and best-known.
+
+**Observed behavior:** The proposal expected at least 198/200, an uninterrupted
+100-step hold for at least one of episodes 84, 102, or 175, and preservation of
+55/57 near-radius, 48/48 middle-radius, and 94/95 far-radius success. Both
+checkpoints instead measured 54/57, 48/48, and 94/95, with failures 10, 84,
+102, and 175. Research evaluation found first reach at steps 22, 22, and 21
+for recurring episodes 84, 102, and 175, and maximum consecutive holds of
+3/2/4 at checkpoint-100352 and 3/1/4 at checkpoint-120832. The working policy
+had first reach at step 17 and maximum holds of 4/1/6. No candidate completed a
+100-step hold. Aggregate interruptions fell from 240 for the working policy to
+5 and 7 for the candidates. The training proxy reached 1.0 near 20480 steps
+and ended at 0.98; the task-reference and research-evaluation results did not
+show a corresponding task improvement. Twenty-two checkpoints were unmeasured.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. Neither measured checkpoint reached 198/200 or repaired a named
+recurring case, so the central task-progress and hold-repair predictions failed.
+Preservation of the middle and far strata is a partial preservation signal, not
+policy progress relative to the working policy. The much lower interruption
+count is an unexpected diagnostic signal, but it occurred with later tolerance
+entry and only brief holds; it does not establish reduced angular overshoot or
+stable control. This conclusion is limited to the 0.75 scale, one transfer
+trajectory, two measured checkpoints, and one fixed development panel. The
+unmeasured checkpoints remain unknown, and the panel is not official benchmark
+evidence.
+
+**Interpretation:** Attenuating both physical commands changed the observed
+hold trajectory without solving the residual task failures. The fewer recorded
+interruptions may reflect fewer repeated tolerance contacts rather than better
+holding, because all three recurring cases remained far below the required
+duration. The result rejects this command-damping recipe for lineage selection
+but does not distinguish state feedback, representation, target-specific
+geometry, or PPO optimization as the cause of the persistent failures. The
+working scientific recipe should therefore be restored before any later
+experiment.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-15-attempt-1.log`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-15-working-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-15-checkpoint-100352-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-15-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-15-working-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-15-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-15-checkpoint-120832-task-reference-v1.json`;
+`robot_learning/scenario/policy_io.py`.
