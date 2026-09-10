@@ -2,34 +2,35 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Diagnose whether a representation that exposes continuous
-absolute target geometry can remove the persistent -150 to -120 degree failure
-sector, while retaining full-radius training coverage; if not, redirect toward
-control or hold-stability shaping rather than treating geometry visibility as
-the sole explanation.
+**Direction:** Prioritize control and hold-stability interventions under the
+full-radius training recipe, while treating direct absolute target geometry as
+deprioritized unless a future design changes the representation test
+substantially.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
 success from 98.0% to 98.5%, but its hard sector still contained 24 of 25
 research failures and included both never-reached targets and repeated hold
-interruptions. In the same research panel, its 6-10 cm bin improved from 97.2%
-to 98.2%, while the 18-20 cm bin fell from 98.2% to 97.3%. The completed
-checkpoint regressed to 97.2% research success while retaining 98.5% on the
-task-reference panel. These are development measurements, not the official
-verdict; the single transferred run and fixed panels do not establish a causal
-effect of radius coverage.
+interruptions. Experiment 3's fresh 13-value observation policy scored 95.1%
+on the research panel and 94.5% on the task-reference panel at 120,832 steps,
+below the unchanged working policy's 97.5% and 98.5%. Its research failures
+also included more never-reached and interrupted episodes than the control.
+The comparison is evidence about this fresh run and these development panels,
+not a causal estimate of every possible geometry representation or training
+initialization.
 
-**Open questions:** Whether direct absolute target geometry helps the policy
-select and stabilize the appropriate reach behavior in the negative-angle
-sector, or whether the residual is primarily a control/reward issue. Whether
-the representation change preserves far-radius competence also remains unknown.
+**Open questions:** Which control or reward changes improve uninterrupted hold
+completion in the persistent negative-angle sector without losing
+short-radius and far-radius competence. Whether checkpoint-aware selection can
+reliably improve the current recipe remains uncertain. The experiment does not
+show whether a geometry representation could help with transfer or with a
+different encoding.
 
-**Conditional next steps:** If the representation test reduces both
-never-reached cases and hold interruptions without sacrificing other geometry,
-measure and compare its best checkpoint against the current working lineage.
-If the sector persists, test hold-stability reward shaping or checkpoint-aware
-selection. The current measured policies remain useful progress but are not
-ready for terminal assessment while the structured failure sector remains.
+**Conditional next steps:** A future experiment may retain the full-radius
+training distribution and test hold-stability or control shaping from the
+working lineage, with checkpoint selection treated as a separate decision.
+Terminal assessment remains inappropriate until the selected development
+policy has stronger evidence against the structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -137,3 +138,61 @@ will satisfy the objective.
 `robot_learning/scenario/environment.py`,
 `robot_learning/scenario/evaluation.py`, and
 `research/query_training_log.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 3
+
+**Result:** The absolute-target-geometry intervention did not improve the
+measured policy. The experiment is closed with the existing `working` and
+`best_known` lineage unchanged; the geometry observation recipe is reverted and
+the official benchmark is not requested.
+
+**Observed behavior:** The fresh run completed 120,832 steps. Training proxy
+success rose from 0 to 0.81; logged mean reward was 167.668 at checkpoint
+105,472 and 129.873 at checkpoint 120,832. These are training facts, not
+policy evaluations. Research evaluation measured checkpoint-105472 at
+92.8% (928/1,000), checkpoint-120832 at 95.1% (951/1,000), and the unchanged
+working policy at 97.5% (975/1,000). The paired comparisons on the same
+research episodes favored the working policy by 47 and 24 successes,
+respectively. Task-reference measurements were 89.5% (179/200), 94.5%
+(189/200), and 98.5% (197/200), respectively.
+
+In the research diagnostics, checkpoint-105472 had 72 failed episodes, of
+which 30 were in the -150 to -120 degree sector, 22 never reached tolerance,
+and 50 had at least one hold interruption. Checkpoint-120832 had 49 failed
+episodes, 27 in that sector, 17 never reaching tolerance, and 32 with hold
+interruptions. The working policy had 25 failed episodes, 24 in that sector,
+11 never reaching tolerance, and 14 with hold interruptions. On the fixed
+task-reference panel, the working policy had 3 failures, while the two
+geometry checkpoints had 21 and 11. The 22 other experiment-3 checkpoints
+remain unmeasured.
+
+**Hypothesis assessment:** Contradicted under the tested fresh run. The
+expected observation was fewer hard-sector reach and hold failures without
+regressing other geometry; neither measured geometry checkpoint beat the
+working policy, and both showed worse overall and task-reference success. The
+hard-sector failure count and failed-episode diagnostics did not improve.
+Checkpoint-120832 was better than checkpoint-105472, which is an unexpected
+training-trajectory signal but not evidence of policy acceptance. The result
+weakens the representation explanation for this residual under the tested
+recipe, while the single fresh run and incompatible observation contract limit
+causal claims about other encodings or transfer conditions.
+
+**Interpretation:** Directly appending target x and y did not solve the
+structured failure pattern and was accompanied by broad measured regression.
+The discrepancy between rising training proxy success and sub-control
+development success indicates that training logs were useful for checkpoint
+selection but did not predict held-out task behavior here. The evidence favors
+preserving the experiment-2 full-radius working policy and investigating
+control or hold-stability shaping before another representation test.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`,
+`research/training_logs/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-3-attempt-1.log`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-3/inventory.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-checkpoint-105472-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-working-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-checkpoint-105472-task-reference-v1.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-checkpoint-120832-task-reference-v1.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-working-task-reference-v1.json`,
+`robot_learning/scenario/observations.py`.
