@@ -328,10 +328,20 @@ def _training_proxy_trajectory(candidates: list[dict]) -> str:
         )
     initial_steps, initial_value = observations[0]
     final_steps, final_value = observations[-1]
-    best_steps, best_value = max(observations, key=lambda item: item[1])
+    best_value = max(value for _, value in observations)
+    best_steps = [steps for steps, value in observations if value == best_value]
+    # A tied maximum spans a plateau; reporting one step would hide the other candidates.
+    best = (
+        f"best {best_value:g} at {best_steps[0]:,} steps"
+        if len(best_steps) == 1
+        else (
+            f"best {best_value:g} at {len(best_steps)} checkpoints spanning "
+            f"{best_steps[0]:,}-{best_steps[-1]:,} steps"
+        )
+    )
     return (
         f"- Training proxy trajectory: initial {initial_value:g} at "
-        f"{initial_steps:,} steps; best {best_value:g} at {best_steps:,} steps; "
+        f"{initial_steps:,} steps; {best}; "
         f"final {final_value:g} at {final_steps:,} steps "
         f"({proxy_label} training proxy, not an evaluation result)"
     )
