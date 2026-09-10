@@ -34,15 +34,23 @@ Model saved to models/reach-example/model.zip
 """
 
 
-def test_v4_evidence_keeps_candidate_selection_reasons():
+def test_v4_evidence_foregrounds_measured_outcomes_not_selection_rationales():
     lines = _v4_evidence_lines(
         None,
         [
             {
                 "index": 1,
-                "candidates": [
-                    {"name": "checkpoint-100", "evaluations": [{}]},
-                    {"name": "checkpoint-200", "evaluations": [{}]},
+                "requested_evaluations": [
+                    {
+                        "candidate": "checkpoint-100",
+                        "instrument": "research_evaluation",
+                        "model_fingerprint": "abcdef1234567890",
+                        "metrics": {
+                            "episodes": 20,
+                            "seed": 7300,
+                            "success_percent": 95.0,
+                        },
+                    }
                 ],
                 "candidate_selections": {
                     "checkpoint-100": "highest proxy",
@@ -52,8 +60,10 @@ def test_v4_evidence_keeps_candidate_selection_reasons():
         ],
     )
 
-    assert "`checkpoint-100`: highest proxy" in lines[0]
-    assert "`checkpoint-200`: final checkpoint" in lines[0]
+    assert "checkpoint-100, research_evaluation" in lines[0]
+    assert "model abcdef123456" in lines[0]
+    assert "success 95.00%" in lines[0]
+    assert "highest proxy" not in lines[0]
 
 
 def _checkpoint(path: Path) -> Path:
@@ -341,9 +351,6 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
         "## Latest experiment"
     )
     assert rendered.index("## Latest experiment") < rendered.index(
-        "## Current scientific direction"
-    )
-    assert rendered.index("## Current scientific direction") < rendered.index(
         "## Current lineages and scientific recipes"
     )
     assert rendered.index("## Current lineages and scientific recipes") < rendered.index(
@@ -351,6 +358,9 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     )
     assert rendered.index("## Working lineage") < rendered.index(
         "## Campaign experiment index"
+    )
+    assert rendered.index("## Available development evidence") < rendered.index(
+        "## Provisional scientific synthesis"
     )
 
 
@@ -430,12 +440,13 @@ def test_v4_brief_groups_long_campaign_checkpoint_and_evidence_detail(
     )
     expanded = render_research_brief()
 
-    assert compact.count("1 measured checkpoint; 19 unmeasured checkpoints") == 50
+    assert compact.count("1 measured checkpoint; 19 unmeasured checkpoints") == 25
+    assert compact.count("measured, research_evaluation/development-v1") >= 25
     assert "research_evaluation/development-v1: 1 measurement" in compact
     assert "experiment-25-0.json" in results_path.read_text(encoding="utf-8")
     assert "experiment-25-0.json" not in expanded
     assert "checkpoint-198" not in expanded
-    assert len(expanded) - len(compact) < 250
+    assert len(expanded) - len(compact) < 1000
 
 
 def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
@@ -483,19 +494,23 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
 
     brief = render_research_brief()
     latest = brief.split("## Latest experiment", 1)[1].split(
-        "## Current scientific direction", 1
+        "## Current lineages and scientific recipes", 1
     )[0]
 
     assert latest.count("| `checkpoint-") == 1
     assert "| `checkpoint-10240` | 10,240 |" in latest
     assert "Unmeasured checkpoints: 23 of 24; steps 5,120-122,880" in latest
-    assert "Training proxy trajectory: initial 0.1 at 5,120 steps; best 0.4 at 10,240 steps; final 0.2 at 122,880 steps (training success training proxy" in latest
+    assert "Training proxy observations: 24 checkpoints from 5,120-122,880 local steps" in latest
+    assert "training success range 0.1-0.4, initial 0.1, final 0.2" in latest
+    assert "not a checkpoint ranking or evaluation result" in latest
     inventory = brief.split(
         "### Current experiment checkpoints available for measurement", 1
     )[1].split("## Working lineage", 1)[0]
     assert inventory.count("checkpoint-") == 24
     assert "Artifact base path: `research/checkpoints`" in inventory
     assert "24 checkpoints available for measurement; steps 5,120-122,880" in inventory
+    assert "at most 3 distinct models" in inventory
+    assert "local 10,240 steps; accumulated 10,240 steps" in inventory
 
 
 def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path):
@@ -543,7 +558,9 @@ def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path)
     assert positions == sorted(positions)
 
 
-def test_v4_brief_reports_the_training_proxy_plateau_span(monkeypatch, tmp_path):
+def test_v4_brief_reports_training_proxy_range_without_checkpoint_ranking(
+    monkeypatch, tmp_path
+):
     research_dir = tmp_path / "research"
     research_dir.mkdir()
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
@@ -576,10 +593,12 @@ def test_v4_brief_reports_the_training_proxy_plateau_span(monkeypatch, tmp_path)
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
 
     latest = render_research_brief().split("## Latest experiment", 1)[1].split(
-        "## Current scientific direction", 1
+        "## Current lineages and scientific recipes", 1
     )[0]
 
-    assert "best 1 at 3 checkpoints spanning 10,240-30,720 steps" in latest
+    assert "training success range 0.2-1" in latest
+    assert "best" not in latest
+    assert "checkpoint ranking" in latest
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):

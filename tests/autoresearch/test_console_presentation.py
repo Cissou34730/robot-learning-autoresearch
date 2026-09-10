@@ -736,7 +736,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
         "Parameter differences from `best_known`: none",
         "- Artifact base path: `models/candidates`",
         "1 checkpoints available for measurement; steps 3,000-3,000",
-        "- Identifiers: `checkpoint-current` (3,000 steps)",
+        "- Identifiers: `checkpoint-current` (local 3,000 steps; accumulated 3,000 steps)",
     ):
         assert expected in section
     assert section.count("Candidate: checkpoint-working") == 1
@@ -746,10 +746,10 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
         "- See `best_known` under **Current lineages and scientific recipes**." in brief
     )
     assert brief.index("## Latest experiment") < brief.index(
-        "## Current scientific direction"
-    )
-    assert brief.index("## Current scientific direction") < brief.index(
         "## Current lineages and scientific recipes"
+    )
+    assert brief.index("## Available development evidence") < brief.index(
+        "## Provisional scientific synthesis"
     )
 
 

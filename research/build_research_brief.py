@@ -264,25 +264,82 @@ def _v4_result_measurements(result: dict) -> str:
             {
                 "candidate": requested.get("candidate", "-"),
                 "instrument": requested.get("instrument", "research_evaluation"),
+                "model_fingerprint": requested.get("model_fingerprint"),
                 **metrics,
             }
         )
     evaluations.extend(result.get("task_reference_evaluations") or [])
     if not evaluations:
+        for candidate in result.get("candidates") or []:
+            for evaluation in candidate.get("evaluations") or []:
+                evaluations.append(
+                    {"candidate": candidate.get("name", "-"), **evaluation}
+                )
+    if not evaluations:
         return "unmeasured"
-    panels = []
+    grouped: dict[tuple[str, str, str | None], list[dict]] = {}
     for evaluation in evaluations:
-        success = evaluation.get("success_percent")
         instrument = evaluation.get("instrument", "research_evaluation")
         panel = evaluation.get("panel")
         measurement = f"{instrument}{f'/{panel}' if panel else ''}"
-        details = [str(evaluation.get("candidate", "-")), measurement]
-        if evaluation.get("episodes") is not None:
-            details.append(f"{evaluation['episodes']} episodes")
-        if evaluation.get("seed") is not None:
-            details.append(f"seed {evaluation['seed']}")
-        if success is not None:
-            details.append(f"success {float(success):.2f}%")
+        fingerprint = evaluation.get("model_fingerprint")
+        key = (
+            str(evaluation.get("candidate", "-")),
+            measurement,
+            str(fingerprint) if fingerprint else None,
+        )
+        grouped.setdefault(key, []).append(evaluation)
+    panels = []
+    for (candidate, measurement, fingerprint), group in grouped.items():
+        details = [candidate, measurement]
+        if fingerprint:
+            details.append(f"model {fingerprint[:12]}")
+        if len(group) > 1:
+            details.append(f"{len(group)} measurements")
+        episodes = sorted(
+            {int(item["episodes"]) for item in group if item.get("episodes") is not None}
+        )
+        if len(episodes) == 1:
+            details.append(
+                f"{episodes[0]} episodes" + (" each" if len(group) > 1 else "")
+            )
+        elif episodes:
+            details.append(
+                f"episode counts {min(episodes)}-{max(episodes)}"
+            )
+        seeds = sorted(
+            {int(item["seed"]) for item in group if item.get("seed") is not None}
+        )
+        if len(seeds) == 1:
+            details.append(f"seed {seeds[0]}")
+        elif seeds:
+            details.append(f"seeds {min(seeds)}-{max(seeds)}")
+        scores = sorted(
+            {
+                float(item["success_percent"])
+                for item in group
+                if item.get("success_percent") is not None
+            }
+        )
+        if len(scores) == 1:
+            details.append(f"success {scores[0]:.2f}%")
+        elif scores:
+            details.append(f"success range {min(scores):.2f}-{max(scores):.2f}%")
+        artifacts = [
+            str(item["evaluation_artifact"])
+            for item in group
+            if item.get("evaluation_artifact")
+        ]
+        if len(artifacts) == 1:
+            details.append(
+                f"detail {_existing_artifact_reference(artifacts[0], kind='file')}"
+            )
+        elif artifacts:
+            available = sum(
+                _existing_artifact_reference(path, kind="file") != "unavailable"
+                for path in artifacts
+            )
+            details.append(f"details available {available}/{len(artifacts)}")
         panels.append(", ".join(details))
     return "; ".join(panels)
 
@@ -323,31 +380,24 @@ def _training_proxy_trajectory(candidates: list[dict]) -> str:
     ]
     if not observations:
         return (
-            f"- Training proxy trajectory: unavailable ({proxy_label} proxy, "
+            f"- Training proxy observations: unavailable ({proxy_label} proxy, "
             "not a training evaluation result)"
         )
     initial_steps, initial_value = observations[0]
     final_steps, final_value = observations[-1]
-    best_value = max(value for _, value in observations)
-    best_steps = [steps for steps, value in observations if value == best_value]
-    # A tied maximum spans a plateau; reporting one step would hide the other candidates.
-    best = (
-        f"best {best_value:g} at {best_steps[0]:,} steps"
-        if len(best_steps) == 1
-        else (
-            f"best {best_value:g} at {len(best_steps)} checkpoints spanning "
-            f"{best_steps[0]:,}-{best_steps[-1]:,} steps"
-        )
-    )
+    values = [value for _, value in observations]
     return (
-        f"- Training proxy trajectory: initial {initial_value:g} at "
-        f"{initial_steps:,} steps; {best}; "
-        f"final {final_value:g} at {final_steps:,} steps "
-        f"({proxy_label} training proxy, not an evaluation result)"
+        f"- Training proxy observations: {len(observations)} checkpoints from "
+        f"{initial_steps:,}-{final_steps:,} local steps; {proxy_label} range "
+        f"{min(values):g}-{max(values):g}, initial {initial_value:g}, final "
+        f"{final_value:g}. These are descriptive training facts, not a checkpoint "
+        "ranking or evaluation result."
     )
 
 
-def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
+def _checkpoint_inventory_lines(
+    candidates: list[dict], *, parent_training_steps: int = 0
+) -> list[str]:
     # Training records the pool in lexicographic name order, which interleaves step counts.
     candidates = sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
@@ -377,9 +427,14 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
             f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
             f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}"
         )
+    lines.append(
+        "- A measurement request may select at most 3 distinct models; the "
+        "Researcher determines which models are informative."
+    )
     identifiers = ", ".join(
         f"`{_recorded_value(candidate.get('name'))}` "
-        f"({int(candidate.get('timesteps', 0)):,} steps)"
+        f"(local {int(candidate.get('timesteps', 0)):,} steps; accumulated "
+        f"{parent_training_steps + int(candidate.get('timesteps', 0)):,} steps)"
         for candidate in candidates
     )
     lines.append(f"- Identifiers: {identifiers}")
@@ -573,7 +628,14 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         else []
     )
     if candidates:
-        lines.extend(_checkpoint_inventory_lines(candidates))
+        parent_training_steps = int(
+            state.get("pending_analysis", {}).get("parent_training_steps", 0)
+        )
+        lines.extend(
+            _checkpoint_inventory_lines(
+                candidates, parent_training_steps=parent_training_steps
+            )
+        )
     else:
         lines.append("No current experiment checkpoints are recorded.")
     return lines
@@ -602,8 +664,11 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
             episodes = evaluation.get("episodes", metrics.get("episodes", "-"))
             seed = evaluation.get("seed", metrics.get("seed", "-"))
             records[str(path)] = (
-                f"research evaluation; model `{identity}`; seed {seed}; "
-                f"{episodes} episodes; semantics `{semantics}`"
+                f"research evaluation; candidate "
+                f"`{evaluation.get('candidate', 'unavailable')}`; model `{identity}`; "
+                f"seed {seed}; {episodes} episodes; success "
+                f"{metrics.get('success_percent', 'unavailable')}%; semantics "
+                f"`{semantics}`"
             )
         references = [
             *(source.get("task_reference_evaluations") or []),
@@ -616,29 +681,26 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
             fingerprint = evaluation.get("model_fingerprint")
             identity = str(fingerprint)[:12] if fingerprint else "unverified"
             records[str(path)] = (
-                f"task reference; model `{identity}`; panel "
-                f"`{evaluation.get('panel', 'unavailable')}`"
+                f"task reference; candidate "
+                f"`{evaluation.get('candidate', 'unavailable')}`; model `{identity}`; "
+                f"panel `{evaluation.get('panel', 'unavailable')}`; "
+                f"{evaluation.get('episodes', '-')} episodes; success "
+                f"{evaluation.get('success_percent', 'unavailable')}%"
             )
     lines = [
         f"- {_existing_artifact_reference(path, kind='file')}: {description}"
         for path, description in sorted(records.items())
     ]
     for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
-        summary = compact_measurement_summary(result)
+        summary = _v4_result_measurements(result)
         if summary == "unmeasured":
             continue
-        selections = result.get("candidate_selections") or {}
-        selection_summary = "; ".join(
-            f"`{candidate}`: {reason}"
-            for candidate, reason in selections.items()
-        )
         sources = [_existing_artifact_reference("research/results.jsonl", kind="file")]
         postmortem = result.get("postmortem")
         if postmortem:
             sources.append(_existing_artifact_reference(postmortem, kind="file"))
         lines.append(
             f"- Experiment {result.get('index', '-')}: {summary}"
-            + (f"; checkpoint selections {selection_summary}" if selection_summary else "")
             + "; source "
             + ", ".join(dict.fromkeys(sources))
         )
@@ -717,19 +779,22 @@ def _render_v4_research_brief(
                 f"--from-step {min(steps)} --to-step {max(steps)}`"
             )
         if measured:
+            parent_steps = int(pending.get("parent_training_steps", 0))
             lines.extend([
                 "",
-                "| Checkpoint | Steps | Training facts | Measurements |",
-                "|---|---:|---|---|",
+                "| Checkpoint | Local steps | Accumulated steps | Training facts | Measurements |",
+                "|---|---:|---:|---|---|",
             ])
             for candidate in measured:
                 facts = f"success {_candidate_metric(candidate, 'training_success')}; reward {_candidate_metric(candidate, 'ep_rew_mean')}"
-                lines.append(f"| `{candidate.get('name', '-')}` | {int(candidate.get('timesteps', 0)):,} | {facts} | {_v4_measurements(candidate)} |")
+                local_steps = int(candidate.get("timesteps", 0))
+                lines.append(f"| `{candidate.get('name', '-')}` | {local_steps:,} | {parent_steps + local_steps:,} | {facts} | {_v4_measurements(candidate)} |")
     elif latest:
         lines.extend([
             f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",
             f"- Parent: {latest.get('training_parent', '-')}",
             f"- Intervention: {_change_details(latest)}",
+            f"- Measurements: {_v4_result_measurements(latest)}",
             f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
             f"- Final action: {(latest.get('closure_decision') or {}).get('continue_from', 'unmeasured')}",
         ])
@@ -753,22 +818,6 @@ def _render_v4_research_brief(
             lines.append(f"- Requested training budget: {int(requested_steps):,} steps")
         if completed_steps is not None:
             lines.append(f"- Completed training steps: {int(completed_steps):,}")
-
-    strategy = scientific_strategy_section(postmortems, campaign_id)
-    lines.extend(
-        [
-            "",
-            "## Current scientific direction",
-            "",
-            "Revisable current investigation authored by the Researcher:",
-            "",
-        ]
-    )
-    lines.append(
-        "\n".join(strategy.splitlines()[1:]).strip()
-        if strategy
-        else "No scientific strategy recorded for this campaign yet."
-    )
 
     lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
 
@@ -798,6 +847,25 @@ def _render_v4_research_brief(
 
     lines.extend(["", "## Available development evidence", ""])
     lines.extend(_v4_evidence_lines(pending, results))
+
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines.extend(
+        [
+            "",
+            "## Provisional scientific synthesis",
+            "",
+            (
+                "Researcher-authored interpretation of the campaign evidence. "
+                "It is memory for reassessment, not a prescribed next direction:"
+            ),
+            "",
+        ]
+    )
+    lines.append(
+        "\n".join(strategy.splitlines()[1:]).strip()
+        if strategy
+        else "No scientific strategy recorded for this campaign yet."
+    )
 
     lines.extend(["", "## Repeated operations", ""])
     groups = _replication_groups(results)
@@ -1052,18 +1120,6 @@ def render_research_brief() -> str:
     strategy = scientific_strategy_section(postmortems, campaign_id)
     lines.extend(
         [
-            "## Current scientific direction",
-            "",
-            "Revisable current investigation authored by the Researcher:",
-            "",
-            "\n".join(strategy.splitlines()[1:]).strip()
-            if strategy
-            else (
-                "No scientific strategy recorded for this campaign yet. Establish it "
-                "in `research/postmortems.md` when preparing the next experiment; "
-                "historical results have not been reinterpreted automatically."
-            ),
-            "",
             "- Campaign objective: the human-defined objective in `research/scenario.md`.",
             "",
             "## Immutable goal",
@@ -1071,6 +1127,21 @@ def render_research_brief() -> str:
             (
                 "The current scientific problem, its protected task definition, and its "
                 "terminology are defined in `research/scenario.md`."
+            ),
+            "",
+            "## Provisional scientific synthesis",
+            "",
+            (
+                "Researcher-authored interpretation of the campaign evidence. "
+                "It is memory for reassessment, not a prescribed next direction:"
+            ),
+            "",
+            "\n".join(strategy.splitlines()[1:]).strip()
+            if strategy
+            else (
+                "No scientific strategy recorded for this campaign yet. Establish it "
+                "in `research/postmortems.md` when preparing the next experiment; "
+                "historical results have not been reinterpreted automatically."
             ),
             "",
             "## Current status",

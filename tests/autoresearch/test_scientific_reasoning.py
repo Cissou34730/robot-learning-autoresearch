@@ -284,12 +284,12 @@ def test_brief_exposes_current_strategy_without_old_campaign_or_truncation(
     scientific_memory.write_text(text, encoding="utf-8")
     rendered = brief.render_research_brief()
     assert "Campaign objective: the human-defined objective in `research/scenario.md`." in rendered
-    assert "Revisable current investigation authored by the Researcher:" in rendered
+    assert "memory for reassessment, not a prescribed next direction" in rendered
     assert "Investigate the plateau" in rendered
     assert "Continue if progress persists, otherwise inspect control" in rendered
     assert "NEVER IMPORT THIS" not in rendered
-    assert rendered.index("Current scientific direction") < rendered.index(
-        "Current status"
+    assert rendered.index("Immutable goal") < rendered.index(
+        "Provisional scientific synthesis"
     )
     # Legacy histories remain readable without fabricated scientific conclusions.
     scientific_memory.write_text("# Research postmortems\n", encoding="utf-8")
