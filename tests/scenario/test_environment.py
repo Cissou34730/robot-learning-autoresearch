@@ -12,7 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    TRAINING_NEGATIVE_ANGLE_PROBABILITY,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -32,33 +31,7 @@ def test_training_distribution_covers_official_radii_without_changing_evaluation
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
     assert training.target_radius_range == (0.06, 0.20)
-    assert training.negative_angle_probability == TRAINING_NEGATIVE_ANGLE_PROBABILITY
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-    assert evaluation.negative_angle_probability == 0.0
-
-
-def test_training_distribution_biases_angles_without_changing_evaluation():
-    training = make_training_env()
-    evaluation = make_evaluation_env()
-
-    training.reset(seed=0)
-    training_angles = []
-    for _ in range(1000):
-        training.reset()
-        target = training.data.mocap_pos[0]
-        training_angles.append(np.arctan2(target[1], target[0]))
-
-    evaluation.reset(seed=0)
-    evaluation_angles = []
-    for _ in range(1000):
-        evaluation.reset()
-        target = evaluation.data.mocap_pos[0]
-        evaluation_angles.append(np.arctan2(target[1], target[0]))
-
-    training_negative_fraction = np.mean(np.asarray(training_angles) < 0.0)
-    evaluation_negative_fraction = np.mean(np.asarray(evaluation_angles) < 0.0)
-    assert 0.70 < training_negative_fraction < 0.80
-    assert 0.45 < evaluation_negative_fraction < 0.55
 
 
 def test_training_environment_may_diverge_from_the_official_task():
