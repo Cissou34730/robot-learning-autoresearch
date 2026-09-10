@@ -723,6 +723,15 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
+def candidate_selections(request: dict) -> dict[str, str]:
+    selections: dict[str, str] = {}
+    for measurement in requested_measurements(request):
+        candidate = str(measurement.get("candidate", "")).strip()
+        selection = str(measurement.get("selection", "")).strip()
+        selections.setdefault(candidate, selection)
+    return selections
+
+
 def validate_evaluation_request(
     request: dict, *, allow_legacy_need_more_evidence: bool = False
 ) -> None:
@@ -761,6 +770,7 @@ def validate_evaluation_request(
                 raise ValueError(f"paired comparison requires a non-empty {field}")
     # Collect distinct candidates before detailed validation.
     distinct_candidates = set()
+    selections: dict[str, str] = {}
     for entry in requested_measurements(request):
         if not isinstance(entry, dict):
             raise TypeError("each measurement must be an object")
@@ -789,6 +799,12 @@ def validate_evaluation_request(
             raise ValueError(
                 f"{instrument} requires a non-empty selection stating why this "
                 "candidate was chosen over the other available checkpoints"
+            )
+        normalized_selection = selection.strip()
+        previous_selection = selections.setdefault(candidate.strip(), normalized_selection)
+        if previous_selection != normalized_selection:
+            raise ValueError(
+                f"measurements for {candidate.strip()!r} must use the same selection"
             )
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]

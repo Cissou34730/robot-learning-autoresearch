@@ -1,7 +1,11 @@
 import json
 from pathlib import Path
 
-from research.build_research_brief import _change_details, render_research_brief
+from research.build_research_brief import (
+    _change_details,
+    _v4_evidence_lines,
+    render_research_brief,
+)
 from robot_learning.training.progress import parse_training_records
 
 SAMPLE_LOG = """
@@ -28,6 +32,28 @@ SAMPLE_LOG = """
 -----------------------------------------
 Model saved to models/reach-example/model.zip
 """
+
+
+def test_v4_evidence_keeps_candidate_selection_reasons():
+    lines = _v4_evidence_lines(
+        None,
+        [
+            {
+                "index": 1,
+                "candidates": [
+                    {"name": "checkpoint-100", "evaluations": [{}]},
+                    {"name": "checkpoint-200", "evaluations": [{}]},
+                ],
+                "candidate_selections": {
+                    "checkpoint-100": "highest proxy",
+                    "checkpoint-200": "final checkpoint",
+                },
+            }
+        ],
+    )
+
+    assert "`checkpoint-100`: highest proxy" in lines[0]
+    assert "`checkpoint-200`: final checkpoint" in lines[0]
 
 
 def _checkpoint(path: Path) -> Path:

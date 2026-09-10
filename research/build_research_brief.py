@@ -627,12 +627,19 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
         summary = compact_measurement_summary(result)
         if summary == "unmeasured":
             continue
+        selections = result.get("candidate_selections") or {}
+        selection_summary = "; ".join(
+            f"`{candidate}`: {reason}"
+            for candidate, reason in selections.items()
+        )
         sources = [_existing_artifact_reference("research/results.jsonl", kind="file")]
         postmortem = result.get("postmortem")
         if postmortem:
             sources.append(_existing_artifact_reference(postmortem, kind="file"))
         lines.append(
-            f"- Experiment {result.get('index', '-')}: {summary}; source "
+            f"- Experiment {result.get('index', '-')}: {summary}"
+            + (f"; checkpoint selections {selection_summary}" if selection_summary else "")
+            + "; source "
             + ", ".join(dict.fromkeys(sources))
         )
     if not lines:

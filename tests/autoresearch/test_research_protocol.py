@@ -1939,6 +1939,30 @@ def test_each_measurement_requires_a_selection_justification(selection):
         )
 
 
+def test_measurements_for_one_candidate_require_one_selection_justification():
+    with pytest.raises(ValueError, match="must use the same selection"):
+        validate_evaluation_request(
+            {
+                "question": "question",
+                "reason": "reason",
+                "measurements": [
+                    {
+                        "instrument": "task_reference",
+                        "candidate": "candidate",
+                        "selection": "highest proxy",
+                    },
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "candidate",
+                        "episodes": 2,
+                        "seed": 1000,
+                        "selection": "final checkpoint",
+                    },
+                ],
+            }
+        )
+
+
 def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path):
     """When limit is exceeded, no evaluations or comparisons are executed."""
     state_path = tmp_path / "research_state.json"

@@ -356,6 +356,8 @@ def test_evaluation_plan_shows_the_question_panel_and_reason():
     assert "checkpoint-120832   200 episodes · seed 2000" in plan
     assert "champion" in plan
     assert "paired comparison   checkpoint-120832 vs champion" in plan
+    assert plan.count("highest training proxy of the pool") == 1
+    assert plan.count("the incumbent this candidate must beat") == 1
     assert "A matched panel directly tests the hypothesis." in plan
     for interpretation in ("supported", "rejected", "significant", "better"):
         assert interpretation not in plan

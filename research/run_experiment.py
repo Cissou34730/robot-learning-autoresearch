@@ -849,6 +849,7 @@ def execute_pending_evaluations() -> int:
             # Measured on the human-owned panel; never pooled with the above.
             "task_reference_evaluations": reference_executed,
             "paired_comparisons": comparisons,
+            "candidate_selections": protocol.candidate_selections(request),
         }
     )
     measured = [item for item in candidates if item.get("summary") is not None]
