@@ -3,33 +3,40 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep the experiment-16 velocity-augmented recipe with
-checkpoint-110592 as working and best-known. That checkpoint is the first
-measured candidate to exceed the previous 197/200 working result and it repaired
-one named recurring hold. Reward-only hold penalties and global command
-attenuation remain deprioritized under their tested conditions. The velocity
-result is promising state-feedback evidence, but fresh initialization and
-checkpoint selection are coupled, so it does not yet establish that the added
-features caused the improvement.
+checkpoint-110592 as working and best-known. Experiment 17's transfer
+continuation did not preserve its 198/200 result: its measured checkpoints
+reached 196/200 and 197/200, although the later one repaired episode 175 and
+improved the far stratum. Unchanged continuation is therefore not a reliable
+route to further progress under this trajectory. Reward-only hold penalties and
+global command attenuation remain deprioritized under their tested conditions.
+The velocity result remains promising state-feedback evidence, but fresh
+initialization, continuation trajectory, and checkpoint selection do not
+establish a feature-level causal effect.
 
 **Lessons and limits:** Experiment 16 checkpoint-110592 achieved 198/200 on
 task-reference-v1, with 56/57 near-radius, 48/48 middle-radius, and 94/95
 far-radius success. It repaired parent failure 84 with `max_held_steps=100`
 and retained failures 102 and 175. This is measured task progress relative to
-experiment-2 checkpoint-120832. The later checkpoint-120832 fell to 196/200,
-with 55/57, 47/48, and 94/95 success and new failures 10 and 185; therefore
-the improvement was not stable through the full measured trajectory.
+experiment-2 checkpoint-120832. Experiment 17 checkpoint-110592 achieved
+196/200 with 54/57, 48/48, and 94/95 success and failed episodes 10, 84, 100,
+and 102. Its checkpoint-120832 achieved 197/200 with 54/57, 48/48, and 95/95
+success and failed episodes 10, 84, and 102. Thus continuation repaired 175
+and, at the later point, improved the far stratum, but it did not repair 102,
+lost the parent's near-radius threshold, and introduced failures 10 and 84.
+These are task-reference observations from one fixed development panel, not
+evidence that continuation caused either the repair or the new failures.
 
-Research evaluation showed the 110592 repair was a complete hold: episode 84
-had first reach at step 17, 100 held steps, and zero interruptions. Episodes
-102 and 175 remained incomplete, with maximum holds of 3 and 7 and one and
-239 interruptions respectively. Aggregate interruptions were 245 at 110592
-versus 240 for the working policy, so the result is not explained by a general
-reduction in interruptions. The training proxy was 0.93 at both measured late
-points and logged reward declined from 122.642 to 119.654; these training
-facts did not identify the best task checkpoint. Only two of 24 checkpoints
+Research evaluation showed the experiment-16 110592 repair was a complete hold:
+episode 84 had first reach at step 17, 100 held steps, and zero interruptions.
+Experiment 17 had no research-evaluation diagnostic measurements, so the
+task-reference changes in episodes 10, 84, 100, 102, and 175 cannot be assigned
+to entry, braking, or hold stability mechanisms. Its training proxy reached
+1.0 at several earlier checkpoints and ended at 0.99, while logged reward
+varied from 114.7 early to 101.4 at 105472 and 106.7 at 120832; these training
+facts did not identify a task-policy checkpoint. Only two of 24 checkpoints
 were measured, the panel is fixed development evidence rather than official
-benchmark evidence, and the fresh run has no control separating velocity
-features from initialization or optimization trajectory.
+benchmark evidence, and the transfer continuation does not isolate velocity
+features from PPO trajectory effects.
 
 Experiment 2's transfer run remains the relevant parent comparison at 197/200
 with 55/57, 48/48, and 94/95 radial success. Experiments 3 and 4 showed that
@@ -159,23 +166,24 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Is the episode-84 repair reproducible with the velocity
-features when initialization is controlled, and can the remaining episodes 102
-and 175 be repaired without the late regression seen at checkpoint-120832? Does
-the velocity signal help specifically with braking and hold stability, or did
-the fresh optimization trajectory select a favorable controller? Does the
-development-panel gain generalize to the official task distribution?
+**Open questions:** Can a future velocity-focused intervention separate the
+13-value observation from optimization and initialization while recovering at
+least 198/200? Why did transfer continuation repair episode 175 while retaining
+102 and adding near-target failures 10 and 84? Does the velocity signal help
+braking and hold stability, or is the experiment-16 gain a trajectory and
+checkpoint-selection effect? Does any development-panel gain generalize to the
+official task distribution?
 
-**Conditional next steps:** After closure, prefer a controlled velocity
-state-feedback follow-up only if it separates fresh initialization from the
-observation change and predicts another complete 100-step repair while
-preserving 55/57, 48/48, and 94/95 radial success. If that control fails or
-the earlier checkpoint is not reproduced, retain checkpoint-110592 as the
-development best-known policy but investigate a different unresolved
-representation or optimization explanation. Do not repeat global command
-damping or reward-only hold changes under the same conditions. All such
-results remain fixed-panel development evidence rather than official
-attainment.
+**Conditional next steps:** After closure, do not spend another unchanged
+continuation on this trajectory. Prefer a new velocity-focused experiment only
+if it explicitly separates observation dependence from optimization or
+initialization and targets at least 198/200 while preserving 55/57, 48/48, and
+94/95 radial success. If that control cannot reproduce the earlier gain,
+investigate a different unresolved representation or optimization explanation;
+keep checkpoint-110592 as the development best-known policy in either case.
+Do not repeat global command damping or reward-only hold changes under the same
+conditions. All such results remain fixed-panel development evidence rather than
+official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -979,3 +987,56 @@ causal effect.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-16-checkpoint-110592-200ep-seed7300-ffdccdbf3357.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-16-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`;
 `robot_learning/scenario/observations.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 17
+
+**Result:** The unchanged velocity-policy continuation was **partially
+supported** under the tested transfer conditions. It repaired episode 175 at
+the later measured checkpoint and reached 197/200, but neither measured
+checkpoint preserved the parent's 198/200 result or the parent's near-radius
+threshold. Experiment 16 checkpoint-110592 remains working and best-known;
+the continuation is not retained.
+
+**Observed behavior:** On the fixed 200-episode task-reference-v1 panel, the
+experiment-17 checkpoint-110592 reached 196/200 (98.0%), with 54/57 near-radius,
+48/48 middle-radius, and 94/95 far-radius successes. It failed episodes 10,
+84, 100, and 102. Checkpoint-120832 reached 197/200 (98.5%), with 54/57,
+48/48, and 95/95 successes and failed episodes 10, 84, and 102. The measured
+working policy reached 198/200, with 56/57, 48/48, and 94/95 successes and
+failed episodes 102 and 175. Therefore checkpoint-120832 repaired working
+failure 175 and improved the far stratum, while both continuation checkpoints
+retained 102 and introduced or retained near-target failures 10 and 84.
+The training log reached a proxy success of 1.0 at several earlier points and
+ended at 0.99; logged reward was 114.7 at 10240 steps, 101.4 at 105472, and
+106.7 at 120832. These are training-process observations, not task
+performance. Twenty-two of 24 checkpoints were not measured and remain
+unknown.
+
+**Hypothesis assessment:** **Partially supported** under the proposal's stated
+conditions. The expected repair component occurred: checkpoint-120832 repaired
+episode 175 with a successful task-reference episode. The expected 198/200
+total and preservation of at least 55/57 near-radius success did not occur at
+either measured checkpoint; checkpoint-110592 also added episode 100, and
+checkpoint-120832 added episode 10 and retained episode 84. The far-radius
+increase to 95/95 at checkpoint-120832 is an unexpected partial preservation
+signal, not overall policy progress relative to the 198/200 parent. The
+evidence describes this transfer trajectory and fixed development panel; it
+does not show that continuation caused the repair or failures, and the
+task-reference artifact does not provide hold-mechanism diagnostics.
+
+**Interpretation:** Further unchanged PPO updates can alter which fixed-panel
+cases succeed, including repairing the prior far-radius failure 175, but this
+run did not make the velocity-augmented policy a more reliable route toward the
+objective. The near-radius regression and persistent episode 102 weaken
+unchanged continuation as the next practical intervention. The training proxy
+and reward again failed to select the best task checkpoint. A future
+velocity-focused test should separate observation dependence from optimization
+trajectory or initialization before making a feature-level causal claim.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-17-attempt-1.log`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-17/inventory.json`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-17/parameters.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-17-working-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-17-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-17-checkpoint-120832-task-reference-v1.json`.
