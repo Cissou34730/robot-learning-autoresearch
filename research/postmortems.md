@@ -3,51 +3,47 @@
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Scientific strategy
 
 **Direction:** The broadened 6-20 cm radius recipe remains the strongest
-development direction, but experiment 3 weakens angle reweighting as the next
-intervention. The experiment-2 checkpoint-100352 policy and complete recipe are
-restored as the working and best-known lineage. A further experiment should
-address geometry-aware control or representation, or provide a concrete
-mechanism for preserving the previously successful behavior, rather than
-adding another proxy-driven angular weighting.
+development direction, while focused angle reweighting and the tested
+geometry-feature representation are both deprioritized. Experiment 4's fresh
+14-feature policy regressed broadly on the task-reference panel, so the
+experiment-2 checkpoint-100352 policy and complete recipe should remain the
+working and best-known lineage. A further experiment should require a concrete
+geometry-aware control mechanism or an explicit preservation mechanism, not
+another proxy-driven weighting or unvalidated representation expansion.
 
 **Lessons and limits:** On the same 200-episode development task-reference
-panel, experiment-2 checkpoint-100352 scored 98.5% (197/200), while experiment
-3 scored 94.5% (189/200) at 100352 steps, 93.5% (187/200) at the proxy peak,
-and 94.5% (189/200) at 120832 steps. The experiment-3 policies retained the
-parent failures at episodes 84 and 102 in all three measurements; the
-episode-175 failure was absent at 100352 and 120832 but new failures appeared
-at negative, near-zero, and positive angles, including far targets around
-18.5-19.8 cm. Thus the expected repair of the negative-angle sector, at-least
-parent success, and no material far-target regression were not observed. The
-contradicting pattern was observed: residual failures persisted and overall
-success fell materially. The 105472 proxy peak was the weakest measured
-candidate, while the final proxy decline had the same measured score as
-100352, so proxy ranking and late-proxy behavior remain insufficient for task
-claims. These are observations from one transfer run and one repeated
-development panel; they weaken the tested recipe but do not isolate angular
-reweighting as the causal source of degradation. All measurements remain
-development evidence, not official validation.
+panel, experiment-2 checkpoint-100352 scored 98.5% (197/200). Experiment 3
+scored 94.5%, 93.5%, and 94.5% at 100352, 105472, and 120832 steps. Experiment
+4 scored only 58.0% (116/200) at 100352 and 57.5% (115/200) at 120832. At the
+experiment-4 parent horizon, all three experiment-2 failures persisted and 81
+new failures appeared; the failures covered both short and far radii and both
+negative and nonnegative angles. The final checkpoint had 85 failures versus
+84 at 100352, with 78 failures shared between the two checkpoints. Every
+experiment-4 failure truncated at 500 steps. These are observations, not proof
+that the three added features alone caused the regression: the run was fresh
+and the task-reference panel was repeated. The high 0.21 training proxy at
+120832 therefore did not support task progress, and proxy ranking remains
+insufficient for task claims. All measurements are development evidence, not
+official validation.
 
 **Open questions:** Is the persistent approximately 1.0-1.2 cm truncation
-behavior a geometry-specific control or representation limitation that needs a
-different intervention? Can a concrete geometry-aware change repair the
-negative-angle cases while preserving the parent's far-target behavior? Are
-some of the newly appearing failures panel-specific, and does the retained
-98.5% development result transfer to the separate official panel? The single
-transfer run cannot distinguish those explanations or establish a causal
-effect of angle sampling.
+behavior a geometry-specific control limitation, a representation limitation,
+or partly a panel artifact? Can a concrete control change repair the residual
+negative-angle cases while preserving the broadened-radius policy's behavior?
+Does the retained 98.5% development result transfer to the separate official
+panel? The fresh experiment-4 regression does not isolate representation from
+optimization variance or establish a causal explanation for the failure.
 
-**Conditional next steps:** Do not pursue another angle-reweighting run solely
-from this evidence. If a specific geometry-aware control intervention is
-identified, test it from the retained broadened-radius lineage with the
-protected task unchanged. A representation intervention should instead use
-fresh initialization when its input semantics are not compatible with the
-retained policy, while using that policy as the behavioral comparator. Terminal
-assessment becomes reasonable only if measured performance at least matches the
-parent while removing the residual cluster without new far-target losses. If no
-such concrete intervention is available, retain the experiment-2 policy and
-investigate panel variability or evaluation transfer rather than treating the
-current scores as official confirmation.
+**Conditional next steps:** Restore and retain the experiment-2 policy; do not
+request terminal assessment from the experiment-4 result. Do not run another
+angle-reweighting or feature-append experiment solely from the current
+evidence. If a specific geometry-aware control intervention with a credible
+preservation mechanism is identified, test it from the retained broadened-radius
+lineage with the protected task unchanged. Otherwise, use the retained policy
+for a deliberate panel-transfer investigation rather than treating 98.5% as
+official confirmation. Terminal assessment should remain conditional on a
+measured policy at least matching the parent while removing the residual
+cluster without new broad regressions.
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 1
 
@@ -178,3 +174,46 @@ the experiment-3 checkpoint inventory under
 the three experiment-3 task-reference artifacts under
 `research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/`; and
 `robot_learning/scenario/environment.py`.
+
+## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 4
+
+**Result:** The added target-radius and periodic-angle observation features
+were strongly contradicted on the development task-reference panel. Neither
+measured checkpoint approached the experiment-2 parent, so the experiment-2
+checkpoint-100352 policy remains working and best-known.
+
+**Observed behavior:** The task-reference panel measured experiment-4
+checkpoint-100352 at 58.0% (116/200) and checkpoint-120832 at 57.5%
+(115/200). At 100352 steps, all three parent failures at episodes 84, 102,
+and 175 persisted and 81 additional failures appeared. The failures spanned
+39 targets below 14 cm and 45 targets at or above 14 cm, as well as 48
+negative-angle and 36 nonnegative-angle targets. At 120832 steps there were
+85 failures, including 40 short-radius and 45 far-radius cases; 78 failures
+were shared with the 100352-step checkpoint. Every failure in both
+measurements truncated at 500 steps. The training proxy nevertheless reached
+0.21 at 120832 steps, matching the reported final proxy peak.
+
+**Hypothesis assessment:** Contradicted under this fresh training run and
+repeated development panel. The expected observation was at least 98.5%
+success, removal of parent failures at episodes 84 and 102, and no added
+far-target failures. Success instead fell to 58.0% and 57.5%, all parent
+failures remained, and broad failures appeared across the task geometry. This
+strongly weakens the tested representation recipe, but the fresh run and
+single panel do not establish that the appended features alone caused the
+regression.
+
+**Interpretation:** The result is a broad failure of the tested fresh
+representation recipe rather than a selective repair of the residual geometry
+cluster. The discrepancy between the 0.21 training proxy and approximately
+58% measured task success further confirms that the proxy cannot establish
+policy progress here. Optimization variability, feature scaling or semantics,
+and other fresh-run effects remain possible explanations; no one is isolated
+by this experiment.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/training_logs/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-4-attempt-1.log`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-4-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-4-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json`;
+and `robot_learning/scenario/observations.py`.
