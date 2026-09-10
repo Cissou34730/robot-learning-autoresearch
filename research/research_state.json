@@ -42,34 +42,993 @@
     "started_at": "2026-09-10T18:58:41.396968+00:00"
   },
   "campaign_experiment_counters": {
-    "7ab511e1-b514-43a0-891b-e3e4cdaff4d8": 2
+    "7ab511e1-b514-43a0-891b-e3e4cdaff4d8": 3
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
+  "last_allocated_experiment": 3,
+  "last_experiment": 3,
   "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
+    "best_known": null,
     "code": {
-      "action": "keep",
-      "reason": "The broadened 6-20 cm training distribution is the tested intervention and produced a modest measured improvement; retaining it preserves the evidence-backed starting point for a targeted follow-up."
+      "action": "revert",
+      "reason": "Restore the complete working scientific recipe from the experiment-2 parent because the experiment-3 angle-reweighting recipe produced broad measured regression and did not satisfy its expected observation."
     },
-    "code_parent_commit": "38a6023db6077b8f0f562c569feecbaf2d233c4d",
-    "continue_from": "checkpoint-100352",
-    "experiment": 2,
-    "reason": "Select experiment-2 checkpoint-100352 as working and best-known because it reached 98.5% (197/200) on the comparable development panel, repaired two of the prior short-radius failures, and outperformed the proxy peak. Keep the broadened-radius scientific recipe because the result partially supports its practical value, while the remaining negative-angle failures justify further development rather than terminal assessment."
+    "code_parent_commit": "a69845a864cd5ec8eb3a26b1b52cf71d53c27211",
+    "continue_from": "working",
+    "experiment": 3,
+    "reason": "Experiment 3 contradicted the expected benefit of focused negative-angle coverage on the measured development panel: its three measured checkpoints scored 94.5%, 93.5%, and 94.5%, below the existing working policy at 98.5%, while the parent negative-angle failures persisted and new failures appeared at other angles and far radii. Continue from the existing experiment-2 working policy rather than selecting an experiment-3 candidate. The development evidence is not sufficient for terminal assessment."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
+  "last_verdict": "researcher selected working as working",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_closure_operation": null,
+  "pending_closure_operation": {
+    "code_action": "revert",
+    "experiment": 3,
+    "plan": {
+      "artifact_publications": [],
+      "best_known_name": null,
+      "best_known_record": {
+        "artifact": "research/checkpoints/retained/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/e2-cada55eb5-b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+        "candidate": "checkpoint-100352",
+        "evaluation_artifacts": [
+          "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json"
+        ],
+        "fingerprint": "b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+        "origin_experiment": 2,
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "reason": "It is the strongest measured experiment-2 candidate at 98.5% (197/200), tied with the final checkpoint but with the stronger training-proxy horizon and fewer reasons to prefer the proxy-declining late checkpoint.",
+        "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
+        "training_steps": 200704
+      },
+      "code_action": "revert",
+      "code_plan": {
+        "parent": "a69845a864cd5ec8eb3a26b1b52cf71d53c27211",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "tests/scenario/test_environment.py"
+        ]
+      },
+      "code_reason": "Restore the complete working scientific recipe from the experiment-2 parent because the experiment-3 angle-reweighting recipe produced broad measured regression and did not satisfy its expected observation.",
+      "decision": {
+        "code": {
+          "action": "revert",
+          "reason": "Restore the complete working scientific recipe from the experiment-2 parent because the experiment-3 angle-reweighting recipe produced broad measured regression and did not satisfy its expected observation."
+        },
+        "continue_from": "working",
+        "experiment": 3,
+        "reason": "Experiment 3 contradicted the expected benefit of focused negative-angle coverage on the measured development panel: its three measured checkpoints scored 94.5%, 93.5%, and 94.5%, below the existing working policy at 98.5%, while the parent negative-angle failures persisted and new failures appeared at other angles and far radii. Continue from the existing experiment-2 working policy rather than selecting an experiment-3 candidate. The development evidence is not sufficient for terminal assessment.",
+        "request_final_benchmark": false
+      },
+      "hypothesis_assessment": "Contradicted under this transfer run and\ndevelopment panel. The expected observation was that focused angular coverage\nwould remove or materially reduce the prior negative-angle failures, reach at\nleast the parent's 98.5%, and avoid material far-target regression. None of\nthose conditions held: the original sector failures persisted, total success\nfell by four to five percentage points, and new failures appeared in other\nangles and at far radii. This weakens the targeted-coverage hypothesis for\nthe tested recipe, but the single run and fixed panel do not prove that angle\nreweighting alone caused the degradation.",
+      "pending": {
+        "baseline": false,
+        "candidates": [
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-100352",
+            "ep_rew_mean": 103.68794968,
+            "evaluations": [],
+            "name": "checkpoint-100352",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 100352,
+            "training_success": 0.95
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-10240",
+            "ep_rew_mean": 103.25501013432836,
+            "evaluations": [],
+            "name": "checkpoint-10240",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 10240,
+            "training_success": 0.9253731343283582
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-105472",
+            "ep_rew_mean": 105.75002405,
+            "evaluations": [],
+            "name": "checkpoint-105472",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 105472,
+            "training_success": 0.98
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-110592",
+            "ep_rew_mean": 102.09600753000001,
+            "evaluations": [],
+            "name": "checkpoint-110592",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 110592,
+            "training_success": 0.96
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-115712",
+            "ep_rew_mean": 100.30526203,
+            "evaluations": [],
+            "name": "checkpoint-115712",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 115712,
+            "training_success": 0.94
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-120832",
+            "ep_rew_mean": 101.70292389000001,
+            "evaluations": [],
+            "name": "checkpoint-120832",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 120832,
+            "training_success": 0.93
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-15360",
+            "ep_rew_mean": 102.35302743,
+            "evaluations": [],
+            "name": "checkpoint-15360",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 15360,
+            "training_success": 0.93
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-20480",
+            "ep_rew_mean": 102.36123502000001,
+            "evaluations": [],
+            "name": "checkpoint-20480",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 20480,
+            "training_success": 0.94
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-25600",
+            "ep_rew_mean": 102.96869944,
+            "evaluations": [],
+            "name": "checkpoint-25600",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 25600,
+            "training_success": 0.95
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-30720",
+            "ep_rew_mean": 102.17159647,
+            "evaluations": [],
+            "name": "checkpoint-30720",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 30720,
+            "training_success": 0.92
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-35840",
+            "ep_rew_mean": 100.4634771,
+            "evaluations": [],
+            "name": "checkpoint-35840",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 35840,
+            "training_success": 0.9
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-40960",
+            "ep_rew_mean": 99.59426981,
+            "evaluations": [],
+            "name": "checkpoint-40960",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 40960,
+            "training_success": 0.9
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-45056",
+            "ep_rew_mean": 96.37257393,
+            "evaluations": [],
+            "name": "checkpoint-45056",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 45056,
+            "training_success": 0.88
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-50176",
+            "ep_rew_mean": 97.29042782,
+            "evaluations": [],
+            "name": "checkpoint-50176",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 50176,
+            "training_success": 0.87
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-5120",
+            "ep_rew_mean": 105.19092343243243,
+            "evaluations": [],
+            "name": "checkpoint-5120",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 5120,
+            "training_success": 0.972972972972973
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-55296",
+            "ep_rew_mean": 99.44066022000001,
+            "evaluations": [],
+            "name": "checkpoint-55296",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 55296,
+            "training_success": 0.9
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-60416",
+            "ep_rew_mean": 98.52900342999999,
+            "evaluations": [],
+            "name": "checkpoint-60416",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 60416,
+            "training_success": 0.91
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-65536",
+            "ep_rew_mean": 93.22001474999999,
+            "evaluations": [],
+            "name": "checkpoint-65536",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 65536,
+            "training_success": 0.85
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-70656",
+            "ep_rew_mean": 98.96073458999999,
+            "evaluations": [],
+            "name": "checkpoint-70656",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 70656,
+            "training_success": 0.87
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-75776",
+            "ep_rew_mean": 101.40629086000001,
+            "evaluations": [],
+            "name": "checkpoint-75776",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 75776,
+            "training_success": 0.87
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-80896",
+            "ep_rew_mean": 105.28393201,
+            "evaluations": [],
+            "name": "checkpoint-80896",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 80896,
+            "training_success": 0.89
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-86016",
+            "ep_rew_mean": 102.93025295,
+            "evaluations": [],
+            "name": "checkpoint-86016",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 86016,
+            "training_success": 0.89
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-90112",
+            "ep_rew_mean": 101.28482759,
+            "evaluations": [],
+            "name": "checkpoint-90112",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 90112,
+            "training_success": 0.9
+          },
+          {
+            "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-95232",
+            "ep_rew_mean": 102.21199963,
+            "evaluations": [],
+            "name": "checkpoint-95232",
+            "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+            "summary": null,
+            "timesteps": 95232,
+            "training_success": 0.91
+          }
+        ],
+        "champion_available": true,
+        "code_parent_commit": "a69845a864cd5ec8eb3a26b1b52cf71d53c27211",
+        "completed_training_steps": 120832,
+        "evaluation_evidence_plan": null,
+        "evaluation_plan": null,
+        "evaluation_plan_models": null,
+        "experiment": 3,
+        "initialization": "transfer",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent_training_steps": 200704,
+        "partial_evaluations": [],
+        "partial_task_reference_evaluations": [
+          {
+            "candidate": "checkpoint-100352",
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-3-checkpoint-100352-task-reference-v1.json",
+            "evaluation_artifact_fingerprint": "92fbc7e47e98a4553d72d84fcb5253e3dde529c6d9fff9d361cb04440a799ec5",
+            "instrument": "task_reference",
+            "label": "experiment 3 parent-horizon checkpoint",
+            "model_fingerprint": "ae293fa337d0a8a89eb122d2072df0b37bd602d36f6844f602577c07ea33ce46",
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "seed": 7300,
+            "success_percent": 94.5
+          },
+          {
+            "candidate": "checkpoint-105472",
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-3-checkpoint-105472-task-reference-v1.json",
+            "evaluation_artifact_fingerprint": "2e240747d3f87a971e3d7e58bf3ec0a1b51f05f3541210569d6e101fd3ca87d2",
+            "instrument": "task_reference",
+            "label": "experiment 3 proxy peak",
+            "model_fingerprint": "5cceca93645d0314d23d645cdd4aba0082015200fd1fe289a6c74f8c7df65f70",
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "seed": 7300,
+            "success_percent": 93.5
+          },
+          {
+            "candidate": "checkpoint-120832",
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-3-checkpoint-120832-task-reference-v1.json",
+            "evaluation_artifact_fingerprint": "a0c2b22c769feb63e0b80f4976f507d854de87d0511a5712531111efc17453eb",
+            "instrument": "task_reference",
+            "label": "experiment 3 final checkpoint",
+            "model_fingerprint": "2c2e378de248ebe7aa0ebd1ec1c762564faaf3c5d31e0c26f2ee5954eac15eff",
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "seed": 7300,
+            "success_percent": 94.5
+          }
+        ],
+        "research_change_paths": [
+          "robot_learning/scenario/environment.py",
+          "tests/scenario/test_environment.py"
+        ],
+        "result": {
+          "best_known_lineage": {
+            "artifact": "research/checkpoints/retained/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/e2-cada55eb5-b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+            "candidate": "checkpoint-100352",
+            "evaluation_artifacts": [
+              "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json"
+            ],
+            "fingerprint": "b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+            "origin_experiment": 2,
+            "parameters": {
+              "algorithm": {
+                "name": "ppo"
+              },
+              "policy": {
+                "activation": "tanh",
+                "net_arch": [
+                  64,
+                  64
+                ]
+              },
+              "ppo": {
+                "batch_size": 64,
+                "ent_coef": 0.01,
+                "gae_lambda": 0.95,
+                "gamma": 0.99,
+                "learning_rate": 0.0003,
+                "n_steps": 1024
+              },
+              "training": {
+                "checkpoint_every_steps": 5000,
+                "n_envs": 1
+              }
+            },
+            "reason": "It is the strongest measured experiment-2 candidate at 98.5% (197/200), tied with the final checkpoint but with the stronger training-proxy horizon and fewer reasons to prefer the proxy-declining late checkpoint.",
+            "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
+            "training_steps": 200704
+          },
+          "campaign_id": "7ab511e1-b514-43a0-891b-e3e4cdaff4d8",
+          "candidate_selections": {
+            "checkpoint-100352": "This is the current experiment's parent-horizon checkpoint and the direct counterpart to the selected experiment-2 parent, so it tests the intervention at the established practical training horizon rather than relying on the proxy peak.",
+            "checkpoint-105472": "This is the highest training-proxy checkpoint among experiment 3's 24 candidates and tests whether the apparent proxy maximum corresponds to the predicted negative-angle repair and preserved far-radius behavior.",
+            "checkpoint-120832": "This is the completed final checkpoint and tests whether the late proxy decline reflects task-performance degradation or whether the angular-coverage intervention preserves the target behavior through the end of training."
+          },
+          "candidates": [
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-100352",
+              "ep_rew_mean": 103.68794968,
+              "evaluations": [],
+              "name": "checkpoint-100352",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 100352,
+              "training_success": 0.95
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-10240",
+              "ep_rew_mean": 103.25501013432836,
+              "evaluations": [],
+              "name": "checkpoint-10240",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 10240,
+              "training_success": 0.9253731343283582
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-105472",
+              "ep_rew_mean": 105.75002405,
+              "evaluations": [],
+              "name": "checkpoint-105472",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 105472,
+              "training_success": 0.98
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-110592",
+              "ep_rew_mean": 102.09600753000001,
+              "evaluations": [],
+              "name": "checkpoint-110592",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 110592,
+              "training_success": 0.96
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-115712",
+              "ep_rew_mean": 100.30526203,
+              "evaluations": [],
+              "name": "checkpoint-115712",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 115712,
+              "training_success": 0.94
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-120832",
+              "ep_rew_mean": 101.70292389000001,
+              "evaluations": [],
+              "name": "checkpoint-120832",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 120832,
+              "training_success": 0.93
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-15360",
+              "ep_rew_mean": 102.35302743,
+              "evaluations": [],
+              "name": "checkpoint-15360",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 15360,
+              "training_success": 0.93
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-20480",
+              "ep_rew_mean": 102.36123502000001,
+              "evaluations": [],
+              "name": "checkpoint-20480",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 20480,
+              "training_success": 0.94
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-25600",
+              "ep_rew_mean": 102.96869944,
+              "evaluations": [],
+              "name": "checkpoint-25600",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 25600,
+              "training_success": 0.95
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-30720",
+              "ep_rew_mean": 102.17159647,
+              "evaluations": [],
+              "name": "checkpoint-30720",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 30720,
+              "training_success": 0.92
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-35840",
+              "ep_rew_mean": 100.4634771,
+              "evaluations": [],
+              "name": "checkpoint-35840",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 35840,
+              "training_success": 0.9
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-40960",
+              "ep_rew_mean": 99.59426981,
+              "evaluations": [],
+              "name": "checkpoint-40960",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 40960,
+              "training_success": 0.9
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-45056",
+              "ep_rew_mean": 96.37257393,
+              "evaluations": [],
+              "name": "checkpoint-45056",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 45056,
+              "training_success": 0.88
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-50176",
+              "ep_rew_mean": 97.29042782,
+              "evaluations": [],
+              "name": "checkpoint-50176",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 50176,
+              "training_success": 0.87
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-5120",
+              "ep_rew_mean": 105.19092343243243,
+              "evaluations": [],
+              "name": "checkpoint-5120",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 5120,
+              "training_success": 0.972972972972973
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-55296",
+              "ep_rew_mean": 99.44066022000001,
+              "evaluations": [],
+              "name": "checkpoint-55296",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 55296,
+              "training_success": 0.9
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-60416",
+              "ep_rew_mean": 98.52900342999999,
+              "evaluations": [],
+              "name": "checkpoint-60416",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 60416,
+              "training_success": 0.91
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-65536",
+              "ep_rew_mean": 93.22001474999999,
+              "evaluations": [],
+              "name": "checkpoint-65536",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 65536,
+              "training_success": 0.85
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-70656",
+              "ep_rew_mean": 98.96073458999999,
+              "evaluations": [],
+              "name": "checkpoint-70656",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 70656,
+              "training_success": 0.87
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-75776",
+              "ep_rew_mean": 101.40629086000001,
+              "evaluations": [],
+              "name": "checkpoint-75776",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 75776,
+              "training_success": 0.87
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-80896",
+              "ep_rew_mean": 105.28393201,
+              "evaluations": [],
+              "name": "checkpoint-80896",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 80896,
+              "training_success": 0.89
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-86016",
+              "ep_rew_mean": 102.93025295,
+              "evaluations": [],
+              "name": "checkpoint-86016",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 86016,
+              "training_success": 0.89
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-90112",
+              "ep_rew_mean": 101.28482759,
+              "evaluations": [],
+              "name": "checkpoint-90112",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 90112,
+              "training_success": 0.9
+            },
+            {
+              "artifact": "research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/checkpoint-95232",
+              "ep_rew_mean": 102.21199963,
+              "evaluations": [],
+              "name": "checkpoint-95232",
+              "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+              "summary": null,
+              "timesteps": 95232,
+              "training_success": 0.91
+            }
+          ],
+          "change": "Keep the broadened uniform training radius range of 6-20 cm and preserve full angular support, but with 50% probability sample the target angle uniformly from -170 to -105 degrees and otherwise sample uniformly from -180 to 180 degrees. Leave the official evaluation environment and all protected task mechanics unchanged.",
+          "closure_decision": {
+            "code": {
+              "action": "revert",
+              "reason": "Restore the complete working scientific recipe from the experiment-2 parent because the experiment-3 angle-reweighting recipe produced broad measured regression and did not satisfy its expected observation."
+            },
+            "continue_from": "working",
+            "experiment": 3,
+            "reason": "Experiment 3 contradicted the expected benefit of focused negative-angle coverage on the measured development panel: its three measured checkpoints scored 94.5%, 93.5%, and 94.5%, below the existing working policy at 98.5%, while the parent negative-angle failures persisted and new failures appeared at other angles and far radii. Continue from the existing experiment-2 working policy rather than selecting an experiment-3 candidate. The development evidence is not sufficient for terminal assessment.",
+            "request_final_benchmark": false
+          },
+          "code_changes": [
+            "robot_learning/scenario/environment.py",
+            "tests/scenario/test_environment.py"
+          ],
+          "completed_training_steps": 120832,
+          "decision_pending": false,
+          "family": "training.target_angle_coverage",
+          "hypothesis": "Reweighting training target angles so that 50% of episodes sample uniformly from -170 to -105 degrees and the remaining 50% retain full angular sampling, while keeping radii uniform from 6 to 20 cm, will remove the selected policy's residual negative-angle failures without materially reducing far-target success.",
+          "hypothesis_assessment": "Contradicted under this transfer run and\ndevelopment panel. The expected observation was that focused angular coverage\nwould remove or materially reduce the prior negative-angle failures, reach at\nleast the parent's 98.5%, and avoid material far-target regression. None of\nthose conditions held: the original sector failures persisted, total success\nfell by four to five percentage points, and new failures appeared in other\nangles and at far radii. This weakens the targeted-coverage hypothesis for\nthe tested recipe, but the single run and fixed panel do not prove that angle\nreweighting alone caused the degradation.",
+          "index": 3,
+          "initialization": "transfer",
+          "kind": "training",
+          "paired_comparisons": [],
+          "parameter_changes": [],
+          "postmortem": "research/postmortems.md",
+          "proposal_snapshot": {
+            "change": "Keep the broadened uniform training radius range of 6-20 cm and preserve full angular support, but with 50% probability sample the target angle uniformly from -170 to -105 degrees and otherwise sample uniformly from -180 to 180 degrees. Leave the official evaluation environment and all protected task mechanics unchanged.",
+            "family": "training.target_angle_coverage",
+            "hypothesis": "Reweighting training target angles so that 50% of episodes sample uniformly from -170 to -105 degrees and the remaining 50% retain full angular sampling, while keeping radii uniform from 6 to 20 cm, will remove the selected policy's residual negative-angle failures without materially reducing far-target success.",
+            "initialization": "transfer",
+            "kind": "training",
+            "reasoning": {
+              "alternative": "The persistent failures may reflect a geometry-specific control limitation or deterministic panel artifact rather than insufficient negative-angle coverage; in that case, reweighting this sector will not reliably improve it and could trade away performance at far radii.",
+              "contradicting_observation": "The negative-angle failures persist at similar radii and angles, or overall success falls because far-target behavior degrades materially. That would weaken the targeted-coverage hypothesis and favor geometry-aware control changes or investigation of panel variability rather than further sampling reweighting.",
+              "evidence": [
+                {
+                  "observation": "The campaign objective is at least 98% episode success on the unchanged official task, whose targets cover 6-20 cm over the full angular range.",
+                  "source": "research/scenario.md"
+                },
+                {
+                  "observation": "Experiment 2 checkpoint-100352 reached 98.5% (197/200), but its three failures were all negative-angle targets: 9.9 cm at -122.9 degrees, 9.4 cm at -127.9 degrees, and 18.2 cm at -154.8 degrees.",
+                  "source": "research/postmortems.md"
+                },
+                {
+                  "observation": "The selected experiment-2 parent has exactly those three truncated failures on the 200-episode task-reference panel, while the other 197 episodes succeed.",
+                  "source": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json"
+                },
+                {
+                  "observation": "The current researcher-owned training environment already samples radii uniformly from 6-20 cm and angles uniformly over the full range; this experiment changes only the angular sampling weights and leaves the protected evaluation distribution unchanged.",
+                  "source": "robot_learning/scenario/environment.py"
+                },
+                {
+                  "observation": "The policy representation uses joint state, target-relative end-effector displacement, and inverse-kinematic angle features, so the focused targets retain the same physical target semantics as the existing training and official distributions.",
+                  "source": "robot_learning/scenario/observations.py"
+                }
+              ],
+              "expected_observation": "On a comparable development task-reference measurement, the transferred policy should succeed on the previously failing negative-angle cases or materially reduce failures in that sector, reach at least the parent's 98.5% overall success, and introduce no material increase in failures at radii 14-20 cm. This would support targeted angular coverage as the next useful intervention without proving that sampling alone caused the gain.",
+              "initialization_reason": "Transfer from working preserves checkpoint-100352, the strongest measured experiment-2 policy at 98.5% (197/200), and concentrates additional learning on the observed residual sector instead of relearning already successful behavior from scratch. The transfer is semantically compatible because the physical arm, target generation coordinates, target-relative and inverse-kinematic observation features, action-to-joint mapping, reward, hold semantics, and PPO network are unchanged; only the frequency of already-valid official target geometries changes. This compatibility is based on preserved feature meanings and task mechanics, not unchanged tensor dimensions alone.",
+              "strategy_link": "Scientific question: can targeted negative-angle coverage remove the remaining failure cluster without sacrificing far-target success? This advances the active strategy's recommended focused follow-up after broadening radii from 14-20 cm to 6-20 cm. It tests the observed angle pattern directly while retaining full angular support and the broadened radius range; if it fails, the strategy should move from coverage toward geometry-aware control or panel-variability analysis."
+            },
+            "training_parent": "working"
+          },
+          "reasoning": {
+            "alternative": "The persistent failures may reflect a geometry-specific control limitation or deterministic panel artifact rather than insufficient negative-angle coverage; in that case, reweighting this sector will not reliably improve it and could trade away performance at far radii.",
+            "contradicting_observation": "The negative-angle failures persist at similar radii and angles, or overall success falls because far-target behavior degrades materially. That would weaken the targeted-coverage hypothesis and favor geometry-aware control changes or investigation of panel variability rather than further sampling reweighting.",
+            "evidence": [
+              {
+                "observation": "The campaign objective is at least 98% episode success on the unchanged official task, whose targets cover 6-20 cm over the full angular range.",
+                "source": "research/scenario.md"
+              },
+              {
+                "observation": "Experiment 2 checkpoint-100352 reached 98.5% (197/200), but its three failures were all negative-angle targets: 9.9 cm at -122.9 degrees, 9.4 cm at -127.9 degrees, and 18.2 cm at -154.8 degrees.",
+                "source": "research/postmortems.md"
+              },
+              {
+                "observation": "The selected experiment-2 parent has exactly those three truncated failures on the 200-episode task-reference panel, while the other 197 episodes succeed.",
+                "source": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-100352-task-reference-v1.json"
+              },
+              {
+                "observation": "The current researcher-owned training environment already samples radii uniformly from 6-20 cm and angles uniformly over the full range; this experiment changes only the angular sampling weights and leaves the protected evaluation distribution unchanged.",
+                "source": "robot_learning/scenario/environment.py"
+              },
+              {
+                "observation": "The policy representation uses joint state, target-relative end-effector displacement, and inverse-kinematic angle features, so the focused targets retain the same physical target semantics as the existing training and official distributions.",
+                "source": "robot_learning/scenario/observations.py"
+              }
+            ],
+            "expected_observation": "On a comparable development task-reference measurement, the transferred policy should succeed on the previously failing negative-angle cases or materially reduce failures in that sector, reach at least the parent's 98.5% overall success, and introduce no material increase in failures at radii 14-20 cm. This would support targeted angular coverage as the next useful intervention without proving that sampling alone caused the gain.",
+            "initialization_reason": "Transfer from working preserves checkpoint-100352, the strongest measured experiment-2 policy at 98.5% (197/200), and concentrates additional learning on the observed residual sector instead of relearning already successful behavior from scratch. The transfer is semantically compatible because the physical arm, target generation coordinates, target-relative and inverse-kinematic observation features, action-to-joint mapping, reward, hold semantics, and PPO network are unchanged; only the frequency of already-valid official target geometries changes. This compatibility is based on preserved feature meanings and task mechanics, not unchanged tensor dimensions alone.",
+            "strategy_link": "Scientific question: can targeted negative-angle coverage remove the remaining failure cluster without sacrificing far-target success? This advances the active strategy's recommended focused follow-up after broadening radii from 14-20 cm to 6-20 cm. It tests the observed angle pattern directly while retaining full angular support and the broadened radius range; if it fails, the strategy should move from coverage toward geometry-aware control or panel-variability analysis."
+          },
+          "requested_evaluations": [],
+          "schema_version": 1,
+          "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+          "scientific_strategy": "## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Scientific strategy\n\n**Direction:** Broadening training radii below 14 cm is retained as a promising\nbut incomplete direction. The experiment-2 checkpoint-100352 is the practical\nparent for a focused follow-up on the remaining negative-angle failures,\nespecially the short-radius cases, rather than a speculative method change.\nThe evidence does not establish that radius coverage alone caused the gain or\nthat the training-proxy decline caused task degradation.\n\n**Lessons and limits:** On the identical 200-episode development\ntask-reference panel, experiment-2 checkpoint-100352 scored 98.5% (197/200),\ncheckpoint-105472 scored 98% (196/200), and checkpoint-120832 scored 98.5%\n(197/200). Relative to the experiment-1 parent checkpoint-100352 at 98%\n(196/200), the experiment-2 parent-horizon policy repaired two prior failures\n(episodes 0 and 10), retained failures at episodes 84 and 102, and added one\nfailure at episode 175. The remaining failures were all negative-angle targets:\n9.9 and 9.4 cm at about -123 and -128 degrees, plus an 18.2 cm target at about\n-155 degrees. Thus the expected short-radius improvement and at-least-parent\noverall success were observed, while the no-material-far-target-regression\ncondition was only partially met. This supports the broadened recipe as useful\nunder the tested transfer and run conditions, not a causal claim about the\nradius distribution. The proxy peak at 105472 was not the strongest measured\npolicy, and the final proxy decline to 0.94 did not lower total task success\nrelative to checkpoint-100352; proxy ranking and late-proxy behavior therefore\nremain insufficient for task claims. All measurements are development-panel\nevidence, not the official result.\n\n**Open questions:** Can targeted training coverage or another intervention\nremove the persistent negative-angle failures without trading away far-target\nsuccess? Is the episode-175 failure a genuine far-target geometry weakness or\npanel-specific variability? Does the 98.5% development result transfer to the\nseparate official panel? The single transfer run and fixed panel do not isolate\nthe causal contribution of radius broadening from continued training.\n\n**Conditional next steps:** Continue from experiment-2 checkpoint-100352 with\nthe broadened-radius recipe and target the observed negative-angle/radius\nregion, while keeping the protected task unchanged. If a focused development\nmeasurement removes the residual failures without a new far-target loss,\nterminal assessment becomes reasonable; if the same cluster persists, pursue\ngeometry-aware coverage or control changes rather than further proxy-driven\ncheckpoint selection. Do not treat the current development score as official\nconfirmation.",
+          "status": "closed",
+          "task_reference_evaluations": [
+            {
+              "candidate": "checkpoint-100352",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-3-checkpoint-100352-task-reference-v1.json",
+              "evaluation_artifact_fingerprint": "92fbc7e47e98a4553d72d84fcb5253e3dde529c6d9fff9d361cb04440a799ec5",
+              "instrument": "task_reference",
+              "label": "experiment 3 parent-horizon checkpoint",
+              "model_fingerprint": "ae293fa337d0a8a89eb122d2072df0b37bd602d36f6844f602577c07ea33ce46",
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "seed": 7300,
+              "success_percent": 94.5
+            },
+            {
+              "candidate": "checkpoint-105472",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-3-checkpoint-105472-task-reference-v1.json",
+              "evaluation_artifact_fingerprint": "2e240747d3f87a971e3d7e58bf3ec0a1b51f05f3541210569d6e101fd3ca87d2",
+              "instrument": "task_reference",
+              "label": "experiment 3 proxy peak",
+              "model_fingerprint": "5cceca93645d0314d23d645cdd4aba0082015200fd1fe289a6c74f8c7df65f70",
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "seed": 7300,
+              "success_percent": 93.5
+            },
+            {
+              "candidate": "checkpoint-120832",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-3-checkpoint-120832-task-reference-v1.json",
+              "evaluation_artifact_fingerprint": "a0c2b22c769feb63e0b80f4976f507d854de87d0511a5712531111efc17453eb",
+              "instrument": "task_reference",
+              "label": "experiment 3 final checkpoint",
+              "model_fingerprint": "2c2e378de248ebe7aa0ebd1ec1c762564faaf3c5d31e0c26f2ee5954eac15eff",
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "seed": 7300,
+              "success_percent": 94.5
+            }
+          ],
+          "training_budget_steps": 120000,
+          "training_parent": "working",
+          "training_parent_lineage": {
+            "artifact": "research/checkpoints/retained/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/e2-cada55eb5-b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+            "candidate": "checkpoint-100352",
+            "fingerprint": "b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+            "identifier": "working",
+            "origin_experiment": 2,
+            "parameters": {
+              "algorithm": {
+                "name": "ppo"
+              },
+              "policy": {
+                "activation": "tanh",
+                "net_arch": [
+                  64,
+                  64
+                ]
+              },
+              "ppo": {
+                "batch_size": 64,
+                "ent_coef": 0.01,
+                "gae_lambda": 0.95,
+                "gamma": 0.99,
+                "learning_rate": 0.0003,
+                "n_steps": 1024
+              },
+              "training": {
+                "checkpoint_every_steps": 5000,
+                "n_envs": 1
+              }
+            },
+            "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
+            "training_steps": 200704
+          },
+          "training_seed": 0,
+          "verdict": "researcher selected working as working",
+          "working_lineage": {
+            "artifact": "research/checkpoints/retained/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/e2-cada55eb5-b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+            "candidate": "checkpoint-100352",
+            "evaluation_artifacts": [],
+            "fingerprint": "b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+            "origin_experiment": 2,
+            "parameters": {
+              "algorithm": {
+                "name": "ppo"
+              },
+              "policy": {
+                "activation": "tanh",
+                "net_arch": [
+                  64,
+                  64
+                ]
+              },
+              "ppo": {
+                "batch_size": 64,
+                "ent_coef": 0.01,
+                "gae_lambda": 0.95,
+                "gamma": 0.99,
+                "learning_rate": 0.0003,
+                "n_steps": 1024
+              },
+              "training": {
+                "checkpoint_every_steps": 5000,
+                "n_envs": 1
+              }
+            },
+            "reason": "Experiment 3 contradicted the expected benefit of focused negative-angle coverage on the measured development panel: its three measured checkpoints scored 94.5%, 93.5%, and 94.5%, below the existing working policy at 98.5%, while the parent negative-angle failures persisted and new failures appeared at other angles and far radii. Continue from the existing experiment-2 working policy rather than selecting an experiment-3 candidate. The development evidence is not sufficient for terminal assessment.",
+            "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
+            "training_steps": 200704
+          }
+        },
+        "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756",
+        "training_budget_steps": 120000,
+        "training_parent_lineage": {
+          "artifact": "research/checkpoints/retained/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/e2-cada55eb5-b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+          "candidate": "checkpoint-100352",
+          "fingerprint": "b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+          "identifier": "working",
+          "origin_experiment": 2,
+          "parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
+          "training_steps": 200704
+        }
+      },
+      "pending_field": "pending_analysis",
+      "removed_retained": [],
+      "request_final_benchmark": false,
+      "retained": [],
+      "working_name": "working",
+      "working_record": {
+        "artifact": "research/checkpoints/retained/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/e2-cada55eb5-b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+        "candidate": "checkpoint-100352",
+        "evaluation_artifacts": [],
+        "fingerprint": "b79cfc6e544ed55a157b8fe3cbaff2f1a8842801655b61db3e6cff095b60095b",
+        "origin_experiment": 2,
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "reason": "Experiment 3 contradicted the expected benefit of focused negative-angle coverage on the measured development panel: its three measured checkpoints scored 94.5%, 93.5%, and 94.5%, below the existing working policy at 98.5%, while the parent negative-angle failures persisted and new failures appeared at other angles and far radii. Continue from the existing experiment-2 working policy rather than selecting an experiment-3 candidate. The development evidence is not sufficient for terminal assessment.",
+        "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
+        "training_steps": 200704
+      }
+    },
+    "progress": "durable",
+    "selected": "working"
+  },
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
-    "code_parent_commit": "38a6023db6077b8f0f562c569feecbaf2d233c4d",
-    "experiment": 2,
-    "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0"
+    "code_parent_commit": "a69845a864cd5ec8eb3a26b1b52cf71d53c27211",
+    "experiment": 3,
+    "scientific_commit": "60423b516c3ee8f4d72bd8e7d78a9781403f2756"
   },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
@@ -106,7 +1065,7 @@
         "n_envs": 1
       }
     },
-    "reason": "Select experiment-2 checkpoint-100352 as working and best-known because it reached 98.5% (197/200) on the comparable development panel, repaired two of the prior short-radius failures, and outperformed the proxy peak. Keep the broadened-radius scientific recipe because the result partially supports its practical value, while the remaining negative-angle failures justify further development rather than terminal assessment.",
+    "reason": "Experiment 3 contradicted the expected benefit of focused negative-angle coverage on the measured development panel: its three measured checkpoints scored 94.5%, 93.5%, and 94.5%, below the existing working policy at 98.5%, while the parent negative-angle failures persisted and new failures appeared at other angles and far radii. Continue from the existing experiment-2 working policy rather than selecting an experiment-3 candidate. The development evidence is not sufficient for terminal assessment.",
     "scientific_commit": "6d3550193164a73b9fb3abe09d54e2e4a87642a0",
     "training_steps": 200704
   }

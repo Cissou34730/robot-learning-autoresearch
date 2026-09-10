@@ -2,46 +2,50 @@
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Scientific strategy
 
-**Direction:** Broadening training radii below 14 cm is retained as a promising
-but incomplete direction. The experiment-2 checkpoint-100352 is the practical
-parent for a focused follow-up on the remaining negative-angle failures,
-especially the short-radius cases, rather than a speculative method change.
-The evidence does not establish that radius coverage alone caused the gain or
-that the training-proxy decline caused task degradation.
+**Direction:** The broadened 6-20 cm radius recipe remains the strongest
+development direction, but experiment 3 weakens angle reweighting as the next
+intervention. The experiment-2 checkpoint-100352 policy and complete recipe are
+restored as the working and best-known lineage. A further experiment should
+address geometry-aware control or representation, or provide a concrete
+mechanism for preserving the previously successful behavior, rather than
+adding another proxy-driven angular weighting.
 
-**Lessons and limits:** On the identical 200-episode development
-task-reference panel, experiment-2 checkpoint-100352 scored 98.5% (197/200),
-checkpoint-105472 scored 98% (196/200), and checkpoint-120832 scored 98.5%
-(197/200). Relative to the experiment-1 parent checkpoint-100352 at 98%
-(196/200), the experiment-2 parent-horizon policy repaired two prior failures
-(episodes 0 and 10), retained failures at episodes 84 and 102, and added one
-failure at episode 175. The remaining failures were all negative-angle targets:
-9.9 and 9.4 cm at about -123 and -128 degrees, plus an 18.2 cm target at about
--155 degrees. Thus the expected short-radius improvement and at-least-parent
-overall success were observed, while the no-material-far-target-regression
-condition was only partially met. This supports the broadened recipe as useful
-under the tested transfer and run conditions, not a causal claim about the
-radius distribution. The proxy peak at 105472 was not the strongest measured
-policy, and the final proxy decline to 0.94 did not lower total task success
-relative to checkpoint-100352; proxy ranking and late-proxy behavior therefore
-remain insufficient for task claims. All measurements are development-panel
-evidence, not the official result.
+**Lessons and limits:** On the same 200-episode development task-reference
+panel, experiment-2 checkpoint-100352 scored 98.5% (197/200), while experiment
+3 scored 94.5% (189/200) at 100352 steps, 93.5% (187/200) at the proxy peak,
+and 94.5% (189/200) at 120832 steps. The experiment-3 policies retained the
+parent failures at episodes 84 and 102 in all three measurements; the
+episode-175 failure was absent at 100352 and 120832 but new failures appeared
+at negative, near-zero, and positive angles, including far targets around
+18.5-19.8 cm. Thus the expected repair of the negative-angle sector, at-least
+parent success, and no material far-target regression were not observed. The
+contradicting pattern was observed: residual failures persisted and overall
+success fell materially. The 105472 proxy peak was the weakest measured
+candidate, while the final proxy decline had the same measured score as
+100352, so proxy ranking and late-proxy behavior remain insufficient for task
+claims. These are observations from one transfer run and one repeated
+development panel; they weaken the tested recipe but do not isolate angular
+reweighting as the causal source of degradation. All measurements remain
+development evidence, not official validation.
 
-**Open questions:** Can targeted training coverage or another intervention
-remove the persistent negative-angle failures without trading away far-target
-success? Is the episode-175 failure a genuine far-target geometry weakness or
-panel-specific variability? Does the 98.5% development result transfer to the
-separate official panel? The single transfer run and fixed panel do not isolate
-the causal contribution of radius broadening from continued training.
+**Open questions:** Is the persistent approximately 1.0-1.2 cm truncation
+behavior a geometry-specific control or representation limitation that needs a
+different intervention? Can a concrete geometry-aware change repair the
+negative-angle cases while preserving the parent's far-target behavior? Are
+some of the newly appearing failures panel-specific, and does the retained
+98.5% development result transfer to the separate official panel? The single
+transfer run cannot distinguish those explanations or establish a causal
+effect of angle sampling.
 
-**Conditional next steps:** Continue from experiment-2 checkpoint-100352 with
-the broadened-radius recipe and target the observed negative-angle/radius
-region, while keeping the protected task unchanged. If a focused development
-measurement removes the residual failures without a new far-target loss,
-terminal assessment becomes reasonable; if the same cluster persists, pursue
-geometry-aware coverage or control changes rather than further proxy-driven
-checkpoint selection. Do not treat the current development score as official
-confirmation.
+**Conditional next steps:** Do not pursue another angle-reweighting run solely
+from this evidence. If a specific geometry-aware control or representation
+intervention is identified, test it from the retained broadened-radius lineage
+with the protected task unchanged; terminal assessment becomes reasonable only
+if measured performance at least matches the parent while removing the
+residual cluster without new far-target losses. If no such concrete
+intervention is available, retain the experiment-2 policy and investigate
+panel variability or evaluation transfer rather than treating the current
+scores as official confirmation.
 
 ## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 1
 
@@ -128,3 +132,47 @@ degradation.
 `research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-105472-task-reference-v1.json`;
 `research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/task-reference-7ab511e1-b514-43a0-891b-e3e4cdaff4d8-experiment-2-checkpoint-120832-task-reference-v1.json`;
 and `robot_learning/scenario/environment.py`.
+
+## 7ab511e1-b514-43a0-891b-e3e4cdaff4d8 / Experiment 3
+
+**Result:** The focused negative-angle training distribution did not improve
+the selected policy on the development panel. The experiment-2
+checkpoint-100352 working policy remains the strongest measured candidate, so
+the experiment-3 recipe and candidates should not replace it.
+
+**Observed behavior:** The task-reference panel measured checkpoint-100352 at
+94.5% (189/200), checkpoint-105472 at 93.5% (187/200), and checkpoint-120832
+at 94.5% (189/200). The parent failures at episodes 84 and 102 persisted in
+all three measurements. New failures included short-radius targets at angles
+near -46, -34, -20, -3, and -100 degrees, positive-angle targets, and
+far-radius targets at approximately 18.5-19.8 cm. The 105472-step checkpoint
+had the highest training proxy at 0.98, while the proxy was 0.95 at 100352
+and 0.93 at 120832; the two latter checkpoints had equal task success.
+Every measured failure truncated at 500 steps rather than completing the hold.
+
+**Hypothesis assessment:** Contradicted under this transfer run and
+development panel. The expected observation was that focused angular coverage
+would remove or materially reduce the prior negative-angle failures, reach at
+least the parent's 98.5%, and avoid material far-target regression. None of
+those conditions held: the original sector failures persisted, total success
+fell by four to five percentage points, and new failures appeared in other
+angles and at far radii. This weakens the targeted-coverage hypothesis for
+the tested recipe, but the single run and fixed panel do not prove that angle
+reweighting alone caused the degradation.
+
+**Interpretation:** The intervention produced broad behavioral regression
+rather than selective repair of the observed failure sector. The unexpected
+appearance of failures outside that sector, together with the poor proxy-ranked
+checkpoint and equal scores at 100352 and 120832, further shows that training
+proxy dynamics do not identify task progress here. A geometry-specific control
+limitation, optimization variability, or panel effects remain plausible
+alternatives.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/research_state.json`;
+`research/training_logs/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3-attempt-1.log`;
+the experiment-3 checkpoint inventory under
+`research/checkpoints/challengers/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/experiment-3/`;
+the three experiment-3 task-reference artifacts under
+`research/evaluations/7ab511e1-b514-43a0-891b-e3e4cdaff4d8/`; and
+`robot_learning/scenario/environment.py`.
