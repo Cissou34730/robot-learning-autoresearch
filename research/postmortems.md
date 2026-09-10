@@ -3,18 +3,37 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep the experiment-16 velocity-augmented recipe with
-checkpoint-110592 as working and best-known, and test whether a target-relative
-velocity basis improves the southwest residual cases. Experiment 18's matched
-fresh velocity ablation reached 196/200, 197/200, and 196/200 at its measured
-checkpoints, never reproducing 198/200, while preserving the middle and far
-radial strata at its best point. This is partial evidence that velocity
-information contributes to the result, but not that raw Cartesian coordinates
-are the best representation. Experiment 17's transfer continuation likewise
-did not preserve 198/200, so unchanged continuation is not a reliable route to
-further progress under this trajectory. Reward-only hold penalties and global
-command attenuation remain deprioritized under their tested conditions.
+checkpoint-110592 as working and best-known. Experiment 18's matched fresh
+velocity ablation provided partial evidence that velocity information
+contributes to the result, but experiment 19's target-relative basis failed
+badly from fresh initialization, so the coordinate change is rejected as a
+practical route under the tested budget. The remaining direction is to improve
+the raw-Cartesian-velocity recipe without reusing reward-only hold penalties,
+global command attenuation, or the failed target-relative representation under
+the same conditions. Experiment 17's transfer continuation also did not
+preserve 198/200, so unchanged continuation is not a reliable route to further
+progress under that trajectory.
 
-**Lessons and limits:** Experiment 16 checkpoint-110592 achieved 198/200 on
+**Lessons and limits:** Experiment 19's target-relative-velocity checkpoints
+achieved only 142/200, 131/200, and 138/200 on task-reference-v1 at 110592,
+115712, and 120832 steps, with radial strata 26/57, 34/48, 82/95; 21/57,
+34/48, 76/95; and 22/57, 29/48, 87/95. Each measured checkpoint repaired
+experiment-16's episode 175 but retained episode 102 and introduced dozens of
+new failures; none approached 198/200 or preserved the proposal's stratum
+thresholds. Research evaluation found that episodes 10 and 102 never entered
+the tolerance band, while episodes 100 and 175 completed 100 held steps with
+zero interruptions at all three checkpoints. Those diagnostics are a partial
+and unexpected mechanistic signal from the researcher panel, not evidence of
+task progress or of a causal repair. Training proxy success rose only from
+0.28 to 0.60 across the measured checkpoints, while task success fell or
+remained poor; this again does not make proxy or reward a policy selector.
+Twenty-one checkpoints were unmeasured and remain unknown rather than failed.
+The target-relative hypothesis is contradicted under its stated fresh-training
+conditions, but the result does not prove that the basis is intrinsically
+harmful because representation semantics, initialization, and optimization
+trajectory were coupled.
+
+Experiment 16 checkpoint-110592 achieved 198/200 on
 task-reference-v1, with 56/57 near-radius, 48/48 middle-radius, and 94/95
 far-radius success, and its research evaluation confirmed a complete hold for
 episode 84. Experiment 18 checkpoint-110592 achieved 197/200 with 55/57,
@@ -176,19 +195,22 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Does expressing end-effector velocity as radial and
-tangential motion relative to the target improve braking and holding in the
-southwest cases (episodes 10, 100, 102, and 175), or is the experiment-16 gain
-mainly a favorable optimization and checkpoint-selection outcome? Does any
-development-panel gain generalize to the official task distribution?
+**Open questions:** Is experiment-16's advantage mainly the raw Cartesian
+velocity representation, a favorable fresh optimization trajectory, or
+checkpoint selection? Can a new intervention improve the residual southwest
+cases without changing the established observation semantics? Which residual
+failures are caused by never entering the band versus unstable holding under a
+comparable policy? Does any development-panel gain generalize to the official
+task distribution?
 
-**Conditional next steps:** Use fresh initialization for the target-relative
-velocity experiment because its two velocity slots change meaning from world
-Cartesian components to target-relative radial and tangential components.
-Retain checkpoint-110592 as the development best-known policy unless a later
-candidate reaches at least 198/200 without sacrificing 55/57, 48/48, or 94/95.
-All current results remain fixed-panel development evidence rather than
-official attainment.
+**Conditional next steps:** Restore the experiment-16 raw Cartesian-velocity
+recipe and retain checkpoint-110592 as the development best-known policy. A
+future experiment should target the remaining task failures while preserving
+the 13-slot raw-velocity semantics; use research diagnostics when the
+intervention predicts entry or hold changes. If a candidate again shows broad
+task degradation, reject it on measured task success regardless of training
+proxy or reward. All current results remain fixed-panel development evidence
+rather than official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -1093,5 +1115,59 @@ official assessment or a causal claim about braking or hold stability.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-100352-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-110592-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-16-checkpoint-110592-task-reference-v1.json`;
+`robot_learning/scenario/observations.py`; `research/scenario.md`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 19
+
+**Result:** The target-relative-velocity hypothesis was **contradicted** under
+the tested fresh-training conditions. The best measured checkpoint reached only
+142/200 on task-reference-v1, far below experiment 16's 198/200, so the
+experiment-16 checkpoint-110592 lineage remains working and best-known.
+
+**Observed behavior:** Task-reference-v1 measured 142/200 at checkpoint-110592
+(26/57 near, 34/48 middle, 82/95 far), 131/200 at checkpoint-115712
+(21/57, 34/48, 76/95), and 138/200 at checkpoint-120832 (22/57, 29/48,
+87/95). The candidate therefore failed the expected total and all three
+radial-stratum thresholds at every measured checkpoint. Relative to the
+experiment-16 task-reference failure set, each checkpoint repaired episode 175
+but retained episode 102 and introduced many additional failures. Episodes 10
+and 102 never entered the tolerance band in the research evaluation, while
+episodes 100 and 175 completed 100 held steps with zero interruptions at all
+three checkpoints. The research-evaluation totals matched the task-reference
+totals. Training proxy success increased from 0.28 to 0.60 and logged reward
+was 139.0, 148.5, and 144.5 at the measured checkpoints; these are training
+facts, not evidence of task-policy progress. Twenty-one of 24 checkpoints were
+unmeasured and remain unknown.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The expected threshold of at least 198/200 and preservation of
+55/57, 48/48, and 94/95 did not occur at any measured checkpoint. Although
+episode 175 was repaired, the candidate lost far more than one radial-stratum
+threshold and retained episode 102, while episode 10 was also consistently
+unrepaired. This supports rejecting the target-relative basis as a practical
+fresh-training route at this budget. It does not establish that target-relative
+velocity is intrinsically causal for the degradation: the changed observation
+semantics, fresh initialization, and optimization trajectory were coupled, and
+the unmeasured checkpoints cannot be classified.
+
+**Interpretation:** The measured policy behavior is broad task degradation,
+not a selective improvement in the southwest residual cases. The complete
+holds for episodes 100 and 175 are an unexpected diagnostic signal, but they
+cannot offset the large losses across near, middle, and far targets or justify
+a braking or hold-stability claim. The result narrows the representation
+investigation back toward the raw Cartesian-velocity recipe without showing
+that any particular alternative control or training mechanism will succeed.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-19-attempt-1.log`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-19/inventory.json`;
+`research/checkpoints/challengers/3f02f914-505c-481f-b995-e040c009974f/experiment-19/parameters.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-19-checkpoint-110592-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-19-checkpoint-115712-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-19-checkpoint-120832-200ep-seed7300-ffdccdbf3357.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-19-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-19-checkpoint-115712-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-19-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-16-checkpoint-110592-task-reference-v1.json`;
 `robot_learning/scenario/observations.py`; `research/scenario.md`.
