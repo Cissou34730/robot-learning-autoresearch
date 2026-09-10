@@ -704,8 +704,10 @@ def _render_v4_research_brief(
             steps = [int(candidate.get("timesteps", 0)) for candidate in candidates]
             lines.append(
                 f"- Unmeasured checkpoints: {len(unmeasured)} of {len(candidates)}; "
-                f"steps {min(steps):,}-{max(steps):,}; see the raw training logs above "
-                "for the full trajectory"
+                f"steps {min(steps):,}-{max(steps):,}. Every checkpoint carries its own "
+                "training success and reward; retrieve them with `uv run python "
+                f"research/query_training_log.py --experiment {pending.get('experiment', '-')} "
+                f"--from-step {min(steps)} --to-step {max(steps)}`"
             )
         if measured:
             lines.extend([
