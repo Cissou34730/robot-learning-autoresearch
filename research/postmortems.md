@@ -2,7 +2,9 @@
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
-**Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
+**Direction:** Keep experiment-2 checkpoint-120832 as working and best-known while
+testing whether explicit target polar geometry can improve the residual failures
+without discarding the learned meanings of the successful policy's features.
 Experiment 11 contradicted the action-regularization hypothesis: its measured
 checkpoints reached at most 196/200, repaired none of the recurring failures,
 and the late checkpoint regressed to 195/200. Together with experiments 5, 8,
@@ -141,15 +143,11 @@ tested without conflating action semantics, optimization, and representation?
 Can a compatible intervention improve the recurring failures without merely
 preventing band entry, as the early experiment-11 interruption signal did?
 
-**Conditional next steps:** Close experiment 11 by reverting its action-cost
-change and keeping experiment-2 checkpoint-120832 as working and best-known.
-No further measurement round is needed for this lineage decision because all
-three requested task-reference measurements failed to improve the working
-policy and the research-evaluation diagnostics did not show a repaired hold.
-If development continues, start from the working recipe and test one
-semantically compatible control or observation intervention at a time,
-comparing total success, radial strata, failure identities, and hold
-diagnostics. Require measured task improvement before changing lineage; the
+**Conditional next steps:** Use a fresh run that preserves the working
+11-feature observation prefix and appends target radius plus sine/cosine target
+angle. Compare total success, radial strata, recurring failure identities, and
+hold diagnostics; retain the working lineage unless the added geometry repairs
+at least one recurring failure without sacrificing the parent strata. The
 fixed-panel evidence is not official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 1
