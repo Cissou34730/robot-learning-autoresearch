@@ -12,9 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    HARD_TARGET_ANGLE_RANGE_DEGREES,
-    HARD_TARGET_FRACTION,
-    HARD_TARGET_RADIUS_RANGE,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -28,37 +25,13 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_training_distribution_covers_official_radii_without_changing_evaluation():
+def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
-    assert training.target_radius_range == (0.06, 0.20)
+    assert training.target_radius_range == (0.14, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-
-
-def test_training_distribution_includes_the_targeted_hard_geometry():
-    env = make_training_env()
-    env.reset(seed=0)
-
-    radii: list[float] = []
-    angles: list[float] = []
-    for _ in range(400):
-        env._sample_target_position()
-        target = env.data.mocap_pos[0]
-        radii.append(float(np.linalg.norm(target[:2])))
-        angles.append(float(np.degrees(np.arctan2(target[1], target[0]))))
-
-    hard_targets = [
-        radius >= HARD_TARGET_RADIUS_RANGE[0]
-        and radius <= HARD_TARGET_RADIUS_RANGE[1]
-        and angle >= HARD_TARGET_ANGLE_RANGE_DEGREES[0]
-        and angle <= HARD_TARGET_ANGLE_RANGE_DEGREES[1]
-        for radius, angle in zip(radii, angles)
-    ]
-    assert any(hard_targets)
-    assert sum(hard_targets) < len(hard_targets)
-    assert HARD_TARGET_FRACTION == pytest.approx(0.25)
 
 
 def test_training_environment_may_diverge_from_the_official_task():
