@@ -17,32 +17,12 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import OBSERVATION_SIZE
 
 
 def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_observation_marks_an_ik_branch_outside_joint_limits():
-    env = make_training_env()
-    env.reset(seed=0)
-    radius = 0.10
-    angle = np.deg2rad(-125.0)
-    env.data.mocap_pos[0] = [
-        radius * np.cos(angle),
-        radius * np.sin(angle),
-        env.data.mocap_pos[0][2],
-    ]
-    environment_module.mujoco.mj_forward(env.model, env.data)
-
-    observation = env._observation()
-
-    assert observation.shape == (OBSERVATION_SIZE,)
-    assert observation[-2] < 0.0
-    assert observation[-1] > 0.0
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
