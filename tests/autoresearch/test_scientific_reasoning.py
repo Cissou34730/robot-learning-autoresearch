@@ -335,8 +335,9 @@ def test_documented_training_example_and_memory_match_the_contract(
     training = instruments.split("## Request training", 1)[1].split(
         "## Record the postmortem", 1
     )[0]
-    assert "falsifiable prediction about the changed recipe" in training
+    assert "structured diagnostic or exploratory uncertainty" in training
     assert "need not isolate a causal mechanism" in training
+    assert "binary acceptance criteria" in training
     assert "The hypothesis is a causal prediction" not in training
     proposal = json.loads(
         re.search(r"```json\n(.*?)\n```", training, re.DOTALL).group(1)

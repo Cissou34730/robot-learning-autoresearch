@@ -9,24 +9,20 @@ current campaign's evidence, including current state, parameters, available
 models, retained lineages and repository-relative artifact paths.
 
 Use `research/postmortems.md` for previous observations and interpretations.
-Inspect referenced evaluation, task-reference or other structured artifacts
-only when additional detail is needed to resolve the current scientific
-question. Inspect enough evidence to support the requested scientific decision,
-but prefer targeted extraction of the required fields over loading a complete
-artifact. Read a full artifact when its complete contents are genuinely needed
-or a simple query cannot express the analysis.
+Inspect referenced evaluation, task-reference or other structured artifacts as
+part of formulating or answering a scientific question. Targeted extraction and
+full-artifact inspection are both available; choose the form that supports the
+investigation.
 
 Detailed artifacts remain valid sources of scientific evidence, including for
 unsuccessful experiments. Inspect episode-level behavior, distributions,
 failure modes, or any other detail when it may help explain a result or generate
 a useful hypothesis.
 
-When querying structured artifacts, prefer queries that answer a scientific
-question over queries that only rediscover the artifact schema or reconfirm
-summary values already available in `research/brief.md`. Schema inspection is
-appropriate when needed to understand an unfamiliar artifact; once the relevant
-structure is known, proceed directly to the scientific analysis rather than
-repeatedly rediscovering it.
+When querying structured artifacts, distinguish schema discovery from scientific
+analysis. Schema inspection may be necessary to understand an unfamiliar
+artifact; repeated deterministic execution and repeated extraction of the same
+fields should be recognized accurately rather than treated as new evidence.
 
 Artifact paths exposed by the brief and research contracts are relative to the
 repository. Use them directly from the repository working directory; do not
@@ -98,6 +94,7 @@ changed before submitting the request.
 `question` and `reason` are non-empty strings describing the request as a whole.
 `measurements` selects the instruments and models to run. `paired_comparisons`
 selects comparisons to compute from compatible measurements and is optional.
+The question may be confirmatory, diagnostic, exploratory, or descriptive.
 
 Write `research/evaluation_request.json`:
 
@@ -110,7 +107,7 @@ Write `research/evaluation_request.json`:
     {
       "instrument": "<research_evaluation | task_reference>",
       "candidate": "<model exposed by the brief>",
-      "selection": "<non-empty reason this candidate was chosen over the other available checkpoints>",
+      "selection": "<non-empty reason measuring this model is useful for the scientific question>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -125,9 +122,15 @@ Write `research/evaluation_request.json`:
 
 `measurements` must contain at least one entry, and at most three distinct models. `paired_comparisons` is optional.
 
-Every measurement requires its own non-empty `selection`. The request-level `reason` justifies the round; `selection` justifies this candidate against the other checkpoints the brief exposes. Naming a checkpoint without having examined the alternatives cannot produce a truthful `selection`.
+Every measurement requires its own non-empty `selection`. The request-level
+`reason` explains the round; `selection` explains why measuring that model is
+useful for the scientific question. It need not claim that the model is superior
+to every alternative.
 
-One evaluation request may measure at most three distinct models. Multiple measurements of the same model count as one. This includes different seeds, episode counts, labels, or instruments applied to the same model.
+One evaluation request may measure at most three distinct models. Multiple
+measurements of the same model count as one. This includes different seeds,
+episode counts, labels, or instruments applied to the same model. This is an
+operational limit, not a recommendation about which models are informative.
 
 | Instrument            | Additional fields                                                       | Operation                                                          |
 | --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -180,15 +183,15 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 {
   "kind": "<training | continuation | replication>",
   "family": "<non-empty hypothesis-family identifier>",
-  "hypothesis": "<non-empty falsifiable hypothesis>",
+  "hypothesis": "<non-empty falsifiable proposition or uncertainty to test or resolve>",
   "initialization": "<fresh | transfer>",
   "reasoning": {
     "evidence": [
       {"source": "<existing repository-relative file>", "observation": "<what was observed there>"}
     ],
-    "alternative": "<plausible competing explanation>",
-    "expected_observation": "<evidence that supports the hypothesis and what would be learned>",
-    "contradicting_observation": "<evidence that weakens the hypothesis and what would be learned>",
+    "alternative": "<plausible competing explanation or outcome>",
+    "expected_observation": "<observation supporting the proposition or one diagnostic branch, and what would be learned>",
+    "contradicting_observation": "<observation weakening the proposition, supporting an alternative, or revealing incomplete framing>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
     "strategy_link": "<how this experiment advances, revises, or rejects the current investigation>"
   },
@@ -202,7 +205,7 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
-| `training` | Trains a changed scientific recipe. The hypothesis is a falsifiable prediction about the changed recipe; it need not isolate a causal mechanism. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
+| `training` | Trains a changed scientific recipe. The hypothesis may predict its effect or use the change to resolve a structured diagnostic or exploratory uncertainty; it need not isolate a causal mechanism. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
 | `continuation` | Trains the unchanged method further from an eligible lineage. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes, parameter overrides and `change` are forbidden. |
 | `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The hypothesis is a prediction about reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
@@ -240,8 +243,9 @@ choices, not mandatory controls or gates for accepting a model.
 The `reasoning` object contains the fields shown in the schema. `evidence` is a
 non-empty array of source/observation objects. `alternative`,
 `expected_observation`, `contradicting_observation`, `initialization_reason`, and
-`strategy_link` are non-empty strings. Their scientific use is defined in
-`research/program.md`.
+`strategy_link` are non-empty strings. Expected and contradicting observations
+describe informative possibilities rather than binary acceptance criteria. Their
+scientific use is defined in `research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -263,13 +267,13 @@ also be edited during experiment preparation. The exact heading and labels are:
 ```markdown
 ## <Campaign ID> / Scientific strategy
 
-**Direction:** <current research question and direction, and the mechanisms campaign evidence has already eliminated>
+**Direction:** <revisable question or approach that currently best serves the human objective>
 
 **Lessons and limits:** <reusable findings, source references and scope; or what remains unknown>
 
 **Open questions:** <uncertainties not yet resolved>
 
-**Conditional next steps:** <possible follow-ups depending on observations>
+**Conditional next steps:** <plausible future options suggested by current evidence>
 ```
 
 All four labeled entries must contain text and may span multiple lines. Their
@@ -302,7 +306,9 @@ it was inspected or understood. An unmeasured checkpoint is unmeasured, not zero
 success.
 New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
 and conclusion belong to the Researcher; the Runner checks only that it is
-present. Fresh baselines are exempt, and historical entries remain readable.
+present. This assessment does not determine saved-policy usefulness, recipe,
+lineage, retention, or terminal-readiness decisions. Fresh baselines are exempt,
+and historical entries remain readable.
 
 ## Resolve lineage
 

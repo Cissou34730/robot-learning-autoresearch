@@ -53,8 +53,10 @@ hypotheses, interpretations or decisions.
 
 Ground decisions in inspected campaign evidence, logs, or relevant code. State
 what is observed, what is inferred, and what remains an assumption. Exploratory
-work may test an uncertain explanation or characterize behavior not yet
-understood; explain why resolving that uncertainty is useful to the objective.
+work may discover a question, test an uncertain explanation, characterize
+behavior not yet understood, or compare plausible directions. Relate the
+investigation to the human objective without requiring its value to be known in
+advance.
 
 Measured task behavior governs claims of policy progress, not training reward or
 proxy success. All relevant evidence may inform the next investigation, including
@@ -62,11 +64,11 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
-That restriction governs claims, not selection. Before measurement the training
-proxy is the only signal that distinguishes one checkpoint from another, so
-ranking candidates by it and measuring the ones it favors is sound practice. What
-the proxy cannot do is settle the outcome: a checkpoint it ranks highest is a
-measurement target, never a demonstrated result.
+That restriction governs claims, not selection. Checkpoint selection is a
+scientific decision. Training dynamics, checkpoint position, previous
+measurements, behavioral hypotheses, or other relevant evidence may inform that
+decision. The harness does not prescribe a ranking criterion. An unmeasured
+checkpoint remains unmeasured, regardless of its training metrics.
 
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
@@ -76,19 +78,22 @@ controls that distinguish the proposed explanation from alternatives. A coherent
 recipe may change several components when testing its overall usefulness;
 component-level attribution then remains limited.
 
-Use additional diagnosis, measurement, or replication only when it could
-materially change the scientific conclusion or lineage decision. Prefer the
-simplest evidence sufficient to distinguish between plausible explanations.
+The Researcher determines the amount and type of evidence appropriate to the
+investigation. Measurements, comparisons, diagnostics, replications, and
+additional analysis rounds are neither required nor discouraged by the harness.
+Repeated execution of identical deterministic episodes does not create new
+episode coverage; whether additional distinct evidence is useful remains a
+scientific decision.
 
 Distinguish lack of improvement in a run, evidence against a hypothesis, and a
 practical decision not to pursue an intervention. Scope conclusions to the tested
 conditions and uncertainty.
 
 Carry evidence and practical prioritization forward. The strategy records what
-is supported, weakened, or unresolved and which directions are currently most
-promising. A route may be deprioritized without being disproven when another
-direction is a better use of experimental effort. Revisit that prioritization
-when new evidence changes its relative value.
+is supported, weakened, or unresolved without turning previous prioritization
+into an instruction. A route may be deprioritized without being disproven, and a
+later Researcher may continue, revise, broaden, replace, or abandon the current
+direction as the evidence warrants.
 
 Experiment history and prior postmortems are evidence, not authority. Their
 interpretations may be revisited. Prefer targeted extraction over loading
@@ -116,9 +121,12 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 
 Inspect relevant repository state and completed evidence, choose continuation,
 an intervention with fresh or transfer initialization, or replication, and state
-the scientific question and how it serves the human objective. State one
-falsifiable hypothesis, a plausible alternative, and the observations that would
-support or weaken it.
+the scientific question and how it serves the human objective. A hypothesis may
+predict the effect of an intervention or frame an uncertainty that the
+investigation is intended to resolve. Diagnostic and exploratory hypotheses are
+valid when they state a falsifiable proposition, plausible alternatives, the
+observations that would distinguish them, and what would be learned. Do not
+invent a causal mechanism merely to satisfy the proposal format.
 
 Justify the training parent and fresh-or-transfer initialization by their
 expected value for the question and semantic compatibility with the policy and
@@ -134,21 +142,22 @@ rationale.
 
 ## Post-training analysis
 
-Inspect the training outcome and available measurements to assess progress toward
-the human objective. Assess the question actually tested, including continuation
-or replication, against the proposal's expected and contradicting observations.
-Use `supported`, `partially supported`, `weakened`, `contradicted`, or
-`inconclusive`, and record partial or unexpected signals as well as limitations.
-An unmeasured checkpoint remains unmeasured, not a failed policy.
+Assess progress toward a learned policy satisfying the human objective. Inspect
+the training outcome and available measurements, then relate relevant findings
+to the proposal's expected and contradicting observations. Those observations
+frame informative possibilities; they are not acceptance thresholds for a saved
+policy or a binary limit on interpretation. Use `supported`, `partially
+supported`, `weakened`, `contradicted`, or `inconclusive`, and record partial,
+unexpected, or orthogonal signals as well as limitations. An unmeasured
+checkpoint remains unmeasured, not a failed policy.
 
-Decide whether more evidence is worth obtaining before resolving lineage. State
-the question or uncertainty, then choose a useful, proportionate measurement
-scope. This may characterize unfamiliar behavior, compare policies, or examine
-learning dynamics across checkpoints. Reuse compatible evidence when it answers
-the question. No comparison, replication, task-reference panel, diagnostic, or
-additional round is required by phase convention. Choose according to the
-scientific question; an instrument may be preferred when its capabilities fit
-that question.
+Decide whether to gather more evidence before resolving lineage. A measurement
+may discover or refine a question, characterize unfamiliar behavior, compare
+policies, test an explanation, or examine learning dynamics across checkpoints.
+Reuse compatible evidence when it answers the question. No comparison,
+replication, task-reference panel, diagnostic, or additional round is required
+by phase convention, and none is discouraged by default. Choose instruments and
+scope according to scientific judgment.
 
 During this phase, request measurements of current candidates or eligible saved
 lineages through `research/evaluation_request.json`. Researcher-owned measurement
@@ -156,9 +165,6 @@ instrumentation may be changed when needed. Each completed round returns to
 analysis with prior measurements available; reconsider the decision in light of
 the new evidence rather than assuming closure is next.
 
-Prefer a useful measurement of a saved policy to an expensive training run when
-it can answer the same question. This is not a requirement to resolve every
-assumption before training or anticipate the next experiment before closure.
 Runner measurement requests are available only in post-training analysis. If a
 new uncertainty arises during preparation, use available evidence or lightweight
 analysis and state any remaining assumption in the hypothesis; do not present it
@@ -184,6 +190,13 @@ known. A separate explicit, evidence-backed `best_known` designation identifies
 the selected policy, not a required training parent. Selecting it does not decide
 whether to end development or request final assessment.
 
+Assess the tested hypothesis, saved-policy usefulness, scientific recipe,
+training parent, artifact retention, and readiness for terminal assessment as
+distinct decisions. A weakened hypothesis does not by itself reject a useful
+saved policy. Later checkpoints describe the training trajectory but do not
+invalidate an earlier frozen policy, and replication evidence about a learning
+process is not required to acknowledge measured behavior of a saved artifact.
+
 The Researcher is responsible for judging whether the evidence backing a
 `best_known` designation is scientifically comparable and sufficient. The Runner
 checks artifact identity and recorded measurement integrity, not scientific merit.
@@ -198,37 +211,30 @@ Maintain the active campaign's **Scientific strategy** in
 `research/postmortems.md` using the format in `research/instruments.md`. Keep it a
 compact decision aid, not a second experiment history:
 
-- `Direction`: a provisional synthesis of the most promising current line of
-   investigation. It guides the next hypothesis phase but does not select or
-   commit its intervention.
+- `Direction`: the revisable question or approach that best serves the human
+   objective, not a commitment to the current investigation or incumbent policy.
 - `Lessons and limits`: reusable findings, their sources, and uncertainty.
 - `Open questions`: useful uncertainties, not a mandatory experiment queue.
-- `Conditional next steps`: a provisional preferred next action and what would
-   change it. A next direction is required while the campaign continues, but may
-   be revised during preparation as understanding improves.
+- `Conditional next steps`: plausible future options suggested by current
+   evidence, not an experiment queue or a default action for the next session.
 
 Preserve historical observations and decisions; revise current interpretations
-in the synthesis rather than rewriting what was believed at the time. Choose the
-question that advances the current research direction, and state the evidence
-when changing it.
+in the synthesis rather than rewriting what was believed at the time. At the
+start of a new hypothesis phase, reassess the strategy with the campaign
+objective and available evidence. Continue, revise, broaden, replace, or abandon
+the current investigation according to scientific judgment. Changing direction
+does not require resolving every open question.
 
 ## Stopping
 
-Compare ending development with the single strongest development experiment the
-current evidence supports. An opportunity supports continuation when it names a
-concrete intervention, is grounded in observed behavior, has a credible path to
-materially improving the human objective, and is proportionate in cost. Continue
-when that opportunity has greater expected value than terminal assessment.
-
-Consider only that strongest opportunity, not every open question. Do not
-continue merely to reduce uncertainty, repeat comparable evidence, exhaust every
-hypothesis, or pursue an intervention that can only be described abstractly.
-
-Request terminal assessment only when development evidence gives a reasonable
-expectation that the official objective is satisfied and no supported material
-opportunity has greater expected value. Reaching the target on a development
-panel does not by itself justify terminal assessment. Explain why the strongest
-apparent opportunity is absent, weakened, immaterial, or disproportionate.
+Continue development while the Researcher judges that further investigation
+best serves the human objective. Request terminal assessment when the Researcher
+judges that the selected best-known policy is ready for the official verdict,
+stating the evidence and uncertainty behind that decision. Another useful
+investigation does not prohibit stopping, and reaching a development threshold
+does not require stopping. The harness prescribes neither a development margin,
+residual-failure criterion, replication count, nor proof that no better research
+direction exists.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. It is the terminal verdict on a policy already expected to
