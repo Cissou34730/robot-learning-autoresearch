@@ -17,6 +17,8 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
+NEAR_TARGET_ACTION_DELTA_COEFFICIENT = 0.01
+NEAR_TARGET_ACTION_BAND_WIDTH = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -49,6 +51,7 @@ def reach_reward(
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
+    previous_action: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -95,6 +98,36 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    near_target_action_delta = 0.0
+    if (
+        action is not None
+        and previous_action is not None
+        and NEAR_TARGET_ACTION_BAND_WIDTH <= 0
+    ):
+        raise ValueError("NEAR_TARGET_ACTION_BAND_WIDTH must be positive")
+    if (
+        action is not None
+        and previous_action is not None
+        and current_distance
+        <= success_threshold + NEAR_TARGET_ACTION_BAND_WIDTH
+    ):
+        band_fraction = float(
+            np.clip(
+                1.0
+                - (current_distance - success_threshold)
+                / NEAR_TARGET_ACTION_BAND_WIDTH,
+                0.0,
+                1.0,
+            )
+        )
+        action_delta = np.asarray(action) - np.asarray(previous_action)
+        near_target_action_delta = -(
+            NEAR_TARGET_ACTION_DELTA_COEFFICIENT
+            * band_fraction
+            * float(np.sum(np.square(action_delta)))
+        )
+    reward += near_target_action_delta
+
     return RewardResult(
         total=float(reward),
         components={
@@ -104,5 +137,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "near_target_action_delta": float(near_target_action_delta),
         },
     )

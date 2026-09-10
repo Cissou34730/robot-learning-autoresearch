@@ -69,6 +69,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = 0.0
+        self._previous_action = np.zeros(2, dtype=np.float64)
         self._held_steps = 0
         self._outside_after_hold = False
 
@@ -115,6 +116,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
+        self._previous_action = np.zeros(2, dtype=np.float64)
         self._held_steps = 0
         self._outside_after_hold = False
         return self._observation(), {}
@@ -147,12 +149,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             distance,
             self.success_threshold,
             action,
+            previous_action=self._previous_action,
             held_steps=self._held_steps,
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
         )
         self._previous_distance = distance
+        self._previous_action = action.copy()
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
