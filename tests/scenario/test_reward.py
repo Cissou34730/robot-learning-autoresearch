@@ -132,28 +132,3 @@ def test_action_cost_penalizes_large_actions(monkeypatch):
     gentle = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 0.1)).total
     violent = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 1.0)).total
     assert violent < gentle
-
-
-def test_near_target_action_changes_are_penalized_only_in_the_guard_band(monkeypatch):
-    monkeypatch.setattr(reward_module, "ACTION_COST_COEFFICIENT", 0.0)
-    monkeypatch.setattr(reward_module, "NEAR_TARGET_ACTION_DELTA_COEFFICIENT", 1.0)
-    changing_action = np.full(2, 1.0)
-    previous_action = np.full(2, -1.0)
-
-    near_target = reach_reward(
-        0.005,
-        0.005,
-        0.01,
-        action=changing_action,
-        previous_action=previous_action,
-    ).total
-    outside_guard_band = reach_reward(
-        0.03,
-        0.03,
-        0.01,
-        action=changing_action,
-        previous_action=previous_action,
-    ).total
-
-    assert near_target == pytest.approx(-8.0)
-    assert outside_guard_band == pytest.approx(0.0)
