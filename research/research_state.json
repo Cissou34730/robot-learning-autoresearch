@@ -43,9 +43,9 @@
     "started_at": "2026-09-10T13:23:16.463283+00:00"
   },
   "campaign_experiment_counters": {
-    "f36723a7-e062-477d-8972-e203af25d8c1": 1
+    "f36723a7-e062-477d-8972-e203af25d8c1": 2
   },
-  "last_allocated_experiment": 1,
+  "last_allocated_experiment": 2,
   "last_experiment": 1,
   "last_lineage_decision": {
     "best_known": "checkpoint-100352",
@@ -72,7 +72,7 @@
     "experiment": 1,
     "scientific_commit": "007501cba5bda6ffe0150d245525b63db9e3f2f4"
   },
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "0b9cf7d61d9ae16eec697592ec60f6d40a43a5cb",
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
