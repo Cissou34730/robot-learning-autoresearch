@@ -3,28 +3,38 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep the experiment-16 velocity-augmented recipe with
-checkpoint-110592 as working and best-known. Experiment 17's transfer
-continuation did not preserve its 198/200 result: its measured checkpoints
-reached 196/200 and 197/200, although the later one repaired episode 175 and
-improved the far stratum. Unchanged continuation is therefore not a reliable
-route to further progress under this trajectory. Reward-only hold penalties and
-global command attenuation remain deprioritized under their tested conditions.
-The velocity result remains promising state-feedback evidence, but fresh
-initialization, continuation trajectory, and checkpoint selection do not
-establish a feature-level causal effect.
+checkpoint-110592 as working and best-known. Experiment 18's matched fresh
+velocity ablation reached 196/200, 197/200, and 196/200 at its measured
+checkpoints, never reproducing 198/200, while preserving the middle and far
+radial strata at its best point. This is partial evidence that the velocity
+signal contributed to the experiment-16 result, but it is not a feature-level
+causal result from one fresh trajectory and one fixed development panel.
+Experiment 17's transfer continuation likewise did not preserve 198/200, so
+unchanged continuation is not a reliable route to further progress under this
+trajectory. Reward-only hold penalties and global command attenuation remain
+deprioritized under their tested conditions.
 
 **Lessons and limits:** Experiment 16 checkpoint-110592 achieved 198/200 on
 task-reference-v1, with 56/57 near-radius, 48/48 middle-radius, and 94/95
-far-radius success. It repaired parent failure 84 with `max_held_steps=100`
-and retained failures 102 and 175. This is measured task progress relative to
-experiment-2 checkpoint-120832. Experiment 17 checkpoint-110592 achieved
-196/200 with 54/57, 48/48, and 94/95 success and failed episodes 10, 84, 100,
-and 102. Its checkpoint-120832 achieved 197/200 with 54/57, 48/48, and 95/95
-success and failed episodes 10, 84, and 102. Thus continuation repaired 175
-and, at the later point, improved the far stratum, but it did not repair 102,
-lost the parent's near-radius threshold, and introduced failures 10 and 84.
-These are task-reference observations from one fixed development panel, not
-evidence that continuation caused either the repair or the new failures.
+far-radius success, and its research evaluation confirmed a complete hold for
+episode 84. Experiment 18 checkpoint-110592 achieved 197/200 with 55/57,
+48/48, and 94/95 success; it failed episodes 10, 100, and 102, repaired
+experiment-16 failure 175, and retained the 84 success, but did not match the
+parent total. Its earlier and final checkpoints reached 196/200 with 54/57,
+48/48, and 94/95 and failed episodes 10, 84, 100, and 102. Thus the ablation
+did not reproduce the best total, but it also produced unexpected repairs and
+retained a complete task-reference success on episode 84 at the middle
+checkpoint. The task-reference artifacts do not provide entry, interruption,
+or hold-duration diagnostics, so those changes cannot be assigned to a hold
+mechanism beyond the task success definition.
+
+Experiment 17 checkpoint-110592 achieved 196/200 with 54/57, 48/48, and 94/95
+success, while its checkpoint-120832 achieved 197/200 with 54/57, 48/48, and
+95/95 success. Continuation repaired 175 and improved the far stratum at the
+later point, but it did not repair 102, lost the parent's near-radius
+threshold, and introduced failures 10 and 84. These are task-reference
+observations from one fixed development panel, not evidence that continuation
+caused either the repair or the new failures.
 
 Research evaluation showed the experiment-16 110592 repair was a complete hold:
 episode 84 had first reach at step 17, 100 held steps, and zero interruptions.
@@ -166,24 +176,21 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Can a future velocity-focused intervention separate the
-13-value observation from optimization and initialization while recovering at
-least 198/200? Why did transfer continuation repair episode 175 while retaining
-102 and adding near-target failures 10 and 84? Does the velocity signal help
-braking and hold stability, or is the experiment-16 gain a trajectory and
-checkpoint-selection effect? Does any development-panel gain generalize to the
-official task distribution?
+**Open questions:** Does the velocity signal improve the unresolved episode 102
+or hold stability, or is the experiment-16 gain mainly a favorable optimization
+and checkpoint-selection outcome? Why did the ablation preserve the episode-84
+success at 110592 and repair 175 while adding episodes 10 and 100? Does any
+development-panel gain generalize to the official task distribution?
 
-**Conditional next steps:** After closure, do not spend another unchanged
-continuation on this trajectory. Prefer a new velocity-focused experiment only
-if it explicitly separates observation dependence from optimization or
-initialization and targets at least 198/200 while preserving 55/57, 48/48, and
-94/95 radial success. If that control cannot reproduce the earlier gain,
-investigate a different unresolved representation or optimization explanation;
-keep checkpoint-110592 as the development best-known policy in either case.
-Do not repeat global command damping or reward-only hold changes under the same
-conditions. All such results remain fixed-panel development evidence rather than
-official attainment.
+**Conditional next steps:** After closure, retain the velocity-augmented recipe
+and do not spend another unchanged continuation on this trajectory. If further
+work is justified, prefer an ordinary experiment that preserves velocity while
+targeting episodes 10, 100, and 102 or explicitly measures hold behavior; a
+replication is useful only if it can distinguish the ablation's remaining
+trajectory variance from feature dependence. Keep checkpoint-110592 as the
+development best-known policy unless a later candidate reaches at least
+198/200 without sacrificing 55/57, 48/48, or 94/95. All current results remain
+fixed-panel development evidence rather than official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -1040,3 +1047,53 @@ trajectory or initialization before making a feature-level causal claim.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-17-working-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-17-checkpoint-110592-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-17-checkpoint-120832-task-reference-v1.json`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 18
+
+**Result:** The end-effector-velocity ablation hypothesis was **partially
+supported** under the matched fresh-training conditions. No measured ablation
+checkpoint reproduced experiment 16's 198/200 result, so the velocity-augmented
+experiment-16 lineage remains working and best-known.
+
+**Observed behavior:** On task-reference-v1, checkpoint-100352 achieved
+196/200 with 54/57 near-radius, 48/48 middle-radius, and 94/95 far-radius
+success, failing episodes 10, 84, 100, and 102. Checkpoint-110592 achieved
+197/200 with 55/57, 48/48, and 94/95 success, failing episodes 10, 100, and
+102. Checkpoint-120832 achieved 196/200 with 54/57, 48/48, and 94/95 success,
+failing episodes 10, 84, 100, and 102. The middle checkpoint therefore repaired
+experiment-16 failure 175 and retained episode 84 as a task success, but it
+still missed the experiment-16 total and added episodes 10 and 100 while
+retaining 102. All measured failures truncated at 500 steps. The training log
+reported proxy success of 0.94, 0.92, and 0.94 and rewards of 129, 122, and
+119 at the three measured checkpoints; these are training-process observations,
+not task-policy performance. Twenty-one of 24 checkpoints were unmeasured and
+remain unknown.
+
+**Hypothesis assessment:** **Partially supported** under the proposal's stated
+conditions. The expected signal that the ablation would remain below 198/200
+occurred at all three measured checkpoints, weakening the optimization-only
+explanation and supporting velocity information as a useful contributor. The
+expected absence of any repaired recurring case did not hold: checkpoint-110592
+retained the complete task-reference success on episode 84 and repaired episode
+175 relative to experiment 16. The task-reference panel does not emit
+hold-entry, interruption, or duration diagnostics, so the mechanism of those
+success changes is unmeasured. This is evidence for a practical contribution
+under one matched run, not proof that velocity values caused the experiment-16
+gain or that the result generalizes.
+
+**Interpretation:** Keeping the 13-slot layout while zeroing only the planar
+velocity values prevented reproduction of the best measured total, but the
+ablation remained close to the velocity policy and showed different
+episode-level successes over training. This narrows, but does not eliminate,
+the alternative explanation of fresh optimization and checkpoint variation.
+The measured task behavior justifies rejecting the ablation for lineage
+selection and retaining the velocity-augmented recipe; it does not justify
+official assessment or a causal claim about braking or hold stability.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-18-attempt-1.log`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-18-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-16-checkpoint-110592-task-reference-v1.json`;
+`robot_learning/scenario/observations.py`; `research/scenario.md`.
