@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/9f0c1a9e-23c2-4c48-85a6-09cb6d902999/e2-cada55eb5-12163c117afeaa188c72b63fe7e3611cd0ec61744f857133a7cca04d11062f1b",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/9f0c1a9e-23c2-4c48-85a6-09cb6d902999/evaluation-9f0c1a9e-23c2-4c48-85a6-09cb6d902999-experiment-2-checkpoint-100352-200ep-seed9100-ffdccdbf3357.json",
-      "research/evaluations/9f0c1a9e-23c2-4c48-85a6-09cb6d902999/task-reference-9f0c1a9e-23c2-4c48-85a6-09cb6d902999-experiment-2-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "12163c117afeaa188c72b63fe7e3611cd0ec61744f857133a7cca04d11062f1b",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest measured task-reference result in the campaign at 98.5%, and its distinct-panel research result ties the current baseline at 98.5%; this is stronger development evidence than the prior 98.0% best-known result, while remaining insufficient for official assessment.",
-    "scientific_commit": "cad53a3fa148b0885361226bab6dfa769cb7c8dc",
-    "training_steps": 200704
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "306b92a92db41c480bf6cb3f698909bcb3d504fc",
-    "id": "9f0c1a9e-23c2-4c48-85a6-09cb6d902999",
+    "base_commit": "bf380220e171bc322253184c7cf449557629d723",
+    "id": "fa90ad45-8ce1-4375-8a6e-abfeb46e9d00",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-10T06:59:38.737198+00:00"
+    "started_at": "2026-09-10T11:47:26.014590+00:00"
   },
   "campaign_experiment_counters": {
-    "9f0c1a9e-23c2-4c48-85a6-09cb6d902999": 9
+    "fa90ad45-8ce1-4375-8a6e-abfeb46e9d00": 0
   },
-  "last_allocated_experiment": 9,
-  "last_experiment": 9,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Restore the working scientific recipe because the hold-exit forfeiture change introduced broad task-reference and research-panel regressions and did not recover the recurring cases."
-    },
-    "code_parent_commit": "54875fc7c96f1f19f6cdfa3b29fac66303a57d9c",
-    "continue_from": "working",
-    "experiment": 9,
-    "reason": "Experiment 9 is contradicted by measured task performance: task-reference success was 95.5% and 96.0% at checkpoints 100352 and 120832 versus 98.5% for working, the recurring failures at seeds 7384 and 7402 persisted, and the research panel had no candidate wins with 2 and 6 losses. Restore the experiment-2 working lineage as the practical measured choice; keep the existing best-known designation and continue development without requesting the official benchmark."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,50 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "54875fc7c96f1f19f6cdfa3b29fac66303a57d9c",
-    "experiment": 9,
-    "scientific_commit": "46577d3a842cfa2d649e8d0e49826df7de2989a5"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/9f0c1a9e-23c2-4c48-85a6-09cb6d902999/e2-cada55eb5-12163c117afeaa188c72b63fe7e3611cd0ec61744f857133a7cca04d11062f1b",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/9f0c1a9e-23c2-4c48-85a6-09cb6d902999/evaluation-9f0c1a9e-23c2-4c48-85a6-09cb6d902999-experiment-2-checkpoint-100352-200ep-seed9100-ffdccdbf3357.json"
-    ],
-    "fingerprint": "12163c117afeaa188c72b63fe7e3611cd0ec61744f857133a7cca04d11062f1b",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 9 is contradicted by measured task performance: task-reference success was 95.5% and 96.0% at checkpoints 100352 and 120832 versus 98.5% for working, the recurring failures at seeds 7384 and 7402 persisted, and the research panel had no candidate wins with 2 and 6 losses. Restore the experiment-2 working lineage as the practical measured choice; keep the existing best-known designation and continue development without requesting the official benchmark.",
-    "scientific_commit": "cad53a3fa148b0885361226bab6dfa769cb7c8dc",
-    "training_steps": 200704
-  }
+  "working_lineage": null
 }
