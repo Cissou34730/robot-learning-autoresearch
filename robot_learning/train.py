@@ -102,14 +102,12 @@ def main() -> None:
 
     params = effective_config["model_parameters"]
     policy_kwargs = build_policy_kwargs(effective_config["policy"])
-    training = config["training"]
-    normalize_observations = bool(training.get("normalize_observations", True))
     if args.resume is not None:
         stats_path = args.resume.parent / "vecnormalize.pkl"
         if not stats_path.exists():
             raise SystemExit(f"normalization statistics missing: {stats_path}")
         venv = VecNormalize.load(str(stats_path), venv)
-    elif normalize_observations:
+    else:
         venv = VecNormalize(
             venv,
             norm_obs=True,
@@ -137,6 +135,7 @@ def main() -> None:
             **params,
         )
 
+    training = config["training"]
     callbacks: list[BaseCallback] = [
         CandidateCheckpointCallback(
             output_dir=args.output_dir,
@@ -159,10 +158,7 @@ def main() -> None:
     finally:
         with frozen_scientific_modules():
             model.save(args.output_dir / "last_model")
-        stats_path = None
-        if hasattr(venv, "save"):
-            stats_path = args.output_dir / "last_vecnormalize.pkl"
-            venv.save(str(stats_path))
+        venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
         artifact = {
             "schema_version": 1,
             "algorithm": ALGORITHM_NAME,
@@ -182,16 +178,22 @@ def main() -> None:
         shutil.copyfile(
             args.output_dir / "last_model.zip", final_checkpoint / "model.zip"
         )
-        if stats_path is not None:
-            shutil.copyfile(stats_path, final_checkpoint / "vecnormalize.pkl")
+        shutil.copyfile(
+            args.output_dir / "last_vecnormalize.pkl",
+            final_checkpoint / "vecnormalize.pkl",
+        )
         (final_checkpoint / "artifact.json").write_text(
             json.dumps(artifact, indent=2, default=str) + "\n",
             encoding="utf-8",
         )
-        shutil.copyfile(args.output_dir / "last_model.zip", args.output_dir / "model.zip")
-        if stats_path is not None:
-            shutil.copyfile(stats_path, args.output_dir / "vecnormalize.pkl")
-        export_runtime(args.output_dir, stats_path=stats_path)
+        shutil.copyfile(
+            args.output_dir / "last_model.zip", args.output_dir / "model.zip"
+        )
+        shutil.copyfile(
+            args.output_dir / "last_vecnormalize.pkl",
+            args.output_dir / "vecnormalize.pkl",
+        )
+        export_runtime(args.output_dir, stats_path=args.output_dir / "vecnormalize.pkl")
         shutil.copyfile(args.output_dir / RUNTIME_FILE, final_checkpoint / RUNTIME_FILE)
 
         candidates: list[dict] = []
@@ -203,7 +205,7 @@ def main() -> None:
                 continue
             if not all(
                 (candidate_dir / filename).exists()
-                for filename in ("model.zip", RUNTIME_FILE)
+                for filename in ("model.zip", "vecnormalize.pkl")
             ):
                 continue
             metrics_path = candidate_dir / "training_metrics.json"
