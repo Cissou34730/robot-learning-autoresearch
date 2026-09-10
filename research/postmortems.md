@@ -2,10 +2,10 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Prioritize control and hold-stability interventions under the
-full-radius training recipe, while treating direct absolute target geometry as
-deprioritized unless a future design changes the representation test
-substantially.
+**Direction:** Test whether explicitly forfeiting accrued hold progress can
+convert the residual negative-angle failures into stable completions under the
+full-radius recipe; broaden or replace this direction if hold stability does
+not improve without sacrificing radius competence.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -17,20 +17,27 @@ below the unchanged working policy's 97.5% and 98.5%. Its research failures
 also included more never-reached and interrupted episodes than the control.
 The comparison is evidence about this fresh run and these development panels,
 not a causal estimate of every possible geometry representation or training
-initialization.
+initialization. The current reward forfeits none of the accrued hold-progress
+potential on exit (`robot_learning/scenario/reward.py`), so a hold-exit
+forfeiture is a direct but untested control-shaping intervention. The available
+evidence still cannot distinguish whether all hard-sector failures are caused by
+reachability, control, or hold stability.
 
-**Open questions:** Which control or reward changes improve uninterrupted hold
-completion in the persistent negative-angle sector without losing
-short-radius and far-radius competence. Whether checkpoint-aware selection can
-reliably improve the current recipe remains uncertain. The experiment does not
-show whether a geometry representation could help with transfer or with a
-different encoding.
+**Open questions:** Does the forfeiture reduce hold interruptions and total
+failures in the negative-angle sector without losing short-radius and
+far-radius competence? If not, are the remaining failures primarily never-reach
+events rather than instability? Whether checkpoint-aware selection can reliably
+improve the current recipe remains uncertain. The experiment does not show
+whether a geometry representation could help with transfer or with a different
+encoding.
 
-**Conditional next steps:** A future experiment may retain the full-radius
-training distribution and test hold-stability or control shaping from the
-working lineage, with checkpoint selection treated as a separate decision.
-Terminal assessment remains inappropriate until the selected development
-policy has stronger evidence against the structured failure sector.
+**Conditional next steps:** Measure the transferred hold-forfeiture recipe
+against the working lineage using the same development panels and inspect both
+hold interruptions and never-reach outcomes. If it preserves competence but
+does not improve the hard sector, investigate reach/control shaping rather than
+assuming a representation change is warranted. Terminal assessment remains
+inappropriate until a selected development policy has stronger evidence against
+the structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
