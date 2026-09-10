@@ -4,6 +4,7 @@ Generic training code never inspects this layout: it only sees the Gymnasium
 observation space declared by the scenario environment.
 """
 
+import mujoco
 import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
@@ -34,9 +35,16 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    # Keep the learned input layout fixed while removing Cartesian velocity
-    # information for the fresh-control experiment.
-    end_effector_velocity = np.zeros(2, dtype=np.float32)
+    site_id = data.model.site("end_effector").id
+    end_effector_jacobian = np.zeros((3, data.model.nv))
+    mujoco.mj_jacSite(
+        data.model,
+        data,
+        end_effector_jacobian,
+        None,
+        site_id,
+    )
+    end_effector_velocity = end_effector_jacobian @ data.qvel
     return np.concatenate(
         [
             data.qpos,
