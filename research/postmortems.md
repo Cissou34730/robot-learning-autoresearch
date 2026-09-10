@@ -2,10 +2,10 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Test whether explicitly forfeiting accrued hold progress can
-convert the residual negative-angle failures into stable completions under the
-full-radius recipe; broaden or replace this direction if hold stability does
-not improve without sacrificing radius competence.
+**Direction:** Improve the residual negative-angle behavior through reach or
+control shaping while preserving the full-radius training recipe. The tested
+hold-exit forfeiture did not address the structured failures, so hold-progress
+forfeiture is deprioritized under the measured conditions.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -17,27 +17,30 @@ below the unchanged working policy's 97.5% and 98.5%. Its research failures
 also included more never-reached and interrupted episodes than the control.
 The comparison is evidence about this fresh run and these development panels,
 not a causal estimate of every possible geometry representation or training
-initialization. The current reward forfeits none of the accrued hold-progress
-potential on exit (`robot_learning/scenario/reward.py`), so a hold-exit
-forfeiture is a direct but untested control-shaping intervention. The available
-evidence still cannot distinguish whether all hard-sector failures are caused by
-reachability, control, or hold stability.
+initialization. Before experiment 4, the parent reward forfeited none of the
+accrued hold-progress potential on exit (`robot_learning/scenario/reward.py`).
+Experiment 4 directly tested full forfeiture, but both measured checkpoints
+scored 95.4% on the research panel
+versus 97.5% for working, had 50/74 hard-sector successes just like working,
+and had more failed episodes with hold interruptions (35 and 34 versus 14).
+Its task-reference scores were also lower (96.5% and 96.0% versus 98.5%),
+although this remains development evidence rather than an official verdict.
+The available evidence still cannot distinguish whether all hard-sector
+failures are caused by reachability, control, or hold stability.
 
-**Open questions:** Does the forfeiture reduce hold interruptions and total
-failures in the negative-angle sector without losing short-radius and
-far-radius competence? If not, are the remaining failures primarily never-reach
-events rather than instability? Whether checkpoint-aware selection can reliably
-improve the current recipe remains uncertain. The experiment does not show
-whether a geometry representation could help with transfer or with a different
-encoding.
+**Open questions:** Whether the remaining failures are primarily never-reach
+events or control/hold dynamics remains unresolved. Whether checkpoint-aware
+selection can reliably improve the current recipe remains uncertain. The
+experiment does not show whether a geometry representation could help with
+transfer or with a different encoding.
 
-**Conditional next steps:** Measure the transferred hold-forfeiture recipe
-against the working lineage using the same development panels and inspect both
-hold interruptions and never-reach outcomes. If it preserves competence but
-does not improve the hard sector, investigate reach/control shaping rather than
-assuming a representation change is warranted. Terminal assessment remains
-inappropriate until a selected development policy has stronger evidence against
-the structured failure sector.
+**Conditional next steps:** A future experiment may investigate reach/control
+shaping while retaining the full-radius recipe, and should inspect the
+negative-angle sector together with never-reached and hold-interruption
+outcomes. Another representation test would require a compatible transfer or
+an explicitly different question. Terminal assessment remains inappropriate
+until a selected development policy has stronger evidence against the
+structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -203,3 +206,64 @@ control or hold-stability shaping before another representation test.
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-checkpoint-120832-task-reference-v1.json`,
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-3-working-task-reference-v1.json`,
 `robot_learning/scenario/observations.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 4
+
+**Result:** Full hold-progress forfeiture did not improve the measured policy.
+The experiment is closed with the existing `working` and `best_known`
+lineages unchanged, the experiment-4 reward recipe reverted, and the official
+benchmark not requested.
+
+**Observed behavior:** Training completed 120,832 local steps. Training proxy
+success ranged from 0.94 to 1.00 across the recorded checkpoints, with 0.971
+at the first checkpoint and 0.99 at the final checkpoint; mean reward was
+103.747 at checkpoint-95232 and 102.474 at checkpoint-120832. These are
+training facts, not task-performance measurements. On the compatible
+1,000-episode research panel, both checkpoint-95232 and checkpoint-120832
+scored 954/1,000 (95.4%), versus 975/1,000 (97.5%) for `working`. The paired
+comparisons had no challenger wins and 21 working wins for each checkpoint.
+On the fixed 200-episode task-reference panel, the checkpoints scored 96.5%
+and 96.0%, versus 98.5% for `working`.
+
+The research diagnostics showed 50/74 successes in the -150 to -120 degree
+sector for each experiment-4 checkpoint and for `working`. Among failed
+research episodes, 11 and 12 never reached tolerance for the two challenger
+checkpoints, versus 11 for `working`; failed episodes with at least one hold
+interruption numbered 35 and 34, versus 14 for `working`. Radius behavior was
+also lower for the challenger: short-radius success was 271/283 and 264/283,
+versus 278/283 for `working`, while far-radius success was 108/111 and
+107/111, versus 108/111. The two measured late checkpoints had identical
+research success, while the completed checkpoint was slightly lower on the
+task-reference panel.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe
+and development panels. The expected observation was fewer hold interruptions
+and hard-sector failures while preserving short- and far-radius competence.
+Hard-sector success was unchanged, failed episodes with hold interruptions
+were higher, and short-radius success regressed; far-radius success was
+preserved at the earlier checkpoint but slightly lower at completion. The
+contradicting observations weaken hold-exit forfeiture as a useful direction
+for this policy, but one transferred intervention and these development
+panels do not establish that every hold-stability intervention is ineffective.
+
+**Interpretation:** The intervention did not convert the structured
+negative-angle failures into completions. The high training proxy and reward
+signals did not predict held-out task performance in this run, and neither
+measured late checkpoint provided a useful alternative to the incumbent.
+The unchanged never-reached count and unchanged hard-sector success leave
+reachability or control as plausible residual limitations; the increased
+interruption count is consistent with, but does not prove, degraded hold
+stability. The saved experiment-4 candidates are therefore not useful
+working or best-known policies.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`,
+`research/training_logs/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-4-attempt-1.log`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-4/inventory.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-checkpoint-95232-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-working-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-checkpoint-95232-task-reference-v1.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-checkpoint-120832-task-reference-v1.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-4-working-task-reference-v1.json`,
+`robot_learning/scenario/reward.py`.
