@@ -502,9 +502,7 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     assert "| `checkpoint-10240` | 10,240 |" in latest
     assert "Unmeasured checkpoints: 23 of 24; steps 5,120-122,880" in latest
     assert "Training proxy observations: 24 checkpoints from 5,120-122,880 local steps" in latest
-    assert "observed training success range 0.1-0.4" in latest
-    assert "initial" not in latest
-    assert "final 0.2" not in latest
+    assert "training success range 0.1-0.4, initial 0.1, final 0.2" in latest
     assert "not a checkpoint ranking or evaluation result" in latest
     inventory = brief.split(
         "### Current experiment checkpoints available for measurement", 1
@@ -922,8 +920,6 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     assert "not a commitment to the current investigation or incumbent policy" in normalized_program
     assert "diagnostic and exploratory hypotheses are valid" in normalized_program
     assert "a weakened hypothesis does not by itself reject a useful" in normalized_program
-    assert "does not prescribe a ranking criterion or privilege a checkpoint" in normalized_program
-    assert "later checkpoints" not in normalized_program
     assert "another useful investigation does not prohibit stopping" in normalized_program
     assert "why measuring that model is useful for the scientific question" in normalized_instruments
     assert "provisional scientific synthesis" in normalized_brief_builder
@@ -935,6 +931,4 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     )
     assert "not a checkpoint ranking or evaluation result" in proxy_summary
     assert "best" not in proxy_summary
-    assert "initial" not in proxy_summary
-    assert "final" not in proxy_summary
     assert "model is useful for the current scientific question" in normalized_protocol

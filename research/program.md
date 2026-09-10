@@ -65,10 +65,10 @@ training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
 That restriction governs claims, not selection. Checkpoint selection is a
-scientific decision informed by evidence the Researcher judges relevant. The
-harness does not prescribe a ranking criterion or privilege a checkpoint because
-of its position in training. An unmeasured checkpoint remains unmeasured,
-regardless of its training metrics.
+scientific decision. Training dynamics, checkpoint position, previous
+measurements, behavioral hypotheses, or other relevant evidence may inform that
+decision. The harness does not prescribe a ranking criterion. An unmeasured
+checkpoint remains unmeasured, regardless of its training metrics.
 
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
@@ -193,10 +193,9 @@ whether to end development or request final assessment.
 Assess the tested hypothesis, saved-policy usefulness, scientific recipe,
 training parent, artifact retention, and readiness for terminal assessment as
 distinct decisions. A weakened hypothesis does not by itself reject a useful
-saved policy. Each saved policy is a separate measurement target; behavior of
-one saved artifact does not invalidate measured behavior of another. Replication
-evidence about a learning process is not required to acknowledge measured
-behavior of a saved artifact.
+saved policy. Later checkpoints describe the training trajectory but do not
+invalidate an earlier frozen policy, and replication evidence about a learning
+process is not required to acknowledge measured behavior of a saved artifact.
 
 The Researcher is responsible for judging whether the evidence backing a
 `best_known` designation is scientifically comparable and sufficient. The Runner
