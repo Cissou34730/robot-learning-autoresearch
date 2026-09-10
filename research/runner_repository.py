@@ -744,7 +744,7 @@ def migrate_research_state() -> bool:
         (temporary_backup / "research_state.json").write_bytes(original_bytes)
         for control, content in original_controls.items():
             (temporary_backup / control.name).write_bytes(content)
-        temporary_backup.replace(backup)
+        temporary_backup.rename(backup)
         for control, content in translated_controls.items():
             atomic_write_text(control, content)
         atomic_write_json(paths.STATE_PATH, converted)
