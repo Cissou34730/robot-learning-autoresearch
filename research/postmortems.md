@@ -2,11 +2,11 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Investigate the residual -150 to -120 degree failures through
-control or hold-stability interventions that preserve the successful full-radius
-recipe and unchanged policy interface. Treat targeted angular oversampling as
-unhelpful under the tested transferred recipe unless a future design changes the
-identified tradeoff.
+**Direction:** Test whether bounded in-tolerance margin shaping can improve the
+retained full-radius policy's hold completion, especially in the residual
+-150 to -120 degree sector, without changing its policy interface or sacrificing
+non-sector reach performance. This is a targeted diagnostic of hold stability,
+not a commitment to reward shaping if the tradeoff persists.
 
 **Lessons and limits:** Experiment 2's transferred full-radius policy improved
 checkpoint-100352 research success from 97.4% to 97.5% and task-reference
@@ -43,10 +43,12 @@ schedule could avoid the regression observed here.
 
 **Conditional next steps:** A future experiment may test control or hold
 shaping, or a compatible observation/control intervention, using the retained
-working policy as the comparison. Checkpoint selection should be measurement
-led rather than inferred from training proxy metrics. Terminal assessment
-remains inappropriate until a selected development policy has stronger evidence
-against the structured failure sector.
+working policy as the comparison. If margin shaping fails, broaden the
+investigation beyond hold stability toward action/control dynamics or a new
+representation. Checkpoint selection should be measurement led rather than
+inferred from training proxy metrics. Terminal assessment remains inappropriate
+until a selected development policy has stronger evidence against the
+structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
