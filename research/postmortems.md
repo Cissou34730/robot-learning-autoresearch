@@ -158,13 +158,15 @@ official generalization.
 
 **Conditional next steps:** Do not request more experiment-12 measurements:
 the large task regression and paired comparisons already determine lineage.
-If development continues, formulate a new, explicitly controlled intervention
-from the working recipe and require task-reference improvement before retaining
-it. Prefer a design that separates representation semantics from optimization
-or control changes and uses emitted hold diagnostics when those diagnostics are
-needed. Keep the current working and best-known lineage unless a future
-candidate repairs a recurring failure without sacrificing the parent radial
-strata; this fixed-panel evidence is not official attainment.
+Experiment 13 therefore tests a milder hard-sector target mixture from the
+working recipe: 30% of training targets come from the -165 to -105 degree
+sector containing the three recurring failures, while the remaining 70% retain
+the full-range uniform sampler. Transfer is appropriate because the target
+domain, 11-element observation layout, physical action mapping, reward, and PPO
+recipe remain unchanged; only target frequency changes. The candidate must
+repair at least one recurring failure while preserving the parent's radial
+strata before it can replace the working lineage. This fixed-panel evidence is
+not official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
