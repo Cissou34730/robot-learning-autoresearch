@@ -2,10 +2,11 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Improve official-task success by addressing the measured residual
-geometry failures while preserving the useful checkpoint-100352 baseline.
-Priority should go to an ordinary next experiment that tests broader coverage of
-the official target-radius range and the hard negative-angle sector.
+**Direction:** Improve official-task success by testing whether the incumbent's
+structured residual failures arise from missing short-radius training coverage,
+while preserving the measured checkpoint-100352 policy as the comparison point.
+This is a provisional diagnostic direction, not a commitment to radius
+coverage if the hard negative-angle sector persists.
 
 **Lessons and limits:** The baseline learned the task late in training: logged
 training success rose from 0 through 70,656 steps to 0.97 at 100,352 steps,
@@ -16,25 +17,26 @@ checkpoint-120832 measured 96.9% and 97.0% on those respective panels, while
 checkpoint-95232 measured 96.0% on the task-reference panel. The
 research-evaluation diagnostics for checkpoint-100352 show 51/74 success in the
 -150 to -120 degree sector and at least 97.8% in every other 30-degree sector.
-The four task-reference failures are all 6-10 cm targets. The training
-environment currently samples 14-20 cm, whereas the official task samples
-6-20 cm, but the measurements do not establish that this difference causes the
-angle-sector failures. The research and task-reference panels are development
-measurements with different coverage and should not be treated as independent
-confirmation or as the official result.
+Its 26 research-panel failures are all in that sector, with 17 never reaching
+tolerance and 9 losing the hold; the four task-reference failures are 6-10 cm
+targets in the same negative-angle sector. The training environment sampled
+14-20 cm while the official task samples 6-20 cm, but these measurements do not
+establish that radius coverage caused either failure pattern. The development
+panels are not independent confirmation or the official verdict.
 
-**Open questions:** Whether expanding training coverage to the full official
-radius range improves the short-radius failures and the negative-angle sector;
-whether the sector is instead an observation or control generalization issue;
-and whether checkpoint selection or continued training can improve success
-without the late-training regression observed here.
+**Open questions:** Whether full-radius training improves short-radius
+performance without sacrificing the already strong far-radius behavior; whether
+it also reduces the negative-angle failures; and whether that sector instead
+reflects an observation or control-generalization problem. Checkpoint selection
+and the late-training regression remain separate uncertainties.
 
-**Conditional next steps:** A future experiment may broaden the training radius
-range or use a curriculum, then measure both an early high-performing
-checkpoint and the completed checkpoint with geometry diagnostics. Preserve
-checkpoint-100352 as the current comparison policy until a measured successor
-is available. Do not request the official benchmark until the selected
-best-known policy is judged ready for a terminal verdict.
+**Conditional next steps:** Measure the transferred full-radius challenger at
+an early high-performing checkpoint and at completion with the same geometry
+diagnostics. If short-radius failures improve, continue refining coverage or a
+curriculum; if the negative-angle concentration remains, prioritize an
+observation/control investigation rather than assuming radius coverage solved
+the task. Preserve checkpoint-100352 until a measured successor is available,
+and defer the official benchmark until terminal readiness is judged.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
