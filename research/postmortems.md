@@ -3,16 +3,16 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep the experiment-16 velocity-augmented recipe with
-checkpoint-110592 as working and best-known. Experiment 18's matched fresh
-velocity ablation reached 196/200, 197/200, and 196/200 at its measured
+checkpoint-110592 as working and best-known, and test whether a target-relative
+velocity basis improves the southwest residual cases. Experiment 18's matched
+fresh velocity ablation reached 196/200, 197/200, and 196/200 at its measured
 checkpoints, never reproducing 198/200, while preserving the middle and far
-radial strata at its best point. This is partial evidence that the velocity
-signal contributed to the experiment-16 result, but it is not a feature-level
-causal result from one fresh trajectory and one fixed development panel.
-Experiment 17's transfer continuation likewise did not preserve 198/200, so
-unchanged continuation is not a reliable route to further progress under this
-trajectory. Reward-only hold penalties and global command attenuation remain
-deprioritized under their tested conditions.
+radial strata at its best point. This is partial evidence that velocity
+information contributes to the result, but not that raw Cartesian coordinates
+are the best representation. Experiment 17's transfer continuation likewise
+did not preserve 198/200, so unchanged continuation is not a reliable route to
+further progress under this trajectory. Reward-only hold penalties and global
+command attenuation remain deprioritized under their tested conditions.
 
 **Lessons and limits:** Experiment 16 checkpoint-110592 achieved 198/200 on
 task-reference-v1, with 56/57 near-radius, 48/48 middle-radius, and 94/95
@@ -176,21 +176,19 @@ initialization, changed input dimension, optimization trajectory, and the
 augmentation were coupled. All measurements use one fixed development panel
 and are not official benchmark evidence.
 
-**Open questions:** Does the velocity signal improve the unresolved episode 102
-or hold stability, or is the experiment-16 gain mainly a favorable optimization
-and checkpoint-selection outcome? Why did the ablation preserve the episode-84
-success at 110592 and repair 175 while adding episodes 10 and 100? Does any
+**Open questions:** Does expressing end-effector velocity as radial and
+tangential motion relative to the target improve braking and holding in the
+southwest cases (episodes 10, 100, 102, and 175), or is the experiment-16 gain
+mainly a favorable optimization and checkpoint-selection outcome? Does any
 development-panel gain generalize to the official task distribution?
 
-**Conditional next steps:** After closure, retain the velocity-augmented recipe
-and do not spend another unchanged continuation on this trajectory. If further
-work is justified, prefer an ordinary experiment that preserves velocity while
-targeting episodes 10, 100, and 102 or explicitly measures hold behavior; a
-replication is useful only if it can distinguish the ablation's remaining
-trajectory variance from feature dependence. Keep checkpoint-110592 as the
-development best-known policy unless a later candidate reaches at least
-198/200 without sacrificing 55/57, 48/48, or 94/95. All current results remain
-fixed-panel development evidence rather than official attainment.
+**Conditional next steps:** Use fresh initialization for the target-relative
+velocity experiment because its two velocity slots change meaning from world
+Cartesian components to target-relative radial and tangential components.
+Retain checkpoint-110592 as the development best-known policy unless a later
+candidate reaches at least 198/200 without sacrificing 55/57, 48/48, or 94/95.
+All current results remain fixed-panel development evidence rather than
+official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
