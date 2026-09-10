@@ -3,22 +3,32 @@
 ## 3f02f914-505c-481f-b995-e040c009974f / Scientific strategy
 
 **Direction:** Keep experiment-2 checkpoint-120832 as working and best-known.
-Experiment 12 contradicted the target-polar-augmentation hypothesis: its
-freshly trained checkpoints reached only 43.0% and 44.5%, retained all three
-working-policy failures, and were strongly worse than the working policy.
-Together with experiments 5, 8, 9, and 11, this makes the tested hold, reward,
-learning-rate, and action-cost changes poor practical routes under their tested
-conditions. Experiments 3, 4, 6, 7, and 10 also failed to improve the working
-policy, so fresh full-range runs, unchanged continuation, the tested angular
-curriculum, exact replacement and augmented representations, lower learning
-rate, hold forfeiture, convex hold shaping, and increased action cost are
-deprioritized under those conditions. The evidence does not identify
-representation, control, or optimization as a universal causal explanation.
-If development continues, return to the working recipe and test only a
-semantically compatible, explicitly justified intervention with task-based
-checkpoint selection.
+Experiment 13 contradicted the mild hard-sector target-frequency hypothesis:
+both measured checkpoints matched the working policy at 197/200 and retained
+all three recurring failures. Together with experiment 12 and the earlier
+hold, reward, learning-rate, action-cost, representation, and angular-mixture
+results, target-frequency resampling is now deprioritized as a practical route
+under the tested conditions. The evidence does not identify representation,
+control, or optimization as a universal causal explanation. If development
+continues, return to the working recipe and test only a semantically
+compatible, explicitly justified intervention with task-based checkpoint
+selection.
 
-**Lessons and limits:** Experiment 2's transfer run reached 197/200 (98.5%)
+**Lessons and limits:** Experiment 13's checkpoints at 105472 and 120832 each
+reached 197/200 (98.5%) with 55/57 near-radius, 48/48 middle-radius, and
+94/95 far-radius successes, exactly matching the working-policy measurement.
+All three recurring failures (84, 102, and 175) remained failures at both
+candidate checkpoints and for the working policy. This is preservation, not
+measured policy progress: the expected repair did not occur. The training
+proxy peaked at 0.97 near 15360 steps and ended at 0.88, while the late
+task-reference result remained 98.5%; this is another reminder that training
+proxy and reward do not select task checkpoints. Only two of 24 candidate
+checkpoints were measured, so the others remain unknown rather than failed.
+All measurements use one fixed development panel and are not independent
+held-out confirmation or official benchmark evidence; task-reference artifacts
+do not provide hold-trajectory diagnostics for this run.
+
+Experiment 2's transfer run reached 197/200 (98.5%)
 with 55/57 successes below 10 cm, 48/48 at 10-14 cm, and 94/95 at 14-20 cm
 on task-reference-v1. Experiments 3 and 4 reached only 63.5-66.5% and
 63.5-64.0% respectively at their measured late checkpoints, with 61 failed
@@ -150,23 +160,19 @@ and are not official benchmark evidence.
 
 **Open questions:** Which combination of angular/control dynamics,
 optimization variance, and observation semantics causes the three persistent
-failures? Can a semantically compatible intervention preserve the working
-policy's learned feature meanings while improving those cases? Can any such
-intervention improve complete task success rather than merely changing band
-entry or short-hold behavior? The development panel still does not establish
-official generalization.
+failures when both ordinary and oversampled target mixtures leave them
+unchanged? Can a semantically compatible intervention improve complete holds
+without trading away the working policy's radial performance? Does any
+development-panel improvement generalize to the official task distribution?
 
-**Conditional next steps:** Do not request more experiment-12 measurements:
-the large task regression and paired comparisons already determine lineage.
-Experiment 13 therefore tests a milder hard-sector target mixture from the
-working recipe: 30% of training targets come from the -165 to -105 degree
-sector containing the three recurring failures, while the remaining 70% retain
-the full-range uniform sampler. Transfer is appropriate because the target
-domain, 11-element observation layout, physical action mapping, reward, and PPO
-recipe remain unchanged; only target frequency changes. The candidate must
-repair at least one recurring failure while preserving the parent's radial
-strata before it can replace the working lineage. This fixed-panel evidence is
-not official attainment.
+**Conditional next steps:** Close experiment 13 by reverting its sampler and
+keeping experiment-2 checkpoint-120832 as working and best-known; no further
+measurement round is needed because neither measured candidate repaired a
+recurring failure and both matched the parent on every reported stratum.
+If development continues, do not repeat the tested angular target-frequency
+interventions. Prefer one separately justified, semantically compatible
+control-or-hold intervention with task-based checkpoint selection, and treat
+any result as fixed-panel development evidence rather than official attainment.
 
 ## 3f02f914-505c-481f-b995-e040c009974f / Experiment 12
 
@@ -768,3 +774,48 @@ without a paired training control, and incomplete checkpoint coverage.
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-11-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/3f02f914-505c-481f-b995-e040c009974f/evaluation-3f02f914-505c-481f-b995-e040c009974f-experiment-9-working-200ep-seed7300-ffdccdbf3357.json`;
 `robot_learning/scenario/reward.py`.
+
+## 3f02f914-505c-481f-b995-e040c009974f / Experiment 13
+
+**Result:** The mild hard-sector target-frequency hypothesis was contradicted
+under the tested transfer conditions. Both measured checkpoints matched the
+working policy at 197/200, repaired none of its recurring failures, and are
+rejected for lineage selection; experiment-2 checkpoint-120832 remains working
+and best-known.
+
+**Observed behavior:** The proposal expected at least 198/200 success, repair
+of at least one of episodes 84, 102, and 175 through a complete 100-step hold,
+preservation of 48/48 middle-radius and at least 94/95 far-radius success, and
+no broad regression. On task-reference-v1, checkpoints 105472 and 120832 each
+achieved 197/200 (98.5%), with 55/57 near-radius, 48/48 middle-radius, and
+94/95 far-radius successes. The working-policy measurement had the same
+strata and total. All three candidate and working-policy failure sets were
+exactly episodes 84, 102, and 175; every listed failure truncated at 500
+steps. The 22 other candidate checkpoints were not measured and remain
+unknown. The training log's proxy peaked at 0.97 around 15360 steps and ended
+at 0.88; these are training-process signals, not task performance.
+
+**Hypothesis assessment:** **Contradicted** under the proposal's stated
+conditions. The candidate preserved the parent's radial strata and did not
+show a broad regression, which is an unexpected preservation signal, but it
+did not meet the total-success threshold or repair any recurring failure.
+Because no recurring case was repaired, the proposed stable-hold diagnostic
+was not testable. This weakens hard-sector target resampling as a practical
+route for this transfer recipe and budget; it does not establish that target
+frequency, angular control, representation, or optimization is the causal
+source of the residual failures.
+
+**Interpretation:** Increasing exposure to the sector containing the recurring
+failures did not change the measured failure identities or improve complete
+task success relative to the working policy. The matching candidate and parent
+measurements support rejecting this challenger for lineage selection, not a
+claim that the policy is officially at the 98% objective. The conclusion is
+limited to two measured checkpoints from one transfer trajectory, one fixed
+development panel, and task-reference outputs without hold-entry or
+interruption diagnostics; unmeasured checkpoints remain unknown.
+
+**Evidence inspected:** `research/results.jsonl`; `research/brief.md`;
+`research/training_logs/3f02f914-505c-481f-b995-e040c009974f/experiment-13-attempt-1.log`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-13-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-13-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/3f02f914-505c-481f-b995-e040c009974f/task-reference-3f02f914-505c-481f-b995-e040c009974f-experiment-13-working-task-reference-v1.json`.
