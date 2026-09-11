@@ -105,7 +105,7 @@ In `research/runner_protocol.py`:
      compatible requirements;
    - when both records contain `comparison_semantics`, require those values to
      match;
-   - for legacy records missing that field, require equal broad
+   - for records missing that field, require equal broad
      `evaluation_semantics`;
 4. for two `task_reference` records, retain exact panel/version/episode/seed
    compatibility;
@@ -147,7 +147,7 @@ Required cases:
 5. a reward-only candidate with matching `comparison_semantics` can replace
    `best_known` from research-evaluation evidence;
 6. incompatible primary semantics still reject replacement;
-7. legacy broad-semantics behavior remains conservative;
+7. records without primary-semantics metadata remain conservative;
 8. task-reference compatibility remains unchanged;
 9. model and artifact mismatches remain rejected.
 
@@ -166,7 +166,7 @@ Push immediately after this commit.
 
 ### Problem C: the authoritative lineage section duplicates existing sections
 
-The generated schema-v4 brief now contains the new authoritative lineage data,
+The generated campaign brief now contains the new authoritative lineage data,
 then repeats much of the same information under `Working lineage` and
 `Best-known model`. When `working` and `best_known` are the same artifact, their
 full recipe is also printed twice in the authoritative section.
@@ -187,7 +187,7 @@ In `research/build_research_brief.py`:
    full block;
 5. keep the Researcher's distinct reasons for `working` and `best_known` where
    they differ;
-6. in the later legacy `Working lineage` and `Best-known model` sections, remove
+6. in the later `Working lineage` and `Best-known model` sections, remove
    facts already present in the authoritative section; retain only information
    not represented there, or replace the duplicate block with a short reference
    to the authoritative section;

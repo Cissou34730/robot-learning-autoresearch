@@ -27,7 +27,7 @@ def copy_reset_implementation(root):
         shutil.copy2(ROOT / relative, destination)
 
 
-def test_reset_persists_a_canonical_accepted_artifact(tmp_path):
+def test_reset_persists_a_canonical_empty_state(tmp_path):
     pwsh = shutil.which("pwsh")
     if pwsh is None:
         pytest.skip("PowerShell is unavailable")
@@ -209,11 +209,11 @@ def reset_template(tmp_path_factory):
     git(root, "commit", "-m", "baseline scientific recipe")
     recipe = git(root, "rev-parse", "HEAD")
     artifact_json = json.dumps({"completed": True, "timesteps": 100_352})
-    write(root, "research/checkpoints/accepted/artifact.json", artifact_json)
+    write(root, "research/checkpoints/retained/artifact.json", artifact_json)
     for name in (
-        "research/checkpoints/accepted/model.zip",
-        "research/checkpoints/accepted/vecnormalize.pkl",
-        "research/checkpoints/accepted/policy_runtime.pkl",
+        "research/checkpoints/retained/model.zip",
+        "research/checkpoints/retained/vecnormalize.pkl",
+        "research/checkpoints/retained/policy_runtime.pkl",
     ):
         write(root, name, "baseline\n")
     write(root, EVALUATION, "baseline\n")
@@ -222,7 +222,7 @@ def reset_template(tmp_path_factory):
     ).hexdigest()
     evidence_fingerprint = hashlib.sha256(b"baseline\n").hexdigest()
     lineage = {
-        "artifact": "research/checkpoints/accepted",
+        "artifact": "research/checkpoints/retained",
         "fingerprint": fingerprint,
         "origin_experiment": 1,
         "candidate": "checkpoint-100",
@@ -258,8 +258,6 @@ def reset_template(tmp_path_factory):
         "retained_lineages": [],
         "pending_analysis": None,
         "pending_training_operation": None,
-        "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
         "pending_closure_operation": None,
         "pending_scientific_parent": None,
         "pending_final_benchmark": None,
@@ -308,7 +306,7 @@ def reset_template(tmp_path_factory):
         f"**Evidence inspected:** `{EVALUATION}`\n",
     )
     git(root, "add", ".")
-    git(root, "commit", "-m", "prepared v4 baseline")
+    git(root, "commit", "-m", "prepared baseline")
     baseline = git(root, "rev-parse", "HEAD")
     write(root, LOG, "baseline raw training log\n")
     for name in (
@@ -395,9 +393,9 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
         "tests/scenario/test_reward.py",
         "robot_learning/training/checkpoint.py",
         "tests/training/test_policy.py",
-        "research/checkpoints/accepted/model.zip",
-        "research/checkpoints/accepted/vecnormalize.pkl",
-        "research/checkpoints/accepted/policy_runtime.pkl",
+        "research/checkpoints/retained/model.zip",
+        "research/checkpoints/retained/vecnormalize.pkl",
+        "research/checkpoints/retained/policy_runtime.pkl",
         EVALUATION,
     ):
         assert (root / name).read_bytes() == b"baseline\n"
@@ -427,11 +425,11 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
     assert state["last_experiment"] == state["last_allocated_experiment"] == 1
     assert state["campaign"]["id"] == CAMPAIGN
     assert state["schema_version"] == 4
-    assert state["working_lineage"]["artifact"] == "research/checkpoints/accepted"
+    assert state["working_lineage"]["artifact"] == "research/checkpoints/retained"
     assert state["working_lineage"]["candidate"] == "checkpoint-100"
     expected_fingerprint = hashlib.sha256(
         b"".join(
-            (root / "research/checkpoints/accepted" / name).read_bytes()
+            (root / "research/checkpoints/retained" / name).read_bytes()
             for name in (
                 "model.zip",
                 "artifact.json",
@@ -659,7 +657,6 @@ def redirect_reset_paths(monkeypatch, root):
         "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
         "RESTART_PENDING_PATH": research / "RESTART_PENDING",
         "GOAL_PATH": research / "GOAL_REACHED",
-        "ACCEPTED_DIR": research / "checkpoints/accepted",
         "CANDIDATE_ROOT": root / "models/candidates",
         "EVALUATION_DIR": research / "evaluations",
     }
@@ -713,7 +710,7 @@ def test_internal_failure_keeps_recovery_backup(
     assert (backups[0].parent / "files/research/research_state.json").is_file()
 
 
-def test_baseline_accepts_measured_v4_roles(baseline_repository):
+def test_baseline_accepts_measured_roles(baseline_repository):
     root, baseline = baseline_repository
     state_path = root / "research/research_state.json"
     result = reset(root, "-Mode", "Baseline", "-BaselineRef", baseline, "-Force")
@@ -721,24 +718,24 @@ def test_baseline_accepts_measured_v4_roles(baseline_repository):
     assert result.returncode == 0, result.stdout + result.stderr
     restored = json.loads(state_path.read_text())
     assert restored["schema_version"] == 4
-    assert restored["working_lineage"]["artifact"] == "research/checkpoints/accepted"
+    assert restored["working_lineage"]["artifact"] == "research/checkpoints/retained"
     assert restored["working_lineage"]["training_steps"] == 100_352
     assert restored["working_lineage"] == restored["best_known_lineage"]
 
 
-def test_baseline_accepts_v4_retained(baseline_repository):
+def test_baseline_accepts_retained_roles(baseline_repository):
     root, baseline = baseline_repository
     git(root, "checkout", "--detach", baseline)
     retained = f"research/checkpoints/retained/{CAMPAIGN}/p"
     (root / retained).parent.mkdir(parents=True)
-    shutil.move(root / "research/checkpoints/accepted", root / retained)
+    shutil.move(root / "research/checkpoints/retained", root / retained)
     state_path = root / "research/research_state.json"
     state = json.loads(state_path.read_text())
     state["working_lineage"]["artifact"] = retained
     state["best_known_lineage"]["artifact"] = retained
     write(root, "research/research_state.json", json.dumps(state))
     git(root, "add", "-A", "research/checkpoints", "research/research_state.json")
-    git(root, "commit", "-m", "publish durable v4 baseline role")
+    git(root, "commit", "-m", "publish durable baseline role")
     retained_baseline = git(root, "rev-parse", "HEAD")
     git(root, "checkout", "development")
 
@@ -780,7 +777,6 @@ def test_baseline_accepts_v4_retained(baseline_repository):
         "mismatched_result_evidence",
         "mismatched_postmortem",
         "changed_task",
-        "legacy",
     ],
 )
 def test_refuses_before_mutation(baseline_repository, problem):
@@ -802,7 +798,7 @@ def test_refuses_before_mutation(baseline_repository, problem):
         # Build an incomplete baseline commit without moving the active branch.
         git(root, "checkout", "--detach", baseline)
         missing = (
-            "research/checkpoints/accepted/policy_runtime.pkl"
+            "research/checkpoints/retained/policy_runtime.pkl"
             if problem == "missing_runtime"
             else EVALUATION
         )
@@ -841,15 +837,6 @@ def test_refuses_before_mutation(baseline_repository, problem):
         write(root, "robot_learning/benchmark/final_contract.py", "different task\n")
         git(root, "add", ".")
         git(root, "commit", "-m", "different task")
-    elif problem == "legacy":
-        git(root, "checkout", "--detach", baseline)
-        state = json.loads((root / "research/research_state.json").read_text())
-        state["schema_version"] = 3
-        write(root, "research/research_state.json", json.dumps(state))
-        git(root, "add", "research/research_state.json")
-        git(root, "commit", "-m", "unverifiable legacy fixture")
-        args[3] = git(root, "rev-parse", "HEAD")
-        git(root, "checkout", "development")
     head = git(root, "rev-parse", "HEAD")
     status = git(root, "status", "--porcelain")
     candidate = (root / "models/candidates/later/model.zip").read_bytes()
@@ -870,7 +857,7 @@ def test_locked_history_is_detected_before_deleting_candidates(baseline_reposito
     assert result.returncode != 0
     assert git(root, "rev-parse", "HEAD") == head
     assert (root / "models/candidates/later/model.zip").exists()
-    assert (root / "research/checkpoints/accepted/model.zip").exists()
+    assert (root / "research/checkpoints/retained/model.zip").exists()
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Windows junction regression")

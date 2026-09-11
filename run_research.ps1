@@ -24,7 +24,7 @@ if (-not $createdNew) {
 function Assert-ResearchRuntime {
     uv run python -c "import robot_learning.train; import research.run_experiment" | Out-Host
     if ($LASTEXITCODE -ne 0) {
-        throw "The research runtime is internally inconsistent: robot_learning.train and research.run_experiment could not both be imported. No researcher session, training, evaluation or lineage decision was started."
+        throw "The research runtime is internally inconsistent: robot_learning.train and research.run_experiment could not both be imported. No researcher session, training, evaluation or closure operation was started."
     }
 }
 
@@ -97,46 +97,6 @@ function Save-ResearchMemory {
     }
 }
 
-function Test-LineageResearchMemory([int]$experiment) {
-    $script:LineageValidationFeedback = ""
-    if (-not (Test-Path "research\proposal.json")) {
-        $script:LineageValidationFeedback = "research/proposal.json was not created"
-        return $false
-    }
-    if (-not (Test-Path "research\postmortems.md")) {
-        $script:LineageValidationFeedback = "research/postmortems.md was not created"
-        return $false
-    }
-    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
-    $campaignId = $state.campaign.id
-    $headingPattern = if ($campaignId) {
-        "(?m)^## $([regex]::Escape($campaignId)) / Experiment $experiment\b"
-    }
-    else {
-        "(?m)^## Experiment $experiment\b"
-    }
-    if (-not ((Get-Content "research\postmortems.md" -Raw) -match $headingPattern)) {
-        $script:LineageValidationFeedback = (
-            "research/postmortems.md has no entry for the current campaign " +
-            "and experiment $experiment"
-        )
-        return $false
-    }
-    # The decision must name existing detailed evidence of this experiment.
-    $validationOutput = @(
-        uv run python research/run_experiment.py --check-lineage-evidence $experiment 2>&1
-    )
-    $validationExitCode = $LASTEXITCODE
-    $validationOutput | ForEach-Object { Write-Host $_ }
-    $script:LineageValidationFeedback = (
-        $validationOutput | ForEach-Object { $_.ToString().Trim() }
-    ) -join " "
-    if ($validationExitCode -ne 0 -and -not $script:LineageValidationFeedback) {
-        $script:LineageValidationFeedback = "lineage evidence validation failed"
-    }
-    return ($validationExitCode -eq 0)
-}
-
 function Test-ResearchProposal {
     $validationOutput = @(
         uv run python research/run_experiment.py --check-proposal 2>&1
@@ -147,21 +107,6 @@ function Test-ResearchProposal {
     ) -join " "
     if ($validationExitCode -ne 0) {
         Write-Host $script:ProposalValidationFeedback
-        return $false
-    }
-    return $true
-}
-
-function Test-EvaluationRequest {
-    $validationOutput = @(
-        uv run python research/run_experiment.py --check-evaluation-request 2>&1
-    )
-    $validationExitCode = $LASTEXITCODE
-    $script:EvaluationValidationFeedback = (
-        $validationOutput | ForEach-Object { $_.ToString().Trim() }
-    ) -join " "
-    if ($validationExitCode -ne 0) {
-        Write-Host $script:EvaluationValidationFeedback
         return $false
     }
     return $true
@@ -195,41 +140,6 @@ function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
     New-ResearcherSessionStatus -Phase $phase -Attempt $attempt `
         -ExitCode $script:ResearcherExitCode `
         -Deliverable "research/proposal.json" `
-        -Present $present -Valid $valid -Reason $reason
-}
-
-function Get-EvaluationSessionStatus([int]$attempt) {
-    $present = Test-Path "research\evaluation_request.json"
-    $valid = $false
-    $reason = "research/evaluation_request.json was not created"
-    if ($present) {
-        $valid = Test-EvaluationRequest
-        $reason = if ($valid) { "" } else { $script:EvaluationValidationFeedback }
-    }
-    New-ResearcherSessionStatus -Phase "evaluation design" -Attempt $attempt `
-        -ExitCode $script:ResearcherExitCode `
-        -Deliverable "research/evaluation_request.json" `
-        -Present $present -Valid $valid -Reason $reason
-}
-
-function Get-LineageSessionStatus([int]$experiment, [int]$attempt) {
-    $present = (Test-Path "research\postmortems.md") -and (
-        Test-Path "research\proposal.json"
-    )
-    $valid = $false
-    $reason = ""
-    if (Test-LineageResearchMemory $experiment) {
-        $valid = Test-ResearchProposal
-        if (-not $valid) {
-            $reason = $script:ProposalValidationFeedback
-        }
-    }
-    else {
-        $reason = $script:LineageValidationFeedback
-    }
-    New-ResearcherSessionStatus -Phase "lineage decision" -Attempt $attempt `
-        -ExitCode $script:ResearcherExitCode `
-        -Deliverable "research/postmortems.md and research/proposal.json" `
         -Present $present -Valid $valid -Reason $reason
 }
 
@@ -304,7 +214,7 @@ while ($true) {
 
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
     if ($null -ne $researchState.pending_final_benchmark) {
-        Write-Status "=== Evaluating the committed accepted lineage on the final benchmark ==="
+        Write-Status "=== Evaluating the committed best-known lineage on the final benchmark ==="
         uv run python research/run_experiment.py --evaluate-pending-final
         if ($LASTEXITCODE -ne 0) {
             throw "Final benchmark failed. The committed lineage remains pending for recovery."
@@ -388,58 +298,6 @@ while ($true) {
         continue
     }
 
-    if ($null -ne $researchState.pending_evaluation_request) {
-        Update-ResearchBrief
-        $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
-        if (-not $evaluationPlanExists) {
-            Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
-            Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
-            $evaluationPrompt = @(
-                "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
-                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-                "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
-                "Start from the campaign objective and available evidence. Inspection may formulate, refine, or answer the scientific question; targeted extraction and full-artifact inspection are both available."
-                'State the scientific question and use the request-level `reason` to explain why the measurement round is useful.'
-                'Every measurement also requires its own `selection`: state why measuring that model is useful for the current scientific question.'
-                "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
-                "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
-            ) -join " "
-            Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design"
-            $evaluationStatus = Get-EvaluationSessionStatus 1
-            Write-ResearcherSessionStatus $evaluationStatus
-            if (-not $evaluationStatus.Complete) {
-                $evaluationProblem = $evaluationStatus.Reason
-                Write-Status "=== Evaluation request missing or invalid; retrying the same phase once ===" Yellow
-                $evaluationRetryPrompt = @(
-                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. Do not exit without a corrected deliverable."
-                    "The same Researcher session context remains available. Correct only the invalid or missing research/evaluation_request.json."
-                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-                    "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
-                ) -join " "
-                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Continue
-                $evaluationStatus = Get-EvaluationSessionStatus 2
-                Write-ResearcherSessionStatus $evaluationStatus
-                if (-not $evaluationStatus.Complete) {
-                    throw "Researcher ended twice without a valid research/evaluation_request.json. Last validation error: $($evaluationStatus.Reason)"
-                }
-            }
-        }
-        else {
-            Write-Status "=== Resuming the researcher's evaluation plan ==="
-        }
-        uv run python research/run_experiment.py --evaluate-pending
-        if ($LASTEXITCODE -eq 130) {
-            Write-Status "=== Requested evaluation paused; completed measurements were saved ===" Yellow
-            break
-        }
-        if ($LASTEXITCODE -ne 0) {
-            throw "Runner execution of the validated evaluation request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
-        }
-        Update-ResearchBrief
-        Write-Status "=== Requested evaluations complete ===" Green
-        continue
-    }
-
     if (Test-Path "research\BASELINE_PENDING") {
         Write-Status "=== Running fresh baseline training ==="
         @{
@@ -459,49 +317,7 @@ while ($true) {
             throw "Baseline failed. The research loop stopped instead of silently continuing."
         }
         Update-ResearchBrief
-        Write-Status "=== Baseline training complete; researcher evaluation comes next ===" Green
-        continue
-    }
-
-    if ($null -ne $researchState.pending_researcher_decision) {
-        Update-ResearchBrief
-        Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $($researchState.pending_researcher_decision.experiment) ==="
-        $decisionPrompt = @(
-            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "Assess progress toward a learned policy satisfying the human objective. Begin with observed behavior, then relate findings to the proposal's type-specific question and reasoning. Record partial and unexpected findings, separate observations from interpretations, and scope claims to the evidence."
-            "Resolve investigation assessment, saved-policy usefulness, recipe action, working lineage, retention, optional best-known designation, and terminal readiness as distinct scientific decisions. A weakened prediction does not by itself reject a useful policy."
-            "Treat the Scientific strategy as a provisional synthesis, not an instruction for the next session. Record supported, weakened, and unresolved findings without prescribing a continuation path."
-            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
-            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
-        ) -join " "
-        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision"
-        $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
-        $lineageStatus = Get-LineageSessionStatus $pendingExperiment 1
-        Write-ResearcherSessionStatus $lineageStatus
-        if (-not $lineageStatus.Complete) {
-            $lineageProblem = $lineageStatus.Reason
-            Write-Status "=== Lineage deliverable invalid; retrying the same phase once ===" Yellow
-            $decisionRetryPrompt = @(
-                "Current phase: close experiment $pendingExperiment and resolve its lineage and scientific recipe. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
-                "The same Researcher session context remains available. Correct only the invalid or missing experiment entry in research/postmortems.md and lineage-only research/proposal.json."
-                "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-                "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
-            ) -join " "
-            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Continue
-            $lineageStatus = Get-LineageSessionStatus $pendingExperiment 2
-            Write-ResearcherSessionStatus $lineageStatus
-            if (-not $lineageStatus.Complete) {
-                throw "Researcher ended twice without valid lineage deliverables for experiment $pendingExperiment. Last validation error: $($lineageStatus.Reason)"
-            }
-        }
-        uv run python research/run_experiment.py
-        if ($LASTEXITCODE -ne 0) {
-            throw "Runner application of the validated lineage decision failed. The researcher deliverables were already accepted, so the researcher phase is not reopened."
-        }
-        Update-ResearchBrief
-        Write-Status "=== Lineage decision finalized; requesting next hypothesis ===" Green
+        Write-Status "=== Baseline training complete; researcher analysis comes next ===" Green
         continue
     }
 
@@ -522,7 +338,7 @@ while ($true) {
     )
     $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
-        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
+        "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no post-training analysis or closure operation is pending."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
         "Start from the campaign objective and available evidence, then reassess the Scientific strategy as provisional memory that prescribes no next action."
         "State the scientific question, decide whether the investigation is confirmatory, diagnostic, or exploratory, and choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
@@ -532,7 +348,7 @@ while ($true) {
         "Code or configuration edits are required only when the selected operation calls for them."
         "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md, plus any edits called for by the selected operation."
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
-        "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
+        "Do not start training or evaluation, write a closure decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
     Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis"
 
@@ -555,7 +371,7 @@ while ($true) {
             "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, preserving valid researcher-owned edits that belong to this unfinished experiment."
             "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment."
-            "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
+            "Do not start training or evaluation, write a closure decision, or invoke research/run_experiment.py."
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Continue
 

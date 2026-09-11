@@ -1,6 +1,6 @@
 """End-to-end test that published lineage roles survive a real clone.
 
-The test publishes a v4 closure into a throwaway Git repository, pushes it to a
+The test publishes a closure into a throwaway Git repository, pushes it to a
 bare remote and clones it back. It is slow because it spawns real Git
 processes, so it lives outside the campaign-time test domains.
 """
@@ -47,7 +47,7 @@ def _lineage(path: Path, *, steps: int) -> dict:
     }
 
 
-def test_published_v4_roles_survive_clean_clone(monkeypatch, tmp_path):
+def test_published_roles_survive_clean_clone(monkeypatch, tmp_path):
     repository_root = tmp_path / "repository"
     repository_root.mkdir()
     monkeypatch.setattr("research.runner_paths.ROOT", repository_root)
@@ -76,7 +76,7 @@ def test_published_v4_roles_survive_clean_clone(monkeypatch, tmp_path):
         "working_lineage": None,
         "best_known_lineage": best_known,
         "retained_lineages": [],
-        "pending_researcher_decision": {
+        "pending_analysis": {
             "experiment": 3,
             "candidates": [
                 {
@@ -95,6 +95,8 @@ def test_published_v4_roles_survive_clean_clone(monkeypatch, tmp_path):
             "parameters": {},
             "initialization": "fresh",
             "parent_training_steps": 0,
+            "baseline": True,
+            "result": {"experiment": 3, "candidates": []},
         },
     }
     repository.write_state(state)

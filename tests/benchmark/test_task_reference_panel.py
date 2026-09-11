@@ -181,13 +181,13 @@ def test_reference_panel_is_deterministic():
     )
 
 
-def test_candidate_and_champion_run_the_same_cases(monkeypatch, tmp_path):
+def test_candidate_and_working_policy_run_the_same_cases(monkeypatch, tmp_path):
     monkeypatch.setattr(reference_contract, "EVALUATION_EPISODES", 3)
     stub_policy_loading(monkeypatch)
     candidate = tmp_path / "candidate.zip"
-    champion = tmp_path / "champion.zip"
+    working = tmp_path / "working.zip"
     candidate.write_bytes(b"candidate")
-    champion.write_bytes(b"champion")
+    working.write_bytes(b"working")
 
     def cases(model_path):
         return [
@@ -199,7 +199,7 @@ def test_candidate_and_champion_run_the_same_cases(monkeypatch, tmp_path):
             for item in evaluate_task_reference_model(model_path)["episode_results"]
         ]
 
-    assert cases(candidate) == cases(champion)
+    assert cases(candidate) == cases(working)
 
 
 def test_reference_evaluation_is_factual_and_declares_no_success(monkeypatch, tmp_path):
@@ -274,7 +274,7 @@ def test_research_proposal_cannot_change_the_task_reference(protected_path):
 def _request(**overrides) -> dict:
     request = {
         "experiment": 3,
-        "question": "Does the candidate hold as well as the champion?",
+        "question": "Does the candidate hold as well as the working policy?",
         "reason": "A stable comparison decides the lineage question.",
     }
     request.update(overrides)
@@ -294,7 +294,7 @@ def test_request_accepts_research_only_reference_only_and_both():
     reference = [
         {
             "instrument": "task_reference",
-            "candidate": "champion",
+            "candidate": "working",
             "selection": "the incumbent to compare against",
         }
     ]
@@ -312,12 +312,12 @@ def test_request_must_ask_for_at_least_one_measurement():
 @pytest.mark.parametrize(
     "entry",
     [
-        {"instrument": "task_reference", "candidate": "champion", "episodes": 10},
-        {"instrument": "task_reference", "candidate": "champion", "seed": 4},
-        {"instrument": "task_reference", "candidate": "champion", "panel": "custom"},
+        {"instrument": "task_reference", "candidate": "working", "episodes": 10},
+        {"instrument": "task_reference", "candidate": "working", "seed": 4},
+        {"instrument": "task_reference", "candidate": "working", "panel": "custom"},
         {
             "instrument": "task_reference",
-            "candidate": "champion",
+            "candidate": "working",
             "official_benchmark": True,
         },
     ],
@@ -343,7 +343,7 @@ def test_request_rejects_a_malformed_reference_list():
     with pytest.raises(TypeError, match="must be a list"):
         validate_evaluation_request(_request(measurements={}))
     with pytest.raises(TypeError, match="must be an object"):
-        validate_evaluation_request(_request(measurements=["champion"]))
+        validate_evaluation_request(_request(measurements=["working"]))
 
 
 def test_reference_entry_fields_stay_minimal():
@@ -356,7 +356,7 @@ def test_reference_entry_fields_stay_minimal():
 
 
 def test_reference_artifacts_cannot_collide_with_research_artifacts():
-    name = task_reference_artifact_name(3, "champion", "task-reference-v1")
+    name = task_reference_artifact_name(3, "working", "task-reference-v1")
 
-    assert name.startswith("task-reference-experiment-3-champion-")
+    assert name.startswith("task-reference-experiment-3-working-")
     assert not name.startswith("evaluation-experiment-")
