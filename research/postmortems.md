@@ -2,34 +2,38 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Refine temporal control toward the 98% objective by testing
-whether the benefit of smoothing survives with less lag, while specifically
-reducing the negative-angle never-reach failures. Use matched task
-measurements for checkpoint selection and do not treat training proxies or the
-task-reference result as a terminal verdict.
+**Direction:** Address the structured negative-angle reachability failures
+while preserving the useful hold-stability behavior of the 50/50 smoother.
+Experiment 8 did not show that reducing lag with a 75/25 filter improves the
+learned task policy, so future work should consider a different action or
+observation representation, or replication of the original smoother, rather
+than treating this refinement as a new recipe. Use matched task measurements
+for checkpoint selection and do not treat training proxies or development
+panels as a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
 to 52/74, and reduced total interruption events from 256 to 18 at the selected
 late checkpoint, while preserving non-sector and radius-bin performance.
-Failed never-reach episodes rose from 11 to 15, and all three task-reference
-failures were unchanged. This partially supports temporal control as a
-contributor under one transferred run, but fixed development panels do not
-establish a universal filter or official-task attainment. Experiments 2 and 6
-remain controls: full-radius training improved short-radius behavior, while
-margin shaping changed interruption diagnostics without increasing task
-success.
+Experiment 8's 75/25 refinement retained low interruption counts relative to
+the unsmoothed incumbent, but its late checkpoint reached only 97.5% on the
+matched panel, had the same 52/74 hard-sector result, more never-reach
+failures (17 versus 15), and modest non-sector and short-radius regressions
+relative to experiment 7. The protected panel remained 98.5% with the same
+three failures at the late checkpoint. These are observations from one
+transferred refinement and fixed development panels; they do not establish
+causality for other filters or representations. Experiments 2 and 6 remain
+controls: full-radius training improved short-radius behavior, while margin
+shaping changed interruption diagnostics without increasing task success.
 
-**Open questions:** Whether a less-lagging filter can retain the interruption
-reduction while recovering reachability in the structured negative-angle
-sector, and whether the research-panel gain is repeatable, remain unresolved.
-The relative contributions of reachability and action/observation
-representation are also uncertain.
+**Open questions:** Whether the structured negative-angle failures arise
+primarily from reachability, action dynamics, observation representation, or
+run variability remains unresolved. The small research-panel gain from
+experiment 7 is not reproduced as a protected-panel gain, and the unmeasured
+experiment-8 checkpoints cannot be ranked from training proxies.
 
-**Conditional next steps:** If the less-lagging filter improves matched
-success without broad regression, compare its measured checkpoints and retain
-the best-supported control recipe. If it does not, shift toward a different
-action or observation representation or replicate the original smoother to
+**Conditional next steps:** A later investigation may test a different
+action or observation representation, or replicate the 50/50 smoother to
 separate refinement failure from run variability. The margin-shaped policy
 remains a diagnostic alternative, not evidence of a better task policy.
 Terminal assessment should wait for stronger evidence against the structured
@@ -452,3 +456,67 @@ experiment-7 research-evaluation artifacts for `checkpoint-100352`,
 `checkpoint-120832`, and `working` under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the three
 corresponding experiment-7 task-reference artifacts.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 8
+
+**Result:** The 75/25 action-smoothing refinement is closed with the
+experiment-7 `working` and `best_known` lineages unchanged. The experiment-8
+recipe is reverted, no experiment-8 candidate is retained, and the official
+benchmark is not requested.
+
+**Observed behavior:** The transferred run completed 120,832 local steps.
+Training proxy success was 0.975 at 5,120 steps, reached 1.00 at 20,480
+steps, varied non-monotonically thereafter, and was 0.97 at completion.
+Logged mean reward peaked at 108.58 at 90,112 steps and was 104.22 at
+120,832. These are training facts, not held-out task-performance
+measurements; 22 of the 24 checkpoints remain unmeasured.
+
+On the matched 1,000-episode research panel, checkpoint-100352 scored 974/1,000
+(97.4%) and checkpoint-120832 scored 975/1,000 (97.5%), below experiment 7's
+selected 977/1,000 (97.7%). The early and late experiment-8 checkpoints had
+51/74 and 52/74 successes in the -150 to -120 degree sector, 923/926 and
+923/926 outside it, 277/283 and 277/283 at short radius, and 108/111 and
+108/111 at far radius. Failed episodes that never reached tolerance numbered
+18 and 17, versus 15 for experiment 7. Failed episodes with at least one
+hold interruption numbered 8 at both checkpoints, and total interruption
+events were 19 and 8, versus 18 for experiment 7; all were still far below
+the unsmoothed incumbent's 256 events. Matched episode outcomes favored
+experiment 7 by 3 wins to 0 for the early checkpoint and 2 to 0 for the late
+checkpoint.
+
+On the fixed 200-episode task-reference panel, the early checkpoint scored
+196/200 (98.0%) and the late checkpoint scored 197/200 (98.5%). The late
+checkpoint had the same three failed target identities as experiment 7:
+9.91 cm at -122.90 degrees, 9.36 cm at -127.91 degrees, and 18.24 cm at
+-154.79 degrees. The early checkpoint additionally failed at 7.24 cm and
+-125.40 degrees. These are development-panel observations, not an official
+benchmark result.
+
+**Hypothesis assessment:** Weakened under the tested transferred recipe and
+development panels. The expected interruption reduction relative to the
+unsmoothed incumbent was retained, but the less-lagging filter did not improve
+matched success or hard-sector success, did not reduce never-reach failures,
+and introduced modest non-sector and radius-bin regressions relative to the
+experiment-7 smoother. The late protected-panel score and failure set were
+unchanged, while the early protected-panel score regressed. Thus the
+measurements weaken the proposition that this 75/25 refinement recovers
+reachability while preserving the 50/50 policy's benefits. They do not
+disprove other temporal filters, representations, or the possibility of
+run-to-run variation.
+
+**Interpretation:** Less lag alone did not address the residual negative-angle
+failure pattern in this transferred run. The low interruption count indicates
+that temporal smoothing can remain diagnostically relevant, but the measured
+task behavior does not support replacing the experiment-7 recipe with the
+75/25 refinement. The stronger training proxies at several checkpoints did
+not identify a better held-out policy, reinforcing that checkpoint selection
+must use measured task behavior.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-8/inventory.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-8-checkpoint-100352-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-8-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+the corresponding experiment-8 task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the
+experiment-7 late research and task-reference artifacts used for comparison.
