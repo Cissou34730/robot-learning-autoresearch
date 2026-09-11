@@ -3,8 +3,9 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Use the retained experiment-7 50/50 action-smoothing policy as
-the practical incumbent while investigating robustness of reachability across
-angle sectors. The fresh replication did not make the smoother a dependable
+the practical incumbent while testing whether its successful transferred
+training basin can still improve reachability without sacrificing broad
+performance. The fresh replication did not make the smoother a dependable
 fresh-start control, and the unsuccessful periodic target-direction
 representation remains abandoned. Use matched task measurements for checkpoint
 selection and do not treat training proxies or development panels as a
@@ -28,22 +29,28 @@ interrupted failures, and 125 interruption events. These observations are from
 single transferred or fresh runs and fixed development panels. They support
 run- or transfer-dependence as a live explanation, but do not establish
 causality for smoothing or distinguish seed variability from transfer history.
+The retained late checkpoint has 977/1,000 research successes with 15
+never-reach failures and 8 interrupted failures, whereas the fresh replication
+has 704/1,000 successes with 296 failures, including 272 in the positive
+60-to-180 degree bins, 191 never-reach failures, and 105 interrupted failures.
 Unmeasured checkpoints cannot be ranked from training proxies.
 
 **Open questions:** Whether the fresh run's shifted positive-angle failures
 are primarily optimization variability, transfer dependence, or a control
 dynamics effect remains unresolved. It is also unknown whether the retained
-policy's residual failures can be reduced without sacrificing its broad
-performance. The experiment-7 task-reference result remains 98.5% on its
-development panel, but no official benchmark result exists.
+policy's residual failures can be reduced by continuing from its learned basin
+without sacrificing broad performance. The experiment-7 task-reference result
+remains 98.5% on its development panel, but no official benchmark result
+exists.
 
-**Conditional next steps:** A future experiment may target robustness of the
-retained smoother's reachability while preserving its measured broad
-performance, or may add another fresh control if separating run variability
-from transfer history is worth the cost. Any new representation or temporal
-control should be justified by matched task-performance evidence. Terminal
-assessment should wait for stronger evidence that the selected policy is ready
-for the official objective.
+**Conditional next steps:** An unchanged continuation can test whether the
+retained basin yields a measured checkpoint closer to the 98% objective; a
+plateau or broad regression would favor a narrowly controlled intervention or
+another fresh control only if separating run variability from transfer history
+becomes more valuable. Any new representation or temporal control should be
+justified by matched task-performance evidence. Terminal assessment should wait
+for stronger evidence that the selected policy is ready for the official
+objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
