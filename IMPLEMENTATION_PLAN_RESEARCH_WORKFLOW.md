@@ -69,9 +69,9 @@ The following existing behavior must be changed deliberately rather than worked 
 | --- | --- | --- |
 | `research/program.md`, `Fixed cycle` | Training must be followed by evaluation, then a separate closure phase; phases cannot be skipped. | Replace the two post-training phases with one analysis phase that can request measurements or close the experiment. |
 | `research/runner_protocol.py`, `requested_measurements()` | Every evaluation request requires at least one measurement. | Keep this requirement for an actual measurement request, but allow analysis to finish using a lineage decision without submitting an evaluation request. |
-| `run_research.ps1` | The launcher used separate evaluation-design and closure sessions. | Dispatch one analysis session which may produce either an evaluation request or a closure decision. |
-| `research/run_experiment.py`, `apply_previous_result_decision()` | Selecting a candidate updated one shared lineage role. | Preserve working lineage and best-known lineage independently. |
-| `research/runner_protocol.py`, `training_parent()` | Training, evaluation and lineage selection used different role terminology. | Expose the same role identifiers for training, evaluation, and lineage selection. |
+| `run_research.ps1` | `pending_evaluation_request` always causes an evaluation-design session; closure gets a separate session. | Dispatch one analysis session which may produce either an evaluation request or a closure decision. |
+| `research/run_experiment.py`, `apply_previous_result_decision()` | Selecting a candidate copies it over `ACCEPTED_DIR` and updates the same state used for the champion. | Preserve working lineage and best-known lineage independently. |
+| `research/runner_protocol.py`, `training_parent()` | `accepted` and retained IDs are training parents; evaluation calls the accepted artifact `champion`. | Expose the same role identifiers for training, evaluation, and lineage selection. |
 | `research/run_experiment.py`, `execute_pending_evaluations()` | `measured[0]` becomes `candidate_metrics` and the apparent experiment score. | Record checkpoint-specific evidence. Do not turn the first measured checkpoint into the experiment's representative or best model. |
 | `research/build_research_brief.py` | Displays accepted state prominently, five recent cards, then compressed memory. | Lead with the current result and working direction; expose all campaign experiments through a factual compact index. |
 | `research/run_experiment.py` and `runner_repository.py` | The result is appended before closure; subsequent lineage decisions mostly update state. | Persist the completed decision into the authoritative experiment record and regenerate its derived views. |
@@ -129,13 +129,13 @@ Make it possible to pursue a promising model without replacing the best-known mo
 
 ### State representation
 
-Use the campaign state schema. The authoritative lineage roles are:
+Advance the campaign state schema from version 3 to version 4. Replace the authoritative `accepted_*` role fields with:
 
 - `working_lineage`: a lineage record or `null`.
 - `best_known_lineage`: a lineage record or `null`.
 - Existing `retained_lineages`: reusable alternatives.
 
-A lineage record contains the following facts, with nullable provenance only where explicitly allowed by the current contract:
+A lineage record contains the following facts, with nullable historical provenance only where explicitly allowed by the migration step:
 
 | Field | Meaning |
 | --- | --- |
@@ -162,7 +162,7 @@ Use these identifiers in all new Researcher-facing contracts:
 
 Resolve each identifier once to a concrete artifact and fingerprint when accepting a request. Changing a role later must not change the identity of an already accepted request or recorded measurement. If two identifiers resolve to the same fingerprint, display that they are the same model; do not describe them as independent contenders.
 
-New documentation and requests use `working` and `best_known`; historical identifiers remain readable only where required by existing records.
+Historical `accepted` and `champion` identifiers are handled only by the compatibility path in Step 8. New documentation and new requests use `working` and `best_known`.
 
 ### Selection and persistence
 
@@ -219,9 +219,9 @@ Allow the Researcher to decide what evidence is useful before spending evaluatio
 
 ### State and dispatch
 
-Use one persisted `pending_analysis` object in state. It carries the existing experiment context: checkpoint inventory, training log references, original proposal/result, effective parameters, parent information, scientific revisions, completed measurement references, and any measurement plan with its partial progress.
+Use one persisted `pending_analysis` object in state version 4. It carries the existing experiment context: checkpoint inventory, training log references, original proposal/result, effective parameters, parent information, scientific revisions, completed measurement references, and any accepted measurement plan with its partial progress.
 
-Use `pending_analysis` for the open post-training analysis operation.
+Replace the mutually exclusive `pending_evaluation_request` / `pending_researcher_decision` states for new operations. Both old states map into `pending_analysis` during explicit compatibility handling.
 
 Implement these transitions:
 
@@ -240,7 +240,7 @@ The preflight reports whether the accepted deliverable is `measurement` or `clos
 
 Preserve `experiment`, `question`, `reason`, `measurements`, and optional `paired_comparisons`, including the existing instrument-specific schema and three-distinct-model limit.
 
-Every completed measurement round returns to analysis. The choice to close is the closure deliverable, not a boolean predicting whether another round will be needed.
+For new requests, remove `need_more_evidence`: every completed measurement round returns to analysis. The choice to close is now the closure deliverable, not a boolean predicting whether the next round will be needed. Compatibility may read the old field in previously accepted pending plans, but new requests must follow the new documented schema.
 
 `measurements` still requires at least one entry. The model catalog includes current candidates, working, best known, and retained lineages. No comparison or model is inserted automatically. Resolve and preserve the artifact identity, instrument identity, panel settings, and evaluation semantics with each measurement, using the existing fingerprints.
 
@@ -357,7 +357,7 @@ Make the latest learning, previous results, and live research direction easy to 
 2. Maintain one current record per `(campaign_id, index)` for new-schema experiments. Add a narrow atomic record-update function which replaces that experiment's existing record or inserts it if absent. Preserve unrelated historical records. Do not introduce a general event store.
 3. Save the original proposal reasoning and strategy snapshot without retrospectively editing them. Update lifecycle status, completed measurements, and closure decision as the experiment progresses.
 4. Persist the final working choice, explicit best-known decision if any, code decision, postmortem reference, and role identities at closure. Cards must not keep saying `awaiting researcher analysis` after closure.
-5. Preserve a candidate list with per-checkpoint steps, training facts, and measurement references. Remove the `measured[0]` assignment as the primary experiment result. Historical scalar summaries remain readable and are not reinterpreted as the selected model.
+5. Preserve a candidate list with per-checkpoint steps, training facts, and measurement references. Remove the `measured[0]` assignment as the primary experiment result. Historical scalar summaries remain readable and are identified as legacy summaries, not reinterpreted as the selected model.
 6. Show both checkpoint values where a run improves from one measured checkpoint to another. Do not replace the first-checkpoint problem with an automatic maximum-score selection.
 7. Group replication facts by `replication_of`, displaying actual method/configuration provenance where available. A replication label groups experiments; it is not proof of recipe equivalence.
 
@@ -409,7 +409,7 @@ The existing proposal `reasoning` fields remain. Clarify `strategy_link` to expl
 - Older lessons remain reachable after more than five experiments.
 - Researcher synthesis is faithfully shown as interpretation, including uncertainty; the Runner fabricates no scientific conclusions.
 - A change of working lineage leaves best-known reporting unchanged unless explicitly designated.
-- A change of best known updates its identity and evidence everywhere; no stale score remains.
+- A change of best known updates its identity and evidence everywhere; no stale champion score remains.
 - Unmeasured models render as unmeasured, not zero percent.
 - Repeated identical-panel observations do not double the evidence count.
 - Earlier campaigns do not enter the current campaign brief or aggregate statistics.
@@ -471,13 +471,13 @@ Use the same substantive instructions for the initial phase and its retry. A ret
 - Current experiment completed training; determine what happened and what scientific action follows.
 - Available tools: checkpoint inventory and raw-log query, structured-artifact analysis, instrumentation edits, research measurement, task-reference measurement, and optional paired comparison.
 - Available outcomes: another measurement request, or postmortem plus a closure decision that chooses working/code/retention and optionally best known.
-- Candidate-only measurement and closure without new measurements are valid. No automatic best-known designation is required.
+- Candidate-only measurement and closure without new measurements are valid. No champion is automatically required.
 - Describe further training as a valid next experiment after closure. Do not instruct the Researcher to produce the next training proposal in the current analysis response.
 - Preserve the operational rule that the Runner executes training, measurements, Git mutations, and final assessment.
 
 These compact lists expose capabilities by phase. Full syntax remains in `instruments.md`. Do not create a new tool registry or copy JSON schemas into PowerShell.
 
-Remove the distinct `evaluation design` and `lineage decision` research-session prompts from normal execution; their responsibilities are represented in the analysis prompt. Keep actionable missing-deliverable retry messages and the existing stop-on-second-invalid-deliverable behavior.
+Remove the distinct `evaluation design` and `lineage decision` research-session prompts from normal version-4 execution; their responsibilities are represented in the analysis prompt. Keep actionable missing-deliverable retry messages and the existing stop-on-second-invalid-deliverable behavior.
 
 Update `PROTOCOL_DECISIONS.md` with the reasons for these changes, the limitations observed after Point 1, the combined implementation scope, and the fact that scientific sufficiency remains a Researcher decision. Distinguish software checks from the future campaign's scientific validation.
 
@@ -579,21 +579,36 @@ Allow the new harness to consume a prepared baseline without changing its traine
 - `tests/autoresearch/test_lineage_roles.py`
 - `researcher_copilot.py` and `tests/autoresearch/test_copilot_researcher.py`, only to preserve the human-only boundary of the maintenance command
 
+### Version 3 compatibility
+
+- Provide an explicit human-only state migration operation, `--migrate-research-state`, in the existing Runner CLI. It is not a Researcher tool and must remain blocked by the Researcher command guard. Do not invoke it against this live worktree during implementation.
+- Preflight the conversion without changing science or policy bytes. Back up the original state and preserve campaign ID, experiment counters, original records, measurements, and pending control files.
+- Map the legacy accepted model to working. If it has recorded development measurements, initialize best known to the same model with a factual legacy-origin designation; do not invent stronger evidence or a new scientific decision. Leave best known null for an unmeasured legacy model.
+- Map legacy `accepted` training-parent submissions to `working` and legacy `champion` references to the same pre-migration artifact. Perform this only for already-existing pending submissions/records; new requests use the documented new IDs.
+- Convert legacy pending evaluation or closure state to `pending_analysis`, preserving accepted plans and partial measurements. Previously accepted closure submissions without `best_known` preserve the migrated best-known model; they must not acquire an implicit promotion.
+- New-protocol validation must not require rewriting an already accepted old measurement plan during recovery. Interpret its recorded semantics and return to analysis after completion. Translate an unexecuted old control submission explicitly during migration, preserving its original content in the backup; validate it before any execution.
+- Obtain recipe provenance only from verifiable recorded Git/artifact evidence. If an old recipe cannot be identified, record `scientific_commit: null`; the artifact remains usable through its saved runtime. Exact recipe restoration for that lineage returns a specific missing-provenance error instead of guessing a commit. Do not silently retrain, adapt, or discard it.
+- An old completed official result is recorded as prior terminal-assessment exposure and the converted campaign is terminal. Do not automatically run further research using a revealed official result.
+- Repeating the migration is a no-op after successful conversion. Validation-only commands must never migrate state implicitly.
+
 ### Reset compatibility
 
-- `-Mode Fresh` continues to preserve the current scientific source/parameters and clear campaign artifacts. It creates an initial state with null working/best-known records and a pending baseline. Keep the current branch/worktree semantics.
-- `-Mode Baseline -BaselineRef ...` accepts a valid measured closed experiment-1 baseline in the current state format. It restores the exact scientific files/tests/configuration, policy/runtime, logs, and baseline evidence from that source, while retaining the current harness.
-- Restore role metadata before finalizing the reset. Both roles identify the same measured baseline artifact; do not retrain or recompute its evidence.
+- `-Mode Fresh` continues to preserve the current scientific source/parameters and clear campaign artifacts. It creates a version-4 initial state with null working/best-known records and a pending baseline. Keep the current branch/worktree semantics.
+- `-Mode Baseline -BaselineRef ...` accepts a valid measured closed experiment-1 baseline in supported old or new state format. It restores the exact scientific files/tests/configuration, policy/runtime, logs, and baseline evidence from that source, while retaining the current harness.
+- Translate role metadata after restoring an old baseline, before finalizing the reset. Both roles identify the same measured baseline artifact; do not retrain or recompute its evidence.
 - For a baseline restore, the selected source commit is an explicit verifiable scientific recipe revision. Record it for later restoration.
 - Extend cleanup/restore lists for the new role references and terminal state; do not accidentally remove an artifact shared by roles before validating the baseline source.
 - Preserve the script's existing safety checks and publication behavior. Do not add a new reset mode or change which parameters count as the human's initial recipe.
 
 ### Software validation
 
-- Restore a measured baseline with both roles referring to the same model.
+- Restore a version-3 measured baseline into the new harness and compare source files, scientific tests, policy/runtime/normalization bytes, effective parameters, and evidence with the source baseline.
+- Restore a version-4 measured baseline with both roles referring to the same model.
 - Fresh reset preserves scientific files and initializes only campaign state.
-- Baseline and reset validation failures leave the original campaign intact.
-- Reset operations do not launch training or a Researcher session.
+- State migration preserves pending measurements, current proposals, counters, and policy fingerprints.
+- Unavailable recipe provenance does not become an invented revision.
+- Migration and reset validation failures leave the original campaign intact.
+- No compatibility operation launches training or a Researcher session.
 
 ## 12. Implementation order and review checkpoints
 
@@ -609,7 +624,7 @@ The implementation can be organized into reviewable local changes covering:
 
 Do not run experimental campaigns between these partial changes. The scientific unit to evaluate is the completed workflow with the same prepared baseline and same Researcher model.
 
-Before finalizing, search all callers/readers of the active lineage roles, analysis state, and candidate evidence. Update active code to the current semantics. This includes console output, CLI checks, reset fixtures, and session validation. Do not perform unrelated cosmetic renaming.
+Before finalizing, search all callers/readers of `accepted_*`, `champion`, `pending_evaluation_request`, `pending_researcher_decision`, `need_more_evidence`, and `candidate_metrics`. Update active code to the new semantics and confine old names to documented compatibility/history handling. This includes console output, CLI checks, reset fixtures, and session validation. Do not perform unrelated cosmetic renaming.
 
 ## 13. Verification and completion criteria
 
@@ -619,9 +634,9 @@ For implementation verification:
 
 1. Run focused tests for each changed responsibility using `uv run pytest ...`.
 2. Run `uv run ruff check` and formatting only on changed Python files. Parse modified PowerShell scripts using the PowerShell parser.
-3. Run the full project test suite once after integration. Investigate failures against the intended new behavior. Replace obsolete tests that assert mandatory evaluation or merged lineage roles with the relevant new invariant. Do not weaken unrelated scientific, task, artifact, or restoration tests merely to obtain green output.
+3. Run the full project test suite once after integration. Investigate failures against the intended new behavior. Replace obsolete tests that assert mandatory evaluation or merged accepted/champion roles with the relevant new invariant. Do not weaken unrelated scientific, task, artifact, or restoration tests merely to obtain green output.
 4. All launcher/Runner integration tests must use temporary state/artifacts and stubbed training/evaluation. Do not start MuJoCo training or evaluate a real saved campaign policy as part of implementation validation.
-5. Verify working-tree scope: the implementation must preserve the pre-existing unfinished scientific edits and all real campaign artifacts. Do not run the real reset script, campaign launcher, or benchmark as a validation shortcut.
+5. Verify working-tree scope: the implementation must preserve the pre-existing unfinished scientific edits and all real campaign artifacts. Do not run the real reset script, migration command, campaign launcher, or benchmark as a validation shortcut.
 
 The implementation should expose enough factual state for the human to inspect the following questions in a separately launched future campaign. These are acceptance questions for the human, not commands or tests for Copilot:
 

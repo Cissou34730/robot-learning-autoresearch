@@ -47,7 +47,7 @@ Push immediately after each commit. Do not amend, squash, or combine them.
 
 ### Modify `research/build_research_brief.py`
 
-In `_render_research_brief`, do not change any helper function or rendered
+In `_render_v4_research_brief`, do not change any helper function or rendered
 content. Change only the order of existing blocks.
 
 Remove this call from immediately after `Current phase and latest event`:
@@ -104,7 +104,7 @@ All later sections keep their current order and content.
 ### Modify focused tests
 
 In
-`tests/autoresearch/test_research_context.py::test_brief_indexes_all_experiments_newest_first_without_candidate_metrics`,
+`tests/autoresearch/test_research_context.py::test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics`,
 replace the current section-order assertions with exactly:
 
 ```python
@@ -127,9 +127,9 @@ replace the current section-order assertions with exactly:
 
 In these three tests in `tests/autoresearch/test_console_presentation.py`:
 
-- `test_brief_exposes_authoritative_lineages_recipes_and_checkpoints`
-- `test_brief_renders_best_known_as_an_alias_of_identical_working_recipe`
-- `test_brief_renders_absent_lineage_facts_as_not_recorded`
+- `test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints`
+- `test_v4_brief_renders_best_known_as_an_alias_of_identical_working_recipe`
+- `test_v4_brief_renders_absent_lineage_facts_as_not_recorded`
 
 replace the lineage-section end delimiter:
 
@@ -143,7 +143,7 @@ with:
         "## Working lineage", 1
 ```
 
-In `test_brief_exposes_authoritative_lineages_recipes_and_checkpoints`, add:
+In `test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints`, add:
 
 ```python
     assert brief.index("## Latest experiment") < brief.index(
@@ -452,11 +452,11 @@ prompts. Replace only the three initial prompt arrays below.
             "Use measured policy behavior, not a conflicting training proxy, to choose the next scientific problem unless you state a causal link from that proxy to the measured behavioral gap. Keep secondary findings as open questions unless evidence makes one the highest-priority gap."
             "State the scientific question before requesting evidence. Request only measurements whose possible outcomes can change the interpretation, model/lineage decision, or next scientific direction. Reuse compatible existing evidence. Comparison and task-reference measurement are optional."
             "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
-            "Current candidates and eligible saved lineages can be remeasured through the existing request flow. If the relevant quantity is not currently emitted, you may modify researcher-owned measurement instrumentation before requesting it. Additional measurement rounds are optional and available during post-training analysis."
+            "Current candidates and eligible saved lineages can be remeasured through the existing request flow. If the relevant quantity is not currently emitted, you may modify researcher-owned measurement instrumentation before requesting it. Additional measurement rounds are optional and available only while closing this trained experiment."
             "When the campaign continues, establish a concrete next direction anchored to the campaign objective and the highest-priority unresolved measured behavior of best_known. Preserve a broader mechanism as open when only one concrete intervention failed."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
             "Set request_final_benchmark to true only when terminal assessment of best_known is the highest-value next action according to the available development evidence, and explain why it is more valuable now than further research. A true value ends the campaign after either goal_reached or goal_not_reached and its result cannot select a later hypothesis."
-            "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the submitted deliverable."
+            "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
 ```
 
@@ -464,7 +464,7 @@ prompts. Replace only the three initial prompt arrays below.
 
 ```powershell
         $decisionPrompt = @(
-            "Current phase: complete post-training analysis for experiment $($researchState.pending_analysis.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
+            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
@@ -655,7 +655,7 @@ Run only:
 git diff --check
 ```
 
-Do not repeat tests passed in commits 1 and 2. Commit with
+Do not rerun tests passed in commits 1 and 2. Commit with
 `record research reasoning rebalance decision`, then push.
 
 ## Final report required from the implementer

@@ -68,38 +68,38 @@ Use function names as navigation anchors; line numbers will change.
 
 | Location | Verified behavior | Required repair |
 | --- | --- | --- |
-| `runner_protocol._lineage_record`, `plan_previous_result_decision` | Current role records retain candidate paths under `research/checkpoints/challengers/`. | Materialize selected/retained artifacts at durable Git-tracked paths before closing. |
-| `run_experiment.apply_pending_closure` | Assigns role records but does not perform the copies that the previous closure path performs. | Implement durable materialization in the current path, including restart and push failure handling. |
-| `.gitignore`, `runner_repository.RUNNER_MEMORY_PREFIXES` | Challengers are ignored; retained paths are tracked. | Keep disposable challengers ignored; persist chosen artifacts through the tracked archive. Checking a previous path is not proof that current models persist. |
+| `runner_protocol._v4_lineage_record`, `plan_v4_previous_result_decision` | New v4 role records retain candidate paths under `research/checkpoints/challengers/`. | Materialize selected/retained artifacts at durable Git-tracked paths before closing. |
+| `run_experiment.apply_pending_v4_closure` | Assigns role records but does not perform the copies that the legacy closure path performs. | Implement durable materialization in the v4 path, including restart and push failure handling. |
+| `.gitignore`, `runner_repository.RUNNER_MEMORY_PREFIXES` | Challengers are ignored; accepted and retained paths are tracked. | Keep disposable challengers ignored; persist chosen artifacts through the tracked archive. Checking the legacy path is not proof that v4 persists models. |
 | `runner_protocol.training_parent`, `run_experiment.run_training_experiment` | Resolves an old parent model and step count while loading current worktree configuration. | An unchanged continuation must restore the selected parent's complete recipe before effective configuration is loaded. |
 | `runner_protocol.validate_paired_comparison_plan` | Checks requested/partial panels in the open experiment, ignoring compatible historical measurements. | Resolve historical evidence by immutable model identity and measurement settings. |
 | `_development_evidence_catalog`, `_validated_designation_evidence` | Best-known closure requires fingerprints that old imported evidence metadata lacks. | Distinguish unavailable provenance from a true identity mismatch; new records must be complete and historical imports must be validated honestly. |
 | `scenario/environment.py`, `scenario/policy_io.py` | Smoothing is implemented after `policy_io.action()` in the environment; exported action mapping remains identity. | Move policy preprocessing into the exported policy I/O contract and apply it exactly once. |
-| `runner_repository.experiment_log_row` | Reads experiment-wide score fields, producing `-` for current measurements. | Render per-model/panel facts and the actual closure decision from current records. |
+| `runner_repository.experiment_log_row` | Reads legacy experiment-wide score fields, producing `-` for v4 measurements. | Render per-model/panel facts and the actual closure decision from v4 records. |
 | `run_research.ps1`, `program.md` | Active preparation still says `This is the complete task` and foregrounds intervention changes. | Expose continuation/intervention/replication without requiring mutation; preserve deliverable completion. |
 | `instruments.md` | Closure example omits supported `code.action: restore`; best-known evidence requirements are incompletely described. | Document the exact implemented schema and evidence rules. |
-| `reset_research.ps1` | Fresh preserves current science; Baseline restores prepared models/evidence and duplicates fingerprint logic. | Add an explicit recipe source to Fresh, share provenance/state logic, and preserve the distinct existing Baseline capability. |
+| `reset_research.ps1` | Fresh preserves current science; Baseline restores old models/evidence and duplicates migration/fingerprint logic. | Add an explicit recipe source to Fresh, share provenance/state logic, and preserve the distinct existing Baseline capability. |
 
 The recent training-log tool was used repeatedly. Do not describe it as unused. Improving broad/repeated extraction requests is a separate future improvement. Preserve the instrument and its phase visibility without mandating calls or changing its output in this implementation.
 
-## 4. Step 1 — Persist lineages as complete Git artifacts
+## 4. Step 1 — Persist v4 lineages as complete Git artifacts
 
 ### Objective and context
 
-A state JSON that points to ignored model files is not durable persistence. A locally runnable lineage must also be recoverable from its published Git commit. The current path must satisfy this invariant for every selected model.
+A state JSON that points to ignored model files is not durable persistence. A locally runnable lineage must also be recoverable from its published Git commit. The current v4 path fails this invariant even though the legacy accepted-model path satisfies it.
 
 ### Files
 
 - `research/runner_repository.py`: artifact copy, memory paths, commit/publication, role references.
 - `research/runner_paths.py`: reuse `campaign_retained_root()`.
-- `research/runner_protocol.py`: closure plan and lineage record construction.
+- `research/runner_protocol.py`: v4 closure plan and lineage record construction.
 - `research/run_experiment.py`: serialized closure plan, application, recovery, cleanup.
 - `tests/autoresearch/test_lineage_roles.py`, `test_post_training_analysis.py`, `test_execution_contract.py`.
 - `AGENTS.md`, only the artifact-location description affected by this change.
 
 ### Required implementation
 
-1. Use the existing Git-tracked `research/checkpoints/retained/<campaign-id>/` archive for new durable policies. Give each newly materialized policy a stable physical directory derived from its source experiment, checkpoint, and complete fingerprint. Retained user-facing IDs remain labels in state; they need not be directory names.
+1. Use the existing Git-tracked `research/checkpoints/retained/<campaign-id>/` archive for new durable v4 policies. Give each newly materialized policy a stable physical directory derived from its source experiment, checkpoint, and complete fingerprint. Retained user-facing IDs remain labels in state; they need not be directory names.
 2. Copy weights, `artifact.json`, `policy_runtime.pkl`, and any saved normalization/replay files using the existing complete-artifact contract. Do not copy only weights or rename the internal files.
 3. Resolve working, best-known, explicit retentions, and pre-decision role aliases before mutations. Deduplicate copies when several references point to the same immutable artifact.
 4. Include source, destination, expected fingerprint, and resulting role records in `pending_closure_operation`. Build and validate the full plan before copying, restoring code, updating state, or cleaning artifacts.
@@ -108,20 +108,20 @@ A state JSON that points to ignored model files is not durable persistence. A lo
 7. Do not rewrite immutable detailed evaluation JSON merely because its historical `model` string names the original challenger path. The measurement binding introduced in Step 3 resolves the model identity.
 8. Commit and push scientific code separately from campaign memory/artifacts. Only after publication may cleanup remove unretained candidate weights. A failed push or Ctrl-C must leave the pending operation recoverable without another Researcher decision.
 9. Persist cleanup completion and clearing of the pending operation so reloading the published state is coherent. Recovery must handle interruption after each boundary: plan, copy, role/result write, local commit, push, cleanup, and pending-operation clearance.
-10. Correct `_lineage_record()` when an existing role is selected: preserve its original `candidate` checkpoint identifier instead of replacing it with the alias `working` or `best_known`. Preserve its original scientific commit and parameters.
+10. Correct `_v4_lineage_record()` when an existing role is selected: preserve its original `candidate` checkpoint identifier instead of replacing it with the alias `working` or `best_known`. Preserve its original scientific commit and parameters.
 11. Record actual cumulative transitions: parent transitions plus the selected checkpoint's actual transitions. An intermediate checkpoint at 100,352 is not a 120,000-step endpoint.
-12. Preserve existing retained paths as readable. If a previously selected role still points to an ignored challenger directory that exists, the next valid closure may materialize it through the same mechanism. Do not fabricate missing weights or repair the live campaign during development.
+12. Preserve old accepted/retained paths as readable. If a previously selected v4 role still points to an ignored challenger directory that exists, the next valid closure may materialize it through the same mechanism. Do not fabricate missing weights or repair the live campaign during development.
 
 ### Software validation
 
 - Close fixtures with different working and best-known candidates plus an explicit retained alternative. Push to a temporary bare remote, clone it into a new temporary directory, and verify all referenced runtime/model/stat files and fingerprints.
 - Verify roles sharing one artifact survive changing one role, removing a redundant retention label, and candidate cleanup.
 - Force failure at each publication boundary; retry from disk and verify no duplicate record, overwritten artifact, lost role, or premature deletion.
-- Test retained-path reuse and a current challenger-backed role becoming durable.
+- Test legacy accepted-path reuse and a current v4 challenger-backed role becoming durable.
 - Check original checkpoint name and actual transition count survive repeated selections.
 - A counterfeit or incomplete artifact fails before state mutation.
 
-Commit/push: `fix: persist selected lineages and recover closure publication`.
+Commit/push: `fix: persist selected v4 lineages and recover closure publication`.
 
 ## 5. Step 2 — Continue an older model with its complete scientific recipe
 
@@ -148,7 +148,7 @@ The selected parent's weights and its recipe are distinct persisted facts. Ordin
 7. Resume the selected model and normalization through the existing training artifact interface. Preserve existing SB3 continuation behavior; do not silently start fresh or substitute another model when incompatible.
 8. For ordinary `kind: training` with transfer, preserve the Researcher's intentional current intervention. Do not automatically overwrite those edits with the parent's recipe. Model-parent provenance and training-recipe provenance must remain separately recorded.
 9. A parent with unavailable scientific provenance must produce an actionable preflight error before training. Do not guess a commit from the current HEAD or from a scientific interpretation in the postmortem.
-10. Make restoration restartable using existing pending-operation bookkeeping. A retry must not repeat completed training or lose the pre-restoration state.
+10. Make restoration restartable using existing pending-operation bookkeeping. A retry must not rerun completed training or lose the pre-restoration state.
 11. Keep `code.action: restore` at closure available and documented; automatic recipe restoration for unchanged continuation must also work when that earlier closure chose to keep different code.
 12. Preserve replication's current documented meaning: it runs the current recipe fresh and links the earlier experiment. Do not silently change replication into historical recipe replay in this step.
 
@@ -199,7 +199,7 @@ Experiments 2, 4, and 5 encountered refusals to compare a new candidate with an 
 3. Researcher-defined secondary diagnostics may motivate a designation between equally successful models when their measurements are comparable. The Runner checks identity and comparability, not whether stability is the right tie-breaker.
 4. Recognize valid evidence for a model even when the latest role record did not yet copy every historical measurement path. Derive association from the catalog's verified fingerprint binding, not membership in an accidentally incomplete role-local list alone.
 5. Distinguish missing identity metadata, missing artifact files, true fingerprint mismatch, incompatible instrument, and incompatible panel semantics. Return precise recoverable errors before applying a closure.
-6. For missing metadata, do not assign the incumbent's fingerprint simply because its checkpoint name resembles a filename. Preserve historical evidence as recorded; verification is required before using unverifiable evidence for designation.
+6. For missing legacy metadata, do not assign the incumbent's fingerprint simply because its checkpoint name resembles a filename. Preserve old results as readable historical evidence; verification or explicit maintenance is required before using unverifiable evidence for designation. Step 7 handles the existing Baseline import path.
 7. The developer must not repair or re-close the current real experiment as part of testing. Use fixtures reproducing the failure and validate that a new Fresh campaign writes sufficient identity from experiment 1 onward.
 
 ### Software validation
@@ -209,7 +209,7 @@ Experiments 2, 4, and 5 encountered refusals to compare a new candidate with an 
 - A reference with multiple panels can supply the exact matching requested panel; unrelated panels are not pooled.
 - Wrong model, mismatched seeds/episode identities, semantics changes, and mixed instruments fail before execution/closure.
 - Best-known replacement accepts compatible historical evidence, rejects unrelated citations, and does not impose a success delta.
-- Missing identity is reported as unavailable provenance rather than a false claim that weights differ.
+- Missing legacy identity is reported as unavailable provenance rather than a false claim that weights differ.
 - Round recovery neither duplicates simulations nor inflates sample size from repeated identical panels.
 
 Commit/push: `fix: resolve historical evaluation evidence by immutable model identity`.
@@ -274,7 +274,7 @@ Preparation already requires `reasoning.expected_observation`, `contradicting_ob
 4. At closure, store the assessment text in the experiment's authoritative record as `hypothesis_assessment`. Preserve the original preparation reasoning/strategy snapshot unchanged. Do not require the Researcher to duplicate its assessment in both Markdown and JSON.
 5. Keep `Interpretation` for other observations, competing explanations, and implications for future work. The assessment must not exclude unexpected evidence or turn one failed intervention into proof against its whole hypothesis family.
 6. The revisable Scientific strategy continues to contain Direction, Lessons and limits, Open questions, and Conditional next steps. It may reconsider an earlier lesson, deepen a lineage over several experiments, or abandon it. No fixed sequence or number of experiments is imposed.
-7. Update `EXPERIMENTS.md` with concise columns covering experiment, operation/parent, intervention, measured checkpoint/panel results (or unmeasured), hypothesis assessment, and final working/best-known/code decision. Remove dependence on obsolete `candidate_success_percent` and `candidate_seeds_passed` for new records.
+7. Update `EXPERIMENTS.md` for v4 with concise columns covering experiment, operation/parent, intervention, measured checkpoint/panel results (or unmeasured), hypothesis assessment, and final working/best-known/code decision. Remove dependence on obsolete `candidate_success_percent` and `candidate_seeds_passed` for new records.
 8. Show per-checkpoint results with instrument/panel identity. Never fill a single representative experiment score with the first or maximum checkpoint score. Do not convert training reward into task success.
 9. In the brief, retain current/latest facts first, then working direction and the complete reverse-chronological experiment index, with best known lower down. Add the latest hypothesis assessment and links to relevant postmortem entries. Preserve source attribution and uncertainty.
 10. Keep older experience accessible through all-campaign index rows and source links. Do not copy every raw diagnostic or all old postmortems into the prompt, and do not impose a line-count target.
@@ -286,7 +286,7 @@ Preparation already requires `reasoning.expected_observation`, `contradicting_ob
 - A new non-baseline closure missing assessment gets a clear validation message; baselines and old completed entries remain readable.
 - Supported, contradicted, mixed, and inconclusive free-text assessments are faithfully persisted/rendered, without a Runner choice about lineage.
 - Two measured checkpoints keep distinct settings/results regardless of request order. An unmeasured candidate stays unmeasured.
-- Closed rows show actual decisions and assessments, not stale `awaiting analysis` placeholders.
+- Closed rows show actual decisions and assessments, not stale `awaiting analysis` or legacy placeholders.
 - All current-campaign experiments remain discoverable after many entries, and revisions of the strategy do not rewrite prior predictions.
 - Retry/upsert does not duplicate an experiment or its postmortem snapshot.
 
@@ -374,7 +374,7 @@ This helper is maintenance code and human-owned. Add `research/reset_campaign.py
 7. Make a recoverable operation-specific backup of the exact files/state being replaced and record progress before destructive work. Confine all temporary/backup paths to the explicitly validated maintenance location. A mid-reset error must report how to recover; a reset must never silently leave old models associated with a new campaign ID.
 8. Restore the recipe and its tests, including deletion of files introduced after that recipe within the scientific surface. Preserve human-owned implementation changes from this development branch.
    For the selected historical recipe, this explicitly removes the experiment-6 smoothing from `scenario/environment.py` and `scenario/policy_io.py`. Do not preserve it, reapply it, or translate it into a baseline default. Preserve the generic human-owned artifact/runtime mechanism and AutoResearch regression tests implemented in Step 4.
-9. Initialize a new UUID and empty state using shared code: no working, no best known, no retained lineages, no pending analysis/measurement/closure/final request, no official result, and reset experiment allocation counters. Write `BASELINE_PENDING` so the next normal launch allocates experiment 1.
+9. Initialize a new UUID and native v4 empty state using shared code: no working, no best known, no retained lineages, no pending analysis/measurement/closure/final request, no official result, and reset experiment allocation counters. Write `BASELINE_PENDING` so the next normal launch allocates experiment 1.
 10. Clear current active campaign results, postmortems/strategy, evaluation artifacts, checkpoint roles/candidates, stale proposals/requests, training logs/recovery markers, and derived summaries according to the validated reset target set. Do not delete unrelated worktrees, environments, developer tools, or other project files.
 11. Record the recipe source revision as human maintenance provenance, distinct from model lineage. Do not copy any source baseline role, score, evidence, selected checkpoint, campaign UUID, or experiment numbering into the new state.
 12. Regenerate derived history with the shared Python renderer. Commit scientific restoration separately from the campaign reset state, and push each commit in accordance with the project's Git convention. Preserve a recoverable reset operation across failures; report local commit/push state accurately.
@@ -398,9 +398,9 @@ These values are historical provenance, not new defaults to hard-code. A read-on
 ### Existing trained-baseline mode
 
 1. Preserve Baseline mode's advertised purpose; do not remove it because the human currently chooses recipe restoration.
-2. It must consume the durable role paths produced by Step 1, validate complete model/runtime/normalization files, actual checkpoint steps, recipe provenance, and measurement identity before replacing the current campaign.
-3. Reuse shared state helpers. Remove PowerShell's separate fingerprint, partial role handling, and experiment-table implementation.
-4. A prepared baseline may be imported only when its model/evidence binding can be verified from its preserved artifact and historical records. If identity cannot be established, refuse before mutation with a specific reason. Never infer identity solely from a checkpoint name, assign fingerprints to unrelated evidence, or repeat evaluation silently.
+2. It must consume the durable v4 role paths produced by Step 1, validate complete model/runtime/normalization files, actual checkpoint steps, recipe provenance, and measurement identity before replacing the current campaign.
+3. Reuse shared migration/state helpers. Remove PowerShell's separate fingerprint, partial role migration, and experiment-table implementation.
+4. A legacy baseline may be imported only when its model/evidence binding can be verified from its preserved artifact and historical records. If identity cannot be established, refuse before mutation with a specific reason. Never infer identity solely from a checkpoint name, assign fingerprints to unrelated evidence, or rerun evaluation silently.
 5. Preserve original measurement semantics and payloads; mark unsupported historical metadata explicitly. Do not manufacture compatible settings to satisfy best-known validation.
 6. Fresh recipe restoration must never depend on any of these trained-baseline metadata requirements. A valid scientific source with no saved policy or evaluations is sufficient for RecipeRef.
 
@@ -409,12 +409,12 @@ These values are historical provenance, not new defaults to hard-code. A read-on
 All tests below execute reset only in temporary repositories with temporary bare remotes and stubbed campaign processes.
 
 - Recipe A to current B: restore A's scientific code/config/tests and remove B-only scientific files, while B's harness/task files remain byte-identical.
-- Fresh with RecipeRef yields empty campaign state and a pending fresh experiment 1; no model, old score, strategy, evaluation, UUID, or experiment counter is imported.
+- Fresh with RecipeRef yields empty v4 campaign state and a pending fresh experiment 1; no model, old score, strategy, evaluation, UUID, or experiment counter is imported.
 - Fresh without RecipeRef preserves all current science exactly.
 - A recipe commit without trained artifacts is accepted. A missing ref, invalid JSON, incompatible task, dirty tree, running campaign, locked file, or unsafe reparse target fails before destructive work.
 - Simulated failure during restoration, state publication, commit, and push retains a usable recovery record/backup and never advertises a successful reset.
 - Stub the next launcher dispatch to verify it selects the fresh-baseline path for experiment 1 and receives the restored configuration. Do not execute training.
-- Baseline mode can reuse a newly published fixture from a clean clone, including actual intermediate-checkpoint steps and evidence identity. An unverifiable baseline fails before replacing the current state.
+- Baseline mode can reuse a newly published v4 fixture from a clean clone, including actual intermediate-checkpoint steps and evidence identity. An unverifiable legacy baseline fails before replacing the current state.
 - No path outside the temporary repository/explicit backup scope is changed or deleted.
 
 Commit/push: `feat: restore a scientific recipe before fresh campaign reset`.
@@ -431,7 +431,7 @@ Commit/push: `feat: restore a scientific recipe before fresh campaign reset`.
 
 Record the actual decisions, their scope, and the campaign evidence motivating them:
 
-1. Selected/retained models must be Git-durable; ignored challenger references were insufficient.
+1. v4 selected/retained models must be Git-durable; ignored challenger references were insufficient.
 2. Unchanged continuation restores the selected parent's complete recipe; ordinary transfer may intentionally apply changed science.
 3. Historical evaluation reuse is identity/settings-based; comparison remains a Researcher choice.
 4. Policy preprocessing is part of the saved inference contract, including per-episode state/reset.
@@ -447,7 +447,7 @@ Do not claim these changes prove improved RL convergence. The human will judge t
 
 1. Run focused tests after each step with `uv run pytest <affected paths>`. Use the installed environment; do not install a new stack or change dependencies to hide failures.
 2. Run syntax/lint/format checks on touched Python files and parse the PowerShell entry point. Avoid repository-wide formatting.
-3. Run the complete project test suite once after integration; fix relevant failures and repeat only as necessary. Do not silently skip or weaken assertions for artifact integrity, task semantics, real executed restoration paths, or Git durability.
+3. Run the complete project test suite once after integration; fix relevant failures and rerun only as necessary. Do not silently skip or weaken assertions for artifact integrity, task semantics, real executed restoration paths, or Git durability.
 4. Include one temporary-repository integration path: recipe reset -> simulated fresh training output -> analysis closure -> published working/best-known artifacts -> changed recipe -> continuation from old parent -> historical comparison -> closure -> reload from a clean clone. Stub expensive processes. Assert file contents and persisted records, not only mocked call counts.
 5. Test reload/recovery around accepted execution and closure publication; do not regenerate Researcher decisions after an accepted operation fails.
    Previously accepted persisted execution/closure plans must remain recoverable under their accepted contract. Do not retroactively demand a new hypothesis-assessment heading to resume an already accepted closure. New submissions use the updated requirements; completed historical records remain readable. Test this with fixtures, without migrating the interrupted real campaign.
@@ -461,13 +461,13 @@ Commit/push: `test: verify campaign restoration evidence and lineage persistence
 
 | Agreed topic | Covered here |
 | --- | --- |
-| New lineages missing from Git | Step 1; verify the active path through a clean clone. |
+| New lineages missing from Git | Step 1; verify the active v4 path through a clean clone. |
 | Old-parent continuation mixes recipes | Step 2. |
 | Paired comparison cannot use existing evidence | Step 3. |
 | Best-known closure conflicts with identity/measurement metadata | Steps 3 and 7, without weakening comparability. |
 | Stateful action preprocessing missing from saved model | Step 4. |
 | Prediction versus observed result not explicit | Step 5. |
-| History rows lack current outcomes / memory too weak | Step 5. |
+| History rows lack v4 outcomes / memory too weak | Step 5. |
 | Working vs best-known and continuation still poorly exposed | Steps 3 and 6. |
 | Residual phase framing and incomplete schemas | Step 6. |
 | Recipe-only restart and existing reset compatibility | Step 7. |

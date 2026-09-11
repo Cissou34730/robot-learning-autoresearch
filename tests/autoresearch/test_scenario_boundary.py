@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from research.build_research_brief import render_research_brief
 from robot_learning import scenario
 from robot_learning.scenario.evaluation import summarize_research_evaluations
 from robot_learning.training import research_config
@@ -242,8 +243,8 @@ def test_every_new_researcher_session_loads_the_authoritative_context():
     program_lines = [
         line for line in script.splitlines() if "research/program.md" in line
     ]
-    assert len(new_sessions) == len(program_lines) == 2
-    assert len(continued_sessions) == 2
+    assert len(new_sessions) == len(program_lines) == 4
+    assert len(continued_sessions) == 4
     for line in program_lines:
         for context in (
             "AGENTS.md",
@@ -456,6 +457,35 @@ def test_ordinary_research_evaluation_ignores_the_final_threshold():
 
     assert "seeds_passing_98_percent" not in summary
     assert summary["worst_seed_success_percent"] == 97.9
+
+
+def test_compact_context_states_no_final_threshold(monkeypatch, tmp_path):
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(
+            {
+                "accepted_artifact": "accepted",
+                "accepted_metrics": {
+                    "episodes": 400,
+                    "seed_count": 2,
+                    "success_percent": 99.0,
+                    "pooled_success_percent": 99.0,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+
+    assert "Accepted seed panels: 2" in brief
+    assert "Accepted success: 99%" in brief
+    assert "seeds passing" not in brief.lower()
+    # The compact context reports the measured result, not a derived failure count.
+    assert "failed episodes" not in brief.lower()
 
 
 def test_training_environment_carries_no_official_task_enforcement():

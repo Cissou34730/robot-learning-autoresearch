@@ -68,6 +68,7 @@ def redirect_paths(monkeypatch, root: Path) -> None:
         "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
         "RESTART_PENDING_PATH": research / "RESTART_PENDING",
         "GOAL_PATH": research / "GOAL_REACHED",
+        "ACCEPTED_DIR": research / "checkpoints" / "accepted",
         "CANDIDATE_ROOT": root / "models" / "candidates",
         "EVALUATION_DIR": research / "evaluations",
     }
@@ -126,7 +127,7 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     write(root, "robot_learning/scenario/reward.py", "RECIPE = 'B'\n")
     write(root, "research/current_params.json", '{"recipe": "B"}\n')
     write(root, "robot_learning/scenario/recipe_b_only.py", "ACTIVE = True\n")
-    old_state = repository.empty_campaign_state(
+    old_state = repository.empty_v4_campaign_state(
         campaign={"id": "old-campaign", "started_at": "then", "base_commit": recipe_a},
         last_verdict="old campaign",
     )

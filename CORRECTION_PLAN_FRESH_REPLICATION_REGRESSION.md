@@ -291,7 +291,7 @@ falsely suggests that an investigation is incomplete.
 ### Exact change
 
 The `Repeated operations` renderer currently reads checkpoint-local
-`candidate.evaluations`, while completed measurements are persisted in
+`candidate.evaluations`, while completed schema-v4 measurements are persisted in
 the experiment result's `requested_evaluations` and
 `task_reference_evaluations`.
 
@@ -322,6 +322,64 @@ Add focused fixtures for:
 
 `fix: report replication measurements from result evidence`
 
+## Change 5 — Accept legacy comparison semantics without equating them
+
+### Intent
+
+Prevent an older scientific recipe from becoming unevaluable only because it
+predates `PRIMARY_COMPARISON_SEMANTICS_VERSION`.
+
+This is an operational compatibility correction. It is not part of fresh versus
+transfer selection and must not change initialization or lineage behavior.
+
+### Files
+
+- `research/runner_protocol.py`
+- `tests/autoresearch/test_research_protocol.py`
+
+### Exact change
+
+In `comparison_semantics_fingerprint()`:
+
+- treat an absent `PRIMARY_COMPARISON_SEMANTICS_VERSION` assignment as legacy
+  version `0`;
+- include legacy `0` in the fingerprint;
+- keep explicit current version `1` distinct from legacy version `0`;
+- keep rejection of duplicate assignments;
+- keep rejection of malformed explicit assignments.
+
+Do not move the version marker, change fingerprint paths, change evaluation
+schemas, or alter compatibility rules beyond the missing-marker fallback.
+
+### Validation
+
+Add focused tests proving:
+
+- missing marker returns a stable fingerprint;
+- explicit version `1` differs from missing/legacy version `0`;
+- changing an explicit version changes the fingerprint;
+- duplicate and malformed explicit assignments remain invalid.
+
+### Commit
+
+`fix: treat missing comparison version as legacy semantics`
+
+## Documentation record
+
+Update `research/PROTOCOL_DECISIONS.md` in the relevant implementation commits.
+Record only these decisions:
+
+- evidence sufficiency covers both the current model decision and the next
+  scientific direction;
+- the campaign objective is distinct from the revisable current investigation;
+- contradictory evidence requires an explicit Researcher interpretation, not a
+  Runner decision;
+- replication summaries use completed result evidence;
+- missing comparison-version metadata is legacy version `0`, not current
+  semantics.
+
+Do not copy the campaign-specific failure sequence into the permanent protocol
+decision log.
 
 ## Test scope
 

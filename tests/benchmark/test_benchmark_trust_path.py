@@ -132,42 +132,23 @@ def test_researcher_cannot_change_the_enforcement_mechanism():
 def _pending_final_benchmark_state(monkeypatch, tmp_path):
     from research.runner_repository import artifact_fingerprint
 
-    artifact = tmp_path / "artifact"
-    artifact.mkdir()
+    accepted = tmp_path / "accepted"
+    accepted.mkdir()
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (artifact / filename).write_bytes(b"artifact")
-    fingerprint = artifact_fingerprint(artifact)
-    best_known = {
-        "artifact": "artifact",
-        "fingerprint": fingerprint,
-        "origin_experiment": 9,
-        "candidate": "candidate",
-        "parameters": {},
-        "scientific_commit": "abc123",
-        "training_steps": 120_000,
-        "evaluation_artifacts": [],
-        "reason": "Measured model selected for official assessment.",
-    }
+        (accepted / filename).write_bytes(b"artifact")
     state_path = tmp_path / "state.json"
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 4,
-                "campaign": {
-                    "id": "campaign",
-                    "started_at": "now",
-                    "base_commit": "base",
-                },
-                "working_lineage": best_known.copy(),
-                "best_known_lineage": best_known.copy(),
-                "retained_lineages": [],
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
                 "official_metrics": None,
                 "pending_final_benchmark": {
                     "experiment": 9,
-                    "selected": "best_known",
-                    "artifact": "artifact",
-                    "fingerprint": fingerprint,
-                    "best_known": best_known.copy(),
+                    "selected": "candidate",
+                    "artifact": "accepted",
+                    "fingerprint": artifact_fingerprint(accepted),
                 },
             }
         ),

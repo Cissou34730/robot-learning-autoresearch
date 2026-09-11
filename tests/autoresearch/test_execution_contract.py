@@ -30,6 +30,7 @@ from research.runner_execution import (
 )
 from research.runner_protocol import (
     PROTECTED_TEST_PREFIXES,
+    allocated_experiment_index,
     next_experiment_index,
     operation_description,
     plan_code_lineage_decision,
@@ -41,6 +42,7 @@ from research.runner_protocol import (
 )
 from research.runner_repository import (
     RUNNER_CONTROL_PATHS,
+    append_result,
     assert_research_surface,
     commit_and_push,
     commit_lineage_decision,
@@ -48,11 +50,11 @@ from research.runner_repository import (
     commit_runner_memory,
     copy_artifact,
     is_runner_memory,
+    load_state,
     repo_relative_path,
     require_complete_artifact,
     resolve_repo_path,
     synchronize_experiment_log,
-    upsert_result,
 )
 
 
@@ -85,20 +87,6 @@ def _paired_evidence_plan(candidate_paths: list[str], reference_paths: list[str]
             ],
         }
     ]
-
-
-def _lineage(artifact: str = "accepted") -> dict:
-    return {
-        "artifact": artifact,
-        "fingerprint": "baseline-fingerprint",
-        "origin_experiment": 1,
-        "candidate": "baseline",
-        "parameters": {},
-        "scientific_commit": "abc123",
-        "training_steps": 0,
-        "evaluation_artifacts": [],
-        "reason": "Baseline lineage for the fixture.",
-    }
 
 
 def _write_evaluation(path: Path, outcomes: list[tuple[int, bool]]) -> None:
@@ -178,6 +166,9 @@ def test_frozen_paired_evidence_uses_shared_episode_identities(
     )[0]
 
     assert comparison["episodes"] == 1
+    assert comparison["shared_episodes"] == 1
+    assert comparison["candidate_episode_coverage"] == 2
+    assert comparison["reference_episode_coverage"] == 2
 
 
 def test_frozen_paired_evidence_rejects_conflicting_duplicate_panels(
@@ -298,6 +289,8 @@ RUNTIME_STACK_MODULES = (
 
 VALIDATION_ONLY_COMMANDS = (
     "--check-proposal",
+    "--check-evaluation-request",
+    "--check-lineage-evidence",
     "--begin-hypothesis",
 )
 
@@ -376,7 +369,7 @@ RUNNER_MEMORY_WORKTREE = [
     "research/research_state.json",
     "research/postmortems.md",
     "research/BASELINE_PENDING",
-    "research/evaluations/evaluation-experiment-3-working-200ep-seed1000-abc.json",
+    "research/evaluations/evaluation-experiment-3-champion-200ep-seed1000-abc.json",
     "research/checkpoints/accepted/model.zip",
     "research/checkpoints/retained/alternative-3/model.zip",
 ]
@@ -494,7 +487,7 @@ def test_lineage_science_push_failure_keeps_recovery_anchor(monkeypatch):
 
 
 def test_evaluation_artifacts_are_evidence_and_never_restorable_science(monkeypatch):
-    artifact = "research/evaluations/evaluation-experiment-4-working.json"
+    artifact = "research/evaluations/evaluation-experiment-4-champion.json"
     monkeypatch.setattr(
         "research.runner_repository.status_paths",
         lambda paths: [SCIENTIFIC_CHANGE, artifact] if paths else [],
@@ -849,26 +842,17 @@ def test_parameter_only_experiment_still_validates_the_configuration(
         "policy_runtime.pkl",
     ):
         (accepted / filename).write_bytes(b"artifact")
-    campaign_id = "00000000-0000-0000-0000-000000000001"
-    working_lineage = _lineage()
-    working_lineage["artifact"] = "accepted"
-    working_lineage["fingerprint"] = repository.artifact_fingerprint(accepted)
-    best_known_lineage = dict(working_lineage)
     (tmp_path / "research_state.json").write_text(
         json.dumps(
             {
-                "schema_version": 4,
-                "working_lineage": working_lineage,
-                "best_known_lineage": best_known_lineage,
-                "retained_lineages": [],
+                "schema_version": 3,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
                 "campaign": {
-                    "id": campaign_id,
+                    "id": "00000000-0000-0000-0000-000000000001",
                     "started_at": "2026-01-01T00:00:00Z",
                     "base_commit": "abc123",
                 },
-                "campaign_experiment_counters": {campaign_id: 0},
-                "last_experiment": 0,
-                "last_allocated_experiment": 0,
             }
         ),
         encoding="utf-8",
@@ -884,13 +868,14 @@ def test_parameter_only_experiment_still_validates_the_configuration(
                 "reasoning": scientific_reasoning,
                 "change": "lengthen the rollout",
                 "initialization": "transfer",
-                    "training_parent": "working",
+                "training_parent": "accepted",
                 "params": {"training": {"n_envs": 1}},
             }
         ),
         encoding="utf-8",
     )
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
     monkeypatch.setattr(
         "research.runner_paths.STATE_PATH", tmp_path / "research_state.json"
     )
@@ -1367,6 +1352,33 @@ def test_scientific_recipe_publication_retries_an_existing_local_commit(monkeypa
     assert revision == "recipe-commit"
 
 
+def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_path):
+    state_path = tmp_path / "research_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 3,
+                "accepted_artifact": "missing-checkpoint",
+                "accepted_metrics": None,
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_repository.git", lambda *args: "base-commit\n")
+
+    state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    assert state["accepted_metrics"] is None
+    with pytest.raises(RuntimeError, match="accepted artifact is incomplete"):
+        load_state(allow_unmeasured=True)
+
+
 def test_repo_paths_use_forward_slashes_and_resolve_legacy_separators(
     monkeypatch, tmp_path
 ):
@@ -1392,6 +1404,33 @@ def test_resolve_repo_path_rejects_non_repository_paths(
         resolve_repo_path(persisted)
 
 
+def test_load_state_resolves_legacy_windows_artifact_path(monkeypatch, tmp_path):
+    accepted = tmp_path / "research" / "checkpoints" / "accepted"
+    accepted.mkdir(parents=True)
+    (accepted / "model.zip").write_bytes(b"model")
+    (accepted / "artifact.json").write_text("{}", encoding="utf-8")
+    state_path = tmp_path / "research_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 3,
+                "accepted_artifact": "research\\checkpoints\\accepted",
+                "accepted_metrics": {"success_percent": 50.0},
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+
+    assert load_state()["accepted_artifact"] == "research\\checkpoints\\accepted"
+
+
 def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
     log_path = tmp_path / "EXPERIMENTS.md"
     results_path = tmp_path / "results.jsonl"
@@ -1399,10 +1438,9 @@ def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
     monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
 
-    upsert_result(
+    append_result(
         {
-                "index": 1,
-                "campaign_id": "campaign-a",
+            "index": 1,
             "change": "line one\nline two",
             "hypothesis_assessment": "safe | table",
             "verdict": "error:\ntraceback",
@@ -1430,10 +1468,9 @@ def test_the_markdown_log_is_derived_from_the_authoritative_history(
     monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
 
     for index in (1, 2):
-        upsert_result(
+        append_result(
             {
                 "index": index,
-                "campaign_id": "campaign-a",
                 "change": f"change {index}",
                 "hypothesis": f"hypothesis {index}",
                 "verdict": "trained",
@@ -1458,6 +1495,23 @@ def test_the_markdown_log_is_derived_from_the_authoritative_history(
     synchronize_experiment_log()
 
     assert log_path.read_text(encoding="utf-8") == rendered
+
+
+def test_a_legacy_record_without_a_date_still_renders(monkeypatch, tmp_path):
+    log_path = tmp_path / "EXPERIMENTS.md"
+    results_path = tmp_path / "results.jsonl"
+    results_path.write_text(
+        json.dumps({"index": 7, "change": "legacy", "verdict": "ok"}) + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
+
+    synchronize_experiment_log()
+
+    assert "| 7 | legacy / parent - | legacy | unmeasured | - | ok |" in (
+        log_path.read_text(encoding="utf-8")
+    )
 
 
 # --- artifact reuse --------------------------------------------------------
@@ -1848,7 +1902,7 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
     state_path = research / "research_state.json"
     campaign_id = "00000000-0000-0000-0000-000000000001"
     restored_config = {"algorithm": {"name": "ppo"}, "training": {"n_envs": 1}}
-    state = repository.empty_campaign_state(
+    state = repository.empty_v4_campaign_state(
         campaign={
             "id": campaign_id,
             "started_at": "2026-01-01T00:00:00Z",
@@ -1936,7 +1990,7 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
         }
     ]
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert persisted["campaign_experiment_counters"][campaign_id] == 1
+    assert persisted["last_allocated_experiment"] == 1
     assert persisted["working_lineage"] is None
     assert persisted["best_known_lineage"] is None
     assert baseline_pending.exists()
@@ -1966,7 +2020,8 @@ def _training_proposal() -> dict:
 
 def test_current_phase_accepts_a_training_proposal_when_no_decision_is_pending():
     state = {
-        "pending_analysis": None,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
         "pending_final_benchmark": None,
     }
 
@@ -1984,7 +2039,8 @@ def test_proposal_preflight_accepts_a_valid_training_proposal(
             {
                 "pending_scientific_parent": "test-parent",
                 "campaign": {"id": "current"},
-                "pending_analysis": None,
+                "pending_evaluation_request": None,
+                "pending_researcher_decision": None,
                 "pending_final_benchmark": None,
             }
         ),
@@ -2009,7 +2065,8 @@ def test_proposal_preflight_rejects_training_without_an_anchored_parent(
     proposal = _training_proposal()
     state = {
         "campaign": {"id": "current"},
-        "pending_analysis": None,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
         "pending_final_benchmark": None,
     }
     proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
@@ -2041,7 +2098,8 @@ def test_proposal_preflight_rejects_protected_scenario_initializer_without_execu
     proposal = _training_proposal()
     state = {
         "pending_scientific_parent": "test-parent",
-        "pending_analysis": None,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
         "pending_final_benchmark": None,
     }
     proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
@@ -2158,7 +2216,8 @@ def test_proposal_preflight_rejects_static_training_contract_errors(
     state_path.write_text(
         json.dumps(
             {
-                "pending_analysis": None,
+                "pending_evaluation_request": None,
+                "pending_researcher_decision": None,
                 "pending_final_benchmark": None,
             }
         ),
@@ -2179,7 +2238,8 @@ def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
         json.dumps(
             {
                 "pending_scientific_parent": "test-parent",
-                "pending_analysis": None,
+                "pending_evaluation_request": None,
+                "pending_researcher_decision": None,
                 "pending_final_benchmark": None,
             }
         ),
@@ -2228,7 +2288,8 @@ def test_proposal_preflight_rejects_a_baseline_that_is_not_fresh(
 
 def test_current_phase_rejects_redundant_lineage_before_training_fields():
     state = {
-        "pending_analysis": None,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
         "pending_final_benchmark": None,
     }
     residue = {"previous_result_decision": {"experiment": 1}}
@@ -2238,13 +2299,13 @@ def test_current_phase_rejects_redundant_lineage_before_training_fields():
 
 
 def test_lineage_phase_accepts_only_the_lineage_proposal_shape():
-    state = {"pending_analysis": {"experiment": 1}}
+    state = {"pending_researcher_decision": {"experiment": 1}}
 
     assert (
         validate_proposal_phase({"previous_result_decision": {"experiment": 1}}, state)
         == "lineage"
     )
-    with pytest.raises(ValueError, match="requires a closure proposal"):
+    with pytest.raises(ValueError, match="requires a lineage proposal"):
         validate_proposal_phase(_training_proposal(), state)
 
 
@@ -2262,7 +2323,8 @@ def test_proposal_preflight_rejects_incident_residue_without_mutation(
     )
     state = {
         "last_experiment": 1,
-        "pending_analysis": None,
+        "pending_evaluation_request": None,
+        "pending_researcher_decision": None,
         "pending_final_benchmark": None,
     }
     state_path.write_text(json.dumps(state), encoding="utf-8")
@@ -2316,38 +2378,25 @@ def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
         encoding="utf-8",
     )
     monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", memory)
-    # Experiment identity is allocated per campaign; seed its counter from the
-    # campaign-scoped value used by the fixture.
-    allocated = int(
-        state.get("campaign_experiment_counters", {}).get(campaign_id, 0)
+    # Experiment identity is allocated per campaign; seed the campaign counter
+    # from whichever flat legacy index the caller intended.
+    allocated = max(
+        int(state.get("last_allocated_experiment") or 0),
+        int(state.get("last_experiment") or 0),
     )
     state_path = tmp_path / "research_state.json"
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 4,
-                "working_lineage": _lineage(),
-                "best_known_lineage": _lineage(),
-                "retained_lineages": [],
+                "schema_version": 3,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
                 "campaign": {
                     "id": campaign_id,
                     "started_at": "2026-01-01T00:00:00Z",
                     "base_commit": "abc123",
                 },
                 "campaign_experiment_counters": {campaign_id: allocated},
-                "last_experiment": 0,
-                "last_allocated_experiment": allocated,
-                "pending_scientific_parent": None,
-                "pending_training_operation": None,
-                "pending_analysis": None,
-                "pending_closure_operation": None,
-                "pending_final_benchmark": None,
-                "terminal_campaign_status": None,
-                "last_lineage_decision": None,
-                "last_verdict": "baseline",
-                "official_metrics": None,
-                "official_benchmark_model": None,
-                "official_benchmark_verdict": None,
                 **state,
             }
         ),
@@ -2392,23 +2441,30 @@ def _rejected_proposal() -> dict:
 
 
 def _allocated(state_path: Path) -> int | None:
-    state = json.loads(state_path.read_text(encoding="utf-8"))
-    return state["campaign_experiment_counters"].get(
-        "00000000-0000-0000-0000-000000000001"
+    return json.loads(state_path.read_text(encoding="utf-8")).get(
+        "last_allocated_experiment"
     )
+
+
+def test_runner_state_outranks_an_incomplete_history(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
+    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", tmp_path / "results")
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "log")
+    (tmp_path / "results").write_text('{"index": 1}\n{"index": 2}\n', encoding="utf-8")
+    (tmp_path / "log").write_text("| 1 | a |\n| 2 | b |\n", encoding="utf-8")
+
+    assert next_experiment_index({"last_allocated_experiment": 4}) == 5
+
+
+def test_a_state_file_without_allocation_seeds_it_from_the_runner_state():
+    assert allocated_experiment_index({"last_experiment": 4}) == 4
+    assert allocated_experiment_index({}) == 0
 
 
 def test_a_fresh_campaign_allocates_the_first_experiment(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
-    campaign_id = "00000000-0000-0000-0000-000000000001"
 
-    assert (
-        next_experiment_index(
-            {"campaign_experiment_counters": {campaign_id: 0}},
-            campaign_id=campaign_id,
-        )
-        == 1
-    )
+    assert next_experiment_index({"last_experiment": 0}) == 1
 
 
 @pytest.mark.parametrize("existing", ["experiment-5", "recovery-experiment-5"])
@@ -2416,44 +2472,31 @@ def test_unexpected_experiment_data_is_preserved_and_its_identity_skipped(
     monkeypatch, tmp_path, capsys, existing
 ):
     candidates = tmp_path / "candidates"
-    campaign_id = "00000000-0000-0000-0000-000000000001"
-    (candidates / campaign_id / existing).mkdir(parents=True)
-    (candidates / campaign_id / existing / "model.zip").write_bytes(
-        b"earlier experiment"
-    )
+    (candidates / existing).mkdir(parents=True)
+    (candidates / existing / "model.zip").write_bytes(b"earlier experiment")
     monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", candidates)
 
-    assert (
-        next_experiment_index(
-            {"campaign_experiment_counters": {campaign_id: 4}},
-            campaign_id=campaign_id,
-        )
-        == 6
-    )
-    assert (
-        candidates / campaign_id / existing / "model.zip"
-    ).read_bytes() == b"earlier experiment"
+    assert next_experiment_index({"last_allocated_experiment": 4}) == 6
+    assert (candidates / existing / "model.zip").read_bytes() == b"earlier experiment"
     assert "skipping that identity" in capsys.readouterr().out
 
 
 def test_recovery_keeps_the_identity_its_interrupted_run_allocated(tmp_path):
-    campaign_id = "00000000-0000-0000-0000-000000000001"
-    state = {"campaign_experiment_counters": {campaign_id: 5}}
+    state = {"last_experiment": 4, "last_allocated_experiment": 5}
 
+    assert resumed_experiment_index(state, tmp_path / "recovery-experiment-5") == 5
+    assert resumed_experiment_index(state, None) == 5
+    # A state file written before allocation existed still recovers experiment 5.
     assert (
         resumed_experiment_index(
-            state, tmp_path / "recovery-experiment-5", campaign_id=campaign_id
+            {"last_experiment": 4}, tmp_path / "recovery-experiment-5"
         )
         == 5
     )
-    assert resumed_experiment_index(state, None, campaign_id=campaign_id) == 5
 
 
 def test_an_invalid_experiment_consumes_its_identity(monkeypatch, tmp_path, capsys):
-    campaign_id = "00000000-0000-0000-0000-000000000001"
-    state_path = _allocation_campaign(
-        monkeypatch, tmp_path, {"campaign_experiment_counters": {campaign_id: 4}}
-    )
+    state_path = _allocation_campaign(monkeypatch, tmp_path, {"last_experiment": 4})
     proposal_path = tmp_path / "proposal.json"
     monkeypatch.setattr("sys.argv", ["run_experiment.py"])
 
@@ -2481,11 +2524,10 @@ def test_an_invalid_experiment_consumes_its_identity(monkeypatch, tmp_path, caps
 def test_a_resumed_experiment_reuses_its_allocated_identity(
     monkeypatch, tmp_path, capsys, mechanism
 ):
-    campaign_id = "00000000-0000-0000-0000-000000000001"
     state_path = _allocation_campaign(
         monkeypatch,
         tmp_path,
-        {"campaign_experiment_counters": {campaign_id: 5}},
+        {"last_experiment": 4, "last_allocated_experiment": 5},
     )
     (tmp_path / "proposal.json").write_text(
         json.dumps(_rejected_proposal()), encoding="utf-8"
@@ -2508,10 +2550,7 @@ def test_a_pending_phase_proposal_allocates_no_identity(monkeypatch, tmp_path, c
     state_path = _allocation_campaign(
         monkeypatch,
         tmp_path,
-        {
-            "campaign_experiment_counters": {"00000000-0000-0000-0000-000000000001": 4},
-            "pending_analysis": {"experiment": 4},
-        },
+        {"last_experiment": 4, "pending_evaluation_request": {"experiment": 4}},
     )
     (tmp_path / "proposal.json").write_text(
         json.dumps(_rejected_proposal()), encoding="utf-8"
@@ -2520,7 +2559,7 @@ def test_a_pending_phase_proposal_allocates_no_identity(monkeypatch, tmp_path, c
 
     assert main() == 1
     assert "invalid proposal for current phase" in capsys.readouterr().out
-    assert _allocated(state_path) == 4
+    assert _allocated(state_path) is None
 
 
 def test_runner_state_is_never_a_researcher_change(monkeypatch):
@@ -2600,3 +2639,119 @@ def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
     )
 
     assert len(candidate_directories(tmp_path)) == 5
+
+
+# --- lineage ---------------------------------------------------------------
+
+
+def test_lineage_resolution_finishes_before_next_experiment_training(
+    monkeypatch, tmp_path
+):
+    candidate = tmp_path / "archive" / "candidate"
+    candidate.mkdir(parents=True)
+    for filename in (
+        "model.zip",
+        "vecnormalize.pkl",
+        "artifact.json",
+        "policy_runtime.pkl",
+    ):
+        (candidate / filename).write_bytes(b"artifact")
+    state_path = tmp_path / "state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 3,
+                "accepted_artifact": "accepted",
+                "accepted_metrics": None,
+                "pending_scientific_parent": "base-commit",
+                "campaign": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "started_at": "2026-01-01T00:00:00Z",
+                    "base_commit": "abc123",
+                },
+                "pending_researcher_decision": {
+                    "experiment": 3,
+                    "candidates": [
+                        {
+                            "name": "candidate",
+                            "artifact": "archive/candidate",
+                            "timesteps": 10,
+                            "evaluations": [],
+                            "summary": None,
+                        }
+                    ],
+                    "champion_available": False,
+                    "parameters": {},
+                    "initialization": "fresh",
+                    "training_budget_steps": 10,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    proposal_path = tmp_path / "proposal.json"
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "previous_result_decision": {
+                    "experiment": 3,
+                    "continue_from": "candidate",
+                    "reason": "Selected measured lineage.",
+                    "code": {"action": "keep", "reason": "Keep this parent."},
+                    "request_final_benchmark": True,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
+    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
+    monkeypatch.setattr("research.runner_repository.git", lambda *args: "base-commit\n")
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
+    committed = []
+
+    def record_lineage_commit(*args, **kwargs):
+        del kwargs
+        committed.append(args)
+
+    monkeypatch.setattr(
+        "research.runner_repository.commit_lineage_decision", record_lineage_commit
+    )
+
+    def fail_if_training_starts(*args, **kwargs):
+        del args, kwargs
+        pytest.fail("next experiment trained too early")
+
+    monkeypatch.setattr(
+        "research.runner_execution.train_candidate",
+        fail_if_training_starts,
+    )
+    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
+
+    assert main() == 0
+    assert not proposal_path.exists()
+    resolved = json.loads(state_path.read_text(encoding="utf-8"))
+    assert committed == [(3, "candidate")]
+    assert resolved["pending_researcher_decision"] is None
+    assert resolved["pending_final_benchmark"]["selected"] == "candidate"
+
+    def evaluate_after_commit(model):
+        assert committed == [(3, "candidate")]
+        assert model == tmp_path / "accepted" / "model.zip"
+        return {
+            "episodes": 200,
+            "seed": 1000,
+            "success_percent": 100.0,
+            "goal_reached": True,
+        }
+
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        evaluate_after_commit,
+    )
+    from research.run_experiment import execute_pending_final_benchmark
+
+    assert execute_pending_final_benchmark() == 0

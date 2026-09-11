@@ -10,7 +10,7 @@ en anglais.**
 
 ## 1. Contexte
 
-La campagne en cours (`e9b968c4-…`) montre à la fois un progrès réel et une
+La campagne v4 en cours (`e9b968c4-…`) montre à la fois un progrès réel et une
 régression par rapport à la campagne précédente : le Researcher répète des
 interventions sur le même « gap » mesuré, mesure peu, conclut de façon binaire,
 et se heurte à des frictions de contrat (chemins d'évidence `best_known`, double
@@ -66,7 +66,7 @@ biais, ne pas ajouter de contrôles Runner.**
    `program.md`. L'issue ne le mentionne pas. À corriger avec l'étape 5.
 
 5. **Étape 6 : le brief contient deux blocs de checkpoints, pas un.**
-  Outre le tableau « Latest experiment » (`_render_research_brief`), la
+   Outre le tableau « Latest experiment » (`_render_v4_research_brief`), la
    section « Current experiment checkpoints available for measurement »
    (`_current_lineages_and_recipes_lines`, ~ligne 479) réémet les 24 mêmes
    checkpoints avec leur chemin d'artefact. Compacter le premier sans le second
@@ -155,7 +155,7 @@ Interdits :
 - nouvelle phase, nouveau fichier de contrôle, nouvelle machine à états ;
 - nouveau champ JSON dans `proposal.json` ou `evaluation_request.json` ;
 - contrôle Runner sur le nombre de fichiers modifiés ;
-- réécriture des JSON historiques ;
+- backfill ou migration des JSON historiques ;
 - exécution d'un entraînement, d'une campagne, du benchmark final ou de la suite
   de tests complète dans ce chantier.
 
@@ -308,7 +308,7 @@ Couvre l'étape 6, étendu au second bloc de checkpoints (§ 2.2 point 5).
 
 **`research/build_research_brief.py`**
 
-- `_render_research_brief()` : afficher individuellement **tous les
+- `_render_v4_research_brief()` : afficher individuellement **tous les
   checkpoints mesurés** ; ne plus émettre une ligne de tableau complète par
   checkpoint non mesuré ; ajouter une ligne compacte donnant le nombre de
   checkpoints non mesurés, la plage de steps disponible, et le renvoi aux logs

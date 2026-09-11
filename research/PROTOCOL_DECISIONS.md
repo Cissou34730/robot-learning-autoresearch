@@ -41,13 +41,16 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Replication summaries:** Completed replication measurements are reported
   from the experiment result's research and task-reference evidence, while
   genuinely empty result-level evidence remains unmeasured.
+- **Comparison-version compatibility:** Missing comparison-version metadata is
+  legacy version `0`; it remains distinct from explicit current semantics.
+
 ## 2026-09-06 - Campaign correctness and durable scientific lineage
 
 - **Scope:** These decisions repair campaign execution, persistence, recovery,
   prompts and reset behavior. They do not change the fixed task, training budget,
   checkpoint cadence or campaign-time validation selection, and do not establish
   improved learning convergence.
-- **Durable lineages:** Every candidate selected as working or
+- **Durable lineages:** Every version-4 candidate selected as working or
   best-known is published with its complete inference artifact under the
   campaign-scoped, Git-versioned retained archive before disposable challenger
   cleanup. State must never rely on an ignored challenger path.
@@ -88,7 +91,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   but the Runner has no ranking or promotion formula.
 - **Fresh recipe reset:** `Fresh -RecipeRef <git-ref>` resolves one immutable
   commit, restores the complete researcher-owned scientific surface, and starts
-  a new empty campaign at experiment 1. It imports no trained baseline,
+  a new empty version-4 campaign at experiment 1. It imports no trained baseline,
   model identity, score, evidence, strategy, campaign identity or counter.
 - **Reset storage:** Reset backups resolve through Git's administrative-path
   semantics instead of assuming `.git` is a directory, so the same operation
@@ -104,9 +107,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
   query targeting or output efficiency is intentionally deferred and is not part
   of this campaign-correctness implementation.
 
-## 2026-09-05 - Steps 4-5: factual campaign memory and post-training analysis prompts
+## 2026-09-05 - Steps 4-5: factual v4 memory and post-training analysis prompts
 
-- **Scope:** The persistence and analysis lifecycle are presented through the
+- **Scope:** The v4 persistence and analysis lifecycle are presented through the
   compact brief, Runner console, launcher prompts, and Researcher documentation.
   This is software-contract work only; it neither launches a campaign nor changes
   training, measurement, or benchmark semantics.
@@ -115,11 +118,12 @@ superseded. It does not instruct the autonomous researcher and does not replace
   full current-campaign newest-first experiment index, factual repeated-operation
   groups, reusable lineages, best-known model, and any official report. Missing
   measurements are rendered as unmeasured, never as zero or a synthesized score.
-- **Analysis:** A completed training run has one post-training analysis
+- **Analysis:** A v4 completed training run has one post-training analysis
   session. It may submit a measurement request or a postmortem-plus-closure
   request. Completed measurement rounds return to the same analysis phase; the
   protected `--check-analysis-deliverable` preflight arbitrates the exclusive
-  deliverable before Runner execution.
+  deliverable before Runner execution. Legacy evaluation and lineage dispatch
+  remains only for legacy state compatibility.
 - **Scientific authority:** Repeated operations and development panels are
   factual observations, not Runner conclusions. Evidence can establish variability
   without identifying its cause; another replication is useful only when the
@@ -153,7 +157,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   a fabricated synthesis; the next researcher proposal must establish it.
 - **Persistence:** Training records preserve the submitted reasoning and a copy
   of the strategy before training. Later synthesis revisions do not rewrite the
-  experiment's original intent. Historical records remain readable as stored.
+  experiment's original intent. Old history remains readable without migration.
 - **Visibility:** The brief displays the current strategy, unabridged and marked
   as researcher interpretation. Postmortem extraction stops at section boundaries
   so strategy text cannot become historical evidence attestation by accident.
@@ -161,7 +165,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   training, evaluation requests, phase order, lineage selection or budgets. The
   working/best-model separation, evaluation freedom, broader prompt/brief redesign
   and cost optimization belong to the subsequent steps.
-- **Validation:** Contract, memory isolation, historical-record readability and persistence
+- **Validation:** Contract, memory isolation, legacy-readability and persistence
   tests exercise the behavior without running a research campaign. Scientific
   relevance and token cost still require the later controlled researcher trials;
   passing the software suite alone does not establish those improvements.
@@ -189,7 +193,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Reason:** The previous target height did not match the arm plane and created
   an artificial distance floor around 2 cm. Optimizer, reward, and curriculum
   experiments performed with that geometry could not answer the intended task.
-- **Consequence:** Reset the active research state, best-known lineage, and experiment
+- **Consequence:** Reset the active research state, champion, and experiment
   history. Start again with a fresh PPO baseline. Old commits remain recoverable
   in Git but are not evidence for the corrected task.
 - **Preserved:** The robot, MuJoCo physics, target radius distribution, 500-step
@@ -230,7 +234,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 ## 2026-08-28 — Runner-owned training budget
 
 - **Decision:** A transfer experiment receives 120,000 training steps. A fresh
-  challenger competing with an accumulated best-known lineage receives matching lineage
+  challenger competing with an accumulated champion receives matching lineage
   compute; the initial baseline receives 120,000 steps.
 - **Reason:** The researcher may choose the method, but cannot make a result win
   merely by silently giving it more compute.
@@ -322,9 +326,9 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Reason:** PPO can peak and regress during one run; retaining only the final
   checkpoint or one noisy apparent maximum discards useful candidates.
 - **Selection:** Prefer checkpoints meaningfully better than the accepted
-  best-known lineage. Among statistically equivalent checkpoints, preserve early,
+  champion. Among statistically equivalent checkpoints, preserve early,
   middle, and late training-time representatives. For the first baseline, where
-  no best-known lineage exists, use the descriptive task ranking to choose the three.
+  no champion exists, use the descriptive task ranking to choose the three.
 - **Clarification:** A `[selection] ... unreferenced checkpoint pool` message
   during the first baseline means only that the checkpoint was measured and
   saved in the temporary pool. It is not yet declared the winner.
@@ -334,14 +338,14 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Status:** Superseded later on 2026-08-28. There is no automatic tournament.
 
 - **Decision:** After training, compare the three finalists and the accepted
-  best-known lineage on identical episodes: 200 episodes on each of three seeds, extended
+  champion on identical episodes: 200 episodes on each of three seeds, extended
   with additional seeds only for close or positive-but-uncertain results.
 - **Reason:** Paired episodes distinguish a genuine behavioral improvement from
   different random target samples.
 - **Isolation:** Development seeds, tournament seeds, and the fixed reported
   benchmark seed are disjoint.
 
-## 2026-08-28 — Conservative best-known promotion
+## 2026-08-28 — Conservative champion promotion
 
 - **Status:** Superseded later on 2026-08-28 by researcher-owned lineage
   selection.
@@ -349,7 +353,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Decision:** Promote a challenger only with positive paired net wins, an
   exact paired-test probability at or below 0.05, and an improvement exceeding
   the measured training-seed noise floor. Ties or insufficient evidence retain
-  the best-known lineage.
+  the champion.
 - **Reason:** `kept/reverted` must be based on repeatable evidence rather than a
   tiny change in an aggregate score.
 - **Reporting:** The untouched benchmark is run only after selection and never
@@ -361,7 +365,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   choice rather than a runner gate.
 
 - **Decision:** Training-seed A/A calibration becomes mandatory only after the
-  accepted best-known lineage reaches 98% success. Below 98%, structural experiments,
+  accepted champion reaches 98% success. Below 98%, structural experiments,
   including a researcher-designed curriculum, remain allowed.
 - **Reason:** Repeating a weak recipe three times measures its weakness at high
   cost and blocks more useful structural research. Near the goal, the noise
@@ -392,7 +396,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   applicable. The proposal is preserved. The next launch resumes only the
   remaining training steps, or resumes evaluation directly when training had
   already completed. A second interruption updates the same recovery state.
-- **Recovery:** If interruption occurs before any recoverable training artifact
+- **Fallback:** If interruption occurs before any recoverable training artifact
   exists, the same preserved proposal restarts from the beginning; the runner
   does not ask the researcher for a different experiment.
 - **Decision:** Training has a 12-hour hard safety limit and a separate
@@ -425,12 +429,12 @@ superseded. It does not instruct the autonomous researcher and does not replace
   without loading large raw logs into the LLM context or repeating exhausted
   hypotheses.
 
-## 2026-08-28 — Version selected artifacts and preserve negative evidence
+## 2026-08-28 — Version accepted artifacts and preserve negative evidence
 
-- **Status:** Clarified later on 2026-08-28: the selected model is chosen by the
+- **Status:** Clarified later on 2026-08-28: the accepted model is chosen by the
   researcher; the runner archives candidates without ranking them.
 
-- **Decision:** Keep the selected policy artifact and research state under Git;
+- **Decision:** Keep the accepted policy artifact and research state under Git;
   candidate training directories remain disposable. Archive the neutral
   checkpoint inventory from every completed experiment and retain concise
   negative results. No checkpoint is called the "best challenger" before the
@@ -443,7 +447,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 - **Decision:** The researcher controls checkpoint timing, metrics, ranking,
   number of finalists, candidate submission, and which candidate or prior
-  best-known lineage becomes the lineage for subsequent work.
+  champion becomes the lineage for subsequent work.
 - **Runner role:** Execute the human/researcher-defined training and evaluation
   plan, save artifacts and raw measurements, and persist explicit decisions. It
   does not allocate the budget, select candidates, promote, retain, or roll back
@@ -455,7 +459,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Reason:** Candidate selection and temporary regressions are part of the
   research method. A fixed automatic promotion rule can discard a lineage that
   is scientifically useful for curriculum or longer-term learning.
-- **Supersedes:** Runner-owned automatic promotion/retention, automatic rollback,
+- **Supersedes:** Runner-owned `promoted/champion retained`, automatic rollback,
   mandatory A/A gating, the three-finalist limit, and the four progress metrics
   as fixed runner policy.
 
@@ -484,7 +488,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Decision:** Training produces a neutral inventory of periodic checkpoints.
   It performs no development ranking and does not retain an automatic top three.
 - **Decision:** After training, the researcher chooses which candidates or
-  best-known lineage to evaluate, with which episode counts, seeds, comparisons, and
+  champion to evaluate, with which episode counts, seeds, comparisons, and
   diagnostics. The runner executes that request exactly. The fixed paired
   tournament is removed.
 - **Decision:** After measurement, the researcher chooses both the model lineage
@@ -507,7 +511,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   interval, plus the final state when needed. It performs no evaluation, ranking,
   top-three retention, or deletion based on model quality.
 - **Evaluation request:** After training, the compact brief exposes all saved
-  candidate names and the current best-known lineage when one exists. The researcher writes
+  candidate names and the current champion when one exists. The researcher writes
   `research/evaluation_request.json` with the candidates, episode counts, seeds,
   and labels it wants measured. The runner executes only that plan.
 - **No tournament:** The automatic paired tournament and its automatic candidate
@@ -577,7 +581,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   `robot_learning/rewards/reach_reward.py` and
   `robot_learning/training/observations.py` remain as thin re-exports of the
   single authoritative implementation.
-- **Equivalence:** The structural move is behavior-preserving. Bit-exact regression
+- **Equivalence:** The migration is structural only. Bit-exact regression
   goldens captured before the move cover the seeded reset target, observations,
   five environment transitions, every reward case, the research evaluation
   result and the pooled evaluation summary.
@@ -703,7 +707,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
     research protocol;
   - the researcher cannot modify the enforcement mechanism during a run.
 - **Reason:** The runner validates protected paths, controls the final-benchmark
-  lifecycle, verifies the selected artifact and writes `GOAL_REACHED`. If the
+  lifecycle, verifies the accepted artifact and writes `GOAL_REACHED`. If the
   researcher can edit it, every other protection is advisory rather than
   enforceable. Protecting it does not give the runner scientific authority: it
   still chooses no hypothesis, no candidate, no lineage and no significance.
@@ -770,7 +774,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   explanation of failure. The researcher was reading conclusions the harness had
   already drawn instead of measurements.
 - **Decision:** Hypothesis-family history is removed from
-  `research/build_research_brief.py`. The family summary
+  `research/build_research_brief.py`. `_legacy_family()`, the family summary
   table and the postmortem-lesson extraction that fed it are deleted. The
   `family` field stays in the experiment protocol and the brief prints the value
   the researcher declared; the harness derives nothing from it.
@@ -817,7 +821,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Decision:** Evaluation artifact lifetime equals lineage evidence lifetime.
   `apply_previous_result_decision()` — the existing candidate/lineage
   housekeeping — keeps the panels of the selected lineage
-  (the selected lineage's evaluation artifacts) and of every retained lineage
+  (`state["accepted_evaluations"]`) and of every retained lineage
   (`evaluation_artifacts` on the retention record), and removes the panels of
   candidates and retained lineages the researcher discarded. Nothing survives
   in state or in `brief.md` advertising a removed path. No second pruning
@@ -885,7 +889,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   configuration shape in the protected runner, and the proposal validator
   contradicted the method-neutral protocol by forcing configuration fields.
 
-## 2026-08-29 — Remove temporary numerical goldens
+## 2026-08-29 — Remove migration-only numerical goldens
 
 - **Decision:** Remove `tests/research/scenario_goldens.json` and its numerical
   scenario-regression test. They were temporary evidence that the scenario
@@ -920,7 +924,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
   an experiment with code changes is fully validated before training; a
   parameter-only experiment validates the proposal and effective configuration
   only; a continuation, evaluation or lineage decision without code changes
-  runs no validation suite.
+  reruns nothing.
 - **Decision:** Complete validation is a syntax check plus `ruff check` on the
   changed Python files, a JSON parse of changed `.json` documents (`.jsonl`
   files are not JSON documents), a non-mutating `uv lock --check` when
@@ -1126,7 +1130,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 
 ## 2026-09-04 - Preserve the executable contract of every saved policy
 
-- **Failure:** Observation changes affected previous best-known policies because every evaluator
+- **Failure:** Observation changes affected old champions because every evaluator
   used the currently checked-out scientific code. Same-sized semantic changes
   could silently invalidate comparisons, not just trigger shape errors.
 - **Decision:** Save `policy_runtime.pkl` beside each checkpoint, containing its
@@ -1137,9 +1141,12 @@ superseded. It does not instruct the autonomous researcher and does not replace
   than restoring a policy's old training environment. Physical action limits and
   success definitions are unchanged. No observation size is special-cased.
 - **Persistence:** Runtime bytes are included in copying, fingerprints, retention
-  and heavyweight cleanup. New training outputs must include the runtime;
-  inference never silently falls back to current scientific code or missing
-  normalization.
+  and heavyweight cleanup. New training outputs must include the runtime. Legacy
+  storage stays readable solely for explicit migration; inference never silently
+  falls back to current scientific code or missing normalization.
+- **Migration:** A human-only tool exports a new copy from an explicit historical
+  revision. Older implicit identity action mappings require explicit attestation.
+  No running campaign, old checkpoint, state or cached result is auto-rewritten.
 - **Research surface:** Policy I/O and checkpoint production remain scientific
   code. Serialization, runtime loading and protected task execution are human-owned.
   Training budget, proposal lifecycle and architecture changes in transfer are
@@ -1152,7 +1159,7 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Fresh:** Preserve current code/parameters and clear campaign state, models,
   measurements, logs and generated context. The next launch trains a baseline.
 - **Baseline:** Restore a Git-versioned, closed experiment-1 baseline: scientific
-  code and tests, parameters, selected model/runtime, evidence and raw logs.
+  code and tests, parameters, accepted model/runtime, evidence and raw logs.
   Preserve the current harness and protected evaluation machinery. Require the
   same robot/task constants; resume scientific research at experiment 2.
 - **Compatibility:** Require the saved executable policy interface. Do not guess

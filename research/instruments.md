@@ -123,7 +123,8 @@ matching evaluation semantics. Source panels may use different episode counts
 or seeds when they have nonempty shared coverage. Compatible historical
 measurements may supply either or both sides when their model fingerprints and
 artifact identities are valid. Detailed diagnostic artifacts retain the same
-evaluation identity.
+evaluation identity. Legacy compatibility fields are ignored when records are
+read.
 Overlapping or repeated episodes count once in pooled summaries and paired
 comparisons. Summary `episodes` reports distinct coverage; `episode_executions`
 and `repeated_episodes` report execution count and repeated coverage separately.
@@ -139,8 +140,9 @@ the reward, is excluded because it changes neither replay nor success. Pooled
 comparison uses success only; per-episode `reward_total` in the detailed
 artifacts is not comparable across a reward change.
 
-Each completed measurement round returns to post-training analysis. Closing is a
-separate closure proposal in the same phase.
+Each completed measurement round returns to post-training analysis. New requests
+do not use `need_more_evidence`; closing is a separate closure proposal in the
+same phase. Legacy accepted requests that contain it remain recoverable.
 
 ## Request training
 
@@ -259,7 +261,7 @@ also be edited during experiment preparation. The exact heading and labels are:
 All three labeled entries must contain text and may span multiple lines. Their
 scientific meaning is defined in `research/program.md`. The Runner checks the
 section's structure, associates the active campaign section with the proposal,
-and displays it in the brief. It does not author scientific content. The
+and displays it in the brief. It does not author scientific content. The legacy
 `Direction` label remains readable as a synthesis, and historical experiment
 entries and strategy sections remain readable.
 

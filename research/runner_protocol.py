@@ -145,8 +145,9 @@ RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "episodes",
     "seed",
     "label",
+    "selection",
 }
-TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label"}
+TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label", "selection"}
 SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
@@ -170,9 +171,7 @@ def is_protected_source(path: str) -> bool:
 
 def is_human_owned(path: str) -> bool:
     relative = path.replace("\\", "/")
-    return is_protected_source(relative) or relative.startswith(
-        PROTECTED_TEST_PREFIXES
-    )
+    return is_protected_source(relative) or relative.startswith(PROTECTED_TEST_PREFIXES)
 
 
 def is_researcher_owned(path: str) -> bool:
@@ -439,13 +438,20 @@ def validate_scientific_reasoning(proposal: dict) -> None:
     reasoning = proposal.get("reasoning")
     if not isinstance(reasoning, dict):
         raise TypeError("proposal reasoning must be an object")
-    for field in (
-        "alternative",
-        "expected_observation",
-        "contradicting_observation",
-        "initialization_reason",
-        "strategy_link",
-    ):
+
+    investigation_type = proposal.get("investigation_type")
+    if investigation_type not in {"confirmatory", "diagnostic", "exploratory"}:
+        raise ValueError(
+            "investigation_type must be confirmatory, diagnostic or exploratory"
+        )
+    fields = ["initialization_reason", "objective_link"]
+    if investigation_type == "exploratory":
+        fields.extend(("uncertainty", "observations_sought", "clarification"))
+    else:
+        fields.extend(
+            ("alternative", "expected_observation", "contradicting_observation")
+        )
+    for field in fields:
         value = reasoning.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"reasoning.{field} must be a non-empty string")
@@ -499,12 +505,16 @@ def validate_research_memory(proposal: dict, state: dict) -> None:
         raise ValueError(
             "postmortems.md needs the current campaign's Scientific strategy section"
         )
-    for label in (
-        "Direction",
-        "Lessons and limits",
-        "Open questions",
-        "Conditional next steps",
-    ):
+    synthesis = re.search(
+        r"^\*\*(?:Current synthesis|Direction):\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
+        section,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if not synthesis or not synthesis.group(1).strip():
+        raise ValueError(
+            "scientific strategy needs a non-empty 'Current synthesis' entry"
+        )
+    for label in ("Lessons and limits", "Open questions"):
         match = re.search(
             rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
             section,
@@ -602,14 +612,24 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
     required = {
         "kind",
         "family",
-        "hypothesis",
+        "investigation_type",
         "initialization",
     }
     missing = sorted(field for field in required if field not in proposal)
     if missing:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     require_nonempty_string("family", "training proposal family")
-    require_nonempty_string("hypothesis", "training proposal hypothesis")
+    investigation_type = proposal["investigation_type"]
+    if investigation_type not in {"confirmatory", "diagnostic", "exploratory"}:
+        raise ValueError(
+            "investigation_type must be confirmatory, diagnostic or exploratory"
+        )
+    if investigation_type == "exploratory":
+        require_nonempty_string(
+            "scientific_question", "exploratory proposal scientific_question"
+        )
+    else:
+        require_nonempty_string("hypothesis", "training proposal hypothesis")
     kind = proposal["kind"]
     if kind not in {"training", "continuation", "replication"}:
         raise ValueError(
@@ -653,6 +673,13 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
     """Return the proposal contract expected by the persisted lifecycle state."""
     if not isinstance(proposal, dict):
         raise TypeError("proposal.json must contain a JSON object")
+    pending_training = state.get("pending_training_operation")
+    if isinstance(pending_training, dict):
+        if proposal != pending_training.get("frozen_proposal"):
+            raise ValueError(
+                "proposal changed after the pending training operation was accepted"
+            )
+        return "training"
     if state.get("terminal_campaign_status") is not None:
         raise ValueError("the campaign has received its terminal official assessment")
     if state.get("pending_final_benchmark") is not None:
@@ -784,6 +811,13 @@ def validate_evaluation_request(
             )
         if "label" in entry and not isinstance(entry["label"], str):
             raise ValueError("measurement label must be a string")
+        # Record scientific usefulness without asking the Runner to rank candidates.
+        selection = entry.get("selection")
+        if not isinstance(selection, str) or not selection.strip():
+            raise ValueError(
+                f"{instrument} requires a non-empty selection stating why this "
+                "model is useful for the current scientific question"
+            )
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]
             if missing:
@@ -850,6 +884,7 @@ def planned_measurements(
                     "candidate": name,
                     "episodes": spec["episodes"],
                     "seed": spec["seed"],
+                    "selection": spec["selection"].strip(),
                     "label": spec.get(
                         "label", f"requested evaluation {len(evaluations) + 1}: {name}"
                     ),
@@ -859,6 +894,7 @@ def planned_measurements(
             references.append(
                 {
                     "candidate": name,
+                    "selection": spec["selection"].strip(),
                     "label": spec.get(
                         "label", f"task reference {len(references) + 1}: {name}"
                     ),
@@ -1629,9 +1665,7 @@ def _validated_historical_panel_records(
             ) from error
         outcomes = dict(identified_outcomes)
         if len(outcomes) != len(identified_outcomes):
-            raise ValueError(
-                f"historical evidence repeats an episode identity: {path}"
-            )
+            raise ValueError(f"historical evidence repeats an episode identity: {path}")
         if (
             int(measurement.get("episodes", -1)) != int(settings[1])
             or int(measurement.get("seed", -1)) != int(settings[2])
@@ -1668,40 +1702,43 @@ def _evidence_records_compatible(candidate: dict, reference: dict) -> bool:
         return candidate_settings == reference_settings
     if candidate["instrument"] != "research_evaluation":
         return False
-    if candidate_settings != reference_settings:
+    if candidate_settings[3] != reference_settings[3]:
         return False
-    candidate_episodes = candidate.get("episode_identities")
-    reference_episodes = reference.get("episode_identities")
-    if candidate_episodes is None and reference_episodes is None:
-        return True
-    return candidate_episodes is not None and candidate_episodes == reference_episodes
+    return bool(_record_episode_seeds(candidate) & _record_episode_seeds(reference))
+
+
+def _record_episode_seeds(record: dict) -> set[int]:
+    identities = record.get("episode_identities")
+    if identities is not None:
+        return {int(identity[1]) for identity in identities}
+    _, episodes, seed, _ = record["settings"]
+    return set(range(int(seed), int(seed) + int(episodes)))
 
 
 def _compatible_primary_panels(
     candidate_records: list[dict], reference_records: list[dict]
-) -> list[tuple[tuple, list[dict], list[dict]]]:
-    panels: dict[tuple, tuple[list[dict], list[dict]]] = {}
-    for candidate in candidate_records:
-        for reference in reference_records:
-            if not _evidence_records_compatible(candidate, reference):
+) -> list[tuple[tuple[tuple, tuple], list[dict], list[dict]]]:
+    candidate_groups: dict[tuple, list[dict]] = {}
+    reference_groups: dict[tuple, list[dict]] = {}
+    for record in candidate_records:
+        candidate_groups.setdefault(record["settings"], []).append(record)
+    for record in reference_records:
+        reference_groups.setdefault(record["settings"], []).append(record)
+    panels = []
+    for candidate_settings, candidate_panel in candidate_groups.items():
+        for reference_settings, reference_panel in reference_groups.items():
+            if not _evidence_records_compatible(
+                candidate_panel[0], reference_panel[0]
+            ):
                 continue
-            key = (
-                candidate["settings"][0],
-                candidate["settings"][1],
-                candidate["settings"][2],
-                candidate["settings"][3],
+            panels.append(
+                (
+                    (candidate_settings, reference_settings),
+                    candidate_panel,
+                    reference_panel,
+                )
             )
-            candidate_panel, reference_panel = panels.setdefault(key, ([], []))
-            if candidate not in candidate_panel:
-                candidate_panel.append(candidate)
-            if reference not in reference_panel:
-                reference_panel.append(reference)
-    return [
-        (settings, *records)
-        for settings, records in sorted(
-            panels.items(), key=lambda item: tuple(str(value) for value in item[0])
-        )
-    ]
+    return sorted(panels, key=lambda item: str(item[0]))
 
 
 def _resolved_paired_evidence_plan(
@@ -1738,6 +1775,10 @@ def _resolved_paired_evidence_plan(
                 int(measurement["seed"]),
                 semantics,
             ),
+            "episode_identities": [
+                (episode, int(measurement["seed"]) + episode)
+                for episode in range(int(measurement["episodes"]))
+            ],
         }
         existing = catalog.get(canonical_path)
         if existing is None:
@@ -1770,9 +1811,12 @@ def _resolved_paired_evidence_plan(
             and record["model_fingerprint"] == reference_fingerprint
         ]
         for record in [*candidate_records, *reference_records]:
-            if not record.get("planned") and not repository.resolve_repo_path(
-                record["evaluation_artifact"]
-            ).is_file():
+            if (
+                not record.get("planned")
+                and not repository.resolve_repo_path(
+                    record["evaluation_artifact"]
+                ).is_file()
+            ):
                 raise ValueError(
                     "paired comparison evidence artifact does not exist: "
                     f"{record['evaluation_artifact']}"
@@ -1786,9 +1830,7 @@ def _resolved_paired_evidence_plan(
             )
             missing_source = available_evaluation_candidates(pending, state)[missing]
             associated_paths = set(
-                repository.evaluation_artifact_paths(
-                    missing_source.get("evaluations")
-                )
+                repository.evaluation_artifact_paths(missing_source.get("evaluations"))
             ) | {
                 repository.canonical_repo_path(str(path))
                 for path in missing_source.get("evaluation_artifacts", [])
@@ -1848,48 +1890,46 @@ def _resolved_paired_evidence_plan(
             )
         panels = []
         for settings, candidate_panel, reference_panel in compatible_panels:
-            validation_settings = settings[:3]
+            candidate_settings, reference_settings = settings
             panel_candidate_records = _validated_historical_panel_records(
                 candidate_panel,
-                validation_settings,
+                candidate_settings[:3],
             )
             panel_reference_records = _validated_historical_panel_records(
                 reference_panel,
-                validation_settings,
+                reference_settings[:3],
             )
-            candidate_identities = {
-                tuple(record["episode_identities"])
-                for record in panel_candidate_records
-                if "episode_identities" in record
-            }
-            reference_identities = {
-                tuple(record["episode_identities"])
-                for record in panel_reference_records
-                if "episode_identities" in record
-            }
-            if (
-                candidate_identities
-                and reference_identities
-                and candidate_identities != reference_identities
-            ):
+            candidate_episode_seeds = set.intersection(
+                *(_record_episode_seeds(record) for record in panel_candidate_records)
+            )
+            reference_episode_seeds = set.intersection(
+                *(_record_episode_seeds(record) for record in panel_reference_records)
+            )
+            shared_episode_seeds = sorted(
+                candidate_episode_seeds & reference_episode_seeds
+            )
+            if not shared_episode_seeds:
                 raise ValueError(
                     f"paired comparison {candidate!r} vs {reference!r} has "
-                    f"nonmatching historical episode identities for seed {settings[2]}"
+                    "no shared historical episode identities"
                 )
             candidate_paths = sorted(
-                record["evaluation_artifact"]
-                for record in panel_candidate_records
+                record["evaluation_artifact"] for record in panel_candidate_records
             )
             reference_paths = sorted(
-                record["evaluation_artifact"]
-                for record in panel_reference_records
+                record["evaluation_artifact"] for record in panel_reference_records
             )
             panels.append(
                 {
-                    "instrument": settings[0],
-                    "episodes": settings[1],
-                    "seed": settings[2],
-                    "evaluation_semantics": settings[3],
+                    "instrument": candidate_settings[0],
+                    "episodes": len(shared_episode_seeds),
+                    "seed": candidate_settings[2],
+                    "evaluation_semantics": candidate_settings[3],
+                    "candidate_episodes": candidate_settings[1],
+                    "candidate_seed": candidate_settings[2],
+                    "reference_episodes": reference_settings[1],
+                    "reference_seed": reference_settings[2],
+                    "shared_episode_seeds": shared_episode_seeds,
                     "candidate_artifacts": candidate_paths,
                     "candidate_artifact_fingerprints": {
                         path: repository.file_fingerprint(
@@ -2127,7 +2167,10 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 description=f"best_known candidate {best_name!r}",
             )
             best_record = _v4_lineage_record(
-                best_source, pending, best_artifact, str(best_decision["reason"]).strip()
+                best_source,
+                pending,
+                best_artifact,
+                str(best_decision["reason"]).strip(),
             )
             best_record["evaluation_artifacts"] = sorted(
                 set(best_record["evaluation_artifacts"])

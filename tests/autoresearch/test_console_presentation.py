@@ -180,7 +180,7 @@ def test_training_summary_reports_checkpoint_aligned_candidate_facts():
     assert "checkpoint-30720 | 30,720 | unavailable | 0" in card
     assert "checkpoint-120832 | 120,832 | 0% | -6.9" in card
     assert card.index("checkpoint-30720") < card.index("checkpoint-120832")
-    assert "Next\n  Researcher post-training analysis" in card
+    assert "Next\n  Researcher evaluation design" in card
 
 
 def test_training_summary_keeps_missing_checkpoint_metrics_distinct_from_zero():
@@ -312,14 +312,14 @@ def evaluation_request() -> dict:
             },
             {
                 "instrument": "research_evaluation",
-                "candidate": "working",
+                "candidate": "champion",
                 "episodes": 200,
                 "seed": 2000,
                 "selection": "the incumbent this candidate must beat",
             },
         ],
         "paired_comparisons": [
-            {"candidate": "checkpoint-120832", "reference": "working"}
+            {"candidate": "checkpoint-120832", "reference": "champion"}
         ],
     }
 
@@ -347,8 +347,8 @@ def test_evaluation_plan_shows_the_question_panel_and_reason():
     assert plan.startswith("=== Evaluation design · Experiment 2 ===")
     assert "Did the longer-range shaping improve acquisition?" in plan
     assert "checkpoint-120832   200 episodes · seed 2000" in plan
-    assert "working" in plan
-    assert "paired comparison   checkpoint-120832 vs working" in plan
+    assert "champion" in plan
+    assert "paired comparison   checkpoint-120832 vs champion" in plan
     assert plan.count("highest training proxy of the pool") == 1
     assert plan.count("the incumbent this candidate must beat") == 1
     assert "A matched panel directly tests the hypothesis." in plan
@@ -381,32 +381,36 @@ def test_evidence_card_reports_only_measured_facts():
     card = render_evidence_card(
         2,
         [{"name": "checkpoint-120832", "summary": measured_summary(64.0)}],
+        measured_summary(59.0),
         [
             {
                 "candidate": "checkpoint-120832",
-                "reference": "working",
+                "reference": "champion",
                 "success_delta_percent": 5.0,
             }
         ],
-        "Researcher post-training analysis",
+        "Researcher lineage decision",
     )
 
     assert card.startswith("=== Evidence · Experiment 2 ===")
     assert "checkpoint-120832   success 64.0% · 200 episodes" in card
-    assert "checkpoint-120832 vs working" in card
+    assert "Champion\n  success 59.0% · 200 episodes" in card
+    assert "checkpoint-120832 vs champion" in card
     assert "delta +5.0 pp" in card
-    assert "Next\n  Researcher post-training analysis" in card
+    assert "Next\n  Researcher lineage decision" in card
 
 
 def test_evidence_card_adds_no_scenario_interpretation():
     card = render_evidence_card(
         2,
         [{"name": "checkpoint", "summary": measured_summary(64.0)}],
+        None,
         [],
-        "Researcher post-training analysis",
+        "Researcher evaluation design",
     )
 
     assert "Scenario evidence" not in card
+    assert "Champion" not in card
     assert "Paired comparison" not in card
 
 
@@ -470,6 +474,88 @@ def test_v4_decision_card_keeps_working_and_best_known_distinct():
     assert "Working lineage\ncheckpoint-120832" in card
     assert "Best-known model\nbaseline" in card
     assert "Hypothesis assessment\nThe predicted behavior improved" in card
+
+
+def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_path):
+    state_path = tmp_path / "research_state.json"
+    request_path = tmp_path / "evaluation_request.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "accepted_artifact": "accepted",
+                "pending_scientific_parent": "test-parent",
+                "pending_evaluation_request": {
+                    "experiment": 2,
+                    "candidates": [
+                        {
+                            "name": "checkpoint-120832",
+                            "artifact": "archive/checkpoint-120832",
+                            "timesteps": 120832,
+                            "evaluations": [],
+                        }
+                    ],
+                    "champion_available": False,
+                    "parameters": {},
+                    "initialization": "transfer",
+                    "training_budget_steps": 120_000,
+                    "parent_training_steps": 0,
+                    "result": {"index": 2, "change": "widen", "hypothesis": "decay"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    request = evaluation_request()
+    request["measurements"] = [
+        {
+            "instrument": "research_evaluation",
+            "candidate": "checkpoint-120832",
+            "episodes": 2,
+            "seed": 2000,
+            "selection": "highest training proxy of the pool",
+        }
+    ]
+    request["paired_comparisons"] = []
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    checkpoint = tmp_path / "archive" / "checkpoint-120832"
+    checkpoint.mkdir(parents=True)
+    checkpoint.joinpath("model.zip").write_bytes(b"model")
+    checkpoint.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.EVALUATION_DIR", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_repository.require_resolvable_commit", lambda _: None
+    )
+    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
+    monkeypatch.setattr(
+        "research.runner_paths.BASELINE_PENDING_PATH", tmp_path / "BASELINE_PENDING"
+    )
+    monkeypatch.setattr("research.runner_repository.append_result", lambda result: None)
+
+    printed: list[str] = []
+    monkeypatch.setattr("research.runner_console.announce", printed.append)
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact",
+        lambda artifact, seed, **kwargs: {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        },
+    )
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    assert "=== Evaluation design · Experiment 2 ===" in printed[0]
+    assert "=== Evidence · Experiment 2 ===" in printed[-1]
 
 
 def test_brief_names_the_active_method_without_dumping_its_configuration(
@@ -740,11 +826,18 @@ def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded(
         assert match is not None
         return match.group(1)
 
-    for name in ("analysisPrompt", "researchPrompt"):
+    for name in (
+        "analysisPrompt",
+        "evaluationPrompt",
+        "decisionPrompt",
+        "researchPrompt",
+    ):
         assert grounding in prompt_block(name)
 
     retry_deliverables = {
         "analysisRetryPrompt": "research/evaluation_request.json",
+        "evaluationRetryPrompt": "research/evaluation_request.json",
+        "decisionRetryPrompt": "research/proposal.json",
         "retryPrompt": "research/proposal.json",
     }
     for name, deliverable in retry_deliverables.items():
@@ -761,7 +854,12 @@ def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded(
 def test_retries_allow_enough_context_to_resolve_the_validation_error():
     launcher = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
 
-    for name in ("analysisRetryPrompt", "retryPrompt"):
+    for name in (
+        "analysisRetryPrompt",
+        "evaluationRetryPrompt",
+        "decisionRetryPrompt",
+        "retryPrompt",
+    ):
         match = re.search(rf"\${name}\s*=\s*@\((.*?)\)\s*-join", launcher, re.DOTALL)
         assert match is not None
         block = match.group(1)

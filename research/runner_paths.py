@@ -21,32 +21,43 @@ BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
 RECOVERY_PENDING_PATH = RESEARCH_DIR / "RECOVERY_PENDING"
 RESTART_PENDING_PATH = RESEARCH_DIR / "RESTART_PENDING"
 GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
+ACCEPTED_DIR = RESEARCH_DIR / "checkpoints" / "accepted"
 CANDIDATE_ROOT = ROOT / "models" / "candidates"
 # Completed measurements are research history: they outlive the checkpoints they
 # describe, so they live outside the disposable candidate tree.
 EVALUATION_DIR = RESEARCH_DIR / "evaluations"
 
 
-def training_log_path(experiment: int, attempt: int, campaign_id: str) -> Path:
-	return TRAINING_LOG_DIR / campaign_id / f"experiment-{experiment}-attempt-{attempt}.log"
+def training_log_path(experiment: int, attempt: int, campaign_id: str | None = None) -> Path:
+	if campaign_id:
+		return TRAINING_LOG_DIR / campaign_id / f"experiment-{experiment}-attempt-{attempt}.log"
+	return TRAINING_LOG_DIR / f"experiment-{experiment}-attempt-{attempt}.log"
 
 
-def campaign_candidate_root(campaign_id: str) -> Path:
-	"""Candidate directory scoped to a specific campaign."""
+def campaign_candidate_root(campaign_id: str | None) -> Path:
+	"""Candidate directory scoped to a specific campaign, or legacy CANDIDATE_ROOT if campaign_id is None."""
+	if campaign_id is None:
+		return CANDIDATE_ROOT
 	return CANDIDATE_ROOT / campaign_id
 
 
-def campaign_checkpoint_root(campaign_id: str) -> Path:
-	"""Challenger checkpoint archive scoped to a specific campaign."""
+def campaign_checkpoint_root(campaign_id: str | None) -> Path:
+	"""Challenger checkpoint archive scoped to a specific campaign, or legacy path if campaign_id is None."""
+	if campaign_id is None:
+		return RESEARCH_DIR / "checkpoints" / "challengers"
 	return RESEARCH_DIR / "checkpoints" / "challengers" / campaign_id
 
 
-def campaign_evaluation_dir(campaign_id: str) -> Path:
-	"""Evaluation artifacts directory scoped to a specific campaign."""
+def campaign_evaluation_dir(campaign_id: str | None) -> Path:
+	"""Evaluation artifacts directory scoped to a specific campaign, or legacy EVALUATION_DIR if campaign_id is None."""
+	if campaign_id is None:
+		return EVALUATION_DIR
 	return EVALUATION_DIR / campaign_id
 
 
-def campaign_retained_root(campaign_id: str) -> Path:
-	"""Retained-lineage archive scoped to a specific campaign."""
+def campaign_retained_root(campaign_id: str | None) -> Path:
+	"""Retained-lineage archive scoped to a specific campaign, or legacy path if campaign_id is None."""
+	if campaign_id is None:
+		return RESEARCH_DIR / "checkpoints" / "retained"
 	return RESEARCH_DIR / "checkpoints" / "retained" / campaign_id
 

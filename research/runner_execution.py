@@ -205,9 +205,11 @@ def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | Non
 
 
 def training_log_attempts(
-    experiment: int, *, campaign_id: str
+    experiment: int, *, campaign_id: str | None = None
 ) -> list[int]:
-    directory = paths.TRAINING_LOG_DIR / campaign_id
+    directory = (
+        paths.TRAINING_LOG_DIR / campaign_id if campaign_id else paths.TRAINING_LOG_DIR
+    )
     pattern = re.compile(rf"^experiment-{experiment}-attempt-(\d+)\.log$")
     attempts = [
         int(match.group(1))
@@ -218,13 +220,13 @@ def training_log_attempts(
 
 
 def training_log_path(
-    experiment: int, attempt: int, *, campaign_id: str
+    experiment: int, attempt: int, *, campaign_id: str | None = None
 ) -> Path:
     return paths.training_log_path(experiment, attempt, campaign_id=campaign_id)
 
 
 def training_attempt(
-    experiment: int, *, recoverable_continuation: bool, campaign_id: str
+    experiment: int, *, recoverable_continuation: bool, campaign_id: str | None = None
 ) -> int:
     attempts = training_log_attempts(experiment, campaign_id=campaign_id)
     if recoverable_continuation:
@@ -237,7 +239,7 @@ def training_attempt(
 
 
 def training_records(
-    experiment: int, attempt: int, *, campaign_id: str
+    experiment: int, attempt: int, *, campaign_id: str | None = None
 ) -> list[dict[str, float]]:
     from robot_learning.training.progress import parse_training_records
 
@@ -252,8 +254,9 @@ def training_budget(
     standard_timesteps: int,
     _initialization: str,
     _baseline: bool,
+    _accepted_training_steps: int,
 ) -> int:
-    del _initialization, _baseline
+    del _initialization, _baseline, _accepted_training_steps
     return standard_timesteps
 
 
@@ -649,8 +652,10 @@ def requested_paired_comparisons(
                     (int(item["episode"]), int(item["episode_seed"]))
                     for item in reference_evaluation["episode_results"]
                 }
-                shared_identities = candidate_identities & reference_identities
-                shared_episode_seeds = sorted(identity[1] for identity in shared_identities)
+                shared_episode_seeds = sorted(
+                    {identity[1] for identity in candidate_identities}
+                    & {identity[1] for identity in reference_identities}
+                )
                 if not shared_episode_seeds:
                     raise ValueError(
                         "paired comparison evidence has no shared episodes"
@@ -662,30 +667,8 @@ def requested_paired_comparisons(
                     raise ValueError(
                         "paired comparison shared episode identities changed after acceptance"
                     )
-                candidate_evaluations.append(
-                    {
-                        **candidate_evaluation,
-                        "episodes": len(shared_identities),
-                        "episode_results": [
-                            item
-                            for item in candidate_evaluation["episode_results"]
-                            if (int(item["episode"]), int(item["episode_seed"]))
-                            in shared_identities
-                        ],
-                    }
-                )
-                reference_evaluations.append(
-                    {
-                        **reference_evaluation,
-                        "episodes": len(shared_identities),
-                        "episode_results": [
-                            item
-                            for item in reference_evaluation["episode_results"]
-                            if (int(item["episode"]), int(item["episode_seed"]))
-                            in shared_identities
-                        ],
-                    }
-                )
+                candidate_evaluations.append(candidate_evaluation)
+                reference_evaluations.append(reference_evaluation)
                 panel_sources = [
                     *panel["candidate_artifacts"],
                     *panel["reference_artifacts"],

@@ -5,6 +5,7 @@ import pytest
 
 from research import runner_protocol as protocol
 from research import runner_repository as repository
+from research.run_experiment import apply_previous_result_decision
 
 
 @pytest.fixture(autouse=True)
@@ -55,7 +56,7 @@ def _research_evidence(path: Path, *, seed: int = 1) -> None:
     )
 
 
-def test_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path):
+def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
     best_known = _artifact(tmp_path / "best-known-checkpoint", "best-known")
@@ -86,7 +87,7 @@ def test_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path):
     assert best_known.joinpath("model.zip").read_bytes() == b"best-known"
 
 
-def test_continuation_freezes_complete_parent_identity(monkeypatch, tmp_path):
+def test_v4_continuation_freezes_complete_parent_identity(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
     lineage = _lineage(working, steps=120_000)
@@ -119,7 +120,7 @@ def test_continuation_freezes_complete_parent_identity(monkeypatch, tmp_path):
     }
 
 
-def test_continuation_requires_parent_recipe_provenance(monkeypatch, tmp_path):
+def test_v4_continuation_requires_parent_recipe_provenance(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
     lineage = _lineage(working, steps=120_000)
@@ -172,7 +173,7 @@ def test_lineage_restore_is_noop_when_parent_recipe_is_current(monkeypatch):
     }
 
 
-def test_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path):
+def test_v4_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
     best_known = _artifact(tmp_path / "best-known-checkpoint", "best-known")
@@ -208,7 +209,692 @@ def test_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path):
     assert available["alternative"]["artifact"] == retained.name
 
 
-def test_best_known_replacement_does_not_require_incumbent_panel_equality(
+def test_v4_rejects_legacy_role_aliases(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working-checkpoint", "working")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(working, steps=120_000),
+        "best_known_lineage": None,
+        "retained_lineages": [],
+    }
+
+    for identifier in ("accepted", "champion"):
+        try:
+            protocol.training_parent({"training_parent": identifier}, state, "transfer")
+        except ValueError as error:
+            assert str(error) == f"unknown training parent {identifier!r}"
+        else:
+            raise AssertionError(f"legacy role {identifier!r} was accepted")
+
+
+def test_v4_reselecting_role_preserves_original_checkpoint_identity(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    working_lineage = _lineage(working, steps=100_352)
+    working_lineage["candidate"] = "checkpoint-100352"
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": working_lineage,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "working",
+                "reason": "Keep the current working model.",
+                "code": {"action": "keep", "reason": "Keep the recipe."},
+            }
+        },
+        state,
+    )
+
+    assert plan["working_record"]["candidate"] == "checkpoint-100352"
+    assert plan["working_record"]["training_steps"] == 100_352
+
+
+def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    best = _artifact(tmp_path / "best", "best")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(working, steps=120_000),
+        "best_known_lineage": _lineage(best, steps=90_000),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint-5000",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {"algorithm": {"name": "ppo"}},
+            "initialization": "transfer",
+            "parent_training_steps": 120_000,
+        },
+    }
+    original_best_artifact = state["best_known_lineage"]["artifact"]
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "checkpoint-5000",
+                "reason": "Explore its learning trajectory.",
+                "code": {"action": "keep", "reason": "The recipe remains active."},
+            }
+        },
+        state,
+    )
+
+    assert plan["working_record"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
+    assert plan["working_record"]["training_steps"] == 125_000
+    assert plan["best_known_record"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
+    assert state["best_known_lineage"]["artifact"] == original_best_artifact
+
+
+def test_v4_planning_reuses_one_durable_artifact_for_matching_aliases(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    durable = _artifact(
+        tmp_path / "research" / "checkpoints" / "retained" / "existing",
+        "same",
+    )
+    candidate = _artifact(tmp_path / "candidate", "same")
+    best_known = _lineage(durable, steps=10_000)
+    best_known["artifact"] = repository.repo_relative_path(durable)
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": None,
+        "best_known_lineage": best_known,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint-5000",
+                    "artifact": repository.repo_relative_path(candidate),
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "checkpoint-5000",
+                "reason": "Use the identical candidate.",
+                "code": {"action": "keep", "reason": "Keep the recipe."},
+            }
+        },
+        state,
+    )
+
+    durable_path = repository.repo_relative_path(durable)
+    assert plan["working_record"]["artifact"] == durable_path
+    assert plan["best_known_record"]["artifact"] == durable_path
+    assert plan["artifact_publications"] == []
+
+
+def test_v4_best_known_requires_a_recorded_measurement_for_a_new_model(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Measured well.",
+            },
+        }
+    }
+
+    try:
+        protocol.plan_previous_result_decision(proposal, state)
+    except ValueError as error:
+        assert "checkpoint" in str(error)
+        assert "available model identifiers" in str(error)
+        assert "no recorded measurement" in str(error)
+    else:
+        raise AssertionError("best-known designation accepted unrelated evidence")
+
+
+def test_v4_omitted_best_known_keeps_the_incumbent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    existing = _lineage(incumbent, steps=10_000)
+    state = {
+        "schema_version": 4,
+        "working_lineage": existing.copy(),
+        "best_known_lineage": existing.copy(),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "best_known",
+                "reason": "Keep the incumbent.",
+                "code": {"action": "keep", "reason": "No code change."},
+            }
+        },
+        state,
+    )
+
+    assert plan["best_known_record"]["fingerprint"] == existing["fingerprint"]
+    assert plan["best_known_record"]["candidate"] == existing["candidate"]
+    assert plan["best_known_record"]["evaluation_artifacts"] == existing[
+        "evaluation_artifacts"
+    ]
+
+
+def test_v4_same_best_known_model_is_idempotent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    existing = _lineage(incumbent, steps=10_000)
+    state = {
+        "schema_version": 4,
+        "working_lineage": existing.copy(),
+        "best_known_lineage": existing.copy(),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "best_known",
+                "reason": "Keep the incumbent.",
+                "code": {"action": "keep", "reason": "No code change."},
+                "best_known": {
+                    "candidate": "best_known",
+                    "reason": "Confirm the incumbent.",
+                },
+            }
+        },
+        state,
+    )
+
+    assert plan["best_known_record"]["fingerprint"] == existing["fingerprint"]
+    assert plan["best_known_record"]["candidate"] == existing["candidate"]
+
+
+def test_v4_unknown_best_known_identifier_lists_available_models(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "missing-model",
+                "reason": "Try an unavailable model.",
+            },
+        }
+    }
+
+    with pytest.raises(ValueError) as error:
+        protocol.plan_previous_result_decision(proposal, state)
+    message = str(error.value)
+    assert "missing-model" in message
+    assert "available model identifiers" in message
+    assert "checkpoint" in message
+
+
+def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
+    )
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    fingerprint = repository.artifact_fingerprint(candidate)
+    evidence = tmp_path / "historical-evaluation.json"
+    evidence.write_text("{}", encoding="utf-8")
+    repository.append_result(
+        {
+            "campaign_id": "campaign",
+            "index": 1,
+            "requested_evaluations": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "old-alias",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "semantics",
+                    "model_fingerprint": fingerprint,
+                    "metrics": {
+                        "evaluation_artifact": evidence.name,
+                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                            evidence
+                        ),
+                    },
+                }
+            ],
+        }
+    )
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Historical evidence measures these exact weights.",
+            },
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(proposal, state)
+
+    assert plan["best_known_record"]["evaluation_artifacts"] == [evidence.name]
+
+    evidence.write_text('{"replaced": true}', encoding="utf-8")
+    with pytest.raises(ValueError, match="content changed after measurement"):
+        protocol.plan_previous_result_decision(proposal, state)
+
+
+def test_v4_best_known_reports_missing_legacy_model_identity(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
+    )
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    evidence = tmp_path / "legacy-evaluation.json"
+    evidence.write_text("{}", encoding="utf-8")
+    repository.append_result(
+        {
+            "campaign_id": "campaign",
+            "index": 1,
+            "requested_evaluations": [
+                {
+                    "candidate": "checkpoint",
+                    "episodes": 2,
+                    "seed": 10,
+                    "evaluation_semantics": "semantics",
+                    "metrics": {"evaluation_artifact": evidence.name},
+                }
+            ],
+        }
+    )
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Keep it.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Try to use imported legacy evidence.",
+            },
+        }
+    }
+
+    with pytest.raises(ValueError, match="no recorded measurement"):
+        protocol.plan_previous_result_decision(proposal, state)
+
+
+def test_v4_retained_lineage_is_selectable_and_preserved(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    retained = _artifact(tmp_path / "retained", "retained")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    retained_plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": "checkpoint",
+                "reason": "Keep it.",
+                "code": {"action": "keep", "reason": "No code change."},
+                "retain": [
+                    {
+                        "candidate": "checkpoint",
+                        "id": "alternate",
+                        "reason": "Keep the checkpoint reusable.",
+                    }
+                ],
+            }
+        },
+        state,
+    )
+    state["retained_lineages"] = retained_plan["retained"]
+    state["retained_lineages"][0]["artifact"] = retained.name
+    state["retained_lineages"][0]["fingerprint"] = (
+        protocol.repository.artifact_fingerprint(retained)
+    )
+
+    parent = protocol.training_parent(
+        {"training_parent": "alternate"}, state, "transfer"
+    )
+
+    assert parent == ("alternate", retained, 5_000)
+    assert retained in protocol.repository.role_and_retention_artifacts(state)
+
+
+def test_v4_state_rejects_legacy_accepted_aliases(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "campaign": {
+            "id": "campaign-test",
+            "started_at": "2026-09-05T00:00:00Z",
+            "base_commit": "a" * 40,
+        },
+        "accepted_artifact": "legacy",
+    }
+
+    try:
+        repository.validate_v4_state(state, allow_missing_artifact=False)
+    except RuntimeError as error:
+        assert "legacy accepted aliases" in str(error)
+    else:
+        raise AssertionError("schema-v4 state accepted a legacy role alias")
+
+
+def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    incumbent_evidence = tmp_path / "incumbent-evaluation.json"
+    candidate_evidence = tmp_path / "candidate-evaluation.json"
+    _research_evidence(incumbent_evidence)
+    _research_evidence(candidate_evidence)
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(incumbent, steps=10_000),
+        "best_known_lineage": _lineage(incumbent, steps=10_000),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [{"evaluation_artifact": candidate_evidence.name}],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
+    state["pending_researcher_decision"]["partial_evaluations"] = [
+        {
+            "candidate": "checkpoint",
+            "episodes": 2,
+            "seed": 1,
+            "evaluation_semantics": "shared-evaluation-semantics",
+            "model_fingerprint": repository.artifact_fingerprint(candidate),
+            "metrics": {
+                "evaluation_artifact": candidate_evidence.name,
+                "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                    candidate_evidence
+                ),
+            },
+        },
+        {
+            "candidate": "best_known",
+            "episodes": 2,
+            "seed": 1,
+            "evaluation_semantics": "shared-evaluation-semantics",
+            "model_fingerprint": repository.artifact_fingerprint(incumbent),
+            "metrics": {
+                "evaluation_artifact": incumbent_evidence.name,
+                "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                    incumbent_evidence
+                ),
+            },
+        },
+    ]
+    decision = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Continue exploring.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Designate from comparable evidence.",
+            },
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(decision, state)
+
+    assert plan["best_known_record"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
+
+    state["pending_researcher_decision"]["partial_evaluations"][0][
+        "model_fingerprint"
+    ] = repository.artifact_fingerprint(incumbent)
+    with pytest.raises(ValueError, match="no recorded measurement"):
+        protocol.plan_previous_result_decision(decision, state)
+
+
+def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    candidate_evidence = tmp_path / "candidate-evaluation.json"
+    candidate_evidence.write_text("{}", encoding="utf-8")
+    state = {
+        "schema_version": 4,
+        "working_lineage": _lineage(incumbent, steps=10_000),
+        "best_known_lineage": _lineage(incumbent, steps=10_000),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+            "partial_evaluations": [
+                {
+                    "candidate": "checkpoint",
+                    "episodes": 200,
+                    "seed": 1,
+                    "evaluation_semantics": "semantics",
+                    "model_fingerprint": repository.artifact_fingerprint(candidate),
+                    "metrics": {
+                        "evaluation_artifact": candidate_evidence.name,
+                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                            candidate_evidence
+                        ),
+                    },
+                }
+            ],
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 2,
+            "continue_from": "checkpoint",
+            "reason": "Continue exploring.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "best_known": {
+                "candidate": "checkpoint",
+                "reason": "Designate from candidate evidence.",
+            },
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(proposal, state)
+    assert plan["best_known_record"]["candidate"] == "checkpoint"
+
+
+def test_v4_best_known_replacement_does_not_require_incumbent_panel_equality(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
@@ -316,7 +1002,49 @@ def test_best_known_evidence_compatibility_keeps_task_reference_exact():
     )
 
 
-def test_publication_copies_complete_artifact_and_reuses_matching_destination(
+def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(repository, "write_state", lambda state: None)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "checkpoint",
+            "reason": "Keep the promising model.",
+            "code": {"action": "keep", "reason": "No code change."},
+        }
+    }
+
+    assert not apply_previous_result_decision(proposal, state)
+
+    assert state["working_lineage"]["artifact"].startswith(
+        "research/checkpoints/retained/"
+    )
+    assert candidate.joinpath("model.zip").read_bytes() == b"candidate"
+    assert candidate.joinpath("artifact.json").is_file()
+
+
+def test_v4_publication_copies_complete_artifact_and_reuses_matching_destination(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
@@ -350,7 +1078,7 @@ def test_publication_copies_complete_artifact_and_reuses_matching_destination(
     assert (destination / "replay_buffer.pkl").read_bytes() == b"replay"
 
 
-def test_publication_refuses_different_matching_destination(monkeypatch, tmp_path):
+def test_v4_publication_refuses_different_matching_destination(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     source = _artifact(tmp_path / "source", "source")
     destination = _artifact(
@@ -366,7 +1094,7 @@ def test_publication_refuses_different_matching_destination(monkeypatch, tmp_pat
         repository.validate_artifact_publication(publication)
 
 
-def test_publication_requires_saved_policy_runtime(monkeypatch, tmp_path):
+def test_v4_publication_requires_saved_policy_runtime(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     source = tmp_path / "source"
     source.mkdir()
@@ -382,7 +1110,7 @@ def test_publication_requires_saved_policy_runtime(monkeypatch, tmp_path):
         repository.validate_artifact_publication(publication)
 
 
-def test_durable_artifact_path_is_compact_and_identity_derived(
+def test_v4_durable_artifact_path_is_compact_and_identity_derived(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
@@ -407,7 +1135,7 @@ def test_durable_artifact_path_is_compact_and_identity_derived(
     assert len(first.name) == 79
 
 
-def test_publication_failure_leaves_no_partial_destination(monkeypatch, tmp_path):
+def test_v4_publication_failure_leaves_no_partial_destination(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     source = _artifact(tmp_path / "source", "source")
     destination = tmp_path / "research" / "checkpoints" / "retained" / "lineage"
@@ -430,14 +1158,12 @@ def test_publication_failure_leaves_no_partial_destination(monkeypatch, tmp_path
     assert not list(destination.parent.glob(".lineage-*.tmp"))
 
 
-def test_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
+def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl")
     working = _artifact(tmp_path / "working", "working")
     candidate = _artifact(tmp_path / "candidate", "candidate")
     state = {
         "schema_version": 4,
-        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
         "working_lineage": _lineage(working, steps=10_000),
         "best_known_lineage": None,
         "retained_lineages": [],
@@ -497,7 +1223,7 @@ def test_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
     ]
 
 
-def test_restore_rejects_lineage_without_recipe_provenance(monkeypatch, tmp_path):
+def test_v4_restore_rejects_lineage_without_recipe_provenance(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working", "working")
     candidate = _artifact(tmp_path / "candidate", "candidate")
@@ -545,7 +1271,7 @@ def test_restore_rejects_lineage_without_recipe_provenance(monkeypatch, tmp_path
         )
 
 
-def test_cleanup_completion_is_recorded_without_removed_retained(
+def test_v4_cleanup_completion_is_recorded_without_removed_retained(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
@@ -585,7 +1311,7 @@ def test_cleanup_completion_is_recorded_without_removed_retained(
     assert not disposable.joinpath("model.zip").exists()
 
 
-def test_cleanup_complete_resume_does_not_regress_progress(monkeypatch, tmp_path):
+def test_v4_cleanup_complete_resume_does_not_regress_progress(monkeypatch, tmp_path):
     monkeypatch.setattr(repository, "write_state", lambda state: None)
     state = {
         "pending_closure_operation": {
@@ -600,7 +1326,7 @@ def test_cleanup_complete_resume_does_not_regress_progress(monkeypatch, tmp_path
     assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
 
 
-def test_cleanup_retries_after_partial_deletion(monkeypatch, tmp_path):
+def test_v4_cleanup_retries_after_partial_deletion(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr(repository, "write_state", lambda state: None)
     first = _artifact(tmp_path / "first", "first")
@@ -649,7 +1375,7 @@ def test_cleanup_retries_after_partial_deletion(monkeypatch, tmp_path):
     assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
 
 
-def test_clearance_push_failure_restores_recoverable_operation(
+def test_v4_clearance_push_failure_restores_recoverable_operation(
     monkeypatch, tmp_path
 ):
     operation = {
@@ -682,7 +1408,7 @@ def test_clearance_push_failure_restores_recoverable_operation(
     assert writes[-1]["pending_closure_operation"] is operation
 
 
-def test_clearance_interrupt_restores_recoverable_operation(monkeypatch):
+def test_v4_clearance_interrupt_restores_recoverable_operation(monkeypatch):
     operation = {
         "experiment": 4,
         "progress": "cleanup_complete",

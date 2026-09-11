@@ -21,34 +21,18 @@ def write_log(path, text: str) -> None:
 
 
 def write_campaign_state(monkeypatch, tmp_path) -> None:
-    """Point STATE_PATH at a complete hermetic v4 state."""
+    """Point STATE_PATH at a hermetic v3 state so the query tool doesn't read the real repo's."""
     state_path = tmp_path / "research_state.json"
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 4,
-                "working_lineage": None,
-                "best_known_lineage": None,
+                "schema_version": 3,
+                "accepted_artifact": "research/checkpoints/accepted",
                 "campaign": {
                     "id": CAMPAIGN_ID,
                     "started_at": "2026-01-01T00:00:00Z",
                     "base_commit": "abc123",
                 },
-                "campaign_experiment_counters": {CAMPAIGN_ID: 0},
-                "retained_lineages": [],
-                "last_experiment": 0,
-                "last_allocated_experiment": 0,
-                "pending_scientific_parent": None,
-                "pending_training_operation": None,
-                "pending_analysis": None,
-                "pending_closure_operation": None,
-                "pending_final_benchmark": None,
-                "terminal_campaign_status": None,
-                "last_lineage_decision": None,
-                "last_verdict": "fresh campaign",
-                "official_metrics": None,
-                "official_benchmark_model": None,
-                "official_benchmark_verdict": None,
             }
         ),
         encoding="utf-8",
@@ -60,50 +44,28 @@ def test_training_attempts_isolate_experiments_and_resume_or_restart(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
-    write_log(tmp_path / CAMPAIGN_ID / "experiment-1-attempt-1.log", "first")
-    write_log(tmp_path / CAMPAIGN_ID / "experiment-1-attempt-2.log", "second")
-    write_log(tmp_path / CAMPAIGN_ID / "experiment-2-attempt-1.log", "other")
+    write_log(tmp_path / "experiment-1-attempt-1.log", "first")
+    write_log(tmp_path / "experiment-1-attempt-2.log", "second")
+    write_log(tmp_path / "experiment-2-attempt-1.log", "other")
 
-    assert (
-        execution.training_attempt(
-            1, recoverable_continuation=True, campaign_id=CAMPAIGN_ID
-        )
-        == 2
-    )
-    assert (
-        execution.training_attempt(
-            1, recoverable_continuation=False, campaign_id=CAMPAIGN_ID
-        )
-        == 3
-    )
-    assert (
-        execution.training_attempt(
-            2, recoverable_continuation=False, campaign_id=CAMPAIGN_ID
-        )
-        == 2
-    )
-    assert (
-        execution.training_attempt(
-            3, recoverable_continuation=False, campaign_id=CAMPAIGN_ID
-        )
-        == 1
-    )
+    assert execution.training_attempt(1, recoverable_continuation=True) == 2
+    assert execution.training_attempt(1, recoverable_continuation=False) == 3
+    assert execution.training_attempt(2, recoverable_continuation=False) == 2
+    assert execution.training_attempt(3, recoverable_continuation=False) == 1
 
 
 def test_recoverable_continuation_requires_an_existing_attempt(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
 
     with pytest.raises(RuntimeError, match="no training log"):
-        execution.training_attempt(
-            1, recoverable_continuation=True, campaign_id=CAMPAIGN_ID
-        )
+        execution.training_attempt(1, recoverable_continuation=True)
 
 
 def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", tmp_path)
-    log = tmp_path / CAMPAIGN_ID / "experiment-1-attempt-1.log"
+    log = tmp_path / "experiment-1-attempt-1.log"
     write_log(log, "interrupted output\n")
     observed_records = []
 
@@ -134,15 +96,13 @@ def test_recoverable_continuation_appends_and_live_progress_reads_active_log(
         lambda record: observed_records.append(record) or "",
     )
 
-    attempt = execution.training_attempt(
-        1, recoverable_continuation=True, campaign_id=CAMPAIGN_ID
-    )
+    attempt = execution.training_attempt(1, recoverable_continuation=True)
     execution.train_candidate(
         output_dir,
         100,
         0,
         None,
-        execution.training_log_path(1, attempt, campaign_id=CAMPAIGN_ID),
+        execution.training_log_path(1, attempt),
         continue_timesteps=True,
         target_timesteps=200,
     )
@@ -165,10 +125,10 @@ def test_runner_passes_the_correct_active_attempt_to_training(
 ):
     training_logs = tmp_path / "training_logs"
     write_log(
-        training_logs / CAMPAIGN_ID / "experiment-1-attempt-9.log", "other experiment\n"
+        training_logs / "current" / "experiment-1-attempt-9.log", "other experiment\n"
     )
     if restart:
-        interrupted = training_logs / CAMPAIGN_ID / "experiment-2-attempt-1.log"
+        interrupted = training_logs / "current" / "experiment-2-attempt-1.log"
         write_log(interrupted, "interrupted output\n")
     else:
         interrupted = None
@@ -177,25 +137,9 @@ def test_runner_passes_the_correct_active_attempt_to_training(
         restart_pending.touch()
     captured_logs = []
     state = {
-        "schema_version": 4,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
         "last_experiment": 1,
         "last_allocated_experiment": 1,
-        "pending_scientific_parent": None,
-        "pending_training_operation": None,
-        "pending_analysis": None,
-        "pending_closure_operation": None,
-        "pending_final_benchmark": None,
-        "terminal_campaign_status": None,
-        "last_lineage_decision": None,
-        "last_verdict": "fresh campaign",
-        "official_metrics": None,
-        "official_benchmark_model": None,
-        "official_benchmark_verdict": None,
-        "campaign_experiment_counters": {CAMPAIGN_ID: 1},
-        "campaign": {"id": CAMPAIGN_ID},
+        "campaign": {"id": "current"},
     }
 
     monkeypatch.setattr("research.runner_paths.TRAINING_LOG_DIR", training_logs)
@@ -270,10 +214,15 @@ def test_runner_passes_the_correct_active_attempt_to_training(
         == 0
     )
 
-    assert captured_logs == [training_logs / CAMPAIGN_ID / expected_name]
-    pending = state["pending_analysis"]
-    assert pending["completed_training_steps"] == 120_832
-    assert pending["result"]["completed_training_steps"] == 120_832
+    assert captured_logs == [training_logs / "current" / expected_name]
+    result = state["pending_evaluation_request"]["result"]
+    assert result["training_budget_steps"] == 120_000
+    assert result["completed_training_steps"] == 120_832
+    assert state["pending_evaluation_request"]["completed_training_steps"] == 120_832
+    assert result["reasoning"] == scientific_reasoning
+    assert "Investigate the plateau" in result["scientific_strategy"]
+    scientific_memory.write_text("Revised later", encoding="utf-8")
+    assert "Investigate the plateau" in result["scientific_strategy"]
     if interrupted is not None:
         assert interrupted.read_text(encoding="utf-8") == "interrupted output\n"
 

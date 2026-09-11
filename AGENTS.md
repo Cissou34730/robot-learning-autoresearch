@@ -39,7 +39,7 @@ uv run pytest tests/e2e                  # Human: slow end-to-end lifecycle suit
 
 The human may add `-RecipeRef <git-ref>` to `Fresh` to restore the complete
 researcher-owned scientific surface from one resolved commit before creating an
-empty campaign. This imports no trained policy or evidence. `Baseline` is the
+empty v4 campaign. This imports no trained policy or evidence. `Baseline` is the
 separate operation for restoring a prepared experiment-1 policy and its evidence.
 The reset wrapper and research launcher share a machine-wide mutex. Reset
 backups resolve through Git's administrative path and support linked worktrees.
@@ -53,6 +53,9 @@ not execute training, the generic evaluator, the viewer, the Runner, the final
 benchmark, repository-wide tests, mutating Git commands or dependency-management
 commands. The exact available operations are cataloged in
 `research/instruments.md`.
+
+Legacy policy migration through `research/migrate_policy_runtime.py` is a
+human-only maintenance operation, never a Researcher experiment command.
 
 ## Layout
 
@@ -75,8 +78,9 @@ commands. The exact available operations are cataloged in
 - `research/EXPERIMENTS.md` - generated human-readable history.
 - `research/brief.md` - generated current Researcher context.
 - `research/evaluations/` - durable detailed development measurements.
-- `research/checkpoints/retained/` - durable reusable policy lineages. Campaign
-  state names the independent `working_lineage`, `best_known_lineage`,
+- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - readable
+  legacy archive locations and durable reusable policy lineages. Version-4
+  campaign state names the independent `working_lineage`, `best_known_lineage`,
   and retained IDs; selected challenger artifacts are published under the
   campaign-scoped retained archive before cleanup.
 - `models/candidates/` - disposable training candidates.
@@ -119,7 +123,7 @@ path takes precedence over any researcher-owned prefix.
 - `tests/scenario/`, `tests/training/`;
 - `research/current_params.json`;
 - the phase deliverables `research/proposal.json`,
-  `research/evaluation_request.json` and `research/postmortems.md`. During
+  `research/evaluation_request.json` and `research/postmortems.md`. During v4
   post-training analysis, exactly one actionable request is submitted: a
   measurement request or a closure proposal with its postmortem.
 
@@ -165,7 +169,7 @@ regenerated atomically. Validation-only commands do not reconcile or mutate the
 derived view. Researcher-owned tests and scientific code travel together in the
 experiment's `code_changes` and Git lineage.
 
-Closure publishes every selected working or best-known candidate to
+Version-4 closure publishes every selected working or best-known candidate to
 `research/checkpoints/retained/<campaign-id>/` before candidate cleanup and
 commits the artifact with the state that references it. A retained inference
 artifact consists of `model.zip`, `artifact.json` and `policy_runtime.pkl`;

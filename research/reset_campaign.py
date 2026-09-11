@@ -340,14 +340,16 @@ def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
     state = git_json(commit, "research/research_state.json")
     if state.get("schema_version") != 4:
         raise ValueError(
-            "BaselineRef does not contain a current campaign state"
+            "BaselineRef must use schema v4; unverifiable legacy baselines must be migrated before reset"
         )
-    repository.validate_state(state, allow_missing_artifact=True)
+    repository.validate_v4_state(state, allow_missing_artifact=True)
     working = state.get("working_lineage")
     best = state.get("best_known_lineage")
     pending_fields = (
         "pending_analysis",
         "pending_training_operation",
+        "pending_evaluation_request",
+        "pending_researcher_decision",
         "pending_closure_operation",
         "pending_scientific_parent",
         "pending_final_benchmark",
@@ -449,7 +451,7 @@ def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
         or best_decision.get("candidate") != best["candidate"]
     ):
         raise ValueError(
-            "BaselineRef history does not contain the recorded designation"
+            "BaselineRef history does not contain the recorded v4 designation"
         )
     verify_task_compatibility(commit)
     return state, matching, baseline_restore_paths(commit, state)
@@ -753,7 +755,7 @@ def validate_restored_recipe() -> None:
 
 def empty_state(base_commit: str, recipe_source: str | None) -> dict:
     campaign_id = str(uuid.uuid4())
-    return repository.empty_campaign_state(
+    return repository.empty_v4_campaign_state(
         campaign={
             "id": campaign_id,
             "started_at": datetime.now(UTC).isoformat(),
@@ -889,7 +891,7 @@ def reset_baseline(
             if log_source == paths.ROOT.resolve():
                 log_source = backup / "files"
             tracked_logs = copy_external_logs(log_source, campaign_id)
-        repository.validate_state(state, allow_missing_artifact=False)
+        repository.validate_v4_state(state, allow_missing_artifact=False)
         repository.atomic_write_text(
             paths.LOG_PATH, repository.render_experiment_log(records)
         )

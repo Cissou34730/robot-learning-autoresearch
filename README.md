@@ -122,8 +122,8 @@ Validation runs before compute is spent:
 * an experiment with code changes is fully validated before training;
 * a parameter-only experiment validates the proposal and the effective
   configuration only;
-* a continuation, evaluation or lineage decision without code changes runs no
-  validation suite.
+* a continuation, evaluation or lineage decision without code changes reruns
+  nothing.
 
 Complete validation checks the syntax of changed Python files and runs
 `ruff check` on them, parses changed JSON documents, verifies dependency

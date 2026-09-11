@@ -137,7 +137,7 @@ Clarify the existing lineage contract without changing its JSON schema:
     eligible lineage;
 - state that exact valid parent identifiers are listed in the current brief.
 
-Do not introduce a renamed JSON field or a schema change.
+Do not introduce a renamed JSON field or a schema migration.
 
 #### `research/program.md`
 
@@ -403,8 +403,8 @@ Add focused synthetic-record tests in
 1. records with different broad semantics but equal `comparison_semantics` can be
    paired;
 2. records with different `comparison_semantics` cannot be paired;
-3. records without primary-semantics metadata with equal broad semantics can still be paired;
-4. records without primary-semantics metadata with different broad semantics remain incompatible;
+3. legacy records with equal broad semantics can still be paired;
+4. legacy records with different broad semantics remain incompatible;
 5. panel, seed, episode, and model identity checks remain unchanged.
 
 Do not run a model or generate real evaluation artifacts.

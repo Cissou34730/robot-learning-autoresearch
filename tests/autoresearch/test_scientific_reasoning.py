@@ -8,6 +8,7 @@ import pytest
 
 from research import build_research_brief as brief
 from research import runner_protocol as protocol
+from research.runner_repository import compact_result_record
 
 
 @pytest.fixture
@@ -175,6 +176,63 @@ def test_strategy_requires_each_meaningful_entry(proposal, scientific_memory, la
         )
 
 
+def test_legacy_reconsideration_text_remains_readable_but_is_not_required(
+    proposal, scientific_memory
+):
+    text = scientific_memory.read_text(encoding="utf-8").replace(
+        "**Reconsider when:**", "**Unrelated:**"
+    )
+    scientific_memory.write_text(text, encoding="utf-8")
+
+    assert (
+        protocol.validate_proposal_against_state(
+            proposal, {"campaign": {"id": "current"}}
+        )
+        == "training"
+    )
+
+
+def test_legacy_direction_remains_valid_without_conditional_next_steps(
+    proposal, scientific_memory
+):
+    text = scientific_memory.read_text(encoding="utf-8").replace(
+        "**Current synthesis:**", "**Direction:**"
+    )
+    scientific_memory.write_text(text, encoding="utf-8")
+
+    assert (
+        protocol.validate_proposal_against_state(
+            proposal, {"campaign": {"id": "current"}}
+        )
+        == "training"
+    )
+
+
+def test_memory_is_separate_from_experiment_attestations(
+    monkeypatch, scientific_memory
+):
+    experiment = (
+        "## current / Experiment 7\n\n"
+        "**Result:** Measured progress.\n\n"
+        "**Evidence inspected:** evidence.txt\n\n"
+    )
+    strategy = scientific_memory.read_text(encoding="utf-8")
+    scientific_memory.write_text(experiment + strategy, encoding="utf-8")
+    section = protocol.postmortem_section(7, "current")
+    assert "Scientific strategy" not in section
+    assert protocol.attested_evidence_paths(section) == ["evidence.txt"]
+    memories = brief._postmortem_memory(experiment + strategy, "current")
+    assert len(memories) == 1
+    assert "Conditional next steps" not in memories[0]
+    # A later revision does not alter the historical experiment section.
+    scientific_memory.write_text(
+        experiment
+        + strategy.replace("Investigate the plateau", "Investigate capacity"),
+        encoding="utf-8",
+    )
+    assert protocol.postmortem_section(7, "current") == section
+
+
 def test_non_baseline_postmortem_requires_hypothesis_assessment(
     monkeypatch, tmp_path
 ):
@@ -291,11 +349,27 @@ def test_brief_exposes_current_strategy_without_old_campaign_or_truncation(
     assert "Investigate the plateau" in rendered
     assert "Conditional next steps" not in rendered
     assert "NEVER IMPORT THIS" not in rendered
-    assert rendered.index("Campaign objective") < rendered.index(
+    assert rendered.index("Immutable goal") < rendered.index(
         "Provisional scientific synthesis"
     )
+    # Legacy histories remain readable without fabricated scientific conclusions.
     scientific_memory.write_text("# Research postmortems\n", encoding="utf-8")
     assert "No scientific strategy recorded" in brief.render_research_brief()
+
+
+def test_history_preserves_reasoning_and_strategy_without_requiring_legacy_rewrite(
+    proposal,
+):
+    record = {
+        "index": 7,
+        "reasoning": proposal["reasoning"],
+        "scientific_strategy": "original direction",
+    }
+    assert compact_result_record(record) == record
+    assert compact_result_record({"index": 1, "hypothesis": "legacy"}) == {
+        "index": 1,
+        "hypothesis": "legacy",
+    }
 
 
 def test_baseline_does_not_require_scientific_memory():
