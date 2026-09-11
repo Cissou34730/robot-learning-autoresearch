@@ -2,12 +2,13 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Diagnose whether the retained 50/50 action-smoothing recipe is
-reproducible from fresh initialization before adding another representation or
-control intervention. Experiment 9 did not make the periodic target-direction
-representation useful in the tested fresh run, so that direction is abandoned.
-Use matched task measurements for checkpoint selection and do not treat training
-proxies or development panels as a terminal verdict.
+**Direction:** Use the retained experiment-7 50/50 action-smoothing policy as
+the practical incumbent while investigating robustness of reachability across
+angle sectors. The fresh replication did not make the smoother a dependable
+fresh-start control, and the unsuccessful periodic target-direction
+representation remains abandoned. Use matched task measurements for checkpoint
+selection and do not treat training proxies or development panels as a
+terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -15,35 +16,34 @@ to 52/74, and reduced total interruption events from 256 to 18 at the selected
 late checkpoint, while preserving non-sector and radius-bin performance.
 Experiment 8's 75/25 refinement retained low interruption counts relative to
 the unsmoothed incumbent, but its late checkpoint reached only 97.5% on the
-matched panel, had the same 52/74 hard-sector result, more never-reach
-failures (17 versus 15), and modest non-sector and short-radius regressions
-relative to experiment 7. Experiment 9's late periodic-direction checkpoint
-reached 89.5% on the research panel, with 17/74 hard-sector and 878/926
-non-sector successes, 105 never-reach failures, and no hold interruptions; its
-task-reference panel reached 90.5% with 19 failures. The protected panel for
-experiment 7 remained 98.5% with three failures. These are observations from
-single transferred or fresh runs and fixed development panels; they do not
-establish causality for other filters, representations, or seeds. Experiments
-2 and 6 remain controls: full-radius training improved short-radius behavior,
-while margin shaping changed interruption diagnostics without increasing task
-success.
-
-**Open questions:** Whether the residual negative-angle failures arise
-primarily from reachability, action dynamics, or run variability remains
-unresolved. The experiment-7 smoother gain came from one transferred run and
-was not reproduced as a protected-panel gain, so its fresh-run reliability is
-unknown. Experiment 9 shows that the tested periodic encoding did not resolve
-the failures, but does not exclude other controls or representations.
+matched panel and had more never-reach failures. Experiment 9's late
+periodic-direction checkpoint reached 89.5% on the research panel, with 17/74
+hard-sector and 878/926 non-sector successes, 105 never-reach failures, and no
+hold interruptions; its task-reference panel reached 90.5%. Experiment 10's
+fresh unchanged replication reached only 70.4% on the same research panel and
+72.0% on the task-reference panel, despite reaching 74/74 in the prior
+-150-to--120 degree hard sector; its research failures instead concentrated in
+positive-angle sectors and included 191 never-reach failures, 105
+interrupted failures, and 125 interruption events. These observations are from
+single transferred or fresh runs and fixed development panels. They support
+run- or transfer-dependence as a live explanation, but do not establish
+causality for smoothing or distinguish seed variability from transfer history.
 Unmeasured checkpoints cannot be ranked from training proxies.
 
-**Conditional next steps:** If fresh replication recovers the smoother's
-measured behavior, treat it as a dependable control and then target the
-remaining reachability failures. If it does not, reconsider the recipe's
-reliability before testing another intervention. The margin-shaped policy
-remains a diagnostic alternative, not evidence of a better task policy, and a
-different representation requires a clear measured task-performance rationale.
-Terminal assessment should wait for stronger evidence against the structured
-failure sector.
+**Open questions:** Whether the fresh run's shifted positive-angle failures
+are primarily optimization variability, transfer dependence, or a control
+dynamics effect remains unresolved. It is also unknown whether the retained
+policy's residual failures can be reduced without sacrificing its broad
+performance. The experiment-7 task-reference result remains 98.5% on its
+development panel, but no official benchmark result exists.
+
+**Conditional next steps:** A future experiment may target robustness of the
+retained smoother's reachability while preserving its measured broad
+performance, or may add another fresh control if separating run variability
+from transfer history is worth the cost. Any new representation or temporal
+control should be justified by matched task-performance evidence. Terminal
+assessment should wait for stronger evidence that the selected policy is ready
+for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -579,3 +579,67 @@ descriptive and does not show that additional training caused the improvement.
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-9-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
 the corresponding experiment-9 task-reference artifacts, and the experiment-7
 late research and task-reference artifacts used for comparison.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 10
+
+**Result:** The fresh replication did not reproduce experiment 7's measured
+50/50 action-smoothing performance. The experiment-7 `working` and
+`best_known` lineages remain selected, the unchanged recipe is kept, the
+experiment-10 candidates are not retained, and terminal assessment is not
+requested.
+
+**Observed behavior:** Training completed 120,832 local steps. The queried
+training proxy was 0 through 90,112 steps, rose to 0.07 at checkpoint-100352,
+and ended at 0.27 at checkpoint-120832; mean reward rose from -8.19 at 5,120
+steps to 129.49 at completion. These are training facts, not held-out task
+performance. On the matched 1,000-episode research panel,
+checkpoint-100352 scored 694/1,000 (69.4%) and checkpoint-120832 scored
+704/1,000 (70.4%). The late checkpoint improved by 10 episodes within this
+run, but remained far below experiment 7's late 977/1,000 (97.7%) result.
+At the late checkpoint, 191 episodes never reached tolerance and 105 reached
+tolerance but failed the complete hold; the diagnostics recorded 125
+interruption events. In contrast, experiment 7's late checkpoint had 15
+never-reach failures, 8 interrupted failures, and 18 interruption events.
+
+The fresh late checkpoint unexpectedly succeeded in all 74 episodes in the
+experiment-7 hard sector (-150 to -120 degrees). Its research-panel success
+was instead poor in positive-angle bins: 35/81 at 60 degrees, 2/76 at 90
+degrees, 2/83 at 120 degrees, and 27/98 at 150 degrees. On the fixed
+200-episode task-reference panel, both measured checkpoints scored 144/200
+(72.0%). The late checkpoint failed all 24 targets in the 120-degree bin,
+along with most targets from 90 to 180 degrees and three targets near -170
+degrees. Twenty-two of the 24 available training checkpoints remain
+unmeasured.
+
+**Hypothesis assessment:** Contradicted under this fresh replication, with
+partial and orthogonal signals. The proposal's expected observation of
+experiment-7-like overall performance, low interruption counts, and comparable
+protected-panel behavior was not observed. The contradicting observation was
+present in the large overall regression, the much higher interruption count,
+and the 72.0% task-reference result. The complete 74/74 hard-sector result is
+a partial signal in the expected direction, while the shift to positive-angle
+failures is unexpected relative to experiment 7. The within-run improvement in
+research success and the rise in training reward are orthogonal to a claim of
+task-policy progress. This weakens reproducibility of the recipe from fresh
+initialization, but does not disprove smoothing under the original transferred
+conditions or identify whether transfer history or run variability caused the
+difference.
+
+**Interpretation:** The fresh policy learned a materially different behavior
+from the retained transferred policy: late training reduced never-reach
+failures but left broad positive-angle reachability failures and introduced
+many more failed holds. The evidence is consistent with the experiment-7 gain
+depending on transfer history or ordinary run variability, but one fresh
+replication cannot separate those explanations. The retained experiment-7
+policy remains the strongest measured candidate and is useful progress toward
+the objective, but the development evidence is not sufficient for terminal
+assessment.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-10/inventory.json`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-10/parameters.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-10-checkpoint-100352-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-10-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+the corresponding experiment-10 task-reference artifacts, and the
+experiment-7 late research and task-reference artifacts used for comparison.
