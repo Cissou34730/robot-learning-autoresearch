@@ -180,8 +180,8 @@ evidence as final validation.
 Close when the evidence supports a lineage decision and a reasoned next action,
 without requiring a complete explanation of the outcome. Append the experiment
 entry to `research/postmortems.md`, separating observations from interpretations
-and citing inspected artifacts. Update the Scientific strategy, then write the
-lineage-only `research/proposal.json`. Closure without new measurements is valid.
+and citing inspected artifacts, then write the lineage-only
+`research/proposal.json`. Closure without new measurements is valid.
 
 Choose a working policy and whether to keep, revert, or restore the complete
 scientific recipe. Retain reusable alternatives when justified; unretained model
@@ -216,10 +216,11 @@ compact decision aid, not a second experiment history:
 - `Open questions`: useful uncertainties, not a mandatory experiment queue.
 
 Preserve historical observations and decisions; revise current interpretations
-in the synthesis rather than rewriting what was believed at the time. At the
-start of a new hypothesis phase, reassess the synthesis with the campaign
-objective and available evidence. The synthesis records no required next action,
-and changing investigations does not require resolving every open question.
+in the synthesis rather than rewriting what was believed at the time. Write the
+synthesis at the start of a new hypothesis phase, from the campaign objective and
+the whole campaign's evidence, rather than at the close of the experiment that
+preceded it. The synthesis records no required next action, and changing
+investigations does not require resolving every open question.
 
 ## Stopping
 

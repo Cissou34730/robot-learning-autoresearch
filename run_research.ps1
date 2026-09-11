@@ -472,7 +472,7 @@ while ($true) {
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
             "Assess progress toward a learned policy satisfying the human objective. Begin with observed behavior, then relate findings to the proposal's type-specific question and reasoning. Record partial and unexpected findings, separate observations from interpretations, and scope claims to the evidence."
             "Resolve investigation assessment, saved-policy usefulness, recipe action, working lineage, retention, optional best-known designation, and terminal readiness as distinct scientific decisions. A weakened prediction does not by itself reject a useful policy."
-            "Treat the Scientific strategy as a provisional synthesis, not an instruction for the next session. Record supported, weakened, and unresolved findings without prescribing a continuation path."
+            "Record supported, weakened, and unresolved findings in the experiment entry without prescribing a continuation path. The campaign's Scientific strategy is rewritten in the next experiment-design phase, not here."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -524,7 +524,7 @@ while ($true) {
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-        "Start from the campaign objective and available evidence, then reassess the Scientific strategy as provisional memory that prescribes no next action."
+        "Start from the campaign objective and the whole campaign's evidence, then rewrite the Scientific strategy as provisional memory that prescribes no next action."
         "State the scientific question, decide whether the investigation is confirmatory, diagnostic, or exploratory, and choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
         "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
