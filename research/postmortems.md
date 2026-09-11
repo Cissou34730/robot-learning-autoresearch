@@ -2,37 +2,38 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Improve the smoothed full-radius policy toward the 98% objective
-by addressing the remaining negative-angle never-reach failures while
-preserving the measured reduction in repeated hold excursions. Use matched
-task measurements for checkpoint selection and do not treat training proxies
-or the task-reference result as a terminal verdict.
+**Direction:** Refine temporal control toward the 98% objective by testing
+whether the benefit of smoothing survives with less lag, while specifically
+reducing the negative-angle never-reach failures. Use matched task
+measurements for checkpoint selection and do not treat training proxies or the
+task-reference result as a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
-to 52/74, and reduced total interruption events from 256 to 26 or 18, while
-preserving non-sector and short-radius success and slightly improving
-far-radius success. Failed never-reach episodes rose from 11 to 16 or 15,
-and all three task-reference failures were unchanged. The result partially
-supports temporal control as a contributor, but one transferred run and
-fixed development panels cannot identify a universal control mechanism or
-official-task attainment. Experiments 2 and 6 remain relevant controls:
-full-radius training improved short-radius behavior, while margin shaping
-changed interruption diagnostics without increasing task success.
+to 52/74, and reduced total interruption events from 256 to 18 at the selected
+late checkpoint, while preserving non-sector and radius-bin performance.
+Failed never-reach episodes rose from 11 to 15, and all three task-reference
+failures were unchanged. This partially supports temporal control as a
+contributor under one transferred run, but fixed development panels do not
+establish a universal filter or official-task attainment. Experiments 2 and 6
+remain controls: full-radius training improved short-radius behavior, while
+margin shaping changed interruption diagnostics without increasing task
+success.
 
-**Open questions:** Whether the research-panel gain from smoothing is
-repeatable, whether the remaining failures are primarily reachability or
-action/observation representation limitations, and whether a less lagging
-temporal control can preserve the interruption reduction without increasing
-never-reach failures remain unresolved.
+**Open questions:** Whether a less-lagging filter can retain the interruption
+reduction while recovering reachability in the structured negative-angle
+sector, and whether the research-panel gain is repeatable, remain unresolved.
+The relative contributions of reachability and action/observation
+representation are also uncertain.
 
-**Conditional next steps:** A future experiment may investigate the residual
-never-reach cases with a different action or observation representation, or
-replicate/refine temporal control with matched measurements. The retained
-margin-shaped policy remains a diagnostic alternative, not evidence of a
-better task policy. Terminal assessment should wait until a selected
-development policy has stronger evidence against the structured failure
-sector.
+**Conditional next steps:** If the less-lagging filter improves matched
+success without broad regression, compare its measured checkpoints and retain
+the best-supported control recipe. If it does not, shift toward a different
+action or observation representation or replicate the original smoother to
+separate refinement failure from run variability. The margin-shaped policy
+remains a diagnostic alternative, not evidence of a better task policy.
+Terminal assessment should wait for stronger evidence against the structured
+failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
