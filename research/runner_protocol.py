@@ -673,6 +673,13 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
     """Return the proposal contract expected by the persisted lifecycle state."""
     if not isinstance(proposal, dict):
         raise TypeError("proposal.json must contain a JSON object")
+    pending_training = state.get("pending_training_operation")
+    if isinstance(pending_training, dict):
+        if proposal != pending_training.get("frozen_proposal"):
+            raise ValueError(
+                "proposal changed after the pending training operation was accepted"
+            )
+        return "training"
     if state.get("terminal_campaign_status") is not None:
         raise ValueError("the campaign has received its terminal official assessment")
     if state.get("pending_final_benchmark") is not None:

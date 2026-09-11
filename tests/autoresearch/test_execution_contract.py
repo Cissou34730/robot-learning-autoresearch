@@ -961,6 +961,29 @@ def test_frozen_training_operation_rejects_proposal_tampering(monkeypatch, tmp_p
         )
 
 
+def test_frozen_legacy_proposal_remains_resumable_but_immutable():
+    legacy = {
+        "kind": "training",
+        "family": "legacy",
+        "hypothesis": "A previously accepted investigation.",
+        "initialization": "fresh",
+        "reasoning": {
+            "evidence": [{"source": "evidence.json", "observation": "Observed."}],
+            "alternative": "An alternative.",
+            "expected_observation": "Expected.",
+            "contradicting_observation": "Contradicting.",
+            "initialization_reason": "Previously accepted.",
+            "strategy_link": "Legacy field.",
+        },
+        "change": "Previously accepted change.",
+    }
+    state = {"pending_training_operation": {"frozen_proposal": legacy}}
+
+    assert validate_proposal_phase(legacy, state) == "training"
+    with pytest.raises(ValueError, match="proposal changed after"):
+        validate_proposal_phase({**legacy, "change": "tampered"}, state)
+
+
 @pytest.mark.parametrize("tamper", ["edit", "add"])
 def test_frozen_training_operation_rejects_source_tampering(
     monkeypatch, tmp_path, tamper
