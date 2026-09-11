@@ -12,7 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    TRAINING_FOCUSED_TARGET_PROBABILITY,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -32,11 +31,6 @@ def test_training_distribution_covers_official_radii_without_changing_evaluation
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
     assert training.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-    assert (
-        training.focused_target_probability
-        == TRAINING_FOCUSED_TARGET_PROBABILITY
-    )
-    assert evaluation.focused_target_probability == 0.0
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
 
 
