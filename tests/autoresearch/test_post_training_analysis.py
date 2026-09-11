@@ -127,10 +127,9 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(
     ] == [10]
     first_record = repository.result_records()[0]
     assert "candidate_metrics" not in first_record
-    assert first_record["candidate_selections"] == {
-        "checkpoint": "the only checkpoint this experiment produced"
-    }
+    assert "candidate_selections" not in first_record
     first_evaluation = first_record["requested_evaluations"][0]
+    assert first_evaluation["selection"] == "the only checkpoint this experiment produced"
     assert first_evaluation["evaluation_semantics"]
     assert first_evaluation["metrics"]["evaluation_semantics"]
 

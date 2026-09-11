@@ -124,8 +124,9 @@ Write `research/evaluation_request.json`:
 
 Every measurement requires its own non-empty `selection`. The request-level
 `reason` explains the round; `selection` explains why measuring that model is
-useful for the scientific question. It need not claim that the model is superior
-to every alternative.
+useful for the scientific question. Measurements of the same model may have
+different selections. It need not claim that the model is superior to every
+alternative.
 
 One evaluation request may measure at most three distinct models. Multiple
 measurements of the same model count as one. This includes different seeds,

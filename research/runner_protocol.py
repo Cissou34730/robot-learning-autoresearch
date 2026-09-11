@@ -723,15 +723,6 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
-def candidate_selections(request: dict) -> dict[str, str]:
-    selections: dict[str, str] = {}
-    for measurement in requested_measurements(request):
-        candidate = str(measurement.get("candidate", "")).strip()
-        selection = str(measurement.get("selection", "")).strip()
-        selections.setdefault(candidate, selection)
-    return selections
-
-
 def validate_evaluation_request(
     request: dict, *, allow_legacy_need_more_evidence: bool = False
 ) -> None:
@@ -770,7 +761,6 @@ def validate_evaluation_request(
                 raise ValueError(f"paired comparison requires a non-empty {field}")
     # Collect distinct candidates before detailed validation.
     distinct_candidates = set()
-    selections: dict[str, str] = {}
     for entry in requested_measurements(request):
         if not isinstance(entry, dict):
             raise TypeError("each measurement must be an object")
@@ -799,12 +789,6 @@ def validate_evaluation_request(
             raise ValueError(
                 f"{instrument} requires a non-empty selection stating why this "
                 "model is useful for the current scientific question"
-            )
-        normalized_selection = selection.strip()
-        previous_selection = selections.setdefault(candidate.strip(), normalized_selection)
-        if previous_selection != normalized_selection:
-            raise ValueError(
-                f"measurements for {candidate.strip()!r} must use the same selection"
             )
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]
@@ -872,6 +856,7 @@ def planned_measurements(
                     "candidate": name,
                     "episodes": spec["episodes"],
                     "seed": spec["seed"],
+                    "selection": spec["selection"].strip(),
                     "label": spec.get(
                         "label", f"requested evaluation {len(evaluations) + 1}: {name}"
                     ),
@@ -881,6 +866,7 @@ def planned_measurements(
             references.append(
                 {
                     "candidate": name,
+                    "selection": spec["selection"].strip(),
                     "label": spec.get(
                         "label", f"task reference {len(references) + 1}: {name}"
                     ),

@@ -698,6 +698,7 @@ def execute_pending_evaluations() -> int:
             contender = available[name]
             episodes = spec["episodes"]
             seed = spec["seed"]
+            selection = spec["selection"]
             label = spec["label"]
             key = request_key(name, episodes, seed, semantics)
             if key in completed_keys:
@@ -738,6 +739,7 @@ def execute_pending_evaluations() -> int:
                     "candidate": name,
                     "episodes": episodes,
                     "seed": seed,
+                    "selection": selection,
                     "label": label,
                     "evaluation_semantics": semantics,
                     "metrics": clean_metrics,
@@ -755,6 +757,7 @@ def execute_pending_evaluations() -> int:
         for spec in requested_references:
             name = spec["candidate"]
             contender = available[name]
+            selection = spec["selection"]
             label = spec["label"]
             reference_key = (name, panel["panel"])
             if reference_key in completed_reference_keys:
@@ -777,6 +780,7 @@ def execute_pending_evaluations() -> int:
                 {
                     "instrument": "task_reference",
                     "candidate": name,
+                    "selection": selection,
                     "label": label,
                     "panel": str(metrics["panel"]),
                     "panel_version": int(metrics["panel_version"]),
@@ -849,7 +853,6 @@ def execute_pending_evaluations() -> int:
             # Measured on the human-owned panel; never pooled with the above.
             "task_reference_evaluations": reference_executed,
             "paired_comparisons": comparisons,
-            "candidate_selections": protocol.candidate_selections(request),
         }
     )
     measured = [item for item in candidates if item.get("summary") is not None]

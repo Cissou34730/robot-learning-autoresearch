@@ -220,20 +220,21 @@ def render_evaluation_plan(request: dict, experiment: int) -> str:
         width = max(len(name) for name, _ in rows)
         lines.append("Plan")
         lines.extend(f"  {name:<{width}}   {detail}" for name, detail in rows)
-    selections: dict[str, str] = {}
+    selections: list[tuple[str, str]] = []
     for spec in request.get("measurements") or []:
         if not isinstance(spec, dict):
             continue
         candidate = str(spec.get("candidate", "")).strip()
+        instrument = str(spec.get("instrument", "")).strip()
         selection = str(spec.get("selection", "")).strip()
         if candidate and selection:
-            selections.setdefault(candidate, selection)
+            selections.append((f"{candidate} / {instrument}", selection))
     if selections:
         lines.extend(["", "Selections"])
-        width = max(len(candidate) for candidate in selections)
+        width = max(len(measurement) for measurement, _ in selections)
         lines.extend(
-            f"  {candidate:<{width}}   {selection}"
-            for candidate, selection in selections.items()
+            f"  {measurement:<{width}}   {selection}"
+            for measurement, selection in selections
         )
     reason = str(request.get("reason", "")).strip()
     if reason:
