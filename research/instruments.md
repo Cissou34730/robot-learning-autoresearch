@@ -145,13 +145,14 @@ same phase. Legacy accepted requests that contain it remain recoverable.
 
 **Phase:** Experiment preparation.
 
-Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`. The common required fields are `kind`, `family`, `hypothesis`, `initialization` and `reasoning`:
+Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`. The common required fields are `kind`, `family`, `investigation_type`, `initialization` and `reasoning`:
 
 ```json
 {
   "kind": "<training | continuation | replication>",
   "family": "<non-empty hypothesis-family identifier>",
-  "hypothesis": "<non-empty falsifiable proposition or uncertainty to test or resolve>",
+  "investigation_type": "<confirmatory | diagnostic | exploratory>",
+  "hypothesis": "<non-empty proposition; confirmatory and diagnostic only>",
   "initialization": "<fresh | transfer>",
   "reasoning": {
     "evidence": [
@@ -171,9 +172,26 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 }
 ```
 
+For `exploratory`, replace `hypothesis`, `alternative`,
+`expected_observation`, and `contradicting_observation` with:
+
+```json
+{
+  "scientific_question": "<question the investigation examines>",
+  "reasoning": {
+    "uncertainty": "<what is not known>",
+    "observations_sought": "<observations or evidence sought>",
+    "clarification": "<what the observations could clarify>"
+  }
+}
+```
+
+The exploratory `reasoning` object also contains the common `evidence`,
+`initialization_reason`, and `objective_link` fields from the first schema.
+
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
-| `training` | Trains a changed scientific recipe. The hypothesis may predict its effect or use the change to resolve a structured diagnostic or exploratory uncertainty; it need not isolate a causal mechanism. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
+| `training` | Trains a changed scientific recipe for any investigation type. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
 | `continuation` | Trains the unchanged method further from an eligible lineage. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes, parameter overrides and `change` are forbidden. |
 | `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The hypothesis is a prediction about reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
@@ -205,11 +223,10 @@ An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. `continuation` continues the selected
 recipe without a learning-method change. A `training` proposal may deliberately
 apply a changed recipe to an existing parent with `initialization: "transfer"`.
-The `reasoning` object contains the fields shown in the schema. `evidence` is a
-non-empty array of source/observation objects. `alternative`,
-`expected_observation`, `contradicting_observation`, `initialization_reason`, and
-`objective_link` are non-empty strings. Their scientific use is defined in
-`research/program.md`.
+The `reasoning` object contains the common and type-specific fields shown in the
+schemas. `evidence` is a non-empty array of source/observation objects. Every
+listed type-specific string, `initialization_reason`, and `objective_link` is
+non-empty. Their scientific use is defined in `research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 

@@ -861,6 +861,7 @@ def test_parameter_only_experiment_still_validates_the_configuration(
             {
                 "kind": "training",
                 "family": "method.rollout_steps",
+                    "investigation_type": "confirmatory",
                 "hypothesis": "a longer rollout stabilizes the update",
                 "reasoning": scientific_reasoning,
                 "change": "lengthen the rollout",
@@ -1625,6 +1626,7 @@ def test_training_proposal_requires_only_its_scientific_shape(scientific_reasoni
     proposal = {
         "kind": "training",
         "family": "observation.representation",
+        "investigation_type": "confirmatory",
         "hypothesis": "the observation hides information needed by the policy",
         "reasoning": scientific_reasoning,
         "change": "change the observation representation",
@@ -1646,6 +1648,7 @@ def test_transfer_proposal_requires_a_training_parent(scientific_reasoning):
     proposal = {
         "kind": "training",
         "family": "x",
+        "investigation_type": "confirmatory",
         "hypothesis": "x",
         "change": "x",
         "initialization": "transfer",
@@ -1663,6 +1666,7 @@ def test_fresh_proposal_rejects_a_training_parent():
     proposal = {
         "kind": "training",
         "family": "x",
+        "investigation_type": "confirmatory",
         "hypothesis": "x",
         "change": "x",
         "initialization": "fresh",
@@ -1971,6 +1975,7 @@ def _training_proposal() -> dict:
     return {
         "kind": "training",
         "family": "observation.representation",
+        "investigation_type": "confirmatory",
         "hypothesis": "the current representation limits learning",
         "reasoning": {
             "evidence": [
@@ -2402,6 +2407,7 @@ def _rejected_proposal() -> dict:
     return {
         "kind": "training",
         "family": "identity.allocation",
+        "investigation_type": "confirmatory",
         "hypothesis": "An experiment number is spent even when nothing trains.",
         "reasoning": _training_proposal()["reasoning"],
         "change": "No researcher change at all.",

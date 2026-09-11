@@ -16,6 +16,7 @@ def proposal(scientific_reasoning):
     return {
         "kind": "training",
         "family": "learning.plateau",
+        "investigation_type": "confirmatory",
         "hypothesis": "The update schedule causes the plateau.",
         "change": "Adjust the update schedule.",
         "initialization": "fresh",
@@ -70,6 +71,51 @@ def test_evidence_pairs_sources_with_observations(proposal, evidence):
     proposal["reasoning"]["evidence"] = evidence
     with pytest.raises((TypeError, ValueError), match="reasoning.evidence"):
         protocol.validate_training_proposal(proposal, baseline=False)
+
+
+def test_exploratory_reasoning_uses_questions_without_prediction_fields(
+    proposal, scientific_memory
+):
+    proposal["investigation_type"] = "exploratory"
+    proposal["scientific_question"] = "How does behavior vary across target geometry?"
+    proposal.pop("hypothesis")
+    for field in (
+        "alternative",
+        "expected_observation",
+        "contradicting_observation",
+    ):
+        proposal["reasoning"].pop(field)
+    proposal["reasoning"].update(
+        uncertainty="The relevant behavioral structure is not known.",
+        observations_sought="Behavior and failure distributions across geometry.",
+        clarification="Whether later work should focus on representation or control.",
+    )
+
+    assert (
+        protocol.validate_proposal_against_state(
+            proposal, {"campaign": {"id": "current"}}
+        )
+        == "training"
+    )
+
+
+@pytest.mark.parametrize("field", ["uncertainty", "observations_sought", "clarification"])
+def test_exploratory_reasoning_requires_exploration_fields(
+    proposal, scientific_memory, field
+):
+    proposal["investigation_type"] = "exploratory"
+    proposal["scientific_question"] = "What behavior does this intervention reveal?"
+    proposal["reasoning"].update(
+        uncertainty="The behavior is unknown.",
+        observations_sought="Structured behavior measurements.",
+        clarification="Which mechanism warrants a later test.",
+    )
+    proposal["reasoning"][field] = ""
+
+    with pytest.raises(ValueError, match=rf"reasoning\.{field}"):
+        protocol.validate_proposal_against_state(
+            proposal, {"campaign": {"id": "current"}}
+        )
 
 
 def test_preflight_reads_current_memory_without_mutation(proposal, scientific_memory):
@@ -350,13 +396,16 @@ def test_documented_training_example_and_memory_match_the_contract(
     training = instruments.split("## Request training", 1)[1].split(
         "## Record the postmortem", 1
     )[0]
-    assert "structured diagnostic or exploratory uncertainty" in training
-    assert "need not isolate a causal mechanism" in training
+    assert '"investigation_type": "<confirmatory | diagnostic | exploratory>"' in training
+    assert '"scientific_question": "<question the investigation examines>"' in training
+    assert '"observations_sought": "<observations or evidence sought>"' in training
     assert "The hypothesis is a causal prediction" not in training
     proposal = json.loads(
         re.search(r"```json\n(.*?)\n```", training, re.DOTALL).group(1)
     )
-    proposal.update(kind="training", initialization="fresh")
+    proposal.update(
+        kind="training", initialization="fresh", investigation_type="confirmatory"
+    )
     for conditional in ("training_parent", "training_seed", "replication_of", "params"):
         proposal.pop(conditional)
     # Placeholder text represents researcher prose; only typed fields need values.

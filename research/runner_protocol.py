@@ -438,13 +438,20 @@ def validate_scientific_reasoning(proposal: dict) -> None:
     reasoning = proposal.get("reasoning")
     if not isinstance(reasoning, dict):
         raise TypeError("proposal reasoning must be an object")
-    for field in (
-        "alternative",
-        "expected_observation",
-        "contradicting_observation",
-        "initialization_reason",
-        "objective_link",
-    ):
+
+    investigation_type = proposal.get("investigation_type")
+    if investigation_type not in {"confirmatory", "diagnostic", "exploratory"}:
+        raise ValueError(
+            "investigation_type must be confirmatory, diagnostic or exploratory"
+        )
+    fields = ["initialization_reason", "objective_link"]
+    if investigation_type == "exploratory":
+        fields.extend(("uncertainty", "observations_sought", "clarification"))
+    else:
+        fields.extend(
+            ("alternative", "expected_observation", "contradicting_observation")
+        )
+    for field in fields:
         value = reasoning.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"reasoning.{field} must be a non-empty string")
@@ -605,14 +612,24 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
     required = {
         "kind",
         "family",
-        "hypothesis",
+        "investigation_type",
         "initialization",
     }
     missing = sorted(field for field in required if field not in proposal)
     if missing:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     require_nonempty_string("family", "training proposal family")
-    require_nonempty_string("hypothesis", "training proposal hypothesis")
+    investigation_type = proposal["investigation_type"]
+    if investigation_type not in {"confirmatory", "diagnostic", "exploratory"}:
+        raise ValueError(
+            "investigation_type must be confirmatory, diagnostic or exploratory"
+        )
+    if investigation_type == "exploratory":
+        require_nonempty_string(
+            "scientific_question", "exploratory proposal scientific_question"
+        )
+    else:
+        require_nonempty_string("hypothesis", "training proposal hypothesis")
     kind = proposal["kind"]
     if kind not in {"training", "continuation", "replication"}:
         raise ValueError(

@@ -1296,7 +1296,14 @@ def execute_pending_final_benchmark() -> int:
 
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     change = protocol.operation_description(proposal)
-    hypothesis = str(proposal["hypothesis"]).strip()
+    investigation_type = proposal.get("investigation_type")
+    investigation = str(
+        proposal[
+            "scientific_question"
+            if investigation_type == "exploratory"
+            else "hypothesis"
+        ]
+    ).strip()
     experiment_kind, parameter_overrides, baseline, initialization = (
         proposal_training_settings(proposal)
     )
@@ -1351,7 +1358,6 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "index": index,
         "campaign_id": campaign_id,
         "change": change,
-        "hypothesis": hypothesis,
         "kind": experiment_kind,
         "family": str(proposal.get("family", "")).strip() or experiment_kind,
         "initialization": initialization,
@@ -1360,6 +1366,12 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "status": "error",
         "verdict": "error",
     }
+    if investigation_type == "exploratory":
+        result["scientific_question"] = investigation
+    else:
+        result["hypothesis"] = investigation
+    if investigation_type is not None:
+        result["investigation_type"] = investigation_type
     # Freeze the pre-training rationale: later revisions of scientific memory
     # must not retroactively change what this experiment was intended to test.
     if "reasoning" in proposal:
