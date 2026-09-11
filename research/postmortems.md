@@ -2,12 +2,12 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Prioritize measured task performance and retain the 50/50
-action-smoothing recipe as the current working direction. Experiment 9 did not
-make the periodic target-direction representation useful in the tested fresh
-run, so the remaining negative-angle failures should not be pursued by retaining
-that observation change. Use matched task measurements for checkpoint selection
-and do not treat training proxies or development panels as a terminal verdict.
+**Direction:** Diagnose whether the retained 50/50 action-smoothing recipe is
+reproducible from fresh initialization before adding another representation or
+control intervention. Experiment 9 did not make the periodic target-direction
+representation useful in the tested fresh run, so that direction is abandoned.
+Use matched task measurements for checkpoint selection and do not treat training
+proxies or development panels as a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -30,17 +30,18 @@ success.
 
 **Open questions:** Whether the residual negative-angle failures arise
 primarily from reachability, action dynamics, or run variability remains
-unresolved. Experiment 9 shows that the tested periodic encoding did not
-resolve them, but a single fresh run cannot exclude other representations or
-seed effects. The small research-panel gain from experiment 7 is not reproduced
-as a protected-panel gain, and unmeasured checkpoints cannot be ranked from
-training proxies.
+unresolved. The experiment-7 smoother gain came from one transferred run and
+was not reproduced as a protected-panel gain, so its fresh-run reliability is
+unknown. Experiment 9 shows that the tested periodic encoding did not resolve
+the failures, but does not exclude other controls or representations.
+Unmeasured checkpoints cannot be ranked from training proxies.
 
-**Conditional next steps:** A future investigation may replicate the 50/50
-smoother or test a control-focused intervention to distinguish run variability
-from action-dynamics effects. A different representation remains possible only
-with a clear measured task-performance rationale. The margin-shaped policy
-remains a diagnostic alternative, not evidence of a better task policy.
+**Conditional next steps:** If fresh replication recovers the smoother's
+measured behavior, treat it as a dependable control and then target the
+remaining reachability failures. If it does not, reconsider the recipe's
+reliability before testing another intervention. The margin-shaped policy
+remains a diagnostic alternative, not evidence of a better task policy, and a
+different representation requires a clear measured task-performance rationale.
 Terminal assessment should wait for stronger evidence against the structured
 failure sector.
 
