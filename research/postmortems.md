@@ -3,14 +3,12 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while diagnostically testing whether its reachability
-residual is caused by weak reward resolution near the 1 cm tolerance. The
-sector-specific smoothing reduction and low-rate replay did not help under
-transfer, so this investigation changes the final-approach reward signal without
-changing the learned observation or action interface. Fresh-run instability
-remains a boundary condition for transfer experiments rather than a reason to
-restart from scratch. Training proxies and development panels remain
-development evidence rather than a terminal verdict.
+practical incumbent while reassessing whether the residual negative-angle
+failures are primarily a representation, control, branch-selection, or transfer
+limitation. The near-tolerance reward test did not improve the incumbent under
+transfer, so reward-scale sharpening is not currently the leading route.
+Training proxies and development panels remain development evidence rather than
+a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -22,32 +20,36 @@ measured checkpoints. In experiment 14, the late checkpoint had 431 never-reach
 failures, 46 interrupted failures, and 632 interruption events; 265 of its 477
 failures were in positive 60-to-180 degree bins, but substantial negative-angle
 failures remained. This supports fresh-run instability or transfer dependence
-under the tested recipe, without separating those explanations. Experiments 11 and 12 preserved broad transferred competence but did not remove
-the incumbent's residual failures, experiment 13's low-rate negative-angle
-replay did not improve them, and experiment 15's sector-specific reduction from
-50/50 to 75/25 recovered none of the incumbent's 23 matched failures while
-raising interruption events from 18 to 30 or 37. Experiment 15 did preserve
-all incumbent successes outside the target sector and the 197/200
-task-reference outcomes, so its negative result is specific to the proposed
-recovery rather than a broad collapse. Training-proxy peaks and within-run
-reward increases remain orthogonal to measured task progress. All comparisons
-use fixed development panels and do not establish generalization or causality;
-no official benchmark result exists.
+under the tested recipe, without separating those explanations. Experiments 11
+and 12 preserved broad transferred competence but did not remove the incumbent's
+residual failures, experiment 13's low-rate negative-angle replay did not
+improve them, experiment 15's sector-specific reduction from 50/50 to 75/25
+recovered none of the incumbent's 23 matched failures, and experiment 16's
+0.02 m closeness scale produced 97.5-97.6% research success versus 97.7% for
+the incumbent without reducing the hard-sector failures or never-reach count.
+Experiment 16 did preserve the three task-reference failures and 98.5% result,
+and one checkpoint had 17 interruption events versus the incumbent's 18, but
+these partial or orthogonal signals did not produce task-performance progress.
+Training-proxy peaks and within-run reward increases remain orthogonal to
+measured task progress. All comparisons use fixed development panels and do not
+establish generalization or causality; no official benchmark result exists.
 
 **Open questions:** The cause of the incumbent's residual failures in the
 negative-angle sector remains unresolved; 15 of 23 matched research failures
-never reached tolerance, but the evidence does not distinguish weak final-
-approach reward shaping from control, representation, optimization, or transfer
-effects. The fresh-run regression is still not separated into optimization
-variance, transfer history, or control dynamics. Unmeasured checkpoints cannot
-be ranked from training proxies.
+never reached tolerance, but the evidence does not distinguish control,
+representation, optimization, or transfer effects. Experiment 16 weakens the
+tested final-approach reward explanation, but does not disprove other reward
+forms or establish that the remaining limitation is causal. The fresh-run
+regression is still not separated into optimization variance, transfer history,
+or control dynamics. Unmeasured checkpoints cannot be ranked from training
+proxies.
 
-**Conditional next steps:** Measure the near-tolerance reward intervention on
-compatible task-performance panels with angle and hold diagnostics. If it does
-not reduce hard-sector never-reach failures without broad regression, retain the
-incumbent and reassess representation or branch-selection explanations rather
-than repeating smoothing or replay. Terminal assessment should wait for
-stronger evidence that the selected policy is ready for the official objective.
+**Conditional next steps:** Preserve the incumbent and, if development
+continues, prioritize a measurement-backed representation or control
+investigation that targets the negative-angle reachability residual without
+repeating the tested narrow smoothing, replay, or closeness-scale changes.
+Terminal assessment should wait for stronger evidence that the selected policy
+is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -915,3 +917,61 @@ the three experiment-15 research-evaluation artifacts, the three experiment-15
 task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and
 `robot_learning/scenario/policy_io.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 16
+
+**Result:** Sharpening the closeness-potential length scale did not improve the
+measured incumbent policy. The experiment is closed with the experiment-7
+`working` and `best_known` lineages unchanged, the experiment-16 reward recipe
+reverted, no challenger retained, and terminal assessment not requested.
+
+**Observed behavior:** Training completed 120,832 local steps. The training
+proxy ranged from 0.95 to 1.00, reached 1.00 at multiple intervals, and ended
+at 0.98; logged mean reward was 105.795 at checkpoint-110592 and 103.538 at
+checkpoint-120832. These are training facts, not task-performance
+measurements. On the matched 1,000-episode research panel, checkpoint-90112
+scored 976/1,000 (97.6%), checkpoint-110592 scored 975/1,000 (97.5%), and
+checkpoint-120832 scored 975/1,000 (97.5%), versus 977/1,000 (97.7%) for the
+experiment-7 incumbent. The incumbent had 23 failures, 15 never-reach
+failures, 8 failed episodes with interruptions, and 18 total interruption
+events. The experiment-16 checkpoints had respectively 24, 25, and 25
+failures; 18, 19, and 18 never-reach failures; 6, 6, and 7 failed episodes
+with interruptions; and 23, 17, and 19 total interruption events. Hard-sector
+success was 52/74 at checkpoint-90112 and 51/74 at the two later checkpoints,
+versus 52/74 for the incumbent. Non-sector success was 924/926 for all three
+challengers versus 925/926 for the incumbent. Paired outcomes had no
+challenger wins and one, two, and two incumbent wins. On the fixed
+task-reference panel, all three checkpoints scored 197/200 (98.5%) and had the
+same three failed target identities as the incumbent.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe and
+fixed development panels, with a limited partial signal. The expected
+hard-sector recovery and reduction in never-reach failures did not occur:
+never-reach counts were equal to or higher than the incumbent, research success
+was lower at every measured checkpoint, and the later checkpoints lost one
+hard-sector success plus one non-sector success. The expected preservation
+branch was partly observed in the unchanged task-reference score and shared
+failure identities, while the 17-event interruption count at checkpoint-110592
+is an orthogonal hold-dynamics signal rather than task progress. These
+measurements weaken the final-approach reward-resolution explanation under this
+transfer and panel; they do not establish that every reward shaping variant is
+ineffective or identify the causal source of the residual failures.
+
+**Interpretation:** Concentrating closeness reward nearer the tolerance did not
+convert the incumbent's structured negative-angle failures into successful
+holds. The unchanged protected-panel outcome and the lack of paired challenger
+wins favor retaining the incumbent and reverting the tested reward recipe.
+Training-proxy peaks and reward values did not predict a better held-out policy
+in this run. The evidence narrows the useful direction, but representation,
+control, branch selection, and transfer-dependent optimization remain plausible
+and are not distinguished by this single intervention.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, the experiment-16 training-log query for
+steps 5,120-120,832, `research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-16/inventory.json`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-16/parameters.json`,
+the three experiment-16 research-evaluation artifacts, the three experiment-16
+task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, the experiment-7
+late research and task-reference artifacts used for comparison, and
+`robot_learning/scenario/reward.py`.
