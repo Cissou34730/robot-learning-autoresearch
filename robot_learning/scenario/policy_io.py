@@ -9,7 +9,7 @@ import numpy as np
 from robot_learning.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
 
-ACTION_SMOOTHING_FACTOR = 0.75
+ACTION_SMOOTHING_FACTOR = 0.5
 
 
 def make_policy_io():
