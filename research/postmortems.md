@@ -3,12 +3,11 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while reassessing whether the residual negative-angle
-failures are primarily a representation, control, branch-selection, or transfer
-limitation. The near-tolerance reward test did not improve the incumbent under
-transfer, so reward-scale sharpening is not currently the leading route.
-Training proxies and development panels remain development evidence rather than
-a terminal verdict.
+practical incumbent while distinguishing optimization refinement from
+representation, control, branch-selection, or transfer limitations in the
+residual negative-angle failures. A conservative transferred update is a useful
+diagnostic before changing the observation contract again. Training proxies and
+development panels remain development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
