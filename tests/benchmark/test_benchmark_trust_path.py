@@ -136,17 +136,38 @@ def _pending_final_benchmark_state(monkeypatch, tmp_path):
     artifact.mkdir()
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
         (artifact / filename).write_bytes(b"artifact")
+    fingerprint = artifact_fingerprint(artifact)
+    best_known = {
+        "artifact": "artifact",
+        "fingerprint": fingerprint,
+        "origin_experiment": 9,
+        "candidate": "candidate",
+        "parameters": {},
+        "scientific_commit": "abc123",
+        "training_steps": 120_000,
+        "evaluation_artifacts": [],
+        "reason": "Measured model selected for official assessment.",
+    }
     state_path = tmp_path / "state.json"
     state_path.write_text(
         json.dumps(
             {
-                "schema_version": 2,
+                "schema_version": 4,
+                "campaign": {
+                    "id": "campaign",
+                    "started_at": "now",
+                    "base_commit": "base",
+                },
+                "working_lineage": best_known.copy(),
+                "best_known_lineage": best_known.copy(),
+                "retained_lineages": [],
                 "official_metrics": None,
                 "pending_final_benchmark": {
                     "experiment": 9,
-                    "selected": "candidate",
+                    "selected": "best_known",
                     "artifact": "artifact",
-                    "fingerprint": artifact_fingerprint(artifact),
+                    "fingerprint": fingerprint,
+                    "best_known": best_known.copy(),
                 },
             }
         ),
