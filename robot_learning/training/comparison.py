@@ -34,26 +34,22 @@ def episode_outcomes(evaluations: list[dict]) -> dict[tuple[str, int], bool]:
 
 
 def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
-    """Compare policies on their shared distinct recorded episode identities."""
+    """Compare policies on distinct, matching recorded episode identities."""
     candidate_outcomes = episode_outcomes(candidate)
     reference_outcomes = episode_outcomes(reference)
-    shared = candidate_outcomes.keys() & reference_outcomes.keys()
-    if not shared:
-        raise ValueError("paired evaluations do not share any episodes")
+    if not candidate_outcomes or candidate_outcomes.keys() != reference_outcomes.keys():
+        raise ValueError("paired evaluations do not cover identical episodes")
     candidate_wins = sum(
         candidate_outcomes[key] and not reference_outcomes[key]
-        for key in shared
+        for key in candidate_outcomes
     )
     reference_wins = sum(
         reference_outcomes[key] and not candidate_outcomes[key]
-        for key in shared
+        for key in candidate_outcomes
     )
-    episode_count = len(shared)
+    episode_count = len(candidate_outcomes)
     return {
         "episodes": episode_count,
-        "shared_episodes": episode_count,
-        "candidate_episode_coverage": len(candidate_outcomes),
-        "reference_episode_coverage": len(reference_outcomes),
         "candidate_wins": candidate_wins,
         "reference_wins": reference_wins,
         "discordant_episodes": candidate_wins + reference_wins,

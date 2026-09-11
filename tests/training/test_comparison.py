@@ -47,21 +47,8 @@ def test_recorded_identity_not_panel_offset_controls_comparison():
     reference = evaluation(0, [False])
     reference["episode_results"][0]["episode_seed"] = 42
 
-    with pytest.raises(ValueError, match="do not share any episodes"):
+    with pytest.raises(ValueError, match="identical episodes"):
         paired_comparison([candidate], [reference])
-
-
-def test_partial_panel_overlap_reports_shared_and_source_coverage():
-    candidate = evaluation(10, [True] * 200)
-    reference = evaluation(10, [False] * 1000)
-
-    comparison = paired_comparison([candidate], [reference])
-
-    assert comparison["episodes"] == 200
-    assert comparison["shared_episodes"] == 200
-    assert comparison["candidate_episode_coverage"] == 200
-    assert comparison["reference_episode_coverage"] == 1000
-    assert comparison["candidate_wins"] == 200
 
 
 def test_different_evaluation_semantics_do_not_collapse():

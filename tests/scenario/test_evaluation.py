@@ -12,7 +12,6 @@ import pytest
 
 import robot_learning.scenario.evaluation as scenario_evaluation
 from robot_learning.scenario.evaluation import summarize_research_evaluations
-from robot_learning.scenario.policy_io import make_policy_io
 
 BASELINE_EPISODE_FIELDS = {
     "episode",
@@ -28,7 +27,7 @@ BASELINE_EPISODE_FIELDS = {
 class ZeroPolicy:
     def __init__(self):
         env = scenario_evaluation.make_evaluation_env()
-        self.io = make_policy_io(use_ik_assist=False)
+        self.io = env.policy_io
         self.observation_space = env.observation_space
         env.close()
 
