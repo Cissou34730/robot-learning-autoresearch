@@ -908,9 +908,7 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     protocol = (root / "research" / "runner_protocol.py").read_text(
         encoding="utf-8"
     )
-    combined = "\n".join(
-        (program, instruments, launcher, brief_builder, protocol)
-    ).lower()
+    combined = f"{program}\n{instruments}\n{launcher}\n{brief_builder}\n{protocol}".lower()
     normalized_program = " ".join(program.lower().split())
     normalized_instruments = " ".join(instruments.lower().split())
     normalized_brief_builder = " ".join(brief_builder.lower().split())

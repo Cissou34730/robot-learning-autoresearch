@@ -689,12 +689,16 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
         return f"{len(ordered)} distinct"
 
     lines = [
-        f"- {measurement_count} measurements; {len(artifacts)} detailed artifacts; "
-        f"{len(fingerprints)} fingerprint-bound models.",
-        "- Measurement record index: "
-        f"{_existing_artifact_reference('research/results.jsonl', kind='file')}; "
-        "current analysis records: "
-        f"{_existing_artifact_reference('research/research_state.json', kind='file')}.",
+        (
+            f"- {measurement_count} measurements; {len(artifacts)} detailed artifacts; "
+            f"{len(fingerprints)} fingerprint-bound models."
+        ),
+        (
+            "- Measurement record index: "
+            f"{_existing_artifact_reference('research/results.jsonl', kind='file')}; "
+            "current analysis records: "
+            f"{_existing_artifact_reference('research/research_state.json', kind='file')}."
+        ),
     ]
     if research_evaluations:
         episodes = {
