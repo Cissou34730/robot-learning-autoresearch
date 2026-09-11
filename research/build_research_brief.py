@@ -606,70 +606,128 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
 
 
 def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
-    records: dict[str, str] = {}
-    if isinstance(pending, dict):
-        source = pending
-        evaluations = [
+    research_evaluations: list[dict] = []
+    task_reference_evaluations: list[dict] = []
+    fingerprints: set[str] = set()
+    artifacts: set[str] = set()
+    seen_research: set[str] = set()
+    seen_task_reference: set[str] = set()
+    sources = [*results, *(([pending]) if isinstance(pending, dict) else [])]
+    for source in sources:
+        direct = [
             *(source.get("requested_evaluations") or []),
             *(source.get("partial_evaluations") or []),
         ]
-        for evaluation in evaluations:
-            metrics = evaluation.get("metrics") or {}
-            path = metrics.get("evaluation_artifact")
-            if not path:
+        if not direct:
+            direct = [
+                {"candidate": candidate.get("name"), **evaluation}
+                for candidate in source.get("candidates") or []
+                for evaluation in candidate.get("evaluations") or []
+            ]
+        for evaluation in direct:
+            metrics = evaluation.get("metrics") or evaluation
+            normalized = {**metrics, **evaluation}
+            identity = str(metrics.get("evaluation_artifact") or _stable_json({
+                key: normalized.get(key)
+                for key in (
+                    "candidate",
+                    "instrument",
+                    "episodes",
+                    "seed",
+                    "evaluation_semantics",
+                    "model_fingerprint",
+                )
+            }))
+            if identity in seen_research:
                 continue
+            seen_research.add(identity)
+            research_evaluations.append(normalized)
             fingerprint = evaluation.get("model_fingerprint") or metrics.get(
                 "model_fingerprint"
             )
-            identity = str(fingerprint)[:12] if fingerprint else "unverified"
-            semantics = evaluation.get("evaluation_semantics") or metrics.get(
-                "evaluation_semantics", "unavailable"
-            )
-            episodes = evaluation.get("episodes", metrics.get("episodes", "-"))
-            seed = evaluation.get("seed", metrics.get("seed", "-"))
-            records[str(path)] = (
-                f"research evaluation; candidate "
-                f"`{evaluation.get('candidate', 'unavailable')}`; model `{identity}`; "
-                f"seed {seed}; {episodes} episodes; success "
-                f"{metrics.get('success_percent', 'unavailable')}%; semantics "
-                f"`{semantics}`"
-            )
-        references = [
+            if fingerprint:
+                fingerprints.add(str(fingerprint))
+            if metrics.get("evaluation_artifact"):
+                artifacts.add(str(metrics["evaluation_artifact"]))
+        for evaluation in [
             *(source.get("task_reference_evaluations") or []),
             *(source.get("partial_task_reference_evaluations") or []),
-        ]
-        for evaluation in references:
-            path = evaluation.get("evaluation_artifact")
-            if not path:
+        ]:
+            identity = str(evaluation.get("evaluation_artifact") or _stable_json({
+                key: evaluation.get(key)
+                for key in (
+                    "candidate",
+                    "panel",
+                    "panel_version",
+                    "episodes",
+                    "seed",
+                    "model_fingerprint",
+                )
+            }))
+            if identity in seen_task_reference:
                 continue
-            fingerprint = evaluation.get("model_fingerprint")
-            identity = str(fingerprint)[:12] if fingerprint else "unverified"
-            records[str(path)] = (
-                f"task reference; candidate "
-                f"`{evaluation.get('candidate', 'unavailable')}`; model `{identity}`; "
-                f"panel `{evaluation.get('panel', 'unavailable')}`; "
-                f"{evaluation.get('episodes', '-')} episodes; success "
-                f"{evaluation.get('success_percent', 'unavailable')}%"
-            )
-    lines = [
-        f"- {_existing_artifact_reference(path, kind='file')}: {description}"
-        for path, description in sorted(records.items())
-    ]
-    for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
-        summary = _v4_result_measurements(result)
-        if summary == "unmeasured":
-            continue
-        sources = [_existing_artifact_reference("research/results.jsonl", kind="file")]
-        postmortem = result.get("postmortem")
-        if postmortem:
-            sources.append(_existing_artifact_reference(postmortem, kind="file"))
-        lines.append(
-            f"- Experiment {result.get('index', '-')}: {summary}"
-            + "; source "
-            + ", ".join(dict.fromkeys(sources))
-        )
-    if not lines:
+            seen_task_reference.add(identity)
+            task_reference_evaluations.append(evaluation)
+            if evaluation.get("model_fingerprint"):
+                fingerprints.add(str(evaluation["model_fingerprint"]))
+            if evaluation.get("evaluation_artifact"):
+                artifacts.add(str(evaluation["evaluation_artifact"]))
+    measurement_count = len(research_evaluations) + len(task_reference_evaluations)
+    if not measurement_count:
         return ["No fingerprint-bound development evidence recorded yet."]
+
+    def numeric_values(values: set[int]) -> str:
+        ordered = sorted(values)
+        if len(ordered) <= 5:
+            return ", ".join(str(value) for value in ordered)
+        return f"{ordered[0]}-{ordered[-1]} ({len(ordered)} distinct)"
+
+    def text_values(values: set[str]) -> str:
+        ordered = sorted(values)
+        if len(ordered) <= 3:
+            return ", ".join(f"`{value}`" for value in ordered)
+        return f"{len(ordered)} distinct"
+
+    lines = [
+        f"- {measurement_count} measurements; {len(artifacts)} detailed artifacts; "
+        f"{len(fingerprints)} fingerprint-bound models.",
+        "- Measurement record index: "
+        f"{_existing_artifact_reference('research/results.jsonl', kind='file')}; "
+        "current analysis records: "
+        f"{_existing_artifact_reference('research/research_state.json', kind='file')}.",
+    ]
+    if research_evaluations:
+        episodes = {
+            int(item["episodes"])
+            for item in research_evaluations
+            if item.get("episodes") is not None
+        }
+        seeds = {
+            int(item["seed"])
+            for item in research_evaluations
+            if item.get("seed") is not None
+        }
+        semantics = {
+            str(item["evaluation_semantics"])
+            for item in research_evaluations
+            if item.get("evaluation_semantics")
+        }
+        lines.append(
+            f"- `research_evaluation`: {len(research_evaluations)} measurements; "
+            f"episode counts {numeric_values(episodes) if episodes else 'not recorded'}; "
+            f"seeds {numeric_values(seeds) if seeds else 'not recorded'}; semantics "
+            f"{text_values(semantics) if semantics else 'not recorded'}."
+        )
+    if task_reference_evaluations:
+        panels = {
+            str(item["panel"])
+            for item in task_reference_evaluations
+            if item.get("panel")
+        }
+        lines.append(
+            f"- `task_reference`: {len(task_reference_evaluations)} measurements; "
+            f"panels {text_values(panels) if panels else 'not recorded'}."
+        )
     return lines
 
 
@@ -804,7 +862,7 @@ def _render_v4_research_brief(
     if not results:
         lines.append("| - | - | - | - | - | - | - | - |")
 
-    lines.extend(["", "## Available development evidence", ""])
+    lines.extend(["", "## Development evidence index", ""])
     lines.extend(_v4_evidence_lines(pending, results))
 
     strategy = scientific_strategy_section(postmortems, campaign_id)
@@ -830,12 +888,13 @@ def _render_v4_research_brief(
     groups = _replication_groups(results)
     if groups:
         for original, entries in groups:
-            facts = "; ".join(
-                f"experiment {entry.get('index')}, seed {entry.get('training_seed', '-')}, "
-                f"{_v4_result_measurements(entry)}"
-                for entry in entries
+            experiments = ", ".join(
+                str(entry.get("index", "-")) for entry in entries
             )
-            lines.append(f"- Replication group `{original}`: {facts}")
+            lines.append(
+                f"- Replication group `{original}`: {len(entries)} runs; "
+                f"experiments {experiments}."
+            )
     else:
         lines.append("No repeated operations recorded.")
 

@@ -34,7 +34,7 @@ Model saved to models/reach-example/model.zip
 """
 
 
-def test_v4_evidence_foregrounds_measured_outcomes_not_selection_rationales():
+def test_v4_evidence_index_is_aggregate_and_excludes_selection_rationales():
     lines = _v4_evidence_lines(
         None,
         [
@@ -60,10 +60,13 @@ def test_v4_evidence_foregrounds_measured_outcomes_not_selection_rationales():
         ],
     )
 
-    assert "checkpoint-100, research_evaluation" in lines[0]
-    assert "model abcdef123456" in lines[0]
-    assert "success 95.00%" in lines[0]
-    assert "highest proxy" not in lines[0]
+    rendered = "\n".join(lines)
+    assert "1 measurements" in rendered
+    assert "1 fingerprint-bound models" in rendered
+    assert "episode counts 20" in rendered
+    assert "seeds 7300" in rendered
+    assert "success 95.00%" not in rendered
+    assert "highest proxy" not in rendered
 
 
 def _checkpoint(path: Path) -> Path:
@@ -359,7 +362,7 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     assert rendered.index("## Working lineage") < rendered.index(
         "## Campaign experiment index"
     )
-    assert rendered.index("## Available development evidence") < rendered.index(
+    assert rendered.index("## Development evidence index") < rendered.index(
         "## Provisional scientific synthesis"
     )
 
@@ -441,11 +444,15 @@ def test_v4_brief_groups_long_campaign_checkpoint_and_evidence_detail(
     expanded = render_research_brief()
 
     assert compact.count("1 measured checkpoint; 19 unmeasured checkpoints") == 25
-    assert compact.count("measured, research_evaluation/development-v1") >= 25
     assert "research_evaluation/development-v1: 1 measurement" in compact
+    assert "25 measurements" in compact
+    assert "episode counts 20" in compact
+    assert "seeds 0" in compact
     assert "experiment-25-0.json" in results_path.read_text(encoding="utf-8")
     assert "experiment-25-0.json" not in expanded
     assert "checkpoint-198" not in expanded
+    assert "1250 measurements" in expanded
+    assert "seeds 0-49 (50 distinct)" in expanded
     assert len(expanded) - len(compact) < 1000
 
 

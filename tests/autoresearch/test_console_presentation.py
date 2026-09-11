@@ -212,7 +212,7 @@ def test_v4_training_summary_advances_to_post_training_analysis():
     assert "Next\n  Researcher post-training analysis" in card
 
 
-def test_v4_replication_brief_reports_result_level_measurements(monkeypatch, tmp_path):
+def test_v4_replication_brief_compacts_result_level_measurements(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
@@ -279,19 +279,12 @@ def test_v4_replication_brief_reports_result_level_measurements(monkeypatch, tmp
 
     rendered = render_research_brief()
 
-    assert (
-        "experiment 1, seed 10, checkpoint-a, research_evaluation, 20 episodes, seed 100, success 55.00%"
-        in rendered
-    )
-    assert (
-        "experiment 2, seed 11, checkpoint-b, task_reference/held-out, 30 episodes, seed 200, success 65.00%"
-        in rendered
-    )
-    assert (
-        "experiment 3, seed 12, checkpoint-c, research_evaluation, success 75.00%"
-        in rendered
-    )
-    assert "experiment 4, seed 13, unmeasured" in rendered
+    assert "Replication group `1`: 4 runs; experiments 1, 2, 3, 4." in rendered
+    assert "3 measurements" in rendered
+    assert "episode counts 20" in rendered
+    assert "seeds 100" in rendered
+    assert "panels `held-out`" in rendered
+    assert "success 55.00%" not in rendered
 
 
 def test_runner_no_longer_dumps_the_structured_result_to_the_console():
@@ -748,7 +741,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     assert brief.index("## Latest experiment") < brief.index(
         "## Current lineages and scientific recipes"
     )
-    assert brief.index("## Available development evidence") < brief.index(
+    assert brief.index("## Development evidence index") < brief.index(
         "## Provisional scientific synthesis"
     )
 
