@@ -476,8 +476,8 @@ def write_state(state: dict) -> None:
     atomic_write_json(paths.STATE_PATH, state)
 
 
-def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
-    """Build a native empty v4 campaign without importing prior lineage evidence."""
+def empty_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
+    """Build an empty campaign without importing prior lineage evidence."""
     campaign_id = str(campaign.get("id") or "")
     if not campaign_id:
         raise ValueError("fresh campaign state requires a campaign ID")
