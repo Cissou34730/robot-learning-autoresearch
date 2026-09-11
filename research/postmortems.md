@@ -2,14 +2,12 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Treat the remaining negative-angle failures as an exploratory
-representation question: test whether an explicit periodic target-direction
-encoding improves reachability while retaining the hold stability of the 50/50
-smoother. The 75/25 refinement did not improve the learned task policy, so the
-current investigation is broadened from temporal filtering to a distinct
-observation representation rather than continued as a smoothing series. Use
-matched task measurements for checkpoint selection and do not treat training
-proxies or development panels as a terminal verdict.
+**Direction:** Prioritize measured task performance and retain the 50/50
+action-smoothing recipe as the current working direction. Experiment 9 did not
+make the periodic target-direction representation useful in the tested fresh
+run, so the remaining negative-angle failures should not be pursued by retaining
+that observation change. Use matched task measurements for checkpoint selection
+and do not treat training proxies or development panels as a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -19,29 +17,32 @@ Experiment 8's 75/25 refinement retained low interruption counts relative to
 the unsmoothed incumbent, but its late checkpoint reached only 97.5% on the
 matched panel, had the same 52/74 hard-sector result, more never-reach
 failures (17 versus 15), and modest non-sector and short-radius regressions
-relative to experiment 7. The protected panel remained 98.5% with the same
-three failures at the late checkpoint. These are observations from one
-transferred refinement and fixed development panels; they do not establish
-causality for other filters or representations. Experiments 2 and 6 remain
-controls: full-radius training improved short-radius behavior, while margin
-shaping changed interruption diagnostics without increasing task success.
+relative to experiment 7. Experiment 9's late periodic-direction checkpoint
+reached 89.5% on the research panel, with 17/74 hard-sector and 878/926
+non-sector successes, 105 never-reach failures, and no hold interruptions; its
+task-reference panel reached 90.5% with 19 failures. The protected panel for
+experiment 7 remained 98.5% with three failures. These are observations from
+single transferred or fresh runs and fixed development panels; they do not
+establish causality for other filters, representations, or seeds. Experiments
+2 and 6 remain controls: full-radius training improved short-radius behavior,
+while margin shaping changed interruption diagnostics without increasing task
+success.
 
-**Open questions:** Whether the structured negative-angle failures arise
-primarily from reachability, action dynamics, observation representation, or
-run variability remains unresolved. It is unknown whether a periodic direction
-feature helps the policy use angular information already implicit in the
-current error and IK features without harming hold control. The small
-research-panel gain from experiment 7 is not reproduced as a protected-panel
-gain, and the unmeasured experiment-8 checkpoints cannot be ranked from
+**Open questions:** Whether the residual negative-angle failures arise
+primarily from reachability, action dynamics, or run variability remains
+unresolved. Experiment 9 shows that the tested periodic encoding did not
+resolve them, but a single fresh run cannot exclude other representations or
+seed effects. The small research-panel gain from experiment 7 is not reproduced
+as a protected-panel gain, and unmeasured checkpoints cannot be ranked from
 training proxies.
 
-**Conditional next steps:** If periodic direction features reduce the
-negative-angle failures without broad regression, retain that representation
-for further measured checkpoint selection; if not, a replication of the 50/50
-smoother or a control-focused intervention can separate run variability from
-the representation hypothesis. The margin-shaped policy remains a diagnostic
-alternative, not evidence of a better task policy. Terminal assessment should
-wait for stronger evidence against the structured failure sector.
+**Conditional next steps:** A future investigation may replicate the 50/50
+smoother or test a control-focused intervention to distinguish run variability
+from action-dynamics effects. A different representation remains possible only
+with a clear measured task-performance rationale. The margin-shaped policy
+remains a diagnostic alternative, not evidence of a better task policy.
+Terminal assessment should wait for stronger evidence against the structured
+failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -524,3 +525,56 @@ must use measured task behavior.
 the corresponding experiment-8 task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the
 experiment-7 late research and task-reference artifacts used for comparison.
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 9
+
+**Result:** The fresh periodic target-direction observation did not improve the
+learned task policy under the tested run. The experiment-7 `working` and
+`best_known` lineages remain selected, the experiment-9 recipe is reverted, and
+terminal assessment is not requested.
+
+**Observed behavior:** Training completed 120,832 local steps. The training
+proxy ranged from 0 to 0.52 and ended at 0.52; logged reward rose from -4.09 at
+5,120 steps to 144.696 at checkpoint-120832. These are training facts, not
+held-out task-performance measurements. On the matched 1,000-episode research
+panel, checkpoint-100352 scored 799/1,000 (79.9%) and checkpoint-120832 scored
+895/1,000 (89.5%). The late checkpoint improved over the early checkpoint, but
+the matched paired comparisons favored the experiment-7 late checkpoint by
+178 and 82 discordant episodes respectively. Relative to that checkpoint's
+52/74 hard-sector and 925/926 non-sector results, the experiment-9 late
+checkpoint achieved 17/74 and 878/926. It had 105 never-reach failures and no
+hold-interruption events; the early checkpoint had 192 never-reach failures and
+148 interruption events. On the fixed 200-episode task-reference panel, the
+early and late checkpoints scored 81.0% and 90.5%, with 38 and 19 failures,
+versus 98.5% and three failures for the experiment-7 late checkpoint. The
+zero-interruption result is a partial hold-stability signal, while the
+within-run late improvement and the training-proxy increase are orthogonal to
+the claim of improved task performance.
+
+**Hypothesis assessment:** Contradicted under the tested fresh recipe and
+development panels, with an important partial signal. The expected sector and
+overall improvements were absent: the late periodic checkpoint was far below
+the 50/50 smoother in hard-sector, non-sector, research-panel, and
+task-reference success, and never-reach failures remained numerous. The
+expected hold-stability component was present as zero interruption events, but
+that did not yield reachability or overall task progress. This matches the
+proposal's contradicting observation of sacrificing broad performance while
+failing to resolve reachability. The result weakens this periodic encoding as a
+useful contributor in this run; it does not disprove other representations or
+attribute the residual failures causally to action dynamics.
+
+**Interpretation:** The added absolute-direction sine and cosine channels did
+not make the structured failure sector learnable in this fresh PPO run. The
+policy appears to have avoided hold interruptions when it reached tolerance,
+but usually failed before reaching it, so the representation change traded
+away broad reachability rather than complementing the smoother. The late
+checkpoint is better than the early one within this run, but both are
+inferior to the retained measured policy; this checkpoint selection is
+descriptive and does not show that additional training caused the improvement.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, `research/postmortems.md`,
+`robot_learning/scenario/observations.py`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-9-checkpoint-100352-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-9-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+the corresponding experiment-9 task-reference artifacts, and the experiment-7
+late research and task-reference artifacts used for comparison.
