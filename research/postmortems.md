@@ -3,12 +3,14 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while seeking a different explanation or intervention for
-its residual negative-angle failures. The sector-specific smoothing reduction
-did not help under transfer. Fresh-run instability remains a boundary condition
-for transfer experiments rather than a reason to restart from scratch. Training
-proxies and development panels remain development evidence rather than a
-terminal verdict.
+practical incumbent while diagnostically testing whether its reachability
+residual is caused by weak reward resolution near the 1 cm tolerance. The
+sector-specific smoothing reduction and low-rate replay did not help under
+transfer, so this investigation changes the final-approach reward signal without
+changing the learned observation or action interface. Fresh-run instability
+remains a boundary condition for transfer experiments rather than a reason to
+restart from scratch. Training proxies and development panels remain
+development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -33,17 +35,19 @@ use fixed development panels and do not establish generalization or causality;
 no official benchmark result exists.
 
 **Open questions:** The cause of the incumbent's residual failures in the
-negative-angle sector remains unresolved; the tested narrow smoothing change
-did not distinguish a temporal-control cause from representation, optimization,
-or transfer effects. The fresh-run regression is still not separated into
-optimization variance, transfer history, or control dynamics. Unmeasured
-checkpoints cannot be ranked from training proxies.
+negative-angle sector remains unresolved; 15 of 23 matched research failures
+never reached tolerance, but the evidence does not distinguish weak final-
+approach reward shaping from control, representation, optimization, or transfer
+effects. The fresh-run regression is still not separated into optimization
+variance, transfer history, or control dynamics. Unmeasured checkpoints cannot
+be ranked from training proxies.
 
-**Conditional next steps:** If further development is worthwhile, use compatible
-task-performance panels and angle/hold diagnostics to test a materially
-different route to the residual failures rather than repeating this narrow
-smoothing intervention or replay. Terminal assessment should wait for stronger
-evidence that the selected policy is ready for the official objective.
+**Conditional next steps:** Measure the near-tolerance reward intervention on
+compatible task-performance panels with angle and hold diagnostics. If it does
+not reduce hard-sector never-reach failures without broad regression, retain the
+incumbent and reassess representation or branch-selection explanations rather
+than repeating smoothing or replay. Terminal assessment should wait for
+stronger evidence that the selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
