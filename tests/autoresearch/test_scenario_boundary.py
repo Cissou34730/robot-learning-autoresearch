@@ -277,10 +277,11 @@ def test_scenario_document_defines_the_current_problem():
     assert "training target distribution and curriculum" in normalized_scenario
     assert "Training conditions may differ from the official task" in normalized_scenario
     assert "discover a learning method" not in normalized_scenario
-    assert "task-reference" not in scenario_text.lower()
-    assert "task_reference" not in scenario_text.lower()
-    assert "final benchmark" not in scenario_text.lower()
-    assert "200-episode" not in scenario_text.lower()
+    assert "official final assessment" in scenario_text.lower()
+    assert "fixed panel of 200 episodes" in normalized_scenario
+    assert "at least 196 episodes succeed" in normalized_scenario
+    assert "distinct from the task-reference development panel" in normalized_scenario
+    assert "request terminal assessment" not in scenario_text.lower()
 
 
 def test_protocol_uses_scenario_independent_wording():
