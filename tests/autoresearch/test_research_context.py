@@ -922,6 +922,14 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     assert "a weakened hypothesis does not by itself reject a useful" in normalized_program
     assert "another useful investigation does not prohibit stopping" in normalized_program
     assert "why measuring that model is useful for the scientific question" in normalized_instruments
+    for scientific_instruction in (
+        "start with `research/brief.md`",
+        "choose the form that supports the investigation",
+        "the intended basis for deciding which checkpoints to measure",
+        "when it may help explain a result or generate a useful hypothesis",
+        "not a recommendation about which models are informative",
+    ):
+        assert scientific_instruction not in normalized_instruments
     assert "provisional scientific synthesis" in normalized_brief_builder
     proxy_summary = _training_proxy_trajectory(
         [

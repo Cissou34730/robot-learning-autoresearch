@@ -4,51 +4,24 @@ This file defines the evidence sources and phase deliverables available to the R
 
 ## Inspect evidence
 
-Start with `research/brief.md`. It is the compact index and summary of the
-current campaign's evidence, including current state, parameters, available
+`research/brief.md` indexes the current campaign state, parameters, available
 models, retained lineages and repository-relative artifact paths.
-
-Use `research/postmortems.md` for previous observations and interpretations.
-Inspect referenced evaluation, task-reference or other structured artifacts as
-part of formulating or answering a scientific question. Targeted extraction and
-full-artifact inspection are both available; choose the form that supports the
-investigation.
-
-Detailed artifacts remain valid sources of scientific evidence, including for
-unsuccessful experiments. Inspect episode-level behavior, distributions,
-failure modes, or any other detail when it may help explain a result or generate
-a useful hypothesis.
-
-When querying structured artifacts, distinguish schema discovery from scientific
-analysis. Schema inspection may be necessary to understand an unfamiliar
-artifact; repeated deterministic execution and repeated extraction of the same
-fields should be recognized accurately rather than treated as new evidence.
+`research/postmortems.md` records Researcher-authored observations and
+interpretations. Referenced structured artifacts contain the detailed outputs
+of completed measurements.
 
 Artifact paths exposed by the brief and research contracts are relative to the
 repository. Use them directly from the repository working directory; do not
 reconstruct them as absolute paths.
 
-For targeted JSON or JSONL extraction, prefer the installed `jello` command
-through the researcher environment rather than relying on a global executable:
-
-```powershell
-uv run --group researcher jello '_.metrics' -f <artifact.json>
-```
-
-Another existing researcher-owned analysis tool may be used when it better fits
-the question. `research/instruments.md` is the operational contract for these
-instruments and request formats, and a starting point for understanding them.
-Inspect instrument, learning, measurement, or Runner implementations when useful
-to understand behavior, assumptions, coverage, outputs, or limitations and decide
-how to use a capability. Implementation inspection may help formulate the
-scientific question as well as answer it. Human-owned implementations remain
-read-only; inspection does not change execution or modification permissions.
+`jello` is available through the researcher environment for JSON and JSONL
+artifacts. Its expressions use Python syntax, not `jq` syntax. Researcher-owned
+analysis tools and read-only implementation inspection are also available.
+Inspection does not change the ownership permissions in `AGENTS.md`.
 
 For the official benchmark result, use `research/brief.md` under **Current
 status -> Reported result**. Its durable metrics and artifact reference remain
 in `research/research_state.json`.
-
-Candidate training success and reward shown in the brief are training facts, not evaluation results. They cannot establish that a policy improved, but they are the intended basis for deciding which checkpoints to measure.
 
 ### Query Stable-Baselines3 logs
 
@@ -80,8 +53,8 @@ During experiment preparation, the Researcher may modify any researcher-owned sc
 During post-training analysis and its optional refinement rounds, the Researcher
 may modify researcher-owned measurement and analysis code before requesting
 another measurement round. The existing request flow can measure current
-candidates and eligible saved lineages. No diagnostic code change or particular
-instrument is required. Changes affecting training apply to the next experiment.
+candidates and eligible saved lineages. Changes affecting training apply to the
+next experiment.
 
 ## Request measurements
 
@@ -94,7 +67,6 @@ changed before submitting the request.
 `question` and `reason` are non-empty strings describing the request as a whole.
 `measurements` selects the instruments and models to run. `paired_comparisons`
 selects comparisons to compute from compatible measurements and is optional.
-The question may be confirmatory, diagnostic, exploratory, or descriptive.
 
 Write `research/evaluation_request.json`:
 
@@ -130,8 +102,7 @@ alternative.
 
 One evaluation request may measure at most three distinct models. Multiple
 measurements of the same model count as one. This includes different seeds,
-episode counts, labels, or instruments applied to the same model. This is an
-operational limit, not a recommendation about which models are informative.
+episode counts, labels, or instruments applied to the same model.
 
 | Instrument            | Additional fields                                                       | Operation                                                          |
 | --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -144,21 +115,17 @@ outcomes. The panel definition is in
 `robot_learning/benchmark/reference_contract.py`; its execution and reported
 quantities are in `robot_learning/benchmark/reference_evaluation.py`.
 
-Add one entry per model. Using identical `research_evaluation` settings measures several candidates or a selected lineage on a comparable panel.
+Add one entry per model and instrument.
 
 A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must cover identical recorded episode identities within matching evaluation semantics.
 Compatible historical measurements may supply either or both sides when their
 model fingerprints, evaluation semantics, instrument settings, and exact episode
 identities match. Detailed diagnostic artifacts retain the same evaluation
 identity. Legacy compatibility fields are ignored when records are read.
-The same compatibility rule determines whether research-evaluation evidence can
-support replacing `best_known`; task-reference evidence retains its exact panel
-compatibility rule and remains optional.
 Overlapping or repeated episodes count once in pooled summaries and paired
 comparisons. Summary `episodes` reports distinct coverage; `episode_executions`
 and `repeated_episodes` report execution count and repeated coverage separately.
 Conflicting outcomes for the same deterministic episode are rejected.
-Reusing the same development panel does not create independent confirmation.
 
 The model fingerprint covers the complete saved artifact, including its policy
 I/O, loader, and normalization state. Research-evaluation context identity covers
@@ -238,15 +205,11 @@ An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. `continuation` continues the selected
 recipe without a learning-method change. A `training` proposal may deliberately
 apply a changed recipe to an existing parent with `initialization: "transfer"`.
-Continuation, replication, and additional seeds remain available scientific
-choices, not mandatory controls or gates for accepting a model.
-
 The `reasoning` object contains the fields shown in the schema. `evidence` is a
 non-empty array of source/observation objects. `alternative`,
 `expected_observation`, `contradicting_observation`, `initialization_reason`, and
-`strategy_link` are non-empty strings. Expected and contradicting observations
-describe informative possibilities rather than binary acceptance criteria. Their
-scientific use is defined in `research/program.md`.
+`strategy_link` are non-empty strings. Their scientific use is defined in
+`research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
