@@ -2,13 +2,12 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Keep the measured experiment-7 action-smoothing policy as the
-practical incumbent while investigating how to remove both its residual
-negative-angle failures and the broad positive-angle failures seen in fresh
-runs. The second fresh replication makes fresh-run or transfer dependence a
-stronger working question, but does not identify whether the cause is
-initialization, optimization variance, or control dynamics. Training proxies and
-development panels remain development evidence rather than a terminal verdict.
+**Direction:** Preserve the measured experiment-7 action-smoothing policy as the
+practical incumbent while testing whether its residual negative-angle failures
+are a sector-specific temporal-control problem. Fresh-run instability is now a
+boundary condition for transfer experiments rather than a reason to restart
+from scratch. Training proxies and development panels remain development
+evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -28,18 +27,18 @@ orthogonal to measured task progress. All comparisons use fixed development
 panels and do not establish generalization or causality; no official benchmark
 result exists.
 
-**Open questions:** Whether the fresh-run regression is primarily caused by
-optimization variance, transfer history, or an interaction with the temporal
-control remains unresolved. The most useful future evidence should measure any
-new representation or control change on compatible task-performance panels and
-retain angle and hold diagnostics. Unmeasured checkpoints cannot be ranked from
-training proxies.
+**Open questions:** Whether reducing smoothing only in the -160 to -115 degree
+sector can improve reachability without losing the incumbent's broad hold
+stability remains unresolved. The fresh-run regression is still not separated
+into optimization variance, transfer history, or control dynamics. Unmeasured
+checkpoints cannot be ranked from training proxies.
 
-**Conditional next steps:** Prefer a fresh-versus-transfer or representation/
-temporal-control experiment over another narrow replay, using the retained
-experiment-7 policy as the practical comparison and selecting checkpoints by
-measured task behavior. Terminal assessment should wait for stronger evidence
-that the selected policy is ready for the official objective.
+**Conditional next steps:** First compare the targeted temporal-control transfer
+against the retained experiment-7 policy using compatible task-performance
+panels and angle/hold diagnostics. If it fails, broaden or abandon this
+sector-specific control explanation rather than repeating the same replay.
+Terminal assessment should wait for stronger evidence that the selected policy
+is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
