@@ -2,63 +2,37 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Improve the current policy toward the 98% objective by testing
-whether temporal action control can convert the residual negative-angle
-reach/hold failures into completed holds. Preserve the full-radius recipe and
-use matched task measurements for checkpoint selection; reward shaping remains
-a diagnostic alternative rather than the primary route.
+**Direction:** Improve the smoothed full-radius policy toward the 98% objective
+by addressing the remaining negative-angle never-reach failures while
+preserving the measured reduction in repeated hold excursions. Use matched
+task measurements for checkpoint selection and do not treat training proxies
+or the task-reference result as a terminal verdict.
 
-**Lessons and limits:** Experiment 2's transferred full-radius policy improved
-checkpoint-100352 research success from 97.4% to 97.5% and task-reference
-success from 98.0% to 98.5%, but its hard sector still contained 24 of 25
-research failures and included both never-reached targets and repeated hold
-interruptions. Experiment 3's fresh 13-value observation policy scored 95.1%
-on the research panel and 94.5% on the task-reference panel at 120,832 steps,
-below the unchanged working policy's 97.5% and 98.5%. Its research failures
-also included more never-reached and interrupted episodes than the control.
-The comparison is evidence about this fresh run and these development panels,
-not a causal estimate of every possible geometry representation or training
-initialization. Before experiment 4, the parent reward forfeited none of the
-accrued hold-progress potential on exit (`robot_learning/scenario/reward.py`).
-Experiment 4 directly tested full forfeiture, but both measured checkpoints
-scored 95.4% on the research panel
-versus 97.5% for working, had 50/74 hard-sector successes just like working,
-and had more failed episodes with hold interruptions (35 and 34 versus 14).
-Its task-reference scores were also lower (96.5% and 96.0% versus 98.5%),
-although this remains development evidence rather than an official verdict.
-The available evidence still cannot distinguish whether all hard-sector
-failures are caused by reachability, control, or hold stability.
-Experiment 5's focused-angle transfer run did not improve the hard sector and
-introduced broad non-sector and hold-interruption regressions, so this result
-weakens insufficient angular coverage as the leading explanation under the
-tested recipe. Training proxy success remained non-monotonic and did not
-predict held-out task performance. Experiment 6's early margin-shaped
-checkpoint matched the working policy at 975/1,000 research successes and
-197/200 task-reference successes, with 51/74 versus 50/74 hard-sector success
-and 924/926 versus 925/926 non-sector success. It reduced total recorded hold
-interruptions from 256 to 35, but failed-episode interruption counts were only
-13 versus 14 and never-reach counts were 12 versus 11; the late checkpoint
-returned to 251 total interruptions and scored 974/1,000. These are diagnostic
-signals from one transferred run and fixed development panels, not evidence
-that the reward caused a task-success improvement.
+**Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
+matched research success from 97.5% to 97.7%, hard-sector success from 50/74
+to 52/74, and reduced total interruption events from 256 to 26 or 18, while
+preserving non-sector and short-radius success and slightly improving
+far-radius success. Failed never-reach episodes rose from 11 to 16 or 15,
+and all three task-reference failures were unchanged. The result partially
+supports temporal control as a contributor, but one transferred run and
+fixed development panels cannot identify a universal control mechanism or
+official-task attainment. Experiments 2 and 6 remain relevant controls:
+full-radius training improved short-radius behavior, while margin shaping
+changed interruption diagnostics without increasing task success.
 
-**Open questions:** Whether the remaining negative-angle failures are primarily
-never-reach events or control/hold dynamics remains unresolved. The early
-margin-shaped policy reduced total interruptions from 256 to 35, but failed
-episode interruption counts changed only from 14 to 13 and success did not
-increase, so it is not yet clear whether temporal control can improve task
-outcomes. Whether checkpoint-aware selection can reliably improve the current
-recipe remains uncertain.
+**Open questions:** Whether the research-panel gain from smoothing is
+repeatable, whether the remaining failures are primarily reachability or
+action/observation representation limitations, and whether a less lagging
+temporal control can preserve the interruption reduction without increasing
+never-reach failures remain unresolved.
 
-**Conditional next steps:** First test a minimal, compatible action-smoothing
-intervention from the retained working policy; compare it against the matched
-working policy and, if useful, the retained margin-shaped diagnostic. If
-smoothing increases never-reach failures or leaves hard-sector success
-unchanged, deprioritize this control explanation and consider a different
-action or observation representation. Checkpoint selection should remain
-measurement led rather than inferred from training proxies. Terminal
-assessment remains inappropriate until a selected development policy has
-stronger evidence against the structured failure sector.
+**Conditional next steps:** A future experiment may investigate the residual
+never-reach cases with a different action or observation representation, or
+replicate/refine temporal control with matched measurements. The retained
+margin-shaped policy remains a diagnostic alternative, not evidence of a
+better task policy. Terminal assessment should wait until a selected
+development policy has stronger evidence against the structured failure
+sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -407,3 +381,73 @@ supports requesting the official benchmark for this closure.
 artifacts for `checkpoint-100352`, `checkpoint-120832`, and `working` under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the three
 corresponding experiment-6 task-reference artifacts.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 7
+
+**Result:** Action smoothing partially supported the control hypothesis and
+produced the strongest measured research-panel result in the campaign so far,
+but it did not improve the protected task-reference panel or establish the
+98% objective. The late smoothed checkpoint is selected as working and
+best-known, the smoothed recipe is kept, and terminal assessment is not
+requested.
+
+**Observed behavior:** The transferred run completed 120,832 local steps
+against a requested 120,000. The queried training proxy success was 0.884615
+at 5,120 steps, reached 1.00 at 22,528 steps, varied non-monotonically
+thereafter, and was 0.99 at both measured checkpoints and at completion.
+Logged mean reward was 104.846 at checkpoint-100352 and 105.245 at
+checkpoint-120832. These are training facts, not held-out task-performance
+measurements; 22 of the 24 available checkpoints remain unmeasured.
+
+On the matched 1,000-episode research panel, checkpoint-100352 and
+checkpoint-120832 each scored 977/1,000 (97.7%), while `working` scored
+975/1,000 (97.5%). Each smoothed checkpoint had 52/74 successes in the
+-150 to -120 degree sector versus 50/74 for `working`, 925/926 outside that
+sector versus 925/926, 278/283 at short radius versus 278/283, and 109/111
+at far radius versus 108/111. Failed episodes that never reached tolerance
+numbered 16 and 15 for the early and late checkpoints versus 11 for
+`working`; failed episodes with at least one hold interruption numbered 7 and
+8 versus 14. Total recorded interruption events were 26 and 18 versus 256,
+including a maximum of 236 for one incumbent episode. The paired comparisons
+had two challenger wins and no incumbent wins among two discordant episodes
+for each smoothed checkpoint.
+
+On the fixed 200-episode task-reference panel, both smoothed checkpoints and
+`working` scored 197/200 (98.5%) and had the same three failed episode
+identities: targets at 9.91 cm and -122.90 degrees, 9.36 cm and -127.91
+degrees, and 18.24 cm and -154.79 degrees. The research and task-reference
+panels therefore provide an orthogonal signal: the research gain is not
+reproduced as a success gain on the protected panel.
+
+**Hypothesis assessment:** Partially supported under the tested transferred
+recipe and development panels. The expected observations were present in the
+research evaluation: hard-sector success increased, interruption events
+decreased sharply, and non-sector and radius-bin performance did not regress.
+The contradicting observation was also present: never-reach failures
+increased, and task-reference success and its failure set were unchanged.
+Thus the measurements support temporal command dynamics as a contributor to
+the tested research-panel behavior, but do not show that smoothing converts
+the residual failures into a reliable official-task improvement. This is
+evidence from one smoothing factor, one transferred run, and repeated fixed
+development panels; it does not establish causality for other filters or
+control representations.
+
+**Interpretation:** The smoother appears to suppress repeated excursions in
+failed trajectories and converts two hard-sector research episodes into
+successes without broad measured regression. The accompanying increase in
+never-reach failures indicates a lag or reachability tradeoff remains, and
+the unchanged task-reference failures show that the structured negative-angle
+limitation is not resolved. The late checkpoint is preferred to the early
+checkpoint because it has the same aggregate success and sector/radius
+results with fewer total interruption events and fewer failed never-reach
+episodes, but that selection is diagnostic rather than proof that late
+training caused the difference. The 97.7% research result is useful progress
+toward the human objective but remains below a conclusive terminal-readiness
+claim.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, `robot_learning/scenario/policy_io.py`, the
+experiment-7 research-evaluation artifacts for `checkpoint-100352`,
+`checkpoint-120832`, and `working` under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the three
+corresponding experiment-7 task-reference artifacts.
