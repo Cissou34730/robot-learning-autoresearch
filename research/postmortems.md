@@ -2,15 +2,15 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Keep the retained experiment-7 50/50 action-smoothing policy as
-the practical incumbent while seeking an intervention that removes its
-repeated negative-angle residual failures without displacing broad competence.
-The 10% residual-angle replay in experiment 13 did not improve measured task
-performance, so future work should distinguish transfer or optimization
-variability from limitations of the current control and representation rather
-than assume that more exposure to the same sector is sufficient. Training
-proxies and development panels remain development evidence rather than a
-terminal verdict.
+**Direction:** Use a second fresh replication of the unchanged experiment-7
+50/50 action-smoothing recipe to test whether experiment 10's severe
+positive-angle failures are reproducible or an optimization outlier, while
+keeping the retained experiment-7 policy as the practical incumbent. The 10%
+residual-angle replay in experiment 13 did not improve measured task
+performance, so the next decision should distinguish fresh-run variability from
+limitations of the current control and representation rather than assume that
+more exposure to the same sector is sufficient. Training proxies and
+development panels remain development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
