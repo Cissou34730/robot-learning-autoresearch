@@ -924,6 +924,9 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
         "single strongest development experiment",
         "no supported material opportunity",
         "reuse compatible evidence when it answers the question",
+        "already expected to satisfy",
+        "not a way to resolve development uncertainty",
+        "does not imply the campaign is ending",
     ):
         assert scientific_preference not in combined
 

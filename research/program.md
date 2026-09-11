@@ -201,8 +201,9 @@ The Researcher is responsible for judging whether the evidence backing a
 checks artifact identity and recorded measurement integrity, not scientific merit.
 
 Further training is an ordinary next experiment after closure, including training
-that targets the selected policy's own residual failures. Closing an experiment
-does not imply the campaign is ending.
+that targets the selected policy's own residual failures. Whether the campaign
+continues or requests terminal assessment is a separate decision resolved in this
+closure.
 
 ## Scientific memory
 
@@ -232,9 +233,8 @@ replication count, or proof that no better research direction exists is
 required.
 
 Request the official benchmark only through closure, targeting the frozen
-best-known model. It is the terminal verdict on a policy already expected to
-satisfy the objective, not a way to resolve development uncertainty. Requesting
-it ends the campaign after either verdict: `goal_reached` or `goal_not_reached`.
-Do not plan further work conditional on benchmark failure. Only this benchmark
-declares the official result; a failed official verdict is never development
-feedback for another hypothesis.
+best-known model. Requesting it ends the campaign after either verdict:
+`goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
+plan further work conditional on benchmark failure. Only this benchmark declares
+the official result; a failed official verdict is never development feedback for
+another hypothesis.
