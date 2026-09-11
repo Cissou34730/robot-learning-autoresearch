@@ -28,6 +28,8 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+TRAINING_RESIDUAL_ANGLE_RANGE = (np.deg2rad(-160.0), np.deg2rad(-115.0))
+TRAINING_RESIDUAL_ANGLE_REPLAY_FRACTION = 0.10
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -42,11 +44,26 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        target_angle_focus_range: tuple[float, float] | None = None,
+        target_angle_focus_fraction: float = 0.0,
     ) -> None:
         super().__init__()
+        if (
+            target_angle_focus_range is not None
+            and target_angle_focus_range[0] >= target_angle_focus_range[1]
+        ):
+            raise ValueError("target_angle_focus_range must be increasing")
+        if not 0.0 <= target_angle_focus_fraction <= 1.0:
+            raise ValueError("target_angle_focus_fraction must be between 0 and 1")
+        if target_angle_focus_range is None and target_angle_focus_fraction != 0.0:
+            raise ValueError(
+                "target_angle_focus_range is required for focused angle sampling"
+            )
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        self.target_angle_focus_range = target_angle_focus_range
+        self.target_angle_focus_fraction = target_angle_focus_fraction
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -81,7 +98,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        use_focus = (
+            self.target_angle_focus_range is not None
+            and self.np_random.random() < self.target_angle_focus_fraction
+        )
+        angle_range = (
+            self.target_angle_focus_range if use_focus else (-np.pi, np.pi)
+        )
+        angle = float(self.np_random.uniform(angle_range[0], angle_range[1]))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
@@ -170,7 +194,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return TwoJointArmReachEnv(
+        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
+        target_angle_focus_range=TRAINING_RESIDUAL_ANGLE_RANGE,
+        target_angle_focus_fraction=TRAINING_RESIDUAL_ANGLE_REPLAY_FRACTION,
+    )
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
