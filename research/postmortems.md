@@ -3,12 +3,14 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Keep the retained experiment-7 50/50 action-smoothing policy as
-the practical incumbent while testing whether a low-rate replay of its
-repeated negative-angle residual sector can improve task success without
-displacing broad competence. Experiments 11 and 12 did not improve measured
-research success, so the next intervention changes training exposure rather
-than post-policy control. Training proxies and development panels remain
-development evidence rather than a terminal verdict.
+the practical incumbent while seeking an intervention that removes its
+repeated negative-angle residual failures without displacing broad competence.
+The 10% residual-angle replay in experiment 13 did not improve measured task
+performance, so future work should distinguish transfer or optimization
+variability from limitations of the current control and representation rather
+than assume that more exposure to the same sector is sufficient. Training
+proxies and development panels remain development evidence rather than a
+terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -54,23 +56,41 @@ orthogonal to the measured task-performance comparison. These are observations
 from one transferred run and fixed development panels; they weaken the
 approach-lag explanation but do not distinguish optimization variance,
 transfer dependence, or another control mechanism.
+Experiment 13 added a 10% training-only replay of targets from -160 to -115
+degrees. Training success ranged from 0.93 to 1.00, peaked at 1.00 at local
+step 25,600, and ended at 0.95; reward peaked at 107.37 around step 30,720
+and was 101.21 at completion. These are training facts, not policy rankings.
+Research evaluation measured 975/1,000 (97.5%) at checkpoint-25,600 and
+974/1,000 (97.4%) at both checkpoints 90,112 and 115,712. All 25, 26, and 26
+failures respectively were in the proposed angle sector; never-reach cases
+were 19, 20, and 19, and interruption events were 16, 12, and 24. On the
+fixed task-reference panel, every measured checkpoint scored 197/200 (98.5%)
+and retained the same three failures: approximately 9.91 cm/-122.9 degrees,
+9.36 cm/-127.9 degrees, and 18.24 cm/-154.8 degrees. The other 175 reference
+episodes succeeded. The early training-proxy peak therefore did not produce
+an overall research-panel improvement, and the late high-reward checkpoint
+did not improve the recurring reference failures. The research-evaluation
+context identifier differs from the retained experiment-7 artifact, so the
+cross-experiment research percentages are descriptive rather than a
+compatible paired comparison; the within-experiment checkpoint comparisons
+use the same semantics and episode identities. Twenty-one experiment-13
+checkpoints remain unmeasured.
 Unmeasured checkpoints cannot be ranked from training proxies.
 
 **Open questions:** Whether the fresh run's shifted positive-angle failures
 are primarily optimization variability, transfer dependence, or a control
-dynamics effect remains unresolved. It is also unknown whether a small replay
-fraction can remove the retained basin's repeated negative-angle failures
-without sacrificing broad performance; the prior 50% focused-coverage run
-regressed broadly. The experiment-7 task-reference result remains 98.5% on its
-development panel, but no official benchmark result exists.
+dynamics effect remains unresolved. Experiment 13 weakens the explanation that
+low-rate exposure alone can remove the retained basin's negative-angle
+failures, but does not distinguish the remaining alternatives. The experiment-7
+task-reference result remains 98.5% on its development panel, but no official
+benchmark result exists.
 
-**Conditional next steps:** If low-rate residual replay fails, a fresh-versus-
-transfer replication may be more valuable than another control modification.
-If it succeeds only in the focused sector, matched measurements must determine
-whether the broad policy objective improved. Any new representation or temporal
-control should be justified by matched task-performance evidence. Terminal
-assessment should wait for stronger evidence that the selected policy is ready
-for the official objective.
+**Conditional next steps:** A fresh-versus-transfer replication may be more
+valuable than another narrow replay or control modification. Any new
+representation or temporal control should be justified by compatible
+task-performance evidence, with residual sector and hold diagnostics retained.
+Terminal assessment should wait for stronger evidence that the selected policy
+is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -772,3 +792,57 @@ the stronger policy selection, but its 97.7% research result and fixed-panel
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-12-working-1000ep-seed91000-ffdccdbf3357.json`,
 and the three experiment-12 task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 13
+
+**Result:** The 10% residual-angle replay did not improve measured task
+performance. The experiment is closed with the experiment-7 `working` and
+`best_known` lineages unchanged, the training-sampler intervention reverted,
+and terminal assessment not requested.
+
+**Observed behavior:** Training completed 120,832 local steps. Training
+success ranged from 0.93 to 1.00, reached 1.00 at checkpoint-25,600, and
+ended at 0.95; mean training reward peaked at 107.37 near checkpoint-30,720
+and was 101.21 at completion. Research evaluation measured checkpoint-25,600
+at 975/1,000 (97.5%), checkpoint-90,112 at 974/1,000 (97.4%), and
+checkpoint-115,712 at 974/1,000 (97.4%). The 25, 26, and 26 failures were all
+in the -160 to -115 degree sector. Never-reach cases were 19, 20, and 19;
+interruption events were 16, 12, and 24. On the fixed 200-episode
+task-reference panel, all three checkpoints scored 197/200 (98.5%) and
+repeated the same three failures at approximately 9.91 cm/-122.9 degrees,
+9.36 cm/-127.9 degrees, and 18.24 cm/-154.8 degrees. The other 175 reference
+episodes succeeded. Twenty-one additional experiment-13 checkpoints remain
+unmeasured.
+
+**Hypothesis assessment:** Contradicted under this transferred run and the
+available development panels, with scope limited by the changed research
+evaluation context. The expected sector improvement and removal of the three
+recurring task-reference failures did not occur. Broad task-reference success
+was preserved, and interruption events were lower at the first two measured
+checkpoints than the incumbent's 18 events, but the late checkpoint had 24,
+so the expected stable hold profile was not established. The research
+evaluation context identifier differs from the incumbent's, limiting direct
+cross-experiment percentage comparisons; within experiment 13, later
+checkpoints did not improve over the early checkpoint. The training-proxy
+peaks are orthogonal to measured policy progress, and the result does not
+establish whether replay failed because of transfer, optimization variance,
+or control dynamics.
+
+**Interpretation:** Modest additional exposure to the recurring sector was
+not sufficient to change the residual behavior of this transferred policy
+basin. The unchanged task-reference failures and concentrated research
+failures weaken low-rate replay as a practical intervention under this recipe,
+while preserving the incumbent as the stronger measured policy selection.
+The evidence supports closing this intervention, not a causal conclusion
+about all angle curricula or readiness for the official task.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`,
+`research/training_logs/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-13-attempt-1.log`,
+the experiment-13 checkpoint inventory and parameters under
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-13/`,
+the three experiment-13 research-evaluation artifacts and three
+experiment-13 task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`,
+`robot_learning/scenario/environment.py`, and
+`robot_learning/scenario/evaluation.py`.
