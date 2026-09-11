@@ -193,9 +193,8 @@ whether to end development or request final assessment.
 Assess the tested hypothesis, saved-policy usefulness, scientific recipe,
 training parent, artifact retention, and readiness for terminal assessment as
 distinct decisions. A weakened hypothesis does not by itself reject a useful
-saved policy. Later checkpoints describe the training trajectory but do not
-invalidate an earlier frozen policy, and replication evidence about a learning
-process is not required to acknowledge measured behavior of a saved artifact.
+saved policy. Replication evidence about a learning process is not required to
+acknowledge measured behavior of a saved artifact.
 
 The Researcher is responsible for judging whether the evidence backing a
 `best_known` designation is scientifically comparable and sufficient. The Runner
