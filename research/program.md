@@ -67,8 +67,8 @@ offer the most promising route forward.
 That restriction governs claims, not selection. Checkpoint selection is a
 scientific decision. Training dynamics, checkpoint position, previous
 measurements, behavioral hypotheses, or other relevant evidence may inform that
-decision. The harness does not prescribe a ranking criterion. An unmeasured
-checkpoint remains unmeasured, regardless of its training metrics.
+decision. An unmeasured checkpoint remains unmeasured, regardless of its
+training metrics.
 
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
@@ -79,11 +79,10 @@ recipe may change several components when testing its overall usefulness;
 component-level attribution then remains limited.
 
 The Researcher determines the amount and type of evidence appropriate to the
-investigation. Measurements, comparisons, diagnostics, replications, and
-additional analysis rounds are neither required nor discouraged by the harness.
-Repeated execution of identical deterministic episodes does not create new
-episode coverage; whether additional distinct evidence is useful remains a
-scientific decision.
+investigation, including measurements, comparisons, diagnostics, replications
+and additional analysis rounds. Repeated execution of identical deterministic
+episodes does not create new episode coverage; whether additional distinct
+evidence is useful remains a scientific decision.
 
 Distinguish lack of improvement in a run, evidence against a hypothesis, and a
 practical decision not to pursue an intervention. Scope conclusions to the tested
@@ -121,12 +120,13 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 
 Inspect relevant repository state and completed evidence, choose continuation,
 an intervention with fresh or transfer initialization, or replication, and state
-the scientific question and how it serves the human objective. A hypothesis may
-predict the effect of an intervention or frame an uncertainty that the
-investigation is intended to resolve. Diagnostic and exploratory hypotheses are
-valid when they state a falsifiable proposition, plausible alternatives, the
-observations that would distinguish them, and what would be learned. Do not
-invent a causal mechanism merely to satisfy the proposal format.
+the scientific question and how it serves the human objective. Declare the
+investigation type. A confirmatory or diagnostic investigation states a
+proposition, a plausible alternative, and the observations that would
+distinguish them. An exploratory investigation states the question, the
+uncertainty, the observations it seeks and what those observations could
+clarify. Do not invent a causal mechanism or a prediction merely to satisfy the
+proposal format.
 
 Justify the training parent and fresh-or-transfer initialization by their
 expected value for the question and semantic compatibility with the policy and
@@ -144,9 +144,10 @@ rationale.
 
 Assess progress toward a learned policy satisfying the human objective. Inspect
 the training outcome and available measurements, then relate relevant findings
-to the proposal's expected and contradicting observations. Those observations
-frame informative possibilities; they are not acceptance thresholds for a saved
-policy or a binary limit on interpretation. Use `supported`, `partially
+to the proposal's own reasoning: its expected and contradicting observations, or
+the uncertainty and sought observations of an exploratory investigation. That
+reasoning frames informative possibilities; it is not an acceptance threshold
+for a saved policy or a binary limit on interpretation. Use `supported`, `partially
 supported`, `weakened`, `contradicted`, or `inconclusive`, and record partial,
 unexpected, or orthogonal signals as well as limitations. An unmeasured
 checkpoint remains unmeasured, not a failed policy.
@@ -189,11 +190,11 @@ known. A separate explicit, evidence-backed `best_known` designation identifies
 the selected policy, not a required training parent. Selecting it does not decide
 whether to end development or request final assessment.
 
-Assess the tested hypothesis, saved-policy usefulness, scientific recipe,
+Assess the investigation's outcome, saved-policy usefulness, scientific recipe,
 training parent, artifact retention, and readiness for terminal assessment as
-distinct decisions. A weakened hypothesis does not by itself reject a useful
-saved policy. Replication evidence about a learning process is not required to
-acknowledge measured behavior of a saved artifact.
+distinct decisions. A weakened or unresolved investigation does not by itself
+reject a useful saved policy. Replication evidence about a learning process is
+not required to acknowledge measured behavior of a saved artifact.
 
 The Researcher is responsible for judging whether the evidence backing a
 `best_known` designation is scientifically comparable and sufficient. The Runner
@@ -226,9 +227,9 @@ best serves the human objective. Request terminal assessment when the Researcher
 judges that the selected best-known policy is ready for the official verdict,
 stating the evidence and uncertainty behind that decision. Another useful
 investigation does not prohibit stopping, and reaching a development threshold
-does not require stopping. The harness prescribes neither a development margin,
-residual-failure criterion, replication count, nor proof that no better research
-direction exists.
+does not require stopping. No development margin, residual-failure criterion,
+replication count, or proof that no better research direction exists is
+required.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. It is the terminal verdict on a policy already expected to

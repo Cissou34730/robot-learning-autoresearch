@@ -930,13 +930,15 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     assert "assess progress toward a learned policy satisfying the human objective" in launcher.lower()
     assert "`current synthesis`: the present interpretation" in normalized_program
     assert "the synthesis records no required next action" in normalized_program
-    assert "diagnostic and exploratory hypotheses are valid" in normalized_program
-    assert "a weakened hypothesis does not by itself reject a useful" in normalized_program
+    assert "an exploratory investigation states the question, the uncertainty" in normalized_program
+    assert "does not by itself reject a useful saved policy" in normalized_program
     assert "another useful investigation does not prohibit stopping" in normalized_program
     assert "`current synthesis`: the present interpretation" in normalized_program
     assert "`conditional next steps`" not in normalized_program
     assert "the researcher determines the amount and type of evidence appropriate" in normalized_program
     assert "why measuring that model is useful for the scientific question" in normalized_instruments
+    assert "harness" not in normalized_program
+    assert "harness" not in normalized_instruments
     for scientific_instruction in (
         "start with `research/brief.md`",
         "choose the form that supports the investigation",
