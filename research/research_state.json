@@ -1,132 +1,28 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/694ef64e-f191-4287-88bc-78085f2356c5/e1-cada55eb5-2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/evaluation-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-1000ep-seed3000-6ba3ba6d7654.json",
-      "research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/evaluation-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-200ep-seed2000-6ba3ba6d7654.json",
-      "research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/task-reference-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Best-known measured candidate by direct task-reference performance and broad research coverage; its development evidence is close to, but does not replace, the official benchmark.",
-    "scientific_commit": "ddf94651db780efcf3af6ff08abdad308b213614",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "1306590468e16948ec132cff801104c875bd4595",
-    "id": "694ef64e-f191-4287-88bc-78085f2356c5",
+    "base_commit": "33b0fc17af664e3c70980205e44686cab0d3be2d",
+    "id": "09d1535e-53d1-4ddf-92cc-9cf2b9176993",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-11T08:22:48.564216+00:00"
+    "started_at": "2026-09-11T21:30:19.810172+00:00"
   },
   "campaign_experiment_counters": {
-    "694ef64e-f191-4287-88bc-78085f2356c5": 1
+    "09d1535e-53d1-4ddf-92cc-9cf2b9176993": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "Keep the unchanged fresh-baseline scientific recipe because the selected candidate was produced by it and no code or parameter change is needed to preserve the measured policy contract."
-    },
-    "code_parent_commit": "ddf94651db780efcf3af6ff08abdad308b213614",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Select checkpoint-100352 as the working policy and request the official benchmark. It has the strongest measured saved-policy evidence: 98.0% on the fixed task-reference panel and 97.2% over 1,000 research-evaluation episodes, while the later final checkpoint measured 97.0% on both 200-episode panels. The remaining uncertainty is precisely the human objective under the official distribution, which development panels cannot decide."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/694ef64e-f191-4287-88bc-78085f2356c5/e1-cada55eb5-2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-    "fingerprint": "2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_final_benchmark": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "ddf94651db780efcf3af6ff08abdad308b213614",
-    "experiment": 1,
-    "scientific_commit": "ddf94651db780efcf3af6ff08abdad308b213614"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/694ef64e-f191-4287-88bc-78085f2356c5/e1-cada55eb5-2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/evaluation-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-200ep-seed2000-6ba3ba6d7654.json",
-      "research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/evaluation-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-1000ep-seed3000-6ba3ba6d7654.json"
-    ],
-    "fingerprint": "2ee8249e0ea4e9758573806512ce68196d75c1c40c50701c980b7ca5445d88bc",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Select checkpoint-100352 as the working policy and request the official benchmark. It has the strongest measured saved-policy evidence: 98.0% on the fixed task-reference panel and 97.2% over 1,000 research-evaluation episodes, while the later final checkpoint measured 97.0% on both 200-episode panels. The remaining uncertainty is precisely the human objective under the official distribution, which development panels cannot decide.",
-    "scientific_commit": "ddf94651db780efcf3af6ff08abdad308b213614",
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }

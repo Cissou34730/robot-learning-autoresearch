@@ -1,21 +1,3 @@
 # Research postmortems
 
-## 694ef64e-f191-4287-88bc-78085f2356c5 / Scientific strategy
-
-**Current synthesis:** The fresh PPO baseline learned the reach-and-hold behavior and produced a strongest measured candidate near the human objective, but development measurements do not establish the official 98% result. `checkpoint-100352` is preferable to the later final checkpoint: it reached 98.0% on the fixed task-reference panel and 97.2% over 1,000 research-evaluation episodes, whereas `checkpoint-120832` measured 97.0% on both 200-episode panels. The official benchmark is the appropriate next assessment of the selected candidate.
-
-**Lessons and limits:** Training reward and the rolling training-success proxy tracked learning but are not policy acceptance measures. The training log rose from zero success early to 0.98 at 99,328 steps, while mean reward peaked at 86,016 steps and declined by the final checkpoint; saved-policy measurements therefore mattered for checkpoint choice. On the broad `checkpoint-100352` panel, all 28 failures truncated at 500 steps; diagnostics show most never entered tolerance, while some reached it only briefly. The task-reference failures for this candidate clustered at inner radii of 6.73-9.91 cm and angles -116.4 to -127.9 degrees. These are development-panel observations, not an official-distribution verdict, and they do not establish a causal explanation.
-
-**Open questions:** Whether `checkpoint-100352` reaches at least 98% on the official benchmark remains unresolved. The stability of its residual geometry-sensitive failures beyond the measured panels is also unresolved.
-
-## 694ef64e-f191-4287-88bc-78085f2356c5 / Experiment 1
-
-**Result:** The fresh baseline established substantial progress toward the objective and a selected near-target candidate, but did not itself establish the official success criterion.
-
-**Observed behavior:** Training completed 120,832 steps with the unchanged PPO recipe. The training log reports mean reward increasing from -24.5 at 5,120 steps to a peak of 163.9 at 86,016, then falling to 112.0 at 120,832; the rolling training-success proxy reached 0.98 at 99,328 and was 0.95 at the end. Of the measured checkpoints, `checkpoint-95232` scored 97.5% on research evaluation and 96.0% on task reference, `checkpoint-100352` scored 97.5% on 200 research episodes, 97.2% on 1,000 additional research episodes, and 98.0% on task reference, and `checkpoint-120832` scored 97.0% on both 200-episode panels. The 1,000-episode panel for `checkpoint-100352` contained 28 failures, all truncated at 500 steps; task-reference failures for that candidate were four targets concentrated at 6.73-9.91 cm and -116.4 to -127.9 degrees.
-
-**Hypothesis assessment:** **Partially supported.** The baseline question was to establish an initial reference for the human objective; it did so with a learned policy close to the target and with measurable checkpoint-dependent behavior. It did not demonstrate that the objective is met: the broad research panel was 97.2%, and the 98.0% task-reference result is a fixed development panel rather than the official benchmark. This assessment is limited to the saved policies and panels measured here; the 21 unmeasured checkpoints remain unmeasured.
-
-**Interpretation:** `checkpoint-100352` is the strongest measured saved policy because it combines the best direct task-reference result with the broadest research coverage, while later training reduced measured performance. The evidence supports selecting it as both working and best-known for terminal assessment. The close but non-definitive results make an official benchmark more informative than another repeated development panel.
-
-**Evidence inspected:** `research/brief.md`; `research/results.jsonl`; `research/training_logs/694ef64e-f191-4287-88bc-78085f2356c5/experiment-1-attempt-1.log`; `research/checkpoints/challengers/694ef64e-f191-4287-88bc-78085f2356c5/experiment-1/inventory.json`; `research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/evaluation-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-1000ep-seed3000-6ba3ba6d7654.json`; `research/evaluations/694ef64e-f191-4287-88bc-78085f2356c5/task-reference-694ef64e-f191-4287-88bc-78085f2356c5-experiment-1-checkpoint-100352-task-reference-v1.json`; corresponding 95,232 and 120,832 evaluation and task-reference artifacts; `robot_learning/scenario/environment.py`; `robot_learning/scenario/evaluation.py`; `robot_learning/training/candidate_checkpoint_callback.py`.
+No experiments recorded.
