@@ -16,7 +16,6 @@ import numpy as np
 PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
-JOINT_CONFIGURATION_COEFFICIENT = 1.0
 ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
@@ -50,8 +49,6 @@ def reach_reward(
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
-    previous_configuration_error: float | None = None,
-    configuration_error: float | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -64,13 +61,6 @@ def reach_reward(
         previous_distance
     )
     reward += closeness
-
-    configuration_progress = 0.0
-    if previous_configuration_error is not None and configuration_error is not None:
-        configuration_progress = JOINT_CONFIGURATION_COEFFICIENT * (
-            previous_configuration_error - configuration_error
-        )
-    reward += configuration_progress
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -110,7 +100,6 @@ def reach_reward(
         components={
             "progress": float(progress),
             "closeness": float(closeness),
-            "joint_configuration_progress": float(configuration_progress),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),

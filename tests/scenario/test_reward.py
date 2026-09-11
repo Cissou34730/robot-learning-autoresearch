@@ -17,27 +17,6 @@ def test_reward_encourages_progress():
     assert reach_reward(0.08, 0.10, 0.03).total < 0
 
 
-def test_reward_encourages_joint_configuration_progress():
-    improved = reach_reward(
-        0.05,
-        0.05,
-        0.01,
-        previous_configuration_error=1.0,
-        configuration_error=0.5,
-    )
-    regressed = reach_reward(
-        0.05,
-        0.05,
-        0.01,
-        previous_configuration_error=0.5,
-        configuration_error=1.0,
-    )
-
-    assert improved.components["joint_configuration_progress"] > 0
-    assert regressed.components["joint_configuration_progress"] < 0
-    assert improved.total > regressed.total
-
-
 def test_linear_hold_progress_reward_pays_completion():
     early = reach_reward(
         0.005,
