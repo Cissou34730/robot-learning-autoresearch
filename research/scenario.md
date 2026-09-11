@@ -19,6 +19,18 @@ An episode succeeds only when the complete uninterrupted hold is achieved. The
 campaign objective is a learned policy that achieves at least 98% episode
 success under the official task distribution.
 
+## Official final assessment
+
+The official final assessment evaluates one frozen policy over a fixed panel of
+200 episodes sampled from the official task distribution. Each episode has at
+most 500 control steps and contributes one success or failure under the success
+criterion above.
+
+The official success percentage is the number of successful episodes divided by
+200. The objective is reached when at least 196 episodes succeed, corresponding
+to at least 98%. This panel is distinct from the task-reference development
+panel; development measurements are not combined with the official result.
+
 ## Immutable task boundary
 
 The official robot, physics, task distribution, interaction semantics, and
