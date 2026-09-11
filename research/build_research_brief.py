@@ -362,39 +362,6 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
-def _training_proxy_trajectory(candidates: list[dict]) -> str:
-    ordered = sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
-    proxy_key = (
-        "training_success"
-        if any(item.get("training_success") is not None for item in ordered)
-        else "ep_rew_mean"
-    )
-    proxy_label = {
-        "training_success": "training success",
-        "ep_rew_mean": "episode reward",
-    }[proxy_key]
-    observations = [
-        (int(item.get("timesteps", 0)), item.get(proxy_key))
-        for item in ordered
-        if item.get(proxy_key) is not None
-    ]
-    if not observations:
-        return (
-            f"- Training proxy observations: unavailable ({proxy_label} proxy, "
-            "not a training evaluation result)"
-        )
-    initial_steps, initial_value = observations[0]
-    final_steps, final_value = observations[-1]
-    values = [value for _, value in observations]
-    return (
-        f"- Training proxy observations: {len(observations)} checkpoints from "
-        f"{initial_steps:,}-{final_steps:,} local steps; {proxy_label} range "
-        f"{min(values):g}-{max(values):g}, initial {initial_value:g}, final "
-        f"{final_value:g}. These are descriptive training facts, not a checkpoint "
-        "ranking or evaluation result."
-    )
-
-
 def _checkpoint_inventory_lines(
     candidates: list[dict], *, parent_training_steps: int = 0
 ) -> list[str]:
@@ -427,10 +394,7 @@ def _checkpoint_inventory_lines(
             f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
             f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}"
         )
-    lines.append(
-        "- A measurement request may select at most 3 distinct models; the "
-        "Researcher determines which models are informative."
-    )
+    lines.append("- A measurement request may select at most 3 distinct models.")
     identifiers = ", ".join(
         f"`{_recorded_value(candidate.get('name'))}` "
         f"(local {int(candidate.get('timesteps', 0)):,} steps; accumulated "
@@ -767,28 +731,23 @@ def _render_v4_research_brief(
                 _existing_artifact_reference(path, kind="file")
                 for path in pending.get("training_log_paths", [])
             ) if pending.get("training_log_paths") else "- Raw training logs: unmeasured",
-            _training_proxy_trajectory(candidates),
         ])
         if unmeasured:
             steps = [int(candidate.get("timesteps", 0)) for candidate in candidates]
             lines.append(
                 f"- Unmeasured checkpoints: {len(unmeasured)} of {len(candidates)}; "
-                f"steps {min(steps):,}-{max(steps):,}. Every checkpoint carries its own "
-                "training success and reward; retrieve them with `uv run python "
-                f"research/query_training_log.py --experiment {pending.get('experiment', '-')} "
-                f"--from-step {min(steps)} --to-step {max(steps)}`"
+                f"steps {min(steps):,}-{max(steps):,}."
             )
         if measured:
             parent_steps = int(pending.get("parent_training_steps", 0))
             lines.extend([
                 "",
-                "| Checkpoint | Local steps | Accumulated steps | Training facts | Measurements |",
-                "|---|---:|---:|---|---|",
+                "| Checkpoint | Local steps | Accumulated steps | Measurements |",
+                "|---|---:|---:|---|",
             ])
             for candidate in measured:
-                facts = f"success {_candidate_metric(candidate, 'training_success')}; reward {_candidate_metric(candidate, 'ep_rew_mean')}"
                 local_steps = int(candidate.get("timesteps", 0))
-                lines.append(f"| `{candidate.get('name', '-')}` | {local_steps:,} | {parent_steps + local_steps:,} | {facts} | {_v4_measurements(candidate)} |")
+                lines.append(f"| `{candidate.get('name', '-')}` | {local_steps:,} | {parent_steps + local_steps:,} | {_v4_measurements(candidate)} |")
     elif latest:
         lines.extend([
             f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",

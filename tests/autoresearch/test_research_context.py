@@ -3,7 +3,6 @@ from pathlib import Path
 
 from research.build_research_brief import (
     _change_details,
-    _training_proxy_trajectory,
     _v4_evidence_lines,
     render_research_brief,
 )
@@ -501,9 +500,10 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     assert latest.count("| `checkpoint-") == 1
     assert "| `checkpoint-10240` | 10,240 |" in latest
     assert "Unmeasured checkpoints: 23 of 24; steps 5,120-122,880" in latest
-    assert "Training proxy observations: 24 checkpoints from 5,120-122,880 local steps" in latest
-    assert "training success range 0.1-0.4, initial 0.1, final 0.2" in latest
-    assert "not a checkpoint ranking or evaluation result" in latest
+    assert "Training proxy observations" not in latest
+    assert "Training facts" not in latest
+    assert "training success" not in latest
+    assert "reward 4" not in latest
     inventory = brief.split(
         "### Current experiment checkpoints available for measurement", 1
     )[1].split("## Working lineage", 1)[0]
@@ -559,7 +559,7 @@ def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path)
     assert positions == sorted(positions)
 
 
-def test_v4_brief_reports_training_proxy_range_without_checkpoint_ranking(
+def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
     monkeypatch, tmp_path
 ):
     research_dir = tmp_path / "research"
@@ -593,13 +593,19 @@ def test_v4_brief_reports_training_proxy_range_without_checkpoint_ranking(
     monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
 
-    latest = render_research_brief().split("## Latest experiment", 1)[1].split(
+    brief = render_research_brief()
+    latest = brief.split("## Latest experiment", 1)[1].split(
         "## Current lineages and scientific recipes", 1
     )[0]
+    inventory = brief.split(
+        "### Current experiment checkpoints available for measurement", 1
+    )[1].split("## Working lineage", 1)[0]
 
-    assert "training success range 0.2-1" in latest
-    assert "best" not in latest
-    assert "checkpoint ranking" in latest
+    assert "training success" not in latest
+    assert "episode reward" not in latest
+    assert "checkpoint ranking" not in latest
+    assert all(f"`checkpoint-{steps}`" in inventory for steps in proxies)
+    assert "steps 5,120-40,960" in inventory
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
@@ -931,12 +937,5 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     ):
         assert scientific_instruction not in normalized_instruments
     assert "provisional scientific synthesis" in normalized_brief_builder
-    proxy_summary = _training_proxy_trajectory(
-        [
-            {"timesteps": 100, "training_success": 0.5},
-            {"timesteps": 200, "training_success": 0.9},
-        ]
-    )
-    assert "not a checkpoint ranking or evaluation result" in proxy_summary
-    assert "best" not in proxy_summary
+    assert "training proxy observations" not in normalized_brief_builder
     assert "model is useful for the current scientific question" in normalized_protocol
