@@ -2,14 +2,14 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Address the structured negative-angle reachability failures
-while preserving the useful hold-stability behavior of the 50/50 smoother.
-Experiment 8 did not show that reducing lag with a 75/25 filter improves the
-learned task policy, so future work should consider a different action or
-observation representation, or replication of the original smoother, rather
-than treating this refinement as a new recipe. Use matched task measurements
-for checkpoint selection and do not treat training proxies or development
-panels as a terminal verdict.
+**Direction:** Treat the remaining negative-angle failures as an exploratory
+representation question: test whether an explicit periodic target-direction
+encoding improves reachability while retaining the hold stability of the 50/50
+smoother. The 75/25 refinement did not improve the learned task policy, so the
+current investigation is broadened from temporal filtering to a distinct
+observation representation rather than continued as a smoothing series. Use
+matched task measurements for checkpoint selection and do not treat training
+proxies or development panels as a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -28,16 +28,20 @@ shaping changed interruption diagnostics without increasing task success.
 
 **Open questions:** Whether the structured negative-angle failures arise
 primarily from reachability, action dynamics, observation representation, or
-run variability remains unresolved. The small research-panel gain from
-experiment 7 is not reproduced as a protected-panel gain, and the unmeasured
-experiment-8 checkpoints cannot be ranked from training proxies.
+run variability remains unresolved. It is unknown whether a periodic direction
+feature helps the policy use angular information already implicit in the
+current error and IK features without harming hold control. The small
+research-panel gain from experiment 7 is not reproduced as a protected-panel
+gain, and the unmeasured experiment-8 checkpoints cannot be ranked from
+training proxies.
 
-**Conditional next steps:** A later investigation may test a different
-action or observation representation, or replicate the 50/50 smoother to
-separate refinement failure from run variability. The margin-shaped policy
-remains a diagnostic alternative, not evidence of a better task policy.
-Terminal assessment should wait for stronger evidence against the structured
-failure sector.
+**Conditional next steps:** If periodic direction features reduce the
+negative-angle failures without broad regression, retain that representation
+for further measured checkpoint selection; if not, a replication of the 50/50
+smoother or a control-focused intervention can separate run variability from
+the representation hypothesis. The margin-shaped policy remains a diagnostic
+alternative, not evidence of a better task policy. Terminal assessment should
+wait for stronger evidence against the structured failure sector.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
