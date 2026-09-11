@@ -161,7 +161,7 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
     "expected_observation": "<observation supporting the proposition or one diagnostic branch, and what would be learned>",
     "contradicting_observation": "<observation weakening the proposition, supporting an alternative, or revealing incomplete framing>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
-    "strategy_link": "<how this experiment advances, revises, or rejects the current investigation>"
+    "objective_link": "<why this investigation is useful for the campaign objective given current evidence>"
   },
   "change": "<non-empty scientific intervention; training only>",
   "training_parent": "<string; required for transfer, otherwise omit>",
@@ -197,7 +197,7 @@ scientific conclusion or proof of inspection. This contract applies equally to
 training, continuation and replication, not to the automatic baseline.
 
 The campaign's Scientific strategy section must exist before submission. The
-Runner validates its four labels and snapshots the section with `reasoning` in
+Runner validates its three labels and snapshots the section with `reasoning` in
 the experiment record. Existing historical records without these fields remain
 readable.
 
@@ -208,7 +208,7 @@ apply a changed recipe to an existing parent with `initialization: "transfer"`.
 The `reasoning` object contains the fields shown in the schema. `evidence` is a
 non-empty array of source/observation objects. `alternative`,
 `expected_observation`, `contradicting_observation`, `initialization_reason`, and
-`strategy_link` are non-empty strings. Their scientific use is defined in
+`objective_link` are non-empty strings. Their scientific use is defined in
 `research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.

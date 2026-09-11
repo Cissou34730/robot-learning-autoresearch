@@ -45,7 +45,7 @@ def test_every_research_training_kind_requires_reasoning(proposal, kind):
         "expected_observation",
         "contradicting_observation",
         "initialization_reason",
-        "strategy_link",
+        "objective_link",
     ],
 )
 @pytest.mark.parametrize("value", [None, " ", 1, [], {}])

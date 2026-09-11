@@ -16,7 +16,7 @@ def scientific_reasoning():
         "expected_observation": "Progress resumes under the intervention.",
         "contradicting_observation": "Progress remains unchanged.",
         "initialization_reason": "Use the selected initialization to test this mechanism.",
-        "strategy_link": "Distinguish a plateau from insufficient training.",
+        "objective_link": "Resolve a source of failure relevant to the objective.",
     }
 
 

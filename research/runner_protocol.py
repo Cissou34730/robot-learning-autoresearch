@@ -443,7 +443,7 @@ def validate_scientific_reasoning(proposal: dict) -> None:
         "expected_observation",
         "contradicting_observation",
         "initialization_reason",
-        "strategy_link",
+        "objective_link",
     ):
         value = reasoning.get(field)
         if not isinstance(value, str) or not value.strip():

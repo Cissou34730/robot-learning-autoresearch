@@ -1980,7 +1980,7 @@ def _training_proposal() -> dict:
             "expected_observation": "Progress resumes.",
             "contradicting_observation": "The plateau persists.",
             "initialization_reason": "Test the representation from initialization.",
-            "strategy_link": "Determine whether representation limits progress.",
+            "objective_link": "Determine whether representation limits objective progress.",
         },
         "change": "change the observation representation",
         "initialization": "fresh",
