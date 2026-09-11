@@ -3,12 +3,11 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while shifting away from the tested previous-command
-observation augmentation. If development resumes, prioritize genuinely
-different control or branch-selection approaches, or a representation tested
-under a design that separates fresh initialization from transfer. Training
-proxies and development panels remain development evidence rather than a
-terminal verdict.
+practical incumbent while testing whether an explicit inverse-kinematics branch
+prior can address its localized negative-angle reachability failures. Treat the
+branch prior as a new residual-torque control formulation, not as a continuation
+of the previous-command representation experiment. Training proxies and
+development panels remain development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -50,17 +49,18 @@ negative-angle sector remains unresolved; the matched research failures are
 500-step failures, and the state-aware fresh policy added negative-sector
 failures despite fixing one far-radius reference target. It is unknown whether
 the residual is principally a policy basin, inverse-kinematics branch
-selection, control mechanics, or fresh-run instability. Hold interruptions
-cannot be compared from experiment 18 because they were not emitted by the
-measurement artifacts. Unmeasured checkpoints cannot be ranked from training
-proxies.
+selection, control mechanics, or fresh-run instability. The new branch prior
+must show whether a semantically explicit branch choice improves reachability
+without sacrificing hold stability. Unmeasured checkpoints cannot be ranked
+from training proxies.
 
-**Conditional next steps:** If development resumes, compare a genuinely
-different control or branch-aware approach against the retained incumbent, and
-instrument hold interruptions if that distinction is central to the question.
+**Conditional next steps:** Measure the branch-aware residual controller against
+the retained incumbent with the matched research and task-reference panels,
+using interruption diagnostics when available. If it fails broadly from fresh
+initialization, the result will weaken this formulation but remain confounded
+with fresh-run instability; a later transfer test would then be informative.
 Do not repeat the same previous-command augmentation or scalar smoothing
-refinement without a design that addresses the fresh-run and reachability
-confounds. Terminal assessment should wait for stronger evidence that the
+refinement. Terminal assessment should wait for stronger evidence that the
 selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
