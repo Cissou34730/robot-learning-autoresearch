@@ -246,6 +246,104 @@ def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tm
     assert comparison["source_artifacts"][1] == "research/evaluations/working.json"
 
 
+def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    working_artifact = tmp_path / "archive" / "working"
+    _artifact(working_artifact)
+    working_artifact.joinpath("model.zip").write_bytes(b"working model")
+    working_fingerprint = repository.artifact_fingerprint(working_artifact)
+    candidate_fingerprint = repository.artifact_fingerprint(
+        tmp_path / "archive" / "checkpoint"
+    )
+    historical_path = tmp_path / "research" / "evaluations" / "working-1000.json"
+    historical_path.parent.mkdir(parents=True)
+    historical_path.write_text(
+        json.dumps(
+            {
+                "episodes": 1000,
+                "seed": 10,
+                "success_percent": 0.0,
+                "episode_results": [
+                    {"episode": episode, "episode_seed": 10 + episode, "success": False}
+                    for episode in range(1000)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["working_lineage"] = {
+        "artifact": "archive/working",
+        "fingerprint": working_fingerprint,
+        "origin_experiment": 1,
+        "candidate": "historical-working",
+        "parameters": {},
+        "scientific_commit": "base",
+        "training_steps": 100,
+        "evaluation_artifacts": ["research/evaluations/working-1000.json"],
+        "reason": "Historical working model.",
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    repository.upsert_result(
+        {
+            "schema_version": 4,
+            "campaign_id": "campaign",
+            "index": 0,
+            "requested_evaluations": [
+                {
+                    "candidate": "historical-working",
+                    "episodes": 1000,
+                    "seed": 10,
+                    "evaluation_semantics": "test",
+                    "model_fingerprint": working_fingerprint,
+                    "metrics": {
+                        "episodes": 1000,
+                        "seed": 10,
+                        "evaluation_semantics": "test",
+                        "model_fingerprint": working_fingerprint,
+                        "evaluation_artifact": "research/evaluations/working-1000.json",
+                    },
+                }
+            ],
+        }
+    )
+    request = _request(10)
+    request["measurements"][0]["episodes"] = 200
+    request["paired_comparisons"] = [
+        {"candidate": "checkpoint", "reference": "working"}
+    ]
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    def evaluate(artifact, seed, episodes, output_path, **kwargs):
+        del artifact, kwargs
+        payload = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 100.0,
+            "episode_results": [
+                {"episode": episode, "episode_seed": seed + episode, "success": True}
+                for episode in range(episodes)
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+
+    assert run_experiment.execute_pending_evaluations() == 0
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    comparison = persisted["pending_analysis"]["result"]["paired_comparisons"][0]
+    assert comparison["episodes"] == 200
+    assert comparison["shared_episodes"] == 200
+    assert comparison["candidate_episode_coverage"] == 200
+    assert comparison["reference_episode_coverage"] == 1000
+    assert comparison["candidate_model_fingerprint"] == candidate_fingerprint
+    assert comparison["panels"][0]["shared_episode_seeds"] == list(range(10, 210))
+
+
 def test_v4_paired_comparison_reports_incompatible_historical_semantics(
     monkeypatch, tmp_path
 ):

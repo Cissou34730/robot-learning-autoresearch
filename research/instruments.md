@@ -117,11 +117,14 @@ quantities are in `robot_learning/benchmark/reference_evaluation.py`.
 
 Add one entry per model and instrument.
 
-A paired comparison uses the accumulated `research_evaluation` outcomes for the two named models. Both sides must cover identical recorded episode identities within matching evaluation semantics.
-Compatible historical measurements may supply either or both sides when their
-model fingerprints, evaluation semantics, instrument settings, and exact episode
-identities match. Detailed diagnostic artifacts retain the same evaluation
-identity. Legacy compatibility fields are ignored when records are read.
+A paired comparison uses the accumulated `research_evaluation` outcomes for the
+two named models. It compares their shared recorded episode identities within
+matching evaluation semantics. Source panels may use different episode counts
+or seeds when they have nonempty shared coverage. Compatible historical
+measurements may supply either or both sides when their model fingerprints and
+artifact identities are valid. Detailed diagnostic artifacts retain the same
+evaluation identity. Legacy compatibility fields are ignored when records are
+read.
 Overlapping or repeated episodes count once in pooled summaries and paired
 comparisons. Summary `episodes` reports distinct coverage; `episode_executions`
 and `repeated_episodes` report execution count and repeated coverage separately.

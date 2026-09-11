@@ -124,8 +124,8 @@ def test_paired_comparison_uses_identical_episode_outcomes():
     assert comparison["exact_p_value"] == pytest.approx(0.03125)
 
 
-def test_paired_comparison_rejects_incompatible_episode_panels():
-    with pytest.raises(ValueError, match="identical episodes"):
+def test_paired_comparison_rejects_panels_without_shared_episodes():
+    with pytest.raises(ValueError, match="do not share any episodes"):
         paired_comparison(
             [evaluation(3000, [True, False])],
             [evaluation(4000, [True, False])],
@@ -839,12 +839,12 @@ def _comparison_record(
         (
             _comparison_record("same", episodes=100),
             _comparison_record("same", episodes=200),
-            False,
+            True,
         ),
         (
             _comparison_record("same", seed=10),
             _comparison_record("same", seed=11),
-            False,
+            True,
         ),
         (
             _comparison_record("same", episode_identities=[(0, 10)]),
@@ -2164,6 +2164,7 @@ def test_continuation_and_replication_allow_unchanged_methods(scientific_reasoni
     invalid_continuation = {
         "kind": "continuation",
         "family": "x",
+        "investigation_type": "confirmatory",
         "hypothesis": "x",
         "initialization": "fresh",
     }
@@ -2181,6 +2182,7 @@ def test_continuation_and_replication_allow_unchanged_methods(scientific_reasoni
     invalid_replication = {
         "kind": "replication",
         "family": "x",
+        "investigation_type": "confirmatory",
         "hypothesis": "x",
         "initialization": "fresh",
         "replication_of": 12,
@@ -2192,6 +2194,7 @@ def test_continuation_and_replication_allow_unchanged_methods(scientific_reasoni
         "reasoning": scientific_reasoning,
         "kind": "continuation",
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check additional training",
         "initialization": "transfer",
         "training_parent": "accepted",
@@ -2202,6 +2205,7 @@ def test_continuation_and_replication_allow_unchanged_methods(scientific_reasoni
         "reasoning": scientific_reasoning,
         "kind": "replication",
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check outcome spread",
         "initialization": "fresh",
         "training_seed": 19,
@@ -2226,6 +2230,7 @@ def test_replication_rejects_non_integer_numeric_fields(field, invalid_value):
     proposal = {
         "kind": "replication",
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check outcome spread",
         "initialization": "fresh",
         "training_seed": 19,
@@ -2259,6 +2264,7 @@ def test_training_numeric_fields_accept_valid_integers(
     proposal = {
         "kind": kind,
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check numeric contract",
         "initialization": initialization,
         **extra_fields,
@@ -2273,6 +2279,7 @@ def test_training_proposal_rejects_negative_seed_for_every_operation(kind):
     proposal = {
         "kind": kind,
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check seed contract",
         "initialization": "fresh",
         "training_seed": -1,
@@ -2295,6 +2302,7 @@ def test_unchanged_operations_reject_change(kind):
     proposal = {
         "kind": kind,
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check unchanged operation",
         "change": "operation note",
         "initialization": "transfer" if kind == "continuation" else "fresh",
@@ -2314,6 +2322,7 @@ def test_replication_reference_must_exist_in_current_campaign(
     proposal = {
         "kind": "replication",
         "family": "method",
+        "investigation_type": "confirmatory",
         "hypothesis": "check outcome spread",
         "reasoning": scientific_reasoning,
         "initialization": "fresh",
@@ -2415,6 +2424,7 @@ def test_training_proposal_has_no_postmortem_or_lineage_payload(scientific_reaso
     proposal = {
         "kind": "training",
         "family": "reward.hold",
+        "investigation_type": "confirmatory",
         "reasoning": scientific_reasoning,
         "hypothesis": "test",
         "change": "test",

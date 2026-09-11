@@ -292,8 +292,15 @@ def render_evidence_card(
         )
         for panel in comparison.get("panels", []):
             semantics = panel.get("evaluation_semantics", "not recorded")
+            candidate_seed = panel.get("candidate_seed", panel.get("seed"))
+            reference_seed = panel.get("reference_seed", panel.get("seed"))
+            seed_text = (
+                f"seed {candidate_seed}"
+                if candidate_seed == reference_seed
+                else f"seeds {candidate_seed} / {reference_seed}"
+            )
             lines.append(
-                f"  panel seed {panel['seed']} · {panel['episodes']} episodes · "
+                f"  shared panel {seed_text} · {panel['episodes']} episodes · "
                 f"evaluation semantics {semantics}"
             )
             lines.extend(

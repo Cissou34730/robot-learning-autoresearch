@@ -878,9 +878,9 @@ def test_researcher_prompts_are_objective_first_and_direction_neutral():
     policy = (root / "researcher_copilot.py").read_text(encoding="utf-8")
 
     objective = "Assess progress toward a learned policy satisfying the human objective."
-    prediction = "relate relevant findings to the proposal's expected_observation"
+    interpretation = "Relate findings to the proposal's type-specific question"
     assert script.count(objective) >= 2
-    assert script.index(objective) < script.index(prediction)
+    assert script.index(objective) < script.index(interpretation)
     assert "prescribes no next action" in script
     assert "Conditional next steps" not in script
     assert "most informative to measure rather than the alternatives" not in script

@@ -635,12 +635,14 @@ def requested_paired_comparisons(
                     panel.get("candidate_artifact_fingerprints", {}),
                     panel,
                     candidate_name,
+                    "candidate",
                 )
                 reference_evaluation = _load_frozen_panel(
                     panel["reference_artifacts"],
                     panel.get("reference_artifact_fingerprints", {}),
                     panel,
                     reference_name,
+                    "reference",
                 )
                 candidate_identities = {
                     (int(item["episode"]), int(item["episode_seed"]))
@@ -650,9 +652,20 @@ def requested_paired_comparisons(
                     (int(item["episode"]), int(item["episode_seed"]))
                     for item in reference_evaluation["episode_results"]
                 }
-                if candidate_identities != reference_identities:
+                shared_episode_seeds = sorted(
+                    {identity[1] for identity in candidate_identities}
+                    & {identity[1] for identity in reference_identities}
+                )
+                if not shared_episode_seeds:
                     raise ValueError(
-                        "paired comparison evidence must use identical episodes"
+                        "paired comparison evidence has no shared episodes"
+                    )
+                frozen_shared = panel.get("shared_episode_seeds")
+                if frozen_shared is not None and shared_episode_seeds != list(
+                    frozen_shared
+                ):
+                    raise ValueError(
+                        "paired comparison shared episode identities changed after acceptance"
                     )
                 candidate_evaluations.append(candidate_evaluation)
                 reference_evaluations.append(reference_evaluation)
@@ -663,8 +676,13 @@ def requested_paired_comparisons(
                 source_artifacts.extend(panel_sources)
                 used_panels.append(
                     {
-                        "episodes": panel["episodes"],
+                        "episodes": len(shared_episode_seeds),
                         "seed": panel["seed"],
+                        "candidate_episodes": len(candidate_identities),
+                        "reference_episodes": len(reference_identities),
+                        "candidate_seed": panel.get("candidate_seed", panel["seed"]),
+                        "reference_seed": panel.get("reference_seed", panel["seed"]),
+                        "shared_episode_seeds": shared_episode_seeds,
                         "evaluation_semantics": panel.get("evaluation_semantics"),
                         "source_artifacts": panel_sources,
                     }
@@ -711,7 +729,11 @@ def requested_paired_comparisons(
 
 
 def _load_frozen_panel(
-    paths: list[str], fingerprints: dict[str, str], panel: dict, model_name: str
+    paths: list[str],
+    fingerprints: dict[str, str],
+    panel: dict,
+    model_name: str,
+    role: str,
 ) -> dict:
     """Load one deterministic panel and reject conflicting duplicate artifacts."""
     expected: dict[tuple[int, int], bool] | None = None
@@ -735,9 +757,11 @@ def _load_frozen_panel(
                 f"{model_name!r}: {path}"
             )
         measurement = json.loads(artifact.read_text(encoding="utf-8"))
+        expected_episodes = int(panel.get(f"{role}_episodes", panel["episodes"]))
+        expected_seed = int(panel.get(f"{role}_seed", panel["seed"]))
         if (
-            int(measurement.get("episodes", -1)) != int(panel["episodes"])
-            or int(measurement.get("seed", -1)) != int(panel["seed"])
+            int(measurement.get("episodes", -1)) != expected_episodes
+            or int(measurement.get("seed", -1)) != expected_seed
         ):
             raise ValueError(
                 f"paired comparison evidence panel metadata changed for "
@@ -769,7 +793,7 @@ def _load_frozen_panel(
                 f"paired comparison evidence repeats an episode identity for "
                 f"{model_name!r}: {path}"
             )
-        if len(outcomes) != int(panel["episodes"]):
+        if len(outcomes) != expected_episodes:
             raise ValueError(
                 f"paired comparison evidence has incomplete episode identities for "
                 f"{model_name!r}: {path}"
@@ -777,7 +801,7 @@ def _load_frozen_panel(
         if expected is not None and outcomes != expected:
             raise ValueError(
                 f"conflicting deterministic measurements for {model_name!r} panel "
-                f"seed {panel['seed']}: {paths}"
+                f"seed {expected_seed}: {paths}"
             )
         expected = outcomes
         selected = measurement

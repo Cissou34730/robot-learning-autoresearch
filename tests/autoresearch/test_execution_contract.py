@@ -146,7 +146,7 @@ def test_compact_measurement_rejects_mismatched_artifact_metadata(
         )
 
 
-def test_frozen_paired_evidence_requires_exact_episode_identities(
+def test_frozen_paired_evidence_uses_shared_episode_identities(
     monkeypatch, tmp_path
 ):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
@@ -155,18 +155,20 @@ def test_frozen_paired_evidence_requires_exact_episode_identities(
     _write_evaluation(candidate, [(10, True), (11, False)])
     _write_evaluation(reference, [(10, False), (12, True)])
 
-    with pytest.raises(ValueError, match="identical episodes"):
-        requested_paired_comparisons(
-            {
-                "paired_comparisons": [
-                    {"candidate": "candidate", "reference": "working"}
-                ]
-            },
-            {},
-            evidence_plan=_paired_evidence_plan(
-                [candidate.name], [reference.name]
-            ),
-        )
+    comparison = requested_paired_comparisons(
+        {
+            "paired_comparisons": [
+                {"candidate": "candidate", "reference": "working"}
+            ]
+        },
+        {},
+        evidence_plan=_paired_evidence_plan([candidate.name], [reference.name]),
+    )[0]
+
+    assert comparison["episodes"] == 1
+    assert comparison["shared_episodes"] == 1
+    assert comparison["candidate_episode_coverage"] == 2
+    assert comparison["reference_episode_coverage"] == 2
 
 
 def test_frozen_paired_evidence_rejects_conflicting_duplicate_panels(

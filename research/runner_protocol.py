@@ -1695,40 +1695,43 @@ def _evidence_records_compatible(candidate: dict, reference: dict) -> bool:
         return candidate_settings == reference_settings
     if candidate["instrument"] != "research_evaluation":
         return False
-    if candidate_settings != reference_settings:
+    if candidate_settings[3] != reference_settings[3]:
         return False
-    candidate_episodes = candidate.get("episode_identities")
-    reference_episodes = reference.get("episode_identities")
-    if candidate_episodes is None and reference_episodes is None:
-        return True
-    return candidate_episodes is not None and candidate_episodes == reference_episodes
+    return bool(_record_episode_seeds(candidate) & _record_episode_seeds(reference))
+
+
+def _record_episode_seeds(record: dict) -> set[int]:
+    identities = record.get("episode_identities")
+    if identities is not None:
+        return {int(identity[1]) for identity in identities}
+    _, episodes, seed, _ = record["settings"]
+    return set(range(int(seed), int(seed) + int(episodes)))
 
 
 def _compatible_primary_panels(
     candidate_records: list[dict], reference_records: list[dict]
-) -> list[tuple[tuple, list[dict], list[dict]]]:
-    panels: dict[tuple, tuple[list[dict], list[dict]]] = {}
-    for candidate in candidate_records:
-        for reference in reference_records:
-            if not _evidence_records_compatible(candidate, reference):
+) -> list[tuple[tuple[tuple, tuple], list[dict], list[dict]]]:
+    candidate_groups: dict[tuple, list[dict]] = {}
+    reference_groups: dict[tuple, list[dict]] = {}
+    for record in candidate_records:
+        candidate_groups.setdefault(record["settings"], []).append(record)
+    for record in reference_records:
+        reference_groups.setdefault(record["settings"], []).append(record)
+    panels = []
+    for candidate_settings, candidate_panel in candidate_groups.items():
+        for reference_settings, reference_panel in reference_groups.items():
+            if not _evidence_records_compatible(
+                candidate_panel[0], reference_panel[0]
+            ):
                 continue
-            key = (
-                candidate["settings"][0],
-                candidate["settings"][1],
-                candidate["settings"][2],
-                candidate["settings"][3],
+            panels.append(
+                (
+                    (candidate_settings, reference_settings),
+                    candidate_panel,
+                    reference_panel,
+                )
             )
-            candidate_panel, reference_panel = panels.setdefault(key, ([], []))
-            if candidate not in candidate_panel:
-                candidate_panel.append(candidate)
-            if reference not in reference_panel:
-                reference_panel.append(reference)
-    return [
-        (settings, *records)
-        for settings, records in sorted(
-            panels.items(), key=lambda item: tuple(str(value) for value in item[0])
-        )
-    ]
+    return sorted(panels, key=lambda item: str(item[0]))
 
 
 def _resolved_paired_evidence_plan(
@@ -1765,6 +1768,10 @@ def _resolved_paired_evidence_plan(
                 int(measurement["seed"]),
                 semantics,
             ),
+            "episode_identities": [
+                (episode, int(measurement["seed"]) + episode)
+                for episode in range(int(measurement["episodes"]))
+            ],
         }
         existing = catalog.get(canonical_path)
         if existing is None:
@@ -1876,33 +1883,28 @@ def _resolved_paired_evidence_plan(
             )
         panels = []
         for settings, candidate_panel, reference_panel in compatible_panels:
-            validation_settings = settings[:3]
+            candidate_settings, reference_settings = settings
             panel_candidate_records = _validated_historical_panel_records(
                 candidate_panel,
-                validation_settings,
+                candidate_settings[:3],
             )
             panel_reference_records = _validated_historical_panel_records(
                 reference_panel,
-                validation_settings,
+                reference_settings[:3],
             )
-            candidate_identities = {
-                tuple(record["episode_identities"])
-                for record in panel_candidate_records
-                if "episode_identities" in record
-            }
-            reference_identities = {
-                tuple(record["episode_identities"])
-                for record in panel_reference_records
-                if "episode_identities" in record
-            }
-            if (
-                candidate_identities
-                and reference_identities
-                and candidate_identities != reference_identities
-            ):
+            candidate_episode_seeds = set.intersection(
+                *(_record_episode_seeds(record) for record in panel_candidate_records)
+            )
+            reference_episode_seeds = set.intersection(
+                *(_record_episode_seeds(record) for record in panel_reference_records)
+            )
+            shared_episode_seeds = sorted(
+                candidate_episode_seeds & reference_episode_seeds
+            )
+            if not shared_episode_seeds:
                 raise ValueError(
                     f"paired comparison {candidate!r} vs {reference!r} has "
-                    f"nonmatching historical episode identities for seed {settings[2]}"
+                    "no shared historical episode identities"
                 )
             candidate_paths = sorted(
                 record["evaluation_artifact"] for record in panel_candidate_records
@@ -1912,10 +1914,15 @@ def _resolved_paired_evidence_plan(
             )
             panels.append(
                 {
-                    "instrument": settings[0],
-                    "episodes": settings[1],
-                    "seed": settings[2],
-                    "evaluation_semantics": settings[3],
+                    "instrument": candidate_settings[0],
+                    "episodes": len(shared_episode_seeds),
+                    "seed": candidate_settings[2],
+                    "evaluation_semantics": candidate_settings[3],
+                    "candidate_episodes": candidate_settings[1],
+                    "candidate_seed": candidate_settings[2],
+                    "reference_episodes": reference_settings[1],
+                    "reference_seed": reference_settings[2],
+                    "shared_episode_seeds": shared_episode_seeds,
                     "candidate_artifacts": candidate_paths,
                     "candidate_artifact_fingerprints": {
                         path: repository.file_fingerprint(
