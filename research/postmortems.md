@@ -2,95 +2,44 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Use a second fresh replication of the unchanged experiment-7
-50/50 action-smoothing recipe to test whether experiment 10's severe
-positive-angle failures are reproducible or an optimization outlier, while
-keeping the retained experiment-7 policy as the practical incumbent. The 10%
-residual-angle replay in experiment 13 did not improve measured task
-performance, so the next decision should distinguish fresh-run variability from
-limitations of the current control and representation rather than assume that
-more exposure to the same sector is sufficient. Training proxies and
+**Direction:** Keep the measured experiment-7 action-smoothing policy as the
+practical incumbent while investigating how to remove both its residual
+negative-angle failures and the broad positive-angle failures seen in fresh
+runs. The second fresh replication makes fresh-run or transfer dependence a
+stronger working question, but does not identify whether the cause is
+initialization, optimization variance, or control dynamics. Training proxies and
 development panels remain development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
-matched research success from 97.5% to 97.7%, hard-sector success from 50/74
-to 52/74, and reduced total interruption events from 256 to 18 at the selected
-late checkpoint, while preserving non-sector and radius-bin performance.
-Experiment 8's 75/25 refinement retained low interruption counts relative to
-the unsmoothed incumbent, but its late checkpoint reached only 97.5% on the
-matched panel and had more never-reach failures. Experiment 9's late
-periodic-direction checkpoint reached 89.5% on the research panel, with 17/74
-hard-sector and 878/926 non-sector successes, 105 never-reach failures, and no
-hold interruptions; its task-reference panel reached 90.5%. Experiment 10's
-fresh unchanged replication reached only 70.4% on the same research panel and
-72.0% on the task-reference panel, despite reaching 74/74 in the prior
--150-to--120 degree hard sector; its research failures instead concentrated in
-positive-angle sectors and included 191 never-reach failures, 105
-interrupted failures, and 125 interruption events. These observations are from
-single transferred or fresh runs and fixed development panels. They support
-run- or transfer-dependence as a live explanation, but do not establish
-causality for smoothing or distinguish seed variability from transfer history.
-The retained late checkpoint has 977/1,000 research successes with 15
-never-reach failures and 8 interrupted failures, whereas the fresh replication
-has 704/1,000 successes with 296 failures, including 272 in the positive
-60-to-180 degree bins, 191 never-reach failures, and 105 interrupted failures.
-Experiment 11 completed an unchanged continuation to 120,832 local steps
-(442,368 accumulated steps). Its training proxy varied between 0.94 and 1.00,
-but measured research success was 976/1,000 at checkpoint-100352 and 975/1,000
-at both checkpoint-110592 and checkpoint-120832. The corresponding
-task-reference result was 197/200 at all three checkpoints. Research
-diagnostics stayed near the incumbent: 18, 17, and 18 never-reach cases and
-18, 17, and 17 interruption events, respectively. On the fixed task-reference
-panel, the same three failures persisted at approximately -123, -128, and
--155 degrees, so this round provides evidence of a stable residual pattern on
-that panel, not a causal explanation or independent confirmation.
-Experiment 12 changed only the post-policy smoothing rule, using a 75/25
-command/previous-command blend outside 3 cm and the incumbent 50/50 blend
-near the target. Its measured checkpoints both reached 975/1,000 research
-successes, below the incumbent's 977/1,000, and both task-reference results
-were 197/200 with the same three failures. The checkpoints had 23 hard-sector
-failures versus 22 for the incumbent; total hold-interruption events were 35
-and 39 versus 18, while never-reach cases were 13 and 14 versus 15. The
-training proxy ranged from 0.94 to 1.00 and ended at 0.97, which is
-orthogonal to the measured task-performance comparison. These are observations
-from one transferred run and fixed development panels; they weaken the
-approach-lag explanation but do not distinguish optimization variance,
-transfer dependence, or another control mechanism.
-Experiment 13 added a 10% training-only replay of targets from -160 to -115
-degrees. Training success ranged from 0.93 to 1.00, peaked at 1.00 at local
-step 25,600, and ended at 0.95; reward peaked at 107.37 around step 30,720
-and was 101.21 at completion. These are training facts, not policy rankings.
-Research evaluation measured 975/1,000 (97.5%) at checkpoint-25,600 and
-974/1,000 (97.4%) at both checkpoints 90,112 and 115,712. All 25, 26, and 26
-failures respectively were in the proposed angle sector; never-reach cases
-were 19, 20, and 19, and interruption events were 16, 12, and 24. On the
-fixed task-reference panel, every measured checkpoint scored 197/200 (98.5%)
-and retained the same three failures: approximately 9.91 cm/-122.9 degrees,
-9.36 cm/-127.9 degrees, and 18.24 cm/-154.8 degrees. The other 175 reference
-episodes succeeded. The early training-proxy peak therefore did not produce
-an overall research-panel improvement, and the late high-reward checkpoint
-did not improve the recurring reference failures. The research-evaluation
-context identifier differs from the retained experiment-7 artifact, so the
-cross-experiment research percentages are descriptive rather than a
-compatible paired comparison; the within-experiment checkpoint comparisons
-use the same semantics and episode identities. Twenty-one experiment-13
-checkpoints remain unmeasured.
-Unmeasured checkpoints cannot be ranked from training proxies.
+matched research success from 97.5% to 97.7%, reduced late interruption events
+from 256 to 18, and retained 98.5% on the fixed task-reference panel.
+Experiments 10 and 14, both fresh unchanged replications, instead remained far
+below that transferred result: experiment 10 reached 70.4% late research
+success, while experiment 14 reached 64.6%, 57.5%, and 52.3% at its three
+measured checkpoints. In experiment 14, the late checkpoint had 431 never-reach
+failures, 46 interrupted failures, and 632 interruption events; 265 of its 477
+failures were in positive 60-to-180 degree bins, but substantial negative-angle
+failures remained. This supports fresh-run instability or transfer dependence
+under the tested recipe, without separating those explanations. Experiments 11
+and 12 preserved broad transferred competence but did not remove the incumbent's
+residual failures, and experiment 13's low-rate negative-angle replay did not
+improve them. Training-proxy peaks and within-run reward increases remain
+orthogonal to measured task progress. All comparisons use fixed development
+panels and do not establish generalization or causality; no official benchmark
+result exists.
 
-**Open questions:** Whether the fresh run's shifted positive-angle failures
-are primarily optimization variability, transfer dependence, or a control
-dynamics effect remains unresolved. Experiment 13 weakens the explanation that
-low-rate exposure alone can remove the retained basin's negative-angle
-failures, but does not distinguish the remaining alternatives. The experiment-7
-task-reference result remains 98.5% on its development panel, but no official
-benchmark result exists.
+**Open questions:** Whether the fresh-run regression is primarily caused by
+optimization variance, transfer history, or an interaction with the temporal
+control remains unresolved. The most useful future evidence should measure any
+new representation or control change on compatible task-performance panels and
+retain angle and hold diagnostics. Unmeasured checkpoints cannot be ranked from
+training proxies.
 
-**Conditional next steps:** A fresh-versus-transfer replication may be more
-valuable than another narrow replay or control modification. Any new
-representation or temporal control should be justified by compatible
-task-performance evidence, with residual sector and hold diagnostics retained.
-Terminal assessment should wait for stronger evidence that the selected policy
-is ready for the official objective.
+**Conditional next steps:** Prefer a fresh-versus-transfer or representation/
+temporal-control experiment over another narrow replay, using the retained
+experiment-7 policy as the practical comparison and selecting checkpoints by
+measured task behavior. Terminal assessment should wait for stronger evidence
+that the selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -846,3 +795,63 @@ experiment-13 task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`,
 `robot_learning/scenario/environment.py`, and
 `robot_learning/scenario/evaluation.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 14
+
+**Result:** The second fresh replication reproduced the broad fresh-run
+regression rather than the transferred experiment-7 competence. The experiment
+is closed with the experiment-7 `working` and `best_known` lineages unchanged,
+the unchanged recipe kept, no challenger retained, and terminal assessment not
+requested.
+
+**Observed behavior:** Training completed 120,832 local steps. The training
+success proxy rose from 0 to 0.27 at step 110,592 and ended at 0.26; mean
+training reward rose from -7.28 at step 5,120 to 110.44 at step 100,352, then
+fell to 89.89 at completion. These are training facts, not policy rankings.
+Research evaluation measured 646/1,000 (64.6%) at checkpoint-100352,
+575/1,000 (57.5%) at checkpoint-110592, and 523/1,000 (52.3%) at
+checkpoint-120832. The corresponding task-reference panel measured 121/200
+(60.5%), 106/200 (53.0%), and 102/200 (51.0%). Thus both panels declined
+within this run while the training proxy was highest.
+
+At the three research checkpoints, failures and diagnostics were respectively
+354, 425, and 477 total failures; 339, 379, and 431 never-reach cases; and
+100, 670, and 632 interruption events. At the late checkpoint, 265 of 477
+research failures were in positive 60-to-180 degree bins, matching the
+proposal's expected positive-angle regression branch. The run also retained
+substantial negative-angle failures, and its hold profile differed from
+experiment 10: 46 late failures were interrupted, but those failures
+contained 632 interruption events. Every failed task-reference episode was
+truncated; its late failures covered both negative and positive angle bins.
+
+**Hypothesis assessment:** Partially supported under the tested fresh recipe and
+fixed development panels. The expected observation was present in its main
+behavioral direction: the fresh policy remained materially below the
+transferred incumbent and developed a majority of late research failures in
+positive-angle sectors, rather than recovering broad competence. The result
+also contains partial and unexpected signals: negative-angle failures remained
+substantial, and the interruption-event profile was not a direct reproduction
+of experiment 10. The contradicting branch that a fresh run would recover
+incumbent-like broad performance was not observed. The measured within-run
+decline and proxy/reward rise are orthogonal evidence against using training
+metrics as a policy-progress claim. This supports a fresh-run or
+transfer-dependent instability hypothesis, but one additional fresh run cannot
+separate initialization, seed/optimization variance, or control dynamics and
+does not establish causality.
+
+**Interpretation:** The unchanged 50/50 action-smoothing recipe is not
+reliably sufficient from fresh initialization under the observed runs, whereas
+the transferred experiment-7 basin remains the strongest measured candidate.
+The second replication makes the fresh-versus-transfer discrepancy more
+credible as a research question and makes another narrow replay less
+promising, but it does not show that transfer itself is causal. The retained
+incumbent is useful progress toward the objective, yet its available
+development evidence remains below the human objective and is not an official
+benchmark result.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, the experiment-14 training-log query for
+steps 5,120-120,832, the experiment-14 checkpoint inventory exposed by the
+brief, and the six experiment-14 research-evaluation and task-reference
+artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`.
