@@ -177,13 +177,20 @@ instead of retrying the same command.
     inspecting the experiment's current code state or delta. To revert this
     experiment's code, use the lineage proposal's "code" decision.
 - A repository-wide pytest run belongs to the runner; run a specific suite.
-- Tool calls resend the conversation. Aggregate repeated mechanical extraction
-    when practical, but choose the evidence scope and inspection depth required by
-    the scientific investigation. Context efficiency does not determine which
-    scientific evidence is worth examining.
-- Targeted tests, linting, parsing and lightweight analysis are available while
-    developing the phase deliverable. The Runner owns final contract and execution
-    validation. The phase ends when its deliverable has been written.
+- Every tool call resends the whole conversation, so prefer one aggregation over
+  the same command repeated per file, and read what you need rather than whole
+  artifacts.
+  When the same extraction or analysis is needed across several artifacts, prefer
+  one aggregated tool call when practical and when the combined result remains
+  compact. Separate calls remain appropriate when the scientific question differs
+  between artifacts or aggregation would make the analysis less clear.
+  Context efficiency does not determine which scientific evidence is worth
+  examining.
+- Use targeted tests, linting, parsing or analysis while developing the phase
+  deliverable when they resolve uncertainty introduced by the work. Once the
+  deliverable is complete, do not perform a separate final validation pass solely
+  to reconfirm the deliverable or repository state; the Runner owns final contract
+  and execution validation. The phase ends when its deliverable has been written.
 </harness_policy>
 """.strip()
 
