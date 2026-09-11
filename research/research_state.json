@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/6bbe4246-0dbc-4e66-9f31-0b66c0388867/e7-c8cf701d5-9939a5402c338f23fddb2147c1b76aa9ffa82d8ff6c135815035060f819d6f0a",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-7-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json",
-      "research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/task-reference-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-7-checkpoint-120832-task-reference-v1.json"
-    ],
-    "fingerprint": "9939a5402c338f23fddb2147c1b76aa9ffa82d8ff6c135815035060f819d6f0a",
-    "origin_experiment": 7,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Designate the late smoothed checkpoint as best known because it has the highest recorded research-evaluation success in the campaign, improves hard-sector research success over the incumbent, preserves non-sector and radius-bin performance, and matches the incumbent on the compatible task-reference panel.",
-    "scientific_commit": "35259497c2a0532c405d7aad9b7620e935e30903",
-    "training_steps": 321536
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "5787ad999dcf8adc9853a369677f673c35c75196",
-    "id": "6bbe4246-0dbc-4e66-9f31-0b66c0388867",
+    "base_commit": "1306590468e16948ec132cff801104c875bd4595",
+    "id": "694ef64e-f191-4287-88bc-78085f2356c5",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-10T21:04:12.989736+00:00"
+    "started_at": "2026-09-11T08:22:48.564216+00:00"
   },
   "campaign_experiment_counters": {
-    "6bbe4246-0dbc-4e66-9f31-0b66c0388867": 18
+    "694ef64e-f191-4287-88bc-78085f2356c5": 0
   },
-  "last_allocated_experiment": 18,
-  "last_experiment": 18,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "restore",
-      "reason": "Restore the complete experiment-7 scientific recipe because the experiment-18 observation augmentation did not improve measured task behavior and its fresh recipe is not the stronger basis for the next investigation."
-    },
-    "code_parent_commit": "c4efe144709aa679a9ebbdcb58a4ef5d9df47a7d",
-    "continue_from": "working",
-    "experiment": 18,
-    "reason": "Experiment 18's state-aware fresh policy scored 97.1% on the matched research panel at both measured checkpoints versus 97.7% for the incumbent, with zero paired challenger wins, and scored 97.5% on task reference versus 98.5% for the incumbent. It fixed one far negative-angle reference failure but added three negative-sector failures and did not establish improved hold stability. Restore the measured incumbent recipe for future development and keep the campaign open; the evidence is not ready for terminal assessment."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,125 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "c4efe144709aa679a9ebbdcb58a4ef5d9df47a7d",
-    "experiment": 18,
-    "scientific_commit": "4f50e58cfcae201d4b08d0578fbccc243cd520d4"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/6bbe4246-0dbc-4e66-9f31-0b66c0388867/e1-cada55eb5-4c5b29b2b6733e5df6b68e63df6db5db862418e355684f56ab0ecb3dee582081",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [
-        "research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-1-checkpoint-100352-1000ep-seed91000-6ba3ba6d7654.json"
-      ],
-      "fingerprint": "4c5b29b2b6733e5df6b68e63df6db5db862418e355684f56ab0ecb3dee582081",
-      "id": "baseline-radius-14-20",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Preserve the incumbent baseline as a reusable control for future measurements of observation, control, or checkpoint-selection interventions.",
-      "scientific_commit": "d14fc6c559e25c418aa69d00061ceae6fbd9239d",
-      "training_steps": 100352
-    },
-    {
-      "artifact": "research/checkpoints/retained/6bbe4246-0dbc-4e66-9f31-0b66c0388867/e6-cada55eb5-f42661eda26ec457a24b63e3def77371269307c85ad958932b1acee81fdfa122",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [
-        "research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-6-checkpoint-100352-1000ep-seed91000-ffdccdbf3357.json"
-      ],
-      "fingerprint": "f42661eda26ec457a24b63e3def77371269307c85ad958932b1acee81fdfa122",
-      "id": "e6-margin-early",
-      "origin_experiment": 6,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the early margin-shaped policy as a reusable diagnostic control: it matches working task success, improves hard-sector success by one research episode, and records far fewer repeated hold-interruption events without changing its policy interface.",
-      "scientific_commit": "a59093c38fa3ad4b4e09ee00c871600f565210f5",
-      "training_steps": 301056
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/6bbe4246-0dbc-4e66-9f31-0b66c0388867/e7-c8cf701d5-9939a5402c338f23fddb2147c1b76aa9ffa82d8ff6c135815035060f819d6f0a",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-7-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json"
-    ],
-    "fingerprint": "9939a5402c338f23fddb2147c1b76aa9ffa82d8ff6c135815035060f819d6f0a",
-    "origin_experiment": 7,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 18's state-aware fresh policy scored 97.1% on the matched research panel at both measured checkpoints versus 97.7% for the incumbent, with zero paired challenger wins, and scored 97.5% on task reference versus 98.5% for the incumbent. It fixed one far negative-angle reference failure but added three negative-sector failures and did not establish improved hold stability. Restore the measured incumbent recipe for future development and keep the campaign open; the evidence is not ready for terminal assessment.",
-    "scientific_commit": "35259497c2a0532c405d7aad9b7620e935e30903",
-    "training_steps": 321536
-  }
+  "working_lineage": null
 }
