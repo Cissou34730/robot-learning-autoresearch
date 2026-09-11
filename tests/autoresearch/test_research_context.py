@@ -918,6 +918,7 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
         "choose the question that advances the current research direction",
         "single strongest development experiment",
         "no supported material opportunity",
+        "reuse compatible evidence when it answers the question",
     ):
         assert scientific_preference not in combined
 
@@ -927,6 +928,7 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     assert "diagnostic and exploratory hypotheses are valid" in normalized_program
     assert "a weakened hypothesis does not by itself reject a useful" in normalized_program
     assert "another useful investigation does not prohibit stopping" in normalized_program
+    assert "the researcher determines the amount and type of evidence appropriate" in normalized_program
     assert "why measuring that model is useful for the scientific question" in normalized_instruments
     for scientific_instruction in (
         "start with `research/brief.md`",

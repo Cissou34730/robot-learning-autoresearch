@@ -151,13 +151,12 @@ supported`, `weakened`, `contradicted`, or `inconclusive`, and record partial,
 unexpected, or orthogonal signals as well as limitations. An unmeasured
 checkpoint remains unmeasured, not a failed policy.
 
-Decide whether to gather more evidence before resolving lineage. A measurement
+Decide whether to request measurements before resolving lineage. A measurement
 may discover or refine a question, characterize unfamiliar behavior, compare
 policies, test an explanation, or examine learning dynamics across checkpoints.
-Reuse compatible evidence when it answers the question. No comparison,
-replication, task-reference panel, diagnostic, or additional round is required
-by phase convention, and none is discouraged by default. Choose instruments and
-scope according to scientific judgment.
+No comparison, replication, task-reference panel, diagnostic, or additional
+round is required by phase convention, and none is discouraged by default.
+Choose instruments and scope according to scientific judgment.
 
 During this phase, request measurements of current candidates or eligible saved
 lineages through `research/evaluation_request.json`. Researcher-owned measurement
