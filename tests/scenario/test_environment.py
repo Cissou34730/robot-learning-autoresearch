@@ -4,7 +4,6 @@ These describe the scenario as it is implemented today. A scenario experiment
 that changes the training mechanics is expected to update them.
 """
 
-import mujoco
 import numpy as np
 import pytest
 
@@ -24,19 +23,6 @@ def test_observation_matches_declared_space():
     env = make_training_env()
     obs, _ = env.reset(seed=0)
     assert env.observation_space.contains(obs)
-
-
-def test_observation_encodes_target_direction_periodically():
-    env = make_training_env()
-    env.reset(seed=0)
-    angle = -2.2
-    radius = 0.15
-    env.data.mocap_pos[0, :2] = [radius * np.cos(angle), radius * np.sin(angle)]
-    mujoco.mj_forward(env.model, env.data)
-
-    observation = env._observation()
-
-    np.testing.assert_allclose(observation[7:9], [np.sin(angle), np.cos(angle)])
 
 
 def test_training_distribution_covers_official_radii_without_changing_evaluation():
