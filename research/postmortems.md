@@ -3,11 +3,11 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while distinguishing optimization refinement from
-representation, control, branch-selection, or transfer limitations in the
-residual negative-angle failures. A conservative transferred update is a useful
-diagnostic before changing the observation contract again. Training proxies and
-development panels remain development evidence rather than a terminal verdict.
+practical incumbent while testing whether its hidden temporal state limits
+negative-angle reachability. Prefer state-aware representations or genuinely
+different control formulations over further narrow smoothing, replay, reward,
+or learning-rate refinements. Training proxies and development panels remain
+development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -42,19 +42,20 @@ not establish generalization or causality; no official benchmark result exists.
 **Open questions:** The cause of the incumbent's residual failures in the
 negative-angle sector remains unresolved; the matched research failures are
 500-step failures, while the three task-reference failures are shared across
-the incumbent and experiment 17. Experiments 16 and 17 weaken the tested
-final-approach reward and smaller-update explanations under their transferred
-recipes, but do not disprove other reward forms or establish that either
-intervention was causal. The fresh-run regression is still not separated into
-optimization variance, transfer history, or control dynamics. Unmeasured
-checkpoints cannot be ranked from training proxies.
+the incumbent and experiment 17. The incumbent exposes qpos, qvel, geometry,
+and inverse-kinematics errors but not the previous command applied by its
+smoother. It is unknown whether that missing filter state explains the
+reachability tradeoff or whether the residual is principally a policy basin or
+branch-selection limitation. Unmeasured checkpoints cannot be ranked from
+training proxies.
 
-**Conditional next steps:** Preserve the incumbent and, if development
-continues, prioritize a measurement-backed representation or control
-investigation that targets the negative-angle reachability residual without
-repeating the tested narrow smoothing, replay, closeness-scale, or
-learning-rate changes. Terminal assessment should wait for stronger evidence
-that the selected policy is ready for the official objective.
+**Conditional next steps:** Compare the state-aware fresh policy against the
+incumbent on matched panels, examining negative-angle reachability, hold
+interruptions, and broad preservation. If it fails to improve, shift away from
+the current filter representation rather than repeating its scalar
+coefficients; if it improves while preserving hold stability, retain the
+representation for further development. Terminal assessment should wait for
+stronger evidence that the selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
