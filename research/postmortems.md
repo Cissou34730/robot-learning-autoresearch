@@ -2,14 +2,12 @@
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
-**Direction:** Use the retained experiment-7 50/50 action-smoothing policy as
-the practical incumbent while testing whether its successful transferred
-training basin can still improve reachability without sacrificing broad
-performance. The fresh replication did not make the smoother a dependable
-fresh-start control, and the unsuccessful periodic target-direction
-representation remains abandoned. Use matched task measurements for checkpoint
-selection and do not treat training proxies or development panels as a
-terminal verdict.
+**Direction:** Keep the retained experiment-7 50/50 action-smoothing policy as
+the practical incumbent. Its transferred basin remains stable under unchanged
+continuation, but experiment 11 did not improve measured research success.
+Future work should target the structured residual failures with matched task
+measurements, while treating training proxies and development panels as
+development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -33,24 +31,33 @@ The retained late checkpoint has 977/1,000 research successes with 15
 never-reach failures and 8 interrupted failures, whereas the fresh replication
 has 704/1,000 successes with 296 failures, including 272 in the positive
 60-to-180 degree bins, 191 never-reach failures, and 105 interrupted failures.
+Experiment 11 completed an unchanged continuation to 120,832 local steps
+(442,368 accumulated steps). Its training proxy varied between 0.94 and 1.00,
+but measured research success was 976/1,000 at checkpoint-100352 and 975/1,000
+at both checkpoint-110592 and checkpoint-120832. The corresponding
+task-reference result was 197/200 at all three checkpoints. Research
+diagnostics stayed near the incumbent: 18, 17, and 18 never-reach cases and
+18, 17, and 17 interruption events, respectively. On the fixed task-reference
+panel, the same three failures persisted at approximately -123, -128, and
+-155 degrees, so this round provides evidence of a stable residual pattern on
+that panel, not a causal explanation or independent confirmation.
 Unmeasured checkpoints cannot be ranked from training proxies.
 
 **Open questions:** Whether the fresh run's shifted positive-angle failures
 are primarily optimization variability, transfer dependence, or a control
-dynamics effect remains unresolved. It is also unknown whether the retained
-policy's residual failures can be reduced by continuing from its learned basin
+dynamics effect remains unresolved. It is also unknown whether a focused
+intervention can remove the retained basin's repeated negative-angle failures
 without sacrificing broad performance. The experiment-7 task-reference result
 remains 98.5% on its development panel, but no official benchmark result
 exists.
 
-**Conditional next steps:** An unchanged continuation can test whether the
-retained basin yields a measured checkpoint closer to the 98% objective; a
-plateau or broad regression would favor a narrowly controlled intervention or
-another fresh control only if separating run variability from transfer history
-becomes more valuable. Any new representation or temporal control should be
-justified by matched task-performance evidence. Terminal assessment should wait
-for stronger evidence that the selected policy is ready for the official
-objective.
+**Conditional next steps:** A subsequent ordinary experiment could test a
+narrowly controlled intervention aimed at the repeated residual geometry, or
+investigate fresh-versus-transfer variability if that uncertainty becomes more
+valuable than direct improvement. Any new representation or temporal control
+should be justified by matched task-performance evidence. Terminal assessment
+should wait for stronger evidence that the selected policy is ready for the
+official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -650,3 +657,54 @@ assessment.
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-10-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
 the corresponding experiment-10 task-reference artifacts, and the
 experiment-7 late research and task-reference artifacts used for comparison.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 11
+
+**Result:** The unchanged continuation preserved the retained basin but did
+not improve measured task performance. The experiment-7 `working` and
+`best_known` lineages remain selected, the experiment-11 candidates are not
+retained, and terminal assessment is not requested.
+
+**Observed behavior:** Training completed 120,832 local steps, reaching 442,368
+accumulated steps. Training success ranged from 0.94 to 1.00 across the
+queried checkpoints; it reached 1.00 at several intermediate checkpoints and
+ended at 0.98, while mean reward peaked at 106.27 at checkpoint-110592 and
+ended at 104.46. These are training facts, not held-out task performance. On
+the matched 1,000-episode research panel, checkpoint-100352 scored 976/1,000
+(97.6%), checkpoint-110592 scored 975/1,000 (97.5%), and
+checkpoint-120832 scored 975/1,000 (97.5%). Their diagnostics recorded,
+respectively, 18, 17, and 18 never-reach cases and 18, 17, and 17 interruption
+events. On the fixed 200-episode task-reference panel, all three checkpoints
+scored 197/200 (98.5%); the same three episodes failed each time, at target
+angles approximately -122.9, -127.9, and -154.8 degrees.
+
+**Hypothesis assessment:** Partially supported, with the improvement branch
+weakened. The expected observation that continuation would preserve broad
+competence was present: all measured checkpoints remained close to the
+experiment-7 research result of 97.7%, matched its 98.5% task-reference result,
+and showed no broad panel regression. The expected observation of reduced
+residual reachability or hold failures was not observed, and no checkpoint
+exceeded the incumbent on the matched research panel. The contradicting
+observation therefore supports a plateau under this unchanged continuation,
+but does not establish why the plateau occurred. The high training proxies and
+their within-run oscillation are orthogonal to a claim of task-policy progress.
+
+**Interpretation:** The measured policies are practically equivalent to the
+retained experiment-7 policy on the available development panels, with a small
+research-panel decline rather than a gain. The repeated task-reference
+failures and nearly unchanged research diagnostics are consistent with a
+residual behavior that further unchanged PPO updates did not remove. Because
+the evidence uses fixed development panels and only three continuation
+checkpoints, it does not establish generalization, causality, or whether a
+different intervention could address those failures. The retained policy
+remains useful progress toward the objective, but the evidence is not ready for
+terminal assessment.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`,
+`research/training_logs/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-11-attempt-1.log`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-11/inventory.json`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-11/parameters.json`,
+the three experiment-11 research-evaluation artifacts, and the three
+experiment-11 task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`.
