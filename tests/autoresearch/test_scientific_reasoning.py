@@ -115,10 +115,9 @@ def test_missing_strategy_is_reported_not_generated(proposal, scientific_memory)
 @pytest.mark.parametrize(
     "label",
     [
-        "Direction",
+        "Current synthesis",
         "Lessons and limits",
         "Open questions",
-        "Conditional next steps",
     ],
 )
 def test_strategy_requires_each_meaningful_entry(proposal, scientific_memory, label):
@@ -136,6 +135,22 @@ def test_legacy_reconsideration_text_remains_readable_but_is_not_required(
 ):
     text = scientific_memory.read_text(encoding="utf-8").replace(
         "**Reconsider when:**", "**Unrelated:**"
+    )
+    scientific_memory.write_text(text, encoding="utf-8")
+
+    assert (
+        protocol.validate_proposal_against_state(
+            proposal, {"campaign": {"id": "current"}}
+        )
+        == "training"
+    )
+
+
+def test_legacy_direction_remains_valid_without_conditional_next_steps(
+    proposal, scientific_memory
+):
+    text = scientific_memory.read_text(encoding="utf-8").replace(
+        "**Current synthesis:**", "**Direction:**"
     )
     scientific_memory.write_text(text, encoding="utf-8")
 
@@ -286,7 +301,7 @@ def test_brief_exposes_current_strategy_without_old_campaign_or_truncation(
     assert "Campaign objective: the human-defined objective in `research/scenario.md`." in rendered
     assert "memory for reassessment, not a prescribed next direction" in rendered
     assert "Investigate the plateau" in rendered
-    assert "Continue if progress persists, otherwise inspect control" in rendered
+    assert "Conditional next steps" not in rendered
     assert "NEVER IMPORT THIS" not in rendered
     assert rendered.index("Immutable goal") < rendered.index(
         "Provisional scientific synthesis"
@@ -337,7 +352,6 @@ def test_documented_training_example_and_memory_match_the_contract(
     )[0]
     assert "structured diagnostic or exploratory uncertainty" in training
     assert "need not isolate a causal mechanism" in training
-    assert "binary acceptance criteria" in training
     assert "The hypothesis is a causal prediction" not in training
     proposal = json.loads(
         re.search(r"```json\n(.*?)\n```", training, re.DOTALL).group(1)

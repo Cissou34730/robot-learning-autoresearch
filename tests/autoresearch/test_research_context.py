@@ -881,8 +881,8 @@ def test_researcher_prompts_are_objective_first_and_direction_neutral():
     prediction = "relate relevant findings to the proposal's expected_observation"
     assert script.count(objective) >= 2
     assert script.index(objective) < script.index(prediction)
-    assert "a direction you are expected to continue" in script
-    assert "Continue, revise, broaden, replace, or abandon it" in script
+    assert "prescribes no next action" in script
+    assert "Conditional next steps" not in script
     assert "most informative to measure rather than the alternatives" not in script
     assert "chosen over the other available checkpoints" not in script
     assert "Context efficiency does not determine which" in policy
@@ -923,11 +923,13 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
         assert scientific_preference not in combined
 
     assert "assess progress toward a learned policy satisfying the human objective" in launcher.lower()
-    assert "revisable question or approach that best serves the human" in normalized_program
-    assert "not a commitment to the current investigation or incumbent policy" in normalized_program
+    assert "`current synthesis`: the present interpretation" in normalized_program
+    assert "the synthesis records no required next action" in normalized_program
     assert "diagnostic and exploratory hypotheses are valid" in normalized_program
     assert "a weakened hypothesis does not by itself reject a useful" in normalized_program
     assert "another useful investigation does not prohibit stopping" in normalized_program
+    assert "`current synthesis`: the present interpretation" in normalized_program
+    assert "`conditional next steps`" not in normalized_program
     assert "the researcher determines the amount and type of evidence appropriate" in normalized_program
     assert "why measuring that model is useful for the scientific question" in normalized_instruments
     for scientific_instruction in (

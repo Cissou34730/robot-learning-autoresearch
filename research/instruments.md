@@ -231,20 +231,19 @@ also be edited during experiment preparation. The exact heading and labels are:
 ```markdown
 ## <Campaign ID> / Scientific strategy
 
-**Direction:** <revisable question or approach that currently best serves the human objective>
+**Current synthesis:** <present interpretation of relevant campaign evidence>
 
 **Lessons and limits:** <reusable findings, source references and scope; or what remains unknown>
 
 **Open questions:** <uncertainties not yet resolved>
-
-**Conditional next steps:** <plausible future options suggested by current evidence>
 ```
 
-All four labeled entries must contain text and may span multiple lines. Their
+All three labeled entries must contain text and may span multiple lines. Their
 scientific meaning is defined in `research/program.md`. The Runner checks the
 section's structure, associates the active campaign section with the proposal,
-and displays it in the brief. It does not author scientific content. Historical
-experiment entries and strategy sections remain readable.
+and displays it in the brief. It does not author scientific content. The legacy
+`Direction` label remains readable as a synthesis, and historical experiment
+entries and strategy sections remain readable.
 
 Append to `research/postmortems.md`:
 

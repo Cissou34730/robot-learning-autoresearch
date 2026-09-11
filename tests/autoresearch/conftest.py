@@ -27,10 +27,9 @@ def scientific_memory(monkeypatch, tmp_path):
     source.write_text("Measured progression", encoding="utf-8")
     memory = tmp_path / "postmortems.md"
     body = (
-        "**Direction:** Investigate the plateau.\n\n"
+        "**Current synthesis:** Investigate the plateau.\n\n"
         "**Lessons and limits:** Progress slows; evidence.txt; one training seed.\n\n"
         "**Open questions:** Optimization or insufficient budget?\n\n"
-        "**Conditional next steps:** Continue if progress persists, otherwise inspect control.\n\n"
         "**Reconsider when:** No progress after the additional training.\n"
     )
     memory.write_text(

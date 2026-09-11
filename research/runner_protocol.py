@@ -498,12 +498,16 @@ def validate_research_memory(proposal: dict, state: dict) -> None:
         raise ValueError(
             "postmortems.md needs the current campaign's Scientific strategy section"
         )
-    for label in (
-        "Direction",
-        "Lessons and limits",
-        "Open questions",
-        "Conditional next steps",
-    ):
+    synthesis = re.search(
+        r"^\*\*(?:Current synthesis|Direction):\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
+        section,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if not synthesis or not synthesis.group(1).strip():
+        raise ValueError(
+            "scientific strategy needs a non-empty 'Current synthesis' entry"
+        )
+    for label in ("Lessons and limits", "Open questions"):
         match = re.search(
             rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
             section,

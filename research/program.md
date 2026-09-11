@@ -89,11 +89,11 @@ Distinguish lack of improvement in a run, evidence against a hypothesis, and a
 practical decision not to pursue an intervention. Scope conclusions to the tested
 conditions and uncertainty.
 
-Carry evidence and practical prioritization forward. The strategy records what
+Carry evidence and practical prioritization forward. The synthesis records what
 is supported, weakened, or unresolved without turning previous prioritization
 into an instruction. A route may be deprioritized without being disproven, and a
-later Researcher may continue, revise, broaden, replace, or abandon the current
-direction as the evidence warrants.
+later Researcher may continue, revise, broaden, replace, or abandon an
+investigation as the evidence warrants.
 
 Experiment history and prior postmortems are evidence, not authority. Their
 interpretations may be revisited. Targeted extraction and complete artifact or
@@ -203,25 +203,21 @@ Further training is an ordinary next experiment after closure, including trainin
 that targets the selected policy's own residual failures. Closing an experiment
 does not imply the campaign is ending.
 
-## Scientific memory and direction
+## Scientific memory
 
 Maintain the active campaign's **Scientific strategy** in
 `research/postmortems.md` using the format in `research/instruments.md`. Keep it a
 compact decision aid, not a second experiment history:
 
-- `Direction`: the revisable question or approach that best serves the human
-   objective, not a commitment to the current investigation or incumbent policy.
+- `Current synthesis`: the present interpretation of relevant campaign evidence.
 - `Lessons and limits`: reusable findings, their sources, and uncertainty.
 - `Open questions`: useful uncertainties, not a mandatory experiment queue.
-- `Conditional next steps`: plausible future options suggested by current
-   evidence, not an experiment queue or a default action for the next session.
 
 Preserve historical observations and decisions; revise current interpretations
 in the synthesis rather than rewriting what was believed at the time. At the
-start of a new hypothesis phase, reassess the strategy with the campaign
-objective and available evidence. Continue, revise, broaden, replace, or abandon
-the current investigation according to scientific judgment. Changing direction
-does not require resolving every open question.
+start of a new hypothesis phase, reassess the synthesis with the campaign
+objective and available evidence. The synthesis records no required next action,
+and changing investigations does not require resolving every open question.
 
 ## Stopping
 
