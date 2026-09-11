@@ -1848,7 +1848,7 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
     state_path = research / "research_state.json"
     campaign_id = "00000000-0000-0000-0000-000000000001"
     restored_config = {"algorithm": {"name": "ppo"}, "training": {"n_envs": 1}}
-    state = repository.empty_v4_campaign_state(
+    state = repository.empty_campaign_state(
         campaign={
             "id": campaign_id,
             "started_at": "2026-01-01T00:00:00Z",
