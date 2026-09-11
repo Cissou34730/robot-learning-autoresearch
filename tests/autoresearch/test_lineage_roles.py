@@ -894,7 +894,9 @@ def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
     assert plan["best_known_record"]["candidate"] == "checkpoint"
 
 
-def test_v4_best_known_replacement_ignores_incompatible_panels(monkeypatch, tmp_path):
+def test_v4_best_known_replacement_does_not_require_incumbent_panel_equality(
+    monkeypatch, tmp_path
+):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr(
         "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
@@ -927,7 +929,7 @@ def test_v4_best_known_replacement_ignores_incompatible_panels(monkeypatch, tmp_
             "partial_evaluations": [
                 {
                     "candidate": "checkpoint",
-                    "episodes": 2,
+                    "episodes": 200,
                     "seed": 1,
                     "evaluation_semantics": "candidate-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(candidate),
@@ -940,7 +942,7 @@ def test_v4_best_known_replacement_ignores_incompatible_panels(monkeypatch, tmp_
                 },
                 {
                     "candidate": "best_known",
-                    "episodes": 2,
+                    "episodes": 1000,
                     "seed": 1,
                     "evaluation_semantics": "incumbent-semantics",
                     "model_fingerprint": repository.artifact_fingerprint(incumbent),
