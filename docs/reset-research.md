@@ -32,7 +32,7 @@ Restores:
 - researcher-owned scenario and training files, application entry points and
   their scientific tests, including removal of files absent from the baseline;
 - scenario description and parameters;
-- the accepted policy and all its associated files, including `policy_runtime.pkl`;
+- the selected policy and all its associated files, including `policy_runtime.pkl`;
 - baseline research state, history, postmortem, detailed evaluations and raw
   experiment-1 training logs.
 
@@ -45,10 +45,9 @@ The baseline campaign identity and its evidence stay together. Later campaign
 data and pending controls are removed. The next launch starts experiment 2,
 not another baseline training. Generated briefs are rebuilt by the launcher.
 
-Legacy checkpoints without the executable runtime are refused. Prepare a
-compatible baseline explicitly; see [policy migration](policy-runtime.md).
-The reset checks baseline structure and required files, not policy performance;
-normal runtime integrity checks still apply when a saved policy is loaded.
+Checkpoints without the executable runtime are refused. The reset checks
+baseline structure and required files, not policy performance; normal runtime
+integrity checks still apply when a saved policy is loaded.
 
 If the baseline's logs are not versioned, they must still exist under
 `research/training_logs/<baseline-campaign-id>/`. By default they are read from

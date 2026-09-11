@@ -24,7 +24,6 @@ _SECTION_HEADINGS = frozenset(
         "Selections",
         "Reason",
         "Candidate",
-        "Champion",
         "Task reference",
         "Paired comparison",
         "Continue from",
@@ -177,11 +176,7 @@ def render_training_summary_card(
             f"{training_success.removeprefix('success ')} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')}"
         )
-    next_phase = (
-        "Researcher post-training analysis"
-        if result.get("schema_version") == 4
-        else "Researcher evaluation design"
-    )
+    next_phase = "Researcher post-training analysis"
     lines.extend(["", "Next", f"  {next_phase}"])
     return "\n".join(lines)
 
@@ -253,7 +248,6 @@ def summary_headline(summary: dict) -> str:
 def render_evidence_card(
     experiment: int,
     candidates: list[dict],
-    champion_summary: dict | None,
     comparisons: list[dict],
     next_phase: str,
     task_reference_evaluations: list[dict] | None = None,
@@ -268,8 +262,6 @@ def render_evidence_card(
             for item in measured
         )
         lines.append("")
-    if champion_summary is not None:
-        lines.extend(["Champion", f"  {summary_headline(champion_summary)}", ""])
     references = task_reference_evaluations or []
     if references:
         width = max(len(str(item["candidate"])) for item in references)

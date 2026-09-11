@@ -81,9 +81,7 @@
   },
   "pending_analysis": null,
   "pending_closure_operation": null,
-  "pending_evaluation_request": null,
   "pending_final_benchmark": null,
-  "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "ddf94651db780efcf3af6ff08abdad308b213614",
     "experiment": 1,

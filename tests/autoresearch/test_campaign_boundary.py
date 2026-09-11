@@ -78,15 +78,6 @@ class TestCampaignArtifactPaths:
         assert campaign_id in str(path)
         assert "experiment-1" in str(path)
 
-    def test_training_log_path_without_campaign(self):
-        """training_log_path should work without campaign_id for backward compat."""
-        path = runner_paths.training_log_path(1, 1)
-
-        assert "experiment-1" in str(path)
-        # Should not include UUIDs
-        assert "-" not in path.parent.name or path.parent.name in ["training_logs"]
-
-
 class TestResultRecordCampaignAttribution:
     """Result records should include campaign_id for filtering."""
 
@@ -146,7 +137,6 @@ class TestArchiveCandidatesWithCampaign:
 
         sig = inspect.signature(runner_repository.archive_candidates)
         assert "campaign_id" in sig.parameters
-        assert sig.parameters["campaign_id"].default is None
 
     def test_archive_candidates_records_forward_slash_artifact_paths(
         self, monkeypatch, tmp_path
@@ -187,7 +177,7 @@ class TestExperimentNumberingScopedPerCampaign:
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
         state = {
-            "schema_version": 3,
+            "schema_version": 4,
             "campaign": {
                 "id": campaign1,
                 "started_at": "2026-09-01T00:00:00Z",
@@ -234,16 +224,6 @@ class TestExperimentNumberingScopedPerCampaign:
             == 3
         )
 
-    def test_allocated_experiment_index_fallback_to_global(self):
-        """allocated_experiment_index without campaign_id should use global fallback."""
-        state = {
-            "last_allocated_experiment": 10,
-            "last_experiment": 5,
-        }
-
-        index = runner_protocol.allocated_experiment_index(state)
-        assert index == 10
-
     def test_experiment_working_paths_scoped_by_campaign(self):
         """experiment_working_paths should include campaign_id when provided."""
         campaign_id = str(uuid.uuid4())
@@ -252,16 +232,6 @@ class TestExperimentNumberingScopedPerCampaign:
         assert len(paths) == 2
         assert campaign_id in str(paths[0])
         assert campaign_id in str(paths[1])
-
-    def test_experiment_working_paths_legacy_fallback(self):
-        """experiment_working_paths without campaign_id should use legacy root."""
-        paths = runner_protocol.experiment_working_paths(1)
-
-        assert len(paths) == 2
-        # Should not include UUIDs
-        assert "experiment-1" in str(paths[0])
-        assert "experiment-1" in str(paths[1])
-
 
 class TestEvaluationArtifactAttribution:
     """Evaluation artifacts should be isolated per campaign."""
@@ -282,21 +252,6 @@ class TestEvaluationArtifactAttribution:
         assert "-experiment-1-" in name
         assert "100ep-seed42-abc123" in name
 
-    def test_evaluation_artifact_name_without_campaign_id(self):
-        """evaluation_artifact_name without campaign_id should use legacy format."""
-        name = runner_protocol.evaluation_artifact_name(
-            experiment=1,
-            candidate="baseline",
-            episodes=100,
-            seed=42,
-            semantics="abc123",
-        )
-        assert "evaluation-experiment-1-" in name
-        assert "100ep-seed42-abc123" in name
-        # Legacy format should not have campaign UUID
-        parts = name.split("-")
-        assert len([p for p in parts if len(p) == 36 and p.count("-") == 4]) == 0
-
     def test_task_reference_artifact_name_with_campaign_id(self):
         """task_reference_artifact_name should include campaign_id when provided."""
         campaign_id = str(uuid.uuid4())
@@ -308,75 +263,6 @@ class TestEvaluationArtifactAttribution:
         assert "-experiment-1-" in name
         assert "-reach" in name
 
-    def test_task_reference_artifact_name_without_campaign_id(self):
-        """task_reference_artifact_name without campaign_id should use legacy format."""
-        name = runner_protocol.task_reference_artifact_name(
-            experiment=1, candidate="baseline", panel="reach"
-        )
-        assert "task-reference-experiment-1-" in name
-        assert "-reach" in name
-        # Legacy format should not have campaign UUID
-        parts = name.split("-")
-        assert len([p for p in parts if len(p) == 36 and p.count("-") == 4]) == 0
-
-
-class TestBriefGenerationCampaignFiltering:
-    """Brief generation should filter results and postmortems by campaign."""
-
-    def test_postmortem_memory_with_campaign_id(self):
-        """_postmortem_memory should extract campaign-specific sections."""
-        from research.build_research_brief import _postmortem_memory
-
-        campaign_id = str(uuid.uuid4())
-        postmortems = f"""
-## {campaign_id} / Experiment 1
-**Result:** Training completed in 150k steps with 45% success
-
-**Interpretation:** Reasonable starting point for optimization
-"""
-
-        memories = _postmortem_memory(postmortems, campaign_id=campaign_id)
-        assert len(memories) == 1
-        assert "Training completed" in memories[0]
-        assert "45%" in memories[0]
-
-    def test_postmortem_memory_legacy_format(self):
-        """_postmortem_memory should still extract legacy format when no campaign_id."""
-        from research.build_research_brief import _postmortem_memory
-
-        postmortems = """
-## Experiment 1
-**Result:** Training completed in 150k steps with 45% success
-"""
-
-        memories = _postmortem_memory(postmortems, campaign_id=None)
-        assert len(memories) == 1
-        assert "Training completed" in memories[0]
-
-    def test_postmortem_memory_campaign_isolation(self):
-        """_postmortem_memory should not extract other campaign sections."""
-        from research.build_research_brief import _postmortem_memory
-
-        campaign1 = str(uuid.uuid4())
-        campaign2 = str(uuid.uuid4())
-
-        postmortems = f"""
-## {campaign1} / Experiment 1
-**Result:** Campaign 1 baseline success 45%
-
-## {campaign2} / Experiment 1
-**Result:** Campaign 2 baseline success 50%
-"""
-
-        # Extract only campaign1
-        memories = _postmortem_memory(postmortems, campaign_id=campaign1)
-        assert len(memories) == 1
-        # Should contain campaign1's result
-        assert "45%" in memories[0]
-        # Should not contain campaign2's result
-        assert "50%" not in memories[0]
-
-
 class TestComprehensiveCampaignIsolation:
     """Integration tests validating complete campaign isolation."""
 
@@ -387,7 +273,7 @@ class TestComprehensiveCampaignIsolation:
 
         # Initialize state for campaign1
         state1 = {
-            "schema_version": 3,
+            "schema_version": 4,
             "campaign": {
                 "id": campaign1,
                 "started_at": "2026-01-01T00:00:00Z",
@@ -400,7 +286,7 @@ class TestComprehensiveCampaignIsolation:
 
         # Initialize state for campaign2 (simulated)
         state2 = {
-            "schema_version": 3,
+            "schema_version": 4,
             "campaign": {
                 "id": campaign2,
                 "started_at": "2026-01-02T00:00:00Z",
@@ -502,7 +388,7 @@ class TestComprehensiveCampaignIsolation:
 
         # Simulate initial campaign state
         state = {
-            "schema_version": 3,
+            "schema_version": 4,
             "campaign": {
                 "id": campaign_id,
                 "started_at": "2026-01-01T12:00:00Z",
@@ -529,26 +415,3 @@ class TestComprehensiveCampaignIsolation:
         # Next allocation should be 4
         next_idx = runner_protocol.next_experiment_index(state, campaign_id=campaign_id)
         assert next_idx == 4
-
-
-def test_postmortem_memory_stops_at_another_campaign_heading():
-    from research.build_research_brief import _postmortem_memory
-
-    campaign1 = str(uuid.uuid4())
-    campaign2 = str(uuid.uuid4())
-
-    postmortems = f"""
-## {campaign1} / Experiment 1
-
-**Result:** Campaign one result
-
-## {campaign2} / Experiment 1
-
-**Interpretation:** CAMPAIGN_TWO_ONLY
-"""
-
-    memories = _postmortem_memory(postmortems, campaign_id=campaign1)
-
-    assert len(memories) == 1
-    assert "Campaign one result" in memories[0]
-    assert "CAMPAIGN_TWO_ONLY" not in memories[0]

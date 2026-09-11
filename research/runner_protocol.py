@@ -219,13 +219,6 @@ def allocated_experiment_index(state: dict, campaign_id: str | None = None) -> i
     written before allocation existed carries only the last experiment the
     Runner ran, which then seeds the counter.
     """
-    if campaign_id is None:
-        # Backward compat: global fallback for legacy code paths
-        return max(
-            int(state.get("last_allocated_experiment") or 0),
-            int(state.get("last_experiment") or 0),
-        )
-    # Campaign-scoped: track per-campaign high index
     campaign_counters = state.get("campaign_experiment_counters", {})
     return int(campaign_counters.get(campaign_id, 0))
 
@@ -361,13 +354,6 @@ def lineage_role(state: dict, identifier: str) -> dict | None:
     lineage = retained_lineage(state, identifier)
     if lineage is not None:
         return lineage
-    if state.get("schema_version") == 3 and identifier in {"accepted", "champion"}:
-        return {
-            "artifact": state.get("accepted_artifact"),
-            "training_steps": int(state.get("accepted_training_steps", 0)),
-            "parameters": state.get("accepted_parameters"),
-            "evaluation_artifacts": state.get("accepted_evaluations", []),
-        }
     return None
 
 
@@ -400,15 +386,14 @@ def resolved_training_parent(
             raise ValueError(
                 f"training parent {identifier!r} is incomplete: {filename}"
             )
-    if state.get("schema_version") == 4:
-        repository.require_complete_inference_artifact(
-            artifact, f"training parent {identifier!r}"
+    repository.require_complete_inference_artifact(
+        artifact, f"training parent {identifier!r}"
+    )
+    fingerprint = str(lineage.get("fingerprint") or "").strip()
+    if not fingerprint or repository.artifact_fingerprint(artifact) != fingerprint:
+        raise ValueError(
+            f"training parent {identifier!r} fingerprint does not match its artifact"
         )
-        fingerprint = str(lineage.get("fingerprint") or "").strip()
-        if not fingerprint or repository.artifact_fingerprint(artifact) != fingerprint:
-            raise ValueError(
-                f"training parent {identifier!r} fingerprint does not match its artifact"
-            )
     if str(proposal.get("kind", "training")).strip().lower() == "continuation":
         if not str(lineage.get("scientific_commit") or "").strip():
             raise ValueError(
@@ -686,23 +671,11 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
         raise ValueError(
             "the final benchmark is pending; no research proposal is accepted"
         )
-    if state.get("schema_version") == 4 and state.get("pending_analysis") is not None:
+    if state.get("pending_analysis") is not None:
         if set(proposal) != {"previous_result_decision"}:
             raise ValueError(
                 "the current analysis phase requires a closure proposal containing "
                 "only previous_result_decision"
-            )
-        return "lineage"
-    if state.get("pending_evaluation_request") is not None:
-        raise ValueError(
-            "research evaluation is pending; use evaluation_request.json, not "
-            "proposal.json"
-        )
-    if state.get("pending_researcher_decision") is not None:
-        if set(proposal) != {"previous_result_decision"}:
-            raise ValueError(
-                "the current phase requires a lineage proposal containing only "
-                "previous_result_decision"
             )
         return "lineage"
     if "previous_result_decision" in proposal:
@@ -751,9 +724,7 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
-def validate_evaluation_request(
-    request: dict, *, allow_legacy_need_more_evidence: bool = False
-) -> None:
+def validate_evaluation_request(request: dict) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
         value = request.get(field)
@@ -764,14 +735,6 @@ def validate_evaluation_request(
             raise ValueError(
                 f"{field} is obsolete; submit measurements through measurements"
             )
-    if "need_more_evidence" in request:
-        if not allow_legacy_need_more_evidence:
-            raise ValueError(
-                "need_more_evidence is obsolete; submit another measurement "
-                "request or close the analysis"
-            )
-        if type(request["need_more_evidence"]) is not bool:
-            raise ValueError("need_more_evidence must be true or false")
     comparisons = request.get("paired_comparisons", [])
     if not isinstance(comparisons, list):
         raise TypeError("paired_comparisons must be a list")
@@ -849,8 +812,6 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
         for lineage in state.get("retained_lineages", [])
         if str(lineage.get("id", "")).strip()
     )
-    if state.get("schema_version") == 3 and pending.get("champion_available"):
-        identifiers.append("champion")
     for identifier in identifiers:
         lineage = lineage_role(state, identifier)
         if lineage is None:
@@ -864,12 +825,10 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
 
 
 def planned_measurements(
-    request: dict, available: dict, *, allow_legacy_need_more_evidence: bool = False
+    request: dict, available: dict
 ) -> tuple[list[dict], list[dict]]:
     """Resolve all typed measurements before either evaluator starts."""
-    validate_evaluation_request(
-        request, allow_legacy_need_more_evidence=allow_legacy_need_more_evidence
-    )
+    validate_evaluation_request(request)
     evaluations: list[dict] = []
     references: list[dict] = []
     for spec in requested_measurements(request):
@@ -940,47 +899,15 @@ def validate_paired_comparison_plan(
     available: dict,
     requested: list[dict],
     *,
-    state: dict | None = None,
+    state: dict,
     resolved_models: dict[str, dict] | None = None,
 ) -> list[dict]:
     """Validate comparison identities that will exist after this request."""
-    if state is not None and state.get("schema_version") == 4:
-        if resolved_models is None:
-            resolved_models = resolved_measurement_models(request, available)
-        return _resolved_paired_evidence_plan(
-            request, pending, state, requested, resolved_models
-        )
-
-    expected_panels: dict[str, set[tuple[int, int]]] = {
-        name: set() for name in available
-    }
-    for item in pending.get("partial_evaluations", []) or []:
-        name = str(item.get("candidate", "")).strip()
-        if name in expected_panels:
-            expected_panels[name].add((int(item["seed"]), int(item["episodes"])))
-    for item in requested:
-        expected_panels[item["candidate"]].add((item["seed"], item["episodes"]))
-
-    for comparison in request.get("paired_comparisons", []):
-        candidate = comparison["candidate"].strip()
-        reference = comparison["reference"].strip()
-        if candidate not in available:
-            raise ValueError(f"unknown paired comparison candidate {candidate!r}")
-        if reference not in available:
-            raise ValueError(f"unknown paired comparison reference {reference!r}")
-        candidate_panels = expected_panels[candidate]
-        reference_panels = expected_panels[reference]
-        if not candidate_panels or not reference_panels:
-            raise ValueError(
-                f"paired comparison {candidate!r} vs {reference!r} requires "
-                "research-evaluation data for both models"
-            )
-        if candidate_panels != reference_panels:
-            raise ValueError(
-                f"paired comparison {candidate!r} vs {reference!r} requires "
-                "identical (seed, episodes) panels"
-            )
-    return []
+    if resolved_models is None:
+        resolved_models = resolved_measurement_models(request, available)
+    return _resolved_paired_evidence_plan(
+        request, pending, state, requested, resolved_models
+    )
 
 
 # --- measurement identity --------------------------------------------------
@@ -1091,9 +1018,6 @@ def pending_evaluation_artifacts(pending: dict) -> list[str]:
             collected.extend(
                 repository.evaluation_artifact_paths(candidate.get("evaluations"))
             )
-    collected.extend(
-        repository.evaluation_artifact_paths(pending.get("champion_evaluations"))
-    )
     collected.extend(
         repository.evaluation_artifact_paths(pending.get("task_reference_evaluations"))
     )
@@ -1243,194 +1167,7 @@ def plan_lineage_restore(lineage: dict) -> dict:
 
 
 def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
-    if state.get("schema_version") == 4:
-        return plan_v4_previous_result_decision(proposal, state)
-    pending = state.get("pending_researcher_decision")
-    if pending is None:
-        raise ValueError("there is no researcher decision awaiting resolution")
-    if set(proposal) != {"previous_result_decision"}:
-        raise ValueError(
-            "a lineage proposal must contain only previous_result_decision"
-        )
-    decision = proposal.get("previous_result_decision")
-    if not isinstance(decision, dict):
-        raise TypeError(
-            "the previous experiment is awaiting a researcher decision; add "
-            "previous_result_decision to the proposal"
-        )
-    if int(decision.get("experiment", -1)) != int(pending["experiment"]):
-        raise ValueError("previous_result_decision references the wrong experiment")
-    measured_evidence = pending_evaluation_artifacts(pending)
-    if measured_evidence:
-        validate_postmortem_evidence(
-            int(pending["experiment"]),
-            measured_evidence,
-            campaign_id=repository.current_campaign_id(state),
-        )
-    selected_name = str(decision.get("continue_from", "")).strip()
-    reason = str(decision.get("reason", "")).strip()
-    if not reason:
-        raise ValueError("previous_result_decision requires a reason")
-    allowed = {
-        "experiment",
-        "continue_from",
-        "reason",
-        "code",
-        "retain",
-        "remove_retained",
-        "request_final_benchmark",
-    }
-    extra = set(decision) - allowed
-    if extra:
-        raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
-    sources = {item["name"]: item for item in pending["candidates"]}
-    if pending.get("champion_available"):
-        sources["champion"] = {
-            "name": "champion",
-            "artifact": state["accepted_artifact"],
-            "timesteps": int(state.get("accepted_training_steps", 0)),
-            "summary": state.get("accepted_metrics"),
-            "evaluations": pending.get("champion_evaluations", []),
-            "parameters": state.get("accepted_parameters"),
-        }
-    if selected_name == "champion" and "champion" not in sources:
-        raise ValueError("there is no existing champion to continue from")
-    selected = sources.get(selected_name)
-    if selected is None:
-        raise ValueError(f"continue_from must be one of {sorted(sources)}")
-    selected_artifact = repository.resolve_repo_path(selected["artifact"])
-    repository.require_complete_artifact(
-        selected_artifact, f"selected lineage {selected_name!r}"
-    )
-
-    code_decision = decision.get("code")
-    if not isinstance(code_decision, dict):
-        raise TypeError(
-            "previous_result_decision requires a code decision with action and reason"
-        )
-    if set(code_decision) != {"action", "reason"}:
-        raise ValueError("code decision contains unsupported fields")
-    code_action = str(code_decision.get("action", "")).strip().lower()
-    code_reason = str(code_decision.get("reason", "")).strip()
-    if code_action not in {"keep", "revert"} or not code_reason:
-        raise ValueError("code decision must be keep or revert with a reason")
-    parent = str(pending.get("code_parent_commit", "")).strip()
-    # The frozen change set describes the intervention that trained; the science
-    # that must be undone is whatever stands against the parent now.
-    code_plan = plan_code_lineage_decision(
-        pending,
-        code_action,
-        current_paths=(
-            repository.scientific_delta(parent)
-            if parent and code_action == "revert"
-            else None
-        ),
-    )
-    code_plan["parent"] = parent
-
-    retained = list(state.get("retained_lineages", []))
-    retained_by_id = {str(lineage.get("id")): lineage for lineage in retained}
-    removal_ids = decision.get("remove_retained", [])
-    if not isinstance(removal_ids, list) or any(
-        not str(identifier).strip() for identifier in removal_ids
-    ):
-        raise ValueError("remove_retained must be a list of retained lineage IDs")
-    removal_ids = [str(identifier).strip() for identifier in removal_ids]
-    if len(set(removal_ids)) != len(removal_ids):
-        raise ValueError("remove_retained contains duplicate IDs")
-    missing = set(removal_ids) - set(retained_by_id)
-    if missing:
-        raise ValueError(f"unknown retained lineages: {sorted(missing)}")
-
-    requested = decision.get("retain", [])
-    if not isinstance(requested, list):
-        raise TypeError("retain must be a list")
-    retained_ids = set(retained_by_id)
-    retention_plans: list[dict] = []
-    for item in requested:
-        if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
-            raise ValueError(
-                "each retained lineage requires only candidate, id, and reason"
-            )
-        candidate_name = str(item["candidate"]).strip()
-        identifier = str(item["id"]).strip()
-        retention_reason = str(item["reason"]).strip()
-        if (
-            not identifier
-            or Path(identifier).name != identifier
-            or identifier in {".", ".."}
-        ):
-            raise ValueError(
-                "retained lineage ID must be a stable file-name-safe identifier"
-            )
-        if not retention_reason or candidate_name not in sources:
-            raise ValueError(
-                "retained lineages require an available candidate, id, and reason"
-            )
-        if candidate_name == selected_name:
-            raise ValueError("do not retain the lineage becoming active")
-        if identifier in retained_ids or identifier in removal_ids:
-            raise ValueError(f"conflicting retained lineage ID: {identifier}")
-        source = sources[candidate_name]
-        source_artifact = repository.resolve_repo_path(source["artifact"])
-        repository.require_complete_artifact(
-            source_artifact, f"retained lineage {identifier!r}"
-        )
-        campaign_id = repository.current_campaign_id(state)
-        destination = paths.campaign_retained_root(campaign_id) / identifier
-        if destination.exists():
-            raise ValueError(
-                f"retained lineage destination already exists: {identifier}"
-            )
-        retention_plans.append(
-            {
-                "source": source_artifact,
-                "destination": destination,
-                "record": {
-                    "id": identifier,
-                    "artifact": repository.repo_relative_path(destination),
-                    "origin_experiment": int(pending["experiment"]),
-                    "campaign_id": campaign_id,
-                    "candidate": candidate_name,
-                    "reason": retention_reason,
-                    "parameters": source.get("parameters", pending["parameters"]),
-                    "training_steps": int(source["timesteps"]),
-                    "evaluation_artifacts": repository.evaluation_artifact_paths(
-                        source.get("evaluations")
-                    ),
-                },
-            }
-        )
-        retained_ids.add(identifier)
-
-    request_final = decision.get("request_final_benchmark", False)
-    if not isinstance(request_final, bool):
-        raise TypeError("request_final_benchmark must be true or false")
-    selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
-    if (
-        request_final
-        and state.get("official_benchmark_artifact") == selected_fingerprint
-    ):
-        raise ValueError(
-            "the selected accepted artifact already received an official benchmark"
-        )
-    return {
-        "pending": pending,
-        "decision": decision,
-        "selected": selected,
-        "selected_name": selected_name,
-        "selected_artifact": selected_artifact,
-        "selected_fingerprint": selected_fingerprint,
-        "code_action": code_action,
-        "code_reason": code_reason,
-        "code_plan": code_plan,
-        "retained": [
-            lineage for lineage in retained if lineage["id"] not in removal_ids
-        ],
-        "retentions": retention_plans,
-        "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
-        "request_final_benchmark": request_final,
-    }
+    return plan_v4_previous_result_decision(proposal, state)
 
 
 def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
@@ -2013,11 +1750,11 @@ def _validated_designation_evidence(
 
 
 def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
-    pending = state.get("pending_analysis") or state.get("pending_researcher_decision")
+    pending = state.get("pending_analysis")
     if pending is None:
         raise ValueError("there is no post-training analysis awaiting closure")
     if not isinstance(pending, dict):
-        raise TypeError("pending researcher decision must be an object")
+        raise TypeError("pending analysis must be an object")
     if set(proposal) != {"previous_result_decision"}:
         raise ValueError(
             "a lineage proposal must contain only previous_result_decision"

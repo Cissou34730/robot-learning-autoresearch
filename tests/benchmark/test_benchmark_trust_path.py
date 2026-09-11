@@ -132,23 +132,21 @@ def test_researcher_cannot_change_the_enforcement_mechanism():
 def _pending_final_benchmark_state(monkeypatch, tmp_path):
     from research.runner_repository import artifact_fingerprint
 
-    accepted = tmp_path / "accepted"
-    accepted.mkdir()
+    artifact = tmp_path / "artifact"
+    artifact.mkdir()
     for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (accepted / filename).write_bytes(b"artifact")
+        (artifact / filename).write_bytes(b"artifact")
     state_path = tmp_path / "state.json"
     state_path.write_text(
         json.dumps(
             {
                 "schema_version": 2,
-                "accepted_artifact": "accepted",
-                "accepted_metrics": None,
                 "official_metrics": None,
                 "pending_final_benchmark": {
                     "experiment": 9,
                     "selected": "candidate",
-                    "artifact": "accepted",
-                    "fingerprint": artifact_fingerprint(accepted),
+                    "artifact": "artifact",
+                    "fingerprint": artifact_fingerprint(artifact),
                 },
             }
         ),

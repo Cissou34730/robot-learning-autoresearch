@@ -8,7 +8,7 @@ commit `0fb7498` on branch `codex/campaign-correctness-remediation`.
 
 The preceding implementation established the right overall model:
 
-- selected version-4 lineages are published as durable Git artifacts;
+- selected lineages are published as durable Git artifacts;
 - working and best-known remain Researcher decisions;
 - unchanged continuation restores its selected parent's scientific recipe;
 - compatible historical measurements can be reused by model identity;
@@ -104,7 +104,7 @@ evaluation-context identity must remain separate.
 measurement artifact
 
 `runner_repository.experiment_log_row()` currently emits one `unmeasured` item
-for every unmeasured checkpoint. The version-4 brief also enumerates every
+for every unmeasured checkpoint. The campaign brief also enumerates every
 historical detailed evaluation artifact. Both behaviors grow mechanically with
 campaign length and distract from the latest experiment and revisable scientific
 strategy. Detailed evidence must remain durable and discoverable without being
@@ -305,7 +305,7 @@ Use temporary fixtures to prove:
 - Runner-managed historical recipe restoration is accepted and is not reported
   as a new Researcher intervention;
 - the exact validated manifest is the one committed and trained;
-- completed training is not rerun after a later recovery boundary.
+- completed training is not repeated after a later recovery boundary.
 
 ### Commit
 
@@ -581,7 +581,7 @@ The work is complete only when all of the following are true:
 2. A documented recovery command demonstrably restores a failed reset.
 3. An interrupted experiment cannot resume after its proposal, parameters,
    seed, parent, or scientific delta has changed.
-4. An untampered interrupted continuation resumes without rerunning completed
+4. An untampered interrupted continuation resumes without repeating completed
    training.
 5. Stateful policy preprocessing is applied once per action and reset once per
    episode in every execution path.

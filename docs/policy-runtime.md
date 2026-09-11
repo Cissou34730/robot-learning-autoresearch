@@ -40,7 +40,7 @@ a new copy using that code in a temporary checkout, without switching branches:
 
 ```powershell
 uv run python research/migrate_policy_runtime.py `
-  --artifact research/checkpoints/accepted --output ../migrated-champion `
+  --artifact research/checkpoints/source --output ../migrated-policy `
   --source-ref <scientific-commit> --identity-actions
 ```
 
