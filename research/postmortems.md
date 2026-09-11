@@ -3,11 +3,12 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Keep the retained experiment-7 50/50 action-smoothing policy as
-the practical incumbent. Its transferred basin remains stable under unchanged
-continuation, but experiment 11 did not improve measured research success.
-Future work should target the structured residual failures with matched task
-measurements, while treating training proxies and development panels as
-development evidence rather than a terminal verdict.
+the practical incumbent. Experiments 11 and 12 did not improve measured
+research success, and the distance-conditioned smoother increased interruption
+events without reducing the residual failures. Future work should target the
+structured residual failures with matched task measurements, while treating
+training proxies and development panels as development evidence rather than a
+terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -41,6 +42,18 @@ diagnostics stayed near the incumbent: 18, 17, and 18 never-reach cases and
 panel, the same three failures persisted at approximately -123, -128, and
 -155 degrees, so this round provides evidence of a stable residual pattern on
 that panel, not a causal explanation or independent confirmation.
+Experiment 12 changed only the post-policy smoothing rule, using a 75/25
+command/previous-command blend outside 3 cm and the incumbent 50/50 blend
+near the target. Its measured checkpoints both reached 975/1,000 research
+successes, below the incumbent's 977/1,000, and both task-reference results
+were 197/200 with the same three failures. The checkpoints had 23 hard-sector
+failures versus 22 for the incumbent; total hold-interruption events were 35
+and 39 versus 18, while never-reach cases were 13 and 14 versus 15. The
+training proxy ranged from 0.94 to 1.00 and ended at 0.97, which is
+orthogonal to the measured task-performance comparison. These are observations
+from one transferred run and fixed development panels; they weaken the
+approach-lag explanation but do not distinguish optimization variance,
+transfer dependence, or another control mechanism.
 Unmeasured checkpoints cannot be ranked from training proxies.
 
 **Open questions:** Whether the fresh run's shifted positive-angle failures
@@ -707,4 +720,55 @@ terminal assessment.
 `research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-11/parameters.json`,
 the three experiment-11 research-evaluation artifacts, and the three
 experiment-11 task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 12
+
+**Result:** Distance-conditioned action smoothing did not improve measured
+task performance. The experiment is closed with the experiment-7 `working`
+and `best_known` lineages unchanged, the smoothing intervention reverted, and
+terminal assessment not requested.
+
+**Observed behavior:** Training completed 120,832 local steps (442,368
+accumulated steps). Queried training success ranged from 0.94 to 1.00,
+including 1.00 at checkpoint-110592, and ended at 0.97; mean training reward
+was 105.73 at checkpoint-110592 and 104.38 at checkpoint-120832. These are
+training facts, not held-out policy evaluations. Research evaluation measured
+both checkpoints at 975/1,000 (97.5%), versus 977/1,000 (97.7%) for the
+incumbent on the compatible 1,000-episode panel. The 110592 and 120832
+checkpoints had 25 failures each, with 13 and 14 never-reach cases, 23 hard
+sector failures each, and 35 and 39 total hold-interruption events; the
+incumbent had 23 failures, 15 never-reach cases, 22 hard-sector failures, and
+18 interruption events. On the fixed 200-episode task-reference panel, both
+checkpoints scored 197/200 (98.5%) and repeated the incumbent's same failures
+at approximately 9.91 cm/-122.9 degrees, 9.36 cm/-127.9 degrees, and
+18.24 cm/-154.8 degrees.
+
+**Hypothesis assessment:** Contradicted under this transferred run, with the
+scope limited to the tested recipe and development panels. The expected
+observation of fewer never-reach or residual-sector failures did not occur:
+overall research success was lower, hard-sector failures were not reduced, and
+the late checkpoint had more never-reach cases. The expected low interruption
+profile was also not preserved, with 35 and 39 total events versus 18 for the
+incumbent. Broad task-reference success was preserved, which is a partial
+non-regression signal, but it did not establish policy progress. These results
+match the proposal's contradicting observation and weaken the approach-lag
+explanation; they do not establish that the alternative explanation is causal.
+
+**Interpretation:** Changing the approach blend outside 3 cm did not make the
+retained basin more successful and did not preserve its hold-stability
+diagnostic. The repeated task-reference failures and near-incumbent research
+profile suggest that this control change is not useful for the current
+residual pattern under the tested transfer. The measured incumbent remains
+the stronger policy selection, but its 97.7% research result and fixed-panel
+98.5% result do not justify an official-task claim or terminal assessment.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`,
+`research/training_logs/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-12-attempt-1.log`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-12/inventory.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-12-checkpoint-110592-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-12-checkpoint-120832-1000ep-seed91000-ffdccdbf3357.json`,
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/evaluation-6bbe4246-0dbc-4e66-9f31-0b66c0388867-experiment-12-working-1000ep-seed91000-ffdccdbf3357.json`,
+and the three experiment-12 task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`.
