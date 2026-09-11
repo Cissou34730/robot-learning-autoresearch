@@ -3,12 +3,12 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Keep the retained experiment-7 50/50 action-smoothing policy as
-the practical incumbent. Experiments 11 and 12 did not improve measured
-research success, and the distance-conditioned smoother increased interruption
-events without reducing the residual failures. Future work should target the
-structured residual failures with matched task measurements, while treating
-training proxies and development panels as development evidence rather than a
-terminal verdict.
+the practical incumbent while testing whether a low-rate replay of its
+repeated negative-angle residual sector can improve task success without
+displacing broad competence. Experiments 11 and 12 did not improve measured
+research success, so the next intervention changes training exposure rather
+than post-policy control. Training proxies and development panels remain
+development evidence rather than a terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, hard-sector success from 50/74
@@ -58,19 +58,19 @@ Unmeasured checkpoints cannot be ranked from training proxies.
 
 **Open questions:** Whether the fresh run's shifted positive-angle failures
 are primarily optimization variability, transfer dependence, or a control
-dynamics effect remains unresolved. It is also unknown whether a focused
-intervention can remove the retained basin's repeated negative-angle failures
-without sacrificing broad performance. The experiment-7 task-reference result
-remains 98.5% on its development panel, but no official benchmark result
-exists.
+dynamics effect remains unresolved. It is also unknown whether a small replay
+fraction can remove the retained basin's repeated negative-angle failures
+without sacrificing broad performance; the prior 50% focused-coverage run
+regressed broadly. The experiment-7 task-reference result remains 98.5% on its
+development panel, but no official benchmark result exists.
 
-**Conditional next steps:** A subsequent ordinary experiment could test a
-narrowly controlled intervention aimed at the repeated residual geometry, or
-investigate fresh-versus-transfer variability if that uncertainty becomes more
-valuable than direct improvement. Any new representation or temporal control
-should be justified by matched task-performance evidence. Terminal assessment
-should wait for stronger evidence that the selected policy is ready for the
-official objective.
+**Conditional next steps:** If low-rate residual replay fails, a fresh-versus-
+transfer replication may be more valuable than another control modification.
+If it succeeds only in the focused sector, matched measurements must determine
+whether the broad policy objective improved. Any new representation or temporal
+control should be justified by matched task-performance evidence. Terminal
+assessment should wait for stronger evidence that the selected policy is ready
+for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
