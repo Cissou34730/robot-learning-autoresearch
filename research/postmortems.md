@@ -3,11 +3,12 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while testing whether its residual negative-angle failures
-are a sector-specific temporal-control problem. Fresh-run instability is now a
-boundary condition for transfer experiments rather than a reason to restart
-from scratch. Training proxies and development panels remain development
-evidence rather than a terminal verdict.
+practical incumbent while seeking a different explanation or intervention for
+its residual negative-angle failures. The sector-specific smoothing reduction
+did not help under transfer. Fresh-run instability remains a boundary condition
+for transfer experiments rather than a reason to restart from scratch. Training
+proxies and development panels remain development evidence rather than a
+terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -19,26 +20,30 @@ measured checkpoints. In experiment 14, the late checkpoint had 431 never-reach
 failures, 46 interrupted failures, and 632 interruption events; 265 of its 477
 failures were in positive 60-to-180 degree bins, but substantial negative-angle
 failures remained. This supports fresh-run instability or transfer dependence
-under the tested recipe, without separating those explanations. Experiments 11
-and 12 preserved broad transferred competence but did not remove the incumbent's
-residual failures, and experiment 13's low-rate negative-angle replay did not
-improve them. Training-proxy peaks and within-run reward increases remain
-orthogonal to measured task progress. All comparisons use fixed development
-panels and do not establish generalization or causality; no official benchmark
-result exists.
+under the tested recipe, without separating those explanations. Experiments 11 and 12 preserved broad transferred competence but did not remove
+the incumbent's residual failures, experiment 13's low-rate negative-angle
+replay did not improve them, and experiment 15's sector-specific reduction from
+50/50 to 75/25 recovered none of the incumbent's 23 matched failures while
+raising interruption events from 18 to 30 or 37. Experiment 15 did preserve
+all incumbent successes outside the target sector and the 197/200
+task-reference outcomes, so its negative result is specific to the proposed
+recovery rather than a broad collapse. Training-proxy peaks and within-run
+reward increases remain orthogonal to measured task progress. All comparisons
+use fixed development panels and do not establish generalization or causality;
+no official benchmark result exists.
 
-**Open questions:** Whether reducing smoothing only in the -160 to -115 degree
-sector can improve reachability without losing the incumbent's broad hold
-stability remains unresolved. The fresh-run regression is still not separated
-into optimization variance, transfer history, or control dynamics. Unmeasured
+**Open questions:** The cause of the incumbent's residual failures in the
+negative-angle sector remains unresolved; the tested narrow smoothing change
+did not distinguish a temporal-control cause from representation, optimization,
+or transfer effects. The fresh-run regression is still not separated into
+optimization variance, transfer history, or control dynamics. Unmeasured
 checkpoints cannot be ranked from training proxies.
 
-**Conditional next steps:** First compare the targeted temporal-control transfer
-against the retained experiment-7 policy using compatible task-performance
-panels and angle/hold diagnostics. If it fails, broaden or abandon this
-sector-specific control explanation rather than repeating the same replay.
-Terminal assessment should wait for stronger evidence that the selected policy
-is ready for the official objective.
+**Conditional next steps:** If further development is worthwhile, use compatible
+task-performance panels and angle/hold diagnostics to test a materially
+different route to the residual failures rather than repeating this narrow
+smoothing intervention or replay. Terminal assessment should wait for stronger
+evidence that the selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -854,3 +859,55 @@ steps 5,120-120,832, the experiment-14 checkpoint inventory exposed by the
 brief, and the six experiment-14 research-evaluation and task-reference
 artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 15
+
+**Result:** The angle-conditioned smoothing intervention did not improve the
+incumbent's residual sector and introduced small research-panel regressions.
+The experiment is closed with the experiment-7 `working` and `best_known`
+lineages unchanged, the experiment-15 code reverted, no challenger retained,
+and terminal assessment not requested.
+
+**Observed behavior:** Training completed 120,832 local steps. The training
+proxy ranged from 0.95 to 1.00, reached 1.00 at several checkpoints, and
+ended at 0.97; mean training reward was 106.525 at checkpoint-86016,
+106.711 at checkpoint-110592, and 104.710 at checkpoint-120832. These are
+training facts and did not establish policy progress. On the matched
+1,000-episode research panel, the incumbent measured 977/1,000 (97.7%),
+checkpoint-86016 measured 975/1,000 (97.5%), and checkpoint-120832 measured
+976/1,000 (97.6%). The incumbent had 23 failures, all in the -160 to -115
+degree target sector (94/117 successes there); the challengers had 25 and 24
+failures respectively, with 92/117 and 93/117 successes in that sector.
+Neither challenger converted an incumbent failure into a success. Outside
+that sector, both challengers matched all 883 incumbent successes. The
+challengers nevertheless added two and one failures on episodes the incumbent
+solved. Total hold-interruption events increased from 18 for the incumbent to
+30 and 37. On the fixed task-reference panel, all three policies produced the
+same 197/200 (98.5%) result and the same episode outcomes.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe
+and fixed development panels, with an important partial signal. The expected
+sector-local recovery did not occur at either measured checkpoint, and the
+small research-panel regressions plus higher interruption counts run against
+the proposed control benefit. The expected preservation branch was partly
+supported: success outside the target sector and every task-reference outcome
+were preserved. This does not establish that action lag is absent in general;
+it weakens this sector-specific smoothing explanation under this transfer and
+does not separate control dynamics from other policy or optimization effects.
+
+**Interpretation:** Reducing smoothing from 50/50 to 75/25 only in the
+-160 to -115 degree sector was not a useful intervention for the measured
+incumbent. The unchanged task-reference outcomes and failure overlap indicate
+that the observed residual failures were not remedied by this narrow temporal
+change, while the increased interruption events are an unexpected orthogonal
+signal. The incumbent remains the strongest measured candidate, but its 97.7%
+research-panel result and 98.5% development-panel result are not an official
+benchmark result and do not justify terminal assessment.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, the experiment-15 training-log query for
+steps 5,120-120,832, the experiment-15 checkpoint inventory and parameters,
+the three experiment-15 research-evaluation artifacts, the three experiment-15
+task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and
+`robot_learning/scenario/policy_io.py`.
