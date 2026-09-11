@@ -29,26 +29,32 @@ the incumbent without reducing the hard-sector failures or never-reach count.
 Experiment 16 did preserve the three task-reference failures and 98.5% result,
 and one checkpoint had 17 interruption events versus the incumbent's 18, but
 these partial or orthogonal signals did not produce task-performance progress.
-Training-proxy peaks and within-run reward increases remain orthogonal to
-measured task progress. All comparisons use fixed development panels and do not
-establish generalization or causality; no official benchmark result exists.
+Experiment 17's lower-learning-rate transfer also preserved the 98.5%
+task-reference result but scored 97.5% at 86,016 steps and 97.4% at 120,832
+steps on the matched research panel, below the 97.7% incumbent. The smaller
+update did not reduce the incumbent's three task-reference failures or the
+negative-angle residual; the measured challengers instead had 25 and 26
+research failures versus 23 for the incumbent, all ending at the 500-step
+limit. Training-proxy peaks and within-run reward increases remain orthogonal
+to measured task progress. All comparisons use fixed development panels and do
+not establish generalization or causality; no official benchmark result exists.
 
 **Open questions:** The cause of the incumbent's residual failures in the
-negative-angle sector remains unresolved; 15 of 23 matched research failures
-never reached tolerance, but the evidence does not distinguish control,
-representation, optimization, or transfer effects. Experiment 16 weakens the
-tested final-approach reward explanation, but does not disprove other reward
-forms or establish that the remaining limitation is causal. The fresh-run
-regression is still not separated into optimization variance, transfer history,
-or control dynamics. Unmeasured checkpoints cannot be ranked from training
-proxies.
+negative-angle sector remains unresolved; the matched research failures are
+500-step failures, while the three task-reference failures are shared across
+the incumbent and experiment 17. Experiments 16 and 17 weaken the tested
+final-approach reward and smaller-update explanations under their transferred
+recipes, but do not disprove other reward forms or establish that either
+intervention was causal. The fresh-run regression is still not separated into
+optimization variance, transfer history, or control dynamics. Unmeasured
+checkpoints cannot be ranked from training proxies.
 
 **Conditional next steps:** Preserve the incumbent and, if development
 continues, prioritize a measurement-backed representation or control
 investigation that targets the negative-angle reachability residual without
-repeating the tested narrow smoothing, replay, or closeness-scale changes.
-Terminal assessment should wait for stronger evidence that the selected policy
-is ready for the official objective.
+repeating the tested narrow smoothing, replay, closeness-scale, or
+learning-rate changes. Terminal assessment should wait for stronger evidence
+that the selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -974,3 +980,54 @@ task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, the experiment-7
 late research and task-reference artifacts used for comparison, and
 `robot_learning/scenario/reward.py`.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 17
+
+**Result:** The transferred PPO learning-rate reduction did not improve the
+incumbent's measured task performance. The experiment-7 `working` policy
+remains the working and best-known lineage; the temporary lower-rate recipe is
+not retained and the official benchmark is not requested.
+
+**Observed behavior:** Training produced 24 checkpoints over 120,832 completed
+local steps. Training success ranged from 0.94 to 1.00, and the highest logged
+reward was 106.115 at checkpoint-86016; the final checkpoint logged success
+0.97 and reward 104.747. These are training facts, not policy-performance
+evidence. On the matched 1,000-episode research panel, checkpoint-86016 scored
+975/1,000 (97.5%), checkpoint-120832 scored 974/1,000 (97.4%), and the
+incumbent scored 977/1,000 (97.7%). The challengers had zero paired wins and
+the incumbent had two and three wins respectively. Their research failures
+numbered 25 and 26 versus 23 for the incumbent, with all failed episodes
+reaching the 500-step limit. On the fixed 200-episode task-reference panel,
+both challengers and the incumbent scored 197/200 (98.5%) and shared the same
+three failed target identities.
+
+**Hypothesis assessment:** Contradicted under the tested transferred recipe
+and fixed development panels, with a preservation partial signal. The proposal
+expected broad competence plus fewer negative-angle never-reach failures or
+higher matched research success if a smaller optimizer step could refine the
+incumbent basin. Neither improvement occurred: research success was lower at
+both measured checkpoints, failures increased, and the task-reference panel
+was unchanged. The unchanged task-reference score and shared failure
+identities are consistent with preserved broad competence, but do not support
+progress toward the human objective. The training-proxy peak at checkpoint-
+86016 and the unchanged task-reference result are respectively orthogonal and
+partial signals; neither establishes that the lower rate is useful. This
+weakens the update-overshoot explanation for this transfer, not optimization
+effects in general, and does not distinguish representation, control, or
+transfer causes of the residual.
+
+**Interpretation:** Lowering the PPO learning rate did not convert the
+incumbent's structured residual failures into successful episodes during this
+transferred run. The result supports reverting the tested parameter change and
+continuing from the measured incumbent if development resumes. It does not
+show that the incumbent meets the official 98% objective, generalize beyond
+the development panels, or establish a causal explanation for the failures.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`, `research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-17/inventory.json`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-17/parameters.json`,
+the three experiment-17 research-evaluation artifacts and the three
+experiment-17 task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the retained
+experiment-7 research and task-reference artifacts referenced by the
+experiment-17 paired comparisons.
