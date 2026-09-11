@@ -3,11 +3,12 @@
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Scientific strategy
 
 **Direction:** Preserve the measured experiment-7 action-smoothing policy as the
-practical incumbent while testing whether its hidden temporal state limits
-negative-angle reachability. Prefer state-aware representations or genuinely
-different control formulations over further narrow smoothing, replay, reward,
-or learning-rate refinements. Training proxies and development panels remain
-development evidence rather than a terminal verdict.
+practical incumbent while shifting away from the tested previous-command
+observation augmentation. If development resumes, prioritize genuinely
+different control or branch-selection approaches, or a representation tested
+under a design that separates fresh initialization from transfer. Training
+proxies and development panels remain development evidence rather than a
+terminal verdict.
 
 **Lessons and limits:** Experiment 7's 50/50 per-joint action smoother raised
 matched research success from 97.5% to 97.7%, reduced late interruption events
@@ -31,31 +32,36 @@ and one checkpoint had 17 interruption events versus the incumbent's 18, but
 these partial or orthogonal signals did not produce task-performance progress.
 Experiment 17's lower-learning-rate transfer also preserved the 98.5%
 task-reference result but scored 97.5% at 86,016 steps and 97.4% at 120,832
-steps on the matched research panel, below the 97.7% incumbent. The smaller
-update did not reduce the incumbent's three task-reference failures or the
-negative-angle residual; the measured challengers instead had 25 and 26
-research failures versus 23 for the incumbent, all ending at the 500-step
-limit. Training-proxy peaks and within-run reward increases remain orthogonal
-to measured task progress. All comparisons use fixed development panels and do
-not establish generalization or causality; no official benchmark result exists.
+steps on the matched research panel, below the 97.7% incumbent. Experiment 18
+added the incumbent smoother's previous applied command to the observation in a
+fresh run, but both measured checkpoints scored 97.1% on research evaluation
+and 97.5% on task reference. Its 29 research failures exceeded the incumbent's
+23, and its task-reference failures repeated two incumbent hard-sector targets
+while adding three more negative-sector targets; the challenger fixed the
+incumbent's far negative-angle failure but lost overall. The experiment-18
+artifacts expose truncation and target geometry but not hold-interruption event
+counts, so the hold-stability component remains unresolved. Training-proxy
+peaks and within-run reward increases remain orthogonal to measured task
+progress. All comparisons use fixed development panels and do not establish
+generalization or causality; no official benchmark result exists.
 
 **Open questions:** The cause of the incumbent's residual failures in the
 negative-angle sector remains unresolved; the matched research failures are
-500-step failures, while the three task-reference failures are shared across
-the incumbent and experiment 17. The incumbent exposes qpos, qvel, geometry,
-and inverse-kinematics errors but not the previous command applied by its
-smoother. It is unknown whether that missing filter state explains the
-reachability tradeoff or whether the residual is principally a policy basin or
-branch-selection limitation. Unmeasured checkpoints cannot be ranked from
-training proxies.
+500-step failures, and the state-aware fresh policy added negative-sector
+failures despite fixing one far-radius reference target. It is unknown whether
+the residual is principally a policy basin, inverse-kinematics branch
+selection, control mechanics, or fresh-run instability. Hold interruptions
+cannot be compared from experiment 18 because they were not emitted by the
+measurement artifacts. Unmeasured checkpoints cannot be ranked from training
+proxies.
 
-**Conditional next steps:** Compare the state-aware fresh policy against the
-incumbent on matched panels, examining negative-angle reachability, hold
-interruptions, and broad preservation. If it fails to improve, shift away from
-the current filter representation rather than repeating its scalar
-coefficients; if it improves while preserving hold stability, retain the
-representation for further development. Terminal assessment should wait for
-stronger evidence that the selected policy is ready for the official objective.
+**Conditional next steps:** If development resumes, compare a genuinely
+different control or branch-aware approach against the retained incumbent, and
+instrument hold interruptions if that distinction is central to the question.
+Do not repeat the same previous-command augmentation or scalar smoothing
+refinement without a design that addresses the fresh-run and reachability
+confounds. Terminal assessment should wait for stronger evidence that the
+selected policy is ready for the official objective.
 
 ## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 1
 
@@ -1032,3 +1038,63 @@ experiment-17 task-reference artifacts under
 `research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, and the retained
 experiment-7 research and task-reference artifacts referenced by the
 experiment-17 paired comparisons.
+
+## 6bbe4246-0dbc-4e66-9f31-0b66c0388867 / Experiment 18
+
+**Result:** The fresh previous-command observation augmentation did not improve
+the incumbent's measured task performance. The experiment-7 smoothed policy
+remains the working and best-known lineage; experiment 18 is not retained and
+the official benchmark is not requested.
+
+**Observed behavior:** Training produced 24 checkpoints over 120,832 completed
+local steps. The training success proxy rose from 0 to 0.95, and logged reward
+peaked at 177.338 at checkpoint-80896 before ending at 110.106; these are
+training facts rather than policy-performance evidence. The measured
+checkpoint-100352 and checkpoint-120832 policies both scored 971/1,000 (97.1%)
+on the matched research panel, versus 977/1,000 (97.7%) for the incumbent. Each
+challenger had 29 failed episodes, all truncated at 500 steps, versus 23
+truncated failures for the incumbent. The paired comparison found six
+discordant episodes, all incumbent wins and no challenger wins.
+
+On the fixed 200-episode task-reference panel, both experiment-18 checkpoints
+scored 195/200 (97.5%), versus 197/200 (98.5%) for the incumbent. Each
+challenger repeated the incumbent failures at 9.91 cm/-122.90 degrees and
+9.36 cm/-127.91 degrees, added failures at 7.24 cm/-125.40 degrees, 9.99
+cm/-132.44 degrees, and 10.38 cm/-132.90 degrees, and succeeded on the
+incumbent's 18.24 cm/-154.79 degree failure. The measurement artifacts report
+episode truncation and target geometry but do not report hold-interruption
+events.
+
+**Hypothesis assessment:** Contradicted under the tested fresh recipe and fixed
+development panels, with partial and unexpected signals. The expected reduction
+in negative-angle never-reach failures, broad preservation, and improved or
+incumbent-level measured success was not observed: research success fell,
+paired outcomes favored the incumbent, and task-reference failures increased.
+The challenger did fix one far negative-angle task-reference failure, which is
+a partial signal in the expected direction, but it introduced three additional
+negative-sector failures and did not improve the aggregate task result. The
+training-proxy rise is orthogonal to policy progress. Because interruption
+events were not emitted, the expected hold-stability comparison is unresolved,
+not evidence for or against the representation. This weakens the hidden-filter-
+state explanation under this fresh recipe, but does not establish that every
+state-aware representation or control formulation is ineffective, nor does it
+separate representation effects from fresh-run optimization, policy-basin, or
+branch-selection effects.
+
+**Interpretation:** Adding the previous applied command did not make the
+incumbent's structured reachability residual reliably learnable in this fresh
+run. The localized fix at one far negative target alongside new failures in the
+same angular sector is more consistent with a changed failure pattern than
+with broad progress toward the human objective. The retained incumbent is the
+stronger development policy, while the next useful direction should move
+beyond this filter-state augmentation or explicitly separate its remaining
+optimization and control explanations.
+
+**Evidence inspected:** `research/brief.md`, `research/results.jsonl`,
+`research/query_training_log.py`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-18/inventory.json`,
+`research/checkpoints/challengers/6bbe4246-0dbc-4e66-9f31-0b66c0388867/experiment-18/parameters.json`,
+the experiment-18 research-evaluation and task-reference artifacts under
+`research/evaluations/6bbe4246-0dbc-4e66-9f31-0b66c0388867/`, the retained
+experiment-7 research and task-reference artifacts used by the paired
+comparisons, and `research/postmortems.md`.
