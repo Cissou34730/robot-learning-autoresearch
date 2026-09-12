@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## d862f6d9-2222-4dd9-9cb5-63921a7b5c7f / Scientific strategy
+
+**Current synthesis:** The fresh PPO baseline learned the reach-and-hold behavior late in training. The best directly measured checkpoint is `checkpoint-100352`: it achieved 98.0% on the protected task-reference development panel, while the same checkpoint achieved 97.0% on the researcher evaluation. Later checkpoints did not improve measured task success. The policy is close to the human objective, but the cross-instrument 96.5-98.0% range and recurring failures on short, negative-angle targets leave meaningful uncertainty about official-task robustness.
+
+**Lessons and limits:** Training proxy success and reward identify a useful checkpoint region but are not sufficient evidence of task progress: the proxy peaked at 98% near 99,328 steps and declined to 95% at 120,832 steps, whereas direct task-reference success was 98%, 96.5%, and 97% for checkpoints 100352, 115712, and 120832. On the fixed task-reference panel, all measured failures truncated at 500 steps; most failures were short targets below 10 cm at negative angles, but this geometry pattern is descriptive rather than causal. The fixed development panel is not the official 200-episode panel, and one fresh baseline run does not establish training-process reproducibility.
+
+**Open questions:** Whether the residual short, negative-angle failures are stable under the official panel and whether a changed training recipe can improve them without sacrificing the strong middle and outer target ranges remain unresolved.
+
+## d862f6d9-2222-4dd9-9cb5-63921a7b5c7f / Experiment 1
+
+**Result:** The fresh baseline produced a useful near-objective policy. `checkpoint-100352` is selected as both the working and best-known lineage, with terminal assessment deferred.
+
+**Observed behavior:** Raw training success rose from 0 through 70,656 steps to 0.98 at 99,328 steps, then was 0.97 at 100,352, 0.95 at 115,712, and 0.95 at 120,832. Research evaluation measured 97.0% (6 failures), 96.5% (7 failures), and 97.0% (6 failures) at checkpoints 100352, 115712, and 120832 respectively; every research-evaluation failure truncated at 500 steps. The protected task-reference panel measured 98.0% (196/200), 96.5% (193/200), and 97.0% (194/200) at those same checkpoints. For `checkpoint-100352`, the four task-reference failures were all short targets from 6.73-9.91 cm at negative angles from -116.4 to -127.9 degrees, with final distances 0.986-1.325 cm. The 10-15 cm task-reference group succeeded 100% for all three checkpoints; the 15-20 cm group succeeded 100%, 100%, and 98.81%.
+
+**Hypothesis assessment:** Partially supported. The baseline established substantial learned task competence and reached the objective percentage on the protected development panel at `checkpoint-100352`, but later checkpoints did not preserve or improve that result and the independent researcher evaluation remained at 97.0% or below. These measurements support selecting the earlier checkpoint, not a claim that the policy reliably satisfies the official objective.
+
+**Interpretation:** The direct task measurements identify `checkpoint-100352` as the strongest available candidate. The agreement between the 98.0% task-reference result and the 97.0% research result supports meaningful progress, while their difference and the repeated short negative-angle failures limit confidence in terminal readiness. The paired comparisons also provide no evidence that the later checkpoints improve over `checkpoint-100352` (100352 versus 115712: -0.5 percentage points; 100352 versus 120832: 0.0 points on shared episodes). No researcher-owned code or parameters changed in this baseline, so no intervention effect is attributable.
+
+**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/evaluations/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/evaluation-d862f6d9-2222-4dd9-9cb5-63921a7b5c7f-experiment-1-checkpoint-100352-200ep-seed1000-6ba3ba6d7654.json`; `research/evaluations/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/evaluation-d862f6d9-2222-4dd9-9cb5-63921a7b5c7f-experiment-1-checkpoint-115712-200ep-seed1000-6ba3ba6d7654.json`; `research/evaluations/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/evaluation-d862f6d9-2222-4dd9-9cb5-63921a7b5c7f-experiment-1-checkpoint-120832-200ep-seed1000-6ba3ba6d7654.json`; the three corresponding `task-reference-...-task-reference-v1.json` artifacts; raw training-log output for experiment 1, steps 0-120832.
