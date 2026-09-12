@@ -2,25 +2,29 @@
 
 ## 386870d9-6be7-4e11-8c36-f11b5e2f4cd4 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned useful reach-and-hold
-behavior, but its measured task performance is only 54.0%-55.5% on the
-development task-reference panel, far below the 98% objective. Performance is
-strong for near targets and collapses for the outer radial range, so the
-105472-step checkpoint is the most task-aligned measured baseline. Training
-reward and training success are informative learning signals but do not select
-the best task policy in this experiment.
+**Current synthesis:** The campaign objective is at least 98% success on the
+unchanged official 6-20 cm reach-and-hold task. The fresh PPO baseline learned
+reliable local behavior but reached only 55.5% on the development
+task-reference panel. Its success was 56/57 at 6-10 cm, 54/59 at 10-15 cm, and
+1/84 at 15-20 cm, while the research panel was 60.0%. The evidence therefore
+supports a learned near-target solution but not coverage of the official radial
+range; the 105472-step checkpoint is the most task-aligned measured baseline.
 
-**Lessons and limits:** On the fixed task-reference panel, the selected
-checkpoint succeeds on 56/57 targets at 6-10 cm, 54/59 at 10-15 cm, and 1/84
-at 15-20 cm. This is descriptive evidence from one baseline and one
-development panel, not causal evidence about the source of the radial failure
-and not official final assessment. The research panel gives 60.0% success for
-the selected checkpoint, with the endpoint tied on its shared episodes; the
-task-reference panel is the task-aligned basis for checkpoint selection.
+**Lessons and limits:** Training reward rose to a peak of 110.3 and training
+success reached 60%, but those signals did not identify a policy better than
+the selected checkpoint on the protected task-reference panel. The radial
+pattern is descriptive evidence from one fresh run and one development panel,
+not causal evidence for inadequate coverage, reward shaping, observations, or
+control. The policy's observation semantics already include joint state,
+target-relative end-effector position, and inverse-kinematics errors, and its
+direct two-joint action mapping is unchanged. Development measurements are not
+the official final assessment.
 
-**Open questions:** It remains unknown which changes to training coverage,
-reward shaping, observations, or control behavior would address the outer-range
-failures without degrading near-target reach-and-hold performance.
+**Open questions:** It remains unresolved whether the outer-range deficit is
+primarily an optimization and training-coverage problem or instead reflects
+limitations in reward shaping, control behavior, or the learned
+representation. It is also unknown how much outer-range improvement can be
+obtained without weakening the strong near-target reach-and-hold behavior.
 
 ## 386870d9-6be7-4e11-8c36-f11b5e2f4cd4 / Experiment 1
 
