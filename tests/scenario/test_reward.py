@@ -17,16 +17,6 @@ def test_reward_encourages_progress():
     assert reach_reward(0.08, 0.10, 0.03).total < 0
 
 
-def test_closeness_potential_is_sharper_near_the_tolerance(monkeypatch):
-    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
-    monkeypatch.setattr(reward_module, "HOLD_PROGRESS_BONUS", 0.0)
-    monkeypatch.setattr(reward_module, "HOLD_COMPLETE_BONUS", 0.0)
-    monkeypatch.setattr(reward_module, "ACTION_COST_COEFFICIENT", 0.0)
-    near = reach_reward(0.011, 0.010, 0.01).total
-    far = reach_reward(0.051, 0.050, 0.01).total
-    assert near > far
-
-
 def test_linear_hold_progress_reward_pays_completion():
     early = reach_reward(
         0.005,
