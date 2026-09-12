@@ -12,6 +12,10 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
+    TRAINING_RESIDUAL_ANGLE_HALF_WIDTH,
+    TRAINING_RESIDUAL_FOCUS_PROBABILITY,
+    TRAINING_RESIDUAL_RADIUS_HALF_WIDTH,
+    TRAINING_RESIDUAL_TARGETS,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -30,8 +34,26 @@ def test_training_distribution_covers_official_radii_without_changing_evaluation
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
+    assert training.focus_targets == TRAINING_RESIDUAL_TARGETS
+    assert training.focus_probability == TRAINING_RESIDUAL_FOCUS_PROBABILITY
     assert training.target_radius_range == final_contract.TARGET_RADIUS_RANGE
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+
+
+def test_residual_focus_samples_remain_local_to_the_named_geometries():
+    env = TwoJointArmReachEnv(
+        focus_targets=TRAINING_RESIDUAL_TARGETS,
+        focus_probability=1.0,
+    )
+    env.reset(seed=0)
+    radius = float(np.linalg.norm(env.data.mocap_pos[0][:2]))
+    angle = float(np.arctan2(env.data.mocap_pos[0][1], env.data.mocap_pos[0][0]))
+
+    assert any(
+        abs(radius - target_radius) <= TRAINING_RESIDUAL_RADIUS_HALF_WIDTH
+        and abs(angle - target_angle) <= TRAINING_RESIDUAL_ANGLE_HALF_WIDTH
+        for target_radius, target_angle in TRAINING_RESIDUAL_TARGETS
+    )
 
 
 def test_training_environment_may_diverge_from_the_official_task():
