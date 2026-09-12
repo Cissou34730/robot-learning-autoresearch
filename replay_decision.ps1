@@ -7,7 +7,9 @@
 #
 # Typical use:
 #   .\reset_research.ps1 -Mode Fresh -Force
-#   uv run python research/run_experiment.py          # baseline training only
+#   .\run_research.ps1                                # Ctrl-C once experiment 1
+#                                                     # has trained, before the
+#                                                     # analysis phase closes
 #   .\replay_decision.ps1 -Capture -Name exp1
 #   git checkout -b replay/prompt-decision-test
 #   .\replay_decision.ps1 -Snapshot .replay/exp1 -Variant 68e179e^ -Label before -ExpectedBranch replay/prompt-decision-test
