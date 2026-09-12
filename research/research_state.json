@@ -1,132 +1,30 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/e2-c8cf701d5-ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/evaluation-d862f6d9-2222-4dd9-9cb5-63921a7b5c7f-experiment-2-checkpoint-120832-200ep-seed1000-ffdccdbf3357.json",
-      "research/evaluations/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/task-reference-d862f6d9-2222-4dd9-9cb5-63921a7b5c7f-experiment-2-checkpoint-120832-task-reference-v1.json"
-    ],
-    "fingerprint": "ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest task-reference success in the campaign at 98.5%, matches the experiment-2 proxy-peak checkpoint on research evaluation at 98.0%, and is directly better than that checkpoint on the same task-reference panel.",
-    "scientific_commit": "e7ee810bfab95ba5e248d854870d8ffcbf79a836",
-    "training_steps": 221184
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "96870a9c38a7427abcc63d968032ab47c9360dd6",
-    "id": "d862f6d9-2222-4dd9-9cb5-63921a7b5c7f",
-    "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-12T06:10:12.897509+00:00"
+    "base_commit": "295422a8bc001a0a91de73238dedf6aecb7f34e6",
+    "id": "386870d9-6be7-4e11-8c36-f11b5e2f4cd4",
+    "recipe_source_commit": null,
+    "started_at": "2026-09-12T20:44:57.053211+00:00"
   },
   "campaign_experiment_counters": {
-    "d862f6d9-2222-4dd9-9cb5-63921a7b5c7f": 2
+    "386870d9-6be7-4e11-8c36-f11b5e2f4cd4": 0
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-120832",
-    "code": {
-      "action": "keep",
-      "reason": "Keep the expanded 6-20 cm training-radius recipe. The endpoint's direct task measurements improved from the prior best-known policy, reducing short-radius failures without degrading the 10-15 cm group, while the remaining uncertainty is about official-panel variability and negative-angle robustness rather than a demonstrated failure of the intervention."
-    },
-    "code_parent_commit": "b530a1efb5846a737bdd50806da5b7ace4529639",
-    "continue_from": "checkpoint-120832",
-    "experiment": 2,
-    "reason": "Select checkpoint-120832 as the working policy because it is the strongest directly measured experiment-2 candidate: 98.5% on the protected task-reference panel and 98.0% on the compatible research evaluation. It improves the short-target result over the experiment-1 best-known policy while preserving perfect measured performance on 10-15 cm targets. Requesting the official benchmark is justified by two distinct 200-episode development measurements at or above the 98% objective; the official panel remains the final authority."
-  },
-  "last_verdict": "official benchmark reached the goal",
-  "official_benchmark_artifact": "ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/e2-c8cf701d5-ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-    "fingerprint": "ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.5348285074358352,
-      "median": 0.5269975126726018,
-      "worst": 2.328857580959567
-    },
-    "goal_reached": true,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 98.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "b530a1efb5846a737bdd50806da5b7ace4529639",
-    "experiment": 2,
-    "scientific_commit": "e7ee810bfab95ba5e248d854870d8ffcbf79a836"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/e2-c8cf701d5-ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/d862f6d9-2222-4dd9-9cb5-63921a7b5c7f/evaluation-d862f6d9-2222-4dd9-9cb5-63921a7b5c7f-experiment-2-checkpoint-120832-200ep-seed1000-ffdccdbf3357.json"
-    ],
-    "fingerprint": "ec59e68cf56a26476107fcfc2274688031f4565bd4481923121e196c70e39227",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Select checkpoint-120832 as the working policy because it is the strongest directly measured experiment-2 candidate: 98.5% on the protected task-reference panel and 98.0% on the compatible research evaluation. It improves the short-target result over the experiment-1 best-known policy while preserving perfect measured performance on 10-15 cm targets. Requesting the official benchmark is justified by two distinct 200-episode development measurements at or above the 98% objective; the official panel remains the final authority.",
-    "scientific_commit": "e7ee810bfab95ba5e248d854870d8ffcbf79a836",
-    "training_steps": 221184
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
