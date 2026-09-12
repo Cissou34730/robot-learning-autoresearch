@@ -14,7 +14,8 @@ ACTION_DEADBAND = 0.1
 
 def physical_action(action):
     action = np.asarray(action, dtype=np.float32)
-    return np.where(np.abs(action) < ACTION_DEADBAND, 0.0, action)
+    magnitude = np.maximum(np.abs(action) - ACTION_DEADBAND, 0.0)
+    return np.sign(action) * magnitude
 
 
 def make_policy_io():
