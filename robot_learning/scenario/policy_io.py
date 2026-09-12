@@ -9,7 +9,7 @@ import numpy as np
 from robot_learning.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
 
-ACTION_DEADBAND = 0.1
+ACTION_DEADBAND = 0.15
 
 
 def physical_action(action):
