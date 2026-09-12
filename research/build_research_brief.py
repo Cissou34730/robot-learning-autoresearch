@@ -6,7 +6,11 @@ import json
 import re
 from pathlib import Path, PureWindowsPath
 
-from research.runner_protocol import operation_description, scientific_strategy_section
+from research.runner_protocol import (
+    is_researcher_owned,
+    operation_description,
+    scientific_strategy_section,
+)
 from research.runner_repository import ARTIFACT_FILES, compact_measurement_summary
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -254,6 +258,42 @@ def _replication_groups(results: list[dict]) -> list[tuple[str, list[dict]]]:
         for original, entries in groups.items()
         if len(entries) > 1
     ]
+
+
+def _researcher_owned_sources() -> list[str]:
+    """Enumerated from the worktree so a new scientific module needs no registration."""
+    package = ROOT / "robot_learning"
+    if not package.is_dir():
+        return []
+    sources = []
+    for path in package.rglob("*.py"):
+        relative = path.relative_to(ROOT).as_posix()
+        if path.name == "__init__.py" or not is_researcher_owned(relative):
+            continue
+        sources.append(relative)
+    return sorted(sources)
+
+
+def _intervention_surfaces(results: list[dict]) -> tuple[list[tuple[str, int]], int, int]:
+    counts = {source: 0 for source in _researcher_owned_sources()}
+    parameter_only = 0
+    unchanged = 0
+    for result in results:
+        changed = set()
+        for entry in result.get("code_changes") or []:
+            relative = str(entry).replace("\\", "/")
+            if relative in counts:
+                changed.add(relative)
+        for relative in changed:
+            counts[relative] += 1
+        if changed:
+            continue
+        if result.get("parameter_changes"):
+            parameter_only += 1
+        else:
+            unchanged += 1
+    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    return ordered, parameter_only, unchanged
 
 
 def _v4_result_measurements(result: dict) -> str:
@@ -901,6 +941,24 @@ def _render_v4_research_brief(
             )
     else:
         lines.append("No repeated operations recorded.")
+
+    lines.extend(["", "## Intervention surfaces", ""])
+    surfaces, parameter_only, unchanged = _intervention_surfaces(results)
+    if surfaces:
+        lines.append(
+            "Experiments that changed each researcher-owned source, including "
+            "sources never changed. This is a record of where the campaign has "
+            "intervened, not a suggestion about where to intervene next:"
+        )
+        lines.append("")
+        for source, count in surfaces:
+            lines.append(f"- `{source}`: {count}")
+        lines.append(
+            f"- Experiments with no researcher-owned source change: "
+            f"{parameter_only} parameter-only, {unchanged} unchanged."
+        )
+    else:
+        lines.append("No researcher-owned sources found.")
 
     lines.extend(["", "## Reusable lineages", ""])
     retained = state.get("retained_lineages") or []

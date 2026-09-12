@@ -5,7 +5,11 @@ param(
     [string]$Model = "gpt-5.6-luna",
 
     [ValidateSet("low", "medium", "high", "xhigh", "max")]
-    [string]$Reasoning = "high"
+    [string]$Reasoning = "high",
+
+    # 0 runs until the campaign reaches its own terminal state.
+    [ValidateRange(0, [int]::MaxValue)]
+    [int]$MaxExperiments = 15
 )
 
 Set-Location $PSScriptRoot
@@ -505,6 +509,15 @@ while ($true) {
         continue
     }
 
+    $allocatedExperiment = [Math]::Max(
+        [int]$researchState.last_allocated_experiment,
+        [int]$researchState.last_experiment
+    )
+    if ($MaxExperiments -gt 0 -and $allocatedExperiment -ge $MaxExperiments) {
+        Write-Status "Experiment budget reached: $allocatedExperiment of $MaxExperiments. Research loop finished." Green
+        break
+    }
+
     Update-ResearchBrief
 
     # Anchor the rollback baseline before the researcher can change or commit
@@ -516,10 +529,6 @@ while ($true) {
 
     Write-Status "=== Researcher forming next hypothesis ==="
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
-    $allocatedExperiment = [Math]::Max(
-        [int]$researchState.last_allocated_experiment,
-        [int]$researchState.last_experiment
-    )
     $nextExperiment = $allocatedExperiment + 1
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
