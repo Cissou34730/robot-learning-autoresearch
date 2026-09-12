@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/abd93958-a0b2-4d26-b212-96ebeb401d22/e16-c8cf701d5-7d3365d7b3d0ae6d527b91e6b890f9b95e15f394104fe4f02f6590de7bf5aed5",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/abd93958-a0b2-4d26-b212-96ebeb401d22/evaluation-abd93958-a0b2-4d26-b212-96ebeb401d22-experiment-16-checkpoint-120832-200ep-seed0-4e6fc25961ea.json",
-      "research/evaluations/abd93958-a0b2-4d26-b212-96ebeb401d22/task-reference-abd93958-a0b2-4d26-b212-96ebeb401d22-experiment-16-checkpoint-120832-task-reference-v1.json"
-    ],
-    "fingerprint": "7d3365d7b3d0ae6d527b91e6b890f9b95e15f394104fe4f02f6590de7bf5aed5",
-    "origin_experiment": 16,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest measured task-reference success in the current campaign at 99.0%, matches the prior best-known research-panel success at 97.0%, corrects one persistent parent failure, and adds no task-reference failure on the fixed development panel.",
-    "scientific_commit": "799e3cb415ad7e8c00665de6e54be8b1532a54de",
-    "training_steps": 321536
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "f4267cd6fa887726d3d4ff333d169cd6c507f6c2",
-    "id": "abd93958-a0b2-4d26-b212-96ebeb401d22",
+    "base_commit": "96870a9c38a7427abcc63d968032ab47c9360dd6",
+    "id": "d862f6d9-2222-4dd9-9cb5-63921a7b5c7f",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-11T22:11:42.103804+00:00"
+    "started_at": "2026-09-12T06:10:12.897509+00:00"
   },
   "campaign_experiment_counters": {
-    "abd93958-a0b2-4d26-b212-96ebeb401d22": 21
+    "d862f6d9-2222-4dd9-9cb5-63921a7b5c7f": 0
   },
-  "last_allocated_experiment": 21,
-  "last_experiment": 21,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 21 was an unchanged fresh replication with no researcher-owned code or parameter changes. Keeping the current scientific recipe preserves the same hard-deadband method associated with the retained working lineage."
-    },
-    "code_parent_commit": "0da81cda564fc059508f426e3bd47d1493d8a1ab",
-    "continue_from": "working",
-    "experiment": 21,
-    "reason": "The fresh replication produced no measured policy progress: the three candidates scored 60.0%, 58.0%, and 61.5% on the research panel and 60.0%, 55.5%, and 61.0% on task-reference, while paired comparisons gave the retained working policy 74, 78, and 71 wins with no candidate wins. Preserve the existing measured experiment-16 working and best-known lineage; defer terminal assessment because its 97.0% research-panel result remains below the objective and the development panels do not establish robust attainment."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,51 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "0da81cda564fc059508f426e3bd47d1493d8a1ab",
-    "experiment": 21,
-    "scientific_commit": "bacc76322e8cacfbb5d4c521c012c085ab8fb49b"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/abd93958-a0b2-4d26-b212-96ebeb401d22/e16-c8cf701d5-7d3365d7b3d0ae6d527b91e6b890f9b95e15f394104fe4f02f6590de7bf5aed5",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/abd93958-a0b2-4d26-b212-96ebeb401d22/evaluation-abd93958-a0b2-4d26-b212-96ebeb401d22-experiment-16-checkpoint-120832-200ep-seed0-4e6fc25961ea.json",
-      "research/evaluations/abd93958-a0b2-4d26-b212-96ebeb401d22/task-reference-abd93958-a0b2-4d26-b212-96ebeb401d22-experiment-16-checkpoint-120832-task-reference-v1.json"
-    ],
-    "fingerprint": "7d3365d7b3d0ae6d527b91e6b890f9b95e15f394104fe4f02f6590de7bf5aed5",
-    "origin_experiment": 16,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The fresh replication produced no measured policy progress: the three candidates scored 60.0%, 58.0%, and 61.5% on the research panel and 60.0%, 55.5%, and 61.0% on task-reference, while paired comparisons gave the retained working policy 74, 78, and 71 wins with no candidate wins. Preserve the existing measured experiment-16 working and best-known lineage; defer terminal assessment because its 97.0% research-panel result remains below the objective and the development panels do not establish robust attainment.",
-    "scientific_commit": "799e3cb415ad7e8c00665de6e54be8b1532a54de",
-    "training_steps": 321536
-  }
+  "working_lineage": null
 }
