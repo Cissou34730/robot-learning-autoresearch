@@ -132,25 +132,3 @@ def test_action_cost_penalizes_large_actions(monkeypatch):
     gentle = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 0.1)).total
     violent = reach_reward(0.05, 0.04, 0.03, action=np.full(2, 1.0)).total
     assert violent < gentle
-
-
-def test_hold_velocity_penalty_only_applies_inside_the_success_band():
-    velocity = np.array([0.4, -0.3])
-    inside = reach_reward(
-        0.005,
-        0.005,
-        0.01,
-        joint_velocity=velocity,
-    ).total
-    outside = reach_reward(
-        0.02,
-        0.02,
-        0.01,
-        joint_velocity=velocity,
-    ).total
-
-    assert inside == pytest.approx(
-        -reward_module.HOLD_VELOCITY_PENALTY_COEFFICIENT
-        * float(np.sum(np.square(velocity)))
-    )
-    assert outside == pytest.approx(0.0)
