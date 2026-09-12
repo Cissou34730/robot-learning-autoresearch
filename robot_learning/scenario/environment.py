@@ -147,6 +147,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             distance,
             self.success_threshold,
             action,
+            joint_velocity=self.data.qvel,
             held_steps=self._held_steps,
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
