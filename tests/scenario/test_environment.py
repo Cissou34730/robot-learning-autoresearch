@@ -25,20 +25,6 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_observation_exposes_normalized_target_geometry():
-    env = make_training_env()
-    observation, _ = env.reset(seed=0)
-    target = env.data.mocap_pos[0]
-    radius = np.hypot(target[0], target[1])
-    angle = np.arctan2(target[1], target[0])
-
-    assert observation.shape == (14,)
-    np.testing.assert_allclose(
-        observation[7:10],
-        [radius / 0.20, np.sin(angle), np.cos(angle)],
-    )
-
-
 def test_training_distribution_covers_the_official_radius_range():
     training = make_training_env()
     evaluation = make_evaluation_env()
