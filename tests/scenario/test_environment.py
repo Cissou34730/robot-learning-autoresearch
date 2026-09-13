@@ -12,8 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    TRAINING_OUTER_TARGET_PROBABILITY,
-    TRAINING_OUTER_TARGET_RADIUS_RANGE,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -27,16 +25,13 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_training_distribution_matches_the_official_radius_range():
+def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
-    assert training.target_radius_range == (0.06, 0.20)
-    assert training.outer_target_probability == TRAINING_OUTER_TARGET_PROBABILITY
-    assert training.outer_target_radius_range == TRAINING_OUTER_TARGET_RADIUS_RANGE
+    assert training.target_radius_range == (0.14, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-    assert evaluation.outer_target_probability == 0.0
 
 
 def test_training_environment_may_diverge_from_the_official_task():
