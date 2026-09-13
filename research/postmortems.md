@@ -2,11 +2,11 @@
 
 ## 285f0407-8cc3-401d-bdcd-2af73de9a61c / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior, but the best measured checkpoint remains just below or at the objective depending on the development panel: checkpoint-100352 scored 97.0% on the research panel and 98.0% on the distinct task-reference panel. Its task-reference failures cluster in a narrow negative-angle region, so the policy is promising but not yet robustly established at the human objective.
+**Current synthesis:** The campaign objective is at least 98% success on the official 6–20 cm, full-angle reach-and-hold distribution. The unchanged PPO baseline learned strong behavior, with checkpoint-100352 reaching 97.0% on the research panel and 98.0% on the distinct task-reference panel, but neither is the official assessment. Repeated failures include a negative-angle cluster, and the baseline training environment sampled only 14–20 cm targets; the available evidence therefore supports a distribution-coverage concern without proving it is causal.
 
-**Lessons and limits:** Measured task success, rather than training reward or the training success proxy, is the relevant progress signal. Later training did not improve the measured policy: checkpoint-120832 scored 97.0% on both available panels, while checkpoint-100352 scored 98.0% on task-reference. The measurements are development panels, not the official 200-episode assessment, and the common failure patterns do not establish their cause.
+**Lessons and limits:** Measured task success, rather than training reward or the training success proxy, is the relevant progress signal. Later unchanged training did not improve the measured policy: checkpoint-120832 scored 97.0% on both available panels, while checkpoint-100352 scored 98.0% on task-reference. The checkpoint-100352 task-reference failures were all at -116° to -128° and 6.7–9.9 cm; research-panel failures also repeatedly included negative angles and several 7–9 cm targets. These are development panels, not the official assessment, and failure clustering does not establish whether radius coverage, angle, control, or hold dynamics is causal.
 
-**Open questions:** Whether the negative-angle failure cluster persists on the official panel and whether a subsequent intervention can improve it without degrading the rest of the task distribution remain unresolved.
+**Open questions:** Whether broader near-base training coverage improves the negative-angle failures while preserving performance across the full official distribution remains unresolved, as does whether the residual failures instead arise from control or hold stability.
 
 ## 285f0407-8cc3-401d-bdcd-2af73de9a61c / Experiment 1
 
