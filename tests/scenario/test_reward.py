@@ -69,6 +69,33 @@ def test_losing_hold_progress_applies_the_configured_forfeit(monkeypatch):
     assert reward == pytest.approx(expected_forfeit)
 
 
+def test_breaking_a_late_hold_forfeits_more_progress_than_an_early_hold(
+    monkeypatch,
+):
+    monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
+    monkeypatch.setattr(reward_module, "OUTSIDE_BAND_PENALTY", 0.0)
+
+    early = reach_reward(
+        0.005,
+        0.0101,
+        0.01,
+        held_steps=0,
+        previous_held_steps=10,
+        hold_steps_required=100,
+    ).total
+    late = reach_reward(
+        0.005,
+        0.0101,
+        0.01,
+        held_steps=0,
+        previous_held_steps=90,
+        hold_steps_required=100,
+    ).total
+
+    assert late < early
+
+
 def test_outside_penalty_accumulates_and_is_bounded(monkeypatch):
     monkeypatch.setattr(reward_module, "PROGRESS_COEFFICIENT", 0.0)
     monkeypatch.setattr(reward_module, "CLOSENESS_COEFFICIENT", 0.0)
