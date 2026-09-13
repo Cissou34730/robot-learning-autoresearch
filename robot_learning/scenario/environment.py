@@ -28,8 +28,6 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = TARGET_RADIUS_RANGE
-TRAINING_FOCUS_ANGLE_RANGE = (np.deg2rad(-165.0), np.deg2rad(-90.0))
-TRAINING_FOCUS_ANGLE_PROBABILITY = 0.5
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -43,14 +41,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
-        focus_angle_probability: float = 0.0,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.focus_angle_probability = focus_angle_probability
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -85,10 +81,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        if self.np_random.random() < self.focus_angle_probability:
-            angle = float(self.np_random.uniform(*TRAINING_FOCUS_ANGLE_RANGE))
-        else:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
@@ -177,10 +170,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(
-        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        focus_angle_probability=TRAINING_FOCUS_ANGLE_PROBABILITY,
-    )
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
