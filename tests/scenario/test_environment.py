@@ -17,6 +17,10 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
+from robot_learning.scenario.observations import (
+    OBSERVATION_SIZE,
+    TARGET_RADIUS_SCALE,
+)
 
 
 def test_observation_matches_declared_space():
