@@ -1265,10 +1265,23 @@ def execute_pending_final_benchmark() -> int:
         )
 
     if state.get("schema_version") == 4:
-        console.announce("isolated final-benchmark evidence review started")
+        console.announce("\n=== Isolated final-benchmark evidence review ===\n")
         review = review_final_benchmark_evidence(best_known)
-        console.announce(f"review decision: {review['decision']}")
-        console.announce(f"review rationale: {review['rationale']}")
+        approved = review["decision"] == "APPROVE_FINAL"
+        next_step = (
+            "Review approved; running official final benchmark."
+            if approved
+            else "Official final benchmark was not run; campaign continues."
+        )
+        console.announce(
+            "\n=== Final-benchmark evidence review complete ===\n\n"
+            "Decision\n"
+            f"{review['decision']}\n\n"
+            "Reason\n"
+            f"{review['rationale']}\n\n"
+            "Next\n"
+            f"{next_step}\n"
+        )
         state["final_benchmark_review"] = {
             "experiment": int(pending["experiment"]),
             "selected": "best_known",
@@ -1276,14 +1289,11 @@ def execute_pending_final_benchmark() -> int:
             "fingerprint": fingerprint,
             **review,
         }
-        if review["decision"] != "APPROVE_FINAL":
+        if not approved:
             state["pending_final_benchmark"] = None
             state["last_verdict"] = "final benchmark rejected by isolated evidence review"
             repository.write_state(state)
-            console.announce("official final benchmark was not run")
-            console.announce("campaign continues")
             return 0
-        console.announce("review approved; running official final benchmark")
 
     official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
     verdict = (
@@ -1305,7 +1315,7 @@ def execute_pending_final_benchmark() -> int:
         else "official benchmark did not reach the goal"
     )
     repository.write_state(state)
-    console.announce(f"final benchmark complete: {verdict}")
+    console.announce(f"\n=== Final benchmark complete: {verdict} ===\n")
     if bool(official_metrics["goal_reached"]):
         paths.GOAL_PATH.write_text(
             f"Goal reached with {pending['selected']} from experiment {pending['experiment']}.\n",

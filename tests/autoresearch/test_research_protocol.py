@@ -1464,11 +1464,14 @@ def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
     assert persisted["official_benchmark_verdict"] == "goal_not_reached"
     assert persisted["terminal_campaign_status"] == "goal_not_reached"
     assert printed == [
-        "isolated final-benchmark evidence review started",
-        "review decision: APPROVE_FINAL",
-        "review rationale: Evidence is sufficient.",
-        "review approved; running official final benchmark",
-        "final benchmark complete: goal_not_reached",
+        "\n=== Isolated final-benchmark evidence review ===\n",
+        (
+            "\n=== Final-benchmark evidence review complete ===\n\n"
+            "Decision\nAPPROVE_FINAL\n\n"
+            "Reason\nEvidence is sufficient.\n\n"
+            "Next\nReview approved; running official final benchmark.\n"
+        ),
+        "\n=== Final benchmark complete: goal_not_reached ===\n",
     ]
     assert not (tmp_path / "GOAL_REACHED").exists()
 
@@ -1528,11 +1531,13 @@ def test_v4_final_benchmark_rejection_returns_campaign_to_research(monkeypatch, 
     assert persisted["final_benchmark_review"]["decision"] == "REJECT_FINAL"
     assert persisted["final_benchmark_review"]["rationale"] == "Failures cluster."
     assert printed == [
-        "isolated final-benchmark evidence review started",
-        "review decision: REJECT_FINAL",
-        "review rationale: Failures cluster.",
-        "official final benchmark was not run",
-        "campaign continues",
+        "\n=== Isolated final-benchmark evidence review ===\n",
+        (
+            "\n=== Final-benchmark evidence review complete ===\n\n"
+            "Decision\nREJECT_FINAL\n\n"
+            "Reason\nFailures cluster.\n\n"
+            "Next\nOfficial final benchmark was not run; campaign continues.\n"
+        ),
     ]
 
 
