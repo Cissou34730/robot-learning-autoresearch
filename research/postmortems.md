@@ -2,27 +2,33 @@
 
 ## b8641d46-760b-4fa7-8933-fc9078535fca / Scientific strategy
 
-**Current synthesis:** Experiment 2 established a learned PPO policy with a
-late transition from zero training-reported success to high task behavior.
-Protected task-reference success was 96% at checkpoint-95232, 98% at
-checkpoint-100352, and 97% at checkpoint-120832. The measured peak checkpoint
-is therefore the strongest current policy evidence, but the official panel
-remains unmeasured.
+**Current synthesis:** The campaign objective remains at least 98% success on
+the distinct official 200-episode panel. Experiment 2 shows that the unchanged
+PPO recipe can produce a strong policy: task-reference success was 96% at
+checkpoint-95232, 98% at checkpoint-100352, and 97% at checkpoint-120832.
+Checkpoint-100352 is the strongest measured policy evidence, but the official
+panel has no result because the final assessment was rejected during isolated
+evidence review. The selected lineage currently identifies only the
+checkpoint-100352 task-reference artifact.
 
-**Lessons and limits:** Training reward and training success were useful for
-locating the transition but are proxies, not policy-acceptance evidence. The
-task-reference panel directly measured task success and showed that continuing
-past checkpoint-100352 did not improve this panel. The three measurements use
-the same deterministic development panel, so they do not establish independent
-generalization or explain the late regression. The remaining failures of
-checkpoint-100352 are concentrated in four repeated panel episodes, mostly
-targets near 6.7-9.9 cm and angles about -116 to -128 degrees; this
-characterizes the panel but does not establish a causal failure mechanism.
+**Lessons and limits:** Training logs place the learning transition between
+70656 and 90112 steps and show a high region through 100352, followed by lower
+training-reported success through 120832. These metrics locate behavior but are
+proxies rather than acceptance evidence. The task-reference measurements use
+one deterministic 200-episode panel, so the 98% result does not establish
+independent generalization. Its four failures cluster around short targets and
+angles near -116 to -128 degrees, which characterizes this panel without
+establishing a causal failure mechanism. Only one training seed has been
+measured, and the retained artifact records the unchanged observation and
+action contract from `robot_learning/scenario/policy_io.py`; no representation
+or recipe change has been tested.
 
-**Open questions:** Performance on the distinct official 200-episode panel is
-unknown. It is also unresolved whether the late difference between
+**Open questions:** It remains unknown whether the learned capability
+reproduces from a fresh seed, whether the late difference between
 checkpoint-100352 and checkpoint-120832 reflects continued-training
-degradation, sampling variation, or both.
+degradation, sampling variation, or both, and how the selected policy performs
+on the distinct official panel. The evidential sufficiency of a future
+best-known lineage for terminal review is also unresolved.
 
 ## b8641d46-760b-4fa7-8933-fc9078535fca / Experiment 2
 
