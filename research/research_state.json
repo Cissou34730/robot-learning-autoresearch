@@ -46,7 +46,14 @@
   "campaign_experiment_counters": {
     "768a395f-05a2-43c3-b1ef-449056fbf8ed": 1
   },
-  "final_benchmark_review": null,
+  "final_benchmark_review": {
+    "artifact": "research/checkpoints/retained/768a395f-05a2-43c3-b1ef-449056fbf8ed/e1-cada55eb5-1ef7925dce0ea2fda8b7e081680c8e1bb1c534e7ffdf52da2d082baf7ead0973",
+    "decision": "REJECT_FINAL",
+    "experiment": 1,
+    "fingerprint": "1ef7925dce0ea2fda8b7e081680c8e1bb1c534e7ffdf52da2d082baf7ead0973",
+    "rationale": "REJECT_FINAL",
+    "selected": "best_known"
+  },
   "last_allocated_experiment": 1,
   "last_experiment": 1,
   "last_lineage_decision": {
@@ -60,57 +67,14 @@
     "experiment": 1,
     "reason": "Checkpoint-100352 is the strongest measured candidate on the protected task-reference panel at 98% (196/200). The endpoint scored 97% on that same panel, while its 99% research score was identical to checkpoint-100352 on the shared research episodes, so the endpoint provides no measured task advantage. The selected policy is sufficiently promising for the official fixed-panel assessment, while development measurements alone cannot establish the official objective."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
+  "last_verdict": "final benchmark rejected by isolated evidence review",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/768a395f-05a2-43c3-b1ef-449056fbf8ed/e1-cada55eb5-1ef7925dce0ea2fda8b7e081680c8e1bb1c534e7ffdf52da2d082baf7ead0973",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/768a395f-05a2-43c3-b1ef-449056fbf8ed/e1-cada55eb5-1ef7925dce0ea2fda8b7e081680c8e1bb1c534e7ffdf52da2d082baf7ead0973",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [
-        "research/evaluations/768a395f-05a2-43c3-b1ef-449056fbf8ed/evaluation-768a395f-05a2-43c3-b1ef-449056fbf8ed-experiment-1-checkpoint-100352-200ep-seed0-6ba3ba6d7654.json",
-        "research/evaluations/768a395f-05a2-43c3-b1ef-449056fbf8ed/evaluation-768a395f-05a2-43c3-b1ef-449056fbf8ed-experiment-1-checkpoint-100352-200ep-seed200-6ba3ba6d7654.json",
-        "research/evaluations/768a395f-05a2-43c3-b1ef-449056fbf8ed/task-reference-768a395f-05a2-43c3-b1ef-449056fbf8ed-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "1ef7925dce0ea2fda8b7e081680c8e1bb1c534e7ffdf52da2d082baf7ead0973",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It is the only measured candidate at or above 98% on the protected task-reference panel and it matches the endpoint on the independent paired research episodes.",
-      "scientific_commit": "150db1007d1219899c39314ee5a96f09bb07e2e2",
-      "training_steps": 100352
-    },
-    "experiment": 1,
-    "fingerprint": "1ef7925dce0ea2fda8b7e081680c8e1bb1c534e7ffdf52da2d082baf7ead0973",
-    "selected": "best_known"
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "150db1007d1219899c39314ee5a96f09bb07e2e2",
