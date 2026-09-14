@@ -307,6 +307,17 @@ while ($true) {
     }
 
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    if ($null -ne $researchState.pending_closure_operation) {
+        Write-Status "=== Resuming the accepted experiment closure ==="
+        uv run python research/run_experiment.py
+        if ($LASTEXITCODE -ne 0) {
+            throw "Runner recovery of the accepted experiment closure failed. The closure remains pending."
+        }
+        Update-ResearchBrief
+        Write-Status "=== Experiment closure complete ===" Green
+        continue
+    }
+
     if ($null -ne $researchState.pending_final_benchmark) {
         uv run python research/run_experiment.py --evaluate-pending-final
         if ($LASTEXITCODE -ne 0) {

@@ -895,6 +895,22 @@ def test_researcher_prompts_are_objective_first_and_direction_neutral():
     assert "Context efficiency does not determine which" in policy
 
 
+def test_launcher_resumes_an_accepted_closure_before_reopening_other_phases():
+    launcher = (Path(__file__).resolve().parents[2] / "run_research.ps1").read_text(
+        encoding="utf-8"
+    )
+    closure = launcher.index(
+        "$null -ne $researchState.pending_closure_operation"
+    )
+    final_benchmark = launcher.index("$null -ne $researchState.pending_final_benchmark")
+    analysis = launcher.index("$null -ne $researchState.pending_analysis")
+
+    assert closure < final_benchmark < analysis
+    recovery_branch = launcher[closure:final_benchmark]
+    assert "uv run python research/run_experiment.py" in recovery_branch
+    assert "continue" in recovery_branch
+
+
 def test_researcher_contract_preserves_investigative_freedom_across_layers():
     root = Path(__file__).resolve().parents[2]
     program = (root / "research" / "program.md").read_text(encoding="utf-8")
