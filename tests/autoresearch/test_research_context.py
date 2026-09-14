@@ -517,7 +517,7 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     assert inventory.count("checkpoint-") == 24
     assert "Artifact base path: `research/checkpoints`" in inventory
     assert "24 checkpoints available for measurement; steps 5,120-122,880" in inventory
-    assert "at most 3 distinct models" in inventory
+    assert "distinct models" not in inventory
     assert "local 10,240 steps; accumulated 10,240 steps" in inventory
 
 

@@ -92,7 +92,10 @@ Write `research/evaluation_request.json`:
 }
 ```
 
-`measurements` must contain at least one entry, and at most three distinct models. `paired_comparisons` is optional.
+If the Researcher submits a measurement request, `measurements` must contain at
+least one entry. A request may name at most three distinct models.
+`paired_comparisons` is optional. These are request validation constraints; they
+do not require a measurement request or limit an experiment or campaign.
 
 Every measurement requires its own non-empty `selection`. The request-level
 `reason` explains the round; `selection` explains why measuring that model is
@@ -100,20 +103,14 @@ useful for the scientific question. Measurements of the same model may have
 different selections. It need not claim that the model is superior to every
 alternative.
 
-One evaluation request may measure at most three distinct models. Multiple
-measurements of the same model count as one. This includes different seeds,
-episode counts, labels, or instruments applied to the same model.
+Within one request, multiple measurements of the same model count as one toward
+the distinct-model limit. This includes different seeds, episode counts, labels,
+or instruments applied to the same model.
 
 | Instrument            | Additional fields                                                       | Operation                                                          |
 | --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Runs the researcher-owned evaluator and writes one result artifact |
-| `task_reference`      | Optional `label`: string                                                | Measures a saved policy on the protected original task using a fixed development panel distinct from the final benchmark |
-
-Task-reference measurement is independent of researcher-owned environments and
-evaluation code. It reports task success and per-episode target geometry and
-outcomes. The panel definition is in
-`robot_learning/benchmark/reference_contract.py`; its execution and reported
-quantities are in `robot_learning/benchmark/reference_evaluation.py`.
+| `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Measures a saved policy using researcher-owned evaluation code and request-provided settings |
+| `task_reference`      | Optional `label`: string                                                | Measures a saved policy using human-owned evaluation code and fixed panel settings |
 
 Add one entry per model and instrument.
 

@@ -434,7 +434,6 @@ def _checkpoint_inventory_lines(
             f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
             f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}"
         )
-    lines.append("- A measurement request may select at most 3 distinct models.")
     identifiers = ", ".join(
         f"`{_recorded_value(candidate.get('name'))}` "
         f"(local {int(candidate.get('timesteps', 0)):,} steps; accumulated "
