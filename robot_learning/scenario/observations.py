@@ -12,9 +12,6 @@ OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
-    def wrap_to_pi(angle: float) -> float:
-        return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
-
     def shoulder_for_elbow(elbow: float) -> float:
         return float(
             np.arctan2(target_y, target_x)
@@ -40,10 +37,10 @@ def reach_observation(data) -> np.ndarray:
             data.qvel,
             end_effector - data.mocap_pos[0],
             [
-                wrap_to_pi(shoulder_open - float(data.qpos[0])),
-                wrap_to_pi(elbow_open - float(data.qpos[1])),
-                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-                wrap_to_pi(elbow_folded - float(data.qpos[1])),
+                shoulder_open - float(data.qpos[0]),
+                elbow_open - float(data.qpos[1]),
+                shoulder_folded - float(data.qpos[0]),
+                elbow_folded - float(data.qpos[1]),
             ],
         ]
     ).astype(np.float32)
