@@ -564,6 +564,10 @@ def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path)
         for steps in (5120, 10240, 100352, 105472, 120832)
     ]
     assert positions == sorted(positions)
+    assert (
+        "`checkpoint-5120` (local 5,120 steps; accumulated 5,120 steps; "
+        "training success 0.9; training reward 100)" in identifiers
+    )
 
 
 def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(

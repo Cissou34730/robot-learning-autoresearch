@@ -437,7 +437,9 @@ def _checkpoint_inventory_lines(
     identifiers = ", ".join(
         f"`{_recorded_value(candidate.get('name'))}` "
         f"(local {int(candidate.get('timesteps', 0)):,} steps; accumulated "
-        f"{parent_training_steps + int(candidate.get('timesteps', 0)):,} steps)"
+        f"{parent_training_steps + int(candidate.get('timesteps', 0)):,} steps; "
+        f"training success {_candidate_metric(candidate, 'training_success')}; "
+        f"training reward {_candidate_metric(candidate, 'ep_rew_mean')})"
         for candidate in candidates
     )
     lines.append(f"- Identifiers: {identifiers}")
