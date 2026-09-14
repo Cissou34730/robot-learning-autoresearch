@@ -120,3 +120,49 @@ objective and is not ready for irreversible official assessment.
 `research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-2-checkpoint-90112-200ep-seed0-00d38a8dd674.json`,
 `research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-2-checkpoint-100352-200ep-seed0-00d38a8dd674.json`,
 and `research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-2-checkpoint-120832-200ep-seed0-00d38a8dd674.json`.
+
+## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 3
+
+**Result:** The fresh replication did not reproduce the near-objective
+unchanged PPO policy. Its challenger checkpoints are not selected; the
+experiment-1 `checkpoint-100352` policy remains the working and best-known
+lineage, and the unchanged scientific recipe is kept for future development.
+
+**Observed behavior:** Training completed 120,832 steps against a requested
+120,000. The raw log's training success stayed at zero through 90,112 steps,
+then reached 0.04 at 100,352 and 0.13 at 120,832; mean episode reward rose
+from -7.3 at 1,024 steps to 107.4 at 120,832. On the same 200-episode
+research-evaluation semantics, checkpoint-100352 achieved 29.5% (59/200) and
+checkpoint-120832 achieved 44.5% (89/200). The later checkpoint therefore
+improved on this development measurement, but both remained far below
+experiment 1's 97.0% at the corresponding peak and 96.5% at its final
+checkpoint. At the shared episode seeds, the replication recovered only seed
+25 from experiment 1's failures at each corresponding checkpoint while losing
+most of experiment 1's successes; the measured replication failures were
+predominantly 500-step truncations. The other 22 checkpoints were not measured.
+
+**Hypothesis assessment:** Contradicted for this replication. The confirmatory
+hypothesis predicted that at least one measured checkpoint would reach 97%;
+neither did, and the independent run was materially worse at both measured
+positions. This supports the proposed seed-specific or unstable alternative
+and weakens treating experiment 1's failure pattern as representative of the
+unchanged recipe. One independent seed and two measured checkpoints do not
+estimate the recipe's full variance or prove that another seed cannot reach the
+objective.
+
+**Interpretation:** The result is evidence of substantial seed sensitivity under
+the tested unchanged recipe, not evidence that the task is unlearnable. The
+late increase in training reward and training success did not correspond to
+near-objective task success, reinforcing that proxy metrics cannot select a
+policy. Because this was a fresh replication with no scientific code or
+parameter intervention, the evidence does not identify a causal component
+behind the variance. The experiment-1 policy remains the strongest measured
+development artifact, but its 97.0% result is still below the 98% objective
+and is not an official assessment.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`, `research/research_state.json`,
+`research/training_logs/045ec01f-613e-4cd7-9cac-4b3c512b0f94/experiment-3-attempt-1.log`,
+`research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-3-checkpoint-100352-200ep-seed0-6ba3ba6d7654.json`,
+`research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-3-checkpoint-120832-200ep-seed0-6ba3ba6d7654.json`,
+and the corresponding experiment-1 evaluation artifacts.
