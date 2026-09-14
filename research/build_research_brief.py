@@ -815,12 +815,6 @@ def _render_v4_research_brief(
     ]
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
-    review = state.get("final_benchmark_review")
-    if isinstance(review, dict):
-        lines.append(
-            f"- Latest final-benchmark review: {review.get('decision', 'unrecorded')}"
-        )
-        lines.append(f"- Reviewer rationale: {review.get('rationale', 'unrecorded')}")
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
@@ -983,6 +977,18 @@ def _render_v4_research_brief(
         if best_known
         else "- Best known: unset"
     )
+    review = state.get("final_benchmark_review")
+    if (
+        isinstance(best_known, dict)
+        and isinstance(review, dict)
+        and review.get("fingerprint") == best_known.get("fingerprint")
+    ):
+        lines.append(
+            "- Terminal review of this artifact after experiment "
+            f"{review.get('experiment', 'unrecorded')}: "
+            f"{review.get('decision', 'unrecorded')}"
+        )
+        lines.append(f"- Review basis: {review.get('rationale', 'unrecorded')}")
     official = state.get("official_metrics")
     if official is not None:
         official_model = state.get("official_benchmark_model") or {}

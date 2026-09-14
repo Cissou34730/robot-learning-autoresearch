@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -13,23 +12,26 @@ from research import runner_repository as repository
 
 REVIEW_MODEL = "gpt-5.6-luna"
 REVIEW_TIMEOUT_SECONDS = 300
-REVIEW_PROMPT = """Based only on the recorded measurements for the current best-known model and
-the stated campaign objective, assess whether the evidence justifies requesting
-the terminal final benchmark at this point.
+REVIEW_PROMPT = """Based only on the stated campaign objective and the recorded measurements for
+the current best-known model, assess whether the available evidence supports
+using the terminal final benchmark at this point.
 
-Before concluding, do two things: (1) account for the statistical uncertainty
-implied by the number of episodes evaluated, rather than treating the reported
-percentage as exact; (2) inspect the individual episode records and determine
-whether failures are spread evenly across the recorded per-episode parameters
-or instead cluster on recurring values of one or more of those parameters,
-whatever those parameters are for this evaluation.
+Base the assessment on the evidence as a whole, including measured performance,
+consistency across available measurements, sample uncertainty, and the structure
+of recorded failures. No single factor is automatically decisive.
 
-Explain the basis for your assessment, including what you found in (1) and (2).
-Do not assess the value of further research or propose next steps.
+Assess readiness for terminal assessment. Do not treat development measurements
+as an official result, predict the benchmark outcome, assess the value of future
+research, or propose another experiment.
 
-Return exactly one decision:
-- APPROVE_FINAL
-- REJECT_FINAL
+Explain concisely which recorded facts determine the decision. End with exactly
+one separate line:
+
+DECISION: APPROVE_FINAL
+
+or:
+
+DECISION: REJECT_FINAL
 """
 
 
@@ -67,11 +69,21 @@ def _review_message(model_identifier: str, evidence_paths: list[str]) -> str:
     )
 
 
-def _decision(response: str) -> str:
-    decisions = set(re.findall(r"\b(?:APPROVE|REJECT)_FINAL\b", response))
-    if len(decisions) != 1:
-        raise RuntimeError("the evidence reviewer did not return one unambiguous verdict")
-    return decisions.pop()
+def _parse_response(response: str) -> tuple[str, str]:
+    lines = [line.strip() for line in response.splitlines() if line.strip()]
+    if len(lines) < 2:
+        raise RuntimeError("the evidence reviewer did not return a rationale and decision")
+    decisions = {
+        "DECISION: APPROVE_FINAL": "APPROVE_FINAL",
+        "DECISION: REJECT_FINAL": "REJECT_FINAL",
+    }
+    decision = decisions.get(lines[-1])
+    if decision is None or any(line in decisions for line in lines[:-1]):
+        raise RuntimeError("the evidence reviewer did not return one final decision")
+    rationale = " ".join(" ".join(lines[:-1]).split())
+    if not rationale:
+        raise RuntimeError("the evidence reviewer did not return a rationale")
+    return decision, rationale
 
 
 async def _request_review(
@@ -106,7 +118,7 @@ async def _request_review(
             on_event=on_event,
             available_tools=ToolSet().add_builtin(["view"]),
             working_directory=str(working_directory),
-            streaming=True,
+            streaming=False,
             enable_skills=False,
             enable_session_store=False,
             skip_embedding_retrieval=True,
@@ -134,7 +146,8 @@ def review_final_benchmark_evidence(best_known: dict) -> dict:
         try:
             identifier, evidence_paths = _copy_review_bundle(best_known, directory)
             response = asyncio.run(_request_review(directory, identifier, evidence_paths))
-            return {"decision": _decision(response), "rationale": response}
+            decision, rationale = _parse_response(response)
+            return {"decision": decision, "rationale": rationale}
         except Exception as error:  # noqa: BLE001 - review failures must close the gate.
             return {
                 "decision": "REJECT_FINAL",
