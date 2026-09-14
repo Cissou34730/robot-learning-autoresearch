@@ -110,7 +110,13 @@ or instruments applied to the same model.
 | Instrument            | Additional fields                                                       | Operation                                                          |
 | --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Measures a saved policy using researcher-owned evaluation code and request-provided settings |
-| `task_reference`      | Optional `label`: string                                                | Measures a saved policy using human-owned evaluation code and fixed panel settings |
+| `task_reference`      | Optional `label`: string                                                | Measures a saved policy on the protected original task using a fixed development panel distinct from the final benchmark |
+
+Task-reference measurement is independent of researcher-owned environments and
+evaluation code. It reports task success and per-episode target geometry and
+outcomes. The panel definition is in
+`robot_learning/benchmark/reference_contract.py`; its execution and reported
+quantities are in `robot_learning/benchmark/reference_evaluation.py`.
 
 Add one entry per model and instrument.
 
