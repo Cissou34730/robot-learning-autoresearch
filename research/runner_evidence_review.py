@@ -7,25 +7,48 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from research import runner_console as console
 from research import runner_paths as paths
 from research import runner_repository as repository
 
 REVIEW_MODEL = "gpt-5.6-luna"
 REVIEW_TIMEOUT_SECONDS = 300
-REVIEW_PROMPT = """Based only on the stated campaign objective and the recorded measurements for
-the current best-known model, assess whether the available evidence supports
-using the terminal final benchmark at this point.
+REVIEW_PROMPT = """Using only the stated campaign objective and the submitted measurements for
+the current best-known model, assess whether proceeding to the terminal final
+benchmark is reasonably supported.
 
-Base the assessment on the evidence as a whole, including measured performance,
-consistency across available measurements, sample uncertainty, and the structure
-of recorded failures. No single factor is automatically decisive.
+Examine what the underlying measurements demonstrate about the model, beyond
+their summary metrics. Interpret the observed behavior in relation to the
+objective, considering the scope of the measurements, their consistency, and
+the evidential strength of the observations.
 
-Assess readiness for terminal assessment. Do not treat development measurements
-as an official result, predict the benchmark outcome, assess the value of future
-research, or propose another experiment.
+When episode-level or similarly detailed records are available, inspect them
+directly. Assess material behavioral patterns that are relevant to the stated
+objective, including their prevalence, severity, and, where the submitted
+measurements contain comparable information, whether they recur. Do not infer
+a pattern from an aggregate rate alone or from an arbitrary subdivision of the
+data. Treat unavailable or incomparable information as unresolved, not as
+evidence for or against a pattern.
 
-Explain concisely which recorded facts determine the decision. End with exactly
-one separate line:
+Build a rationale that explains how the demonstrated capability, observed
+limitations, and uncertainty affect readiness. Give each observation weight
+according to its relevance and evidential strength. Balance means proportionate
+consideration of the material evidence, not an equal number of arguments for
+each outcome. Where observations admit different interpretations, compare the
+plausible interpretations and state whether the submitted evidence distinguishes
+between them.
+
+Use the stated objective as the standard without adding performance
+requirements. The question is whether the submitted evidence justifies using
+the distinct terminal assessment, not whether the development measurements
+already establish its official outcome.
+
+Choose APPROVE_FINAL when the evidence reasonably supports proceeding, and
+REJECT_FINAL when it does not. Explain which recorded facts carry the decision,
+how their weight was assessed, and why any material countervailing evidence,
+when present, does not change the conclusion.
+
+End with exactly one separate line:
 
 DECISION: APPROVE_FINAL
 
@@ -94,16 +117,30 @@ async def _request_review(
         AssistantMessageData,
         SessionErrorData,
         SessionIdleData,
+        ToolExecutionCompleteData,
+        ToolExecutionStartData,
     )
 
     completed = asyncio.Event()
     responses: list[str] = []
     errors: list[str] = []
+    active_reads: dict[str, str] = {}
 
     def on_event(event) -> None:
         data = event.data
         if isinstance(data, AssistantMessageData) and data.content:
             responses.append(data.content)
+        elif isinstance(data, ToolExecutionStartData):
+            arguments = data.arguments if isinstance(data.arguments, dict) else {}
+            target = str(arguments.get("path") or arguments.get("filePath") or "file")
+            active_reads[data.tool_call_id] = target
+            console.announce(f"[review] reading {target}")
+        elif isinstance(data, ToolExecutionCompleteData):
+            target = active_reads.pop(data.tool_call_id, "file")
+            if data.success:
+                console.announce(f"[review] read {target}")
+            else:
+                console.announce(f"[review] failed to read {target}: {data.error}")
         elif isinstance(data, SessionErrorData):
             errors.append(data.message or "unknown session error")
         elif isinstance(data, SessionIdleData):

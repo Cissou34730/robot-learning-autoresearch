@@ -292,15 +292,27 @@ def commit_lineage_decision(
 # --- campaign state --------------------------------------------------------
 
 
+WINDOWS_REPLACE_LOCK_ERRORS = {5, 32}
+WINDOWS_REPLACE_TIMEOUT_SECONDS = 10.0
+WINDOWS_REPLACE_INITIAL_DELAY_SECONDS = 0.05
+WINDOWS_REPLACE_MAX_DELAY_SECONDS = 0.5
+
+
 def _atomic_replace(temporary: Path, destination: Path) -> None:
-    for attempt in range(20):
+    deadline = time.monotonic() + WINDOWS_REPLACE_TIMEOUT_SECONDS
+    delay = WINDOWS_REPLACE_INITIAL_DELAY_SECONDS
+    while True:
         try:
             temporary.replace(destination)
             return
-        except PermissionError:
-            if attempt == 19:
+        except PermissionError as error:
+            if getattr(error, "winerror", None) not in WINDOWS_REPLACE_LOCK_ERRORS:
                 raise
-            time.sleep(0.05)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise
+            time.sleep(min(delay, remaining))
+            delay = min(delay * 2, WINDOWS_REPLACE_MAX_DELAY_SECONDS)
 
 
 def atomic_write_json(path: Path, value: dict) -> None:
