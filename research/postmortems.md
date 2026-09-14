@@ -1,21 +1,3 @@
 # Research postmortems
 
-## f571cc16-ae35-4a96-9bb1-e618052af336 / Scientific strategy
-
-**Current synthesis:** The campaign objective is at least 98% success on the unchanged official reach-and-hold task. The only completed run used the unchanged PPO recipe and learned useful behavior late: `checkpoint-100352` achieved 98.0% on both 200-episode development instruments, while the later checkpoint fell to 96.5% and 97.0%. This establishes a promising measured artifact but not an official result; the terminal review produced no benchmark evidence because the required files were inaccessible.
-
-**Lessons and limits:** Measured task success, not reward or the training proxy, identifies the useful checkpoint: the reward peak at step 86,016 measured 95.5% and 94.0%, whereas the proxy peak near steps 97,280-100,352 coincided with 98.0% on both panels. The selected checkpoint still had four failures on each panel; task-reference failures reached the 500-step limit and were concentrated around negative angles and short radii, while the researcher-evaluation failures all missed the complete hold. Evidence is limited to one fresh run, one training seed, and 200-episode development panels, so it neither establishes the official result nor separates run variability from checkpoint-selection effects. Sources: `research/results.jsonl`, `research/research_state.json`, `research/postmortems.md`, `research/evaluations/f571cc16-ae35-4a96-9bb1-e618052af336/`, and the queried experiment-1 training log.
-
-**Open questions:** Whether the late, objective-level development performance is reproducible from an independent fresh initialization; whether a checkpoint with that performance generalizes to the distinct official panel; and whether the observed residual-failure concentration persists beyond the development panels remain unresolved.
-
-## f571cc16-ae35-4a96-9bb1-e618052af336 / Experiment 1
-
-**Result:** The baseline produced a strong candidate, with the best measured development performance at the objective level.
-
-**Observed behavior:** Training completed 120,832 steps. The logged mean episode reward rose from -24.5 at step 5,120 to 163.9 at step 86,016, then declined to 117.3 at step 100,352 and 112.0 at the final checkpoint. The training success proxy rose from 0 to 0.97 by steps 97,280-100,352 and was 0.95 at step 120,832. Research evaluation success was 95.5% at checkpoint 86,016, 98.0% at checkpoint 100,352, and 96.5% at checkpoint 120,832. Protected task-reference success was respectively 94.0%, 98.0%, and 97.0%. At checkpoint 100,352, the researcher evaluator had four failures, each missing the complete hold; the task-reference panel had four failures, all reaching the 500-step limit, with target angles from -127.9 to -116.4 degrees and radii from 6.73 to 9.91 cm.
-
-**Hypothesis assessment:** Supported as a baseline-establishment result, and partially supported as evidence of progress toward the human objective: one saved checkpoint reached 98.0% on both development instruments, but the later checkpoint regressed and no development panel is the official assessment. The baseline does not establish that the objective is met on the official panel.
-
-**Interpretation:** Measured task performance, rather than the reward or training proxy alone, identifies checkpoint 100352 as the most useful artifact from this run. The agreement between the researcher evaluator and protected task-reference panel supports freezing that checkpoint for official assessment, while the late-training regression argues against selecting the final checkpoint. The failure concentration is a diagnostic signal, not evidence that all official-task failures have the same cause.
-
-**Evidence inspected:** `research/results.jsonl`; `research/evaluations/f571cc16-ae35-4a96-9bb1-e618052af336/evaluation-f571cc16-ae35-4a96-9bb1-e618052af336-experiment-1-checkpoint-86016-200ep-seed1729-6ba3ba6d7654.json`; `research/evaluations/f571cc16-ae35-4a96-9bb1-e618052af336/evaluation-f571cc16-ae35-4a96-9bb1-e618052af336-experiment-1-checkpoint-100352-200ep-seed1729-6ba3ba6d7654.json`; `research/evaluations/f571cc16-ae35-4a96-9bb1-e618052af336/evaluation-f571cc16-ae35-4a96-9bb1-e618052af336-experiment-1-checkpoint-120832-200ep-seed1729-6ba3ba6d7654.json`; the three corresponding `task-reference-...json` artifacts; and the experiment-1 training log queried for steps 5,120-120,832.
+No experiments recorded.
