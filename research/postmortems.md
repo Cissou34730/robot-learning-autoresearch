@@ -25,12 +25,13 @@ training-distribution changes and fresh-seed effects remain confounded with
 learning dynamics. Measurements cover only selected checkpoints and one fixed
 200-episode development panel.
 
-**Open questions:** It is unresolved whether exposing the unchanged policy to
-the full official radius range improves generalization while preserving its
-angle coverage, whether the residual negative-angle failures are radius-related,
-and how much of the result variance comes from initialization. It is also
-unknown whether any development policy has reached the official objective,
-because the strongest result is 194/200 on a development panel rather than the
+**Open questions:** It remains unresolved how much of the result variance comes
+from initialization and whether another training design can address the
+negative-angle failures without broad regression. Experiment 4 did not improve
+the unchanged-task panel after exposing the transfer policy to the full
+official radius range, and the unchanged failure set includes both short and
+long radii. No development policy has reached the official objective because
+the strongest result is 194/200 on a development panel rather than the
 terminal assessment.
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 1
@@ -167,3 +168,48 @@ and is not an official assessment.
 `research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-3-checkpoint-100352-200ep-seed0-6ba3ba6d7654.json`,
 `research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-3-checkpoint-120832-200ep-seed0-6ba3ba6d7654.json`,
 and the corresponding experiment-1 evaluation artifacts.
+
+## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 4
+
+**Result:** Expanding the training target-radius range from 14-20 cm to the
+official 6-20 cm range did not produce measured task progress. The working
+experiment-1 checkpoint remains the strongest measured policy, so experiment 4
+is not selected and the parent scientific recipe is restored.
+
+**Observed behavior:** Training completed 120,832 steps against a requested
+120,000. Training proxies were high at the comparable checkpoint: training
+success was 0.99 and mean episode reward was 113.72 at step 100,352. At the
+endpoint they declined to 0.94 and 110.99. Research evaluation on 200 episodes
+measured 97.0% (194/200) at both experiment-4 checkpoints 100,352 and 120,832,
+matching the working policy's 97.0% on the same panel. Both challengers had zero
+paired wins and zero losses against working. All three policies failed the same
+six episode seeds (11, 25, 111, 167, 171, and 188), and all six failures
+truncated at 500 steps. The failure targets covered radii from 6.00 to 16.63
+cm and angles from -122.1 to -145.4 degrees. Diagnostics showed small changes
+in approach behavior for some failures, including brief tolerance entry for
+seeds 111 and 188 under experiment 4, but no binary task successes were
+recovered. The remaining 22 experiment-4 checkpoints were not measured.
+
+**Hypothesis assessment:** Weakened. The exploratory question predicted that
+full-radius training could improve the parent without the broad regression of
+the angle-focused transfer. Neither measured challenger improved over the
+97.0% parent, and the identical failure set does not support radial coverage
+as a sufficient explanation for the residual failures. The result does not
+prove that radius coverage cannot help under another training design or
+initialization. It also does not establish that the negative-angle pattern is
+caused by angle coverage alone, because this run changed training distribution
+and continued from the parent.
+
+**Interpretation:** The measured policy outcome is unchanged despite strong
+training proxies, reinforcing that those proxies cannot select a policy.
+Failures at both the shortest and longer target radii within the negative-angle
+cluster weaken a radius-only account, while the unchanged panel result gives no
+evidence that this transfer intervention advances the human objective. The
+working policy remains useful for further development but is below the 98%
+objective and is not ready for terminal assessment.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`, `research/research_state.json`,
+`research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-4-checkpoint-100352-200ep-seed0-ffdccdbf3357.json`,
+`research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-4-checkpoint-120832-200ep-seed0-ffdccdbf3357.json`,
+and `research/evaluations/045ec01f-613e-4cd7-9cac-4b3c512b0f94/evaluation-045ec01f-613e-4cd7-9cac-4b3c512b0f94-experiment-4-working-200ep-seed0-ffdccdbf3357.json`.
