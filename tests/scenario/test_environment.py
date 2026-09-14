@@ -12,6 +12,7 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
+    TRAINING_FOCUSED_ANGLE_PROBABILITY,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -32,6 +33,15 @@ def test_training_distribution_matches_the_official_radius_range():
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
     assert training.target_radius_range == final_contract.TARGET_RADIUS_RANGE
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+
+
+def test_training_distribution_focuses_the_observed_negative_angle_sector():
+    training = make_training_env()
+    evaluation = make_evaluation_env()
+
+    assert training.focused_angle_probability == TRAINING_FOCUSED_ANGLE_PROBABILITY
+    assert training.focused_angle_range == (-np.deg2rad(170.0), -np.deg2rad(90.0))
+    assert evaluation.focused_angle_probability == 0.0
 
 
 def test_training_environment_may_diverge_from_the_official_task():
