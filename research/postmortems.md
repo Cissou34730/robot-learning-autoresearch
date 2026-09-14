@@ -2,35 +2,34 @@
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Scientific strategy
 
-**Current synthesis:** The campaign objective is at least 98% success on the
-official full-range reach-and-hold task. The fresh PPO baseline learned a useful
-policy, but its strongest measured development checkpoint reached 97.0% (194/200)
-at checkpoint-100352, below the objective. The transfer experiment that added
-focused negative-angle exposure did not improve measured task success: its best
-checkpoint reached 88.0% and its final checkpoint 83.5%. The original working
-policy therefore remains the strongest measured lineage.
+**Current synthesis:** The campaign objective is at least 98% success, or 196/200
+episodes, on the official full-range reach-and-hold task. The unchanged fresh PPO
+recipe learned a useful policy whose best measured development checkpoint reached
+97.0% (194/200) at step 100352, but the later step-120832 checkpoint reached
+96.5%. The transfer recipe that added 25% focused exposure to the -150 to -115
+degree sector did not improve unchanged-task success: its measured checkpoints
+were 88.0%, 84.5%, and 83.5%. The experiment-1 checkpoint-100352 policy remains
+the strongest measured lineage.
 
-**Lessons and limits:** Measured task success, rather than training reward or
-training success, supports claims of policy progress. On the shared 200-episode
-development panel, checkpoint-100352 outperformed checkpoint-90112 (97.0% versus
-93.0%) and checkpoint-120832 (97.0% versus 96.5%); the late paired comparison
-had only one discordant episode. Detailed diagnostics show that five of the six
-persistent failures never reached tolerance, while one reached it briefly and
-lost the hold. The baseline trained with a far-target radius range while the
-official task spans 6-20 cm, so coverage is a plausible but unproven contributor.
-The focused transfer run recovered five of the six prior failure seeds on its
-three measured checkpoints, but introduced many other failures and scored
-84.5% at the checkpoint matching the baseline peak. Its training proxies did
-not establish task progress: training success rose to 0.91 at the final
-checkpoint while measured task success fell to 83.5%. These are single-seed
-development measurements, the experiment-2 artifacts do not emit target
-radius/angle breakdowns, and the unmeasured checkpoints remain unknown.
+**Lessons and limits:** Task success on the fixed 200-episode development panel,
+not training reward or training success, supports policy-progress claims. The
+baseline's six failures at step 100352 form a negative-angle cluster from
+-122.1 to -145.4 degrees; five never entered tolerance and one held for only one
+step. The step-120832 baseline retained that cluster and added a brief failure at
+102.7 degrees. The focused transfer run recovered five of those six episode
+seeds, but created many failures across other angles and had only 84.5% success
+at the corresponding step. Its training success rose to 0.91 while measured task
+success fell, so the proxy did not establish task progress. The baseline uses a
+14-20 cm training-radius range while the official task spans 6-20 cm, making
+coverage plausible but unproven. The evidence is single-seed for the unchanged
+recipe, the target-geometry diagnostics do not establish a causal mechanism, and
+unmeasured checkpoints remain unknown.
 
-**Open questions:** It remains unresolved whether the persistent negative-angle
-failures arise from insufficient training coverage, a learned representation
-limitation, or another control limitation. It is also unknown whether the
-97.0% peak generalizes beyond the development panel and which alternative
-intervention could address the residual failures without the broad regression
+**Open questions:** It remains unresolved whether the residual negative-angle
+failures reflect insufficient coverage, a learned representation limitation, or
+another control limitation. The reproducibility and seed variance of the
+near-objective unchanged PPO result are also unknown, as is whether another
+training seed can reach or exceed the objective without the broad regression
 seen under focused transfer training.
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 1
