@@ -12,7 +12,6 @@ import robot_learning.scenario.reward as reward_module
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import (
-    TRAINING_FOCUSED_ANGLE_RANGE,
     TRAINING_TARGET_RADIUS_RANGE,
     TwoJointArmReachEnv,
     make_evaluation_env,
@@ -26,33 +25,13 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_training_distribution_covers_full_radius_without_changing_evaluation():
+def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
-    assert training.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+    assert training.target_radius_range == (0.14, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
-
-
-def test_training_distribution_oversamples_the_persistent_failure_angles():
-    env = make_training_env()
-    env.reset(seed=0)
-    sampled_angles = []
-
-    for _ in range(1000):
-        env._sample_target_position()
-        target = env.data.mocap_pos[0]
-        sampled_angles.append(np.arctan2(target[1], target[0]))
-
-    focused = [
-        angle
-        for angle in sampled_angles
-        if TRAINING_FOCUSED_ANGLE_RANGE[0]
-        <= angle
-        <= TRAINING_FOCUSED_ANGLE_RANGE[1]
-    ]
-    assert 200 <= len(focused) <= 350
 
 
 def test_training_environment_may_diverge_from_the_official_task():

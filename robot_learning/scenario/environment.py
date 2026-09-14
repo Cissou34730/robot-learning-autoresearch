@@ -27,9 +27,7 @@ from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
-TRAINING_TARGET_RADIUS_RANGE = TARGET_RADIUS_RANGE
-TRAINING_FOCUSED_ANGLE_RANGE = (np.deg2rad(-150.0), np.deg2rad(-115.0))
-TRAINING_FOCUSED_ANGLE_PROBABILITY = 0.25
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -83,10 +81,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        if self.np_random.random() < TRAINING_FOCUSED_ANGLE_PROBABILITY:
-            angle = float(self.np_random.uniform(*TRAINING_FOCUSED_ANGLE_RANGE))
-        else:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
