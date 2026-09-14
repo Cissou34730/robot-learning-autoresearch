@@ -343,8 +343,9 @@ checks only that a measurement exists, not whether the evidence is scientificall
 sufficient and not whether scores compare favorably.
 
 Omitting `request_final_benchmark` or setting it to `false` allows the campaign
-to proceed after closure. Setting it to `true` requests the isolated readiness
-review of `best_known` described under **Request the official benchmark**. The
+to proceed after closure. Setting it to `true` requests terminal assessment of
+`best_known`; the Runner ends the campaign after either `goal_reached` or
+`goal_not_reached`. The result is not available to a later hypothesis. The
 scientific decision rule for requesting assessment is defined in
 `research/program.md`.
 
@@ -370,9 +371,7 @@ and `request_final_benchmark` is a boolean.
 
 Set `request_final_benchmark` to `true` in `previous_result_decision`.
 
-After applying the lineage decision, the Runner performs an isolated readiness
-review of the selected frozen `best_known`. Approval executes the terminal
-official benchmark and writes its verdict to `research/brief.md`; the campaign
-ends after either official verdict. Rejection does not execute the benchmark and
-returns the campaign to research without exposing an official benchmark result.
-The review requires no additional Researcher deliverable.
+After applying the lineage decision, the Runner assesses the frozen best-known
+model and writes the terminal verdict to `research/brief.md`. The campaign ends
+after either verdict. This operation does not produce evidence for another
+hypothesis.

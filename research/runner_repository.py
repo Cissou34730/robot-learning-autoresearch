@@ -552,7 +552,6 @@ def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
         "pending_researcher_decision": None,
         "pending_closure_operation": None,
         "pending_final_benchmark": None,
-        "final_benchmark_review": None,
         "terminal_campaign_status": None,
         "last_lineage_decision": None,
         "last_verdict": last_verdict,

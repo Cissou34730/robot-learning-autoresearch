@@ -328,12 +328,8 @@ while ($true) {
         if ($null -ne $researchState.official_benchmark_verdict) {
             Write-Status "=== Final benchmark complete: $($researchState.official_benchmark_verdict) ===" Green
         }
-        elseif ($researchState.final_benchmark_review.decision -eq "REJECT_FINAL") {
-            Write-Status "=== Official final benchmark was not run ===" Yellow
-            Write-Status "=== Campaign continues ===" Yellow
-        }
         else {
-            throw "Final benchmark review completed without an official verdict or rejection record."
+            throw "Final benchmark completed without an official verdict."
         }
         continue
     }

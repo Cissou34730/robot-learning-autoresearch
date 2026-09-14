@@ -1210,7 +1210,6 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
 
 
 def execute_pending_final_benchmark() -> int:
-    from research.runner_evidence_review import review_final_benchmark_evidence
     from robot_learning.scenario.final_benchmark import evaluate_final_model
 
     state = repository.read_state()
@@ -1264,37 +1263,6 @@ def execute_pending_final_benchmark() -> int:
             "the selected accepted artifact already received an official benchmark"
         )
 
-    if state.get("schema_version") == 4:
-        console.announce("\n=== Isolated final-benchmark evidence review ===\n")
-        review = review_final_benchmark_evidence(best_known)
-        approved = review["decision"] == "APPROVE_FINAL"
-        next_step = (
-            "Review approved; running official final benchmark."
-            if approved
-            else "Official final benchmark was not run; campaign continues."
-        )
-        console.announce(
-            "\n=== Final-benchmark evidence review complete ===\n\n"
-            "Decision\n"
-            f"{review['decision']}\n\n"
-            "Reason\n"
-            f"{review['rationale']}\n\n"
-            "Next\n"
-            f"{next_step}\n"
-        )
-        state["final_benchmark_review"] = {
-            "experiment": int(pending["experiment"]),
-            "selected": "best_known",
-            "artifact": artifact,
-            "fingerprint": fingerprint,
-            **review,
-        }
-        if not approved:
-            state["pending_final_benchmark"] = None
-            state["last_verdict"] = "final benchmark rejected by isolated evidence review"
-            repository.write_state(state)
-            return 0
-
     official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
     verdict = (
         "goal_reached" if bool(official_metrics["goal_reached"]) else "goal_not_reached"
@@ -1315,7 +1283,6 @@ def execute_pending_final_benchmark() -> int:
         else "official benchmark did not reach the goal"
     )
     repository.write_state(state)
-    console.announce(f"\n=== Final benchmark complete: {verdict} ===\n")
     if bool(official_metrics["goal_reached"]):
         paths.GOAL_PATH.write_text(
             f"Goal reached with {pending['selected']} from experiment {pending['experiment']}.\n",
@@ -1910,7 +1877,9 @@ def main() -> int:
     if args.evaluate_pending_final:
         status = execute_pending_final_benchmark()
         if status == 0:
-            repository.commit_runner_memory("record the final benchmark gate")
+            # The official result may be the campaign's last transition, so it
+            # is published now rather than by an experiment that may never run.
+            repository.commit_runner_memory("record the official final benchmark")
         return status
     if args.evaluate_pending:
         return execute_pending_evaluations()

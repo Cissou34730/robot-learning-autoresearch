@@ -108,12 +108,8 @@ The phase order is:
    rounds or close directly from logs and existing evidence;
 4. close the experiment and resolve its working lineage, scientific recipe
    decision, and optional best-known designation;
-5. either prepare the next experiment, or request terminal assessment through
-   the closure decision.
-
-A request for terminal assessment is first reviewed by an isolated evidence-only
-session. Approval runs the final benchmark; rejection returns the campaign to
-research without exposing final-benchmark evidence.
+5. either prepare the next experiment, or request Runner execution of the final
+   benchmark as a terminal campaign action through the closure decision.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -238,10 +234,8 @@ replication count, or proof that no better research direction exists is
 required.
 
 Request the official benchmark only through closure, targeting the frozen
-best-known model. The request is first reviewed by an isolated evidence-only
-session. Approval runs the final benchmark; rejection returns the campaign to
-research without exposing final-benchmark evidence. An approved assessment ends
-the campaign after either verdict, `goal_reached` or `goal_not_reached`, and that
-decision is irreversible. Do not plan further work conditional on benchmark
-failure. Only this benchmark declares the official result; a failed official
-verdict is never development feedback for another hypothesis.
+best-known model. Requesting it ends the campaign after either verdict:
+`goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
+plan further work conditional on benchmark failure. Only this benchmark declares
+the official result; a failed official verdict is never development feedback for
+another hypothesis.
