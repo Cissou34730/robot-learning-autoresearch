@@ -3,36 +3,37 @@
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success, or 196/200
-episodes, on the official full-range reach-and-hold task. Unchanged fresh PPO
-produced a useful but below-objective policy: its best measured development
-checkpoint reached 97.0% (194/200) at step 100352, while the later step-120832
-checkpoint reached 96.5%. A fresh replication of the same recipe reached only
-29.5% and 44.5% at those two positions, so the near-objective result is not a
-reliable estimate of the recipe's typical outcome. The experiment-1
-checkpoint-100352 policy remains the strongest measured lineage.
+episodes, on the official full-range reach-and-hold task. The strongest measured
+development policy is the experiment-1 checkpoint at step 100352 with 97.0%
+(194/200); its later checkpoint reached 96.5%. A fresh replication reached only
+29.5% and 44.5% at the corresponding positions, so the unchanged PPO recipe has
+large seed-dependent outcome variance and the near-objective result is not a
+typical-performance estimate. The experiment-1 checkpoint remains the strongest
+measured lineage, but no policy has reached the official objective.
 
 **Lessons and limits:** Task success on the fixed 200-episode development panel,
 not training reward or training success, supports policy-progress claims. The
-best unchanged policy's six failures cluster at negative target angles from
--122.1 to -145.4 degrees, but the evidence does not identify whether coverage,
-representation, or control causes them. The training distribution covers only
-14-20 cm although the official task covers 6-20 cm. Focused transfer toward the
-negative-angle sector recovered five of those six episode seeds but regressed
-many other cases, reaching 84.5% at the corresponding checkpoint; its rising
-training proxies therefore did not establish task progress. The full-angle
-policy I/O and task mechanics are shared across these comparisons, while
-training-distribution changes and fresh-seed effects remain confounded with
-learning dynamics. Measurements cover only selected checkpoints and one fixed
-200-episode development panel.
+strongest policy's persistent failures cluster at target angles from -122.1 to
+-145.4 degrees and include both short and long radii. Focused negative-angle
+sampling recovered several hard seeds but regressed the rest of the panel;
+expanding radius coverage to the official range left the same six failures
+unchanged. In two of those failures, the policy briefly entered tolerance but
+did not complete the hold, while the others never reached tolerance. The
+observation code currently wraps inverse-kinematics joint errors at +/-pi, so
+the shoulder feature is discontinuous near several of these targets; this is a
+plausible representation limitation, not an established cause. Full-angle
+policy I/O and task mechanics are shared across comparisons, while training
+distribution changes and fresh-seed effects remain confounded with learning
+dynamics. Measurements cover only selected checkpoints and one fixed
+development panel.
 
-**Open questions:** It remains unresolved how much of the result variance comes
-from initialization and whether another training design can address the
-negative-angle failures without broad regression. Experiment 4 did not improve
-the unchanged-task panel after exposing the transfer policy to the full
-official radius range, and the unchanged failure set includes both short and
-long radii. No development policy has reached the official objective because
-the strongest result is 194/200 on a development panel rather than the
-terminal assessment.
+**Open questions:** It remains unresolved whether a continuous, unwrapped
+inverse-kinematics representation improves the negative-angle failures without
+broad regression, how much of any result is due to initialization variance, and
+whether the remaining failures are primarily representational, controllability,
+or reachability limitations. No development policy has reached the official
+objective because the strongest result is 194/200 on a development panel rather
+than the terminal assessment.
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 1
 
