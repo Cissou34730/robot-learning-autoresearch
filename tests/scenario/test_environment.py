@@ -17,10 +17,6 @@ from robot_learning.scenario.environment import (
     make_evaluation_env,
     make_training_env,
 )
-from robot_learning.scenario.observations import (
-    OBSERVATION_SIZE,
-    TARGET_RADIUS_SCALE,
-)
 
 
 def test_observation_matches_declared_space():
@@ -29,12 +25,12 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_training_distribution_covers_the_official_radius_range():
+def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
 
     assert training.target_radius_range == TRAINING_TARGET_RADIUS_RANGE
-    assert training.target_radius_range == final_contract.TARGET_RADIUS_RANGE
+    assert training.target_radius_range == (0.14, 0.20)
     assert evaluation.target_radius_range == final_contract.TARGET_RADIUS_RANGE
 
 
