@@ -44,7 +44,14 @@
   "campaign_experiment_counters": {
     "b8641d46-760b-4fa7-8933-fc9078535fca": 2
   },
-  "final_benchmark_review": null,
+  "final_benchmark_review": {
+    "artifact": "research/checkpoints/retained/b8641d46-760b-4fa7-8933-fc9078535fca/e2-cada55eb5-9f68131293160468de1a8f2c2565b142faa9368ce7aa6559d9db1046dfa6f724",
+    "decision": "REJECT_FINAL",
+    "experiment": 2,
+    "fingerprint": "9f68131293160468de1a8f2c2565b142faa9368ce7aa6559d9db1046dfa6f724",
+    "rationale": "Review unavailable: best-known lineage must identify two evaluation artifacts",
+    "selected": "best_known"
+  },
   "last_allocated_experiment": 2,
   "last_experiment": 2,
   "last_lineage_decision": {
@@ -58,55 +65,14 @@
     "experiment": 2,
     "reason": "The 100352-step checkpoint is the strongest measured policy: it achieved 98% (196/200) on the protected task-reference panel, ahead of 96% at 95232 and 97% at the final 120832-step checkpoint. This is development evidence rather than the official result, so assess this frozen candidate on the distinct official panel."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
+  "last_verdict": "final benchmark rejected by isolated evidence review",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/b8641d46-760b-4fa7-8933-fc9078535fca/e2-cada55eb5-9f68131293160468de1a8f2c2565b142faa9368ce7aa6559d9db1046dfa6f724",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/b8641d46-760b-4fa7-8933-fc9078535fca/e2-cada55eb5-9f68131293160468de1a8f2c2565b142faa9368ce7aa6559d9db1046dfa6f724",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [
-        "research/evaluations/b8641d46-760b-4fa7-8933-fc9078535fca/task-reference-b8641d46-760b-4fa7-8933-fc9078535fca-experiment-2-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "9f68131293160468de1a8f2c2565b142faa9368ce7aa6559d9db1046dfa6f724",
-      "origin_experiment": 2,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the highest directly measured task success in the campaign at 98% on the protected development panel.",
-      "scientific_commit": "15068aaf3aa08853677721f35543da039d0a32ba",
-      "training_steps": 100352
-    },
-    "experiment": 2,
-    "fingerprint": "9f68131293160468de1a8f2c2565b142faa9368ce7aa6559d9db1046dfa6f724",
-    "selected": "best_known"
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "15068aaf3aa08853677721f35543da039d0a32ba",
