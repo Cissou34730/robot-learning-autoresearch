@@ -3,34 +3,35 @@
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success, or 196/200
-episodes, on the official full-range reach-and-hold task. The unchanged fresh PPO
-recipe learned a useful policy whose best measured development checkpoint reached
-97.0% (194/200) at step 100352, but the later step-120832 checkpoint reached
-96.5%. The transfer recipe that added 25% focused exposure to the -150 to -115
-degree sector did not improve unchanged-task success: its measured checkpoints
-were 88.0%, 84.5%, and 83.5%. The experiment-1 checkpoint-100352 policy remains
-the strongest measured lineage.
+episodes, on the official full-range reach-and-hold task. Unchanged fresh PPO
+produced a useful but below-objective policy: its best measured development
+checkpoint reached 97.0% (194/200) at step 100352, while the later step-120832
+checkpoint reached 96.5%. A fresh replication of the same recipe reached only
+29.5% and 44.5% at those two positions, so the near-objective result is not a
+reliable estimate of the recipe's typical outcome. The experiment-1
+checkpoint-100352 policy remains the strongest measured lineage.
 
 **Lessons and limits:** Task success on the fixed 200-episode development panel,
 not training reward or training success, supports policy-progress claims. The
-baseline's six failures at step 100352 form a negative-angle cluster from
--122.1 to -145.4 degrees; five never entered tolerance and one held for only one
-step. The step-120832 baseline retained that cluster and added a brief failure at
-102.7 degrees. The focused transfer run recovered five of those six episode
-seeds, but created many failures across other angles and had only 84.5% success
-at the corresponding step. Its training success rose to 0.91 while measured task
-success fell, so the proxy did not establish task progress. The baseline uses a
-14-20 cm training-radius range while the official task spans 6-20 cm, making
-coverage plausible but unproven. The evidence is single-seed for the unchanged
-recipe, the target-geometry diagnostics do not establish a causal mechanism, and
-unmeasured checkpoints remain unknown.
+best unchanged policy's six failures cluster at negative target angles from
+-122.1 to -145.4 degrees, but the evidence does not identify whether coverage,
+representation, or control causes them. The training distribution covers only
+14-20 cm although the official task covers 6-20 cm. Focused transfer toward the
+negative-angle sector recovered five of those six episode seeds but regressed
+many other cases, reaching 84.5% at the corresponding checkpoint; its rising
+training proxies therefore did not establish task progress. The full-angle
+policy I/O and task mechanics are shared across these comparisons, while
+training-distribution changes and fresh-seed effects remain confounded with
+learning dynamics. Measurements cover only selected checkpoints and one fixed
+200-episode development panel.
 
-**Open questions:** It remains unresolved whether the residual negative-angle
-failures reflect insufficient coverage, a learned representation limitation, or
-another control limitation. The reproducibility and seed variance of the
-near-objective unchanged PPO result are also unknown, as is whether another
-training seed can reach or exceed the objective without the broad regression
-seen under focused transfer training.
+**Open questions:** It is unresolved whether exposing the unchanged policy to
+the full official radius range improves generalization while preserving its
+angle coverage, whether the residual negative-angle failures are radius-related,
+and how much of the result variance comes from initialization. It is also
+unknown whether any development policy has reached the official objective,
+because the strongest result is 194/200 on a development panel rather than the
+terminal assessment.
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 1
 
