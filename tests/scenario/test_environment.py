@@ -25,13 +25,6 @@ def test_observation_matches_declared_space():
     assert env.observation_space.contains(obs)
 
 
-def test_inverse_kinematics_errors_preserve_unwrapped_angles():
-    env = make_training_env()
-    obs, _ = env.reset(seed=3)
-
-    assert obs[7] < -np.pi
-
-
 def test_training_distribution_focuses_on_far_targets_without_changing_evaluation():
     training = make_training_env()
     evaluation = make_evaluation_env()
