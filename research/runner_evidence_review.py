@@ -89,7 +89,7 @@ def _parse_response(response: str) -> tuple[str, str]:
 async def _request_review(
     working_directory: Path, model_identifier: str, evidence_paths: list[str]
 ) -> str:
-    from copilot import CopilotClient, ToolSet
+    from copilot import CopilotClient, PermissionHandler, ToolSet
     from copilot.session_events import (
         AssistantMessageData,
         SessionErrorData,
@@ -116,6 +116,9 @@ async def _request_review(
         session = await client.create_session(
             model=REVIEW_MODEL,
             on_event=on_event,
+            # Only "view" is available, so approving every request only ever
+            # grants read access to the isolated evidence bundle.
+            on_permission_request=PermissionHandler.approve_all,
             available_tools=ToolSet().add_builtin(["view"]),
             working_directory=str(working_directory),
             streaming=False,
