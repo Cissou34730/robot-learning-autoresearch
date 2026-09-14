@@ -1444,6 +1444,10 @@ def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
         lambda model: {"goal_reached": False, "model": str(model)},
     )
+    monkeypatch.setattr(
+        "research.runner_evidence_review.review_final_benchmark_evidence",
+        lambda lineage: {"decision": "APPROVE_FINAL", "rationale": "Evidence is sufficient."},
+    )
 
     assert execute_pending_final_benchmark() == 0
 
@@ -1458,6 +1462,113 @@ def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
     assert persisted["official_benchmark_verdict"] == "goal_not_reached"
     assert persisted["terminal_campaign_status"] == "goal_not_reached"
     assert not (tmp_path / "GOAL_REACHED").exists()
+
+
+def test_v4_final_benchmark_rejection_returns_campaign_to_research(monkeypatch, tmp_path):
+    artifact = _artifact(tmp_path / "archive" / "best-known")
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    fingerprint = artifact_fingerprint(artifact)
+    best_known = {
+        "artifact": "archive/best-known",
+        "fingerprint": fingerprint,
+        "origin_experiment": 8,
+        "candidate": "candidate",
+        "parameters": {},
+        "scientific_commit": "abc123",
+        "training_steps": 120_000,
+        "evaluation_artifacts": [],
+        "reason": "Measured model selected for official assessment.",
+    }
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 4,
+                "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+                "working_lineage": best_known.copy(),
+                "best_known_lineage": best_known.copy(),
+                "retained_lineages": [],
+                "pending_final_benchmark": {
+                    "experiment": 8,
+                    "selected": "best_known",
+                    "artifact": best_known["artifact"],
+                    "fingerprint": fingerprint,
+                    "best_known": best_known.copy(),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "research.runner_evidence_review.review_final_benchmark_evidence",
+        lambda lineage: {"decision": "REJECT_FINAL", "rationale": "Failures cluster."},
+    )
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        lambda model: pytest.fail("rejected evidence must not run the official benchmark"),
+    )
+
+    assert execute_pending_final_benchmark() == 0
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["pending_final_benchmark"] is None
+    assert persisted.get("terminal_campaign_status") is None
+    assert persisted["final_benchmark_review"]["decision"] == "REJECT_FINAL"
+    assert persisted["final_benchmark_review"]["rationale"] == "Failures cluster."
+
+
+def test_v4_final_benchmark_reviewer_failure_is_fail_closed(monkeypatch, tmp_path):
+    artifact = _artifact(tmp_path / "archive" / "best-known")
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    fingerprint = artifact_fingerprint(artifact)
+    best_known = {
+        "artifact": "archive/best-known",
+        "fingerprint": fingerprint,
+        "origin_experiment": 8,
+        "candidate": "candidate",
+        "parameters": {},
+        "scientific_commit": "abc123",
+        "training_steps": 120_000,
+        "evaluation_artifacts": [],
+        "reason": "Measured model selected for official assessment.",
+    }
+    state_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 4,
+                "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+                "working_lineage": best_known.copy(),
+                "best_known_lineage": best_known.copy(),
+                "retained_lineages": [],
+                "pending_final_benchmark": {
+                    "experiment": 8,
+                    "selected": "best_known",
+                    "artifact": best_known["artifact"],
+                    "fingerprint": fingerprint,
+                    "best_known": best_known.copy(),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "research.runner_evidence_review.review_final_benchmark_evidence",
+        lambda lineage: {
+            "decision": "REJECT_FINAL",
+            "rationale": "Review unavailable: timed out",
+        },
+    )
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        lambda model: pytest.fail("a failed review must not run the official benchmark"),
+    )
+
+    assert execute_pending_final_benchmark() == 0
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["final_benchmark_review"]["rationale"] == "Review unavailable: timed out"
 
 
 def test_v4_final_benchmark_rejects_a_pending_request_that_does_not_match_best_known(

@@ -815,6 +815,12 @@ def _render_v4_research_brief(
     ]
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
+    review = state.get("final_benchmark_review")
+    if isinstance(review, dict):
+        lines.append(
+            f"- Latest final-benchmark review: {review.get('decision', 'unrecorded')}"
+        )
+        lines.append(f"- Reviewer rationale: {review.get('rationale', 'unrecorded')}")
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
