@@ -33,25 +33,38 @@ Return exactly one decision:
 """
 
 
-def _copy_review_bundle(best_known: dict, destination: Path) -> str:
+def _copy_review_bundle(best_known: dict, destination: Path) -> tuple[str, list[str]]:
     objective = paths.RESEARCH_DIR / "scenario.md"
     if not objective.is_file():
         raise RuntimeError("the campaign objective is unavailable for evidence review")
     evidence = best_known.get("evaluation_artifacts")
-    if not isinstance(evidence, list) or len(evidence) != 2:
-        raise ValueError("best-known lineage must identify two evaluation artifacts")
+    if not isinstance(evidence, list) or not evidence:
+        raise ValueError("best-known lineage must identify evaluation artifacts")
 
+    destination.mkdir(parents=True, exist_ok=True)
     shutil.copy2(objective, destination / "scenario.md")
     evidence_directory = destination / "evaluations"
     evidence_directory.mkdir()
+    copied_paths = ["scenario.md"]
     for index, relative_path in enumerate(evidence, start=1):
         source = repository.resolve_repo_path(str(relative_path))
         if not source.is_file():
             raise RuntimeError(
                 f"best-known evaluation artifact is unavailable: {relative_path}"
             )
-        shutil.copy2(source, evidence_directory / f"{index}-{source.name}")
-    return str(best_known.get("candidate") or best_known.get("fingerprint"))
+        copied_path = f"evaluations/evaluation-{index:03}.json"
+        shutil.copy2(source, destination / copied_path)
+        copied_paths.append(copied_path)
+    return str(best_known.get("candidate") or best_known.get("fingerprint")), copied_paths
+
+
+def _review_message(model_identifier: str, evidence_paths: list[str]) -> str:
+    files = "\n".join(f"- {path}" for path in evidence_paths)
+    return (
+        f"Current best-known model identifier: {model_identifier}\n\n"
+        "Read every listed file with the view tool before deciding:\n"
+        f"{files}\n\n{REVIEW_PROMPT}"
+    )
 
 
 def _decision(response: str) -> str:
@@ -61,7 +74,9 @@ def _decision(response: str) -> str:
     return decisions.pop()
 
 
-async def _request_review(working_directory: Path, model_identifier: str) -> str:
+async def _request_review(
+    working_directory: Path, model_identifier: str, evidence_paths: list[str]
+) -> str:
     from copilot import CopilotClient, ToolSet
     from copilot.session_events import (
         AssistantMessageData,
@@ -98,9 +113,7 @@ async def _request_review(working_directory: Path, model_identifier: str) -> str
             enable_mcp_apps=False,
         )
         try:
-            await session.send(
-                f"Current best-known model identifier: {model_identifier}\n\n{REVIEW_PROMPT}"
-            )
+            await session.send(_review_message(model_identifier, evidence_paths))
             await asyncio.wait_for(completed.wait(), timeout=REVIEW_TIMEOUT_SECONDS)
         except TimeoutError as error:
             await session.abort()
@@ -119,8 +132,8 @@ def review_final_benchmark_evidence(best_known: dict) -> dict:
     with tempfile.TemporaryDirectory(prefix="robot-learning-final-review-") as temporary:
         directory = Path(temporary)
         try:
-            identifier = _copy_review_bundle(best_known, directory)
-            response = asyncio.run(_request_review(directory, identifier))
+            identifier, evidence_paths = _copy_review_bundle(best_known, directory)
+            response = asyncio.run(_request_review(directory, identifier, evidence_paths))
             return {"decision": _decision(response), "rationale": response}
         except Exception as error:  # noqa: BLE001 - review failures must close the gate.
             return {

@@ -308,13 +308,22 @@ while ($true) {
 
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
     if ($null -ne $researchState.pending_final_benchmark) {
-        Write-Status "=== Evaluating the committed accepted lineage on the final benchmark ==="
         uv run python research/run_experiment.py --evaluate-pending-final
         if ($LASTEXITCODE -ne 0) {
             throw "Final benchmark failed. The committed lineage remains pending for recovery."
         }
+        $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
         Update-ResearchBrief
-        Write-Status "=== Final benchmark complete ===" Green
+        if ($null -ne $researchState.official_benchmark_verdict) {
+            Write-Status "=== Final benchmark complete: $($researchState.official_benchmark_verdict) ===" Green
+        }
+        elseif ($researchState.final_benchmark_review.decision -eq "REJECT_FINAL") {
+            Write-Status "=== Official final benchmark was not run ===" Yellow
+            Write-Status "=== Campaign continues ===" Yellow
+        }
+        else {
+            throw "Final benchmark review completed without an official verdict or rejection record."
+        }
         continue
     }
 

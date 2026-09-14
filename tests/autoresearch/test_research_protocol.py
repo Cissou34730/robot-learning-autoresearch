@@ -1448,6 +1448,8 @@ def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
         "research.runner_evidence_review.review_final_benchmark_evidence",
         lambda lineage: {"decision": "APPROVE_FINAL", "rationale": "Evidence is sufficient."},
     )
+    printed = []
+    monkeypatch.setattr("research.runner_console.announce", printed.append)
 
     assert execute_pending_final_benchmark() == 0
 
@@ -1461,6 +1463,13 @@ def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
     }
     assert persisted["official_benchmark_verdict"] == "goal_not_reached"
     assert persisted["terminal_campaign_status"] == "goal_not_reached"
+    assert printed == [
+        "isolated final-benchmark evidence review started",
+        "review decision: APPROVE_FINAL",
+        "review rationale: Evidence is sufficient.",
+        "review approved; running official final benchmark",
+        "final benchmark complete: goal_not_reached",
+    ]
     assert not (tmp_path / "GOAL_REACHED").exists()
 
 
@@ -1508,6 +1517,8 @@ def test_v4_final_benchmark_rejection_returns_campaign_to_research(monkeypatch, 
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
         lambda model: pytest.fail("rejected evidence must not run the official benchmark"),
     )
+    printed = []
+    monkeypatch.setattr("research.runner_console.announce", printed.append)
 
     assert execute_pending_final_benchmark() == 0
 
@@ -1516,6 +1527,13 @@ def test_v4_final_benchmark_rejection_returns_campaign_to_research(monkeypatch, 
     assert persisted.get("terminal_campaign_status") is None
     assert persisted["final_benchmark_review"]["decision"] == "REJECT_FINAL"
     assert persisted["final_benchmark_review"]["rationale"] == "Failures cluster."
+    assert printed == [
+        "isolated final-benchmark evidence review started",
+        "review decision: REJECT_FINAL",
+        "review rationale: Failures cluster.",
+        "official final benchmark was not run",
+        "campaign continues",
+    ]
 
 
 def test_v4_final_benchmark_reviewer_failure_is_fail_closed(monkeypatch, tmp_path):
