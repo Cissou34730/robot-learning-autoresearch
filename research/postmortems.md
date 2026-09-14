@@ -2,27 +2,31 @@
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned a useful reach-and-hold
-policy, but the strongest measured checkpoint reached 97.0%, below the 98%
-campaign objective. Performance peaked at checkpoint-100352 and declined
-slightly by checkpoint-120832. The late-checkpoint failures include a persistent
-cluster of target angles near -122 to -145 degrees, which is a useful diagnostic
-signal but does not establish the underlying cause.
+**Current synthesis:** The campaign objective is at least 98% success on the
+official full-range reach-and-hold task. The fresh PPO baseline learned a useful
+policy, but its strongest measured development checkpoint reached 97.0% (194/200)
+at checkpoint-100352, below the objective. Performance then declined slightly to
+96.5% at checkpoint-120832. Six failures persisted across those two checkpoints
+in a target-angle cluster from -122.1 to -145.4 degrees, while the later
+checkpoint added one different failure.
 
 **Lessons and limits:** Measured task success, rather than training reward or
 training success, supports claims of policy progress. On the shared 200-episode
 development panel, checkpoint-100352 outperformed checkpoint-90112 (97.0% versus
-93.0%) and was slightly better than checkpoint-120832 (97.0% versus 96.5%).
-These are development measurements from one panel, not the official assessment,
-and the paired comparison with checkpoint-120832 had only one discordant
-episode. The baseline shows that the unchanged recipe can approach the target,
-but does not show that additional training is monotonic or sufficient.
+93.0%) and checkpoint-120832 (97.0% versus 96.5%); the late paired comparison
+had only one discordant episode. Detailed diagnostics show that five of the six
+persistent failures never reached tolerance, while one reached it briefly and
+lost the hold. The baseline trained with a far-target radius range while the
+official task spans 6-20 cm, so coverage is a plausible but unproven contributor.
+These are single-seed development measurements from one panel, not the official
+assessment, and the unmeasured checkpoints remain unknown.
 
-**Open questions:** It remains unknown whether the negative-angle failure
-cluster is caused by the learned representation, reward/training coverage, or
-another control limitation, and whether the measured peak generalizes to the
-task-reference panel. Future work should target the residual failures without
-treating this diagnostic pattern as a proven mechanism.
+**Open questions:** It remains unresolved whether the persistent negative-angle
+failures arise from insufficient training coverage, a learned representation
+limitation, or another control limitation. It is also unknown whether the
+97.0% peak generalizes beyond the development panel and whether broader,
+sector-focused exposure changes the residual failures without creating failures
+elsewhere.
 
 ## 045ec01f-613e-4cd7-9cac-4b3c512b0f94 / Experiment 1
 
