@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/a82df388-883d-4362-b081-0c03c09f4dc5/e4-ca6256462-9d7c4a744258c0a24d4b82ae8ce0c60202ce3f76923a7896806be247b679c29a",
-    "candidate": "checkpoint-30720",
-    "evaluation_artifacts": [
-      "research/evaluations/a82df388-883d-4362-b081-0c03c09f4dc5/evaluation-a82df388-883d-4362-b081-0c03c09f4dc5-experiment-4-checkpoint-30720-200ep-seed0-8df2da1a0aff.json",
-      "research/evaluations/a82df388-883d-4362-b081-0c03c09f4dc5/task-reference-a82df388-883d-4362-b081-0c03c09f4dc5-experiment-4-checkpoint-30720-task-reference-v1.json"
-    ],
-    "fingerprint": "9d7c4a744258c0a24d4b82ae8ce0c60202ce3f76923a7896806be247b679c29a",
-    "origin_experiment": 4,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Promote checkpoint-30720 because its 97.5% protected task-reference and 96.5% researcher-panel results are higher than the existing best-known checkpoint and the later experiment-4 checkpoint on the available development measurements.",
-    "scientific_commit": "ef34f995d19a9092c8851b8ba409ec2a963a32fb",
-    "training_steps": 267264
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "ebeb3d7ad84154276bf07e1377e6e3d097abef27",
-    "id": "a82df388-883d-4362-b081-0c03c09f4dc5",
-    "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-15T09:43:53.604316+00:00"
+    "base_commit": "9372fcab3f7828705635d0facdf567bea4a99703",
+    "id": "8b90fea8-b848-4455-9c37-b4b50e0123a4",
+    "recipe_source_commit": null,
+    "started_at": "2026-09-15T14:35:27.479915+00:00"
   },
   "campaign_experiment_counters": {
-    "a82df388-883d-4362-b081-0c03c09f4dc5": 5
+    "8b90fea8-b848-4455-9c37-b4b50e0123a4": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 5 made no scientific code or parameter changes. Keep the complete experiment-4 residual-sector-focused recipe associated with the selected working lineage."
-    },
-    "code_parent_commit": "8c28ef9b45acb50271dd3e83f41e43181ed2da0f",
-    "continue_from": "working",
-    "experiment": 5,
-    "reason": "Close experiment 5 on the existing working policy. Unchanged continuation preserved the experiment-4 task-reference result at checkpoint-100352 with 195/200 (97.5%), but did not exceed it, scored 192/200 (96.0%) on the researcher panel versus 193/200 (96.5%) for experiment-4 checkpoint-30720, and ended at 189/200 (94.5%) on task-reference. The measured evidence therefore provides no basis to replace the existing working or best-known lineage, and the development result remains below the human objective."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,50 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "8c28ef9b45acb50271dd3e83f41e43181ed2da0f",
-    "experiment": 5,
-    "scientific_commit": "ca22dfc21164256095686dc6ca80c6db5bf68adb"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/a82df388-883d-4362-b081-0c03c09f4dc5/e4-ca6256462-9d7c4a744258c0a24d4b82ae8ce0c60202ce3f76923a7896806be247b679c29a",
-    "candidate": "checkpoint-30720",
-    "evaluation_artifacts": [
-      "research/evaluations/a82df388-883d-4362-b081-0c03c09f4dc5/evaluation-a82df388-883d-4362-b081-0c03c09f4dc5-experiment-4-checkpoint-30720-200ep-seed0-8df2da1a0aff.json"
-    ],
-    "fingerprint": "9d7c4a744258c0a24d4b82ae8ce0c60202ce3f76923a7896806be247b679c29a",
-    "origin_experiment": 4,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Close experiment 5 on the existing working policy. Unchanged continuation preserved the experiment-4 task-reference result at checkpoint-100352 with 195/200 (97.5%), but did not exceed it, scored 192/200 (96.0%) on the researcher panel versus 193/200 (96.5%) for experiment-4 checkpoint-30720, and ended at 189/200 (94.5%) on task-reference. The measured evidence therefore provides no basis to replace the existing working or best-known lineage, and the development result remains below the human objective.",
-    "scientific_commit": "ef34f995d19a9092c8851b8ba409ec2a963a32fb",
-    "training_steps": 267264
-  }
+  "working_lineage": null
 }
