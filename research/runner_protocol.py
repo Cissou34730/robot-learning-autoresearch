@@ -812,7 +812,8 @@ def validate_evaluation_request(
         if not isinstance(selection, str) or not selection.strip():
             raise ValueError(
                 f"{instrument} requires a non-empty selection stating why this "
-                "model is useful for the current scientific question"
+                "model is useful for the current scientific question and naming "
+                "the strongest omitted alternative"
             )
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]

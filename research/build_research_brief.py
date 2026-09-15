@@ -415,22 +415,22 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
         common_parts = common_parts[:common_length]
     common_parent = Path(*common_parts) if common_parts else None
     measured = sum(bool(candidate.get("evaluations")) for candidate in candidates)
-    steps = [int(candidate.get("timesteps", 0)) for candidate in candidates]
-    checkpoint_label = "checkpoint" if len(candidates) == 1 else "checkpoints"
+    label = "candidate" if len(candidates) == 1 else "candidates"
     lines = [
-        f"- Checkpoint inventory: {len(candidates)} {checkpoint_label} "
-        f"({measured} measured, {len(candidates) - measured} unmeasured); steps "
-        f"{min(steps):,}-{max(steps):,}."
+        (
+            f"- Candidate inventory: {len(candidates)} {label} "
+            f"({measured} measured, {len(candidates) - measured} unmeasured)."
+        )
     ]
     if common_parent is not None:
         lines.append(
-            "- Inspect checkpoint identifiers, training metrics, and artifacts in "
-            f"{_recorded_path((common_parent / 'inventory.json').as_posix())}."
+            "- Inspect candidate identifiers, training steps, training metrics, and "
+            f"artifacts in {_recorded_path((common_parent / 'inventory.json').as_posix())}."
         )
     else:
         lines.append(
-            "- Inspect checkpoint identifiers, training metrics, and artifacts in "
-            f"{_recorded_path('research/research_state.json')}."
+            "- Inspect candidate identifiers, training steps, training metrics, and "
+            f"artifacts in {_recorded_path('research/research_state.json')}."
         )
     return lines
 
@@ -606,7 +606,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
             "- Parameter differences from `best_known`: "
             + _parameter_differences(current_params, best_known),
             "",
-            "### Current experiment checkpoint inventory",
+            "### Current experiment candidate inventory",
             "",
         ]
     )
@@ -618,7 +618,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
     if candidates:
         lines.extend(_checkpoint_inventory_lines(candidates))
     else:
-        lines.append("No current experiment checkpoints are recorded.")
+        lines.append("No current experiment candidates are recorded.")
     return lines
 
 
@@ -798,7 +798,7 @@ def _render_v4_research_brief(
         result = pending.get("result", {})
         candidates = sorted(
             pending.get("candidates", []),
-            key=lambda item: int(item.get("timesteps", 0)),
+            key=lambda item: str(item.get("name", "")),
         )
         measured = [candidate for candidate in candidates if candidate.get("evaluations")]
         unmeasured = [candidate for candidate in candidates if not candidate.get("evaluations")]
@@ -812,21 +812,17 @@ def _render_v4_research_brief(
             ) if pending.get("training_log_paths") else "- Raw training logs: unmeasured",
         ])
         if unmeasured:
-            steps = [int(candidate.get("timesteps", 0)) for candidate in candidates]
             lines.append(
-                f"- Unmeasured checkpoints: {len(unmeasured)} of {len(candidates)}; "
-                f"steps {min(steps):,}-{max(steps):,}."
+                f"- Unmeasured candidates: {len(unmeasured)} of {len(candidates)}."
             )
         if measured:
-            parent_steps = int(pending.get("parent_training_steps", 0))
             lines.extend([
                 "",
-                "| Checkpoint | Local steps | Accumulated steps | Measurements |",
-                "|---|---:|---:|---|",
+                "| Candidate | Measurements |",
+                "|---|---|",
             ])
             for candidate in measured:
-                local_steps = int(candidate.get("timesteps", 0))
-                lines.append(f"| `{candidate.get('name', '-')}` | {local_steps:,} | {parent_steps + local_steps:,} | {_v4_measurements(candidate)} |")
+                lines.append(f"| `{candidate.get('name', '-')}` | {_v4_measurements(candidate)} |")
     elif latest:
         lines.extend([
             f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",

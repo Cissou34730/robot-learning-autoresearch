@@ -1658,7 +1658,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                         candidate_dir,
                         remaining_timesteps,
                         training_seed,
-                        reusable / "final_checkpoint" / "model.zip",
+                        reusable / "model.zip",
                         active_training_log(),
                         label=(
                             "resumed baseline training"

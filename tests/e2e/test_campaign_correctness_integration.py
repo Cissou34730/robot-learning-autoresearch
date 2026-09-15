@@ -173,8 +173,8 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
         del training_log
         marker = f"experiment-{len(training_calls) + 1}".encode()
         training_calls.append((timesteps, seed, resume, kwargs["label"]))
-        artifact = output_dir / "final_checkpoint"
-        artifact.mkdir(parents=True)
+        artifact = output_dir
+        artifact.mkdir(parents=True, exist_ok=True)
         artifact.joinpath("model.zip").write_bytes(marker)
         artifact.joinpath("artifact.json").write_text(
             json.dumps({"completed": True, "timesteps": timesteps}),

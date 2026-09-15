@@ -117,7 +117,7 @@ def comparison_metrics(campaign: dict) -> dict:
         candidate
         for r in rows
         for candidate in {m.get("candidate", "") for m in measurements(r)}
-        if candidate.startswith("checkpoint-")
+        if candidate.startswith(("checkpoint-", "candidate-"))
     )
     evidence = [m for r in rows for m in measurements(r)]
     final = [

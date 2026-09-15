@@ -173,10 +173,47 @@ class TestArchiveCandidatesWithCampaign:
             campaign_id="campaign-a",
         )
 
+        expected = (
+            "candidate-" + runner_repository.artifact_fingerprint(candidate)[:8]
+        )
+        assert archived[0]["name"] == expected
+        assert archived[0]["timesteps"] == 10
         assert archived[0]["artifact"] == (
-            "research/checkpoints/challengers/campaign-a/experiment-4/checkpoint-10"
+            f"research/checkpoints/challengers/campaign-a/experiment-4/{expected}"
         )
         assert "\\" not in archived[0]["artifact"]
+
+    def test_archive_candidates_names_are_position_neutral_and_unique(
+        self, monkeypatch, tmp_path
+    ):
+        root = tmp_path / "repo"
+        monkeypatch.setattr("research.runner_paths.ROOT", root)
+        monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", root / "research")
+        contenders = []
+        for steps, payload in ((5120, b"a"), (120832, b"b"), (60416, b"a")):
+            candidate = tmp_path / f"src-{steps}"
+            candidate.mkdir()
+            (candidate / "model.zip").write_bytes(payload)
+            (candidate / "artifact.json").write_text("{}", encoding="utf-8")
+            contenders.append(
+                {
+                    "kind": "candidate",
+                    "name": f"checkpoint-{steps}",
+                    "path": candidate,
+                    "timesteps": steps,
+                }
+            )
+
+        archived = runner_repository.archive_candidates(
+            1, contenders, {}, campaign_id="campaign-b"
+        )
+
+        names = [item["name"] for item in archived]
+        assert len(set(names)) == 3
+        assert all(name.startswith("candidate-") for name in names)
+        assert not any(str(item["timesteps"]) in item["name"] for item in archived)
+        assert names[0][: len("candidate-") + 8] == names[2][: len("candidate-") + 8]
+        assert len(names[2]) > len(names[0])
 
 
 class TestExperimentNumberingScopedPerCampaign:

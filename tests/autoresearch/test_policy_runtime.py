@@ -275,14 +275,12 @@ def test_copy_and_identity_include_executable_contract(monkeypatch, tmp_path):
 def test_candidate_without_manifest_requires_its_runtime(tmp_path):
     from research.runner_execution import candidate_directories
 
-    directory = tmp_path / "final_checkpoint"
-    directory.mkdir()
-    (directory / "model.zip").write_bytes(b"weights")
-    (directory / "artifact.json").write_text('{"timesteps": 100}')
+    (tmp_path / "model.zip").write_bytes(b"weights")
+    (tmp_path / "artifact.json").write_text('{"timesteps": 100}')
     with pytest.raises(RuntimeError, match="policy_runtime.pkl"):
         candidate_directories(tmp_path)
-    (directory / "policy_runtime.pkl").write_bytes(b"runtime")
-    assert candidate_directories(tmp_path)[0]["path"] == directory
+    (tmp_path / "policy_runtime.pkl").write_bytes(b"runtime")
+    assert candidate_directories(tmp_path)[0]["path"] == tmp_path
 
 
 def test_real_sb3_checkpoint_preserves_normalization_and_prediction(

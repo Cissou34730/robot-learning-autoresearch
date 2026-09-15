@@ -505,20 +505,20 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     )[0]
 
     assert latest.count("| `checkpoint-") == 1
-    assert "| `checkpoint-10240` | 10,240 |" in latest
-    assert "Unmeasured checkpoints: 23 of 24; steps 5,120-122,880" in latest
+    assert "| `checkpoint-10240` | development" in latest
+    assert "Unmeasured candidates: 23 of 24." in latest
+    assert "steps 5,120" not in latest
+    assert "Local steps" not in latest
     assert "Training proxy observations" not in latest
     assert "Training facts" not in latest
     assert "training success" not in latest
     assert "reward 4" not in latest
     inventory = brief.split(
-        "### Current experiment checkpoint inventory", 1
+        "### Current experiment candidate inventory", 1
     )[1].split("## Working lineage", 1)[0]
     assert "checkpoint-" not in inventory
-    assert (
-        "Checkpoint inventory: 24 checkpoints (1 measured, 23 unmeasured); "
-        "steps 5,120-122,880" in inventory
-    )
+    assert "Candidate inventory: 24 candidates (1 measured, 23 unmeasured)." in inventory
+    assert "steps" not in inventory.split("training steps", 1)[0]
     assert "`research/checkpoints/inventory.json`" in inventory
     assert "distinct models" not in inventory
     assert "training success" not in inventory
@@ -556,13 +556,12 @@ def test_v4_brief_requires_checkpoint_inventory_inspection(monkeypatch, tmp_path
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
 
     inventory = render_research_brief().split(
-        "### Current experiment checkpoint inventory", 1
+        "### Current experiment candidate inventory", 1
     )[1].split("## Working lineage", 1)[0]
-    assert (
-        "Checkpoint inventory: 5 checkpoints (0 measured, 5 unmeasured); "
-        "steps 5,120-120,832" in inventory
-    )
+    assert "Candidate inventory: 5 candidates (0 measured, 5 unmeasured)." in inventory
     assert "`research/checkpoints/inventory.json`" in inventory
+    assert "5,120" not in inventory
+    assert "120,832" not in inventory
     assert "checkpoint-5120" not in inventory
     assert "checkpoint-120832" not in inventory
     assert "training success" not in inventory
@@ -607,7 +606,7 @@ def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
         "## Current lineages and scientific recipes", 1
     )[0]
     inventory = brief.split(
-        "### Current experiment checkpoints available for measurement", 1
+        "### Current experiment candidate inventory", 1
     )[1].split("## Working lineage", 1)[0]
 
     assert "training success" not in latest
@@ -615,7 +614,7 @@ def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
     assert "checkpoint ranking" not in latest
     assert all(f"`checkpoint-{steps}`" not in inventory for steps in proxies)
     assert "`research/checkpoints/inventory.json`" in inventory
-    assert "steps 5,120-40,960" in inventory
+    assert "40,960" not in inventory
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):

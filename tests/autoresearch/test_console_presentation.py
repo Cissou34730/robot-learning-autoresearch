@@ -823,7 +823,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     )
     assert (
         "`checkpoint-current`"
-        not in section.split("### Current experiment checkpoint inventory", 1)[0]
+        not in section.split("### Current experiment candidate inventory", 1)[0]
     )
     for expected in (
         "Candidate: checkpoint-working",
@@ -839,8 +839,8 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
         "`alternate`",
         "`ppo.learning_rate`: lineage 0.0001; current 0.0003",
         "Parameter differences from `best_known`: none",
-        "- Checkpoint inventory: 1 checkpoint (0 measured, 1 unmeasured); steps 3,000-3,000.",
-        "- Inspect checkpoint identifiers, training metrics, and artifacts in `models/candidates/inventory.json`.",
+        "- Candidate inventory: 1 candidate (0 measured, 1 unmeasured).",
+        "- Inspect candidate identifiers, training steps, training metrics, and artifacts in `models/candidates/inventory.json`.",
     ):
         assert expected in section
     assert section.count("Candidate: checkpoint-working") == 1
@@ -922,7 +922,7 @@ def test_v4_brief_renders_absent_lineage_facts_as_not_recorded(monkeypatch, tmp_
     assert "Recorded evaluation artifacts: not recorded" in section
     assert "Parameter differences from `working`: not recorded" in section
     assert "Parameter differences from `best_known`: not recorded" in section
-    assert "No current experiment checkpoints are recorded." in section
+    assert "No current experiment candidates are recorded." in section
 
 
 def test_same_session_retries_reuse_context_while_initial_prompts_stay_grounded():

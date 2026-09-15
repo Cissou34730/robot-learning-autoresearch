@@ -78,8 +78,8 @@ Write `research/evaluation_request.json`:
   "measurements": [
     {
       "instrument": "<research_evaluation | task_reference>",
-      "candidate": "<model exposed by the brief>",
-      "selection": "<non-empty reason measuring this model is useful for the scientific question>",
+      "candidate": "<model exposed by the brief or listed in the candidate inventory>",
+      "selection": "<non-empty reason measuring this model is useful for the scientific question, naming the strongest omitted alternative and why this model is more informative>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -102,9 +102,11 @@ do not require a measurement request or limit an experiment or campaign.
 
 Every measurement requires its own non-empty `selection`. The request-level
 `reason` explains the round; `selection` explains why measuring that model is
-useful for the scientific question. Measurements of the same model may have
+useful for the scientific question and names the strongest omitted alternative
+for that purpose, on whatever inventory data the Researcher inspected, with why
+the chosen model is more informative. Measurements of the same model may have
 different selections. It need not claim that the model is superior to every
-alternative.
+alternative. The Runner checks that the field is present, not its content.
 
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,

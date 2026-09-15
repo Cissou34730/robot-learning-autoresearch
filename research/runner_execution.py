@@ -395,13 +395,14 @@ def remove_candidate_dir(path: Path) -> None:
 def candidate_directories(candidate_dir: Path) -> list[dict]:
     manifest_path = candidate_dir / "candidate_manifest.json"
     if not manifest_path.exists():
-        artifact = candidate_dir / "final_checkpoint"
-        metadata = json.loads((artifact / "artifact.json").read_text(encoding="utf-8"))
+        metadata = json.loads(
+            (candidate_dir / "artifact.json").read_text(encoding="utf-8")
+        )
         candidates = [
             {
-                "name": artifact.name,
+                "name": candidate_dir.name,
                 "timesteps": metadata["timesteps"],
-                "path": artifact,
+                "path": candidate_dir,
                 "training_success": metadata.get("training_success"),
                 "ep_rew_mean": metadata.get("ep_rew_mean"),
             }
@@ -425,9 +426,6 @@ def candidate_directories(candidate_dir: Path) -> list[dict]:
 
 def copy_candidate_outputs(source: Path, destination: Path) -> None:
     repository.copy_artifact(source, destination)
-    final_checkpoint = source / "final_checkpoint"
-    if final_checkpoint.exists():
-        repository.copy_artifact(final_checkpoint, destination / "final_checkpoint")
     manifest_path = source / "candidate_manifest.json"
     if not manifest_path.exists():
         return
@@ -435,8 +433,6 @@ def copy_candidate_outputs(source: Path, destination: Path) -> None:
     shutil.copyfile(manifest_path, destination / "candidate_manifest.json")
     for candidate in manifest["candidates"]:
         relative = Path(candidate["path"])
-        if relative == Path("final_checkpoint"):
-            continue
         shutil.copytree(source / relative, destination / relative)
 
 

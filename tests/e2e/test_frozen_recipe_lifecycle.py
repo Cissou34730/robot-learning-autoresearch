@@ -201,13 +201,12 @@ def test_continuation_restores_and_recovers_frozen_parent_recipe(monkeypatch, tm
         del seed, training_log, kwargs
         train_calls.append((timesteps, resume))
         assert resume == artifact / "model.zip"
-        final = output_dir / "final_checkpoint"
-        final.mkdir(parents=True)
-        final.joinpath("model.zip").write_bytes(b"continued")
-        final.joinpath("artifact.json").write_text(
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_dir.joinpath("model.zip").write_bytes(b"continued")
+        output_dir.joinpath("artifact.json").write_text(
             json.dumps({"timesteps": timesteps}), encoding="utf-8"
         )
-        final.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+        output_dir.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
         return 0.0
 
     monkeypatch.setattr(
@@ -398,13 +397,12 @@ def test_continuation_recovers_candidate_after_process_crash(
             "resumed_from": str(resume),
             "completed": completed,
         }
-        for destination in (output_dir, output_dir / "final_checkpoint"):
-            destination.mkdir(parents=True, exist_ok=True)
-            destination.joinpath("model.zip").write_bytes(b"continued")
-            destination.joinpath("artifact.json").write_text(
-                json.dumps(metadata), encoding="utf-8"
-            )
-            destination.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_dir.joinpath("model.zip").write_bytes(b"continued")
+        output_dir.joinpath("artifact.json").write_text(
+            json.dumps(metadata), encoding="utf-8"
+        )
+        output_dir.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
         return 0.0
 
     monkeypatch.setattr(
@@ -441,7 +439,7 @@ def test_continuation_recovers_candidate_after_process_crash(
         crashed_state["pending_training_operation"]["progress"] == "training_dispatched"
     )
     candidate = tmp_path / "models" / "candidates" / "campaign" / "experiment-1"
-    assert candidate.joinpath("final_checkpoint/model.zip").is_file()
+    assert candidate.joinpath("model.zip").is_file()
 
     monkeypatch.setattr(repository, "write_state", original_write)
     monkeypatch.setattr(execution, "remove_candidate_dir", original_remove)
