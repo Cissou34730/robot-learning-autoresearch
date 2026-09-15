@@ -43,9 +43,9 @@
     "started_at": "2026-09-15T05:16:23.949862+00:00"
   },
   "campaign_experiment_counters": {
-    "e396d2fc-96c5-4690-8031-b9a7969d0c0c": 3
+    "e396d2fc-96c5-4690-8031-b9a7969d0c0c": 4
   },
-  "last_allocated_experiment": 3,
+  "last_allocated_experiment": 4,
   "last_experiment": 3,
   "last_lineage_decision": {
     "best_known": null,
@@ -72,7 +72,7 @@
     "experiment": 3,
     "scientific_commit": "d3ef4abf94abd4d8b5ce3a9bd6b74e1d09f3ef73"
   },
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "be9760b057b19e55bb3ef432948079cfcd7c5053",
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
