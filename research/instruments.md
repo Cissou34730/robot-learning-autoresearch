@@ -94,6 +94,9 @@ Write `research/evaluation_request.json`:
 
 If the Researcher submits a measurement request, `measurements` must contain at
 least one entry. A request may name at most three distinct models.
+The three-model limit is an execution ceiling, not a target. A request using one
+or two models is complete when those models are sufficient for its stated
+scientific question.
 `paired_comparisons` is optional. These are request validation constraints; they
 do not require a measurement request or limit an experiment or campaign.
 

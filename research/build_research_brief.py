@@ -422,7 +422,7 @@ def _checkpoint_inventory_lines(
     if common_parent is not None:
         lines.append(f"- Artifact base path: {_recorded_path(common_parent.as_posix())}")
         lines.append(
-            f"- {len(candidates)} checkpoints available for measurement; steps "
+            f"- Checkpoint inventory: {len(candidates)} checkpoints; steps "
             f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
             f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}; "
             "each artifact is "
@@ -430,7 +430,7 @@ def _checkpoint_inventory_lines(
         )
     else:
         lines.append(
-            f"- {len(candidates)} checkpoints available for measurement; steps "
+            f"- Checkpoint inventory: {len(candidates)} checkpoints; steps "
             f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
             f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}"
         )
@@ -623,7 +623,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
             "- Parameter differences from `best_known`: "
             + _parameter_differences(current_params, best_known),
             "",
-            "### Current experiment checkpoints available for measurement",
+            "### Current experiment checkpoint inventory",
             "",
         ]
     )
