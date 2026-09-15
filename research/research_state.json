@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/e396d2fc-96c5-4690-8031-b9a7969d0c0c/e1-cada55eb5-f5717532af9e840746089a9d1a42b9ef64541242a30aab4875671d6ef43ac9f4",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/e396d2fc-96c5-4690-8031-b9a7969d0c0c/evaluation-e396d2fc-96c5-4690-8031-b9a7969d0c0c-experiment-1-checkpoint-100352-200ep-seed8300-6ba3ba6d7654.json",
-      "research/evaluations/e396d2fc-96c5-4690-8031-b9a7969d0c0c/task-reference-e396d2fc-96c5-4690-8031-b9a7969d0c0c-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "f5717532af9e840746089a9d1a42b9ef64541242a30aab4875671d6ef43ac9f4",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the strongest measured candidate across the independent research panel and the task-reference panel, with 97.0% and 98.0% success respectively.",
-    "scientific_commit": "d82255b333f04a601e84809bb841b8adb70ae8dc",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "cbf63901186711deb9b7ad5729c9d3b35ca4c8c6",
-    "id": "e396d2fc-96c5-4690-8031-b9a7969d0c0c",
-    "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-15T05:16:23.949862+00:00"
+    "base_commit": "9b663254ec79e7d855cffed9bcaa2fd77bf78ab1",
+    "id": "9aa54085-f9f7-4ad0-bbce-13ab3dae7199",
+    "recipe_source_commit": null,
+    "started_at": "2026-09-15T06:46:46.919680+00:00"
   },
   "campaign_experiment_counters": {
-    "e396d2fc-96c5-4690-8031-b9a7969d0c0c": 4
+    "9aa54085-f9f7-4ad0-bbce-13ab3dae7199": 0
   },
-  "last_allocated_experiment": 4,
-  "last_experiment": 3,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 3 was an unchanged replication with no researcher-owned source or parameter changes, so keep the unchanged PPO recipe for provenance."
-    },
-    "code_parent_commit": "bccc4257eda6326bcac4bb948387e4fb245629e7",
-    "continue_from": "working",
-    "experiment": 3,
-    "reason": "Experiment 3 made partial learning progress but did not reproduce the near-threshold experiment-1 policy: its best measured research-panel result was 47.5% and its best task-reference result was 49.5%. Keep the existing experiment-1 working lineage and continue development rather than request the irreversible official benchmark."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,50 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "bccc4257eda6326bcac4bb948387e4fb245629e7",
-    "experiment": 3,
-    "scientific_commit": "d3ef4abf94abd4d8b5ce3a9bd6b74e1d09f3ef73"
-  },
-  "pending_scientific_parent": "be9760b057b19e55bb3ef432948079cfcd7c5053",
+  "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/e396d2fc-96c5-4690-8031-b9a7969d0c0c/e1-cada55eb5-f5717532af9e840746089a9d1a42b9ef64541242a30aab4875671d6ef43ac9f4",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/e396d2fc-96c5-4690-8031-b9a7969d0c0c/evaluation-e396d2fc-96c5-4690-8031-b9a7969d0c0c-experiment-1-checkpoint-100352-200ep-seed8300-6ba3ba6d7654.json"
-    ],
-    "fingerprint": "f5717532af9e840746089a9d1a42b9ef64541242a30aab4875671d6ef43ac9f4",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 3 made partial learning progress but did not reproduce the near-threshold experiment-1 policy: its best measured research-panel result was 47.5% and its best task-reference result was 49.5%. Keep the existing experiment-1 working lineage and continue development rather than request the irreversible official benchmark.",
-    "scientific_commit": "d82255b333f04a601e84809bb841b8adb70ae8dc",
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
