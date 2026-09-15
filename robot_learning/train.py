@@ -10,7 +10,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
-from robot_learning.policy_runtime import frozen_scientific_modules
+from robot_learning.policy_runtime import RUNTIME_FILE, frozen_scientific_modules
 from robot_learning.scenario.environment import make_training_env
 from robot_learning.scenario.viewer import make_training_viewer_callback
 from robot_learning.training.candidate_checkpoint_callback import (
@@ -173,6 +173,19 @@ def main() -> None:
             json.dumps(artifact, indent=2, default=str) + "\n",
             encoding="utf-8",
         )
+        final_checkpoint = args.output_dir / "final_checkpoint"
+        final_checkpoint.mkdir()
+        shutil.copyfile(
+            args.output_dir / "last_model.zip", final_checkpoint / "model.zip"
+        )
+        shutil.copyfile(
+            args.output_dir / "last_vecnormalize.pkl",
+            final_checkpoint / "vecnormalize.pkl",
+        )
+        (final_checkpoint / "artifact.json").write_text(
+            json.dumps(artifact, indent=2, default=str) + "\n",
+            encoding="utf-8",
+        )
         shutil.copyfile(
             args.output_dir / "last_model.zip", args.output_dir / "model.zip"
         )
@@ -181,6 +194,7 @@ def main() -> None:
             args.output_dir / "vecnormalize.pkl",
         )
         export_runtime(args.output_dir, stats_path=args.output_dir / "vecnormalize.pkl")
+        shutil.copyfile(args.output_dir / RUNTIME_FILE, final_checkpoint / RUNTIME_FILE)
 
         candidates: list[dict] = []
         pool_dir = args.output_dir / "candidate_pool"
@@ -223,6 +237,15 @@ def main() -> None:
                 }
             )
 
+        final_steps = int(model.num_timesteps)
+        if not any(item["timesteps"] == final_steps for item in candidates):
+            candidates.append(
+                {
+                    "name": "final",
+                    "timesteps": final_steps,
+                    "path": "final_checkpoint",
+                }
+            )
         (args.output_dir / "candidate_manifest.json").write_text(
             json.dumps({"schema_version": 1, "candidates": candidates}, indent=2)
             + "\n",
