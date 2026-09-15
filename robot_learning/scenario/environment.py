@@ -30,7 +30,7 @@ from robot_learning.scenario.reward import reach_reward
 TRAINING_TARGET_RADIUS_RANGE = TARGET_RADIUS_RANGE
 TRAINING_FOCUSED_ANGLE_RANGE = (0.0, np.pi / 2.0)
 TRAINING_FOCUSED_RADIUS_RANGE = (0.18, 0.20)
-TRAINING_FOCUSED_ANGLE_PROBABILITY = 0.5
+TRAINING_FOCUSED_ANGLE_PROBABILITY = 0.25
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
