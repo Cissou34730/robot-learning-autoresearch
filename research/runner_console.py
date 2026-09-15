@@ -5,6 +5,7 @@ measured. It never adds a scientific conclusion of its own.
 """
 
 import sys
+import time
 from datetime import datetime
 
 _RESET = "\033[0m"
@@ -31,23 +32,96 @@ _SECTION_HEADINGS = frozenset(
         "Scientific recipe",
         "Retained alternatives",
         "Removed retained alternatives",
+        "Working lineage",
+        "Best-known model",
         "Final benchmark",
         "Hypothesis assessment",
     }
 )
 
+# A heartbeat is rewritten in place and reaches the log only on this cadence:
+# long enough that a run does not become a wall of near-identical counters,
+# short enough that a redirected log still shows the recent dynamics of a run.
+PROGRESS_ARCHIVE_SECONDS = 20.0
+
 
 def _style_card_sections(text: str) -> str:
     lines = text.splitlines(keepends=True)
     return "".join(
-        f"{_YELLOW}{line}{_RESET}"
-        if line.rstrip("\r\n") in _SECTION_HEADINGS
-        else line
+        f"{_YELLOW}{line}{_RESET}" if line.rstrip("\r\n") in _SECTION_HEADINGS else line
         for line in lines
     )
 
 
+class LiveProgress:
+    """The one line that is rewritten instead of appended.
+
+    Training and evaluation heartbeat every few seconds, and appending each one
+    buries the cards that carry the scientific facts. The live line is rewritten
+    where the terminal can do it, and reaches the log on a cadence. A phase
+    boundary forces it, so nothing that mattered is lost.
+    """
+
+    def __init__(
+        self,
+        stream=None,
+        archive_seconds: float = PROGRESS_ARCHIVE_SECONDS,
+    ) -> None:
+        self.archive_seconds = archive_seconds
+        self._stream = stream
+        self._live = ""
+        self._archived_at = float("-inf")
+
+    def _out(self):
+        # Resolved per call: whether stdout can be rewritten is not decided here.
+        return self._stream if self._stream is not None else sys.stdout
+
+    def line(self, message: str, *, archive: bool = False) -> None:
+        timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
+        text = f"{timestamp} {message}"
+        stream = self._out()
+        now = time.monotonic()
+        due = archive or now - self._archived_at >= self.archive_seconds
+        if not stream.isatty():
+            # Nothing can be rewritten, so only the archived snapshots survive.
+            if due:
+                self._archived_at = now
+                print(text, file=stream, flush=True)
+            return
+        if due:
+            self._archived_at = now
+            self._live = ""
+            stream.write(f"\r\033[K{text}\n")
+        else:
+            self._live = text
+            stream.write(f"\r\033[K{text}")
+        stream.flush()
+
+    def clear(self) -> None:
+        """Erase an unterminated status line so the next fact starts on its own."""
+        if not self._live:
+            return
+        self._live = ""
+        stream = self._out()
+        stream.write("\r\033[K")
+        stream.flush()
+
+    def archived(self) -> None:
+        """A durable line just reached the console, so the status line can wait."""
+        self._archived_at = time.monotonic()
+
+
+_progress = LiveProgress()
+
+
+def progress(message: str, *, archive: bool = False) -> None:
+    """Report a heartbeat that a later one supersedes."""
+    _progress.line(message, archive=archive)
+
+
 def announce(message: str) -> None:
+    _progress.clear()
+    _progress.archived()
     leading_break = "\n" if message.startswith("\n") else ""
     text = message.lstrip("\n")
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time

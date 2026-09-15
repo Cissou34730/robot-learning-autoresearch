@@ -449,6 +449,128 @@ def test_only_meaningful_events_reach_the_console(capsys):
     assert finished.is_set()
 
 
+def test_a_turn_reports_the_work_it_contained(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console("e3·proposal")
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    def emit(data):
+        on_event(SimpleNamespace(data=data))
+
+    emit(events.AssistantTurnStartData(turn_id="t1", model="gpt-5.6-luna"))
+    emit(
+        events.ToolExecutionStartData(
+            tool_call_id="call-1",
+            tool_name="view",
+            arguments={"path": "research/brief.md"},
+        )
+    )
+    emit(
+        events.ToolExecutionStartData(
+            tool_call_id="call-2", tool_name="rg", arguments={"pattern": "success_rate"}
+        )
+    )
+    emit(events.SessionWorkspaceFileChangedData(operation="modified", path="reward.py"))
+    emit(
+        events.AssistantUsageData(
+            model="gpt-5.6-luna", input_tokens=9_000, output_tokens=400
+        )
+    )
+    emit(events.AssistantTurnEndData(turn_id="t1"))
+
+    out = capsys.readouterr().out
+    assert "-- [e3·proposal] turn 1 · gpt-5.6-luna" in out
+    digest = out.splitlines()[-1]
+    assert digest.startswith("-- [e3·proposal] turn 1 · ")
+    assert "2 tools" in digest
+    assert "1 file" in digest
+    assert "out 400" in digest
+
+
+def test_a_turn_reports_only_what_happened_during_it(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console("e1·proposal")
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    def emit(data):
+        on_event(SimpleNamespace(data=data))
+
+    # Work that belongs to the previous turn must not be counted twice.
+    emit(
+        events.ToolExecutionStartData(
+            tool_call_id="call-1", tool_name="view", arguments={"path": "a.py"}
+        )
+    )
+    emit(
+        events.AssistantUsageData(
+            model="gpt-5.6-luna", input_tokens=1_000, output_tokens=100
+        )
+    )
+    emit(events.AssistantTurnStartData(turn_id="t1"))
+    emit(
+        events.ToolExecutionStartData(
+            tool_call_id="call-2", tool_name="view", arguments={"path": "b.py"}
+        )
+    )
+    emit(
+        events.AssistantUsageData(
+            model="gpt-5.6-luna", input_tokens=1_600, output_tokens=150
+        )
+    )
+    emit(events.AssistantTurnEndData(turn_id="t1"))
+
+    digest = capsys.readouterr().out.splitlines()[-1]
+    assert "1 tool ·" in digest
+    # Only the work done after the turn opened belongs to it.
+    assert "out 150" in digest
+    assert "out 250" not in digest
+    assert "prompt 2k" in digest
+    assert "prompt 3k" not in digest
+
+
+def test_a_turn_never_closed_by_the_runtime_still_reports(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console("e2·analysis")
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    on_event(SimpleNamespace(data=events.AssistantTurnStartData(turn_id="t1")))
+    on_event(SimpleNamespace(data=events.SessionIdleData()))
+
+    assert capsys.readouterr().out.count("-- [e2·analysis] turn 1") == 2
+
+
+def test_a_turn_is_reported_once_even_when_it_ends_twice(capsys):
+    events = pytest.importorskip("copilot.session_events")
+    console = adapter.Console("e2·analysis")
+    on_event, _ = adapter.build_handlers(console, asyncio.Event())
+
+    on_event(SimpleNamespace(data=events.AssistantTurnStartData(turn_id="t1")))
+    on_event(SimpleNamespace(data=events.AssistantTurnEndData(turn_id="t1")))
+    on_event(SimpleNamespace(data=events.AssistantTurnEndData(turn_id="t1")))
+
+    assert capsys.readouterr().out.count("-- [e2·analysis] turn 1") == 2
+
+
+def test_a_standalone_session_carries_no_launcher_label(capsys):
+    console = adapter.Console()
+
+    console.turn_start()
+    console.turn_end()
+
+    out = capsys.readouterr().out
+    assert out.splitlines()[0].startswith("-- turn 1")
+    assert "[" not in out
+
+
+def test_the_console_label_names_the_experiment_and_the_phase():
+    labelled = adapter.parse_args(
+        ["p", "--session-id", "s", "--experiment", "4", "--phase", "analysis"]
+    )
+
+    assert adapter.console_label(labelled) == "e4·analysis"
+    assert adapter.console_label(adapter.parse_args(["p", "--session-id", "s"])) == ""
+
+
 def test_a_refused_call_does_not_also_report_a_tool_failure(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console()

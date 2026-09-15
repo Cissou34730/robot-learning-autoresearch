@@ -57,6 +57,38 @@ Model saved to models/candidates/experiment-2/model.zip
 ROOT = Path(__file__).resolve().parents[2]
 
 
+class FakeTty:
+    """A stream that can be rewritten, like a real terminal."""
+
+    def __init__(self) -> None:
+        self.written: list[str] = []
+
+    def isatty(self) -> bool:
+        return True
+
+    def write(self, text: str) -> None:
+        self.written.append(text)
+
+    def flush(self) -> None:
+        pass
+
+
+class FakeLog:
+    """A redirected stream, where rewriting a line has nowhere to happen."""
+
+    def __init__(self) -> None:
+        self.written: list[str] = []
+
+    def isatty(self) -> bool:
+        return False
+
+    def write(self, text: str) -> None:
+        self.written.append(text)
+
+    def flush(self) -> None:
+        pass
+
+
 def test_runner_timestamp_uses_local_time(monkeypatch, capsys):
     class FixedLocalDateTime:
         @classmethod
@@ -69,6 +101,71 @@ def test_runner_timestamp_uses_local_time(monkeypatch, capsys):
     runner_console.announce("[checks] passed")
 
     assert capsys.readouterr().out == "[00:12:34] [checks] passed\n"
+
+
+def test_a_heartbeat_rewrites_the_status_line_instead_of_appending(monkeypatch):
+    stream = FakeTty()
+    monkeypatch.setattr(
+        runner_console, "_progress", runner_console.LiveProgress(stream=stream)
+    )
+
+    # The first heartbeat of a phase enters the log; the next one supersedes it.
+    runner_console.progress("[train] 1,000 / 10,000 (10%)", archive=True)
+    runner_console.progress("[train] 2,000 / 10,000 (20%)")
+
+    assert stream.written[0].endswith("(10%)\n")
+    assert stream.written[1].startswith("\r\033[K")
+    assert stream.written[1].endswith("(20%)")
+    assert not stream.written[1].endswith("\n")
+
+
+def test_a_redirected_run_keeps_snapshots_not_every_heartbeat(monkeypatch):
+    stream = FakeLog()
+    monkeypatch.setattr(
+        runner_console, "_progress", runner_console.LiveProgress(stream=stream)
+    )
+
+    runner_console.progress("[train] 1,000 / 10,000 (10%)")
+    runner_console.progress("[train] 2,000 / 10,000 (20%)")
+
+    written = "".join(stream.written)
+    assert "1,000" in written
+    assert "2,000" not in written
+
+
+def test_a_redirected_run_archives_again_once_the_cadence_elapses(monkeypatch):
+    stream = FakeLog()
+    monkeypatch.setattr(
+        runner_console,
+        "_progress",
+        runner_console.LiveProgress(stream=stream, archive_seconds=0.0),
+    )
+
+    runner_console.progress("[eval] 1 / 10 | 10%")
+    runner_console.progress("[eval] 2 / 10 | 20%")
+
+    written = "".join(stream.written)
+    assert "1 / 10" in written
+    assert "2 / 10" in written
+
+
+def test_the_heartbeat_cadence_stays_below_a_minute():
+    assert 0 < runner_console.PROGRESS_ARCHIVE_SECONDS < 60
+
+
+def test_a_card_erases_the_unterminated_status_line_first(monkeypatch, capsys):
+    stream = FakeTty()
+    monkeypatch.setattr(
+        runner_console, "_progress", runner_console.LiveProgress(stream=stream)
+    )
+    runner_console.progress("[train] 1,000 / 10,000 (10%)", archive=True)
+    runner_console.progress("[train] 2,000 / 10,000 (20%)")
+
+    runner_console.announce("[checks] passed")
+
+    # The card must not be appended to the tail of a half-written heartbeat.
+    assert stream.written[-1] == "\r\033[K"
+    assert "[checks] passed" in capsys.readouterr().out
 
 
 def test_extracted_parser_reads_every_snapshot():
@@ -476,6 +573,23 @@ def test_v4_decision_card_keeps_working_and_best_known_distinct():
     assert "Hypothesis assessment\nThe predicted behavior improved" in card
 
 
+def test_every_heading_a_decision_card_prints_is_styled():
+    plan = {
+        "pending": {"experiment": 2},
+        "decision": {"reason": "Keep exploring this checkpoint."},
+        "working_name": "checkpoint-120832",
+        "best_known_name": "baseline",
+        "code_action": "keep",
+        "request_final_benchmark": False,
+        "hypothesis_assessment": "The predicted behavior improved.",
+    }
+
+    styled = runner_console._style_card_sections(render_decision_card(plan))
+
+    for heading in ("Working lineage", "Best-known model", "Hypothesis assessment"):
+        assert f"{runner_console._YELLOW}{heading}\n" in styled
+
+
 def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_path):
     state_path = tmp_path / "research_state.json"
     request_path = tmp_path / "evaluation_request.json"
@@ -709,9 +823,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     )
     assert (
         "`checkpoint-current`"
-        not in section.split(
-            "### Current experiment checkpoint inventory", 1
-        )[0]
+        not in section.split("### Current experiment checkpoint inventory", 1)[0]
     )
     for expected in (
         "Candidate: checkpoint-working",

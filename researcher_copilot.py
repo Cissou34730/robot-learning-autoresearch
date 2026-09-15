@@ -403,8 +403,19 @@ def offloaded_since(before: set[str]) -> tuple[int, int]:
 class Console:
     """Everything the human sees, and nothing the protocol reads back."""
 
-    def __init__(self) -> None:
+    def __init__(self, label: str = "") -> None:
+        # Which experiment and phase this session is, so one long console log
+        # stays attributable without reading backwards for the last banner.
+        self.label = label
         self._mid_stream = False
+        self._turn = 0
+        self._turn_started_at: float | None = None
+        self._turn_model = ""
+        self._turn_tools = 0
+        self._turn_files = 0
+        self._turn_prompt_at_start = 0
+        self._turn_cache_read_at_start = 0
+        self._turn_output_at_start = 0
         self.changed_files: dict[str, str] = {}
         self.prompt_tokens = 0
         self.cache_read_tokens = 0
@@ -419,6 +430,50 @@ class Console:
         self.tool_counts: dict[str, int] = {}
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
+
+    def tagged(self, text: str) -> str:
+        return f"[{self.label}] {text}" if self.label else text
+
+    def turn_start(self, model: str | None = None) -> None:
+        """Mark where the model's next stretch of work begins.
+
+        Streamed prose carries no marker of its own, so without this a long
+        session reads as one undivided wall between tool lines.
+        """
+        self._turn += 1
+        self._turn_started_at = time.monotonic()
+        self._turn_model = model or ""
+        self._turn_tools = 0
+        self._turn_files = 0
+        self._turn_prompt_at_start = self.prompt_tokens
+        self._turn_cache_read_at_start = self.cache_read_tokens
+        self._turn_output_at_start = self.output_tokens
+        model_note = f" · {self._turn_model}" if self._turn_model else ""
+        self.line(f"-- {self.tagged(f'turn {self._turn}')}{model_note}")
+
+    def turn_end(self) -> None:
+        """Report what one turn cost, rather than leaving it to the summary."""
+        if self._turn_started_at is None:
+            return
+        elapsed = int(time.monotonic() - self._turn_started_at)
+        self._turn_started_at = None
+        minutes, seconds = divmod(elapsed, 60)
+        duration = f"{minutes}m{seconds:02d}s" if minutes else f"{seconds}s"
+        tools = f"{self._turn_tools} tool" + ("" if self._turn_tools == 1 else "s")
+        parts = [tools]
+        if self._turn_files:
+            files = f"{self._turn_files} file" + ("" if self._turn_files == 1 else "s")
+            parts.append(files)
+        parts.append(duration)
+        output = self.output_tokens - self._turn_output_at_start
+        if output:
+            parts.append(f"out {thousands(output)}")
+        prompt = self.prompt_tokens - self._turn_prompt_at_start
+        if prompt:
+            cached = self.cache_read_tokens - self._turn_cache_read_at_start
+            share = f" ({round(100 * cached / prompt)}% cached)" if cached else ""
+            parts.append(f"prompt {thousands(prompt)}{share}")
+        self.line(f"-- {self.tagged(f'turn {self._turn}')} · " + " · ".join(parts))
 
     def line(self, text: str) -> None:
         if self._mid_stream:
@@ -442,6 +497,7 @@ class Console:
     ) -> None:
         self.tool_calls += 1
         self.tool_counts[name] = self.tool_counts.get(name, 0) + 1
+        self._turn_tools += 1
         if tool_call_id:
             self.active_tools[tool_call_id] = (name, arguments)
         if name in SILENT_TOOLS:
@@ -532,6 +588,7 @@ class Console:
         marker = {"created": "+", "deleted": "-"}.get(str(operation), "~")
         if self.changed_files.get(path) != marker:
             self.changed_files[path] = marker
+            self._turn_files += 1
             self.line(f"  {marker} {path}")
 
     def error(self, message: str) -> None:
@@ -584,6 +641,8 @@ def build_handlers(console: Console, finished: asyncio.Event):
     from copilot.session_events import (
         AssistantMessageData,
         AssistantMessageDeltaData,
+        AssistantTurnEndData,
+        AssistantTurnStartData,
         AssistantUsageData,
         PermissionRequestShell,
         SessionErrorData,
@@ -599,6 +658,13 @@ def build_handlers(console: Console, finished: asyncio.Event):
             console.delta(data.delta_content or "")
         elif isinstance(data, AssistantMessageData):
             console.message(data.content or "")
+        elif isinstance(data, AssistantTurnStartData):
+            console.turn_start(getattr(data, "model", None))
+        elif isinstance(data, AssistantTurnEndData):
+            console.turn_end()
+        # AssistantReasoningData and AssistantReasoningDeltaData are deliberately
+        # not routed: the console reports the work a session did, not the text it
+        # thought through on the way there.
         elif isinstance(data, ToolExecutionStartData):
             console.tool(data.tool_name, data.arguments, data.tool_call_id)
         elif isinstance(data, ToolExecutionCompleteData):
@@ -637,6 +703,8 @@ def build_handlers(console: Console, finished: asyncio.Event):
         elif isinstance(data, SessionErrorData):
             console.error(data.message or "unknown session error")
         elif isinstance(data, SessionIdleData):
+            # A turn the runtime never closed still reports what it contained.
+            console.turn_end()
             finished.set()
 
     def on_permission_request(request, invocation):
@@ -758,6 +826,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def console_label(args) -> str:
+    """The experiment and phase a session belongs to, for the console only."""
+    parts = []
+    if args.experiment is not None:
+        parts.append(f"e{args.experiment}")
+    if args.phase:
+        parts.append(str(args.phase))
+    return "·".join(parts)
+
+
 def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None:
     """Append aggregate usage, never conversation content or tool arguments."""
     if not args.campaign_id:
@@ -798,7 +876,7 @@ def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    args.usage_console = Console()
+    args.usage_console = Console(console_label(args))
     started = time.monotonic()
     exit_code = EXIT_RUNTIME_FAILURE
     try:

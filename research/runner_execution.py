@@ -320,7 +320,7 @@ def train_candidate(
                 record = latest_training_record(log_text)
                 steps = latest_step_count(log_text)
                 if steps is None:
-                    console.announce(
+                    console.progress(
                         f"[train] starting ({console.format_duration(elapsed)} elapsed)"
                     )
                 else:
@@ -339,7 +339,7 @@ def train_candidate(
                         if completed_this_run
                         else 0
                     )
-                    console.announce(
+                    console.progress(
                         f"[train] {steps:,} / {progress_target:,} "
                         f"({progress:.0f}%) | {console.format_duration(elapsed)} | "
                         f"ETA ~{console.format_duration(eta)}"
@@ -556,7 +556,7 @@ def evaluate_artifact(
                     if current_completed > completed_episodes:
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
-                    console.announce(
+                    console.progress(
                         f"[eval] {progress_label:<20} "
                         f"| {completed_episodes:>4} / {episodes} "
                         f"| {100 * completed_episodes // episodes:>3}% "
@@ -688,12 +688,8 @@ def requested_paired_comparisons(
                     }
                 )
             provenance = {
-                "candidate_model_fingerprint": frozen[
-                    "candidate_model_fingerprint"
-                ],
-                "reference_model_fingerprint": frozen[
-                    "reference_model_fingerprint"
-                ],
+                "candidate_model_fingerprint": frozen["candidate_model_fingerprint"],
+                "reference_model_fingerprint": frozen["reference_model_fingerprint"],
                 "panels": used_panels,
                 "source_artifacts": list(dict.fromkeys(source_artifacts)),
             }
@@ -806,5 +802,7 @@ def _load_frozen_panel(
         expected = outcomes
         selected = measurement
     if selected is None:
-        raise ValueError(f"paired comparison has no evidence artifacts for {model_name!r}")
+        raise ValueError(
+            f"paired comparison has no evidence artifacts for {model_name!r}"
+        )
     return {**selected, "evaluation_semantics": panel.get("evaluation_semantics", "")}
