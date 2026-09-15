@@ -64,12 +64,6 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
-That restriction governs claims, not selection. Checkpoint selection is a
-scientific decision. Training dynamics, checkpoint position, previous
-measurements, behavioral hypotheses, or other relevant evidence may inform that
-decision. An unmeasured checkpoint remains unmeasured, regardless of its
-training metrics.
-
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
 variability. Fresh training does not by itself establish that an intervention

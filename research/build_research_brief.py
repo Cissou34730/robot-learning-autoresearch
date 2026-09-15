@@ -402,11 +402,7 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
-def _checkpoint_inventory_lines(
-    candidates: list[dict], *, parent_training_steps: int = 0
-) -> list[str]:
-    # Training records the pool in lexicographic name order, which interleaves step counts.
-    candidates = sorted(candidates, key=lambda item: int(item.get("timesteps", 0)))
+def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
     parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
     common_parts = list(parents[0].parts) if parents else []
@@ -418,37 +414,24 @@ def _checkpoint_inventory_lines(
             common_length += 1
         common_parts = common_parts[:common_length]
     common_parent = Path(*common_parts) if common_parts else None
-    lines = []
+    measured = sum(bool(candidate.get("evaluations")) for candidate in candidates)
+    steps = [int(candidate.get("timesteps", 0)) for candidate in candidates]
+    checkpoint_label = "checkpoint" if len(candidates) == 1 else "checkpoints"
+    lines = [
+        f"- Checkpoint inventory: {len(candidates)} {checkpoint_label} "
+        f"({measured} measured, {len(candidates) - measured} unmeasured); steps "
+        f"{min(steps):,}-{max(steps):,}."
+    ]
     if common_parent is not None:
-        lines.append(f"- Artifact base path: {_recorded_path(common_parent.as_posix())}")
         lines.append(
-            f"- Checkpoint inventory: {len(candidates)} checkpoints; steps "
-            f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
-            f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}; "
-            "each artifact is "
-            f"{_recorded_path((common_parent / '<identifier>').as_posix())}"
+            "- Inspect checkpoint identifiers, training metrics, and artifacts in "
+            f"{_recorded_path((common_parent / 'inventory.json').as_posix())}."
         )
     else:
         lines.append(
-            f"- Checkpoint inventory: {len(candidates)} checkpoints; steps "
-            f"{min(int(candidate.get('timesteps', 0)) for candidate in candidates):,}-"
-            f"{max(int(candidate.get('timesteps', 0)) for candidate in candidates):,}"
+            "- Inspect checkpoint identifiers, training metrics, and artifacts in "
+            f"{_recorded_path('research/research_state.json')}."
         )
-    identifiers = ", ".join(
-        f"`{_recorded_value(candidate.get('name'))}` "
-        f"(local {int(candidate.get('timesteps', 0)):,} steps; accumulated "
-        f"{parent_training_steps + int(candidate.get('timesteps', 0)):,} steps; "
-        f"training success {_candidate_metric(candidate, 'training_success')}; "
-        f"training reward {_candidate_metric(candidate, 'ep_rew_mean')})"
-        for candidate in candidates
-    )
-    lines.append(f"- Identifiers: {identifiers}")
-    for candidate, artifact, parent in zip(candidates, artifacts, parents):
-        if common_parent is None or parent != common_parent:
-            lines.append(
-                f"- `{_recorded_value(candidate.get('name'))}` artifact: "
-                f"{_recorded_path(artifact)}"
-            )
     return lines
 
 
@@ -633,14 +616,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         else []
     )
     if candidates:
-        parent_training_steps = int(
-            state.get("pending_analysis", {}).get("parent_training_steps", 0)
-        )
-        lines.extend(
-            _checkpoint_inventory_lines(
-                candidates, parent_training_steps=parent_training_steps
-            )
-        )
+        lines.extend(_checkpoint_inventory_lines(candidates))
     else:
         lines.append("No current experiment checkpoints are recorded.")
     return lines

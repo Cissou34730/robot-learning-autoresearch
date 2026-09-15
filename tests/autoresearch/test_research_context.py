@@ -512,16 +512,19 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     assert "training success" not in latest
     assert "reward 4" not in latest
     inventory = brief.split(
-        "### Current experiment checkpoints available for measurement", 1
+        "### Current experiment checkpoint inventory", 1
     )[1].split("## Working lineage", 1)[0]
-    assert inventory.count("checkpoint-") == 24
-    assert "Artifact base path: `research/checkpoints`" in inventory
-    assert "24 checkpoints available for measurement; steps 5,120-122,880" in inventory
+    assert "checkpoint-" not in inventory
+    assert (
+        "Checkpoint inventory: 24 checkpoints (1 measured, 23 unmeasured); "
+        "steps 5,120-122,880" in inventory
+    )
+    assert "`research/checkpoints/inventory.json`" in inventory
     assert "distinct models" not in inventory
-    assert "local 10,240 steps; accumulated 10,240 steps" in inventory
+    assert "training success" not in inventory
 
 
-def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path):
+def test_v4_brief_requires_checkpoint_inventory_inspection(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
@@ -553,21 +556,16 @@ def test_v4_brief_orders_checkpoint_inventory_numerically(monkeypatch, tmp_path)
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
 
     inventory = render_research_brief().split(
-        "### Current experiment checkpoints available for measurement", 1
+        "### Current experiment checkpoint inventory", 1
     )[1].split("## Working lineage", 1)[0]
-    identifiers = next(
-        line for line in inventory.splitlines() if line.startswith("- Identifiers:")
-    )
-
-    positions = [
-        identifiers.index(f"`checkpoint-{steps}`")
-        for steps in (5120, 10240, 100352, 105472, 120832)
-    ]
-    assert positions == sorted(positions)
     assert (
-        "`checkpoint-5120` (local 5,120 steps; accumulated 5,120 steps; "
-        "training success 0.9; training reward 100)" in identifiers
+        "Checkpoint inventory: 5 checkpoints (0 measured, 5 unmeasured); "
+        "steps 5,120-120,832" in inventory
     )
+    assert "`research/checkpoints/inventory.json`" in inventory
+    assert "checkpoint-5120" not in inventory
+    assert "checkpoint-120832" not in inventory
+    assert "training success" not in inventory
 
 
 def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
@@ -615,7 +613,8 @@ def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
     assert "training success" not in latest
     assert "episode reward" not in latest
     assert "checkpoint ranking" not in latest
-    assert all(f"`checkpoint-{steps}`" in inventory for steps in proxies)
+    assert all(f"`checkpoint-{steps}`" not in inventory for steps in proxies)
+    assert "`research/checkpoints/inventory.json`" in inventory
     assert "steps 5,120-40,960" in inventory
 
 

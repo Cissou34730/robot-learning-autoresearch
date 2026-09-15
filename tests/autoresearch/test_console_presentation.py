@@ -710,7 +710,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
     assert (
         "`checkpoint-current`"
         not in section.split(
-            "### Current experiment checkpoints available for measurement", 1
+            "### Current experiment checkpoint inventory", 1
         )[0]
     )
     for expected in (
@@ -727,9 +727,8 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
         "`alternate`",
         "`ppo.learning_rate`: lineage 0.0001; current 0.0003",
         "Parameter differences from `best_known`: none",
-        "- Artifact base path: `models/candidates`",
-        "1 checkpoints available for measurement; steps 3,000-3,000",
-        "- Identifiers: `checkpoint-current` (local 3,000 steps; accumulated 3,000 steps)",
+        "- Checkpoint inventory: 1 checkpoint (0 measured, 1 unmeasured); steps 3,000-3,000.",
+        "- Inspect checkpoint identifiers, training metrics, and artifacts in `models/candidates/inventory.json`.",
     ):
         assert expected in section
     assert section.count("Candidate: checkpoint-working") == 1
