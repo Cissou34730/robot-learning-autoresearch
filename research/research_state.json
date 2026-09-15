@@ -1,132 +1,30 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/9af8af06-b323-444d-9108-0ed38bef0cae/e1-cada55eb5-4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/evaluation-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-100352-100ep-seed0-6ba3ba6d7654.json",
-      "research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/task-reference-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the highest-training-success measured checkpoint and the only measured candidate with 98.0% on the task-reference 200-episode panel; the later checkpoint scored 97.0% on that same panel.",
-    "scientific_commit": "fe500b69cadd8e8812a3556dd2ae29b63f988e39",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "6214ac066b0021a9e8f24410fbf4fe0516c4464c",
-    "id": "9af8af06-b323-444d-9108-0ed38bef0cae",
+    "base_commit": "cbf63901186711deb9b7ad5729c9d3b35ca4c8c6",
+    "id": "e396d2fc-96c5-4690-8031-b9a7969d0c0c",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-15T04:52:14.649038+00:00"
+    "started_at": "2026-09-15T05:16:23.949862+00:00"
   },
   "campaign_experiment_counters": {
-    "9af8af06-b323-444d-9108-0ed38bef0cae": 1
+    "e396d2fc-96c5-4690-8031-b9a7969d0c0c": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "The unchanged baseline recipe produced the strongest measured candidate; no evidence supports reverting or replacing the researcher-owned scientific recipe."
-    },
-    "code_parent_commit": "fe500b69cadd8e8812a3556dd2ae29b63f988e39",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Checkpoint-100352 is the best measured candidate: it achieved 98.0% on the 100-episode research evaluation and 98.0% on the independent 200-episode task-reference panel. The terminal checkpoint was 97.0% on task-reference and did not improve the research evaluation. Request the official assessment because the selected candidate reaches the campaign objective on the available 200-episode development panel, while its performance on the distinct official panel remains the relevant unresolved question."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/9af8af06-b323-444d-9108-0ed38bef0cae/e1-cada55eb5-4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-    "fingerprint": "4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "fe500b69cadd8e8812a3556dd2ae29b63f988e39",
-    "experiment": 1,
-    "scientific_commit": "fe500b69cadd8e8812a3556dd2ae29b63f988e39"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/9af8af06-b323-444d-9108-0ed38bef0cae/e1-cada55eb5-4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/evaluation-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-100352-100ep-seed0-6ba3ba6d7654.json"
-    ],
-    "fingerprint": "4836646aaa03171e84cf248ddf5fba67ec2ff5966c8b9a119a175b5d0bfe116c",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Checkpoint-100352 is the best measured candidate: it achieved 98.0% on the 100-episode research evaluation and 98.0% on the independent 200-episode task-reference panel. The terminal checkpoint was 97.0% on task-reference and did not improve the research evaluation. Request the official assessment because the selected candidate reaches the campaign objective on the available 200-episode development panel, while its performance on the distinct official panel remains the relevant unresolved question.",
-    "scientific_commit": "fe500b69cadd8e8812a3556dd2ae29b63f988e39",
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
