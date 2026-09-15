@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## 9aa54085-f9f7-4ad0-bbce-13ab3dae7199 / Scientific strategy
+
+**Current synthesis:** The fresh PPO baseline learned strong reach-and-hold behavior. The saved checkpoint at 100,352 steps achieved 98% on both the researcher panel and the protected task-reference panel, while the completed 120,832-step checkpoint achieved 98% on the researcher panel but 97% on the task-reference panel. The earlier checkpoint is therefore the strongest measured candidate in this campaign, although only the official assessment can establish the human objective.
+
+**Lessons and limits:** Training reward and proxy success identify the learning transition and later regression, but measured task success determines policy progress. The researcher-panel failures for both measured checkpoints were the same two episode seeds, and the task-reference failures for the selected checkpoint clustered at short targets in a negative-angle sector; these observations characterize residual behavior but do not establish a causal mechanism. The researcher panel has 100 episodes and the task-reference panel is a fixed 200-episode development panel, so neither substitutes for the distinct official panel.
+
+**Open questions:** The official panel may differ from the development panels, and the residual failure cluster may or may not be improved without regressions. The baseline does not identify which training or reward changes would address those failures.
+
+## 9aa54085-f9f7-4ad0-bbce-13ab3dae7199 / Experiment 1
+
+**Result:** The fresh baseline produced a learned policy with 98% measured task success at checkpoint-100352. That checkpoint is selected as the working and best-known lineage, checkpoint-120832 is retained as a measured alternate, and terminal assessment is requested.
+
+**Observed behavior:** Training logs show zero proxy successes through 70,656 steps, then a rise to 0.97 at 99,328 and 100,352 steps. The proxy success was 0.97 at checkpoint-100352 and 0.95 at the completed checkpoint-120832; episode reward likewise peaked earlier and was lower at completion. Research evaluation measured 98/100 episodes for both checkpoints, with the same failures at episode seeds 11 and 25 and no discordant outcomes in the paired comparison. On the independent task-reference panel, checkpoint-100352 succeeded on 196/200 episodes (98%), while checkpoint-120832 succeeded on 194/200 (97%); the later checkpoint retained all four earlier failures and added failures at seeds 7421 and 7452. The selected checkpoint's four task-reference failures used target radii from about 6.7 to 9.9 cm and angles from about -116 to -128 degrees. These are development measurements, not the official result.
+
+**Hypothesis assessment:** The automatic baseline had no intervention-specific hypothesis; its purpose was to establish whether the unchanged starting method could produce a useful policy. That purpose was supported: a saved policy reached the objective level on the development task-reference panel. The evidence does not establish that the human objective is met on the official panel, nor does it establish why later training reduced task-reference success.
+
+**Interpretation:** The baseline demonstrates substantial learned progress toward the human objective and provides a defensible candidate for terminal assessment. The agreement between the two panels for checkpoint-100352 and the regression on the independent panel at checkpoint-120832 support selecting the earlier checkpoint, but the residual failures and development-panel uncertainty warrant treating 98% as readiness for assessment rather than as the official verdict. Keeping the unchanged scientific recipe is appropriate because no researcher-owned intervention was tested.
+
+**Evidence inspected:** `research/brief.md`; `research/results.jsonl`; `research/evaluations/9aa54085-f9f7-4ad0-bbce-13ab3dae7199/evaluation-9aa54085-f9f7-4ad0-bbce-13ab3dae7199-experiment-1-checkpoint-100352-100ep-seed0-6ba3ba6d7654.json`; `research/evaluations/9aa54085-f9f7-4ad0-bbce-13ab3dae7199/evaluation-9aa54085-f9f7-4ad0-bbce-13ab3dae7199-experiment-1-checkpoint-120832-100ep-seed0-6ba3ba6d7654.json`; `research/evaluations/9aa54085-f9f7-4ad0-bbce-13ab3dae7199/task-reference-9aa54085-f9f7-4ad0-bbce-13ab3dae7199-experiment-1-checkpoint-100352-task-reference-v1.json`; `research/evaluations/9aa54085-f9f7-4ad0-bbce-13ab3dae7199/task-reference-9aa54085-f9f7-4ad0-bbce-13ab3dae7199-experiment-1-checkpoint-120832-task-reference-v1.json`.
