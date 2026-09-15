@@ -127,19 +127,15 @@ Tests are organized by repository domain:
 | --- | --- | --- |
 | `tests/benchmark/` | official task, official robot, benchmark contract, final goal verdict | human |
 | `tests/autoresearch/` | the generic AutoResearch harness: proposals, execution lifecycle, persistence, lineage, protected paths, presentation, training-artifact contract | human |
-| `tests/scenario/` | training environment, reward, observations, research evaluation | researcher |
-| `tests/training/` | the currently active learning method and its configuration | researcher |
 
 `tests/benchmark/` and `tests/autoresearch/` are immutable for the duration of a
 campaign: a proposal that creates, modifies, renames or deletes a file under
 either prefix is rejected before training. They also stay method-neutral, so
 replacing the learning algorithm never requires touching them.
 
-`tests/scenario/` and `tests/training/` belong to the researcher. Changes there
-are ordinary research code: they appear in the experiment's `code_changes` and
-follow the same Git code lineage as the implementation they validate. A
-structural experiment is expected to update them; a parameter-only experiment
-is not.
+Scientific experiments do not carry researcher-maintained pytest suites. The
+Runner validates their changed Python and JSON directly and retains protected
+human-owned boundary checks.
 
 Selected version-4 working and best-known policies are published under
 `research/checkpoints/retained/<campaign-id>/` before disposable challengers are
@@ -152,7 +148,8 @@ Validation runs before compute is spent:
 
 * a fresh campaign baseline is fully validated even when the worktree carries no
   uncommitted change, so an inconsistent starting point cannot consume training;
-* an experiment with code changes is fully validated before training;
+* an experiment with code changes receives source validation and protected
+  boundary checks before training;
 * a parameter-only experiment validates the proposal and the effective
   configuration only;
 * a continuation, evaluation or lineage decision without code changes reruns
@@ -164,7 +161,7 @@ metadata against `uv.lock` with a non-mutating check when either changed, and
 then runs:
 
 ```powershell
-uv run pytest -q tests/benchmark tests/autoresearch tests/scenario tests/training
+uv run pytest -q tests/benchmark tests/autoresearch
 ```
 
 Harness regression coverage does not broaden campaign-time selection: ordinary

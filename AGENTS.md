@@ -89,8 +89,7 @@ human-only maintenance operation, never a Researcher experiment command.
 - `reports/` - ignored human reports and campaign-scoped aggregate session usage;
   never injected into Researcher context. Usage survives reset under its original
   campaign ID and is not scientific history in `research/results.jsonl`.
-- `tests/benchmark/`, `tests/autoresearch/`, `tests/scenario/`,
-  `tests/training/` - tests grouped by ownership domain.
+- `tests/benchmark/`, `tests/autoresearch/` - human-owned task and harness tests.
 - `tests/e2e/` - human-owned end-to-end lifecycle checks that drive real Git
   repositories, the PowerShell entry points and complete runner runs. They are
   minutes slow, so `pyproject.toml` keeps them out of the default `uv run
@@ -126,7 +125,6 @@ path takes precedence over any researcher-owned prefix.
 - `robot_learning/training/`;
 - `robot_learning/train.py`, `robot_learning/evaluate.py`,
   `robot_learning/play.py`;
-- `tests/scenario/`, `tests/training/`;
 - `research/current_params.json`;
 - the phase deliverables `research/proposal.json`,
   `research/evaluation_request.json` and `research/postmortems.md`. During v4
@@ -141,18 +139,16 @@ with its code lineage and validation, and are not an ignored scratch surface.
 
 Do not run repository-wide lint or format passes. Format only touched files.
 
-The Runner's complete validation is syntax checking plus `ruff check` on changed
-Python files, JSON parsing for changed JSON files, and selected pytest suites.
-A fresh baseline and changes outside the positively declared researcher-owned
-surface receive complete validation. Researcher-owned code changes omit only
-`tests/benchmark`; parameter-only proposals and decisions without code changes
-run no suites.
+The Runner validates changed Python syntax with `ruff check`, parses changed JSON
+files, and runs selected human-owned pytest suites. A fresh baseline runs the
+benchmark and targeted AutoResearch boundary checks. Researcher-owned code
+changes run only the targeted AutoResearch boundary checks; parameter-only
+proposals and decisions without code changes run no suites. The Researcher is
+not required to author, maintain or run tests for scientific changes.
 
 Tests assert the behavior owned by their domain. Human-owned benchmark and
 AutoResearch tests remain method-neutral. Architecture guards derive the
 surface they protect rather than naming one implementation file.
-Adding harness regression tests does not itself broaden campaign-time suite
-selection for researcher-owned reward or parameter changes.
 A test that needs a real repository, a real PowerShell entry point or a
 complete runner run belongs in `tests/e2e/`, never in a campaign-time domain.
 

@@ -91,11 +91,9 @@ def test_execution_belongs_to_the_launcher(command):
     assert adapter.command_denial(command) == adapter.EXECUTION_DENIAL
 
 
-def test_a_repository_wide_test_run_is_refused_but_a_suite_is_not():
+def test_a_repository_wide_test_run_is_refused():
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
-    assert adapter.command_denial("uv run pytest tests/scenario") is None
-    assert adapter.command_denial("uv run pytest -q tests/training") is None
 
 
 @pytest.mark.parametrize(
@@ -124,7 +122,6 @@ def test_dependency_management_is_refused(command):
 
 def test_uv_run_uses_the_fixed_environment_without_being_obstructed():
     assert adapter.command_denial("uv run python analysis.py") is None
-    assert adapter.command_denial("uv run pytest tests/scenario") is None
 
 
 def test_ordinary_research_commands_are_not_obstructed():
@@ -161,7 +158,7 @@ def test_the_execution_target_is_resolved_through_the_launcher_prefix():
     assert resolve(["uv", "run", "python", "-m", "robot_learning.train"]) == (
         "robot_learning.train"
     )
-    assert resolve(["uv", "run", "pytest", "tests/scenario"]) == "pytest"
+    assert resolve(["uv", "run", "pytest", "tests/autoresearch/test.py"]) == "pytest"
     # Inline code names no target, which the guardrail accepts knowingly.
     assert resolve(["python", "-c", "code"]) is None
     assert resolve(["Get-Content", "anything"]) is None
@@ -627,10 +624,8 @@ def test_the_researcher_is_told_that_round_trips_resend_the_conversation():
     assert "one aggregated tool call when practical" in normalized
     assert "when the combined result remains compact" in normalized
     assert "Separate calls remain appropriate" in normalized
-    assert (
-        "Use targeted tests, linting, parsing or analysis while developing"
-        in normalized
-    )
+    assert "Researcher-authored tests are not part" in normalized
+    assert "Use targeted linting, parsing or lightweight analysis" in normalized
     assert "when they resolve uncertainty introduced by the work" in normalized
     assert "do not perform a separate final validation pass solely" in normalized
     assert "the Runner owns final contract and execution validation" in normalized

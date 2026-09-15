@@ -1191,7 +1191,7 @@ def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
         "scientific_delta",
         lambda commit: [
             "robot_learning/scenario/reward.py",
-            "tests/scenario/test_reward.py",
+            "robot_learning/training/new_helper.py",
         ],
     )
     monkeypatch.setattr(
@@ -1219,7 +1219,7 @@ def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
     assert plan["code_plan"]["parent"] == "a" * 40
     assert plan["code_plan"]["restore"] == ["robot_learning/scenario/reward.py"]
     assert plan["code_plan"]["remove_created"] == [
-        (tmp_path / "tests/scenario/test_reward.py").resolve()
+        (tmp_path / "robot_learning/training/new_helper.py").resolve()
     ]
 
 

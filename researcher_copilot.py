@@ -100,7 +100,7 @@ EXECUTION_DENIAL = (
 
 SUITE_DENIAL = (
     "Denied by the harness: a repository-wide pytest run belongs to the runner. "
-    "Run the specific suite you need, for example `uv run pytest tests/scenario`."
+    "Use targeted linting, parsing or lightweight analysis for scientific changes."
 )
 
 DEPENDENCY_DENIAL = (
@@ -178,7 +178,8 @@ instead of retrying the same command.
     Read-only Git is available only when the current task specifically requires
     inspecting the experiment's current code state or delta. To revert this
     experiment's code, use the lineage proposal's "code" decision.
-- A repository-wide pytest run belongs to the runner; run a specific suite.
+- Pytest execution belongs to the runner. Researcher-authored tests are not part
+    of the scientific recipe and are not required for phase completion.
 - Every tool call resends the whole conversation, so prefer one aggregation over
   the same command repeated per file, and read what you need rather than whole
   artifacts.
@@ -188,8 +189,8 @@ instead of retrying the same command.
   between artifacts or aggregation would make the analysis less clear.
   Context efficiency does not determine which scientific evidence is worth
   examining.
-- Use targeted tests, linting, parsing or analysis while developing the phase
-  deliverable when they resolve uncertainty introduced by the work. Once the
+- Use targeted linting, parsing or lightweight analysis while developing the
+    phase deliverable when they resolve uncertainty introduced by the work. Once the
   deliverable is complete, do not perform a separate final validation pass solely
   to reconfirm the deliverable or repository state; the Runner owns final contract
   and execution validation. The phase ends when its deliverable has been written.

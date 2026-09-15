@@ -262,14 +262,6 @@ PROTECTED_TEST_PATHS = (
     "tests/e2e/test_reset_research.py",
 )
 
-RESEARCHER_OWNED_TEST_PATHS = (
-    "tests/scenario/test_reward.py",
-    "tests/scenario/test_environment.py",
-    "tests/training/test_active_learning_method.py",
-    "tests/training/test_checkpointing.py",
-)
-
-
 def active_effective_config() -> tuple[dict, dict]:
     """The current runtime configuration and the trainer's resolved view of it."""
     config = load_experiment_config()
@@ -578,6 +570,8 @@ def test_protected_test_directories_are_prefix_based():
         "tests/benchmark/",
         "tests/autoresearch/",
         "tests/e2e/",
+        "tests/scenario/",
+        "tests/training/",
     )
 
 
@@ -596,8 +590,11 @@ def test_deleting_a_protected_test_is_rejected(monkeypatch, protected_path):
 def test_status_reports_both_sides_of_a_rename(monkeypatch):
     assert worktree_changes(
         monkeypatch,
-        renamed("tests/scenario/test_reward.py", "tests/scenario/test_shaping.py"),
-    ) == ["tests/scenario/test_reward.py", "tests/scenario/test_shaping.py"]
+        renamed(
+            "robot_learning/scenario/reward.py",
+            "robot_learning/scenario/shaping.py",
+        ),
+    ) == ["robot_learning/scenario/reward.py", "robot_learning/scenario/shaping.py"]
 
 
 def test_status_keeps_unquoted_paths_containing_spaces(monkeypatch):
@@ -621,16 +618,16 @@ def test_renaming_a_protected_test_is_rejected(monkeypatch):
     ("origin", "destination"),
     [
         (
-            "tests/training/test_active_learning_method.py",
+            "robot_learning/training/algorithms.py",
             "tests/autoresearch/test_smuggled_rule.py",
         ),
         (
-            "tests/scenario/test_reward.py",
+            "robot_learning/scenario/reward.py",
             "tests/benchmark/test_smuggled_contract.py",
         ),
     ],
 )
-def test_renaming_a_researcher_test_into_a_protected_domain_is_rejected(
+def test_renaming_researcher_code_into_a_protected_domain_is_rejected(
     monkeypatch, origin, destination
 ):
     with pytest.raises(ValueError, match="human-owned .* tests"):
@@ -642,31 +639,31 @@ def test_renaming_a_researcher_test_into_a_protected_domain_is_rejected(
     [
         (
             "tests/autoresearch/test_execution_contract.py",
-            "tests/training/test_execution_contract.py",
+            "robot_learning/training/execution_contract.py",
         ),
         (
             "tests/benchmark/test_task_contract.py",
-            "tests/scenario/test_task_contract.py",
+            "robot_learning/scenario/task_contract.py",
         ),
     ],
 )
-def test_renaming_a_protected_test_out_of_its_domain_is_rejected(
+def test_renaming_a_protected_test_into_researcher_code_is_rejected(
     monkeypatch, origin, destination
 ):
     with pytest.raises(ValueError, match="human-owned .* tests"):
         validate_worktree(monkeypatch, renamed(origin, destination))
 
 
-def test_renaming_between_researcher_owned_domains_is_allowed(monkeypatch):
+def test_renaming_between_researcher_owned_source_domains_is_allowed(monkeypatch):
     assert validate_worktree(
         monkeypatch,
         renamed(
-            "tests/scenario/test_reward.py",
-            "tests/training/test_reward_shaping.py",
+            "robot_learning/scenario/reward.py",
+            "robot_learning/training/reward_shaping.py",
         ),
     ) == [
-        "tests/scenario/test_reward.py",
-        "tests/training/test_reward_shaping.py",
+        "robot_learning/scenario/reward.py",
+        "robot_learning/training/reward_shaping.py",
     ]
 
 
@@ -677,6 +674,12 @@ def test_creating_a_new_protected_test_is_rejected(monkeypatch):
     with pytest.raises(ValueError, match="human-owned .* tests"):
         validate_worktree(monkeypatch, "?? tests/benchmark/test_invented_rule.py")
 
+    with pytest.raises(ValueError, match="human-owned and retired tests"):
+        validate_worktree(monkeypatch, "?? tests/scenario/test_invented_rule.py")
+
+    with pytest.raises(ValueError, match="human-owned and retired tests"):
+        validate_worktree(monkeypatch, "?? tests/training/test_invented_rule.py")
+
 
 def test_protected_test_protection_ignores_path_separator(monkeypatch):
     with pytest.raises(ValueError, match="human-owned .* tests"):
@@ -686,36 +689,10 @@ def test_protected_test_protection_ignores_path_separator(monkeypatch):
         validate_worktree(monkeypatch, " M tests\\benchmark\\test_task_contract.py")
 
 
-@pytest.mark.parametrize("research_test_path", RESEARCHER_OWNED_TEST_PATHS)
-def test_researcher_owned_tests_remain_changeable(monkeypatch, research_test_path):
-    assert validate_worktree(monkeypatch, f" M {research_test_path}") == [
-        research_test_path
-    ]
-    assert validate_worktree(monkeypatch, f"?? {research_test_path}") == [
-        research_test_path
-    ]
-    assert validate_worktree(monkeypatch, f" D {research_test_path}") == [
-        research_test_path
-    ]
-
-
-def test_researcher_owned_tests_are_ordinary_code_changes(monkeypatch):
-    changes = validate_worktree(
-        monkeypatch,
-        " M robot_learning/scenario/reward.py",
-        " M tests/scenario/test_reward.py",
-    )
-
-    assert changes == [
-        "robot_learning/scenario/reward.py",
-        "tests/scenario/test_reward.py",
-    ]
-
-
-def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
+def test_researcher_owned_source_follows_the_code_lineage(monkeypatch):
 
     root = Path(__file__).resolve().parents[2]
-    created = "tests/training/test_invented_by_this_experiment.py"
+    created = "robot_learning/training/invented_by_this_experiment.py"
 
     def tracked_at_parent(*args: str) -> str:
         path = args[-1]
@@ -729,25 +706,21 @@ def test_researcher_owned_tests_follow_the_code_lineage(monkeypatch):
             "code_parent_commit": "abc123",
             "research_change_paths": [
                 "robot_learning/scenario/reward.py",
-                "tests/scenario/test_reward.py",
                 created,
             ],
         },
         "revert",
     )
 
-    assert plan["restore"] == [
-        "robot_learning/scenario/reward.py",
-        "tests/scenario/test_reward.py",
-    ]
+    assert plan["restore"] == ["robot_learning/scenario/reward.py"]
     assert plan["remove_created"] == [(root / created).resolve()]
 
 
-def test_renamed_researcher_tests_travel_with_the_code_lineage(monkeypatch):
+def test_renamed_researcher_source_travels_with_the_code_lineage(monkeypatch):
 
     root = Path(__file__).resolve().parents[2]
-    origin = "tests/scenario/test_reward.py"
-    destination = "tests/scenario/test_shaping.py"
+    origin = "robot_learning/scenario/reward.py"
+    destination = "robot_learning/scenario/shaping.py"
 
     def tracked_at_parent(*args: str) -> str:
         path = args[-1]
@@ -773,12 +746,8 @@ def test_renamed_researcher_tests_travel_with_the_code_lineage(monkeypatch):
 ALL_SUITES = (
     "tests/benchmark",
     "tests/autoresearch",
-    "tests/scenario",
-    "tests/training",
 )
 RESEARCHER_SUITES = (
-    "tests/scenario",
-    "tests/training",
     "tests/autoresearch/test_scenario_boundary.py",
     "tests/autoresearch/test_campaign_boundary.py",
 )
@@ -1088,21 +1057,17 @@ def test_restored_parent_ignores_equivalent_parameter_key_order(monkeypatch, tmp
         ["robot_learning/train.py"],
         ["robot_learning/evaluate.py"],
         ["robot_learning/play.py"],
-        ["tests/scenario/test_reward.py"],
-        ["tests/training/test_active_learning_method.py"],
         ["robot_learning\\scenario\\reward.py"],
         # Mixed researcher-owned surfaces, and researcher code beside a
         # parameter-only edit, stay a researcher-only change.
         [
             "robot_learning/scenario/environment.py",
             "robot_learning/training/normalization.py",
-            "tests/scenario/test_environment.py",
-            "tests/training/test_checkpointing.py",
         ],
         ["robot_learning/scenario/reward.py", "research/current_params.json"],
     ],
 )
-def test_researcher_owned_change_skips_only_the_frozen_task_suite(changed_paths):
+def test_researcher_owned_change_runs_only_protected_boundary_checks(changed_paths):
     assert (
         validation_test_paths(changed_paths, fresh_baseline=False) == RESEARCHER_SUITES
     )
@@ -1213,24 +1178,18 @@ def test_dependency_check_never_rewrites_the_lockfile(monkeypatch):
     assert calls == [("uv", "lock", "--check")]
 
 
-def test_validated_test_paths_are_the_four_repository_domains():
+def test_validated_test_paths_are_the_human_owned_repository_domains():
 
     assert protocol.VALIDATED_TEST_PATHS == (
         "tests/benchmark",
         "tests/autoresearch",
-        "tests/scenario",
-        "tests/training",
     )
     assert protocol.RESEARCHER_VALIDATED_TEST_PATHS == (
-        "tests/scenario",
-        "tests/training",
         "tests/autoresearch/test_scenario_boundary.py",
         "tests/autoresearch/test_campaign_boundary.py",
     )
     assert protocol.FRESH_BASELINE_VALIDATED_TEST_PATHS == (
         "tests/benchmark",
-        "tests/scenario",
-        "tests/training",
         "tests/autoresearch/test_scenario_boundary.py",
         "tests/autoresearch/test_campaign_boundary.py",
     )

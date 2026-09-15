@@ -58,28 +58,25 @@ PROTECTED_CONTEXT_PATHS = {
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
 PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
-# Human-owned test domains. Prefix-based so that creating, renaming or deleting
-# a file underneath them is rejected just like modifying an existing one.
+# Human-owned test domains and retired researcher-test locations. Prefix-based
+# so that creating, renaming or deleting a file underneath them is rejected.
 PROTECTED_TEST_PREFIXES = (
     "tests/benchmark/",
     "tests/autoresearch/",
     "tests/e2e/",
+    "tests/scenario/",
+    "tests/training/",
 )
 VALIDATED_TEST_PATHS = (
     "tests/benchmark",
     "tests/autoresearch",
-    "tests/scenario",
-    "tests/training",
 )
 AUTORESEARCH_BOUNDARY_TEST_PATHS = (
     "tests/autoresearch/test_scenario_boundary.py",
     "tests/autoresearch/test_campaign_boundary.py",
 )
-# A researcher code change cannot alter the frozen task, so `tests/benchmark`
-# adds nothing; every other suite still guards code the researcher may rewrite.
+# Researcher code changes retain only the human-owned architecture guards.
 RESEARCHER_VALIDATED_TEST_PATHS = (
-    "tests/scenario",
-    "tests/training",
     *AUTORESEARCH_BOUNDARY_TEST_PATHS,
 )
 FRESH_BASELINE_VALIDATED_TEST_PATHS = (
@@ -92,8 +89,6 @@ FRESH_BASELINE_VALIDATED_TEST_PATHS = (
 RESEARCHER_OWNED_PREFIXES = (
     "robot_learning/scenario/",
     "robot_learning/training/",
-    "tests/scenario/",
-    "tests/training/",
 )
 RESEARCHER_OWNED_PATHS = {
     "robot_learning/evaluate.py",
@@ -543,7 +538,7 @@ def validate_research_delta_ownership(code_changes: list[str]) -> None:
     )
     if protected_tests:
         raise ValueError(
-            "the human-owned benchmark and AutoResearch tests cannot be changed "
+            "human-owned and retired tests cannot be changed "
             f"by a research proposal: {protected_tests}; restore them to their "
             "content at the scientific parent before proposing another experiment"
         )

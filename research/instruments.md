@@ -357,7 +357,7 @@ existing `previous_result_decision.reason` field.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
-researcher-owned scientific recipe: researcher-owned source, tests, and
+researcher-owned scientific recipe: researcher-owned source and
 `research/current_params.json`. `keep` keeps the experiment's complete
 scientific recipe; `revert` restores the scientific parent's complete recipe;
 and `restore` restores the complete recipe associated with the explicitly named

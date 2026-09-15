@@ -616,7 +616,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
             "",
             "### Effective scientific recipe in the current worktree",
             "",
-            "- Researcher-owned source and tests: current worktree",
+            "- Researcher-owned source: current worktree",
             f"- Effective parameters: {_stable_json(current_params)}",
             "- Parameter differences from `working`: "
             + _parameter_differences(current_params, working),
