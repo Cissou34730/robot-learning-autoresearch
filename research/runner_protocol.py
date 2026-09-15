@@ -37,6 +37,7 @@ PROTECTED_BENCHMARK_PATHS = {
 # Additional Runner instruments are protected even when they do not belong to
 # the official-task trust path.
 PROTECTED_RUNNER_PATHS = {
+    "tools/campaign_report.py",
     "research/migrate_policy_runtime.py",
     "research/reset_campaign.py",
     "research/build_research_brief.py",

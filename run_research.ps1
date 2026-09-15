@@ -42,6 +42,7 @@ function Invoke-ResearcherSession {
     param(
         [Parameter(Mandatory)][string]$Prompt,
         [Parameter(Mandatory)][string]$Phase,
+        [Parameter(Mandatory)][int]$Experiment,
         [switch]$Continue
     )
     if ($Continue) {
@@ -60,7 +61,13 @@ function Invoke-ResearcherSession {
         "--session-id", $script:ResearcherSessionId
         "--model", $model
         "--reasoning", $reasoning
+        "--experiment", "$Experiment"
+        "--phase", $Phase
+        "--attempt", $(if ($Continue) { "2" } else { "1" })
     )
+    if ($researchState.campaign.id) {
+        $sessionArgs += @("--campaign-id", $researchState.campaign.id)
+    }
     if ($Continue) {
         $sessionArgs += "--resume"
     }
@@ -355,7 +362,7 @@ while ($true) {
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis"
+        Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis" -Experiment $analysisExperiment
         $analysisStatus = Get-AnalysisSessionStatus 1
         Write-ResearcherSessionStatus $analysisStatus
         if (-not $analysisStatus.Complete) {
@@ -367,7 +374,7 @@ while ($true) {
                 "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Continue
+            Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Experiment $analysisExperiment -Continue
             $analysisStatus = Get-AnalysisSessionStatus 2
             Write-ResearcherSessionStatus $analysisStatus
             if (-not $analysisStatus.Complete) {
@@ -408,7 +415,7 @@ while ($true) {
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design"
+            Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design" -Experiment $researchState.pending_evaluation_request.experiment
             $evaluationStatus = Get-EvaluationSessionStatus 1
             Write-ResearcherSessionStatus $evaluationStatus
             if (-not $evaluationStatus.Complete) {
@@ -420,7 +427,7 @@ while ($true) {
                     "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
-                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Continue
+                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Experiment $researchState.pending_evaluation_request.experiment -Continue
                 $evaluationStatus = Get-EvaluationSessionStatus 2
                 Write-ResearcherSessionStatus $evaluationStatus
                 if (-not $evaluationStatus.Complete) {
@@ -480,7 +487,7 @@ while ($true) {
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision"
+        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment
         $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
         $lineageStatus = Get-LineageSessionStatus $pendingExperiment 1
         Write-ResearcherSessionStatus $lineageStatus
@@ -493,7 +500,7 @@ while ($true) {
                 "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Continue
+            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment -Continue
             $lineageStatus = Get-LineageSessionStatus $pendingExperiment 2
             Write-ResearcherSessionStatus $lineageStatus
             if (-not $lineageStatus.Complete) {
@@ -543,7 +550,7 @@ while ($true) {
         "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
-    Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis"
+    Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment
 
     $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     if ($resultCountAfter -gt $resultCountBefore) {
@@ -566,7 +573,7 @@ while ($true) {
             "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment."
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Continue
+        Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Experiment $nextExperiment -Continue
 
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {

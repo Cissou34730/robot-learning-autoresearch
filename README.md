@@ -55,6 +55,39 @@ per changed file and per shell command, and stays quiet about reads and
 searches. It reports what a session did; whether a phase is complete remains a
 property of the deliverable and its protected validator.
 
+### Human campaign report
+
+Generate a read-only Markdown report, optionally comparing another worktree:
+
+```powershell
+uv run python tools/campaign_report.py
+uv run python tools/campaign_report.py --compare ..\robot-learning-reference-campaing-1 --output reports\comparison.md
+```
+
+The report exposes checkpoint selection and unmeasured proxy peaks,
+initialization and parent rationales, repeated hypothesis families, cited prior
+evidence, lineage/recipe decisions, development-panel reuse and final requests.
+These are facts for reviewing bias evolution, not an automatic quality score.
+It does not inspect live processes or run a model, Git or a Researcher session.
+Use `--repo <path>` or `--campaign-id <id>` to select other existing records.
+Detailed scientific judgments remain the Researcher's recorded assessments.
+
+Each launcher invocation records only aggregate tokens (input/cache/output),
+AIU, tool counts by name and duration, with campaign/experiment/phase metadata,
+in `reports/session_usage/<campaign-id>.jsonl`. No messages, tool arguments or
+file contents are saved. Failed and interrupted invocations record available
+usage; missing SDK values are unavailable, not zero. Accounting failure warns
+without invalidating the scientific deliverable. Retries record separate usage
+deltas even when they resume the same session. Input includes cache reads, so
+the report never adds cache reads twice. Historical sessions cannot be recovered
+from console summaries; their consumption is explicitly missing.
+
+`reports/` is ignored by Git and never injected into Researcher context. Reset
+leaves these campaign-scoped human records intact; copy this directory alongside
+the campaign records if reports must be portable to another worktree or machine.
+Generated reports contain only persisted common fields and recorded scientific
+text: no scenario-specific diagnostic interpretation or new causal conclusions.
+
 Stop the campaign, then choose a reset mode explicitly in the current branch:
 
 ```powershell

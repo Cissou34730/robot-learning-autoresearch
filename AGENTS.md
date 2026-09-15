@@ -34,6 +34,7 @@ uv run python -m robot_learning.train    # Runner: train a policy
 uv run python -m robot_learning.play --model <model.zip>  # Human: open the viewer
 uv run pytest                            # Runner: complete test suite
 uv run pytest tests/e2e                  # Human: slow end-to-end lifecycle suite
+uv run python tools/campaign_report.py   # Human: factual campaign / bias report
 .\reset_research.ps1 -Mode Fresh -Force  # Human: reset campaign, preserve science
 ```
 
@@ -84,6 +85,10 @@ human-only maintenance operation, never a Researcher experiment command.
   and retained IDs; selected challenger artifacts are published under the
   campaign-scoped retained archive before cleanup.
 - `models/candidates/` - disposable training candidates.
+- `tools/campaign_report.py` - human-only campaign decision and usage report.
+- `reports/` - ignored human reports and campaign-scoped aggregate session usage;
+  never injected into Researcher context. Usage survives reset under its original
+  campaign ID and is not scientific history in `research/results.jsonl`.
 - `tests/benchmark/`, `tests/autoresearch/`, `tests/scenario/`,
   `tests/training/` - tests grouped by ownership domain.
 - `tests/e2e/` - human-owned end-to-end lifecycle checks that drive real Git
@@ -98,6 +103,7 @@ The Researcher may read but not modify these paths through an experiment:
 - `AGENTS.md`, `research/program.md`, `research/scenario.md`,
   `research/instruments.md`;
 - `run_research.ps1`, `researcher_session.ps1`, `researcher_copilot.py`;
+- `tools/campaign_report.py`;
 - `research/run_experiment.py`, `research/reset_campaign.py`, `research/runner_*.py`,
   `research/build_research_brief.py`, `research/query_training_log.py`;
 - `pyproject.toml`, `uv.lock`;

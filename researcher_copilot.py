@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import subprocess
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -407,11 +409,13 @@ class Console:
         self.cache_read_tokens = 0
         self.cache_write_tokens = 0
         self.output_tokens = 0
+        self.reported_usage: set[str] = set()
         self.nano_aiu = 0.0
         self.nano_aiu_by_type: dict[str, float] = {}
         self.session_error: str | None = None
         self.denials = 0
         self.tool_calls = 0
+        self.tool_counts: dict[str, int] = {}
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
 
@@ -436,6 +440,7 @@ class Console:
         self, name: str, arguments: object, tool_call_id: str | None = None
     ) -> None:
         self.tool_calls += 1
+        self.tool_counts[name] = self.tool_counts.get(name, 0) + 1
         if tool_call_id:
             self.active_tools[tool_call_id] = (name, arguments)
         if name in SILENT_TOOLS:
@@ -608,11 +613,16 @@ def build_handlers(console: Console, finished: asyncio.Event):
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):
+            for name in ("input_tokens", "cache_read_tokens", "output_tokens"):
+                if getattr(data, name, None) is not None:
+                    console.reported_usage.add(name)
             console.prompt_tokens += data.input_tokens or 0
             console.cache_read_tokens += data.cache_read_tokens or 0
             console.cache_write_tokens += data.cache_write_tokens or 0
             console.output_tokens += data.output_tokens or 0
             usage = getattr(data, "copilot_usage", None)
+            if getattr(usage, "total_nano_aiu", None) is not None:
+                console.reported_usage.add("aiu")
             console.nano_aiu += getattr(usage, "total_nano_aiu", 0) or 0
             # Priced by the runtime rather than by a rate table copied in here.
             for detail in getattr(usage, "_token_details", None) or []:
@@ -675,7 +685,7 @@ async def open_session(client, args, options: dict):
 async def run(args) -> int:
     from copilot import CopilotClient
 
-    console = Console()
+    console = getattr(args, "usage_console", None) or Console()
     finished = asyncio.Event()
     model = normalize_model(args.model)
 
@@ -739,18 +749,72 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     # never inherit whatever session happened to run last on this machine.
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--timeout", type=float, default=1800.0)
+    # Accounting metadata only; these values never enter the model prompt.
+    parser.add_argument("--campaign-id")
+    parser.add_argument("--experiment", type=int)
+    parser.add_argument("--phase")
+    parser.add_argument("--attempt", type=int, default=1)
     return parser.parse_args(argv)
+
+
+def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None:
+    """Append aggregate usage, never conversation content or tool arguments."""
+    if not args.campaign_id:
+        return  # Standalone invocations are not attributed to an arbitrary campaign.
+    # Campaign IDs are path components, not filenames supplied by the model.
+    import uuid
+
+    campaign_id = str(uuid.UUID(args.campaign_id))
+    directory = ROOT / "reports" / "session_usage"
+    directory.mkdir(parents=True, exist_ok=True)
+    row = {
+        "campaign_id": campaign_id,
+        "experiment": args.experiment,
+        "phase": args.phase,
+        "attempt": args.attempt,
+        "session_id": args.session_id,
+        "recorded_at": datetime.now(UTC).isoformat(),
+        "model": normalize_model(args.model),
+        "reasoning": args.reasoning,
+        "duration_seconds": round(elapsed, 3),
+        "exit_code": exit_code,
+        "input_tokens": console.prompt_tokens
+        if "input_tokens" in console.reported_usage
+        else None,
+        "cache_read_tokens": console.cache_read_tokens
+        if "cache_read_tokens" in console.reported_usage
+        else None,
+        "output_tokens": console.output_tokens
+        if "output_tokens" in console.reported_usage
+        else None,
+        "aiu": console.nano_aiu / 1e9 if "aiu" in console.reported_usage else None,
+        "tool_calls": console.tool_calls,
+        "tools_by_name": console.tool_counts,
+    }
+    with (directory / f"{campaign_id}.jsonl").open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    args.usage_console = Console()
+    started = time.monotonic()
+    exit_code = EXIT_RUNTIME_FAILURE
     try:
-        return asyncio.run(run(args))
+        exit_code = asyncio.run(run(args))
     except KeyboardInterrupt:
-        return EXIT_INTERRUPTED
+        exit_code = EXIT_INTERRUPTED
     except Exception as error:  # noqa: BLE001 - the launcher needs a code, not a traceback
         print(f"Copilot runtime failure: {error}", file=sys.stderr)
-        return EXIT_RUNTIME_FAILURE
+    finally:
+        try:
+            record_usage(
+                args, args.usage_console, time.monotonic() - started, exit_code
+            )
+        except (OSError, ValueError) as error:
+            # Accounting failure must not invalidate a scientific deliverable.
+            print(f"Session usage could not be recorded: {error}", file=sys.stderr)
+    return exit_code
 
 
 if __name__ == "__main__":

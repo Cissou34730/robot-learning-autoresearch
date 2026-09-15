@@ -42,6 +42,9 @@ htmlcov/
 # Oversized researcher tool output, offloaded out of the model context
 .copilot/
 
+# Human reports and campaign-scoped session accounting, never Researcher context
+reports/
+
 # Transient research runner controls and generated summaries
 research/training_logs/
 research/last_train_summary.md
