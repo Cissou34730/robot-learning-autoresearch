@@ -58,56 +58,30 @@
     "experiment": 3,
     "reason": "Select experiment 3 checkpoint-100352 because it is the strongest measured saved policy: 98.0% on the research panel and 97.0% on the task-reference panel, with paired wins over the experiment-2 working policy and over the later experiment-3 checkpoint. The development evidence supports freezing this candidate for the official fixed panel, while the development panels cannot themselves establish the human objective."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
-  "pending_analysis": null,
-  "pending_closure_operation": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "bd21b9dc24d554c424e924ccfb417939df6c84d53ff4755450e59a167dccf479",
+  "official_benchmark_model": {
     "artifact": "research/checkpoints/retained/8b90fea8-b848-4455-9c37-b4b50e0123a4/e3-cada55eb5-bd21b9dc24d554c424e924ccfb417939df6c84d53ff4755450e59a167dccf479",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/8b90fea8-b848-4455-9c37-b4b50e0123a4/e3-cada55eb5-bd21b9dc24d554c424e924ccfb417939df6c84d53ff4755450e59a167dccf479",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [
-        "research/evaluations/8b90fea8-b848-4455-9c37-b4b50e0123a4/evaluation-8b90fea8-b848-4455-9c37-b4b50e0123a4-experiment-3-checkpoint-100352-200ep-seed9100-0b0f509c3adf.json",
-        "research/evaluations/8b90fea8-b848-4455-9c37-b4b50e0123a4/task-reference-8b90fea8-b848-4455-9c37-b4b50e0123a4-experiment-3-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "bd21b9dc24d554c424e924ccfb417939df6c84d53ff4755450e59a167dccf479",
-      "origin_experiment": 3,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "This checkpoint is the strongest measured candidate in the campaign at 98.0% research-panel success and 97.0% task-reference success, exceeding the prior best-known policy on both development panels.",
-      "scientific_commit": "e5e83c851388b7c0c9998f557b58f255b469f80f",
-      "training_steps": 301056
-    },
-    "experiment": 3,
     "fingerprint": "bd21b9dc24d554c424e924ccfb417939df6c84d53ff4755450e59a167dccf479",
     "selected": "best_known"
   },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.4172823610163634,
+      "median": 0.36068079511379014,
+      "worst": 2.127831023308546
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 94.5
+  },
+  "pending_analysis": null,
+  "pending_closure_operation": null,
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "54d4a8c0a26150620d8cbac4ce3be8da9ebe36c7",
@@ -118,7 +92,7 @@
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/8b90fea8-b848-4455-9c37-b4b50e0123a4/e3-cada55eb5-bd21b9dc24d554c424e924ccfb417939df6c84d53ff4755450e59a167dccf479",
     "candidate": "checkpoint-100352",
