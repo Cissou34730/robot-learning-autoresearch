@@ -1,132 +1,30 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/ad87dedc-d374-4fe4-a4fc-7cfea548ef31/e1-cada55eb5-b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/ad87dedc-d374-4fe4-a4fc-7cfea548ef31/evaluation-ad87dedc-d374-4fe4-a4fc-7cfea548ef31-experiment-1-checkpoint-100352-200ep-seed7301-6ba3ba6d7654.json",
-      "research/evaluations/ad87dedc-d374-4fe4-a4fc-7cfea548ef31/task-reference-ad87dedc-d374-4fe4-a4fc-7cfea548ef31-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest measured task success among the available checkpoints on both the research and task-reference panels, and its selection is supported by the shared-episode comparisons against both later checkpoints.",
-    "scientific_commit": "704839f7ce16203cc6720eacadd93d5b5c642c82",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "c79c0fde3a91f836f4748fdeebb655299d3b6d08",
-    "id": "ad87dedc-d374-4fe4-a4fc-7cfea548ef31",
+    "base_commit": "6214ac066b0021a9e8f24410fbf4fe0516c4464c",
+    "id": "9af8af06-b323-444d-9108-0ed38bef0cae",
     "recipe_source_commit": "9f0d9af87bea5c9eee418e61e1977b1312037236",
-    "started_at": "2026-09-14T21:38:59.169293+00:00"
+    "started_at": "2026-09-15T04:52:14.649038+00:00"
   },
   "campaign_experiment_counters": {
-    "ad87dedc-d374-4fe4-a4fc-7cfea548ef31": 1
+    "9af8af06-b323-444d-9108-0ed38bef0cae": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "This was an unchanged fresh baseline with no researcher-owned scientific code changes; keep its complete PPO recipe for the selected policy and its provenance."
-    },
-    "code_parent_commit": "704839f7ce16203cc6720eacadd93d5b5c642c82",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Checkpoint 100352 is the strongest measured policy on both development panels, reaching 98.0% on the task-reference panel and 98.5% on the research panel. Later checkpoints scored lower on both panels. The development evidence is close enough to the human objective to justify the distinct official assessment, while its residual failures and panel limitations mean the official verdict remains necessary."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/ad87dedc-d374-4fe4-a4fc-7cfea548ef31/e1-cada55eb5-b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-    "fingerprint": "b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "704839f7ce16203cc6720eacadd93d5b5c642c82",
-    "experiment": 1,
-    "scientific_commit": "704839f7ce16203cc6720eacadd93d5b5c642c82"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/ad87dedc-d374-4fe4-a4fc-7cfea548ef31/e1-cada55eb5-b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/ad87dedc-d374-4fe4-a4fc-7cfea548ef31/evaluation-ad87dedc-d374-4fe4-a4fc-7cfea548ef31-experiment-1-checkpoint-100352-200ep-seed7301-6ba3ba6d7654.json"
-    ],
-    "fingerprint": "b771dfadfac7ecc01df54f2d68e901b89d91995df2d7890e20b68e28b80f3856",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Checkpoint 100352 is the strongest measured policy on both development panels, reaching 98.0% on the task-reference panel and 98.5% on the research panel. Later checkpoints scored lower on both panels. The development evidence is close enough to the human objective to justify the distinct official assessment, while its residual failures and panel limitations mean the official verdict remains necessary.",
-    "scientific_commit": "704839f7ce16203cc6720eacadd93d5b5c642c82",
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
