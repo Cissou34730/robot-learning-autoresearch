@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## 9af8af06-b323-444d-9108-0ed38bef0cae / Scientific strategy
+
+**Current synthesis:** The fresh PPO baseline learned the reach-and-hold behavior. Checkpoint-100352 is the strongest measured candidate: it achieved 98.0% on the 100-episode research panel and 98.0% on the independent 200-episode task-reference panel. The later checkpoint-120832 retained 98.0% on the research panel but reached 97.0% on the task-reference panel, so later training did not improve the measured objective.
+
+**Lessons and limits:** Measured task success, rather than training reward or proxy success, supports policy progress. Training reward peaked at checkpoint-86016 while training success continued rising, and the terminal training metrics do not distinguish the two measured policies on the research panel. The task-reference failures for checkpoint-100352 cluster in a negative-angle sector, but the panels are development measurements and do not establish official performance or a causal failure mechanism.
+
+**Open questions:** Whether checkpoint-100352 reaches at least 98% on the distinct official 200-episode panel remains unresolved. The residual failure pattern and its stability outside the development panels are also unresolved.
+
+## 9af8af06-b323-444d-9108-0ed38bef0cae / Experiment 1
+
+**Result:** The fresh baseline produced a useful learned policy. Checkpoint-100352 is selected for closure because it is the best measured candidate and meets 98.0% on both available development panels.
+
+**Observed behavior:** Training completed 120,832 steps against a 120,000-step request. Training success was 0 through 70,656 steps, then rose to 0.93 at 95,232, peaked at 0.97 at 100,352, and was 0.95 at 120,832. Training reward peaked at 163.85 at 86,016 and was 117.32 at 100,352 versus 112.02 at 120,832. Research evaluation at seed 0 returned 98.0% for both measured checkpoints, with the same two failed episode seeds (11 and 25). On task-reference-v1, checkpoint-100352 achieved 98.0% (196/200), while checkpoint-120832 achieved 97.0% (194/200). The four checkpoint-100352 failures were all 500-step truncations with target angles from -116.4 to -127.9 degrees; checkpoint-120832 retained those failures and added failures at -132.4 and 169.1 degrees.
+
+**Hypothesis assessment:** Supported as a baseline-establishment result: the unchanged fresh method learned a policy with measured development performance at the human objective level. This is not evidence for a causal intervention or for official success; the baseline had no type-specific intervention question, only the proposition that it would establish an initial reference policy. The research panel used one seed and the task-reference panel is not the official assessment.
+
+**Interpretation:** The learned policy makes substantial progress toward the human objective, and checkpoint-100352 is more useful than the terminal checkpoint under the measured task-reference panel. The late training reward and training-success signals are orthogonal to final candidate selection and show no reason to prefer checkpoint-120832. The repeated negative-angle failures suggest a residual behavioral weakness worth noting, but the available artifacts do not identify its cause.
+
+**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/results.jsonl`; `research/checkpoints/challengers/9af8af06-b323-444d-9108-0ed38bef0cae/experiment-1/inventory.json`; `research/training_logs/9af8af06-b323-444d-9108-0ed38bef0cae/experiment-1-attempt-1.log`; `research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/evaluation-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-100352-100ep-seed0-6ba3ba6d7654.json`; `research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/evaluation-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-120832-100ep-seed0-6ba3ba6d7654.json`; `research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/task-reference-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-100352-task-reference-v1.json`; `research/evaluations/9af8af06-b323-444d-9108-0ed38bef0cae/task-reference-9af8af06-b323-444d-9108-0ed38bef0cae-experiment-1-checkpoint-120832-task-reference-v1.json`.
