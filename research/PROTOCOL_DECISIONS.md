@@ -41,6 +41,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
   `research/benchmark_envs.py` throughput probe, are removed. Moving the protected
   scenario files and the PowerShell phase machine is deferred to a campaign
   boundary because those path moves change measurement identity.
+- **Phase consolidation:** the v4 lifecycle exposes exactly three Researcher
+  phases - experiment design ("new hypothesis"), investigation ("post-training
+  analysis", which may request another measurement round) and closure ("lineage
+  decision"). The separate "evaluation design" session is retained only as the
+  legacy schema-v3-compatibility path and is not part of the v4 lifecycle.
 
 ## 2026-09-07 - Research harness evidence and context
 
