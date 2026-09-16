@@ -199,6 +199,33 @@ def is_researcher_owned(path: str) -> bool:
     )
 
 
+def declared_paths_exist(root: Path | None = None) -> list[str]:
+    """Every explicitly declared classification that is missing on disk.
+
+    A declared-but-missing classification silently changes which files define
+    evaluation semantics, so it must fail loudly instead of being ignored
+    (issue #41).
+    """
+    base = root or paths.ROOT
+    declared = {
+        *PROTECTED_BENCHMARK_PATHS,
+        *PROTECTED_RUNNER_PATHS,
+        *PROTECTED_RUNTIME_PATHS,
+        *PROTECTED_MEASUREMENT_PATHS,
+        *PROTECTED_CONTEXT_PATHS,
+        *DEPENDENCY_METADATA_PATHS,
+        *RESEARCHER_OWNED_PATHS,
+        *PARAMETER_ONLY_PATHS,
+        *PRESENTATION_ONLY_PATHS,
+        *TRAINING_ONLY_PATHS,
+        *MODEL_CONTAINED_RUNTIME_PATHS,
+        *EVALUATION_RUNTIME_PATHS,
+    }
+    return sorted(
+        relative for relative in declared if not (base / relative).is_file()
+    )
+
+
 def validation_test_paths(
     changed_paths: list[str], *, fresh_baseline: bool
 ) -> tuple[str, ...]:

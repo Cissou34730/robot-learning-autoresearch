@@ -135,7 +135,7 @@ IMPORT_CYCLE_ENTRY_POINTS = (
     "robot_learning.benchmark.reference_evaluation",
     "robot_learning.scenario",
     "robot_learning.scenario.final_benchmark",
-    "robot_learning.training.observations",
+    "robot_learning.scenario.observations",
 )
 
 

@@ -33,6 +33,14 @@ superseded. It does not instruct the autonomous researcher and does not replace
   tests remain an optional instrument, never a completion obligation, while
   parameter-only changes run no suites and human-owned, protected, dependency or
   unclassified changes keep full validation.
+- **Ownership registry guard and housekeeping:** every explicitly declared
+  classification is checked against the files on disk, so a declared-but-missing
+  path fails loudly instead of silently changing evaluation semantics. The dead
+  compatibility shims in `robot_learning/environments/`, `robot_learning/rewards/`
+  and `robot_learning/training/observations.py`, plus the unclassified
+  `research/benchmark_envs.py` throughput probe, are removed. Moving the protected
+  scenario files and the PowerShell phase machine is deferred to a campaign
+  boundary because those path moves change measurement identity.
 
 ## 2026-09-07 - Research harness evidence and context
 
