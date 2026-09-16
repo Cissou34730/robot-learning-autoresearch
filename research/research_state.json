@@ -1063,7 +1063,7 @@
         "training_steps": 100352
       }
     },
-    "progress": "durable",
+    "progress": "cleanup_complete",
     "selected": "candidate-cdb684be"
   },
   "pending_evaluation_request": null,
