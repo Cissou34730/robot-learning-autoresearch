@@ -24,6 +24,10 @@ superseded. It does not instruct the autonomous researcher and does not replace
   selections and artifact references. It is written before execution and carried
   into the closed experiment record, so restart recovery cannot duplicate or
   lose a round. Aggregate measurement views remain derivable from the rounds.
+- **Cost visibility:** The brief reports training experiments, completed and
+  requested steps, recorded replications, evaluation rounds, instrument
+  executions, distinct episode coverage and repeated coverage as facts. It sets
+  no budget, target, or preferred allocation, and implies no stopping decision.
 
 ## 2026-09-07 - Research harness evidence and context
 

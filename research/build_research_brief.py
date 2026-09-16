@@ -981,6 +981,110 @@ def _v4_best_known_section(state: dict) -> list[str]:
     return lines
 
 
+def _cost_records(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[dict]:
+    """Experiment records once each, preferring the full pending result."""
+    records = [record for record in results if isinstance(record, dict)]
+    indices = {int(record.get("index", -1)) for record in records}
+    if isinstance(pending, dict):
+        result = pending.get("result")
+        if isinstance(result, dict) and int(result.get("index", -1)) not in indices:
+            records.append(result)
+    return records
+
+
+def _v4_cost_accounting_section(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[str]:
+    """Factual campaign accounting in non-overlapping units.
+
+    Issue #34: surfaces training and evaluation work without implying a budget,
+    a preferred allocation, or an automatic stopping decision.
+    """
+    records = _cost_records(state, results, pending)
+    completed_steps = 0
+    requested_steps = 0
+    for record in records:
+        if record.get("completed_training_steps") is not None:
+            completed_steps += int(record["completed_training_steps"])
+        elif record.get("training_budget_steps") is not None:
+            completed_steps += int(record["training_budget_steps"])
+        if record.get("training_budget_steps") is not None:
+            requested_steps += int(record["training_budget_steps"])
+    replications = sorted(
+        int(record["index"])
+        for record in records
+        if str(record.get("kind")) == "replication"
+    )
+    rounds: list[dict] = []
+    for record in records:
+        rounds.extend(
+            item for item in record.get("evaluation_rounds") or [] if isinstance(item, dict)
+        )
+    research_executions = 0
+    research_episode_executions = 0
+    reference_executions = 0
+    reference_episode_executions = 0
+    for round_record in rounds:
+        round_results = (
+            round_record.get("results")
+            if isinstance(round_record.get("results"), dict)
+            else {}
+        )
+        for item in round_results.get("research_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            research_executions += 1
+            research_episode_executions += int(item.get("episodes", 0) or 0)
+        for item in round_results.get("task_reference_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            reference_executions += 1
+            reference_episode_executions += int(item.get("episodes", 0) or 0)
+    distinct_episodes = 0
+    episode_executions = 0
+    repeated_episodes = 0
+    for record in records:
+        for candidate in record.get("candidates") or []:
+            summary = candidate.get("summary") if isinstance(candidate, dict) else None
+            if not isinstance(summary, dict):
+                continue
+            distinct_episodes += int(summary.get("episodes", 0) or 0)
+            episode_executions += int(summary.get("episode_executions", 0) or 0)
+            repeated_episodes += int(summary.get("repeated_episodes", 0) or 0)
+    return [
+        "",
+        "## Campaign cost accounting",
+        "",
+        (
+            "Factual record of the work this campaign has performed and the "
+            "evidence coverage it has produced. It sets no budget, target, or "
+            "preferred allocation:"
+        ),
+        "",
+        (
+            f"- Training experiments: {len(records)} "
+            f"(completed steps: {completed_steps:,}; requested steps: {requested_steps:,})."
+        ),
+        (
+            "- Replication experiments recorded: "
+            + (", ".join(str(index) for index in replications) if replications else "none")
+            + "."
+        ),
+        (
+            f"- Evaluation rounds: {len(rounds)} "
+            f"(research_evaluation: {research_executions} executions, "
+            f"{research_episode_executions} episodes; task_reference: "
+            f"{reference_executions} executions, {reference_episode_executions} episodes)."
+        ),
+        (
+            f"- Research-evaluation episode coverage: {distinct_episodes} distinct; "
+            f"{episode_executions} executions; {repeated_episodes} repeated."
+        ),
+    ]
+
+
 def _v4_measurement_rounds_section(
     pending: dict | None, latest: dict | None
 ) -> list[str]:
@@ -1187,6 +1291,8 @@ def _render_v4_research_brief(
     lines.extend(_v4_evidence_section(pending, results))
 
     lines.extend(_v4_measurement_rounds_section(pending, latest))
+
+    lines.extend(_v4_cost_accounting_section(state, results, pending))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 

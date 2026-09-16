@@ -105,6 +105,7 @@ def test_composed_brief_orders_each_section_once():
         "## Working lineage",
         "## Campaign experiment index",
         "## Development evidence index",
+        "## Campaign cost accounting",
         "## Provisional scientific synthesis",
         "## Repeated operations",
         "## Intervention surfaces",
@@ -166,3 +167,78 @@ def test_measurement_rounds_section_groups_rounds_in_order():
 def test_measurement_rounds_section_is_absent_without_rounds():
     assert brief._v4_measurement_rounds_section(None, None) == []
     assert brief._v4_measurement_rounds_section({}, None) == []
+
+
+def test_cost_accounting_counts_training_and_replication_factually():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+        },
+        {
+            "index": 2,
+            "kind": "training",
+            "training_budget_steps": 100,
+            "completed_training_steps": 120,
+        },
+        {
+            "index": 3,
+            "kind": "replication",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+            "replication_of": 1,
+        },
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "Training experiments: 3" in text
+    assert "completed steps: 320" in text
+    assert "requested steps: 300" in text
+    assert "Replication experiments recorded: 3." in text
+
+
+def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+            "evaluation_rounds": [
+                {
+                    "round": 1,
+                    "results": {
+                        "research_evaluations": [{"episodes": 10}, {"episodes": 10}]
+                    },
+                },
+                {
+                    "round": 2,
+                    "results": {
+                        "research_evaluations": [{"episodes": 10}],
+                        "task_reference_evaluations": [{"episodes": 200}],
+                    },
+                },
+            ],
+            "candidates": [
+                {
+                    "summary": {
+                        "episodes": 15,
+                        "episode_executions": 30,
+                        "repeated_episodes": 15,
+                    }
+                }
+            ],
+        }
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "Evaluation rounds: 2" in text
+    assert "research_evaluation: 3 executions, 30 episodes" in text
+    assert "task_reference: 1 executions, 200 episodes" in text
+    assert "15 distinct; 30 executions; 15 repeated" in text
+
+
+def test_cost_accounting_does_not_recommend_confirmation():
+    text = "\n".join(brief._v4_cost_accounting_section({}, [], None)).lower()
+    for wording in ("budget limit", "warning", "should", "enough", "stop"):
+        assert wording not in text
