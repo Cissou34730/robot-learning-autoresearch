@@ -6,6 +6,7 @@ import json
 import re
 from pathlib import Path, PureWindowsPath
 
+from research import runner_console as console
 from research.runner_protocol import (
     is_researcher_owned,
     operation_description,
@@ -274,7 +275,9 @@ def _researcher_owned_sources() -> list[str]:
     return sorted(sources)
 
 
-def _intervention_surfaces(results: list[dict]) -> tuple[list[tuple[str, int]], int, int]:
+def _intervention_surfaces(
+    results: list[dict],
+) -> tuple[list[tuple[str, int]], int, int]:
     counts = {source: 0 for source in _researcher_owned_sources()}
     parameter_only = 0
     unchanged = 0
@@ -337,16 +340,18 @@ def _v4_result_measurements(result: dict) -> str:
         if len(group) > 1:
             details.append(f"{len(group)} measurements")
         episodes = sorted(
-            {int(item["episodes"]) for item in group if item.get("episodes") is not None}
+            {
+                int(item["episodes"])
+                for item in group
+                if item.get("episodes") is not None
+            }
         )
         if len(episodes) == 1:
             details.append(
                 f"{episodes[0]} episodes" + (" each" if len(group) > 1 else "")
             )
         elif episodes:
-            details.append(
-                f"episode counts {min(episodes)}-{max(episodes)}"
-            )
+            details.append(f"episode counts {min(episodes)}-{max(episodes)}")
         seeds = sorted(
             {int(item["seed"]) for item in group if item.get("seed") is not None}
         )
@@ -503,7 +508,9 @@ def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
         f"  - Model fingerprint: {_recorded_value(lineage.get('fingerprint'))}",
         f"  - Scientific commit: {_recorded_value(lineage.get('scientific_commit'))}",
         "  - Effective parameters: "
-        + (_stable_json(parameters) if isinstance(parameters, dict) else "not recorded"),
+        + (
+            _stable_json(parameters) if isinstance(parameters, dict) else "not recorded"
+        ),
         f"  - Recorded evaluation artifacts: {evidence}",
         f"  - Researcher reason: {_recorded_value(lineage.get('reason'))}",
     ]
@@ -644,17 +651,22 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
         for evaluation in direct:
             metrics = evaluation.get("metrics") or evaluation
             normalized = {**metrics, **evaluation}
-            identity = str(metrics.get("evaluation_artifact") or _stable_json({
-                key: normalized.get(key)
-                for key in (
-                    "candidate",
-                    "instrument",
-                    "episodes",
-                    "seed",
-                    "evaluation_semantics",
-                    "model_fingerprint",
+            identity = str(
+                metrics.get("evaluation_artifact")
+                or _stable_json(
+                    {
+                        key: normalized.get(key)
+                        for key in (
+                            "candidate",
+                            "instrument",
+                            "episodes",
+                            "seed",
+                            "evaluation_semantics",
+                            "model_fingerprint",
+                        )
+                    }
                 )
-            }))
+            )
             if identity in seen_research:
                 continue
             seen_research.add(identity)
@@ -670,17 +682,22 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
             *(source.get("task_reference_evaluations") or []),
             *(source.get("partial_task_reference_evaluations") or []),
         ]:
-            identity = str(evaluation.get("evaluation_artifact") or _stable_json({
-                key: evaluation.get(key)
-                for key in (
-                    "candidate",
-                    "panel",
-                    "panel_version",
-                    "episodes",
-                    "seed",
-                    "model_fingerprint",
+            identity = str(
+                evaluation.get("evaluation_artifact")
+                or _stable_json(
+                    {
+                        key: evaluation.get(key)
+                        for key in (
+                            "candidate",
+                            "panel",
+                            "panel_version",
+                            "episodes",
+                            "seed",
+                            "model_fingerprint",
+                        )
+                    }
                 )
-            }))
+            )
             if identity in seen_task_reference:
                 continue
             seen_task_reference.add(identity)
@@ -762,9 +779,21 @@ def _render_v4_research_brief(
     current_params: dict,
 ) -> str:
     pending = state.get("pending_analysis")
-    latest = pending.get("result") if isinstance(pending, dict) else (results[-1] if results else None)
-    latest_experiment = pending.get("experiment") if isinstance(pending, dict) else (latest or {}).get("index", "none")
-    phase = "post-training analysis" if isinstance(pending, dict) else "experiment preparation"
+    latest = (
+        pending.get("result")
+        if isinstance(pending, dict)
+        else (results[-1] if results else None)
+    )
+    latest_experiment = (
+        pending.get("experiment")
+        if isinstance(pending, dict)
+        else (latest or {}).get("index", "none")
+    )
+    phase = (
+        "post-training analysis"
+        if isinstance(pending, dict)
+        else "experiment preparation"
+    )
     if state.get("pending_final_benchmark") is not None:
         phase = "official assessment"
     terminal = state.get("terminal_campaign_status")
@@ -800,38 +829,53 @@ def _render_v4_research_brief(
             pending.get("candidates", []),
             key=lambda item: str(item.get("name", "")),
         )
-        measured = [candidate for candidate in candidates if candidate.get("evaluations")]
-        unmeasured = [candidate for candidate in candidates if not candidate.get("evaluations")]
-        lines.extend([
-            f"- Operation: {operation_description(result) or result.get('kind', '-')}",
-            f"- Parent: {result.get('training_parent', pending.get('training_parent', '-'))}",
-            f"- Intervention: {_change_details(result)}",
-            "- Raw training logs: " + ", ".join(
-                _existing_artifact_reference(path, kind="file")
-                for path in pending.get("training_log_paths", [])
-            ) if pending.get("training_log_paths") else "- Raw training logs: unmeasured",
-        ])
+        measured = [
+            candidate for candidate in candidates if candidate.get("evaluations")
+        ]
+        unmeasured = [
+            candidate for candidate in candidates if not candidate.get("evaluations")
+        ]
+        lines.extend(
+            [
+                f"- Operation: {operation_description(result) or result.get('kind', '-')}",
+                f"- Parent: {result.get('training_parent', pending.get('training_parent', '-'))}",
+                f"- Intervention: {_change_details(result)}",
+                "- Raw training logs: "
+                + ", ".join(
+                    _existing_artifact_reference(path, kind="file")
+                    for path in pending.get("training_log_paths", [])
+                )
+                if pending.get("training_log_paths")
+                else "- Raw training logs: unmeasured",
+            ]
+        )
         if unmeasured:
             lines.append(
                 f"- Unmeasured candidates: {len(unmeasured)} of {len(candidates)}."
             )
         if measured:
-            lines.extend([
-                "",
-                "| Candidate | Measurements |",
-                "|---|---|",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "| Candidate | Measurements |",
+                    "|---|---|",
+                ]
+            )
             for candidate in measured:
-                lines.append(f"| `{candidate.get('name', '-')}` | {_v4_measurements(candidate)} |")
+                lines.append(
+                    f"| `{candidate.get('name', '-')}` | {_v4_measurements(candidate)} |"
+                )
     elif latest:
-        lines.extend([
-            f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",
-            f"- Parent: {latest.get('training_parent', '-')}",
-            f"- Intervention: {_change_details(latest)}",
-            f"- Measurements: {_v4_result_measurements(latest)}",
-            f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
-            f"- Final action: {(latest.get('closure_decision') or {}).get('continue_from', 'unmeasured')}",
-        ])
+        lines.extend(
+            [
+                f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",
+                f"- Parent: {latest.get('training_parent', '-')}",
+                f"- Intervention: {_change_details(latest)}",
+                f"- Measurements: {_v4_result_measurements(latest)}",
+                f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
+                f"- Final action: {(latest.get('closure_decision') or {}).get('continue_from', 'unmeasured')}",
+            ]
+        )
     else:
         lines.append("No experiment has completed in this campaign.")
 
@@ -862,8 +906,18 @@ def _render_v4_research_brief(
         else "- Working: unset"
     )
 
-    lines.extend(["", "## Campaign experiment index", "", "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |", "|---:|---|---|---|---|---|---|---|"])
-    for result in sorted(results, key=lambda item: int(item.get("index", 0)), reverse=True):
+    lines.extend(
+        [
+            "",
+            "## Campaign experiment index",
+            "",
+            "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
+            "|---:|---|---|---|---|---|---|---|",
+        ]
+    )
+    for result in sorted(
+        results, key=lambda item: int(item.get("index", 0)), reverse=True
+    ):
         checkpoints = compact_measurement_summary(result)
         closure = result.get("closure_decision") or {}
         lines.append(
@@ -905,9 +959,7 @@ def _render_v4_research_brief(
     groups = _replication_groups(results)
     if groups:
         for original, entries in groups:
-            experiments = ", ".join(
-                str(entry.get("index", "-")) for entry in entries
-            )
+            experiments = ", ".join(str(entry.get("index", "-")) for entry in entries)
             lines.append(
                 f"- Replication group `{original}`: {len(entries)} runs; "
                 f"experiments {experiments}."
@@ -953,15 +1005,17 @@ def _render_v4_research_brief(
     official = state.get("official_metrics")
     if official is not None:
         official_model = state.get("official_benchmark_model") or {}
-        lines.extend([
-            "",
-            "## Official report",
-            "",
-            f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
-            f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
-            f"- Result: {official}",
-            f"- Terminal assessment: {terminal or 'not recorded'}",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Official report",
+                "",
+                f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
+                f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
+                f"- Result: {official}",
+                f"- Terminal assessment: {terminal or 'not recorded'}",
+            ]
+        )
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -1382,7 +1436,9 @@ def write_research_brief() -> Path:
 
 def main() -> None:
     brief = write_research_brief()
-    print(f"Wrote {brief.relative_to(ROOT)}")
+    # Reported through the runner console so this line carries the same label
+    # and timestamp as the other runner steps, instead of appearing unattributed.
+    console.announce(f"[brief] wrote {brief.relative_to(ROOT).as_posix()}")
 
 
 if __name__ == "__main__":

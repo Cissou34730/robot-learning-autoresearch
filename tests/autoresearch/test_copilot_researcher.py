@@ -303,7 +303,7 @@ def test_streamed_text_is_not_repeated_by_the_final_message(capsys):
     console.delta("answer")
     console.message("partial answer")
 
-    assert capsys.readouterr().out == "partial answer"
+    assert capsys.readouterr().out == "  partial answer"
 
 
 def test_the_final_message_is_shown_when_nothing_streamed(capsys):
@@ -311,7 +311,31 @@ def test_the_final_message_is_shown_when_nothing_streamed(capsys):
 
     console.message("complete answer")
 
-    assert capsys.readouterr().out == "complete answer\n"
+    assert capsys.readouterr().out == "  complete answer\n"
+
+
+def test_every_line_of_a_message_carries_its_own_gutter(capsys):
+    console = adapter.Console()
+
+    console.message("Wrote research/brief.md\nWrote the closure deliverables")
+
+    # A line the model writes is never left looking like harness output.
+    assert capsys.readouterr().out == (
+        "  Wrote research/brief.md\n  Wrote the closure deliverables\n"
+    )
+
+
+def test_a_streamed_message_is_gutter_per_line_not_per_chunk(capsys):
+    console = adapter.Console()
+
+    console.delta("Wrote research/")
+    console.delta("brief.md\nWrote the closure")
+    console.delta(" deliverables\n")
+    console.line("-- done")
+
+    assert capsys.readouterr().out == (
+        "  Wrote research/brief.md\n  Wrote the closure deliverables\n-- done\n"
+    )
 
 
 def test_the_summary_reports_work_not_a_verdict(capsys):
@@ -367,11 +391,13 @@ def test_the_models_own_words_are_coloured_apart_from_harness_output(monkeypatch
     console.tool("view", {"path": "a.py"})
 
     text = "".join(stream.written)
-    # One colour opens the stream and one reset closes it before the tool line.
-    assert text.count(adapter._MESSAGE) == 1
-    prose, _, remainder = text.split(adapter._MESSAGE, 1)[1].partition(adapter._RESET)
-    assert prose == "The parent used N=8."
-    assert "view: a.py" in remainder
+    # One block: the colour opens, the gutter re-opens it on the line, and the
+    # reset closes it before the harness reports its own line.
+    assert text.count(adapter._MESSAGE) == 2
+    assert adapter._GUTTER in text
+    assert text.split("The parent used N=8.")[0].endswith(f"{adapter._MESSAGE} ")
+    assert "view: a.py" in text
+    assert text.index("view: a.py") > text.index("The parent used N=8.")
 
 
 def test_a_complete_message_is_coloured_only_where_it_is_shown(monkeypatch):
@@ -382,7 +408,7 @@ def test_a_complete_message_is_coloured_only_where_it_is_shown(monkeypatch):
     console.message("complete answer")
 
     assert "".join(stream.written) == (
-        f"{adapter._MESSAGE}complete answer{adapter._RESET}\n"
+        f"{adapter._MESSAGE}{adapter._GUTTER}complete answer{adapter._RESET}\n"
     )
 
 

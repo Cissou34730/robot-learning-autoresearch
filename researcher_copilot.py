@@ -29,8 +29,11 @@ EXIT_INTERRUPTED = 130
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
-# The model's own words, distinct from every harness marker around them.
-_MESSAGE = "\033[97m"
+# The model's own words: one block behind a gutter, so a line it writes is never
+# mistaken for something the harness reported.
+_MESSAGE = "\033[1;97m"
+_PLAIN_GUTTER = "  "
+_GUTTER = f"{_DIM}{_PLAIN_GUTTER}│{_RESET}{_MESSAGE} "
 _MARKER_COLORS = {
     ">": "\033[36m",
     "x": "\033[31m",
@@ -422,6 +425,7 @@ class Console:
         # stays attributable without reading backwards for the last banner.
         self.label = label
         self._mid_stream = False
+        self._at_line_start = True
         self._turn = 0
         self._turn_started_at: float | None = None
         self._turn_model = ""
@@ -489,30 +493,46 @@ class Console:
         self.line(f"-- {self.tagged(f'turn {self._turn}')} · " + " · ".join(parts))
 
     def line(self, text: str) -> None:
-        if self._mid_stream:
-            if sys.stdout.isatty():
-                sys.stdout.write(_RESET)
-            print(flush=True)
-            self._mid_stream = False
+        self._close_message()
         print(format_console_line(text), flush=True)
+
+    def _close_message(self) -> None:
+        """End the model's block, so the next fact starts at column zero."""
+        if not self._mid_stream:
+            return
+        if sys.stdout.isatty():
+            sys.stdout.write(_RESET)
+        if not self._at_line_start:
+            print(flush=True)
+        self._mid_stream = False
+        self._at_line_start = True
 
     def delta(self, text: str) -> None:
         if not text:
             return
         if not self._mid_stream:
             self._mid_stream = True
+            self._at_line_start = True
             if sys.stdout.isatty():
                 sys.stdout.write(_MESSAGE)
-                sys.stdout.flush()
-        print(text, end="", flush=True)
+        for index, part in enumerate(text.split("\n")):
+            if index:
+                print(flush=True)
+                self._at_line_start = True
+            if not part:
+                continue
+            if self._at_line_start:
+                # Every line of the message carries the gutter, including the
+                # bare ones, so none of them reads as harness output.
+                sys.stdout.write(_GUTTER if sys.stdout.isatty() else _PLAIN_GUTTER)
+                self._at_line_start = False
+            print(part, end="", flush=True)
 
     def message(self, text: str) -> None:
         if self._mid_stream or not text:
             return
-        if sys.stdout.isatty():
-            print(f"{_MESSAGE}{text}{_RESET}", flush=True)
-            return
-        print(text, flush=True)
+        self.delta(text)
+        self._close_message()
 
     def tool(
         self, name: str, arguments: object, tool_call_id: str | None = None

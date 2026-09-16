@@ -599,7 +599,7 @@ while ($true) {
         throw "Experiment runner failed. The loop stopped safely."
     }
     Update-ResearchBrief
-    Write-Status "=== Experiment session ended ===" Green
+    Write-Status "=== Experiment $nextExperiment session closed ===" Green
     Start-Sleep -Seconds 5
 }
 }

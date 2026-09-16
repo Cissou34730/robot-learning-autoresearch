@@ -77,9 +77,13 @@ class LiveProgress:
         return self._stream if self._stream is not None else sys.stdout
 
     def line(self, message: str, *, archive: bool = False) -> None:
-        timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
-        text = f"{timestamp} {message}"
         stream = self._out()
+        timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
+        if stream.isatty():
+            # A heartbeat is superseded by the next one, so its timestamp yields
+            # to the timestamps of the lines that stay in the log.
+            timestamp = f"{_DIM}{timestamp}{_RESET}"
+        text = f"{timestamp} {message}"
         now = time.monotonic()
         due = archive or now - self._archived_at >= self.archive_seconds
         if not stream.isatty():
@@ -132,8 +136,9 @@ def announce(message: str) -> None:
     elif sys.stdout.isatty() and text.startswith("[") and "]" in text:
         prefix, _, remainder = text.partition("]")
         color = _RED if prefix == "[error" else _CYAN
+        # A durable line keeps a full-brightness timestamp: it is the one a
+        # reader returns to, unlike the heartbeat it replaced.
         text = f"{color}{prefix}]{_RESET}{remainder}"
-        timestamp = f"{_DIM}{timestamp}{_RESET}"
     separator = " " if timestamp else ""
     print(f"{leading_break}{timestamp}{separator}{text}", flush=True)
 

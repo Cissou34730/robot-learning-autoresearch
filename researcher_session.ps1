@@ -64,8 +64,10 @@ function Write-ResearcherSessionStatus {
         [string]$Status.ExitCode
     }
     if ($Status.Complete -and $exitText -eq "0") {
+        # A completed phase still reports as one line, but the line says which
+        # phase it closes so it is not read as a stray status message.
         Write-Status (
-            "Researcher session: $($Status.Phase), attempt $($Status.Attempt): " +
+            "Researcher phase closed: $($Status.Phase), attempt $($Status.Attempt), " +
             "process=$exitText, $($Status.Deliverable)=$($Status.Validity)"
         ) Green
         return

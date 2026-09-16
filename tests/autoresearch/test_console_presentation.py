@@ -2,6 +2,7 @@
 
 import json
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -177,6 +178,24 @@ def test_the_training_heartbeat_shows_the_estimate_without_its_label():
     # wanted, and the reader recognises the estimate from the value itself.
     assert "ETA" not in source
     assert "format_duration(eta)" in source
+
+
+def test_the_heartbeat_timestamp_yields_to_the_durable_one(monkeypatch):
+    stream = FakeTty()
+    monkeypatch.setattr(
+        runner_console, "_progress", runner_console.LiveProgress(stream=stream)
+    )
+    monkeypatch.setattr(sys, "stdout", stream)
+
+    runner_console.progress("[train] 1,000 / 10,000 (10%)", archive=True)
+    runner_console.announce("[train] baseline training | seed 0 | 120,000 steps")
+
+    written = "".join(stream.written)
+    heartbeat, _, launch = written.partition("\n")
+    # The line that stays in the log keeps the brighter timestamp.
+    assert heartbeat.startswith(f"\r\033[K{runner_console._DIM}[")
+    assert launch.startswith("[")
+    assert runner_console._DIM not in launch
 
 
 def test_the_evaluation_label_keeps_one_column_for_every_line():
