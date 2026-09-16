@@ -5,9 +5,10 @@
 **Current synthesis:** The campaign objective is a policy with at least 98%
 success on the fixed 200-episode official assessment. Across the campaign, the
 best measured policy progressed from 61.5% for the fresh baseline to 85.0% after
-the uniform-radius recipe change and 89.0% after unchanged continuation. The
-experiment 3 endpoint is therefore useful evidence of progress, but it remains
-below the objective and the development panel is not the official assessment.
+the uniform-radius recipe change, 89.0% after the first unchanged continuation,
+and 94.0% after the second unchanged continuation. The experiment 4 endpoint
+is the strongest measured development policy, but it remains below the
+objective and the development panel is not the official assessment.
 
 **Lessons and limits:** The unchanged baseline learned the task, while the
 uniform 0.06-0.20 m training-radius recipe coincided with improvement from
@@ -23,20 +24,21 @@ recipe but does not establish that radius sampling alone caused the gain.
 Experiment 3 likewise shows that a training proxy peak is not an acceptance
 criterion: the checkpoint at its 40,960-step proxy peak measured 88.5%, the
 95,232-step proxy rebound measured 80.0%, and the lower-proxy endpoint measured
-89.0%. The
-task-reference artifacts report all failures as truncated at 500 steps but do
-not distinguish acquisition failures from incomplete holds, so the residual
-failure mechanism is unresolved. The retained experiment 3 artifact uses the
+89.0%. Experiment 4 reinforces this discrepancy: its proxy peak at 35,840
+steps measured 89.0%, while the endpoint with a lower 0.96 proxy measured
+94.0% and had 2 acquisition failures and 10 incomplete or interrupted holds
+in the researcher evaluation. The retained experiment 3 artifact uses the
 same PPO method, observation/action mapping, normalization contract, and
 uniform-radius training distribution as its parent, so transfer is semantically
 compatible for unchanged-method comparisons; equal tensor dimensions alone would
 not establish that compatibility.
 
-**Open questions:** It is unresolved whether continued optimization of the
-experiment 3 policy can reduce the remaining acquisition and hold failures, or
-whether the endpoint has plateaued. The relative contributions of radius
-sampling, transfer dynamics, and representation or control limitations remain
-uncertain. Development-panel evidence is not the official final verdict.
+**Open questions:** It remains unresolved whether the 94.0% endpoint can be
+improved by further optimization or whether the unchanged recipe has plateaued,
+and whether the remaining hold failures require a different intervention.
+The relative contributions of radius sampling, transfer dynamics, and
+representation or control limitations remain uncertain. Development-panel
+evidence is not the official final verdict.
 The experiment 3 task-reference records do not carry the diagnostic fields used
 by the earlier research-evaluation artifacts, so its 22 failures cannot be
 partitioned from the available record. These uncertainties remain open without
@@ -182,3 +184,46 @@ kept; terminal assessment is not justified because the development result is
 `research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-3-checkpoint-120832-task-reference-v1.json`;
 `research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-2-checkpoint-120832-task-reference-v1.json`;
 `research/results.jsonl`; `research/scenario.md`.
+
+## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 4
+
+**Result:** Continuing the unchanged uniform-radius PPO recipe improved the
+measured policy to 188/200 successes (94.0%) on task-reference-v1, up from the
+experiment 3 endpoint's 178/200 (89.0%), but it did not reach the 98% objective
+or justify terminal assessment.
+
+**Observed behavior:** The training proxy reached 1.00 from 29,696 through
+40,960 steps, with the highest listed reward of 194.48 at 35,840 steps. That
+proxy-peak checkpoint measured 178/200 (89.0%) on task-reference-v1. At 120,832
+steps, the proxy was 0.96 with reward 186.89, but task-reference success was
+188/200 (94.0%). The endpoint's research evaluation likewise measured 94.0%;
+of its 12 failures, 2 never entered tolerance and 10 entered tolerance but did
+not complete a continuous 100-step hold. The task-reference endpoint had 86/92
+near-radius successes, 102/108 far-radius successes, 89/95 front-half
+successes, and 99/105 back-half successes; all 12 failures truncated at 500
+steps.
+
+**Hypothesis assessment:** Partially supported. The expected later checkpoint
+exceeding 178/200 occurred, providing measured task evidence that this
+continuation was useful under the tested recipe. The result is still 8
+episodes short of the 196/200 development-panel equivalent of the objective,
+and the non-monotonic proxy remained a poor selection signal. The endpoint
+diagnostics identify hold completion as the larger residual failure category,
+but they do not establish why continued optimization improved task success or
+whether further continuation will improve it.
+
+**Interpretation:** The endpoint is the strongest measured policy in the current
+campaign and is suitable as the working and best-known lineage for further
+development. Keeping the unchanged scientific recipe is appropriate for this
+closure because the measured continuation improved task performance and no
+code change was made. The endpoint is not ready for terminal assessment:
+94.0% is development-panel evidence, not the official benchmark, and the
+remaining hold failures leave a material gap to the human objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/checkpoints/challengers/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/experiment-4/inventory.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-35840-task-reference-v1.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/evaluation-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-200ep-seed7300-c5b54f36dc64.json`;
+`research/results.jsonl`; `research/scenario.md`;
+`robot_learning/scenario/evaluation.py`.
