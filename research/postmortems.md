@@ -2,28 +2,32 @@
 
 ## 2f80d343-e97b-4af0-90b0-51cba116b8ae / Scientific strategy
 
-**Current synthesis:** Experiment 1 established that the baseline PPO recipe learns
-substantial reach-and-hold behavior, but the measured policy is not close to the
-98% objective. The late checkpoint with the strongest measured task performance is
-`checkpoint-110592`; its advantage over `checkpoint-115712` is small and
-directionally consistent across the researcher and protected task-reference
-panels.
+**Current synthesis:** The campaign objective is at least 98% success on the
+official 200-episode panel. Experiment 1's PPO baseline learned substantial
+reach-and-hold behavior but remained far from that objective: the two measured
+late checkpoints scored 60.0% and 61.0% on the researcher panel and 55.0% and
+56.5% on the protected task-reference panel. `checkpoint-110592` is the
+strongest measured policy in both panels, although its advantage over
+`checkpoint-115712` is small.
 
-**Lessons and limits:** Training success and reward rose from 0 and -403.195 to
-0.92 and 176.617 by 115,712 steps, but measured success was 60.0% or 61.0% on
-the researcher panel and 55.0% or 56.5% on the task-reference panel. This
-confirms that the training proxies do not establish task progress by themselves,
-especially late in training. Diagnostics indicate both failure to reach the
-tolerance region and reaching it without completing the uninterrupted hold; the
-available panels also show lower success for nearer targets than for targets near
-the outer radius. These are observations of the measured checkpoints, not causal
-attributions about the training recipe.
+**Lessons and limits:** Training proxies rose from 0 success and -403.195
+reward at 5,120 steps to 0.92 and 176.617 at 115,712 steps, while measured task
+success did not rise with the late proxy increase. For `checkpoint-110592`, 58
+of 78 researcher-panel failures never reached tolerance and 20 reached it but
+lost the uninterrupted hold; nearer targets also performed worse than outer
+targets. The policy representation is a 14-value physical state description
+containing joint state, end-effector error and velocity, and analytical
+inverse-kinematics errors, with saved observation normalization. These findings
+are measured behavior, not causal attribution: one training seed and the
+available development panels do not distinguish representation, exploration,
+reward shaping, or optimization effects, nor establish reproducibility.
 
-**Open questions:** Which changes to learning conditions or task representation
-can reduce the dominant reach and hold failures while preserving performance
-across target geometry? The current evidence does not distinguish whether either
-failure mode is primarily caused by representation, exploration, reward shaping,
-or optimization.
+**Open questions:** It remains unknown whether the late proxy/success
+divergence reflects a temporary optimization plateau, degradation from further
+updates, or a persistent mismatch between training signal and complete
+official-task success. It also remains unresolved which mechanism most limits
+near-target reaching and uninterrupted holding, and how much of the observed
+shortfall varies across training seeds.
 
 ## 2f80d343-e97b-4af0-90b0-51cba116b8ae / Experiment 1
 
