@@ -58,56 +58,30 @@
     "experiment": 1,
     "reason": "Close experiment 1 on candidate-d918a3be. It is the strongest measured task-performing artifact: 98.0% on the protected task-reference panel and 98.0% on a distinct-seed research evaluation. The independent development measurements justify terminal assessment, while the official 200-episode panel remains the necessary unresolved test of the human objective."
   },
-  "last_verdict": "researcher selected candidate-d918a3be as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
-  "pending_analysis": null,
-  "pending_closure_operation": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "d918a3be630db945f4c8772449ff6c21e54b6dac5aa0c64052916cf6a5e7c925",
+  "official_benchmark_model": {
     "artifact": "research/checkpoints/retained/05b467a1-a612-4916-b6dc-29cc31e0d3f4/e1-c5a65a52d-d918a3be630db945f4c8772449ff6c21e54b6dac5aa0c64052916cf6a5e7c925",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/05b467a1-a612-4916-b6dc-29cc31e0d3f4/e1-c5a65a52d-d918a3be630db945f4c8772449ff6c21e54b6dac5aa0c64052916cf6a5e7c925",
-      "candidate": "candidate-d918a3be",
-      "evaluation_artifacts": [
-        "research/evaluations/05b467a1-a612-4916-b6dc-29cc31e0d3f4/evaluation-05b467a1-a612-4916-b6dc-29cc31e0d3f4-experiment-1-candidate-d918a3be-200ep-seed9000-6ba3ba6d7654.json",
-        "research/evaluations/05b467a1-a612-4916-b6dc-29cc31e0d3f4/task-reference-05b467a1-a612-4916-b6dc-29cc31e0d3f4-experiment-1-candidate-d918a3be-task-reference-v1.json"
-      ],
-      "fingerprint": "d918a3be630db945f4c8772449ff6c21e54b6dac5aa0c64052916cf6a5e7c925",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Designate candidate-d918a3be as best known because it is the only measured candidate at 98.0% on the protected task-reference panel and it repeated 98.0% on a distinct-seed research evaluation. The higher-reward candidate-c3c84d52 scored 94.0%, and the final candidate-f68b1643 scored 97.0% on task-reference-v1.",
-      "scientific_commit": "1413a5f3dd6288b157773bc62ab9e8684b70dfc0",
-      "training_steps": 100352
-    },
-    "experiment": 1,
     "fingerprint": "d918a3be630db945f4c8772449ff6c21e54b6dac5aa0c64052916cf6a5e7c925",
     "selected": "best_known"
   },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
+  "pending_analysis": null,
+  "pending_closure_operation": null,
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "1413a5f3dd6288b157773bc62ab9e8684b70dfc0",
@@ -118,7 +92,7 @@
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/05b467a1-a612-4916-b6dc-29cc31e0d3f4/e1-c5a65a52d-d918a3be630db945f4c8772449ff6c21e54b6dac5aa0c64052916cf6a5e7c925",
     "candidate": "candidate-d918a3be",
