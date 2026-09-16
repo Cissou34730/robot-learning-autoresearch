@@ -121,16 +121,31 @@ Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
 
-| Instrument            | Additional fields                                                       | Operation                                                          |
-| --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Measures a saved policy using researcher-owned evaluation code and request-provided settings |
-| `task_reference`      | Optional `label`: string                                                | Measures a saved policy on the protected original task using a fixed development panel distinct from the final benchmark |
+### `research_evaluation`
 
-Task-reference measurement is independent of researcher-owned environments and
-evaluation code. It reports task success and per-episode target geometry and
-outcomes. The panel definition is in
-`robot_learning/benchmark/reference_contract.py`; its execution and reported
-quantities are in `robot_learning/benchmark/reference_evaluation.py`.
+- Ownership: researcher-owned evaluation code and instrumentation, changed with
+  the research recipe.
+- Settings: request-provided `episodes` (positive integer) and `seed` (integer);
+  optional `label` (string).
+- Measured task: the current researcher-owned task and environment mechanics.
+- Outputs: per-episode success and any researcher-defined evidence the scenario
+  evaluator emits.
+- Artifact semantics: measurement identity covers the evaluator, environment and
+  task mechanics, and instrumentation outside the saved artifact.
+
+### `task_reference`
+
+- Ownership: human-owned panel and evaluator, not changed with the research
+  recipe.
+- Settings: optional `label` (string); the fixed panel's episodes and seed are
+  not request-configurable.
+- Measured task: the protected original task, independent of researcher-owned
+  environments and evaluation code.
+- Outputs: per-episode success plus target geometry and outcomes.
+- Artifact semantics: the panel is fixed and versioned, so measurements remain
+  comparable across research changes. Panel definition is in
+  `robot_learning/benchmark/reference_contract.py`; execution and reported
+  quantities are in `robot_learning/benchmark/reference_evaluation.py`.
 
 Add one entry per model and instrument.
 
