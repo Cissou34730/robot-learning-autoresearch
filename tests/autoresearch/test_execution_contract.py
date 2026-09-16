@@ -160,9 +160,9 @@ def test_frozen_paired_evidence_uses_shared_episode_identities(monkeypatch, tmp_
     )[0]
 
     assert comparison["episodes"] == 1
-    assert comparison["shared_episodes"] == 1
-    assert comparison["candidate_episode_coverage"] == 2
-    assert comparison["reference_episode_coverage"] == 2
+    assert comparison["panels"][0]["shared_episode_seeds"] == [10]
+    assert comparison["panels"][0]["candidate_episodes"] == 2
+    assert comparison["panels"][0]["reference_episodes"] == 2
 
 
 def test_frozen_paired_evidence_rejects_conflicting_duplicate_panels(

@@ -684,8 +684,29 @@ def requested_paired_comparisons(
                     raise ValueError(
                         "paired comparison shared episode identities changed after acceptance"
                     )
-                candidate_evaluations.append(candidate_evaluation)
-                reference_evaluations.append(reference_evaluation)
+                shared_seeds = set(shared_episode_seeds)
+                candidate_evaluations.append(
+                    {
+                        **candidate_evaluation,
+                        "episodes": len(shared_episode_seeds),
+                        "episode_results": [
+                            item
+                            for item in candidate_evaluation["episode_results"]
+                            if int(item["episode_seed"]) in shared_seeds
+                        ],
+                    }
+                )
+                reference_evaluations.append(
+                    {
+                        **reference_evaluation,
+                        "episodes": len(shared_episode_seeds),
+                        "episode_results": [
+                            item
+                            for item in reference_evaluation["episode_results"]
+                            if int(item["episode_seed"]) in shared_seeds
+                        ],
+                    }
+                )
                 panel_sources = [
                     *panel["candidate_artifacts"],
                     *panel["reference_artifacts"],

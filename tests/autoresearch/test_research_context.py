@@ -164,7 +164,7 @@ def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
     assert "| Candidate | Steps | Training success | Training reward | Artifact |" in brief
     assert "| `earlier` | 20 | unavailable | unavailable | `research/checkpoints/earlier` |" in brief
     assert "| `later` | 120 | 0 | 0 | `research/checkpoints/later` |" in brief
-    assert brief.index("`earlier`") < brief.index("`later`")
+    assert brief.index("`later`") < brief.index("`earlier`")
     assert "Most recent training dynamics" not in brief
 
 

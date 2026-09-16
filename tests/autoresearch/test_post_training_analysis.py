@@ -214,6 +214,7 @@ def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tm
         }
     )
     request = _request(10)
+    request["measurements"][0]["omitted_alternative"] = "working"
     request["paired_comparisons"] = [
         {"candidate": "checkpoint", "reference": "working"}
     ]
@@ -313,6 +314,7 @@ def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
     )
     request = _request(10)
     request["measurements"][0]["episodes"] = 200
+    request["measurements"][0]["omitted_alternative"] = "working"
     request["paired_comparisons"] = [
         {"candidate": "checkpoint", "reference": "working"}
     ]
@@ -339,11 +341,10 @@ def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     comparison = persisted["pending_analysis"]["result"]["paired_comparisons"][0]
     assert comparison["episodes"] == 200
-    assert comparison["shared_episodes"] == 200
-    assert comparison["candidate_episode_coverage"] == 200
-    assert comparison["reference_episode_coverage"] == 1000
     assert comparison["candidate_model_fingerprint"] == candidate_fingerprint
     assert comparison["panels"][0]["shared_episode_seeds"] == list(range(10, 210))
+    assert comparison["panels"][0]["candidate_episodes"] == 200
+    assert comparison["panels"][0]["reference_episodes"] == 1000
 
 
 def test_v4_paired_comparison_reports_incompatible_historical_semantics(
@@ -390,6 +391,7 @@ def test_v4_paired_comparison_reports_incompatible_historical_semantics(
         }
     )
     request = _request(10)
+    request["measurements"][0]["omitted_alternative"] = "working"
     request["paired_comparisons"] = [
         {"candidate": "checkpoint", "reference": "working"}
     ]

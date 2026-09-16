@@ -126,7 +126,7 @@ def test_paired_comparison_uses_identical_episode_outcomes():
 
 
 def test_paired_comparison_rejects_panels_without_shared_episodes():
-    with pytest.raises(ValueError, match="do not share any episodes"):
+    with pytest.raises(ValueError, match="do not cover identical episodes"):
         paired_comparison(
             [evaluation(3000, [True, False])],
             [evaluation(4000, [True, False])],
