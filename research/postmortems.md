@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## 052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a / Scientific strategy
+
+**Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold behavior, but task-reference performance peaked at checkpoint-105472 rather than at the final training checkpoint. The measured peak was 97.5% (195/200), below the 98% campaign objective, while later checkpoints scored 95.5% and 92.0% on the same development panel despite higher training-time proxy success and reward. Checkpoint-105472 is therefore the strongest current policy evidence, but it is not ready for the official terminal assessment.
+
+**Lessons and limits:** Training reward and proxy success are useful for tracking learning dynamics but did not predict the measured ordering of the late checkpoints. The task-reference panel is a development panel distinct from the official 200-episode assessment, so its results support policy selection and diagnosis rather than an official verdict. The shared panel shows that the late decline is behaviorally real under the measured task semantics, but this single fresh baseline does not identify its cause or establish that any intervention caused it. Sources: `research/research_state.json`, `research/brief.md`, and the three experiment-1 task-reference artifacts under `research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/`.
+
+**Open questions:** It remains unresolved whether the late degradation reflects PPO optimization dynamics, reward/termination incentives, or another aspect of the current scientific recipe, and whether the residual failures of checkpoint-105472 can be reduced while preserving its measured robustness.
+
+## 052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a / Experiment 1
+
+**Result:** The baseline produced a useful learned policy, with checkpoint-105472 the best measured candidate at 97.5% task-reference success, but no measured candidate reached the 98% objective.
+
+**Observed behavior:** Training proxies improved throughout the run: proxy success increased from 0.00 at 5,120 steps to 0.53 at 120,832 steps, while mean episode reward increased from -2014.4 to 24.4 and mean episode length fell from 500 to 343 steps. On the shared 200-episode task-reference panel, checkpoint-105472 succeeded on 195 episodes (97.5%), checkpoint-115712 on 191 (95.5%), and checkpoint-120832 on 184 (92.0%). The five failures of checkpoint-105472 were episodes 52, 83, 84, 100, and 102; all measured failures truncated at 500 steps. The later checkpoints lost more shared-panel successes than they recovered relative to checkpoint-105472.
+
+**Hypothesis assessment:** Partially supported. The baseline established that the unchanged recipe can learn high task performance and provided a policy close to, but below, the human objective. It did not establish objective attainment, and the higher late training proxies did not correspond to higher task-reference success. This conclusion is limited to the one fresh run and the fixed development panel; unmeasured checkpoints remain unmeasured.
+
+**Interpretation:** Measured task behavior, rather than the training proxies, supports selecting checkpoint-105472 for continued development. The decline across later checkpoints makes checkpoint-120832 unsuitable as the working or best-known policy despite its strongest training-time metrics. The result indicates a proxy/evaluation mismatch or late-policy degradation, but does not identify a causal mechanism. No official benchmark is requested because the best measured policy remains below the objective on the development panel.
+
+**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/results.jsonl`; `research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-1-checkpoint-105472-task-reference-v1.json`; `research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-1-checkpoint-115712-task-reference-v1.json`; `research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-1-checkpoint-120832-task-reference-v1.json`; and the experiment-1 training-log query.
