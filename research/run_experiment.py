@@ -574,6 +574,53 @@ def _seal_paired_evidence_artifact(evidence_plan: list[dict], path: Path) -> Non
                     ] = fingerprint
 
 
+def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> dict:
+    """Persist a new ordered measurement round before executing anything.
+
+    The round keeps the request's question, reason and per-measurement
+    selections so the order and purpose of successive requests survive closure
+    and can be recovered after an interruption.
+    """
+    rounds = pending.setdefault("evaluation_rounds", [])
+    record = {
+        "round": len(rounds) + 1,
+        "experiment": int(experiment),
+        "question": str(request.get("question", "")),
+        "reason": str(request.get("reason", "")),
+        "measurements": [
+            dict(entry)
+            for entry in request.get("measurements") or []
+            if isinstance(entry, dict)
+        ],
+        "paired_comparisons": [
+            dict(entry)
+            for entry in request.get("paired_comparisons") or []
+            if isinstance(entry, dict)
+        ],
+        "status": "accepted",
+        "results": {
+            "research_evaluations": [],
+            "task_reference_evaluations": [],
+            "paired_comparisons": [],
+        },
+    }
+    rounds.append(record)
+    return record
+
+
+def _round_measurement_reference(item: dict) -> dict:
+    """A round keeps the request rationale and the artifact, not the detail."""
+    reference = {
+        "instrument": item.get("instrument"),
+        "candidate": item.get("candidate"),
+        "selection": item.get("selection"),
+        "omitted_alternative": item.get("omitted_alternative"),
+        "label": item.get("label"),
+    }
+    reference.update(repository.evaluation_reference(item.get("metrics") or {}))
+    return reference
+
+
 def execute_pending_evaluations() -> int:
     from robot_learning.scenario.evaluation import summarize_research_evaluations
     from robot_learning.scenario.task_reference import task_reference_panel
@@ -649,13 +696,19 @@ def execute_pending_evaluations() -> int:
             state=state if is_v4 else None,
             resolved_models=resolved_models if is_v4 else None,
         )
+    active_round: dict | None = None
     if paths.EVALUATION_REQUEST_PATH.exists() and not accepted_v4_plan:
         pending["evaluation_plan"] = request
         if is_v4:
             pending["evaluation_plan_models"] = resolved_models
             pending["evaluation_evidence_plan"] = evidence_plan
+            active_round = _begin_evaluation_round(pending, experiment, request)
         pending.setdefault("partial_evaluations", [])
         repository.write_state(state)
+    elif is_v4:
+        rounds = pending.get("evaluation_rounds")
+        if isinstance(rounds, list) and rounds:
+            active_round = rounds[-1]
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -754,6 +807,10 @@ def execute_pending_evaluations() -> int:
             )
             completed_keys.add(key)
             pending["partial_evaluations"] = executed
+            if active_round is not None:
+                active_round["results"]["research_evaluations"].append(
+                    _round_measurement_reference(executed[-1])
+                )
             repository.write_state(state)
 
         for spec in requested_references:
@@ -808,6 +865,10 @@ def execute_pending_evaluations() -> int:
             )
             completed_reference_keys.add(reference_key)
             pending["partial_task_reference_evaluations"] = reference_executed
+            if active_round is not None:
+                active_round["results"]["task_reference_evaluations"].append(
+                    dict(reference_executed[-1])
+                )
             repository.write_state(state)
     except KeyboardInterrupt:
         console.announce(
@@ -859,6 +920,13 @@ def execute_pending_evaluations() -> int:
             "paired_comparisons": comparisons,
         }
     )
+    if active_round is not None:
+        active_round["results"]["paired_comparisons"] = list(comparisons)
+        active_round["status"] = "completed"
+    if is_v4:
+        rounds = pending.get("evaluation_rounds")
+        if isinstance(rounds, list):
+            result["evaluation_rounds"] = [dict(round_record) for round_record in rounds]
     measured = [item for item in candidates if item.get("summary") is not None]
     if measured and not is_v4:
         primary = measured[0]["summary"]

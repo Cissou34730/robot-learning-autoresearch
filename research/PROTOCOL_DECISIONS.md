@@ -19,6 +19,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
   episode count are deliberately distinct from the official benchmark panel.
   Coinciding defaults would make development measurement reproduce the terminal
   verdict panel, so the official result would not be held out.
+- **Evaluation-round provenance:** Each completed measurement request is kept as
+  an ordered, identifiable round with its question, reason, per-measurement
+  selections and artifact references. It is written before execution and carried
+  into the closed experiment record, so restart recovery cannot duplicate or
+  lose a round. Aggregate measurement views remain derivable from the rounds.
 
 ## 2026-09-07 - Research harness evidence and context
 

@@ -113,3 +113,56 @@ def test_composed_brief_orders_each_section_once():
     ]
     positions = [text.index(heading) for heading in headings]
     assert positions == sorted(positions)
+
+
+def test_measurement_rounds_section_groups_rounds_in_order():
+    pending = {
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "question": "first question",
+                "reason": "first reason",
+                "status": "completed",
+                "results": {
+                    "research_evaluations": [
+                        {
+                            "candidate": "c1",
+                            "episodes": 10,
+                            "seed": 1,
+                            "success_percent": 90.0,
+                            "selection": "observed signal",
+                            "evaluation_artifact": "research/evaluations/x.json",
+                        }
+                    ]
+                },
+            },
+            {
+                "round": 2,
+                "question": "second question",
+                "reason": "second reason",
+                "status": "completed",
+                "results": {
+                    "paired_comparisons": [
+                        {
+                            "candidate": "c1",
+                            "reference": "working",
+                            "candidate_wins": 3,
+                            "reference_wins": 1,
+                            "episodes": 10,
+                        }
+                    ]
+                },
+            },
+        ]
+    }
+    text = "\n".join(brief._v4_measurement_rounds_section(pending, None))
+    assert text.index("### Round 1 (completed)") < text.index("### Round 2 (completed)")
+    assert "first question" in text
+    assert "second question" in text
+    assert "`c1` `research_evaluation`" in text
+    assert "Paired comparison `c1` vs `working`" in text
+
+
+def test_measurement_rounds_section_is_absent_without_rounds():
+    assert brief._v4_measurement_rounds_section(None, None) == []
+    assert brief._v4_measurement_rounds_section({}, None) == []

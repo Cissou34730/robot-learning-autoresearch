@@ -981,6 +981,97 @@ def _v4_best_known_section(state: dict) -> list[str]:
     return lines
 
 
+def _v4_measurement_rounds_section(
+    pending: dict | None, latest: dict | None
+) -> list[str]:
+    """Completed and accepted measurement rounds in request order.
+
+    Issue #39: the durable record keeps each request's question, selections and
+    artifact references so the progression of scientific questions stays
+    auditable after closure instead of being reconstructed from timestamps.
+    """
+    source = pending if isinstance(pending, dict) else latest
+    if not isinstance(source, dict):
+        return []
+    rounds = source.get("evaluation_rounds")
+    if not isinstance(rounds, list) or not rounds:
+        return []
+    lines = [
+        "",
+        "## Measurement rounds",
+        "",
+        (
+            "Measurement rounds for the current experiment in the order they were "
+            "requested. Each round records its own question, selections and "
+            "resulting artifacts:"
+        ),
+    ]
+    for record in rounds:
+        if not isinstance(record, dict):
+            continue
+        status = str(record.get("status", "accepted"))
+        lines.extend(["", f"### Round {record.get('round', '-')} ({status})"])
+        if record.get("question"):
+            lines.append(f"- Question: {_compact(str(record['question']), 400)}")
+        if record.get("reason"):
+            lines.append(f"- Reason: {_compact(str(record['reason']), 400)}")
+        results = (
+            record.get("results") if isinstance(record.get("results"), dict) else {}
+        )
+        for item in results.get("research_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            detail = (
+                f"{item.get('episodes', '-')} episodes, seed {item.get('seed', '-')}"
+            )
+            if item.get("success_percent") is not None:
+                detail += f", success {float(item['success_percent']):.2f}%"
+            lines.append(
+                f"- `{item.get('candidate', '-')}` `research_evaluation`: {detail}."
+            )
+            if item.get("selection"):
+                lines.append(
+                    f"  - Selection: {_compact(str(item['selection']), 300)}"
+                )
+            if item.get("evaluation_artifact"):
+                lines.append(
+                    "  - Artifact: "
+                    + _existing_artifact_reference(
+                        item["evaluation_artifact"], kind="file"
+                    )
+                )
+        for item in results.get("task_reference_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            detail = f"panel `{item.get('panel', '-')}`"
+            if item.get("success_percent") is not None:
+                detail += f", success {float(item['success_percent']):.2f}%"
+            lines.append(
+                f"- `{item.get('candidate', '-')}` `task_reference`: {detail}."
+            )
+            if item.get("selection"):
+                lines.append(
+                    f"  - Selection: {_compact(str(item['selection']), 300)}"
+                )
+            if item.get("evaluation_artifact"):
+                lines.append(
+                    "  - Artifact: "
+                    + _existing_artifact_reference(
+                        item["evaluation_artifact"], kind="file"
+                    )
+                )
+        for item in results.get("paired_comparisons") or []:
+            if not isinstance(item, dict):
+                continue
+            lines.append(
+                f"- Paired comparison `{item.get('candidate', '-')}` vs "
+                f"`{item.get('reference', '-')}`: {item.get('candidate_wins', '-')} "
+                f"vs {item.get('reference_wins', '-')} discordant wins over "
+                f"{item.get('episodes', '-')} episodes."
+            )
+    return lines
+
+
 def _v4_official_section(state: dict, terminal) -> list[str]:
     """The terminal official report, present only after a verdict."""
     official = state.get("official_metrics")
@@ -1094,6 +1185,8 @@ def _render_v4_research_brief(
     lines.extend(_v4_experiment_index_section(results))
 
     lines.extend(_v4_evidence_section(pending, results))
+
+    lines.extend(_v4_measurement_rounds_section(pending, latest))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 

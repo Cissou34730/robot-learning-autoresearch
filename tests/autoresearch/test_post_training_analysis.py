@@ -150,6 +150,82 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(
     assert summary["episode_executions"] == 4
     assert summary["repeated_episodes"] == 4 - distinct_episodes
     assert summary["success_percent"] == pytest.approx(100 * 2 / distinct_episodes)
+    rounds = records[0]["evaluation_rounds"]
+    assert [record["round"] for record in rounds] == [1, 2]
+    assert [record["status"] for record in rounds] == ["completed", "completed"]
+    assert rounds[0]["question"] == "Does this checkpoint behave consistently?"
+    assert rounds[0]["measurements"][0]["seed"] == 10
+    assert rounds[1]["measurements"][0]["seed"] == second_seed
+    assert [
+        item["seed"] for item in rounds[0]["results"]["research_evaluations"]
+    ] == [10]
+    assert [
+        item["seed"] for item in rounds[1]["results"]["research_evaluations"]
+    ] == [second_seed]
+
+
+def test_v4_evaluation_round_survives_interruption_without_duplicating(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    calls: list[int] = []
+    interrupt = {"pending": True}
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        if interrupt["pending"] and seed == 20:
+            interrupt["pending"] = False
+            raise KeyboardInterrupt
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request = _request(10)
+    request["measurements"].append(
+        {
+            "instrument": "research_evaluation",
+            "candidate": "checkpoint",
+            "episodes": 2,
+            "seed": 20,
+            "selection": "compare a second panel of the same checkpoint",
+            "omitted_alternative": None,
+        }
+    )
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 130
+    partial = json.loads(state_path.read_text(encoding="utf-8"))
+    rounds = partial["pending_analysis"]["evaluation_rounds"]
+    assert [record["round"] for record in rounds] == [1]
+    assert rounds[0]["status"] == "accepted"
+    assert [
+        item["seed"] for item in rounds[0]["results"]["research_evaluations"]
+    ] == [10]
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    # The interrupted measurement is retried; the completed one is not repeated.
+    assert calls == [10, 20, 20]
+    completed = json.loads(state_path.read_text(encoding="utf-8"))
+    rounds = completed["pending_analysis"]["evaluation_rounds"]
+    assert rounds[0]["status"] == "completed"
+    assert [
+        item["seed"] for item in rounds[0]["results"]["research_evaluations"]
+    ] == [10, 20]
+    record = repository.result_records()[0]
+    assert [
+        item["seed"]
+        for item in record["evaluation_rounds"][0]["results"]["research_evaluations"]
+    ] == [10, 20]
 
 
 def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tmp_path):

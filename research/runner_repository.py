@@ -340,6 +340,18 @@ def _canonicalize_result_artifacts(result: dict) -> None:
     for evaluation in result.get("task_reference_evaluations") or []:
         if isinstance(evaluation, dict):
             _canonicalize_evaluation_artifact(evaluation)
+    for round_record in result.get("evaluation_rounds") or []:
+        if not isinstance(round_record, dict):
+            continue
+        round_results = round_record.get("results")
+        if not isinstance(round_results, dict):
+            continue
+        for evaluation in round_results.get("research_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        for evaluation in round_results.get("task_reference_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
 
 
 LINEAGE_RECORD_FIELDS = {
