@@ -4,43 +4,40 @@
 
 **Current synthesis:** The campaign objective is a policy with at least 98%
 success on the fixed 200-episode official assessment, meaning at least 196
-complete reach-and-hold episodes. Across the campaign, the best measured policy
-progressed from 61.5% for the fresh baseline to 85.0% after the uniform-radius
-recipe change, 89.0% after the first unchanged continuation, and 94.0% after
-the second unchanged continuation. Experiment 5's measured checkpoints were
-187/200, 187/200, and 188/200, so the experiment 4 endpoint remains tied for
-the strongest measured development policy at 188/200. This is eight episodes
-below the 196/200 development-panel equivalent of the objective, and the
-development panel is not the official assessment.
+complete reach-and-hold episodes. Measured development success rose from 61.5%
+for the fresh baseline to 85.0% after uniform-radius training, 89.0% after the
+first unchanged continuation, and 94.0% after the second. The strongest
+measured policy remains the experiment 4 endpoint at 188/200; experiment 5
+measured 187/200, 187/200, and 188/200. Thus the current policy is eight
+development-panel episodes below the objective equivalent, and this panel is
+not the official assessment.
 
-**Lessons and limits:** The unchanged baseline learned the task, and the
-uniform 0.06-0.20 m training-radius recipe coincided with a large improvement
-on the shared task-reference panel. At the experiment 2 endpoint, 12 of 30
-failures never entered tolerance and 18 entered but did not complete the
-100-step hold; the experiment 4 research evaluation had 2 acquisition failures
-and 10 incomplete or interrupted holds, while the experiment 5 endpoint had 1
-acquisition failure and 11 incomplete or interrupted holds. Success gains across
-the transferred stages show that the tested recipe remained useful through
-experiment 4, but experiment 5 did not extend that measured gain. Training
-proxies are not reliable selection criteria: experiment 5 reached a proxy of
-1.00 around 27,648-39,936 steps, fluctuated through the remainder, and ended at
-0.97 while task-reference success was 93.5-94.0%. These observations do not
-establish a hard plateau or that any single recipe component caused earlier
-gains.
-The retained policy and current recipe share the PPO method, tanh [64, 64]
-policy, observation/action mapping, normalization contract, and uniform-radius
-training distribution, which supports semantic transfer for unchanged-method
-comparisons; equal tensor dimensions alone would not establish compatibility.
+**Lessons and limits:** Uniform 0.06-0.20 m training-radius sampling coincided
+with the largest early gain and reduced no-reach failures, but the single
+transferred comparison does not isolate distribution causality. Later unchanged
+transfer remained useful through experiment 4 and then produced no measured
+gain in experiment 5. At the experiment 5 endpoint, one failure was an
+acquisition failure and eleven reached tolerance without completing the
+uninterrupted 100-step hold; most of those hold failures left tolerance after
+only 1-6 held steps, with a few lasting 77-98 steps. Training proxies are not
+reliable selection criteria: experiment 5 reached a proxy of 1.00 before
+fluctuating to 0.97 while task-reference success stayed at 93.5-94.0%. The
+retained policy and unchanged recipe share PPO, tanh [64, 64], the existing
+observation/action mapping, normalization contract, and uniform-radius
+distribution, which supports transfer only for that unchanged representation
+and task semantics. These observations do not establish a hard plateau, a
+single causal mechanism, or readiness for the official verdict.
 
-**Open questions:** It remains unresolved whether the 94.0% policy has useful
-headroom under a changed method or has reached a practical plateau, and whether
-the residual hold failures reflect a training limitation, a representation or
-control limitation, or another factor. The relative contributions of radius
-sampling and transfer dynamics remain uncertain because there is no radius-only
-control. The experiment 3 task-reference records also lack the diagnostic fields
-used by the earlier research-evaluation artifacts, so their 22 failures cannot
-be partitioned from the available record. Development-panel evidence remains
-distinct from the official final verdict.
+**Open questions:** It remains unresolved whether the residual hold failures
+reflect insufficient state representation, control behavior, or optimization,
+and whether a changed method has useful headroom beyond the 94.0% policy. It is
+also unknown whether explicit end-effector motion information can improve
+stability without sacrificing acquisition across the official geometry range.
+The relative contributions of radius sampling and transfer dynamics remain
+uncertain because there is no radius-only control. Experiment 3's
+task-reference records lack the diagnostic fields used by the earlier
+research-evaluation artifacts, and development-panel evidence remains distinct
+from the official final verdict.
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 1
 
