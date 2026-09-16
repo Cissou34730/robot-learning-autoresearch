@@ -407,6 +407,21 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
+def _candidate_proxy_order(candidate: dict) -> tuple:
+    """Order candidates by recorded training proxy, not by position in the run."""
+    success = candidate.get("training_success")
+    return (
+        success is None,
+        -float(success) if success is not None else 0.0,
+        int(candidate.get("timesteps") or 0),
+    )
+
+
+def _candidate_steps(candidate: dict) -> str:
+    timesteps = candidate.get("timesteps")
+    return "-" if timesteps is None else f"{int(timesteps):,}"
+
+
 def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
     parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
@@ -425,8 +440,24 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
         (
             f"- Candidate inventory: {len(candidates)} {label} "
             f"({measured} measured, {len(candidates) - measured} unmeasured)."
-        )
+        ),
+        "",
+        (
+            "Training success and reward are training-time proxies recorded during "
+            "training; they are not task measurements."
+        ),
+        "",
+        "| Candidate | Steps | Training success | Training reward | Measurements |",
+        "|---|---:|---:|---:|---:|",
     ]
+    for candidate in sorted(candidates, key=_candidate_proxy_order):
+        lines.append(
+            f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
+            f"{_candidate_metric(candidate, 'training_success')} | "
+            f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
+            f"{len(candidate.get('evaluations') or [])} |"
+        )
+    lines.append("")
     if common_parent is not None:
         lines.append(
             "- Inspect candidate identifiers, training metrics, and "
@@ -866,6 +897,9 @@ def _render_v4_research_brief(
                     f"| `{candidate.get('name', '-')}` | {_v4_measurements(candidate)} |"
                 )
     elif latest:
+        selected_lineage = (latest.get("closure_decision") or {}).get(
+            "continue_from", "unmeasured"
+        )
         lines.extend(
             [
                 f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",
@@ -873,29 +907,11 @@ def _render_v4_research_brief(
                 f"- Intervention: {_change_details(latest)}",
                 f"- Measurements: {_v4_result_measurements(latest)}",
                 f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
-                f"- Final action: {(latest.get('closure_decision') or {}).get('continue_from', 'unmeasured')}",
+                f"- Working lineage selected: {selected_lineage}",
             ]
         )
     else:
         lines.append("No experiment has completed in this campaign.")
-
-    if latest:
-        training_record = {**(pending or {}), **latest}
-        requested_steps = training_record.get("training_budget_steps")
-        completed_steps = training_record.get("completed_training_steps")
-        if completed_steps is None:
-            completed_steps = max(
-                (
-                    int(candidate["timesteps"])
-                    for candidate in training_record.get("candidates", [])
-                    if candidate.get("timesteps") is not None
-                ),
-                default=None,
-            )
-        if requested_steps is not None:
-            lines.append(f"- Requested training budget: {int(requested_steps):,} steps")
-        if completed_steps is not None:
-            lines.append(f"- Completed training steps: {int(completed_steps):,}")
 
     lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
 
@@ -1102,7 +1118,7 @@ def render_research_brief() -> str:
             "|---|---:|---:|---:|---|",
         ]
         for candidate in sorted(
-            pending_evaluation["candidates"], key=lambda item: int(item["timesteps"])
+            pending_evaluation["candidates"], key=_candidate_proxy_order
         ):
             evaluation_lines.append(
                 f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "

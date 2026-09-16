@@ -516,15 +516,19 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     inventory = brief.split(
         "### Current experiment candidate inventory", 1
     )[1].split("## Working lineage", 1)[0]
-    assert "checkpoint-" not in inventory
+    rows = [
+        line for line in inventory.splitlines() if line.startswith("| `checkpoint-")
+    ]
     assert "Candidate inventory: 24 candidates (1 measured, 23 unmeasured)." in inventory
-    assert "steps" not in inventory.split("training steps", 1)[0]
     assert "`research/checkpoints/inventory.json`" in inventory
     assert "distinct models" not in inventory
-    assert "training success" not in inventory
+    assert "not task measurements" in inventory
+    assert len(rows) == 24
+    assert rows[0].startswith("| `checkpoint-10240` | 10,240 | 0.4 | 4 |")
+    assert rows[-1].startswith("| `checkpoint-5120` | 5,120 | 0.1 | 1 |")
 
 
-def test_v4_brief_requires_checkpoint_inventory_inspection(monkeypatch, tmp_path):
+def test_v4_brief_surfaces_candidate_metrics_at_selection(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
@@ -558,16 +562,22 @@ def test_v4_brief_requires_checkpoint_inventory_inspection(monkeypatch, tmp_path
     inventory = render_research_brief().split(
         "### Current experiment candidate inventory", 1
     )[1].split("## Working lineage", 1)[0]
+    rows = [
+        line for line in inventory.splitlines() if line.startswith("| `checkpoint-")
+    ]
     assert "Candidate inventory: 5 candidates (0 measured, 5 unmeasured)." in inventory
     assert "`research/checkpoints/inventory.json`" in inventory
-    assert "5,120" not in inventory
-    assert "120,832" not in inventory
-    assert "checkpoint-5120" not in inventory
-    assert "checkpoint-120832" not in inventory
-    assert "training success" not in inventory
+    assert "not task measurements" in inventory
+    assert [row.split("|")[1].strip() for row in rows] == [
+        "`checkpoint-5120`",
+        "`checkpoint-10240`",
+        "`checkpoint-100352`",
+        "`checkpoint-105472`",
+        "`checkpoint-120832`",
+    ]
 
 
-def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
+def test_v4_brief_orders_candidate_metrics_by_training_proxy(
     monkeypatch, tmp_path
 ):
     research_dir = tmp_path / "research"
@@ -612,9 +622,17 @@ def test_v4_brief_omits_training_proxies_without_hiding_checkpoint_inventory(
     assert "training success" not in latest
     assert "episode reward" not in latest
     assert "checkpoint ranking" not in latest
-    assert all(f"`checkpoint-{steps}`" not in inventory for steps in proxies)
+    rows = [
+        line for line in inventory.splitlines() if line.startswith("| `checkpoint-")
+    ]
+    assert [row.split("|")[1].strip() for row in rows] == [
+        "`checkpoint-10240`",
+        "`checkpoint-20480`",
+        "`checkpoint-30720`",
+        "`checkpoint-40960`",
+        "`checkpoint-5120`",
+    ]
     assert "`research/checkpoints/inventory.json`" in inventory
-    assert "40,960" not in inventory
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):

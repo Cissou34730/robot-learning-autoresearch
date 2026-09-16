@@ -2885,15 +2885,20 @@ def test_protocol_defines_a_method_neutral_researcher_within_the_fixed_stack():
     assert "does not install packages" in PROGRAM
 
 
-def test_post_training_guidance_is_evidence_first_without_banning_endpoints():
+def test_post_training_guidance_is_evidence_first_without_positional_labels():
     normalized_program = " ".join(PROGRAM.split())
     normalized_launcher = " ".join(LOOP.split())
+    normalized_instruments = " ".join(
+        (ROOT / "research" / "instruments.md").read_text(encoding="utf-8").split()
+    )
 
-    for text in (normalized_program, normalized_launcher):
+    for text in (normalized_program, normalized_launcher, normalized_instruments):
         assert "observed signal or explicit uncertainty" in text
         assert "next decision" in text
         assert "not sufficient reasons on their own" in text
-    assert "Measuring an endpoint remains valid" in normalized_program
+        assert "first, latest, final" not in text
+        assert "horizon-matched" not in text
+        assert "strongest" not in text
 
 
 def test_protocol_offers_no_alternative_algorithm_menu():

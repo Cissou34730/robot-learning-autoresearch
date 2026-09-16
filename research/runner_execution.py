@@ -28,6 +28,8 @@ from robot_learning.training.research_config import (
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
+# Candidates are ordinary cadence artifacts; none may mark the end of training.
+CANDIDATE_NAME_PATTERN = re.compile(r"checkpoint-\d+")
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
@@ -427,6 +429,11 @@ def candidate_directories(candidate_dir: Path) -> list[dict]:
     if not candidates:
         raise RuntimeError("training must produce at least one candidate")
     for candidate in candidates:
+        if not CANDIDATE_NAME_PATTERN.fullmatch(str(candidate.get("name", ""))):
+            raise RuntimeError(
+                "candidate names must be checkpoint-<steps> so that no artifact "
+                f"marks the end of training: {candidate.get('name')!r}"
+            )
         for filename in repository.INFERENCE_ARTIFACT_FILES:
             if not (candidate["path"] / filename).exists():
                 raise RuntimeError(

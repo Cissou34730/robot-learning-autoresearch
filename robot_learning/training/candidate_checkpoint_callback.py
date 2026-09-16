@@ -16,7 +16,6 @@ class CandidateCheckpointCallback(BaseCallback):
         self.output_dir = output_dir
         self.every_steps = every_steps
         self.next_checkpoint = every_steps
-        self.last_checkpoint_steps: int | None = None
 
     def _on_step(self) -> bool:
         return True
@@ -46,7 +45,6 @@ class CandidateCheckpointCallback(BaseCallback):
             + "\n",
             encoding="utf-8",
         )
-        self.last_checkpoint_steps = self.num_timesteps
 
     def _on_rollout_start(self) -> None:
         if self.num_timesteps < self.next_checkpoint:
@@ -54,7 +52,3 @@ class CandidateCheckpointCallback(BaseCallback):
         self._save()
         while self.next_checkpoint <= self.num_timesteps:
             self.next_checkpoint += self.every_steps
-
-    def _on_training_end(self) -> None:
-        if self.last_checkpoint_steps != self.num_timesteps:
-            self._save()

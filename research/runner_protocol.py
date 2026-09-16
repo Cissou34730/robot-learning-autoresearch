@@ -823,8 +823,8 @@ def validate_evaluation_request(
             )
         if "omitted_alternative" not in entry:
             raise ValueError(
-                f"{instrument} requires omitted_alternative to identify the "
-                "strongest model left outside the request"
+                f"{instrument} requires omitted_alternative to identify an "
+                "available model left outside the request"
             )
         omitted_alternative = entry["omitted_alternative"]
         if omitted_alternative is not None and (

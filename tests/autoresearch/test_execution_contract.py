@@ -444,7 +444,7 @@ def test_lineage_closure_separates_the_science_from_the_memory_commit(monkeypatc
     science, memory = commits_of(calls)
     assert committed_paths(science) == [SCIENTIFIC_CHANGE]
     assert set(committed_paths(memory)) == set(RUNNER_MEMORY_WORKTREE)
-    assert memory[2] == "select experiment 4 lineage: checkpoint-120832"
+    assert memory[2] == "select experiment 4 working lineage: checkpoint-120832"
 
 
 def test_lineage_closure_retry_pushes_an_existing_local_commit(monkeypatch):
@@ -2551,7 +2551,7 @@ def test_candidate_manifest_preserves_identity_and_complete_artifacts(tmp_path):
             (artifact_dir / filename).touch()
         finalists.append(
             {
-                "name": f"candidate-{number}",
+                "name": f"checkpoint-{number * 100}",
                 "timesteps": number * 100,
                 "path": relative,
                 "training_success": 0.0,
@@ -2565,9 +2565,9 @@ def test_candidate_manifest_preserves_identity_and_complete_artifacts(tmp_path):
     candidates = candidate_directories(tmp_path)
 
     assert [item["name"] for item in candidates] == [
-        "candidate-0",
-        "candidate-1",
-        "candidate-2",
+        "checkpoint-0",
+        "checkpoint-100",
+        "checkpoint-200",
     ]
     assert [item["timesteps"] for item in candidates] == [0, 100, 200]
     assert [item["path"] for item in candidates] == [
@@ -2588,12 +2588,33 @@ def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
             "policy_runtime.pkl",
         ):
             (artifact_dir / filename).touch()
-        finalists.append({"path": relative})
+        finalists.append({"name": f"checkpoint-{number}", "path": relative})
     (tmp_path / "candidate_manifest.json").write_text(
         json.dumps({"candidates": finalists}), encoding="utf-8"
     )
 
     assert len(candidate_directories(tmp_path)) == 5
+
+
+def test_candidate_manifest_rejects_a_candidate_named_for_the_end_of_training(
+    tmp_path,
+):
+    artifact_dir = tmp_path / "final_checkpoint"
+    artifact_dir.mkdir()
+    for filename in (
+        "model.zip",
+        "vecnormalize.pkl",
+        "artifact.json",
+        "policy_runtime.pkl",
+    ):
+        (artifact_dir / filename).touch()
+    (tmp_path / "candidate_manifest.json").write_text(
+        json.dumps({"candidates": [{"name": "final", "path": "final_checkpoint"}]}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(RuntimeError, match="checkpoint-<steps>"):
+        candidate_directories(tmp_path)
 
 
 # --- lineage ---------------------------------------------------------------

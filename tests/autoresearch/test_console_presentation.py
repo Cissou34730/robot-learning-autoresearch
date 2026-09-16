@@ -775,11 +775,7 @@ def test_brief_names_the_active_method_without_dumping_its_configuration(
     assert "exploration_bonus" not in brief
 
 
-@pytest.mark.parametrize("pending_analysis", [True, False])
-@pytest.mark.parametrize("recorded_completed_steps", [True, False])
-def test_v4_brief_distinguishes_requested_and_completed_training_steps(
-    monkeypatch, tmp_path, pending_analysis, recorded_completed_steps
-):
+def test_v4_brief_does_not_publish_a_terminal_training_step(monkeypatch, tmp_path):
     candidates = [
         {"name": "checkpoint-100352", "timesteps": 100_352},
         {"name": "checkpoint-120832", "timesteps": 120_832},
@@ -788,21 +784,19 @@ def test_v4_brief_distinguishes_requested_and_completed_training_steps(
         "index": 1,
         "campaign_id": "campaign",
         "training_budget_steps": 120_000,
+        "completed_training_steps": 120_832,
         "candidates": candidates,
         "closure_decision": {"continue_from": "checkpoint-100352"},
     }
-    if recorded_completed_steps:
-        result["completed_training_steps"] = 120_832
     state = {
         "schema_version": 4,
         "campaign": {"id": "campaign", "base_commit": "base"},
-    }
-    if pending_analysis:
-        state["pending_analysis"] = {
+        "pending_analysis": {
             "experiment": 1,
             "result": result,
             "candidates": candidates,
-        }
+        },
+    }
     for filename, content in (
         ("current_params.json", "{}"),
         ("postmortems.md", ""),
@@ -813,10 +807,15 @@ def test_v4_brief_distinguishes_requested_and_completed_training_steps(
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
     brief = render_research_brief()
+    latest = brief.split("## Latest experiment", 1)[1].split(
+        "## Current lineages and scientific recipes", 1
+    )[0]
 
-    assert "Requested training budget: 120,000 steps" in brief
-    assert "Completed training steps: 120,832" in brief
-    assert "Completed training steps: 100,352" not in brief
+    assert "Requested training budget" not in brief
+    assert "Completed training steps" not in brief
+    assert "training budget" not in latest.lower()
+    assert "120,000" not in latest
+    assert "120,832" not in latest
 
 
 def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(

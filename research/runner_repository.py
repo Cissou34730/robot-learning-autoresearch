@@ -282,7 +282,9 @@ def commit_lineage_decision(
         # been published, the rollback anchor must stay recoverable.
         state["pending_scientific_parent"] = None
         write_state(state)
-    if not commit_runner_memory(f"select experiment {experiment} lineage: {selected}"):
+    if not commit_runner_memory(
+        f"select experiment {experiment} working lineage: {selected}"
+    ):
         # A previous attempt may have committed this exact memory locally and
         # failed only while pushing. Retrying must publish that commit before
         # candidate cleanup can proceed.
