@@ -89,6 +89,7 @@ def _request(seed: int) -> dict:
                 "episodes": 2,
                 "seed": seed,
                 "selection": "the only checkpoint this experiment produced",
+                "omitted_alternative": None,
             }
         ],
     }
@@ -130,6 +131,7 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(
     assert "candidate_selections" not in first_record
     first_evaluation = first_record["requested_evaluations"][0]
     assert first_evaluation["selection"] == "the only checkpoint this experiment produced"
+    assert first_evaluation["omitted_alternative"] is None
     assert first_evaluation["evaluation_semantics"]
     assert first_evaluation["metrics"]["evaluation_semantics"]
 

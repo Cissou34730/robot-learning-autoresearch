@@ -79,7 +79,8 @@ Write `research/evaluation_request.json`:
     {
       "instrument": "<research_evaluation | task_reference>",
       "candidate": "<model exposed by the brief or listed in the candidate inventory>",
-      "selection": "<non-empty reason measuring this model is useful for the scientific question, naming the strongest omitted alternative and why this model is more informative>",
+      "selection": "<observed signal or explicit uncertainty, why this measurement is informative, and which next decision it could change>",
+      "omitted_alternative": "<strongest available model left outside this request, or null only when every available model is requested>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -101,12 +102,21 @@ scientific question.
 do not require a measurement request or limit an experiment or campaign.
 
 Every measurement requires its own non-empty `selection`. The request-level
-`reason` explains the round; `selection` explains why measuring that model is
-useful for the scientific question and names the strongest omitted alternative
-for that purpose, on whatever inventory data the Researcher inspected, with why
-the chosen model is more informative. Measurements of the same model may have
-different selections. It need not claim that the model is superior to every
-alternative. The Runner checks that the field is present, not its content.
+`reason` explains the round; `selection` cites an observed signal or explicit
+uncertainty, explains why measuring that model is useful for the scientific
+question, and states which next decision the result could change. A model's
+position or label, such as first, latest, final, endpoint, or horizon-matched,
+describes it but is not by itself a scientific reason to measure it. Position
+may still support a selection when tied to observed evidence or a specific
+uncertainty. Measurements of the same model may have different selections. The
+Runner checks that `selection` is present, not whether its reasoning is sound.
+
+Every measurement also requires `omitted_alternative`. It names the strongest
+available model left outside the entire request for the stated purpose. The
+Runner checks only that the identifier is available and is not measured in the
+same request. Use `null` only when the request measures every available model;
+the Runner verifies that condition. It does not rank candidates or judge which
+omitted model is scientifically strongest.
 
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,

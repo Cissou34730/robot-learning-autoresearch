@@ -699,6 +699,7 @@ def execute_pending_evaluations() -> int:
             episodes = spec["episodes"]
             seed = spec["seed"]
             selection = spec["selection"]
+            omitted_alternative = spec["omitted_alternative"]
             label = spec["label"]
             key = request_key(name, episodes, seed, semantics)
             if key in completed_keys:
@@ -740,6 +741,7 @@ def execute_pending_evaluations() -> int:
                     "episodes": episodes,
                     "seed": seed,
                     "selection": selection,
+                    "omitted_alternative": omitted_alternative,
                     "label": label,
                     "evaluation_semantics": semantics,
                     "metrics": clean_metrics,
@@ -758,6 +760,7 @@ def execute_pending_evaluations() -> int:
             name = spec["candidate"]
             contender = available[name]
             selection = spec["selection"]
+            omitted_alternative = spec["omitted_alternative"]
             label = spec["label"]
             reference_key = (name, panel["panel"])
             if reference_key in completed_reference_keys:
@@ -781,6 +784,7 @@ def execute_pending_evaluations() -> int:
                     "instrument": "task_reference",
                     "candidate": name,
                     "selection": selection,
+                    "omitted_alternative": omitted_alternative,
                     "label": label,
                     "panel": str(metrics["panel"]),
                     "panel_version": int(metrics["panel_version"]),

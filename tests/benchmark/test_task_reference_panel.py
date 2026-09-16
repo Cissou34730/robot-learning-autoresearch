@@ -289,6 +289,7 @@ def test_request_accepts_research_only_reference_only_and_both():
             "episodes": 10,
             "seed": 5,
             "selection": "the candidate under test",
+            "omitted_alternative": None,
         }
     ]
     reference = [
@@ -296,6 +297,7 @@ def test_request_accepts_research_only_reference_only_and_both():
             "instrument": "task_reference",
             "candidate": "champion",
             "selection": "the incumbent to compare against",
+            "omitted_alternative": None,
         }
     ]
 
@@ -352,6 +354,7 @@ def test_reference_entry_fields_stay_minimal():
         "candidate",
         "label",
         "selection",
+        "omitted_alternative",
     }
 
 

@@ -153,6 +153,15 @@ No comparison, replication, task-reference panel, diagnostic, or additional
 round is required by phase convention, and none is discouraged by default.
 Choose instruments and scope according to scientific judgment.
 
+Ground each model selection in an observed signal or explicit uncertainty and
+state which next decision the measurement could change. Checkpoint position or
+a label such as first, latest, final, endpoint, or horizon-matched is descriptive
+context, not sufficient reasoning on its own. Measuring an endpoint remains
+valid when evidence or a specific unresolved question makes it informative.
+Identify the strongest available model omitted from the request as required by
+the measurement contract; this comparison records the Researcher's tradeoff and
+does not ask the Runner to rank models.
+
 During this phase, request measurements of current candidates or eligible saved
 lineages through `research/evaluation_request.json`. Researcher-owned measurement
 instrumentation may be changed when needed. Each completed round returns to

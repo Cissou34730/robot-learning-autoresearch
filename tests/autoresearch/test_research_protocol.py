@@ -28,6 +28,7 @@ from research.runner_protocol import (
     operation_description,
     parameter_change_records,
     plan_previous_result_decision,
+    planned_measurements,
     training_parent,
     validate_evaluation_request,
     validate_experiment_semantics,
@@ -190,6 +191,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
                         "seed": 1000,
                         "label": "first panel",
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
@@ -198,6 +200,7 @@ def test_requested_evaluations_resume_without_repeating_completed_work(
                         "seed": 2000,
                         "label": "second panel",
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                 ],
             }
@@ -301,6 +304,7 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
                         "seed": 1000,
                         "label": "first",
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
@@ -309,6 +313,7 @@ def test_evaluation_deduplication_ignores_label(monkeypatch, tmp_path):
                         "seed": 1000,
                         "label": "renamed",
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                 ],
             }
@@ -412,6 +417,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                 ],
                 "need_more_evidence": True,
@@ -443,6 +449,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
                         "seed": 1000,
                         "label": "reused A",
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
@@ -451,6 +458,7 @@ def test_researcher_can_request_evaluations_across_two_rounds(monkeypatch, tmp_p
                         "seed": 2000,
                         "label": "new B",
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     },
                 ],
                 "need_more_evidence": False,
@@ -515,6 +523,7 @@ def _single_panel_evaluation_fixture(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "the only checkpoint in the pool",
+                        "omitted_alternative": None,
                     }
                 ],
             }
@@ -663,6 +672,7 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
                             "episodes": 2,
                             "seed": 1000,
                             "selection": "the only checkpoint in the pool",
+                            "omitted_alternative": None,
                         }
                     ],
                     "need_more_evidence": more_evidence,
@@ -1607,6 +1617,7 @@ def test_evaluation_request_accepts_up_to_three_distinct_models(
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "one of the models under test",
+                        "omitted_alternative": None,
                     }
                     for i in range(distinct_count)
                 ],
@@ -1665,6 +1676,7 @@ def test_evaluation_request_rejects_more_than_three_distinct_models(
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "one of the models under test",
+                        "omitted_alternative": None,
                     }
                     for i in range(4)
                 ],
@@ -1717,6 +1729,7 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "the only model in the pool",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
@@ -1724,6 +1737,7 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 2000,
                         "selection": "the only model in the pool",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
@@ -1731,6 +1745,7 @@ def test_repeated_measurements_of_same_model_count_once(monkeypatch, tmp_path):
                         "episodes": 4,
                         "seed": 3000,
                         "selection": "the only model in the pool",
+                        "omitted_alternative": None,
                     },
                 ],
             }
@@ -1785,11 +1800,13 @@ def test_different_instruments_same_model_count_once(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "the only model in the pool",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "task_reference",
                         "candidate": "candidate",
                         "selection": "the only model in the pool",
+                        "omitted_alternative": None,
                     },
                 ],
             }
@@ -1850,6 +1867,7 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "one side of the comparison",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
@@ -1857,6 +1875,7 @@ def test_paired_comparisons_excluded_from_model_count(monkeypatch, tmp_path):
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "the other side of the comparison",
+                        "omitted_alternative": None,
                     },
                 ],
                 "paired_comparisons": [
@@ -1885,6 +1904,7 @@ def test_evaluation_request_allows_omitted_need_more_evidence():
                     "episodes": 2,
                     "seed": 1000,
                     "selection": "the only model in the pool",
+                    "omitted_alternative": None,
                 }
             ],
         }
@@ -1955,6 +1975,7 @@ def test_measurements_for_one_candidate_may_have_distinct_selections():
                     "instrument": "task_reference",
                     "candidate": "candidate",
                     "selection": "measure behavior on the protected panel",
+                    "omitted_alternative": None,
                 },
                 {
                     "instrument": "research_evaluation",
@@ -1962,10 +1983,88 @@ def test_measurements_for_one_candidate_may_have_distinct_selections():
                     "episodes": 2,
                     "seed": 1000,
                     "selection": "inspect researcher-owned diagnostics",
+                    "omitted_alternative": None,
                 },
             ],
         }
     )
+
+
+def _selection_request(*measurements: dict) -> dict:
+    return {
+        "question": "Which measurement resolves the current uncertainty?",
+        "reason": "The result changes the next lineage decision.",
+        "measurements": list(measurements),
+    }
+
+
+def _research_measurement(candidate: str, omitted_alternative) -> dict:
+    return {
+        "instrument": "research_evaluation",
+        "candidate": candidate,
+        "episodes": 2,
+        "seed": 1000,
+        "selection": "The observed proxy reversal makes this model diagnostic.",
+        "omitted_alternative": omitted_alternative,
+    }
+
+
+def test_each_measurement_requires_an_omitted_alternative_field():
+    measurement = _research_measurement("model-a", "model-b")
+    del measurement["omitted_alternative"]
+
+    with pytest.raises(ValueError, match="requires omitted_alternative"):
+        validate_evaluation_request(_selection_request(measurement))
+
+
+@pytest.mark.parametrize("omitted_alternative", ["", "   ", 7, []])
+def test_omitted_alternative_has_a_structured_value(omitted_alternative):
+    with pytest.raises(ValueError, match="non-empty string or null"):
+        validate_evaluation_request(
+            _selection_request(
+                _research_measurement("model-a", omitted_alternative)
+            )
+        )
+
+
+def test_omitted_alternative_must_be_available_and_outside_request():
+    available = {"model-a": {}, "model-b": {}, "model-c": {}}
+    requested, _ = planned_measurements(
+        _selection_request(_research_measurement("model-a", "model-b")), available
+    )
+    assert requested[0]["omitted_alternative"] == "model-b"
+
+    with pytest.raises(ValueError, match="unknown omitted_alternative"):
+        planned_measurements(
+            _selection_request(_research_measurement("model-a", "model-x")),
+            available,
+        )
+
+    with pytest.raises(ValueError, match="is also measured in this request"):
+        planned_measurements(
+            _selection_request(
+                _research_measurement("model-a", "model-b"),
+                _research_measurement("model-b", "model-a"),
+            ),
+            available,
+        )
+
+
+def test_null_omitted_alternative_is_only_valid_for_an_exhaustive_request():
+    available = {"model-a": {}, "model-b": {}}
+    with pytest.raises(ValueError, match="measures every available model"):
+        planned_measurements(
+            _selection_request(_research_measurement("model-a", None)), available
+        )
+
+    requested, _ = planned_measurements(
+        _selection_request(
+            _research_measurement("model-a", None),
+            _research_measurement("model-b", None),
+        ),
+        available,
+    )
+    assert [item["omitted_alternative"] for item in requested] == [None, None]
 
 
 def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path):
@@ -2008,6 +2107,7 @@ def test_rejection_before_any_execution_on_exceeding_limit(monkeypatch, tmp_path
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "one of the models under test",
+                        "omitted_alternative": None,
                     }
                     for i in range(4)
                 ],
@@ -2088,6 +2188,7 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
                         "episodes": 2,
                         "seed": 1000,
                         "selection": "one of the models under test",
+                        "omitted_alternative": None,
                     }
                     for i in range(3)
                 ],
@@ -2146,6 +2247,7 @@ def test_multiple_rounds_each_have_independent_three_model_limit(monkeypatch, tm
                         "episodes": 2,
                         "seed": 2000,
                         "selection": "one of the models under test",
+                        "omitted_alternative": None,
                     }
                     for i in range(3, 6)
                 ],
@@ -2781,6 +2883,17 @@ def test_protocol_defines_a_method_neutral_researcher_within_the_fixed_stack():
     assert "current implementation is a starting point" in PROGRAM
     assert "within the installed stack" in PROGRAM
     assert "does not install packages" in PROGRAM
+
+
+def test_post_training_guidance_is_evidence_first_without_banning_endpoints():
+    normalized_program = " ".join(PROGRAM.split())
+    normalized_launcher = " ".join(LOOP.split())
+
+    for text in (normalized_program, normalized_launcher):
+        assert "observed signal or explicit uncertainty" in text
+        assert "next decision" in text
+        assert "not sufficient reasons on their own" in text
+    assert "Measuring an endpoint remains valid" in normalized_program
 
 
 def test_protocol_offers_no_alternative_algorithm_menu():

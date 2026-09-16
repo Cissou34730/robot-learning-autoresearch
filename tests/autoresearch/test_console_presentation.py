@@ -431,6 +431,7 @@ def evaluation_request() -> dict:
                 "seed": 2000,
                 "label": "checkpoint-120832",
                 "selection": "highest training proxy of the pool",
+                "omitted_alternative": None,
             },
             {
                 "instrument": "research_evaluation",
@@ -438,6 +439,7 @@ def evaluation_request() -> dict:
                 "episodes": 200,
                 "seed": 2000,
                 "selection": "the incumbent this candidate must beat",
+                "omitted_alternative": None,
             },
         ],
         "paired_comparisons": [
@@ -473,6 +475,7 @@ def test_evaluation_plan_shows_the_question_panel_and_reason():
     assert "paired comparison   checkpoint-120832 vs champion" in plan
     assert plan.count("highest training proxy of the pool") == 1
     assert plan.count("the incumbent this candidate must beat") == 1
+    assert plan.count("omitted: none; exhaustive request") == 2
     assert "A matched panel directly tests the hypothesis." in plan
     for interpretation in ("supported", "rejected", "significant", "better"):
         assert interpretation not in plan
@@ -681,6 +684,7 @@ def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_
             "episodes": 2,
             "seed": 2000,
             "selection": "highest training proxy of the pool",
+            "omitted_alternative": None,
         }
     ]
     request["paired_comparisons"] = []
@@ -893,7 +897,7 @@ def test_v4_brief_exposes_authoritative_lineages_recipes_and_checkpoints(
         "`ppo.learning_rate`: lineage 0.0001; current 0.0003",
         "Parameter differences from `best_known`: none",
         "- Candidate inventory: 1 candidate (0 measured, 1 unmeasured).",
-        "- Inspect candidate identifiers, training steps, training metrics, and artifacts in `models/candidates/inventory.json`.",
+        "- Inspect candidate identifiers, training metrics, and artifacts in `models/candidates/inventory.json`.",
     ):
         assert expected in section
     assert section.count("Candidate: checkpoint-working") == 1

@@ -294,21 +294,25 @@ def render_evaluation_plan(request: dict, experiment: int) -> str:
         width = max(len(name) for name, _ in rows)
         lines.append("Plan")
         lines.extend(f"  {name:<{width}}   {detail}" for name, detail in rows)
-    selections: list[tuple[str, str]] = []
+    selections: list[tuple[str, str, str]] = []
     for spec in request.get("measurements") or []:
         if not isinstance(spec, dict):
             continue
         candidate = str(spec.get("candidate", "")).strip()
         instrument = str(spec.get("instrument", "")).strip()
         selection = str(spec.get("selection", "")).strip()
+        omitted = spec.get("omitted_alternative")
+        omitted_text = (
+            str(omitted).strip() if omitted is not None else "none; exhaustive request"
+        )
         if candidate and selection:
-            selections.append((f"{candidate} / {instrument}", selection))
+            selections.append((f"{candidate} / {instrument}", selection, omitted_text))
     if selections:
         lines.extend(["", "Selections"])
-        width = max(len(measurement) for measurement, _ in selections)
+        width = max(len(measurement) for measurement, _, _ in selections)
         lines.extend(
-            f"  {measurement:<{width}}   {selection}"
-            for measurement, selection in selections
+            f"  {measurement:<{width}}   {selection} | omitted: {omitted}"
+            for measurement, selection, omitted in selections
         )
     reason = str(request.get("reason", "")).strip()
     if reason:

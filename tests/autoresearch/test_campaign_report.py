@@ -105,6 +105,7 @@ def test_report_exposes_early_unmeasured_peak_and_selection_rationale(tmp_path):
                 "episodes": 200,
                 "seed": 0,
                 "selection": "Historical matched position",
+                "omitted_alternative": None,
                 "metrics": {"success_percent": 90},
             }
         ],

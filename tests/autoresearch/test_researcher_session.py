@@ -297,6 +297,7 @@ def _valid_request() -> dict:
                 "episodes": 200,
                 "seed": 1000,
                 "selection": "the only model the hypothesis is about",
+                "omitted_alternative": None,
             }
         ],
     }
@@ -398,6 +399,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "episodes": 200,
                         "seed": 1,
                         "selection": "the model under test",
+                        "omitted_alternative": None,
                     }
                 ],
             ),
@@ -413,6 +415,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "episodes": 0,
                         "seed": 1,
                         "selection": "the model under test",
+                        "omitted_alternative": None,
                     }
                 ],
             ),
@@ -428,6 +431,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "episodes": "many",
                         "seed": 1,
                         "selection": "the model under test",
+                        "omitted_alternative": None,
                     }
                 ],
             ),
@@ -442,6 +446,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "candidate": "experiment-3",
                         "episodes": 200,
                         "selection": "the model under test",
+                        "omitted_alternative": None,
                     }
                 ],
             ),
@@ -474,6 +479,7 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "instrument": "task_reference",
                         "candidate": "experiment-9",
                         "selection": "the model under test",
+                        "omitted_alternative": None,
                     }
                 ],
             ),
@@ -507,13 +513,15 @@ def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
                         "episodes": 200,
                         "seed": 1,
                         "selection": "the model under test",
+                        "omitted_alternative": None,
                     },
                     {
                         "instrument": "research_evaluation",
                         "candidate": "experiment-3",
                         "episodes": -5,
                         "seed": 2,
-                            "selection": "the model under test",
+                        "selection": "the model under test",
+                        "omitted_alternative": None,
                     },
                 ],
             ),
@@ -550,11 +558,13 @@ def test_evaluation_preflight_rejects_the_legacy_champion_alias(
                     "episodes": 200,
                     "seed": 1000,
                     "selection": "the incumbent under the legacy alias",
+                    "omitted_alternative": None,
                 },
                 {
                     "instrument": "task_reference",
                     "candidate": "champion",
                     "selection": "the incumbent under the legacy alias",
+                    "omitted_alternative": None,
                 },
             ],
         ),

@@ -424,12 +424,12 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
     ]
     if common_parent is not None:
         lines.append(
-            "- Inspect candidate identifiers, training steps, training metrics, and "
+            "- Inspect candidate identifiers, training metrics, and "
             f"artifacts in {_recorded_path((common_parent / 'inventory.json').as_posix())}."
         )
     else:
         lines.append(
-            "- Inspect candidate identifiers, training steps, training metrics, and "
+            "- Inspect candidate identifiers, training metrics, and "
             f"artifacts in {_recorded_path('research/research_state.json')}."
         )
     return lines

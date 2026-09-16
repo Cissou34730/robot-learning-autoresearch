@@ -142,8 +142,15 @@ RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "seed",
     "label",
     "selection",
+    "omitted_alternative",
 }
-TASK_REFERENCE_ENTRY_FIELDS = {"instrument", "candidate", "label", "selection"}
+TASK_REFERENCE_ENTRY_FIELDS = {
+    "instrument",
+    "candidate",
+    "label",
+    "selection",
+    "omitted_alternative",
+}
 SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
@@ -812,9 +819,19 @@ def validate_evaluation_request(
         if not isinstance(selection, str) or not selection.strip():
             raise ValueError(
                 f"{instrument} requires a non-empty selection stating why this "
-                "model is useful for the current scientific question and naming "
-                "the strongest omitted alternative"
+                "model is useful for the current scientific question"
             )
+        if "omitted_alternative" not in entry:
+            raise ValueError(
+                f"{instrument} requires omitted_alternative to identify the "
+                "strongest model left outside the request"
+            )
+        omitted_alternative = entry["omitted_alternative"]
+        if omitted_alternative is not None and (
+            not isinstance(omitted_alternative, str)
+            or not omitted_alternative.strip()
+        ):
+            raise ValueError("omitted_alternative must be a non-empty string or null")
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]
             if missing:
@@ -867,6 +884,10 @@ def planned_measurements(
     validate_evaluation_request(
         request, allow_legacy_need_more_evidence=allow_legacy_need_more_evidence
     )
+    requested_names = {
+        str(spec["candidate"]).strip() for spec in requested_measurements(request)
+    }
+    omitted_names = set(available) - requested_names
     evaluations: list[dict] = []
     references: list[dict] = []
     for spec in requested_measurements(request):
@@ -875,6 +896,25 @@ def planned_measurements(
             raise ValueError(
                 f"unknown measurement candidate {name!r}; choose from {sorted(available)}"
             )
+        omitted_alternative = spec["omitted_alternative"]
+        if omitted_alternative is None:
+            if omitted_names:
+                raise ValueError(
+                    "omitted_alternative may be null only when the request measures "
+                    "every available model"
+                )
+        else:
+            omitted_alternative = omitted_alternative.strip()
+            if omitted_alternative not in available:
+                raise ValueError(
+                    f"unknown omitted_alternative {omitted_alternative!r}; choose "
+                    f"from {sorted(omitted_names)}"
+                )
+            if omitted_alternative in requested_names:
+                raise ValueError(
+                    f"omitted_alternative {omitted_alternative!r} is also measured "
+                    "in this request"
+                )
         if spec["instrument"] == "research_evaluation":
             evaluations.append(
                 {
@@ -882,6 +922,7 @@ def planned_measurements(
                     "episodes": spec["episodes"],
                     "seed": spec["seed"],
                     "selection": spec["selection"].strip(),
+                    "omitted_alternative": omitted_alternative,
                     "label": spec.get(
                         "label", f"requested evaluation {len(evaluations) + 1}: {name}"
                     ),
@@ -892,6 +933,7 @@ def planned_measurements(
                 {
                     "candidate": name,
                     "selection": spec["selection"].strip(),
+                    "omitted_alternative": omitted_alternative,
                     "label": spec.get(
                         "label", f"task reference {len(references) + 1}: {name}"
                     ),
