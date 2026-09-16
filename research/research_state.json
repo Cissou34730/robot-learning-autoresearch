@@ -42,34 +42,991 @@
     "started_at": "2026-09-16T15:55:58.147851+00:00"
   },
   "campaign_experiment_counters": {
-    "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a": 5
+    "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a": 6
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
+  "last_allocated_experiment": 6,
+  "last_experiment": 6,
   "last_lineage_decision": {
     "best_known": null,
     "code": {
-      "action": "keep",
-      "reason": "Experiment 5 used the unchanged scientific recipe and its direct continuation degraded task-reference performance. Keeping the recipe preserves the complete context of the retained parent; the observed degradation does not identify a causal code change that should be applied during closure."
+      "action": "revert",
+      "reason": "The tested HOLD_COMPLETE_BONUS increase did not preserve or improve measured task performance. Restore the parent's complete scientific recipe, including the original completion bonus."
     },
-    "code_parent_commit": "89d11c871aee0a5863f1d790a519d30bf71a28a3",
+    "code_parent_commit": "63f0025e73a79523f35ee0b983c0467278ef93d0",
     "continue_from": "working",
-    "experiment": 5,
-    "reason": "All six measured experiment-5 continuation checkpoints fell below the retained parent's 97.5% task-reference success, ranging from 94.5% after 5,120 additional steps to 89.0%-90.0% later, while training proxies reached 1.00. Keep the retained parent as working and best-known for further development; the evidence remains below the objective and does not justify the official benchmark."
+    "experiment": 6,
+    "reason": "Experiment 6's completion-bonus intervention reached 91.0%, 96.0%, and 94.5% on the task-reference panel, all below the retained parent's 97.5%, while training proxies reached 0.99. Restore the retained parent as the working and unchanged best-known lineage; the development evidence remains below the official objective, so do not request the official benchmark."
   },
   "last_verdict": "researcher selected working as working",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_closure_operation": null,
+  "pending_closure_operation": {
+    "code_action": "revert",
+    "experiment": 6,
+    "plan": {
+      "artifact_publications": [],
+      "best_known_name": null,
+      "best_known_record": {
+        "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+        "candidate": "checkpoint-105472",
+        "evaluation_artifacts": [
+          "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-1-checkpoint-105472-task-reference-v1.json"
+        ],
+        "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+        "origin_experiment": 1,
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "reason": "It has the highest measured task-reference success among the three evaluated checkpoints, 97.5% (195/200), exceeding checkpoint-115712 at 95.5% and checkpoint-120832 at 92.0%.",
+        "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
+        "training_steps": 105472
+      },
+      "code_action": "revert",
+      "code_plan": {
+        "parent": "63f0025e73a79523f35ee0b983c0467278ef93d0",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/reward.py"
+        ]
+      },
+      "code_reason": "The tested HOLD_COMPLETE_BONUS increase did not preserve or improve measured task performance. Restore the parent's complete scientific recipe, including the original completion bonus.",
+      "decision": {
+        "code": {
+          "action": "revert",
+          "reason": "The tested HOLD_COMPLETE_BONUS increase did not preserve or improve measured task performance. Restore the parent's complete scientific recipe, including the original completion bonus."
+        },
+        "continue_from": "working",
+        "experiment": 6,
+        "reason": "Experiment 6's completion-bonus intervention reached 91.0%, 96.0%, and 94.5% on the task-reference panel, all below the retained parent's 97.5%, while training proxies reached 0.99. Restore the retained parent as the working and unchanged best-known lineage; the development evidence remains below the official objective, so do not request the official benchmark.",
+        "request_final_benchmark": false
+      },
+      "hypothesis_assessment": "Contradicted for this tested completion-bonus transfer and sampled checkpoints. The exploratory question sought evidence that emphasizing the terminal uninterrupted hold could improve protected task-reference success while preserving the parent's learned reach behavior. No measured candidate improved on or matched the parent, and the strong proxy/reward trajectory again did not correspond to task-reference progress. The partial recovery at 115,712 is an orthogonal signal that the intervention produced a useful policy below the parent, not evidence of objective progress. This conclusion is limited to one reward change, one transferred run, three checkpoints, and the repeated development panel; it does not establish that completion rewards cannot help under another formulation or that the reward caused the observed degradation.",
+      "pending": {
+        "baseline": false,
+        "candidates": [
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-100352",
+            "ep_rew_mean": 329.88986311,
+            "evaluations": [],
+            "name": "checkpoint-100352",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 100352,
+            "training_success": 0.97
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-10240",
+            "ep_rew_mean": 171.1711276451613,
+            "evaluations": [],
+            "name": "checkpoint-10240",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 10240,
+            "training_success": 0.6129032258064516
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-105472",
+            "ep_rew_mean": 336.57865793999997,
+            "evaluations": [],
+            "name": "checkpoint-105472",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 105472,
+            "training_success": 0.98
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-110592",
+            "ep_rew_mean": 340.99874052,
+            "evaluations": [],
+            "name": "checkpoint-110592",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 110592,
+            "training_success": 0.98
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-115712",
+            "ep_rew_mean": 345.12768977,
+            "evaluations": [],
+            "name": "checkpoint-115712",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 115712,
+            "training_success": 0.99
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-120832",
+            "ep_rew_mean": 342.60025604000003,
+            "evaluations": [],
+            "name": "checkpoint-120832",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 120832,
+            "training_success": 0.99
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-15360",
+            "ep_rew_mean": 155.6592878181818,
+            "evaluations": [],
+            "name": "checkpoint-15360",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 15360,
+            "training_success": 0.5681818181818182
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-20480",
+            "ep_rew_mean": 186.5958702121212,
+            "evaluations": [],
+            "name": "checkpoint-20480",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 20480,
+            "training_success": 0.6515151515151515
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-25600",
+            "ep_rew_mean": 234.1856565957447,
+            "evaluations": [],
+            "name": "checkpoint-25600",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 25600,
+            "training_success": 0.7553191489361702
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-30720",
+            "ep_rew_mean": 267.06151698,
+            "evaluations": [],
+            "name": "checkpoint-30720",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 30720,
+            "training_success": 0.83
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-35840",
+            "ep_rew_mean": 303.01179346000004,
+            "evaluations": [],
+            "name": "checkpoint-35840",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 35840,
+            "training_success": 0.91
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-40960",
+            "ep_rew_mean": 325.24415779,
+            "evaluations": [],
+            "name": "checkpoint-40960",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 40960,
+            "training_success": 0.95
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-45056",
+            "ep_rew_mean": 326.18076176,
+            "evaluations": [],
+            "name": "checkpoint-45056",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 45056,
+            "training_success": 0.95
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-50176",
+            "ep_rew_mean": 331.00313901000004,
+            "evaluations": [],
+            "name": "checkpoint-50176",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 50176,
+            "training_success": 0.96
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-5120",
+            "ep_rew_mean": 170.88053833333333,
+            "evaluations": [],
+            "name": "checkpoint-5120",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 5120,
+            "training_success": 0.6
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-55296",
+            "ep_rew_mean": 322.31750486,
+            "evaluations": [],
+            "name": "checkpoint-55296",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 55296,
+            "training_success": 0.94
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-60416",
+            "ep_rew_mean": 312.6545614,
+            "evaluations": [],
+            "name": "checkpoint-60416",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 60416,
+            "training_success": 0.92
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-65536",
+            "ep_rew_mean": 314.94876125999997,
+            "evaluations": [],
+            "name": "checkpoint-65536",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 65536,
+            "training_success": 0.93
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-70656",
+            "ep_rew_mean": 313.70456916,
+            "evaluations": [],
+            "name": "checkpoint-70656",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 70656,
+            "training_success": 0.93
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-75776",
+            "ep_rew_mean": 320.93319898000004,
+            "evaluations": [],
+            "name": "checkpoint-75776",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 75776,
+            "training_success": 0.95
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-80896",
+            "ep_rew_mean": 325.10874989,
+            "evaluations": [],
+            "name": "checkpoint-80896",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 80896,
+            "training_success": 0.95
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-86016",
+            "ep_rew_mean": 338.55569449,
+            "evaluations": [],
+            "name": "checkpoint-86016",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 86016,
+            "training_success": 0.97
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-90112",
+            "ep_rew_mean": 337.61163617,
+            "evaluations": [],
+            "name": "checkpoint-90112",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 90112,
+            "training_success": 0.97
+          },
+          {
+            "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-95232",
+            "ep_rew_mean": 332.91256868,
+            "evaluations": [],
+            "name": "checkpoint-95232",
+            "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+            "summary": null,
+            "timesteps": 95232,
+            "training_success": 0.97
+          }
+        ],
+        "champion_available": true,
+        "code_parent_commit": "63f0025e73a79523f35ee0b983c0467278ef93d0",
+        "completed_training_steps": 120832,
+        "evaluation_evidence_plan": null,
+        "evaluation_plan": null,
+        "evaluation_plan_models": null,
+        "experiment": 6,
+        "initialization": "transfer",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent_training_steps": 105472,
+        "partial_evaluations": [],
+        "partial_task_reference_evaluations": [
+          {
+            "candidate": "checkpoint-105472",
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-6-checkpoint-105472-task-reference-v1.json",
+            "evaluation_artifact_fingerprint": "8e337bd9c52e58c8391c0cdaddf3e69ca8af602d0d473ca3ae9ae41a52f8174f",
+            "instrument": "task_reference",
+            "label": "task reference: matched late checkpoint",
+            "model_fingerprint": "4ff46a59d7582f5d89169f09c10e1a49bc978bda6111cbc8b1a305549b9a9a20",
+            "omitted_alternative": "checkpoint-110592",
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "seed": 7300,
+            "selection": "Observed signal: this transferred checkpoint has 0.98 training success and 336.579 mean reward at 105472 steps, matching the retained parent's measured checkpoint position while using the increased completion bonus. Measuring it on the protected panel tests whether the intervention preserves or improves the parent's learned reach-and-hold behavior at the first high-proxy late point; the result could change whether this reward recipe is retained or whether the parent remains the working and best-known policy.",
+            "success_percent": 91.0
+          },
+          {
+            "candidate": "checkpoint-115712",
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-6-checkpoint-115712-task-reference-v1.json",
+            "evaluation_artifact_fingerprint": "5ac0f3b0d8f5621705d897e2e536b74640e4e007bb79bff096ec7c49bcf731e9",
+            "instrument": "task_reference",
+            "label": "task reference: peak reward checkpoint",
+            "model_fingerprint": "b114932498f5275ef35dbaee86adced0187c05e95716758ef55536479306a2d2",
+            "omitted_alternative": "checkpoint-110592",
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "seed": 7300,
+            "selection": "Observed signal: this checkpoint has the experiment's highest recorded mean training reward, 345.128, with 0.99 training success. Measuring it tests whether the strongest reward/proxy signal under the completion-dominant reward corresponds to protected task success rather than reward-scale inflation; the result could make this candidate a useful replacement, show that the reward change is not task-aligned, or identify late degradation despite the peak proxy.",
+            "success_percent": 96.0
+          },
+          {
+            "candidate": "checkpoint-120832",
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-6-checkpoint-120832-task-reference-v1.json",
+            "evaluation_artifact_fingerprint": "09d2bd1bfc770c1a713ad8f443aecb364154db671aa76d24e76c3162d843e006",
+            "instrument": "task_reference",
+            "label": "task reference: endpoint persistence",
+            "model_fingerprint": "833fe9b275636bf98adc32bb5203a2108f75016e7b949c699cfb54cc6c6982d7",
+            "omitted_alternative": "checkpoint-110592",
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "seed": 7300,
+            "selection": "Observed signal: the endpoint retains 0.99 training success but its mean reward falls from 345.128 at 115712 to 342.600, echoing the campaign's prior late divergence between training proxies and task-reference behavior. Measuring it distinguishes a persistent task improvement from a transient intermediate peak and could change whether the late reward intervention is considered robust enough for working or best-known status.",
+            "success_percent": 94.5
+          }
+        ],
+        "research_change_paths": [
+          "robot_learning/scenario/reward.py"
+        ],
+        "result": {
+          "best_known_lineage": {
+            "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+            "candidate": "checkpoint-105472",
+            "evaluation_artifacts": [
+              "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-1-checkpoint-105472-task-reference-v1.json"
+            ],
+            "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+            "origin_experiment": 1,
+            "parameters": {
+              "algorithm": {
+                "name": "ppo"
+              },
+              "policy": {
+                "activation": "tanh",
+                "net_arch": [
+                  64,
+                  64
+                ]
+              },
+              "ppo": {
+                "batch_size": 64,
+                "ent_coef": 0.01,
+                "gae_lambda": 0.95,
+                "gamma": 0.99,
+                "learning_rate": 0.0003,
+                "n_steps": 1024
+              },
+              "training": {
+                "checkpoint_every_steps": 5000,
+                "n_envs": 1
+              }
+            },
+            "reason": "It has the highest measured task-reference success among the three evaluated checkpoints, 97.5% (195/200), exceeding checkpoint-115712 at 95.5% and checkpoint-120832 at 92.0%.",
+            "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
+            "training_steps": 105472
+          },
+          "campaign_id": "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a",
+          "candidates": [
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-100352",
+              "ep_rew_mean": 329.88986311,
+              "evaluations": [],
+              "name": "checkpoint-100352",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 100352,
+              "training_success": 0.97
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-10240",
+              "ep_rew_mean": 171.1711276451613,
+              "evaluations": [],
+              "name": "checkpoint-10240",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 10240,
+              "training_success": 0.6129032258064516
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-105472",
+              "ep_rew_mean": 336.57865793999997,
+              "evaluations": [],
+              "name": "checkpoint-105472",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 105472,
+              "training_success": 0.98
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-110592",
+              "ep_rew_mean": 340.99874052,
+              "evaluations": [],
+              "name": "checkpoint-110592",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 110592,
+              "training_success": 0.98
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-115712",
+              "ep_rew_mean": 345.12768977,
+              "evaluations": [],
+              "name": "checkpoint-115712",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 115712,
+              "training_success": 0.99
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-120832",
+              "ep_rew_mean": 342.60025604000003,
+              "evaluations": [],
+              "name": "checkpoint-120832",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 120832,
+              "training_success": 0.99
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-15360",
+              "ep_rew_mean": 155.6592878181818,
+              "evaluations": [],
+              "name": "checkpoint-15360",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 15360,
+              "training_success": 0.5681818181818182
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-20480",
+              "ep_rew_mean": 186.5958702121212,
+              "evaluations": [],
+              "name": "checkpoint-20480",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 20480,
+              "training_success": 0.6515151515151515
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-25600",
+              "ep_rew_mean": 234.1856565957447,
+              "evaluations": [],
+              "name": "checkpoint-25600",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 25600,
+              "training_success": 0.7553191489361702
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-30720",
+              "ep_rew_mean": 267.06151698,
+              "evaluations": [],
+              "name": "checkpoint-30720",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 30720,
+              "training_success": 0.83
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-35840",
+              "ep_rew_mean": 303.01179346000004,
+              "evaluations": [],
+              "name": "checkpoint-35840",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 35840,
+              "training_success": 0.91
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-40960",
+              "ep_rew_mean": 325.24415779,
+              "evaluations": [],
+              "name": "checkpoint-40960",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 40960,
+              "training_success": 0.95
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-45056",
+              "ep_rew_mean": 326.18076176,
+              "evaluations": [],
+              "name": "checkpoint-45056",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 45056,
+              "training_success": 0.95
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-50176",
+              "ep_rew_mean": 331.00313901000004,
+              "evaluations": [],
+              "name": "checkpoint-50176",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 50176,
+              "training_success": 0.96
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-5120",
+              "ep_rew_mean": 170.88053833333333,
+              "evaluations": [],
+              "name": "checkpoint-5120",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 5120,
+              "training_success": 0.6
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-55296",
+              "ep_rew_mean": 322.31750486,
+              "evaluations": [],
+              "name": "checkpoint-55296",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 55296,
+              "training_success": 0.94
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-60416",
+              "ep_rew_mean": 312.6545614,
+              "evaluations": [],
+              "name": "checkpoint-60416",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 60416,
+              "training_success": 0.92
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-65536",
+              "ep_rew_mean": 314.94876125999997,
+              "evaluations": [],
+              "name": "checkpoint-65536",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 65536,
+              "training_success": 0.93
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-70656",
+              "ep_rew_mean": 313.70456916,
+              "evaluations": [],
+              "name": "checkpoint-70656",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 70656,
+              "training_success": 0.93
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-75776",
+              "ep_rew_mean": 320.93319898000004,
+              "evaluations": [],
+              "name": "checkpoint-75776",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 75776,
+              "training_success": 0.95
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-80896",
+              "ep_rew_mean": 325.10874989,
+              "evaluations": [],
+              "name": "checkpoint-80896",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 80896,
+              "training_success": 0.95
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-86016",
+              "ep_rew_mean": 338.55569449,
+              "evaluations": [],
+              "name": "checkpoint-86016",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 86016,
+              "training_success": 0.97
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-90112",
+              "ep_rew_mean": 337.61163617,
+              "evaluations": [],
+              "name": "checkpoint-90112",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 90112,
+              "training_success": 0.97
+            },
+            {
+              "artifact": "research/checkpoints/challengers/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/experiment-6/checkpoint-95232",
+              "ep_rew_mean": 332.91256868,
+              "evaluations": [],
+              "name": "checkpoint-95232",
+              "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+              "summary": null,
+              "timesteps": 95232,
+              "training_success": 0.97
+            }
+          ],
+          "change": "Increase the researcher-owned HOLD_COMPLETE_BONUS in robot_learning/scenario/reward.py from 100.0 to 300.0, leaving the observation, action, task mechanics, hold-progress potential, exit forfeiture, and other reward terms unchanged.",
+          "closure_decision": {
+            "code": {
+              "action": "revert",
+              "reason": "The tested HOLD_COMPLETE_BONUS increase did not preserve or improve measured task performance. Restore the parent's complete scientific recipe, including the original completion bonus."
+            },
+            "continue_from": "working",
+            "experiment": 6,
+            "reason": "Experiment 6's completion-bonus intervention reached 91.0%, 96.0%, and 94.5% on the task-reference panel, all below the retained parent's 97.5%, while training proxies reached 0.99. Restore the retained parent as the working and unchanged best-known lineage; the development evidence remains below the official objective, so do not request the official benchmark.",
+            "request_final_benchmark": false
+          },
+          "code_changes": [
+            "robot_learning/scenario/reward.py"
+          ],
+          "completed_training_steps": 120832,
+          "decision_pending": false,
+          "family": "reward_success_alignment",
+          "hypothesis_assessment": "Contradicted for this tested completion-bonus transfer and sampled checkpoints. The exploratory question sought evidence that emphasizing the terminal uninterrupted hold could improve protected task-reference success while preserving the parent's learned reach behavior. No measured candidate improved on or matched the parent, and the strong proxy/reward trajectory again did not correspond to task-reference progress. The partial recovery at 115,712 is an orthogonal signal that the intervention produced a useful policy below the parent, not evidence of objective progress. This conclusion is limited to one reward change, one transferred run, three checkpoints, and the repeated development panel; it does not establish that completion rewards cannot help under another formulation or that the reward caused the observed degradation.",
+          "index": 6,
+          "initialization": "transfer",
+          "investigation_type": "exploratory",
+          "kind": "training",
+          "paired_comparisons": [],
+          "parameter_changes": [],
+          "postmortem": "research/postmortems.md",
+          "proposal_snapshot": {
+            "change": "Increase the researcher-owned HOLD_COMPLETE_BONUS in robot_learning/scenario/reward.py from 100.0 to 300.0, leaving the observation, action, task mechanics, hold-progress potential, exit forfeiture, and other reward terms unchanged.",
+            "family": "reward_success_alignment",
+            "initialization": "transfer",
+            "investigation_type": "exploratory",
+            "kind": "training",
+            "reasoning": {
+              "clarification": "The observations could show whether stronger credit for the exact terminal task event is a useful route toward 98%, whether it preserves or improves the parent's learned behavior under transfer, or whether the proxy/reference discrepancy persists despite the reward change.",
+              "evidence": [
+                {
+                  "observation": "The objective is at least 98% success on the unchanged official reach-and-hold task, where success requires a complete uninterrupted 2-second hold.",
+                  "source": "research/scenario.md"
+                },
+                {
+                  "observation": "Across experiments 1-5, training proxies reached as high as 1.00 while task-reference success remained below the objective; the retained parent reached 97.5%, whereas experiment 5 continuation checkpoints were 89.0%-94.5%.",
+                  "source": "research/brief.md"
+                },
+                {
+                  "observation": "The active synthesis records a persistent proxy/reference gap and says the existing reward's completion-dominance has not been compared with an alternative.",
+                  "source": "research/postmortems.md"
+                },
+                {
+                  "observation": "The current reward gives linear hold-progress potential and a 100-point one-shot completion bonus, so the intervention increases only the completion bonus to 300 while retaining distance, action, hold-progress, and exit-forfeit terms.",
+                  "source": "robot_learning/scenario/reward.py"
+                }
+              ],
+              "initialization_reason": "Transfer from the working lineage preserves the policy's 14-dimensional reach-and-hold observation semantics, two physical action outputs, and learned two-joint-arm reach representation. The task mechanics, target semantics, and hold criterion remain unchanged; only the scalar training reward changes, so the parent's representation is semantically compatible and provides a near-objective starting point rather than discarding useful behavior.",
+              "objective_link": "The retained parent is 97.5% on the development task-reference panel, only five failures short of the 98% panel count, while unchanged continuation degraded it. A completion-dominant reward directly emphasizes the official success event and offers a measured path to close that remaining task-performance gap without changing the official task.",
+              "observations_sought": "Protected task-reference success and failure behavior at the candidate checkpoints, together with the training success and reward trajectory, compared with the retained parent and the unchanged recipe's prior trajectories.",
+              "uncertainty": "The campaign does not identify whether the proxy/reference gap is caused by reward incentives, update dynamics, target-distribution effects, or run-specific variation, and no reward intervention has yet been tested."
+            },
+            "scientific_question": "Can making the reward for completing the uninterrupted 100-step hold more dominant improve protected task-reference success while preserving the retained parent's learned reach behavior?",
+            "training_parent": "working"
+          },
+          "reasoning": {
+            "clarification": "The observations could show whether stronger credit for the exact terminal task event is a useful route toward 98%, whether it preserves or improves the parent's learned behavior under transfer, or whether the proxy/reference discrepancy persists despite the reward change.",
+            "evidence": [
+              {
+                "observation": "The objective is at least 98% success on the unchanged official reach-and-hold task, where success requires a complete uninterrupted 2-second hold.",
+                "source": "research/scenario.md"
+              },
+              {
+                "observation": "Across experiments 1-5, training proxies reached as high as 1.00 while task-reference success remained below the objective; the retained parent reached 97.5%, whereas experiment 5 continuation checkpoints were 89.0%-94.5%.",
+                "source": "research/brief.md"
+              },
+              {
+                "observation": "The active synthesis records a persistent proxy/reference gap and says the existing reward's completion-dominance has not been compared with an alternative.",
+                "source": "research/postmortems.md"
+              },
+              {
+                "observation": "The current reward gives linear hold-progress potential and a 100-point one-shot completion bonus, so the intervention increases only the completion bonus to 300 while retaining distance, action, hold-progress, and exit-forfeit terms.",
+                "source": "robot_learning/scenario/reward.py"
+              }
+            ],
+            "initialization_reason": "Transfer from the working lineage preserves the policy's 14-dimensional reach-and-hold observation semantics, two physical action outputs, and learned two-joint-arm reach representation. The task mechanics, target semantics, and hold criterion remain unchanged; only the scalar training reward changes, so the parent's representation is semantically compatible and provides a near-objective starting point rather than discarding useful behavior.",
+            "objective_link": "The retained parent is 97.5% on the development task-reference panel, only five failures short of the 98% panel count, while unchanged continuation degraded it. A completion-dominant reward directly emphasizes the official success event and offers a measured path to close that remaining task-performance gap without changing the official task.",
+            "observations_sought": "Protected task-reference success and failure behavior at the candidate checkpoints, together with the training success and reward trajectory, compared with the retained parent and the unchanged recipe's prior trajectories.",
+            "uncertainty": "The campaign does not identify whether the proxy/reference gap is caused by reward incentives, update dynamics, target-distribution effects, or run-specific variation, and no reward intervention has yet been tested."
+          },
+          "requested_evaluations": [],
+          "schema_version": 1,
+          "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+          "scientific_question": "Can making the reward for completing the uninterrupted 100-step hold more dominant improve protected task-reference success while preserving the retained parent's learned reach behavior?",
+          "scientific_strategy": "## 052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a / Scientific strategy\n\n**Current synthesis:** The campaign objective is at least 98% success on the official two-joint-arm reach-and-hold task. The unchanged PPO recipe learned substantial task behavior in experiment 1 and reached 97.5% (195/200) on the development task-reference panel at checkpoint-105472, but later checkpoints fell to 95.5% and 92.0% while training proxies improved. Transfers that changed learning rate or entropy regularization did not preserve the parent peak: experiment 2 reached at most 96.5% and experiment 3 at most 97.0%. The fresh unchanged replication in experiment 4 rose from 89.5% to 94.0% on its measured late checkpoints, while the direct unchanged continuation in experiment 5 fell from 94.5% to 89.0-90.0%; thus the late trajectory is not fixed by the unchanged recipe. The campaign has one near-objective measured policy, no measured policy at the objective, and a persistent gap between training proxies and protected task-reference behavior.\n\n**Lessons and limits:** Measured task behavior, not training reward or proxy success, governs policy progress. High proxies repeatedly coexisted with lower task-reference success: experiment 2 had 0.99 training success and 152.588 mean reward at checkpoint-90112 but 94.0% measured success; experiment 3 reached 1.00 and about 154 reward near 100352-105472 steps but measured 97.0% and 95.5%; experiment 4 reached 0.95 and 135.373 at 115712 but measured 92.5%; experiment 5 reached 1.00 and 153.642 at 105472 but measured 89.5%. The current reward combines distance shaping, linear hold-progress potential, a full hold-progress forfeiture on exit, and a one-shot completion bonus equal to the full hold-progress scale; that structure has not been compared with a more completion-dominant signal. In experiment 5, all measured failures truncated at 500 steps, and the failure set changed substantially from the parent's five failures: four overlapped after 5,120 additional steps and one overlapped at 120,832. These outcomes characterize degradation and failure-set changes without identifying a mechanism. The retained parent and all tested runs share the observation, action, task, and 64x64 tanh policy semantics, making transfer and replication comparisons relevant; however, two fresh runs do not estimate run-to-run variation. The task-reference panel is repeated development evidence rather than the official panel, and unmeasured checkpoints remain unmeasured. Sources: `research/scenario.md`, `research/brief.md`, `research/research_state.json`, `research/results.jsonl`, `research/postmortems.md`, the experiment-1 through experiment-5 inventories and parameters, the five training-log queries, `robot_learning/scenario/reward.py`, and the twenty task-reference artifacts under `research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/`.\n\n**Open questions:** It remains unknown whether the persistent proxy/reference gap reflects reward incentives, update dynamics, target-distribution effects, or run-specific variation. It is also unknown whether emphasizing the terminal uninterrupted hold can improve protected task-reference behavior without sacrificing the parent policy's learned reach representation. The unmeasured checkpoints leave any brief recovery unsampled, and the parent policy's five residual failures and the relationship between development-panel performance and the official assessment remain uncharacterized.",
+          "status": "closed",
+          "task_reference_evaluations": [
+            {
+              "candidate": "checkpoint-105472",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-6-checkpoint-105472-task-reference-v1.json",
+              "evaluation_artifact_fingerprint": "8e337bd9c52e58c8391c0cdaddf3e69ca8af602d0d473ca3ae9ae41a52f8174f",
+              "instrument": "task_reference",
+              "label": "task reference: matched late checkpoint",
+              "model_fingerprint": "4ff46a59d7582f5d89169f09c10e1a49bc978bda6111cbc8b1a305549b9a9a20",
+              "omitted_alternative": "checkpoint-110592",
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "seed": 7300,
+              "selection": "Observed signal: this transferred checkpoint has 0.98 training success and 336.579 mean reward at 105472 steps, matching the retained parent's measured checkpoint position while using the increased completion bonus. Measuring it on the protected panel tests whether the intervention preserves or improves the parent's learned reach-and-hold behavior at the first high-proxy late point; the result could change whether this reward recipe is retained or whether the parent remains the working and best-known policy.",
+              "success_percent": 91.0
+            },
+            {
+              "candidate": "checkpoint-115712",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-6-checkpoint-115712-task-reference-v1.json",
+              "evaluation_artifact_fingerprint": "5ac0f3b0d8f5621705d897e2e536b74640e4e007bb79bff096ec7c49bcf731e9",
+              "instrument": "task_reference",
+              "label": "task reference: peak reward checkpoint",
+              "model_fingerprint": "b114932498f5275ef35dbaee86adced0187c05e95716758ef55536479306a2d2",
+              "omitted_alternative": "checkpoint-110592",
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "seed": 7300,
+              "selection": "Observed signal: this checkpoint has the experiment's highest recorded mean training reward, 345.128, with 0.99 training success. Measuring it tests whether the strongest reward/proxy signal under the completion-dominant reward corresponds to protected task success rather than reward-scale inflation; the result could make this candidate a useful replacement, show that the reward change is not task-aligned, or identify late degradation despite the peak proxy.",
+              "success_percent": 96.0
+            },
+            {
+              "candidate": "checkpoint-120832",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-6-checkpoint-120832-task-reference-v1.json",
+              "evaluation_artifact_fingerprint": "09d2bd1bfc770c1a713ad8f443aecb364154db671aa76d24e76c3162d843e006",
+              "instrument": "task_reference",
+              "label": "task reference: endpoint persistence",
+              "model_fingerprint": "833fe9b275636bf98adc32bb5203a2108f75016e7b949c699cfb54cc6c6982d7",
+              "omitted_alternative": "checkpoint-110592",
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "seed": 7300,
+              "selection": "Observed signal: the endpoint retains 0.99 training success but its mean reward falls from 345.128 at 115712 to 342.600, echoing the campaign's prior late divergence between training proxies and task-reference behavior. Measuring it distinguishes a persistent task improvement from a transient intermediate peak and could change whether the late reward intervention is considered robust enough for working or best-known status.",
+              "success_percent": 94.5
+            }
+          ],
+          "training_budget_steps": 120000,
+          "training_parent": "working",
+          "training_parent_lineage": {
+            "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+            "candidate": "checkpoint-105472",
+            "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+            "identifier": "working",
+            "origin_experiment": 1,
+            "parameters": {
+              "algorithm": {
+                "name": "ppo"
+              },
+              "policy": {
+                "activation": "tanh",
+                "net_arch": [
+                  64,
+                  64
+                ]
+              },
+              "ppo": {
+                "batch_size": 64,
+                "ent_coef": 0.01,
+                "gae_lambda": 0.95,
+                "gamma": 0.99,
+                "learning_rate": 0.0003,
+                "n_steps": 1024
+              },
+              "training": {
+                "checkpoint_every_steps": 5000,
+                "n_envs": 1
+              }
+            },
+            "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
+            "training_steps": 105472
+          },
+          "training_seed": 0,
+          "verdict": "researcher selected working as working",
+          "working_lineage": {
+            "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+            "candidate": "checkpoint-105472",
+            "evaluation_artifacts": [],
+            "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+            "origin_experiment": 1,
+            "parameters": {
+              "algorithm": {
+                "name": "ppo"
+              },
+              "policy": {
+                "activation": "tanh",
+                "net_arch": [
+                  64,
+                  64
+                ]
+              },
+              "ppo": {
+                "batch_size": 64,
+                "ent_coef": 0.01,
+                "gae_lambda": 0.95,
+                "gamma": 0.99,
+                "learning_rate": 0.0003,
+                "n_steps": 1024
+              },
+              "training": {
+                "checkpoint_every_steps": 5000,
+                "n_envs": 1
+              }
+            },
+            "reason": "Experiment 6's completion-bonus intervention reached 91.0%, 96.0%, and 94.5% on the task-reference panel, all below the retained parent's 97.5%, while training proxies reached 0.99. Restore the retained parent as the working and unchanged best-known lineage; the development evidence remains below the official objective, so do not request the official benchmark.",
+            "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
+            "training_steps": 105472
+          }
+        },
+        "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f",
+        "training_budget_steps": 120000,
+        "training_parent_lineage": {
+          "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+          "candidate": "checkpoint-105472",
+          "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+          "identifier": "working",
+          "origin_experiment": 1,
+          "parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
+          "training_steps": 105472
+        }
+      },
+      "pending_field": "pending_analysis",
+      "removed_retained": [],
+      "request_final_benchmark": false,
+      "retained": [],
+      "working_name": "working",
+      "working_record": {
+        "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+        "candidate": "checkpoint-105472",
+        "evaluation_artifacts": [],
+        "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
+        "origin_experiment": 1,
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "reason": "Experiment 6's completion-bonus intervention reached 91.0%, 96.0%, and 94.5% on the task-reference panel, all below the retained parent's 97.5%, while training proxies reached 0.99. Restore the retained parent as the working and unchanged best-known lineage; the development evidence remains below the official objective, so do not request the official benchmark.",
+        "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
+        "training_steps": 105472
+      }
+    },
+    "progress": "durable",
+    "selected": "working"
+  },
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
-    "code_parent_commit": "89d11c871aee0a5863f1d790a519d30bf71a28a3",
-    "experiment": 5,
-    "scientific_commit": "c6751595b46fd6d82603c830e1d87b9e86133465"
+    "code_parent_commit": "63f0025e73a79523f35ee0b983c0467278ef93d0",
+    "experiment": 6,
+    "scientific_commit": "fb87b980e21dca05aaca1938dcfc7bbe057ddc2f"
   },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
@@ -106,7 +1063,7 @@
         "n_envs": 1
       }
     },
-    "reason": "All six measured experiment-5 continuation checkpoints fell below the retained parent's 97.5% task-reference success, ranging from 94.5% after 5,120 additional steps to 89.0%-90.0% later, while training proxies reached 1.00. Keep the retained parent as working and best-known for further development; the evidence remains below the objective and does not justify the official benchmark.",
+    "reason": "Experiment 6's completion-bonus intervention reached 91.0%, 96.0%, and 94.5% on the task-reference panel, all below the retained parent's 97.5%, while training proxies reached 0.99. Restore the retained parent as the working and unchanged best-known lineage; the development evidence remains below the official objective, so do not request the official benchmark.",
     "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
     "training_steps": 105472
   }
