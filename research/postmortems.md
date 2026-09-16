@@ -2,29 +2,30 @@
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-competence, but the best measured checkpoint is well below the 98% campaign
-objective. `checkpoint-120832` is the strongest measured artifact and improves
-on the immediately preceding checkpoint on the shared development panel.
+**Current synthesis:** The campaign objective remains a policy with at least
+98% success on the fixed 200-episode official assessment. The fresh PPO
+baseline learned substantial reach-and-hold competence, and
+`checkpoint-120832` is the strongest measured artifact at 61.5% (123/200),
+improving by 12 percentage points over `checkpoint-115712` on the shared
+development panel, but it is not close to the objective.
 
 **Lessons and limits:** Training proxies rose from zero success early in the run
 to `success_rate` 0.89 and `ep_rew_mean` 169.5 at 120832 steps, while the
-protected task-reference result was 61.5% (123/200). Research diagnostics show
-that 55 of the endpoint's 77 failures never entered tolerance and 22 entered
-but did not complete the 100-step hold. The endpoint is weaker on the
-near-radius subset (56.1%, 32/57) and on the front half of the angular panel
-(48.4%, 46/95) than on the corresponding far-radius (63.6%, 91/143) and back
-half (73.3%, 77/105) subsets. These are development measurements, not the
-official benchmark, and the paired result supports within-panel improvement
-only. The training environment also overweights the 6-10 cm radius band
-relative to the official uniform radius distribution; this is a plausible
-source of evaluation mismatch, not an established cause.
+protected task-reference result was 61.5%. Of the endpoint's 77 failures, 55
+never entered tolerance and 22 entered but did not complete the 100-step hold.
+Success was lower for near-radius targets (56.1%, 32/57) and front-half targets
+(48.4%, 46/95) than for far-radius (63.6%, 91/143) and back-half targets
+(73.3%, 77/105). Code and evaluation artifacts show that training samples the
+6-10 cm band with probability 0.50, whereas the protected task uses a uniform
+6-20 cm radius; this is a plausible mismatch, not proof of cause. The paired
+checkpoint comparison supports within-panel improvement only, and all
+measurements are development evidence rather than the official result.
 
-**Open questions:** A subsequent investigation could target the dominant
-no-reach failures, especially in the front and near-radius subsets, while
-checking that complete-hold reliability is preserved. The current measurements
-do not establish whether the training-distribution difference, policy
-representation, or control behavior causes those failures.
+**Open questions:** It remains unresolved whether the radius-sampling mismatch
+is materially responsible for the near-radius and no-reach failures, or whether
+the limiting factors are instead the policy representation or control behavior.
+It is also unresolved whether changes that improve acquisition preserve the
+complete 100-step hold across the official geometry distribution.
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 1
 
