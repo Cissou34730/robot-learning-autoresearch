@@ -800,26 +800,16 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
     return lines
 
 
-def _render_v4_research_brief(
+def _v4_phase_section(
     state: dict,
-    results: list[dict],
-    postmortems: str,
+    pending: dict | None,
+    latest: dict | None,
+    latest_experiment,
+    terminal,
     campaign_id: str | None,
     campaign_base_commit: str | None,
-    current_method: str,
-    current_params: dict,
-) -> str:
-    pending = state.get("pending_analysis")
-    latest = (
-        pending.get("result")
-        if isinstance(pending, dict)
-        else (results[-1] if results else None)
-    )
-    latest_experiment = (
-        pending.get("experiment")
-        if isinstance(pending, dict)
-        else (latest or {}).get("index", "none")
-    )
+) -> list[str]:
+    """The campaign header: where the campaign is and what it expects next."""
     phase = (
         "post-training analysis"
         if isinstance(pending, dict)
@@ -827,7 +817,6 @@ def _render_v4_research_brief(
     )
     if state.get("pending_final_benchmark") is not None:
         phase = "official assessment"
-    terminal = state.get("terminal_campaign_status")
     if terminal:
         phase = "terminal official assessment"
     lines = [
@@ -852,6 +841,193 @@ def _render_v4_research_brief(
     ]
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
+    return lines
+
+
+def _v4_lineage_section(state: dict, current_params: dict) -> list[str]:
+    """Lineage facts and the current experiment candidate inventory."""
+    lines = ["", *_current_lineages_and_recipes_lines(state, current_params)]
+    lines.extend(["", "## Working lineage", ""])
+    lines.append(
+        "- See `working` under **Current lineages and scientific recipes**."
+        if state.get("working_lineage")
+        else "- Working: unset"
+    )
+    return lines
+
+
+def _v4_experiment_index_section(results: list[dict]) -> list[str]:
+    """One row per completed experiment, newest first."""
+    lines = [
+        "",
+        "## Campaign experiment index",
+        "",
+        "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
+        "|---:|---|---|---|---|---|---|---|",
+    ]
+    for result in sorted(
+        results, key=lambda item: int(item.get("index", 0)), reverse=True
+    ):
+        checkpoints = compact_measurement_summary(result)
+        closure = result.get("closure_decision") or {}
+        lines.append(
+            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
+            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
+            f"{_compact(checkpoints, 140).replace('|', '/')} | "
+            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
+            f"working {closure.get('continue_from', 'unmeasured')}; "
+            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
+            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
+            f"{_postmortem_reference(result.get('postmortem'))} |"
+        )
+    if not results:
+        lines.append("| - | - | - | - | - | - | - | - |")
+    return lines
+
+
+def _v4_evidence_section(pending: dict | None, results: list[dict]) -> list[str]:
+    """Aggregate fingerprint-bound development evidence."""
+    return [
+        "",
+        "## Development evidence index",
+        "",
+        *_v4_evidence_lines(pending, results),
+    ]
+
+
+def _v4_synthesis_section(postmortems: str, campaign_id: str | None) -> list[str]:
+    """The Researcher-authored, revisable scientific synthesis."""
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines = [
+        "",
+        "## Provisional scientific synthesis",
+        "",
+        (
+            "Researcher-authored interpretation of the campaign evidence. "
+            "It is memory for reassessment, not a prescribed next direction:"
+        ),
+        "",
+    ]
+    lines.append(
+        "\n".join(strategy.splitlines()[1:]).strip()
+        if strategy
+        else "No scientific strategy recorded for this campaign yet."
+    )
+    return lines
+
+
+def _v4_repeated_operations_section(results: list[dict]) -> list[str]:
+    """Replication groups, stated as facts rather than a next direction."""
+    lines = ["", "## Repeated operations", ""]
+    groups = _replication_groups(results)
+    if groups:
+        for original, entries in groups:
+            experiments = ", ".join(str(entry.get("index", "-")) for entry in entries)
+            lines.append(
+                f"- Replication group `{original}`: {len(entries)} runs; "
+                f"experiments {experiments}."
+            )
+    else:
+        lines.append("No repeated operations recorded.")
+    return lines
+
+
+def _v4_intervention_surfaces_section(results: list[dict]) -> list[str]:
+    """Where the campaign has intervened, without suggesting where to next."""
+    lines = ["", "## Intervention surfaces", ""]
+    surfaces, parameter_only, unchanged = _intervention_surfaces(results)
+    if surfaces:
+        lines.append(
+            "Experiments that changed each researcher-owned source, including "
+            "sources never changed. This is a record of where the campaign has "
+            "intervened, not a suggestion about where to intervene next:"
+        )
+        lines.append("")
+        for source, count in surfaces:
+            lines.append(f"- `{source}`: {count}")
+        lines.append(
+            f"- Experiments with no researcher-owned source change: "
+            f"{parameter_only} parameter-only, {unchanged} unchanged."
+        )
+    else:
+        lines.append("No researcher-owned sources found.")
+    return lines
+
+
+def _v4_reusable_lineages_section(state: dict) -> list[str]:
+    """Retained alternative lineages available as training parents."""
+    lines = ["", "## Reusable lineages", ""]
+    retained = state.get("retained_lineages") or []
+    if retained:
+        for lineage in retained:
+            lines.append(
+                f"- See `{lineage.get('id', '-')}` under "
+                "**Current lineages and scientific recipes**."
+            )
+    else:
+        lines.append("No retained alternatives.")
+    return lines
+
+
+def _v4_best_known_section(state: dict) -> list[str]:
+    """Pointer to the best-known lineage among the current lineages."""
+    lines = ["", "## Best-known model", ""]
+    best_known = state.get("best_known_lineage")
+    lines.append(
+        "- See `best_known` under **Current lineages and scientific recipes**."
+        if best_known
+        else "- Best known: unset"
+    )
+    return lines
+
+
+def _v4_official_section(state: dict, terminal) -> list[str]:
+    """The terminal official report, present only after a verdict."""
+    official = state.get("official_metrics")
+    if official is None:
+        return []
+    official_model = state.get("official_benchmark_model") or {}
+    return [
+        "",
+        "## Official report",
+        "",
+        f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
+        f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
+        f"- Result: {official}",
+        f"- Terminal assessment: {terminal or 'not recorded'}",
+    ]
+
+
+def _render_v4_research_brief(
+    state: dict,
+    results: list[dict],
+    postmortems: str,
+    campaign_id: str | None,
+    campaign_base_commit: str | None,
+    current_method: str,
+    current_params: dict,
+) -> str:
+    pending = state.get("pending_analysis")
+    latest = (
+        pending.get("result")
+        if isinstance(pending, dict)
+        else (results[-1] if results else None)
+    )
+    latest_experiment = (
+        pending.get("experiment")
+        if isinstance(pending, dict)
+        else (latest or {}).get("index", "none")
+    )
+    terminal = state.get("terminal_campaign_status")
+    lines = _v4_phase_section(
+        state,
+        pending,
+        latest,
+        latest_experiment,
+        terminal,
+        campaign_id,
+        campaign_base_commit,
+    )
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
@@ -913,125 +1089,22 @@ def _render_v4_research_brief(
     else:
         lines.append("No experiment has completed in this campaign.")
 
-    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
+    lines.extend(_v4_lineage_section(state, current_params))
 
-    lines.extend(["", "## Working lineage", ""])
-    lines.append(
-        "- See `working` under **Current lineages and scientific recipes**."
-        if state.get("working_lineage")
-        else "- Working: unset"
-    )
+    lines.extend(_v4_experiment_index_section(results))
 
-    lines.extend(
-        [
-            "",
-            "## Campaign experiment index",
-            "",
-            "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
-            "|---:|---|---|---|---|---|---|---|",
-        ]
-    )
-    for result in sorted(
-        results, key=lambda item: int(item.get("index", 0)), reverse=True
-    ):
-        checkpoints = compact_measurement_summary(result)
-        closure = result.get("closure_decision") or {}
-        lines.append(
-            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
-            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
-            f"{_compact(checkpoints, 140).replace('|', '/')} | "
-            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
-            f"working {closure.get('continue_from', 'unmeasured')}; "
-            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
-            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
-            f"{_postmortem_reference(result.get('postmortem'))} |"
-        )
-    if not results:
-        lines.append("| - | - | - | - | - | - | - | - |")
+    lines.extend(_v4_evidence_section(pending, results))
 
-    lines.extend(["", "## Development evidence index", ""])
-    lines.extend(_v4_evidence_lines(pending, results))
+    lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 
-    strategy = scientific_strategy_section(postmortems, campaign_id)
-    lines.extend(
-        [
-            "",
-            "## Provisional scientific synthesis",
-            "",
-            (
-                "Researcher-authored interpretation of the campaign evidence. "
-                "It is memory for reassessment, not a prescribed next direction:"
-            ),
-            "",
-        ]
-    )
-    lines.append(
-        "\n".join(strategy.splitlines()[1:]).strip()
-        if strategy
-        else "No scientific strategy recorded for this campaign yet."
-    )
+    lines.extend(_v4_repeated_operations_section(results))
 
-    lines.extend(["", "## Repeated operations", ""])
-    groups = _replication_groups(results)
-    if groups:
-        for original, entries in groups:
-            experiments = ", ".join(str(entry.get("index", "-")) for entry in entries)
-            lines.append(
-                f"- Replication group `{original}`: {len(entries)} runs; "
-                f"experiments {experiments}."
-            )
-    else:
-        lines.append("No repeated operations recorded.")
+    lines.extend(_v4_intervention_surfaces_section(results))
 
-    lines.extend(["", "## Intervention surfaces", ""])
-    surfaces, parameter_only, unchanged = _intervention_surfaces(results)
-    if surfaces:
-        lines.append(
-            "Experiments that changed each researcher-owned source, including "
-            "sources never changed. This is a record of where the campaign has "
-            "intervened, not a suggestion about where to intervene next:"
-        )
-        lines.append("")
-        for source, count in surfaces:
-            lines.append(f"- `{source}`: {count}")
-        lines.append(
-            f"- Experiments with no researcher-owned source change: "
-            f"{parameter_only} parameter-only, {unchanged} unchanged."
-        )
-    else:
-        lines.append("No researcher-owned sources found.")
+    lines.extend(_v4_reusable_lineages_section(state))
+    lines.extend(_v4_best_known_section(state))
 
-    lines.extend(["", "## Reusable lineages", ""])
-    retained = state.get("retained_lineages") or []
-    if retained:
-        for lineage in retained:
-            lines.append(
-                f"- See `{lineage.get('id', '-')}` under "
-                "**Current lineages and scientific recipes**."
-            )
-    else:
-        lines.append("No retained alternatives.")
-    lines.extend(["", "## Best-known model", ""])
-    best_known = state.get("best_known_lineage")
-    lines.append(
-        "- See `best_known` under **Current lineages and scientific recipes**."
-        if best_known
-        else "- Best known: unset"
-    )
-    official = state.get("official_metrics")
-    if official is not None:
-        official_model = state.get("official_benchmark_model") or {}
-        lines.extend(
-            [
-                "",
-                "## Official report",
-                "",
-                f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
-                f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
-                f"- Result: {official}",
-                f"- Terminal assessment: {terminal or 'not recorded'}",
-            ]
-        )
+    lines.extend(_v4_official_section(state, terminal))
     return "\n".join(lines).rstrip() + "\n"
 
 
