@@ -994,6 +994,58 @@ def _cost_records(
     return records
 
 
+def _v4_terminal_readiness_section(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[str]:
+    """Advisory deterministic terminal-readiness evidence (issue #37)."""
+    from research import stopping_policy
+
+    records = _cost_records(state, results, pending)
+    assessment = stopping_policy.assess_terminal_readiness(
+        state.get("best_known_lineage"), records
+    )
+    lines = [
+        "",
+        "## Terminal-readiness evidence",
+        "",
+        (
+            "Advisory, deterministic evidence for the frozen best-known model. It "
+            "does not authorize or block a terminal request; the Researcher "
+            "retains the stopping decision. See `research/stopping_contract.md`."
+        ),
+        "",
+    ]
+    if not assessment.get("assessed"):
+        reason = assessment.get("reason", "unknown")
+        lines.append(f"- Assessment: not assessed ({reason}).")
+        return lines
+    panel = assessment["panel"]
+    lines.extend(
+        [
+            (
+                f"- Fresh stopping-validation panel: seed {panel['seed']}, "
+                f"{assessment['episodes']} episodes "
+                f"(experiment {panel['experiment']})."
+            ),
+            (
+                f"- Observed success: {assessment['successes']}/"
+                f"{assessment['episodes']} "
+                f"({assessment['success_percent']:.2f}%)."
+            ),
+            (
+                f"- {int(assessment['confidence'] * 100)}% one-sided lower bound: "
+                f"{assessment['lower_bound_percent']:.2f}% (objective "
+                f"{assessment['objective_percent']:.1f}%)."
+            ),
+            (
+                "- Contract assessment: "
+                f"{'supported' if assessment['supported'] else 'not supported'}."
+            ),
+        ]
+    )
+    return lines
+
+
 def _v4_cost_accounting_section(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[str]:
@@ -1293,6 +1345,8 @@ def _render_v4_research_brief(
     lines.extend(_v4_measurement_rounds_section(pending, latest))
 
     lines.extend(_v4_cost_accounting_section(state, results, pending))
+
+    lines.extend(_v4_terminal_readiness_section(state, results, pending))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 

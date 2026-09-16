@@ -42,6 +42,7 @@ PROTECTED_RUNNER_PATHS = {
     "research/reset_campaign.py",
     "research/build_research_brief.py",
     "research/query_training_log.py",
+    "research/stopping_policy.py",
     "researcher_session.ps1",
     "run_research.ps1",
 }
@@ -61,6 +62,7 @@ PROTECTED_CONTEXT_PATHS = {
     "research/instruments.md",
     "research/program.md",
     "research/scenario.md",
+    "research/stopping_contract.md",
 }
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.

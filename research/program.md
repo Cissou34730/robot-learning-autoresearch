@@ -229,12 +229,24 @@ investigations does not require resolving every open question.
 
 Continue development while the Researcher judges that further investigation
 best serves the human objective. Request terminal assessment when the Researcher
-judges that the selected best-known policy is ready for the official verdict,
-stating the evidence and uncertainty behind that decision. Another useful
-investigation does not prohibit stopping, and reaching a development threshold
-does not require stopping. No development margin, residual-failure criterion,
-replication count, or proof that no better research direction exists is
-required.
+judges that the selected best-known model is ready for the official verdict,
+stating the evidence and uncertainty behind that decision.
+
+`research/stopping_contract.md` defines the terminal-readiness evidence. A
+development result on the episodes used to select the model is not by itself
+readiness evidence, because selection biases that panel upward. A terminal
+request should cite a stopping-validation panel measured on the frozen
+best-known model after its designation, on episodes not used for selection, and
+should state the uncertainty the evidence cannot remove. The contract is advisory
+in this version: it reports a deterministic assessment and neither blocks nor
+authorizes the request, and no automatic threshold decides when the campaign
+ends.
+
+Another useful investigation does not prohibit stopping, and reaching a
+development threshold does not require stopping. No residual-failure criterion or
+proof that no better research direction exists is required. Unlike the earlier
+wording, a fresh stopping-validation panel is expected for a terminal request;
+its margin is the one stated in the contract.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. Requesting it ends the campaign after either verdict:

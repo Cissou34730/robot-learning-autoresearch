@@ -106,6 +106,7 @@ def test_composed_brief_orders_each_section_once():
         "## Campaign experiment index",
         "## Development evidence index",
         "## Campaign cost accounting",
+        "## Terminal-readiness evidence",
         "## Provisional scientific synthesis",
         "## Repeated operations",
         "## Intervention surfaces",
