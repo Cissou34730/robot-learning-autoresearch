@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/e4-c8cf701d5-30a0e1c7fecdea0418d980fe61d1cec5e4ccb2da64bbc1ce5110250238ecf728",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/evaluation-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-200ep-seed7300-c5b54f36dc64.json",
-      "research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-task-reference-v1.json"
-    ],
-    "fingerprint": "30a0e1c7fecdea0418d980fe61d1cec5e4ccb2da64bbc1ce5110250238ecf728",
-    "origin_experiment": 4,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest measured task-reference success in the current campaign at 94.0% (188/200), exceeding the experiment 3 endpoint at 89.0% and the experiment 4 proxy-peak checkpoint at 89.0%.",
-    "scientific_commit": "929bdec9e91951dd88de8e9aaa7ced77ab67e8b2",
-    "training_steps": 483328
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "d07440c1eba47e6b71bf443fc1afbba9c92e3dca",
-    "id": "cc96dcb7-74bb-41d4-8c53-0f9afd26aa75",
+    "base_commit": "61dc4ce7a54e5cbce4b92e555418ae1c3a063348",
+    "id": "2f80d343-e97b-4af0-90b0-51cba116b8ae",
     "recipe_source_commit": null,
-    "started_at": "2026-09-16T11:32:21.948711+00:00"
+    "started_at": "2026-09-16T14:46:53.299658+00:00"
   },
   "campaign_experiment_counters": {
-    "cc96dcb7-74bb-41d4-8c53-0f9afd26aa75": 5
+    "2f80d343-e97b-4af0-90b0-51cba116b8ae": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 5 made no researcher-owned code or parameter changes. Keeping the unchanged uniform-radius PPO recipe preserves the established policy I/O, normalization, and training semantics for the selected working lineage."
-    },
-    "code_parent_commit": "ee7264fc76fa7ce88640abc1745c1ed0642d902a",
-    "continue_from": "working",
-    "experiment": 5,
-    "reason": "Experiment 5 produced no measured task improvement over the experiment 4 working policy: its measured checkpoints reached 187/200, 187/200, and 188/200, while the prior working endpoint was also 188/200. Under matched research-evaluation semantics, both endpoints had 188 successes and the prior endpoint had fewer incomplete holds (10 versus 11). Keep the prior 188/200 policy as working and best-known; the development result remains below 196/200 and is not the official benchmark, so do not request terminal assessment."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,50 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "ee7264fc76fa7ce88640abc1745c1ed0642d902a",
-    "experiment": 5,
-    "scientific_commit": "68be334a70d2306ab43eb0ca01658d3413e81162"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/e4-c8cf701d5-30a0e1c7fecdea0418d980fe61d1cec5e4ccb2da64bbc1ce5110250238ecf728",
-    "candidate": "checkpoint-120832",
-    "evaluation_artifacts": [
-      "research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/evaluation-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-200ep-seed7300-c5b54f36dc64.json"
-    ],
-    "fingerprint": "30a0e1c7fecdea0418d980fe61d1cec5e4ccb2da64bbc1ce5110250238ecf728",
-    "origin_experiment": 4,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 5 produced no measured task improvement over the experiment 4 working policy: its measured checkpoints reached 187/200, 187/200, and 188/200, while the prior working endpoint was also 188/200. Under matched research-evaluation semantics, both endpoints had 188 successes and the prior endpoint had fewer incomplete holds (10 versus 11). Keep the prior 188/200 policy as working and best-known; the development result remains below 196/200 and is not the official benchmark, so do not request terminal assessment.",
-    "scientific_commit": "929bdec9e91951dd88de8e9aaa7ced77ab67e8b2",
-    "training_steps": 483328
-  }
+  "working_lineage": null
 }
