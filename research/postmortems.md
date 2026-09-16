@@ -2,34 +2,31 @@
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Scientific strategy
 
-**Current synthesis:** The campaign objective remains a policy with at least
-98% success on the fixed 200-episode official assessment. The transferred PPO
-policy from experiment 2 is now the strongest measured artifact at 85.0%
-(170/200) on the development panel, improving by 23.5 percentage points over
-the experiment 1 endpoint, but it remains below the objective and is not ready
-for terminal assessment.
+**Current synthesis:** The campaign objective is a policy with at least 98%
+success on the fixed 200-episode official assessment. The best measured policy
+is the experiment 2 transferred PPO endpoint, at 85.0% (170/200) on the
+development panel. It improved substantially over the fresh experiment 1
+endpoint, especially for near-radius and front-half targets, but remains below
+the objective and is not ready for terminal assessment.
 
-**Lessons and limits:** Training proxies rose from zero success early in the run
-to `success_rate` 0.96 and `ep_rew_mean` 187.0 at 120832 steps in experiment 2,
-while task-reference success reached 85.0%. The training proxy was non-monotonic:
-it reached 1.0 and `ep_rew_mean` 194.17 at 50176 steps, but that checkpoint
-measured only 72.0%, so proxy peak selection would not have identified the best
-measured task policy. At the experiment 2 endpoint, 12 of 30 failures never
-entered tolerance and 18 entered but did not complete the 100-step hold,
-compared with 55 and 22 respectively for the experiment 1 endpoint. Endpoint
-success was 87.7% near-radius (50/57), 83.9% far-radius (120/143), 83.2% on
-the front half (79/95), and 86.7% on the back half (91/105). The uniform-radius
-training intervention therefore coincided with large gains in the previously
-weak near and front geometries and a reduction in acquisition failures, while
-the complete-hold failure count did not increase. These are same-panel
-development measurements of a transferred policy; they support usefulness of
-the tested recipe but do not isolate the radius sampler as the sole cause.
+**Lessons and limits:** The unchanged baseline learned the task, while the
+uniform 0.06-0.20 m training-radius recipe coincided with improvement from
+61.5% to 85.0% on the shared task-reference panel. At the experiment 2
+endpoint, 12 of 30 failures never entered tolerance and 18 entered but did not
+complete the 100-step hold; near-radius success was 87.7%, far-radius success
+83.9%, front-half success 83.2%, and back-half success 86.7%. Training proxies
+were non-monotonic: the proxy peak at 50,176 steps measured only 72.0%, whereas
+the 120,832-step endpoint measured 85.0%. Thus task measurements, not proxy
+peaks, govern policy selection. The evidence is from one transferred run
+without a radius-only control, so it supports the usefulness of the tested
+recipe but does not establish that radius sampling alone caused the gain.
 
-**Open questions:** It remains unresolved whether the radius-sampling mismatch
-accounts for most of the gain, versus transfer dynamics or other control and
-representation effects. The endpoint still has 30 failures and is 26 successes
-short of the 196/200 objective on this development panel, so residual
-representation, control, or hold robustness limitations remain unresolved.
+**Open questions:** It is unresolved whether continued optimization of the
+experiment 2 policy can reduce the remaining acquisition and hold failures, or
+whether the endpoint has plateaued or begun to degrade. The relative
+contributions of radius sampling, transfer dynamics, and representation or
+control limitations also remain uncertain. Development-panel evidence is not
+the official final verdict.
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 1
 
