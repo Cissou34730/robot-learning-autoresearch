@@ -3,11 +3,11 @@
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Scientific strategy
 
 **Current synthesis:** The campaign objective is a policy with at least 98%
-success on the fixed 200-episode official assessment. The best measured policy
-is now the experiment 3 continuation endpoint, at 89.0% (178/200) on the shared
-development panel, improving by 8 episodes over the experiment 2 parent. The
-continuation is useful progress but remains below the objective and is not ready
-for terminal assessment.
+success on the fixed 200-episode official assessment. Across the campaign, the
+best measured policy progressed from 61.5% for the fresh baseline to 85.0% after
+the uniform-radius recipe change and 89.0% after unchanged continuation. The
+experiment 3 endpoint is therefore useful evidence of progress, but it remains
+below the objective and the development panel is not the official assessment.
 
 **Lessons and limits:** The unchanged baseline learned the task, while the
 uniform 0.06-0.20 m training-radius recipe coincided with improvement from
@@ -26,13 +26,21 @@ criterion: the checkpoint at its 40,960-step proxy peak measured 88.5%, the
 89.0%. The
 task-reference artifacts report all failures as truncated at 500 steps but do
 not distinguish acquisition failures from incomplete holds, so the residual
-failure mechanism is unresolved.
+failure mechanism is unresolved. The retained experiment 3 artifact uses the
+same PPO method, observation/action mapping, normalization contract, and
+uniform-radius training distribution as its parent, so transfer is semantically
+compatible for unchanged-method comparisons; equal tensor dimensions alone would
+not establish that compatibility.
 
 **Open questions:** It is unresolved whether continued optimization of the
 experiment 3 policy can reduce the remaining acquisition and hold failures, or
 whether the endpoint has plateaued. The relative contributions of radius
 sampling, transfer dynamics, and representation or control limitations remain
 uncertain. Development-panel evidence is not the official final verdict.
+The experiment 3 task-reference records do not carry the diagnostic fields used
+by the earlier research-evaluation artifacts, so its 22 failures cannot be
+partitioned from the available record. These uncertainties remain open without
+prescribing a particular subsequent operation.
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 1
 
