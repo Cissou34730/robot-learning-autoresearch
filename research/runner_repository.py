@@ -1208,15 +1208,6 @@ def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
     ]
 
 
-def candidate_identifier(artifact: Path, taken: set[str]) -> str:
-    """Position-neutral name: content fingerprint, extended only on collision."""
-    fingerprint = artifact_fingerprint(artifact)
-    length = 8
-    while f"candidate-{fingerprint[:length]}" in taken and length < len(fingerprint):
-        length += 4
-    return f"candidate-{fingerprint[:length]}"
-
-
 def archive_candidates(
     index: int,
     contenders: list[dict],
@@ -1228,12 +1219,10 @@ def archive_candidates(
         raise RuntimeError(f"challenger archive already exists: {destination}")
     destination.mkdir(parents=True)
     archived: list[dict] = []
-    names: set[str] = set()
     for contender in contenders:
         if contender["kind"] != "candidate":
             continue
-        name = candidate_identifier(contender["path"], names)
-        names.add(name)
+        name = contender["name"]
         artifact = destination / name
         copy_artifact(contender["path"], artifact)
         archived.append(

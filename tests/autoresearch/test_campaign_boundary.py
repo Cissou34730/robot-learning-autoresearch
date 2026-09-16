@@ -173,17 +173,14 @@ class TestArchiveCandidatesWithCampaign:
             campaign_id="campaign-a",
         )
 
-        expected = (
-            "candidate-" + runner_repository.artifact_fingerprint(candidate)[:8]
-        )
-        assert archived[0]["name"] == expected
+        assert archived[0]["name"] == "checkpoint-10"
         assert archived[0]["timesteps"] == 10
         assert archived[0]["artifact"] == (
-            f"research/checkpoints/challengers/campaign-a/experiment-4/{expected}"
+            "research/checkpoints/challengers/campaign-a/experiment-4/checkpoint-10"
         )
         assert "\\" not in archived[0]["artifact"]
 
-    def test_archive_candidates_names_are_position_neutral_and_unique(
+    def test_archive_candidates_preserve_readable_checkpoint_names(
         self, monkeypatch, tmp_path
     ):
         root = tmp_path / "repo"
@@ -209,11 +206,7 @@ class TestArchiveCandidatesWithCampaign:
         )
 
         names = [item["name"] for item in archived]
-        assert len(set(names)) == 3
-        assert all(name.startswith("candidate-") for name in names)
-        assert not any(str(item["timesteps"]) in item["name"] for item in archived)
-        assert names[0][: len("candidate-") + 8] == names[2][: len("candidate-") + 8]
-        assert len(names[2]) > len(names[0])
+        assert names == ["checkpoint-5120", "checkpoint-120832", "checkpoint-60416"]
 
 
 class TestExperimentNumberingScopedPerCampaign:
