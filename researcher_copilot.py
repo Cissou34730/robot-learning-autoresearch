@@ -196,7 +196,9 @@ instead of retrying the same command.
     inspecting the experiment's current code state or delta. To revert this
     experiment's code, use the lineage proposal's "code" decision.
 - Pytest execution belongs to the runner. Researcher-authored tests are not part
-    of the scientific recipe and are not required for phase completion.
+    of the scientific recipe, are not required for phase completion, and remain
+    available only as an optional instrument when they resolve a specific
+    uncertainty.
 - Every tool call resends the whole conversation, so prefer one aggregation over
   the same command repeated per file, and read what you need rather than whole
   artifacts.

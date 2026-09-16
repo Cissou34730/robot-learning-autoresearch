@@ -28,6 +28,11 @@ superseded. It does not instruct the autonomous researcher and does not replace
   requested steps, recorded replications, evaluation rounds, instrument
   executions, distinct episode coverage and repeated coverage as facts. It sets
   no budget, target, or preferred allocation, and implies no stopping decision.
+- **Optional researcher tests:** During a campaign a researcher-owned source
+  change runs only the protected AutoResearch boundary checks. Researcher-authored
+  tests remain an optional instrument, never a completion obligation, while
+  parameter-only changes run no suites and human-owned, protected, dependency or
+  unclassified changes keep full validation.
 
 ## 2026-09-07 - Research harness evidence and context
 
