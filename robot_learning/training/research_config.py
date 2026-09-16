@@ -19,8 +19,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
 
-RESEARCH_EVALUATION_EPISODES = 200
-RESEARCH_EVALUATION_SEED = 1000
+# Development-panel defaults shared by the runner and the evaluation CLI. They
+# are deliberately distinct from the official benchmark panel in
+# `robot_learning/benchmark/final_contract.py`. If the two coincide, a
+# development `research_evaluation` reproduces the terminal verdict panel and the
+# official result is no longer held out. Keep these values decoupled from the
+# official constants; `tests/autoresearch/test_panel_independence.py` fails loudly
+# if they are re-aligned.
+RESEARCH_EVALUATION_EPISODES = 120
+RESEARCH_EVALUATION_SEED = 4200
 
 
 def validate_param_overrides(overrides: dict) -> None:
