@@ -1283,7 +1283,7 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     calls = []
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model: (
+        lambda model, progress_callback=None: (
             calls.append(model)
             or {
                 "episodes": 200,
@@ -1345,7 +1345,7 @@ def test_legacy_champion_path_is_canonicalized_before_final_benchmark(
     }
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model: {
+        lambda model, progress_callback=None: {
             "episodes": 1,
             "seed": 1000,
             "success_percent": 50.0,
@@ -1373,8 +1373,8 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     request["previous_result_decision"]["request_final_benchmark"] = True
     assert not apply_previous_result_decision(request, state)
 
-    def failed_benchmark(model):
-        del model
+    def failed_benchmark(model, progress_callback=None):
+        del model, progress_callback
         raise RuntimeError("benchmark crashed")
 
     monkeypatch.setattr(
@@ -1391,7 +1391,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
 
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model: {
+        lambda model, progress_callback=None: {
             "episodes": 200,
             "seed": 1000,
             "success_percent": 97.5,
@@ -1442,7 +1442,10 @@ def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
     state_path.write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model: {"goal_reached": False, "model": str(model)},
+        lambda model, progress_callback=None: {
+            "goal_reached": False,
+            "model": str(model),
+        },
     )
 
     assert execute_pending_final_benchmark() == 0

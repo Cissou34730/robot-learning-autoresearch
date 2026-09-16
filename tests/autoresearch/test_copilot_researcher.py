@@ -18,6 +18,22 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = (ROOT / "researcher_copilot.py").read_text(encoding="utf-8")
 
 
+class FakeTty:
+    """A stream that can be coloured and rewritten, like a real terminal."""
+
+    def __init__(self) -> None:
+        self.written: list[str] = []
+
+    def isatty(self) -> bool:
+        return True
+
+    def write(self, text: str) -> None:
+        self.written.append(text)
+
+    def flush(self) -> None:
+        pass
+
+
 # --- model identity ---------------------------------------------------------
 
 
@@ -310,6 +326,64 @@ def test_the_summary_reports_work_not_a_verdict(capsys):
     assert "0.36 AIU" in out
     for verdict in ("success", "complete", "valid", "failed"):
         assert verdict not in out.lower()
+
+
+def test_the_session_end_is_a_labelled_line_with_its_own_duration(capsys):
+    console = adapter.Console("e3·proposal")
+
+    console.summary(
+        "fdb8162a-19eb-45ee-9835-9b22f70f4a80",
+        ["research/proposal.json"],
+        elapsed_seconds=422,
+    )
+
+    out = capsys.readouterr().out
+    # A phase boundary the reader can find without reading the whole session.
+    line = out.splitlines()[-1]
+    assert line.startswith("[session] fdb8162a · 7m02s · 1 file(s) changed")
+    assert "tools 0" in line
+
+
+def test_the_session_label_is_coloured_apart_from_tool_lines(monkeypatch):
+    stream = FakeTty()
+    monkeypatch.setattr(sys, "stdout", stream)
+    console = adapter.Console("e3·proposal")
+
+    console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80", [])
+
+    text = "".join(stream.written)
+    colour = adapter._MARKER_COLORS["[session]"]
+    assert f"{colour}[session]{adapter._RESET}" in text
+    assert colour != adapter._MARKER_COLORS[">"]
+
+
+def test_the_models_own_words_are_coloured_apart_from_harness_output(monkeypatch):
+    stream = FakeTty()
+    monkeypatch.setattr(sys, "stdout", stream)
+    console = adapter.Console("e3·proposal")
+
+    console.delta("The parent ")
+    console.delta("used N=8.")
+    console.tool("view", {"path": "a.py"})
+
+    text = "".join(stream.written)
+    # One colour opens the stream and one reset closes it before the tool line.
+    assert text.count(adapter._MESSAGE) == 1
+    prose, _, remainder = text.split(adapter._MESSAGE, 1)[1].partition(adapter._RESET)
+    assert prose == "The parent used N=8."
+    assert "view: a.py" in remainder
+
+
+def test_a_complete_message_is_coloured_only_where_it_is_shown(monkeypatch):
+    stream = FakeTty()
+    monkeypatch.setattr(sys, "stdout", stream)
+    console = adapter.Console()
+
+    console.message("complete answer")
+
+    assert "".join(stream.written) == (
+        f"{adapter._MESSAGE}complete answer{adapter._RESET}\n"
+    )
 
 
 def test_cost_separates_cached_prompt_tokens_from_fresh_ones():

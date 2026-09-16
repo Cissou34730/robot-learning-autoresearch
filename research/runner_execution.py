@@ -32,6 +32,17 @@ STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
+# One width for the measured artifact, so every line of an evaluation reports
+# its counts where the previous line reported them.
+EVALUATION_LABEL_WIDTH = 22
+
+
+def evaluation_label(name: str) -> str:
+    """The artifact, padded to one column; a long name keeps its identifying tail."""
+    text = " ".join(str(name).split())
+    if len(text) > EVALUATION_LABEL_WIDTH:
+        text = "…" + text[-(EVALUATION_LABEL_WIDTH - 1) :]
+    return f"{text:<{EVALUATION_LABEL_WIDTH}}"
 
 
 # --- process mechanics -----------------------------------------------------
@@ -329,20 +340,9 @@ def train_candidate(
                         last_progress_at = time.monotonic()
                     progress_target = target_timesteps or timesteps
                     progress = min(100.0, 100 * steps / progress_target)
-                    completed_this_run = (
-                        steps
-                        if not continue_timesteps
-                        else max(steps - (progress_target - timesteps), 0)
-                    )
-                    eta = (
-                        elapsed * max(progress_target - steps, 0) / completed_this_run
-                        if completed_this_run
-                        else 0
-                    )
                     console.progress(
                         f"[train] {steps:,} / {progress_target:,} "
-                        f"({progress:.0f}%) | {console.format_duration(elapsed)} | "
-                        f"ETA ~{console.format_duration(eta)}"
+                        f"({progress:.0f}%) | {console.format_duration(elapsed)}"
                         + console.training_progress_suffix(record)
                     )
                 stalled_for = time.monotonic() - last_progress_at
@@ -513,8 +513,13 @@ def evaluate_artifact(
         command.append("--official-benchmark")
     if task_reference:
         command.append("--task-reference")
-    progress_label = f"{artifact_dir.name} {label}"
+    progress_label = evaluation_label(artifact_dir.name)
     started = time.monotonic()
+    # Training announces the phase it starts; an evaluation announces the panel
+    # it will run, so its heartbeats and its elapsed time share one origin.
+    console.announce(
+        f"[eval] {progress_label}| {episodes} episodes | seed {seed} | {label}"
+    )
     last_progress_at = started
     completed_episodes = 0
     # The evaluator can emit large episode-level diagnostics. File-backed streams
@@ -553,8 +558,7 @@ def evaluate_artifact(
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
                     console.progress(
-                        f"[eval] {progress_label:<20} "
-                        f"| {completed_episodes:>4} / {episodes} "
+                        f"[eval] {progress_label}| {completed_episodes:>4} / {episodes} "
                         f"| {100 * completed_episodes // episodes:>3}% "
                         f"| {console.format_duration(time.monotonic() - started)}"
                     )
@@ -586,8 +590,7 @@ def evaluate_artifact(
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
     console.announce(
-        f"[eval] {progress_label:<20} "
-        f"| {int(metrics['episodes']):>4} / {episodes} | 100% "
+        f"[eval] {progress_label}| {int(metrics['episodes']):>4} / {episodes} | 100% "
         f"| {console.format_duration(time.monotonic() - started)} "
         f"| success {metrics['success_percent']:.1f}%"
     )

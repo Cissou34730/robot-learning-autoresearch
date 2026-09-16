@@ -146,9 +146,7 @@ def test_compact_measurement_rejects_mismatched_artifact_metadata(
         )
 
 
-def test_frozen_paired_evidence_uses_shared_episode_identities(
-    monkeypatch, tmp_path
-):
+def test_frozen_paired_evidence_uses_shared_episode_identities(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     candidate = tmp_path / "candidate.json"
     reference = tmp_path / "reference.json"
@@ -156,11 +154,7 @@ def test_frozen_paired_evidence_uses_shared_episode_identities(
     _write_evaluation(reference, [(10, False), (12, True)])
 
     comparison = requested_paired_comparisons(
-        {
-            "paired_comparisons": [
-                {"candidate": "candidate", "reference": "working"}
-            ]
-        },
+        {"paired_comparisons": [{"candidate": "candidate", "reference": "working"}]},
         {},
         evidence_plan=_paired_evidence_plan([candidate.name], [reference.name]),
     )[0]
@@ -225,9 +219,7 @@ def test_frozen_paired_evidence_rejects_duplicate_episode_identity(
                 ]
             },
             {},
-            evidence_plan=_paired_evidence_plan(
-                [candidate.name], [reference.name]
-            ),
+            evidence_plan=_paired_evidence_plan([candidate.name], [reference.name]),
         )
 
 
@@ -250,6 +242,8 @@ def test_frozen_paired_evidence_rejects_replaced_artifact(monkeypatch, tmp_path)
             {},
             evidence_plan=evidence_plan,
         )
+
+
 from robot_learning.evaluate import write_progress
 from robot_learning.train import effective_training_config
 from robot_learning.training.research_config import load_experiment_config
@@ -261,6 +255,7 @@ PROTECTED_TEST_PATHS = (
     "tests/autoresearch/test_research_protocol.py",
     "tests/e2e/test_reset_research.py",
 )
+
 
 def active_effective_config() -> tuple[dict, dict]:
     """The current runtime configuration and the trainer's resolved view of it."""
@@ -832,7 +827,7 @@ def test_parameter_only_experiment_still_validates_the_configuration(
             {
                 "kind": "training",
                 "family": "method.rollout_steps",
-                    "investigation_type": "confirmatory",
+                "investigation_type": "confirmatory",
                 "hypothesis": "a longer rollout stabilizes the update",
                 "reasoning": scientific_reasoning,
                 "change": "lengthen the rollout",
@@ -1810,9 +1805,11 @@ def test_fresh_baseline_adopts_committed_human_owned_harness_fixes(monkeypatch):
     monkeypatch.setattr(
         repository,
         "scientific_delta",
-        lambda parent: ["tests/autoresearch/test_scenario_boundary.py"]
-        if parent == "reset-parent"
-        else [],
+        lambda parent: (
+            ["tests/autoresearch/test_scenario_boundary.py"]
+            if parent == "reset-parent"
+            else []
+        ),
     )
     monkeypatch.setattr(repository, "status_paths", lambda scope: [])
     monkeypatch.setattr(repository, "git", lambda *args: "current-head\n")
@@ -1894,7 +1891,9 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
 
     dispatched = []
 
-    def stop_before_training(output_dir, timesteps, seed, resume, training_log, **kwargs):
+    def stop_before_training(
+        output_dir, timesteps, seed, resume, training_log, **kwargs
+    ):
         dispatched.append(
             {
                 "output_dir": output_dir,
@@ -1933,10 +1932,7 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
 
     assert dispatched == [
         {
-            "output_dir": tmp_path
-            / "models/candidates"
-            / campaign_id
-            / "experiment-1",
+            "output_dir": tmp_path / "models/candidates" / campaign_id / "experiment-1",
             "timesteps": 120_000,
             "seed": 0,
             "resume": None,
@@ -2697,9 +2693,12 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     assert resolved["pending_researcher_decision"] is None
     assert resolved["pending_final_benchmark"]["selected"] == "candidate"
 
-    def evaluate_after_commit(model):
+    def evaluate_after_commit(model, progress_callback=None):
         assert committed == [(3, "candidate")]
         assert model == tmp_path / "accepted" / "model.zip"
+        # The terminal assessment reports its episodes instead of running silent.
+        assert progress_callback is not None
+        progress_callback(200, 200)
         return {
             "episodes": 200,
             "seed": 1000,

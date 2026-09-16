@@ -240,7 +240,7 @@ def render_training_summary_card(
         [
             "",
             "Candidates",
-            "  Candidate | Steps | Training success | Training reward",
+            "  Candidate | Steps | Training reward | Training success",
             "  --- | ---: | ---: | ---:",
         ]
     )
@@ -248,8 +248,8 @@ def render_training_summary_card(
         training_success = scenario_progress_metric(candidate) or "success unavailable"
         lines.append(
             f"  {candidate['name']} | {int(candidate['timesteps']):,} | "
-            f"{training_success.removeprefix('success ')} | "
-            f"{_candidate_metric(candidate, 'ep_rew_mean')}"
+            f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
+            f"{training_success.removeprefix('success ')}"
         )
     next_phase = (
         "Researcher post-training analysis"
@@ -445,3 +445,37 @@ def render_decision_card(plan: dict) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def render_final_benchmark_card(
+    *,
+    selected: str,
+    artifact: str,
+    fingerprint: str,
+) -> str:
+    """What the terminal assessment is, before it runs it.
+
+    The runner reports the lineage it is about to measure, the contract that owns
+    the measurement, and where the verdict lands. The benchmark's own numbers
+    belong to the human-owned contract in `research/scenario.md`, and the
+    measured ones arrive with the evaluator's own reports.
+    """
+    return "\n".join(
+        [
+            "=== Official benchmark ===",
+            "",
+            f"Selected   : {selected}",
+            f"Artifact   : {artifact}",
+            f"Fingerprint: {fingerprint[:16]}",
+            "",
+            "Contract",
+            "  The protected human-defined task and its fixed panel, as defined in",
+            "  research/scenario.md. No research setting can redefine them.",
+            "",
+            "Recorded",
+            "  research/research_state.json (official_metrics) and research/GOAL_REACHED",
+            "",
+            "Next",
+            "  This verdict is terminal and cannot select a later hypothesis.",
+        ]
+    )

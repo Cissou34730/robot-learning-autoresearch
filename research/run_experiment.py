@@ -125,9 +125,7 @@ def _verify_configuration_resume_surface(operation: dict) -> None:
         for entry in expected or []
         if isinstance(entry, dict) and entry.get("path") != parameter_path
     ]
-    filtered_actual = [
-        entry for entry in actual if entry.get("path") != parameter_path
-    ]
+    filtered_actual = [entry for entry in actual if entry.get("path") != parameter_path]
     _require_matching_manifest(
         filtered_expected,
         filtered_actual,
@@ -288,7 +286,9 @@ def _apply_training_parent_operation(
         repository.apply_code_lineage_decision(plan)
         research_config.write_experiment_config(copy.deepcopy(parent["parameters"]))
         restored_config = research_config.load_experiment_config()
-        operation["restored_config_fingerprint"] = _canonical_fingerprint(restored_config)
+        operation["restored_config_fingerprint"] = _canonical_fingerprint(
+            restored_config
+        )
         if operation["restored_config_fingerprint"] != _canonical_fingerprint(
             parent["parameters"]
         ):
@@ -1209,6 +1209,12 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
 # --- final benchmark phase -------------------------------------------------
 
 
+def final_benchmark_progress(completed: int, total: int) -> None:
+    """One terminal assessment, reported as it finishes episodes."""
+    percent = 100 * completed // total if total else 0
+    console.progress(f"[benchmark] {completed:>4} / {total} | {percent:>3}%")
+
+
 def execute_pending_final_benchmark() -> int:
     from robot_learning.scenario.final_benchmark import evaluate_final_model
 
@@ -1263,10 +1269,32 @@ def execute_pending_final_benchmark() -> int:
             "the selected accepted artifact already received an official benchmark"
         )
 
-    official_metrics = evaluate_final_model(accepted_artifact / "model.zip")
+    console.announce(
+        "\n"
+        + console.render_final_benchmark_card(
+            selected=str(pending.get("selected") or "accepted lineage"),
+            artifact=artifact,
+            fingerprint=fingerprint,
+        )
+        + "\n"
+    )
+    official_metrics = evaluate_final_model(
+        accepted_artifact / "model.zip",
+        progress_callback=final_benchmark_progress,
+    )
     verdict = (
         "goal_reached" if bool(official_metrics["goal_reached"]) else "goal_not_reached"
     )
+    # The scenario adapter owns what it returns beyond the verdict, so the log
+    # reports the measurements it did produce and never invents a missing one.
+    verdict_facts = [verdict]
+    success = official_metrics.get("success_percent")
+    if success is not None:
+        verdict_facts.append(f"success {float(success):.1f}%")
+    measured_episodes = official_metrics.get("episodes")
+    if measured_episodes is not None:
+        verdict_facts.append(f"over {int(measured_episodes)} episodes")
+    console.announce("[benchmark] " + " · ".join(verdict_facts))
     state["official_metrics"] = official_metrics
     state["official_benchmark_artifact"] = fingerprint
     state["official_benchmark_model"] = {
@@ -1495,9 +1523,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             "validated scientific configuration",
         )
         if not configuration_frozen:
-            operation["parameter_changes"] = copy.deepcopy(
-                result["parameter_changes"]
-            )
+            operation["parameter_changes"] = copy.deepcopy(result["parameter_changes"])
             operation["effective_scientific_manifest"] = effective_manifest
             operation["effective_scientific_fingerprint"] = _canonical_fingerprint(
                 effective_manifest

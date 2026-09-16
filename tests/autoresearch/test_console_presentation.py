@@ -7,13 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from research import run_experiment, runner_console
+from research import run_experiment, runner_console, runner_execution
 from research.build_research_brief import render_research_brief
 from research.runner_console import (
     render_decision_card,
     render_evaluation_plan,
     render_evidence_card,
     render_experiment_card,
+    render_final_benchmark_card,
     render_training_summary_card,
     training_progress_suffix,
 )
@@ -168,6 +169,28 @@ def test_a_card_erases_the_unterminated_status_line_first(monkeypatch, capsys):
     assert "[checks] passed" in capsys.readouterr().out
 
 
+def test_the_training_heartbeat_reports_no_estimate():
+    with open(runner_execution.__file__, encoding="utf-8") as handle:
+        source = handle.read()
+
+    # The line reports what happened, not a projection of what is left.
+    assert "ETA" not in source
+    assert "eta = (" not in source
+
+
+def test_the_evaluation_label_keeps_one_column_for_every_line():
+    assert runner_execution.evaluation_label("candidate-14f63a02") == (
+        "candidate-14f63a02    "
+    )
+    # A long name keeps the tail that identifies it instead of shifting the bars.
+    label = runner_execution.evaluation_label(
+        "campaign-experiment-1-candidate-14f63a02"
+    )
+
+    assert len(label) == runner_execution.EVALUATION_LABEL_WIDTH
+    assert label.endswith("andidate-14f63a02")
+
+
 def test_extracted_parser_reads_every_snapshot():
     records = parse_training_records(TRAINING_LOG)
 
@@ -273,9 +296,10 @@ def test_training_summary_reports_checkpoint_aligned_candidate_facts():
     assert "Completed  : 120,832 steps in 8m54s" in card
     assert "Training dynamics" not in card
     assert "Episode length" not in card
-    assert "Candidate | Steps | Training success | Training reward" in card
-    assert "checkpoint-30720 | 30,720 | unavailable | 0" in card
-    assert "checkpoint-120832 | 120,832 | 0% | -6.9" in card
+    # Reward first, matching the order the live training line reports it in.
+    assert "Candidate | Steps | Training reward | Training success" in card
+    assert "checkpoint-30720 | 30,720 | 0 | unavailable" in card
+    assert "checkpoint-120832 | 120,832 | -6.9 | 0%" in card
     assert card.index("checkpoint-30720") < card.index("checkpoint-120832")
     assert "Next\n  Researcher evaluation design" in card
 
@@ -295,7 +319,7 @@ def test_training_summary_keeps_missing_checkpoint_metrics_distinct_from_zero():
         ],
     )
 
-    assert "checkpoint-1024 | 1,024 | unavailable | 0" in card
+    assert "checkpoint-1024 | 1,024 | 0 | unavailable" in card
 
 
 def test_v4_training_summary_advances_to_post_training_analysis():
@@ -588,6 +612,34 @@ def test_every_heading_a_decision_card_prints_is_styled():
 
     for heading in ("Working lineage", "Best-known model", "Hypothesis assessment"):
         assert f"{runner_console._YELLOW}{heading}\n" in styled
+
+
+def test_the_final_benchmark_card_states_what_the_runner_owns():
+    card = render_final_benchmark_card(
+        selected="best_known",
+        artifact="research/checkpoints/retained/campaign/checkpoint-120832",
+        fingerprint="5e10ac53a5cfd755a0bcb3216171ef93",
+    )
+
+    assert card.startswith("=== Official benchmark ===")
+    assert "Selected   : best_known" in card
+    assert "checkpoint-120832" in card
+    assert "Fingerprint: 5e10ac53a5cfd755" in card
+    assert "research/scenario.md" in card
+    assert "official_metrics" in card
+    assert "cannot select a later hypothesis" in card
+
+
+def test_the_final_benchmark_card_reports_no_threshold_of_its_own():
+    card = render_final_benchmark_card(
+        selected="accepted lineage",
+        artifact="archive/candidate",
+        fingerprint="abc",
+    )
+
+    # The benchmark's numbers belong to the human-owned contract, not the runner.
+    assert "%" not in card
+    assert "episodes" not in card
 
 
 def test_evaluation_plan_is_printed_before_any_evaluation_runs(monkeypatch, tmp_path):

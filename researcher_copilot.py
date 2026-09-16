@@ -29,6 +29,8 @@ EXIT_INTERRUPTED = 130
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
+# The model's own words, distinct from every harness marker around them.
+_MESSAGE = "\033[97m"
 _MARKER_COLORS = {
     ">": "\033[36m",
     "x": "\033[31m",
@@ -37,7 +39,19 @@ _MARKER_COLORS = {
     "~": "\033[36m",
     "!": "\033[33m",
     "--": "\033[36m",
+    "[session]": "\033[95m",
 }
+
+
+def format_duration(seconds: float) -> str:
+    total = max(int(seconds), 0)
+    minutes, seconds = divmod(total, 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        return f"{hours}h{minutes:02d}m"
+    if minutes:
+        return f"{minutes}m{seconds:02d}s"
+    return f"{seconds}s"
 
 
 def format_console_line(text: str) -> str:
@@ -457,8 +471,7 @@ class Console:
             return
         elapsed = int(time.monotonic() - self._turn_started_at)
         self._turn_started_at = None
-        minutes, seconds = divmod(elapsed, 60)
-        duration = f"{minutes}m{seconds:02d}s" if minutes else f"{seconds}s"
+        duration = format_duration(elapsed)
         tools = f"{self._turn_tools} tool" + ("" if self._turn_tools == 1 else "s")
         parts = [tools]
         if self._turn_files:
@@ -477,6 +490,8 @@ class Console:
 
     def line(self, text: str) -> None:
         if self._mid_stream:
+            if sys.stdout.isatty():
+                sys.stdout.write(_RESET)
             print(flush=True)
             self._mid_stream = False
         print(format_console_line(text), flush=True)
@@ -484,11 +499,18 @@ class Console:
     def delta(self, text: str) -> None:
         if not text:
             return
+        if not self._mid_stream:
+            self._mid_stream = True
+            if sys.stdout.isatty():
+                sys.stdout.write(_MESSAGE)
+                sys.stdout.flush()
         print(text, end="", flush=True)
-        self._mid_stream = True
 
     def message(self, text: str) -> None:
         if self._mid_stream or not text:
+            return
+        if sys.stdout.isatty():
+            print(f"{_MESSAGE}{text}{_RESET}", flush=True)
             return
         print(text, flush=True)
 
@@ -596,16 +618,21 @@ class Console:
         self.line(f"  ! session error: {message}")
 
     def summary(
-        self, session_id: str, changed: list[str], offloaded: tuple[int, int] = (0, 0)
+        self,
+        session_id: str,
+        changed: list[str],
+        offloaded: tuple[int, int] = (0, 0),
+        elapsed_seconds: float = 0.0,
     ) -> None:
+        """The session's own end, labelled so a phase boundary is visible."""
         for path in changed:
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
         files = f"{len(changed)} file(s) changed"
         denials = f", {self.denials} denied" if self.denials else ""
         self.line(
-            f"-- session {session_id[:8]}: {files}, {self.usage()}"
-            f", {self.work(offloaded)}{denials}"
+            f"[session] {session_id[:8]} · {format_duration(elapsed_seconds)} · "
+            f"{files}, {self.usage()}, {self.work(offloaded)}{denials}"
         )
 
     def work(self, offloaded: tuple[int, int]) -> str:
@@ -781,6 +808,7 @@ async def run(args) -> int:
         )
         before = worktree_status()
         before_offload = offload_snapshot()
+        started = time.monotonic()
         try:
             await session.send(args.prompt)
             await asyncio.wait_for(finished.wait(), timeout=args.timeout)
@@ -791,6 +819,7 @@ async def run(args) -> int:
                 session.session_id,
                 changed_since(before),
                 offloaded_since(before_offload),
+                elapsed_seconds=time.monotonic() - started,
             )
             return EXIT_TIMEOUT
         except KeyboardInterrupt:
@@ -801,7 +830,10 @@ async def run(args) -> int:
             await session.disconnect()
 
         console.summary(
-            session.session_id, changed_since(before), offloaded_since(before_offload)
+            session.session_id,
+            changed_since(before),
+            offloaded_since(before_offload),
+            elapsed_seconds=time.monotonic() - started,
         )
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
 
