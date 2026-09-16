@@ -7,36 +7,39 @@ success on the fixed 200-episode official assessment, meaning at least 196
 complete reach-and-hold episodes. Across the campaign, the best measured policy
 progressed from 61.5% for the fresh baseline to 85.0% after the uniform-radius
 recipe change, 89.0% after the first unchanged continuation, and 94.0% after
-the second unchanged continuation. The experiment 4 endpoint is the strongest
-measured development policy at 188/200, but it remains eight episodes below the
-development-panel equivalent of the objective, and the development panel is not
-the official assessment.
+the second unchanged continuation. Experiment 5's measured checkpoints were
+187/200, 187/200, and 188/200, so the experiment 4 endpoint remains tied for
+the strongest measured development policy at 188/200. This is eight episodes
+below the 196/200 development-panel equivalent of the objective, and the
+development panel is not the official assessment.
 
 **Lessons and limits:** The unchanged baseline learned the task, and the
 uniform 0.06-0.20 m training-radius recipe coincided with a large improvement
 on the shared task-reference panel. At the experiment 2 endpoint, 12 of 30
 failures never entered tolerance and 18 entered but did not complete the
-100-step hold; the later experiment 4 research evaluation had 2 acquisition
-failures and 10 incomplete or interrupted holds. Success gains across the
-three transferred stages show that the tested recipe has remained useful through
-483,328 accumulated steps, but they do not establish indefinite improvement or
-that radius sampling alone caused the experiment 2 gain. Training proxies are
-not reliable selection criteria: experiment 4 reached a proxy of 1.00 around
-29,696-40,960 steps, fell to 0.96 at its endpoint, and nevertheless improved
-from 89.0% to 94.0% on task-reference-v1.
+100-step hold; the experiment 4 research evaluation had 2 acquisition failures
+and 10 incomplete or interrupted holds, while the experiment 5 endpoint had 1
+acquisition failure and 11 incomplete or interrupted holds. Success gains across
+the transferred stages show that the tested recipe remained useful through
+experiment 4, but experiment 5 did not extend that measured gain. Training
+proxies are not reliable selection criteria: experiment 5 reached a proxy of
+1.00 around 27,648-39,936 steps, fluctuated through the remainder, and ended at
+0.97 while task-reference success was 93.5-94.0%. These observations do not
+establish a hard plateau or that any single recipe component caused earlier
+gains.
 The retained policy and current recipe share the PPO method, tanh [64, 64]
 policy, observation/action mapping, normalization contract, and uniform-radius
 training distribution, which supports semantic transfer for unchanged-method
 comparisons; equal tensor dimensions alone would not establish compatibility.
 
 **Open questions:** It remains unresolved whether the 94.0% policy has useful
-headroom under further optimization or has plateaued, and whether the residual
-hold failures reflect a training limitation, a representation or control
-limitation, or another factor. The relative contributions of radius sampling
-and transfer dynamics remain uncertain because there is no radius-only control.
-The experiment 3 task-reference records also lack the diagnostic fields used by
-the earlier research-evaluation artifacts, so their 22 failures cannot be
-partitioned from the available record. Development-panel evidence remains
+headroom under a changed method or has reached a practical plateau, and whether
+the residual hold failures reflect a training limitation, a representation or
+control limitation, or another factor. The relative contributions of radius
+sampling and transfer dynamics remain uncertain because there is no radius-only
+control. The experiment 3 task-reference records also lack the diagnostic fields
+used by the earlier research-evaluation artifacts, so their 22 failures cannot
+be partitioned from the available record. Development-panel evidence remains
 distinct from the official final verdict.
 
 ## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 1
@@ -222,3 +225,51 @@ remaining hold failures leave a material gap to the human objective.
 `research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/evaluation-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-200ep-seed7300-c5b54f36dc64.json`;
 `research/results.jsonl`; `research/scenario.md`;
 `robot_learning/scenario/evaluation.py`.
+
+## cc96dcb7-74bb-41d4-8c53-0f9afd26aa75 / Experiment 5
+
+**Result:** The unchanged continuation did not improve the measured policy.
+Task-reference-v1 success was 187/200 (93.5%) at checkpoints 35,840 and
+105,472, and 188/200 (94.0%) at checkpoint 120,832. The experiment 4 working
+policy also measured 188/200, so experiment 5 did not close the eight-episode
+gap to the development-panel equivalent of the objective.
+
+**Observed behavior:** The experiment 5 training log reported proxy
+`success_rate` 1.00 from 27,648 through 39,936 steps, then fluctuated between
+0.94 and 0.99, including 0.95 around 109,568-115,712 steps, before ending at
+0.97 with `ep_rew_mean` 188.10 at 120,832 steps. The three protected
+task-reference measurements were 187/200, 187/200, and 188/200; all failures
+ran to the 500-step limit. The endpoint research evaluation identified 1
+acquisition failure and 11 failures that reached tolerance but did not complete
+the uninterrupted 100-step hold. Against the experiment 4 endpoint under the
+same research-evaluation semantics, both policies had 188 successes, with six
+episode outcomes changing in each direction; the experiment 4 endpoint had 10
+incomplete holds and 2 acquisition failures versus 11 and 1 for experiment 5.
+The other 21 experiment 5 checkpoints were not measured and are not treated as
+failures.
+
+**Hypothesis assessment:** Weakened. The expected observation, a later
+checkpoint exceeding 188/200, did not occur in any of the three measured
+checkpoints. This supports a plateau interpretation for this single unchanged
+continuation under the tested measurement scope, while the endpoint tie and
+limited sampling do not establish that all further optimization or other
+methods will fail.
+
+**Interpretation:** Experiment 5 provides no measured task-performance reason
+to replace the experiment 4 working and best-known policy. The unchanged
+scientific recipe remains internally consistent, but this continuation is not
+evidence of additional headroom and the residual hold failures remain
+material. The 94.0% development result is not the official benchmark and is
+not sufficient to request terminal assessment, so closure keeps the existing
+working and best-known lineage and leaves further development as a later
+experiment decision.
+
+**Evidence inspected:** `research/brief.md`;
+`research/checkpoints/challengers/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/experiment-5/inventory.json`;
+`research/training_logs/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/experiment-5-attempt-1.log`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-5-checkpoint-35840-task-reference-v1.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-5-checkpoint-105472-task-reference-v1.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/task-reference-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-5-checkpoint-120832-task-reference-v1.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/evaluation-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-5-checkpoint-120832-200ep-seed7300-c5b54f36dc64.json`;
+`research/evaluations/cc96dcb7-74bb-41d4-8c53-0f9afd26aa75/evaluation-cc96dcb7-74bb-41d4-8c53-0f9afd26aa75-experiment-4-checkpoint-120832-200ep-seed7300-c5b54f36dc64.json`;
+`research/results.jsonl`; `research/scenario.md`.
