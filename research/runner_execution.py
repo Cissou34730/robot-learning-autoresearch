@@ -340,9 +340,20 @@ def train_candidate(
                         last_progress_at = time.monotonic()
                     progress_target = target_timesteps or timesteps
                     progress = min(100.0, 100 * steps / progress_target)
+                    completed_this_run = (
+                        steps
+                        if not continue_timesteps
+                        else max(steps - (progress_target - timesteps), 0)
+                    )
+                    eta = (
+                        elapsed * max(progress_target - steps, 0) / completed_this_run
+                        if completed_this_run
+                        else 0
+                    )
                     console.progress(
                         f"[train] {steps:,} / {progress_target:,} "
-                        f"({progress:.0f}%) | {console.format_duration(elapsed)}"
+                        f"({progress:.0f}%) | {console.format_duration(elapsed)} | "
+                        f"~{console.format_duration(eta)}"
                         + console.training_progress_suffix(record)
                     )
                 stalled_for = time.monotonic() - last_progress_at

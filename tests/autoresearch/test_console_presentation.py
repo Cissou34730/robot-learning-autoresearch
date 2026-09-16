@@ -169,13 +169,14 @@ def test_a_card_erases_the_unterminated_status_line_first(monkeypatch, capsys):
     assert "[checks] passed" in capsys.readouterr().out
 
 
-def test_the_training_heartbeat_reports_no_estimate():
+def test_the_training_heartbeat_shows_the_estimate_without_its_label():
     with open(runner_execution.__file__, encoding="utf-8") as handle:
         source = handle.read()
 
-    # The line reports what happened, not a projection of what is left.
+    # The row reports what is left; the word "ETA" in front of it is what was not
+    # wanted, and the reader recognises the estimate from the value itself.
     assert "ETA" not in source
-    assert "eta = (" not in source
+    assert "format_duration(eta)" in source
 
 
 def test_the_evaluation_label_keeps_one_column_for_every_line():
