@@ -1,64 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/2f80d343-e97b-4af0-90b0-51cba116b8ae/e2-c02070fc4-572e69f6c12b8776b65225d7be19327559dea3ee079a02b954a3a25e9bf7d1a3",
-    "candidate": "checkpoint-75776",
-    "evaluation_artifacts": [
-      "research/evaluations/2f80d343-e97b-4af0-90b0-51cba116b8ae/evaluation-2f80d343-e97b-4af0-90b0-51cba116b8ae-experiment-2-checkpoint-75776-200ep-seed0-c5b54f36dc64.json",
-      "research/evaluations/2f80d343-e97b-4af0-90b0-51cba116b8ae/task-reference-2f80d343-e97b-4af0-90b0-51cba116b8ae-experiment-2-checkpoint-75776-task-reference-v1.json"
-    ],
-    "fingerprint": "572e69f6c12b8776b65225d7be19327559dea3ee079a02b954a3a25e9bf7d1a3",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest measured success on both the 200-episode research panel (84.5%) and the fixed task-reference panel (85.5%) among experiment-2 candidates and substantially exceeds the prior best-known policy.",
-    "scientific_commit": "f1c488d55bdb570aa81aea4e5a34c4ec8c103464",
-    "training_steps": 186368
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "61dc4ce7a54e5cbce4b92e555418ae1c3a063348",
-    "id": "2f80d343-e97b-4af0-90b0-51cba116b8ae",
+    "base_commit": "0c4e4183a26eb112523d141c6320f4b4b23f2d3e",
+    "id": "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a",
     "recipe_source_commit": null,
-    "started_at": "2026-09-16T14:46:53.299658+00:00"
+    "started_at": "2026-09-16T15:55:58.147851+00:00"
   },
   "campaign_experiment_counters": {
-    "2f80d343-e97b-4af0-90b0-51cba116b8ae": 2
+    "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a": 0
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-75776",
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 2 made no researcher-owned code or parameter changes; keep the unchanged PPO recipe and its saved policy I/O contract for the selected lineage."
-    },
-    "code_parent_commit": "1be60fc6815fa2f164567ca620f28d3d2efe7135",
-    "continue_from": "checkpoint-75776",
-    "experiment": 2,
-    "reason": "Select checkpoint-75776 because it is the strongest measured experiment-2 policy on both development panels: 84.5% research success and 85.5% task-reference success, versus 83.5%/84.5% at checkpoint-110592 and 82.5%/81.0% at checkpoint-115712. It materially improves on experiment 1 but remains well below the 98% objective, so do not request terminal assessment."
-  },
-  "last_verdict": "researcher selected checkpoint-75776 as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -67,50 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "1be60fc6815fa2f164567ca620f28d3d2efe7135",
-    "experiment": 2,
-    "scientific_commit": "f1c488d55bdb570aa81aea4e5a34c4ec8c103464"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/2f80d343-e97b-4af0-90b0-51cba116b8ae/e2-c02070fc4-572e69f6c12b8776b65225d7be19327559dea3ee079a02b954a3a25e9bf7d1a3",
-    "candidate": "checkpoint-75776",
-    "evaluation_artifacts": [
-      "research/evaluations/2f80d343-e97b-4af0-90b0-51cba116b8ae/evaluation-2f80d343-e97b-4af0-90b0-51cba116b8ae-experiment-2-checkpoint-75776-200ep-seed0-c5b54f36dc64.json"
-    ],
-    "fingerprint": "572e69f6c12b8776b65225d7be19327559dea3ee079a02b954a3a25e9bf7d1a3",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Select checkpoint-75776 because it is the strongest measured experiment-2 policy on both development panels: 84.5% research success and 85.5% task-reference success, versus 83.5%/84.5% at checkpoint-110592 and 82.5%/81.0% at checkpoint-115712. It materially improves on experiment 1 but remains well below the 98% objective, so do not request terminal assessment.",
-    "scientific_commit": "f1c488d55bdb570aa81aea4e5a34c4ec8c103464",
-    "training_steps": 186368
-  }
+  "working_lineage": null
 }
