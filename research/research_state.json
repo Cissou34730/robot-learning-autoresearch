@@ -23362,7 +23362,7 @@
         "training_steps": 321536
       }
     },
-    "progress": "durable",
+    "progress": "cleanup_complete",
     "selected": "candidate-b6e5dba9"
   },
   "pending_evaluation_request": null,
