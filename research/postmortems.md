@@ -3,33 +3,33 @@
 ## 2f80d343-e97b-4af0-90b0-51cba116b8ae / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success on the
-official 200-episode panel. The fresh PPO baseline reached 61.0% on the
-research panel and 56.5% on the task-reference panel. Unchanged continuation
-produced a materially stronger development policy at continuation checkpoint
-`checkpoint-75776`, scoring 84.5% and 85.5% on those panels, respectively, but
-the later measured checkpoints declined to 83.5%/84.5% and 82.5%/81.0%.
-`checkpoint-75776` is therefore the strongest measured policy and is selected
-for the next development lineage, not for terminal assessment.
+official 200-episode panel, or 196 successful episodes. The fresh PPO baseline
+achieved 61.0% on the research panel and 56.5% on the task-reference panel.
+Unchanged continuation produced the strongest measured policy at
+`checkpoint-75776`, with 84.5% research success and 85.5% task-reference
+success; later measured checkpoints declined to 83.5%/84.5% and 82.5%/81.0%.
+The best observed policy therefore shows substantial learned behavior but
+remains 13.5 percentage points below the development-panel objective proxy.
 
-**Lessons and limits:** Experiment 2's training proxies peaked around the
-measured best checkpoint (training success 0.98 and reward 189.728 at 75,776
-continuation steps) and were lower at 110,592 (0.92 and 176.222) and 115,712
-(0.89 and 169.413). Measured task success followed the same broad checkpoint
-ordering in this continuation, so the run does not reproduce the earlier
-proxy-only late improvement, but it does show that selecting a checkpoint
-matters. For `checkpoint-75776`, 20 of 31 research-panel failures never reached
-tolerance and 11 reached it but failed the uninterrupted hold. The two
-development panels agree on the ranking, while both leave a large shortfall to
-the objective. These observations describe saved policies and training
-dynamics; they do not establish that optimization caused the differences or
+**Lessons and limits:** At `checkpoint-75776`, 169 of 200 research-panel
+episodes succeeded; among its 31 failures, 20 never reached tolerance and 11
+reached tolerance but failed the uninterrupted hold. The task-reference panel
+showed the same broad checkpoint ranking, with 171 successes out of 200.
+Training proxies peaked near the selected checkpoint (training success 0.98
+and reward 189.728) and declined at the later checkpoints, so proxy improvement
+alone is insufficient evidence of task progress. The observations concern one
+training seed and development panels, not the official result, and do not
 identify whether reaching, holding, representation, exploration, or reward is
-the limiting mechanism. The evidence remains one training seed and development
-panels rather than an official result.
+the limiting mechanism. The policy uses a stable 14-value state representation
+and two-joint action mapping across the measured recipe, but that compatibility
+does not establish that the current reward is adequate.
 
-**Open questions:** It remains unknown whether a changed recipe can convert the
-remaining reaching and hold failures into the 196 successes required by the
-objective, and which intervention would do so. The variability across training
-seeds and the durability of the checkpoint-selection effect are also unresolved.
+**Open questions:** It remains unresolved whether the remaining failures are
+most productively reduced by stronger proximity learning, improved hold
+stability, a different representation or exploration pattern, or another
+training change. Seed-to-seed variability, the durability of checkpoint
+selection, and generalization from the development panels to the official panel
+also remain unknown.
 
 ## 2f80d343-e97b-4af0-90b0-51cba116b8ae / Experiment 1
 
