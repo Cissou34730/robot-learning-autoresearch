@@ -136,12 +136,11 @@ def main() -> None:
         )
 
     training = config["training"]
-    callbacks: list[BaseCallback] = [
-        CandidateCheckpointCallback(
-            output_dir=args.output_dir,
-            every_steps=int(training["checkpoint_every_steps"]),
-        )
-    ]
+    checkpoint_callback = CandidateCheckpointCallback(
+        output_dir=args.output_dir,
+        every_steps=int(training["checkpoint_every_steps"]),
+    )
+    callbacks: list[BaseCallback] = [checkpoint_callback]
     if args.view:
         callbacks.append(make_training_viewer_callback(speed=args.speed))
 
@@ -159,6 +158,7 @@ def main() -> None:
         with frozen_scientific_modules():
             model.save(args.output_dir / "last_model")
         venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
+        checkpoint_callback.save_terminal_checkpoint()
         artifact = {
             "schema_version": 1,
             "algorithm": ALGORITHM_NAME,
