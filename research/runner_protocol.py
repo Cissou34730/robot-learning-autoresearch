@@ -48,6 +48,13 @@ PROTECTED_RUNNER_PATHS = {
 # The researcher runtime boundary: it decides which tools and commands a
 # research session may use, so a proposal must not be able to widen its own.
 PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
+# Measurement-accounting invariants shared by the Runner and the research
+# evaluator. Deterministic episode identity and conflict rejection are
+# correctness properties, not scientific choices, so restoring a research recipe
+# must never be able to revert them (issue #35).
+PROTECTED_MEASUREMENT_PATHS = {
+    "robot_learning/paired_evidence.py",
+}
 # Human-owned context defines the Researcher's protocol, permissions and task.
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
@@ -166,6 +173,7 @@ def is_protected_source(path: str) -> bool:
         relative in PROTECTED_BENCHMARK_PATHS
         or relative in PROTECTED_RUNNER_PATHS
         or relative in PROTECTED_RUNTIME_PATHS
+        or relative in PROTECTED_MEASUREMENT_PATHS
         or relative in PROTECTED_CONTEXT_PATHS
         or relative in DEPENDENCY_METADATA_PATHS
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)

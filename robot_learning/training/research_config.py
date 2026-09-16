@@ -26,7 +26,7 @@ CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
 # official result is no longer held out. Keep these values decoupled from the
 # official constants; `tests/autoresearch/test_panel_independence.py` fails loudly
 # if they are re-aligned.
-RESEARCH_EVALUATION_EPISODES = 120
+RESEARCH_EVALUATION_EPISODES = 160
 RESEARCH_EVALUATION_SEED = 4200
 
 

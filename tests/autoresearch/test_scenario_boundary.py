@@ -91,7 +91,6 @@ GENERIC_CORE_MODULES = (
     "robot_learning/play.py",
     "robot_learning/training/algorithms.py",
     "robot_learning/training/candidate_checkpoint_callback.py",
-    "robot_learning/training/comparison.py",
     "robot_learning/training/normalization.py",
     "robot_learning/training/progress.py",
     "robot_learning/training/research_config.py",

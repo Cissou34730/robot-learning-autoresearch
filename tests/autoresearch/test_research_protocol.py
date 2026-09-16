@@ -42,12 +42,12 @@ from research.runner_repository import (
     measurement_record,
     write_state,
 )
-from robot_learning.scenario.evaluation import (
-    summarize_research_evaluations as summarize_evaluations,
-)
-from robot_learning.training.comparison import (
+from robot_learning.paired_evidence import (
     exact_mcnemar_pvalue,
     paired_comparison,
+)
+from robot_learning.scenario.evaluation import (
+    summarize_research_evaluations as summarize_evaluations,
 )
 
 ROOT = Path(__file__).resolve().parents[2]

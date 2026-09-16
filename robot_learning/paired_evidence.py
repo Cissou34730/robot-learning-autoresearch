@@ -1,4 +1,14 @@
-"""Paired statistics available for researcher-designed comparisons."""
+"""Frozen accounting for paired research measurements.
+
+Deterministic episode identity, distinct-coverage counting, and conflict
+rejection are correctness properties of measurement rather than scientific
+choices. They therefore live on the protected side of the ownership boundary so
+that restoring a research recipe can never silently revert them (issue #35).
+
+The protected Runner replay reconciles shared episode identities from frozen
+panels before calling :func:`paired_comparison`; this module owns the accounting
+that both the Runner and the research evaluator share.
+"""
 
 import math
 

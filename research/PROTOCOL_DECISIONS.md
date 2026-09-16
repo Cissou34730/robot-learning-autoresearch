@@ -7,6 +7,19 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-16 - Measurement integrity on the protected side
+
+- **Comparison accounting placement:** Deterministic episode identity,
+  distinct-coverage counting, and conflicting-outcome rejection are correctness
+  properties of measurement, not scientific choices. They live in the protected
+  `robot_learning/benchmark/paired_evidence.py`, so restoring a research recipe
+  cannot silently revert the shared-episode fix. The optional statistic and the
+  decision to request a comparison remain the Researcher's.
+- **Development versus official panel:** The research-evaluation default seed and
+  episode count are deliberately distinct from the official benchmark panel.
+  Coinciding defaults would make development measurement reproduce the terminal
+  verdict panel, so the official result would not be held out.
+
 ## 2026-09-07 - Research harness evidence and context
 
 - **Authoritative context:** The brief exposes current lineage identities,
