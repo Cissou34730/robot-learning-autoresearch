@@ -28,12 +28,6 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-TRAINING_TARGET_RADIUS_BANDS = (
-    (0.06, 0.10),
-    (0.10, 0.15),
-    (0.15, 0.20),
-)
-TRAINING_TARGET_RADIUS_BAND_PROBABILITIES = (0.50, 0.25, 0.25)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -191,8 +185,6 @@ def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
     return TwoJointArmReachEnv(
         target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        target_radius_bands=TRAINING_TARGET_RADIUS_BANDS,
-        target_radius_band_probabilities=TRAINING_TARGET_RADIUS_BAND_PROBABILITIES,
     )
 
 
