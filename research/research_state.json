@@ -45635,7 +45635,7 @@
         "training_steps": 442368
       }
     },
-    "progress": "durable",
+    "progress": "cleanup_complete",
     "selected": "candidate-4d0018a6"
   },
   "pending_evaluation_request": null,
