@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## d1897119-e054-4e2a-a2fd-06958f8ce0bd / Scientific strategy
+
+**Current synthesis:** The fresh PPO baseline learns substantial reach-and-hold behavior, but protected-task success is only about half of the development panel and remains far below the 98% human objective. The training success proxy improves to about 0.95 before easing at the endpoint, so it overstates task progress and does not identify an acceptable policy. The 100352-step checkpoint is the current measured working and best-known candidate because it has the highest protected-task success in this experiment.
+
+**Lessons and limits:** The training trajectory establishes learnability under the baseline recipe, but its proxy is not a substitute for the protected reach-and-hold measurement. On the fixed 200-episode task-reference panel, failures are concentrated at short target radii, while angle-sector performance is comparatively balanced. The leading checkpoints differ by only one episode on that panel, so the selection is operational rather than evidence of a causal or robust superiority. The task-reference panel is development evidence and is not the official final assessment.
+
+**Open questions:** It is unresolved whether changing the learned representation, reward, or training distribution can address the short-radius failures without sacrificing the rest of the task. It is also unresolved how much checkpoint-to-checkpoint variation persists on an independent panel.
+
+## d1897119-e054-4e2a-a2fd-06958f8ce0bd / Experiment 1
+
+**Result:** The fresh baseline produced a usable but insufficient learned policy. The best measured checkpoint achieved 51.0% success on the protected task-reference panel; the campaign objective is at least 98%.
+
+**Observed behavior:** Training completed 120832 steps with 24 saved candidates. The raw log's training proxy rose from 0 at the early checkpoints to 0.95 around 108544-110592 steps, then was 0.94 at 120832 steps. On the same 200-episode task-reference panel, candidate-cdb684be at 100352 steps succeeded on 102 episodes (51.0%), candidate-ab1b5d07 at 110592 steps on 101 (50.5%), and candidate-519172ed at 120832 steps on 95 (47.5%). For cdb684be, success was 3/57 at 6-<10 cm, 32/59 at 10-<15 cm, and 67/84 at 15-20 cm; angle sectors ranged from 20/37 to 28/53. All failures were truncated at 500 steps. The cdb684be-versus-ab1b5d07 paired outcomes were 31 episodes successful only for cdb684be, 30 only for ab1b5d07, and 139 equal.
+
+**Hypothesis assessment:** Partially supported for the baseline's limited purpose of establishing that the unchanged method can learn the task: the training proxy and protected-task success both improve markedly from the early run. The evidence does not support treating the baseline as close to satisfying the human objective, and it weakens any inference that the late proxy peak identifies the best protected-task policy. This conclusion is limited to the tested recipe and task-reference panel; unmeasured checkpoints remain unmeasured.
+
+**Interpretation:** Measured task behavior shows real but insufficient progress, with the clearest residual deficit at short target radii. The 51.0% checkpoint is selected for working and best-known lineage because it is the highest observed protected-task result, not because the one-episode margin over the proxy-peak checkpoint establishes robust superiority. The baseline recipe should be retained for provenance while development continues; an official benchmark is not warranted from this evidence.
+
+**Evidence inspected:** `research/checkpoints/challengers/d1897119-e054-4e2a-a2fd-06958f8ce0bd/experiment-1/inventory.json`; `research/results.jsonl`; `research/research_state.json`; `research/evaluations/d1897119-e054-4e2a-a2fd-06958f8ce0bd/task-reference-d1897119-e054-4e2a-a2fd-06958f8ce0bd-experiment-1-candidate-cdb684be-task-reference-v1.json`; `research/evaluations/d1897119-e054-4e2a-a2fd-06958f8ce0bd/task-reference-d1897119-e054-4e2a-a2fd-06958f8ce0bd-experiment-1-candidate-ab1b5d07-task-reference-v1.json`; `research/evaluations/d1897119-e054-4e2a-a2fd-06958f8ce0bd/task-reference-d1897119-e054-4e2a-a2fd-06958f8ce0bd-experiment-1-candidate-519172ed-task-reference-v1.json`; `research/query_training_log.py`.
