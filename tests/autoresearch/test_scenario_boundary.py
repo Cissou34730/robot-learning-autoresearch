@@ -501,6 +501,44 @@ def test_training_environment_carries_no_official_task_enforcement():
     assert "final_contract" not in source
 
 
+def test_training_only_setup_lives_outside_the_shared_environment():
+    environment_source = (
+        ROOT / "robot_learning" / "scenario" / "environment.py"
+    ).read_text(encoding="utf-8")
+    assert "make_training_env" not in environment_source
+    assert "TRAINING_TARGET_RADIUS_RANGE" not in environment_source
+
+    training_source = (
+        ROOT / "robot_learning" / "scenario" / "training_environment.py"
+    ).read_text(encoding="utf-8")
+    assert "TRAINING_TARGET_RADIUS_RANGE" in training_source
+    assert "def make_training_env" in training_source
+
+
+def test_shared_mechanics_and_evaluation_ignore_training_only_setup():
+    from research import runner_protocol
+
+    assert (
+        "robot_learning/scenario/training_environment.py"
+        in runner_protocol.TRAINING_ONLY_PATHS
+    )
+    for relative in (
+        "robot_learning/scenario/environment.py",
+        "robot_learning/scenario/evaluation.py",
+    ):
+        assert (
+            "robot_learning.scenario.training_environment"
+            not in imported_modules(ROOT / relative)
+        ), relative
+
+
+def test_training_still_constructs_through_make_training_env():
+    from robot_learning.scenario import training_environment
+
+    env = training_environment.make_training_env()
+    assert env.target_radius_range == training_environment.TRAINING_TARGET_RADIUS_RANGE
+
+
 def test_runtime_configuration_carries_no_reward():
     config = load_experiment_config()
     assert "reward" not in config
