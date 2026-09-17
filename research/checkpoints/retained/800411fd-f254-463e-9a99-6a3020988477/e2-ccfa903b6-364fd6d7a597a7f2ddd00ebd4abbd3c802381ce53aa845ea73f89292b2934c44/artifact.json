@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "algorithm": "ppo",
+  "seed": 0,
+  "timesteps": 95232,
+  "requested_timesteps": 120000,
+  "completed": true,
+  "resumed_from": "C:\\Users\\cyril.beurier\\code\\robot-learning-integration\\research\\checkpoints\\retained\\800411fd-f254-463e-9a99-6a3020988477\\e1-cfbc9e22f-7752442020f2d423674a26fedcc1e4bacde67765cbab000bd59c2b491d0d1192\\model.zip",
+  "effective_config": {
+    "runtime_config": {
+      "algorithm": {
+        "name": "ppo"
+      },
+      "policy": {
+        "activation": "tanh",
+        "net_arch": [
+          64,
+          64
+        ]
+      },
+      "ppo": {
+        "batch_size": 64,
+        "ent_coef": 0.01,
+        "gae_lambda": 0.95,
+        "gamma": 0.99,
+        "learning_rate": 0.0003,
+        "n_steps": 1024
+      },
+      "training": {
+        "checkpoint_every_steps": 5000,
+        "n_envs": 1
+      }
+    },
+    "n_envs": 1,
+    "model_parameters": {
+      "batch_size": 64,
+      "ent_coef": 0.01,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0003,
+      "n_steps": 1024
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    }
+  },
+  "training_success": 0.95,
+  "ep_rew_mean": 315.91225047
+}
