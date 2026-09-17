@@ -7,9 +7,11 @@ the official 200-episode reach-and-hold panel. The fresh PPO baseline achieved
 89.5% on a 200-episode research panel and 92.0% on the reused task-reference
 panel. Unchanged continuation then produced a 96.5% candidate at accumulated
 checkpoint-100352 steps on a matched seed-1 research panel; the later
-checkpoint-120832 result was 96.0%. This is substantial measured progress, but
-all development evidence remains below the objective and none is official
-terminal evidence.
+checkpoint-120832 result was 96.0%. In experiment 3, the retained working
+policy also achieved 96.5% on the seed-2 panel, while continued checkpoints
+achieved 86.5%, 89.5%, and 86.0%. This is substantial measured progress from
+the baseline, but all development evidence remains below the objective and
+none is official terminal evidence.
 
 **Lessons and limits:** The raw training log shows continued late improvement:
 between steps 90112 and 120832 in experiment 1, mean reward rose from about
@@ -24,6 +26,10 @@ success were not monotonic. The experiment-2 research measurements and the
 experiment-1 task-reference measurement report horizon exhaustion for every
 failure; the reference panel is reused and selection-contaminated, so its
 angular pattern is descriptive rather than a distribution-wide diagnosis.
+Experiment 3's same-panel comparison makes its lower results more informative
+than the earlier cross-panel comparison: the working policy beat checkpoint-
+110592 on 15 versus 1 discordant episode, but this is still one independent
+panel and one training trajectory, not proof of distribution-wide degradation.
 There has been one training seed and no replication, so learning-process
 variability and the generality of the observed continuation trajectory remain
 uncertain (`research/results.jsonl`, `research/research_state.json`,
@@ -31,10 +37,12 @@ uncertain (`research/results.jsonl`, `research/research_state.json`,
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-120832-200ep-seed1-a69293a214ad.json`).
 
 **Open questions:** It remains unknown whether the unchanged PPO process can
-continue reducing horizon-exhaustion failures from the 96.5% candidate or has
-begun to plateau or degrade, how much of the improvement is robust across
-independent task draws and training seeds, and whether a changed recipe would
-improve the remaining gap to the official objective.
+continue reducing horizon-exhaustion failures from the 96.5% candidate, how
+much of the improvement is robust across independent task draws and training
+seeds, and whether a changed recipe would improve the remaining gap to the
+official objective. The experiment-3 measurements do not resolve whether its
+lower continuation performance is a general late-training failure or a
+trajectory-specific outcome.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -127,3 +135,46 @@ task-reference panel or checkpoint ordering as a lineage criterion.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-100352-200ep-seed1-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-120832-200ep-seed1-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-working-200ep-seed1-a69293a214ad.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 3
+
+**Result:** Further unchanged PPO continuation did not improve the incumbent
+and produced lower-scoring measured checkpoints. The existing working lineage
+remains the useful policy and best-known designation.
+
+**Observed behavior:** The experiment-3 proxy peak at checkpoint-70656
+(training success 0.99, reward 342.54) achieved 173/200 (86.5%) on the fresh
+seed-2 research panel. The late proxy rebound at checkpoint-110592
+(success 0.97, reward 335.33) achieved 179/200 (89.5%), and the endpoint
+checkpoint-120832 (success 0.94, reward 318.24) achieved 172/200 (86.0%).
+The retained working policy achieved 193/200 (96.5%) on that same seed-2
+panel. The paired comparison between working and checkpoint-110592 had 15
+working wins versus 1 checkpoint win. Every failure in these four measurements
+truncated at the 500-step horizon.
+
+**Hypothesis assessment:** Partially supported. The original prediction allowed
+either further improvement or a plateau/degradation after checkpoint-100352.
+No continuation checkpoint exceeded the incumbent, and the same-panel paired
+result supports a policy-specific loss for checkpoint-110592 under these
+evaluation conditions. The proxy peak and rebound did not transfer to higher
+measured task success, weakening the continued-optimization branch. Because
+the evidence is one seed-2 panel from one continuation trajectory, it does not
+establish distribution-wide degradation or disprove that another recipe could
+improve the remaining gap.
+
+**Interpretation:** Experiment 3 provides measured evidence against selecting
+its continued checkpoints over the incumbent, while preserving the earlier
+96.5% policy as meaningful progress toward the 98% objective. Training proxies
+were again orthogonal to saved-policy task success: the strongest proxy
+checkpoint was not the strongest measured policy. The working lineage and its
+unchanged recipe should therefore be kept for the next investigation; the
+development evidence is not terminal evidence and does not justify requesting
+the irreversible official benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-3/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-checkpoint-70656-200ep-seed2-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-checkpoint-110592-200ep-seed2-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-checkpoint-120832-200ep-seed2-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-working-200ep-seed2-a69293a214ad.json`.
