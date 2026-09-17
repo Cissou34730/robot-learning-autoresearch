@@ -13,8 +13,6 @@ import numpy as np
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-TRAINING_TARGET_RADIUS_BANDS = ((0.06, 0.10), (0.10, 0.20))
-TRAINING_TARGET_RADIUS_BAND_PROBABILITIES = (0.60, 0.40)
 FOCUSED_TARGET_ANGLE_RANGE = (np.deg2rad(-170.0), np.deg2rad(-110.0))
 FOCUSED_TARGET_ANGLE_PROBABILITY = 0.25
 
@@ -57,6 +55,4 @@ def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
     return FocusedAngleReachEnv(
         target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        target_radius_bands=TRAINING_TARGET_RADIUS_BANDS,
-        target_radius_band_probabilities=TRAINING_TARGET_RADIUS_BAND_PROBABILITIES,
     )
