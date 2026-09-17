@@ -13,7 +13,7 @@ import numpy as np
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-FOCUSED_TARGET_ANGLE_RANGE = (np.deg2rad(-170.0), np.deg2rad(-110.0))
+FOCUSED_TARGET_ANGLE_RANGE = (np.deg2rad(120.0), np.deg2rad(165.0))
 FOCUSED_TARGET_ANGLE_PROBABILITY = 0.25
 
 
