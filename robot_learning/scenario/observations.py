@@ -2,42 +2,13 @@
 
 Generic training code never inspects this layout: it only sees the Gymnasium
 observation space declared by the scenario environment.
-
-For each of the two analytic inverse-kinematics solutions, the observation
-reports the wrapped joint error only when that solution lies inside the robot's
-joint range. An infeasible branch is reported as a zero joint error so the
-policy is never presented an unreachable configuration as a target.
 """
 
-import mujoco
 import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
 OBSERVATION_SIZE = 11
-
-SHOULDER_JOINT = "shoulder"
-ELBOW_JOINT = "elbow"
-
-
-def _joint_limits(data, joint_name: str) -> tuple[float, float]:
-    joint_id = mujoco.mj_name2id(data.model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
-    if joint_id < 0:
-        raise ValueError(f"unknown joint in model: {joint_name}")
-    low, high = data.model.jnt_range[joint_id]
-    return float(low), float(high)
-
-
-def _branch_is_feasible(
-    shoulder: float,
-    elbow: float,
-    shoulder_limits: tuple[float, float],
-    elbow_limits: tuple[float, float],
-) -> bool:
-    return (
-        shoulder_limits[0] <= shoulder <= shoulder_limits[1]
-        and elbow_limits[0] <= elbow <= elbow_limits[1]
-    )
 
 
 def reach_observation(data) -> np.ndarray:
@@ -63,32 +34,16 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-
-    shoulder_limits = _joint_limits(data, SHOULDER_JOINT)
-    elbow_limits = _joint_limits(data, ELBOW_JOINT)
-
-    open_deltas = [0.0, 0.0]
-    if _branch_is_feasible(shoulder_open, elbow_open, shoulder_limits, elbow_limits):
-        open_deltas = [
-            wrap_to_pi(shoulder_open - float(data.qpos[0])),
-            wrap_to_pi(elbow_open - float(data.qpos[1])),
-        ]
-
-    folded_deltas = [0.0, 0.0]
-    if _branch_is_feasible(
-        shoulder_folded, elbow_folded, shoulder_limits, elbow_limits
-    ):
-        folded_deltas = [
-            wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-            wrap_to_pi(elbow_folded - float(data.qpos[1])),
-        ]
-
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
-            open_deltas,
-            folded_deltas,
+            [
+                wrap_to_pi(shoulder_open - float(data.qpos[0])),
+                wrap_to_pi(elbow_open - float(data.qpos[1])),
+                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
+                wrap_to_pi(elbow_folded - float(data.qpos[1])),
+            ],
         ]
     ).astype(np.float32)
