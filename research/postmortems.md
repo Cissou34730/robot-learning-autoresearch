@@ -6,51 +6,42 @@
 official 200-episode reach-and-hold panel. The fresh unchanged PPO baseline
 reached 89.5% on research evaluation and 92.0% on the reused task-reference
 panel. Unchanged continuation produced the strongest development result,
-96.5% (193/200), and the incumbent reproduced that result on the seed-2,
-seed-3, and seed-4 research panels. The incumbent's seven failures recur at
-the same target geometries: six in the 120-165 degree sector and one near
--103 degrees. The lower-rate transfer, fresh replication, focused-angle
-coverage transfer, and explicit target-geometry representation all failed to
-exceed the incumbent under their measured conditions. The current working and
-best-known policy is therefore the unchanged-recipe incumbent at 96.5%,
-which remains below the objective and lacks terminal-readiness evidence.
-Experiment 7's 74.0% and 81.0% challengers on a matched fresh panel weaken
-that representation result without showing that the added features are
-intrinsically harmful. Experiment 8's two quadratic hold-credit challengers
-also failed to exceed the incumbent: both scored 88.5% on a matched seed-1003
-panel versus 92.0% for the incumbent, and each had 4 versus 11 paired wins.
-This weakens the tested hold-credit explanation without establishing that
-quadratic shaping is intrinsically harmful or that the incumbent's 96.5%
-result generalizes unchanged to every panel. This synthesis is provisional
-memory, not a prescribed direction.
+96.5% (193/200), and that incumbent reproduced 96.5% on the seed-2, seed-3,
+and seed-4 research panels. Its seven failures recur at the same geometries:
+six in the 120-165 degree sector and one near -103 degrees. Lower-rate
+transfer, fresh replication, focused-angle coverage, explicit target geometry,
+and quadratic hold-progress credit each failed to exceed the incumbent under
+their measured conditions. The current working and best-known policy is
+therefore the unchanged-recipe incumbent at 96.5%, below the objective and
+without terminal-readiness evidence. The experiment-7 challengers (74.0% and
+81.0%) and experiment-8 challengers (both 88.5% versus 92.0% for the incumbent)
+weaken their tested explanations without proving those interventions
+intrinsically harmful. This is provisional memory, not a prescribed direction.
 
-**Lessons and limits:** Measured saved-policy success, not training reward or
-proxy success, governs progress. Proxies are non-monotonic: continuation
-improved before declining, the lower-rate run preserved stronger late proxies
-without preserving task success, and the fresh replication improved reward
-while remaining far below the incumbent. All detailed failures exhausted the
-500-step horizon, and the incumbent generally approached the 1 cm threshold
-without sustaining the required hold. The repeated positive-angle failures
-are a coverage signal, not proof of a coverage cause; focused coverage did not
-reduce them. The current reward already contains distance progress, a linear
-hold-progress potential, an exit forfeiture, and a completion bonus
-(`robot_learning/scenario/reward.py`), but reward shaping has not been
-separated from representation, optimization trajectory, or mechanics. The
-quadratic hold-credit run reached a proxy peak without saved-policy
-improvement, and its measured challengers did not reduce the 120-165 degree
-failure sector relative to the matched incumbent. Fresh training variability
-is demonstrated by the 89.5% baseline and 83.0% replication, not characterized
-as a seed distribution. Development measurements remain selection evidence
-rather than the official verdict.
+**Lessons and limits:** Saved-policy task success, not training reward or proxy
+success, governs progress. Proxies are non-monotonic: continuation improved
+before declining, lower-rate training preserved late proxies without
+preserving task success, and fresh replication improved reward while remaining
+far below the incumbent. All detailed failures exhausted the 500-step horizon;
+the incumbent usually approached the 1 cm threshold but did not sustain the
+required hold. Repeated positive-angle failures are a coverage signal, not
+proof of a coverage cause; focused coverage did not reduce them. The reward
+already combines distance progress, linear hold-progress potential, exit
+forfeiture, and completion bonus (`robot_learning/scenario/reward.py`), but
+reward shaping has not been separated from representation, optimization
+trajectory, or mechanics. The quadratic run reached a proxy peak without
+saved-policy improvement and did not reduce the residual sector. Fresh
+training variability is demonstrated by the 89.5% baseline and 83.0%
+replication, but its seed distribution is unknown. Development measurements
+remain selection evidence rather than the official verdict.
 
-**Open questions:** It remains unknown whether the residual failures are
-limited by temporal credit for completing the hold, state representation,
-optimization trajectory, target coverage, or task mechanics. It is also
-unknown whether another reward design or a different intervention can address
-the residual failures; the tested quadratic hold profile did not. The
-unmeasured experiment-7 checkpoints remain unmeasured, and no
-terminal-readiness assessment has been established for the current best-known
-designation.
+**Open questions:** The residual failures could reflect temporal credit for
+completing the hold, optimization trajectory, representation, target coverage,
+or task mechanics; current evidence does not distinguish them. It remains
+unknown whether a reward or optimization change can address the failures
+without damaging already-solved geometries. The unmeasured experiment-7
+checkpoints remain unmeasured, and no terminal-readiness assessment has been
+established for the current best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
