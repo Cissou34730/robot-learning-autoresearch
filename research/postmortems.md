@@ -2,30 +2,30 @@
 
 ## 5befb592-3256-436e-bf6a-a4733c512ad9 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline produced a useful but incomplete
-learned policy. The endpoint checkpoint-120832 achieved 90% success on the
+**Current synthesis:** The campaign objective is at least 98% success on the
+official two-joint-arm reach-and-hold distribution. The fresh PPO baseline
+learned a useful but incomplete policy: checkpoint-120832 reached 90% on the
 100-episode research evaluation and 92% on the fixed task-reference preview,
-improving over checkpoint-100352's 75% research success. It is the strongest
-measured candidate and should remain the working and best-known lineage, but it
-does not yet support the 98% human objective or terminal assessment.
+versus 75% for checkpoint-100352. It is the strongest measured candidate and
+the current working and best-known lineage, while remaining below the
+objective and without terminal-readiness evidence.
 
 **Lessons and limits:** Training proxies improved from an episode reward of
--3090 at 1024 steps to -168.489 at the endpoint, and training success reached
-0.11 late in the run, but these proxies are not acceptance evidence. The
-research evaluation and paired comparison support real progress for the saved
-endpoint under the tested semantics: 15 additional successes and no
-checkpoint-100352 wins on the shared 100 episodes. The task-reference failures
-were all 500-step truncations and were descriptively concentrated in the
-positive-angle portion of that reused panel, but this is selection-contaminated
-development evidence and does not establish a causal failure mechanism or
-official-task generalization. One fresh training run, one research seed, and
-two measured checkpoints leave learning variance and neighboring-checkpoint
+-3090 at 1024 steps to -168.489 at the endpoint, and logged training success
+reached 0.11, but neither proxy is acceptance evidence. The paired research
+comparison found 15 endpoint wins and no earlier-checkpoint wins among the
+shared discordant episodes, supporting real progress under the tested
+semantics. The task-reference failures all truncated at 500 steps and were
+descriptively concentrated in the positive-angle portion of that reused panel;
+this selection-contaminated preview does not establish a causal failure
+mechanism or official-task generalization. One fresh run, one research seed,
+and two measured checkpoints leave learning variance and neighboring-checkpoint
 behavior unresolved.
 
-**Open questions:** Whether unchanged training can close the remaining success
-gap, whether the observed geometry pattern recurs on independent panels, and
-which learning or task-facing intervention could improve robustness remain
-unknown.
+**Open questions:** It is unknown whether the late-run improvement continues
+under the unchanged recipe, whether further updates plateau or degrade, whether
+the observed geometry pattern recurs on independent panels, and which
+learning or task-facing intervention could improve robustness.
 
 ## 5befb592-3256-436e-bf6a-a4733c512ad9 / Experiment 1
 
