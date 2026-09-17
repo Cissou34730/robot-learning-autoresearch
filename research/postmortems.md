@@ -6,34 +6,39 @@
 official 200-episode reach-and-hold panel. The fresh unchanged PPO baseline
 reached 89.5% on research evaluation and 92.0% on the reused task-reference
 panel. Unchanged continuation later produced the strongest development result,
-96.5% (193/200), and the incumbent also measured 96.5% on independent seed-2
-and seed-3 research panels. This is meaningful progress but remains below the
-objective and is not official terminal evidence. The transferred lower-rate
-recipe reached 94.0% at its measured proxy peak and 85.5% at its endpoint,
-below the incumbent on the same seed-3 panel. The current working and
-best-known policy is therefore the unchanged-recipe incumbent, while the
-repeatability of its learned behavior remains unresolved. This synthesis is
-provisional memory rather than a prescribed direction.
+96.5% (193/200), and the incumbent also measured 96.5% on independent seed-2,
+seed-3, and seed-4 research panels. This is meaningful progress but remains
+below the objective and is not official terminal evidence. The transferred
+lower-rate recipe reached 94.0% at its measured proxy peak and 85.5% at its
+endpoint, below the incumbent on the same seed-3 panel. A fresh seed-4 run of
+the unchanged recipe reached only 83.0% at its endpoint on both seed-3 and
+seed-4 research panels, so the incumbent's saved-policy behavior is stable
+across these evaluation panels while reproducing the learning trajectory is
+not established. The current working and best-known policy is therefore the
+unchanged-recipe incumbent. This synthesis is provisional memory rather than
+a prescribed direction.
 
 **Lessons and limits:** Training proxies and saved-policy task success are not
-monotonic: unchanged continuation reached proxy peaks before declining, and
-the lower-rate run retained stronger late proxies without transferring that
-signal to saved-policy success. All recorded detailed failures exhausted the
-500-step horizon, but this does not identify whether representation, task
-coverage, optimization trajectory, or another limitation causes them. The
-same unchanged recipe has produced both the 89.5% fresh baseline and 96.5%
-continued-policy results, but all four training experiments used one learning
-seed and the campaign has no replication. Same-panel comparisons establish
-that the tested lower-rate transfer was not useful under its measured
-conditions, not that every lower rate or intervention is ineffective. These
-limits are recorded in `research/brief.md`, `research/results.jsonl`, the
-experiment postmortems below, and the detailed evaluation artifacts.
+monotonic: unchanged continuation reached proxy peaks before declining, the
+lower-rate run retained stronger late proxies without transferring that signal
+to saved-policy success, and experiment 5's reward proxy improved to -568.3
+while its logged training success stayed at 0. All recorded detailed failures
+exhausted the 500-step horizon, but this does not identify whether
+representation, task coverage, optimization trajectory, or another limitation
+causes them. The unchanged recipe produced both the 89.5% fresh baseline and
+96.5% continued-policy results, while the one fresh seed-4 replication reached
+83.0%; this demonstrates learning-process variability under the tested
+conditions, not a distribution-wide estimate of seed variance or a causal
+explanation. Same-panel comparisons establish that the tested lower-rate
+transfer was not useful under its measured conditions, not that every lower
+rate or intervention is ineffective. These limits are recorded in
+`research/brief.md`, `research/results.jsonl`, the experiment postmortems
+below, and the detailed evaluation artifacts.
 
-**Open questions:** How much of the gap between the fresh baseline and the
-96.5% incumbent reflects the training trajectory and seed rather than a
-repeatable property of the unchanged PPO recipe? It also remains unknown
-whether a different learned representation, task coverage, or learning
-method can close the remaining gap to 98%. Development measurements remain
+**Open questions:** What training trajectory, representation, task coverage,
+or learning method can close the remaining gap from 96.5% to 98%? More
+replications would quantify the observed learning-process variability, but
+experiment 5 does not establish its cause. Development measurements remain
 selection evidence rather than the official verdict, and no terminal-readiness
 assessment has been established for the current best-known designation.
 
@@ -213,3 +218,54 @@ The lower-rate intervention does not justify an official benchmark request.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-4-checkpoint-70656-200ep-seed3-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-4-checkpoint-120832-200ep-seed3-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-4-working-200ep-seed3-a69293a214ad.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 5
+
+**Result:** The fresh replication did not reproduce the incumbent's learned
+behavior. The existing working and best-known lineage remains the useful
+policy; the unchanged scientific recipe is kept and the replication
+checkpoints are not retained.
+
+**Observed behavior:** The seed-4 training log reports training success of 0
+at every logged point from 5,120 through 120,832 steps. Mean episode reward
+improved from about -2,420 to -568.3, with the endpoint the run's best reward
+proxy; the policy standard deviation also declined from 0.991 to 0.621. On
+research evaluation, checkpoint-100352 scored 132/200 (66.0%) on seed 3 and
+checkpoint-120832 scored 166/200 (83.0%) on seed 3. The endpoint also scored
+166/200 (83.0%) on the independent seed-4 panel. The incumbent scored 193/200
+(96.5%) on both seed-3 and seed-4 panels. Paired comparisons favored the
+incumbent 64 to 3 against checkpoint-100352 and 33 to 6 against the
+replication endpoint on the matched panel; the independent-panel comparison
+also favored the incumbent 33 to 6 over 201 shared episode identities. Every
+failure in these measurements truncated at the 500-step horizon.
+
+**Hypothesis assessment:** Weakened. Under the tested fresh seed-4
+trajectory, neither measured checkpoint reached the incumbent's approximately
+96.5% development result or exceeded the prior fresh baseline range, and the
+endpoint's large reward-proxy improvement did not transfer to comparable
+saved-policy success. The independent seed-4 evaluation reproduced the
+endpoint's 83.0% result, weakening the explanation that the matched seed-3
+panel alone caused the gap. This is evidence about one replication trajectory
+and does not estimate the full seed distribution, identify a causal mechanism,
+or show that the unchanged recipe can never rediscover the incumbent regime.
+
+**Interpretation:** Measured task success supports retaining the incumbent as
+meaningful progress toward the 98% objective, but 193/200 remains below the
+official 196/200 criterion and all these measurements are development
+evidence, not the official verdict. The replication makes the incumbent's
+saved-policy behavior more credible across evaluation panels while making the
+learning process less reproducible under the tested seed. The unmeasured
+replication checkpoints remain unmeasured rather than failed. No final
+benchmark is requested because the selected policy is below the objective and
+has no predeclared terminal-validation evidence.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/current_params.json`;
+`research/research_state.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-5-attempt-1.log`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-5/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-checkpoint-100352-200ep-seed3-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-checkpoint-120832-200ep-seed3-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-checkpoint-120832-200ep-seed4-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-working-200ep-seed3-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-working-200ep-seed4-a69293a214ad.json`.
