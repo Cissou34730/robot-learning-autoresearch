@@ -242,3 +242,64 @@ not establish that the representation is irrelevant; it shows the tested
 suppression is harmful and leaves the band cause unresolved.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-10240-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-70656-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-3/inventory.json, research/results.jsonl, robot_learning/scenario/observations.py, research/brief.md
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 4
+
+**Result:** A fresh 120k-step run that added two per-branch joint-limit-violation
+features to `reach_observation` (OBSERVATION_SIZE 11 to 13) trained a policy far
+below the baseline: 36.5% and 36.0% on the researcher 200-episode panel and 42.0%
+on task-reference-v1, versus 97.0% and 98.0% for `working`. It repaired none of
+the parent's failures, so the experiment-4 observation change is reverted and
+`working` remains the selected policy.
+
+**Observed behavior:** Two checkpoints were measured on the researcher panel
+(seed 20260918, semantics 6ba3ba6d7654): `checkpoint-115712` 73/200 = 36.5% and
+`checkpoint-120832` 72/200 = 36.0%; `checkpoint-120832` measured 84/200 = 42.0%
+on task-reference-v1. Paired on the shared 200-episode researcher panel,
+`checkpoint-120832` succeeds on 72 episodes against `working`'s 194: it adds 0
+episodes `working` misses and loses 122 episodes `working` solves, while the 6
+episodes neither solves are exactly `working`'s near-limit band failures. On
+task-reference it likewise adds 0 exclusive successes and loses 112. Classifying
+each researcher-panel target by analytic inverse-kinematics feasibility, 177
+episodes are both-feasible (`working` 177/177, experiment 4 71/177), 13 are
+open-feasible-only (13/13 versus 1/13) and 10 are folded-feasible-only / near-limit
+band (4/10 versus 0/10). Experiment 4's 128 researcher-panel failures span all
+angle sectors (42 with |angle| < 60 degrees, 28 in 60-120, 58 in 120-180); 60
+never enter tolerance (max_held_steps 0, minimum distance above 2 cm), 47 stall
+just outside tolerance and 21 are interrupted holds, whereas all 6 `working`
+failures are in the 120-180 degree sector and are near-tolerance stalls or
+interruptions with no no-arrival case. The raw training log shows success_rate
+rising slowly from 0 at 70,656 steps to 0.49 at 120,832, with `ep_len_mean` still
+falling (486 at 100,352 to 347 at 120,832) and reward 135 at 0.49 success; under
+the same fresh, seed-0, 120k-step recipe, experiment 1 reached 0.97 training
+success at 100,352 and 0.95 at 120,832 with reward 112. At the budget end
+experiment 4's training-success curve is comparable to experiment 1 at roughly
+90,000 steps.
+
+**Hypothesis assessment:** Contradicted for the tested intervention. The
+hypothesis predicted that explicit per-branch joint-limit feasibility would let a
+fresh policy select the feasible folded branch, resolving the near-limit band and
+moving overall success toward or above 98% with no new failures among
+both-feasible or open-only targets. Instead the fresh run did not reach baseline
+competence - the proposal's own stated contradicting observation - and it fixed
+neither the band (0/10 and 0/13) nor any other episode, while failing broadly
+including on both-feasible targets. Limits: only 2 of 24 research-panel
+checkpoints plus one task-reference measurement were taken; the run's
+training-success curve was still rising at the budget end; and with one fresh run
+per recipe the slowdown cannot be causally attributed to the added features
+rather than to optimization variance, so the band-specific representational
+versus precision question is left unresolved rather than tested.
+
+**Interpretation:** Adding the two joint-limit-violation features did not supply
+a usable feasibility signal: no previously failing episode was repaired, and the
+policy lost competence on the majority of both-feasible targets the baseline
+solves. The comparison is comparatively controlled (both runs fresh, seed 0,
+120,000 requested steps, identical algorithm and parameters, only the observation
+differs), which makes the observation change a plausible cause of the slower
+learning, but a single run cannot establish that causally. The measured success
+below training success (0.36 versus 0.49) is consistent with a policy that was
+still far from converged rather than with one specific failure mode, so this run
+does not isolate the near-limit band cause. Whether a different feasibility
+encoding, or simply more steps on this observation, would help remains untested.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-4-checkpoint-115712-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-4-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-4-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-4/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-1/inventory.json, research/results.jsonl, research/research_state.json, robot_learning/scenario/observations.py, robot_learning/robots/two_joint_arm.xml, training logs for experiments 1 and 4 (research/query_training_log.py).
