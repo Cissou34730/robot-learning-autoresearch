@@ -3,36 +3,49 @@
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Scientific strategy
 
 **Current synthesis:** The unchanged baseline recipe (PPO, 64x64 tanh, n_steps
-1024, ent_coef 0.01, 120k-step budget) learns the reach-and-hold task broadly:
-its selected checkpoint `checkpoint-100352` scores 97.0% on the researcher
-200-episode panel (seed 20260918) and 98.0% on the protected task-reference
-panel (task-reference-v1), close to but not safely above the 98% objective.
-Residual failures are not spread over the task: they concentrate in an angular
-wedge roughly between -115 and -155 degrees, where the end effector settles
-just outside the 1 cm tolerance (min distance ~1.0-1.4 cm) without ever
-completing the hold. A later checkpoint, `checkpoint-120832`, scores lower
-(94.5%) and adds failures outside the wedge caused by oscillation across the
-tolerance boundary, so training this recipe beyond ~100k steps degraded hold
-stability while the wedge gap persisted.
+1024, ent_coef 0.01, 120k-step budget) learns the reach-and-hold task broadly
+but not completely. Its selected checkpoint `checkpoint-100352` scores 97.0% on
+the researcher 200-episode panel (seed 20260918) and 98.0% on the protected
+task-reference panel (task-reference-v1), close to but not safely above the 98%
+objective. Re-reading both panels' per-episode geometry shows the residual
+failures are not a broad angular wedge: all 6 research-panel and all 4
+task-reference failures are targets whose elbow-open inverse-kinematics
+solution violates the shoulder joint range (-170 to 170 degrees), so only the
+elbow-folded configuration reaches them. The 190 and 187 episodes whose
+elbow-open solution is feasible contain zero failures. Within the
+folded-required set failures are partial (6 of 10 and 4 of 13) and the stalled
+end effector stops about 0.8-1.4 cm outside the 1 cm tolerance without ever
+completing a hold, while folded-required episodes that succeed enter tolerance
+normally. That set is a thin, radius-dependent arc of roughly 5% of the
+official target area, moving from about -124 degrees at 6 cm to about -155
+degrees at 20 cm. The recipe's training distribution samples radii only in
+14-20 cm while the official task samples 6-20 cm, so the near-field part of
+this arc was never trained. A later checkpoint, `checkpoint-120832`, scores
+lower (94.5%) and adds oscillation failures outside this region, so training
+this recipe further, unchanged, degraded hold stability while the
+folded-required failures persisted.
 
-**Lessons and limits:** On two independent development panels and at two
-checkpoints the failure structure is the same localized wedge, so this is a
-reproduced coverage gap rather than panel noise; the estimate of its failure
-rate is still based on few wedge episodes per panel (6/200 and 4/200) and is
-uncertain. Within the measured evidence, task success and the training-time
-success proxy agree well near the peak (0.97 -> 97.0%), while training reward
-does not track success (e.g. 86,016: reward 163.85 at 0.42 success; 95,232:
-reward 129.26 at 0.93), so reward is usable only as a shaped training signal.
-The recipe was trained unchanged in this experiment, so no component of it can
-be causally credited for the wedge gap or for the post-peak degradation.
+**Lessons and limits:** The folded-required explanation is a re-reading of two
+existing development panels and joint-limit geometry, not an independent
+confirmation, and the task-reference panel remains a repeated development
+measurement rather than held-out evidence. The association is exact over the
+400 measured episodes, but the region holds few episodes per panel (10 and 13),
+the 1 cm tolerance is close to the observed stall distance, and the mechanism
+is inferred rather than demonstrated. Within the measured evidence, task
+success and the training-time success proxy agree near the peak (0.97 ->
+97.0%), while training reward does not track success (e.g. 86,016: reward
+163.85 at 0.42 success; 95,232: reward 129.26 at 0.93), so reward is usable
+only as a shaped training signal. The recipe was trained unchanged in
+experiment 1, so no component of it can be causally credited for the
+folded-required deficit or for the post-peak degradation.
 
-**Open questions:** Whether the wedge is an angular coverage gap in the learned
-representation, a directional precision limit near the 1 cm boundary, or an
-artifact of the training target distribution is unresolved. The exact angular
-extent and radius dependence of the gap are only coarsely localized. It is also
-unknown how much of the residual failure a coverage-oriented training change
-would remove, and whether a small margin increase in hold precision is
-sufficient.
+**Open questions:** Whether the folded-required deficit is a training-density
+deficit (too few folded targets, especially near field), a precision limitation
+near the shoulder joint limit, or an artifact of the observation's two wrapped
+inverse-kinematics solutions conflicting at the limit is unresolved. It is
+unknown how much of the deficit raising folded-target density would remove and
+whether it would trade failures elsewhere. The exact angular extent and radius
+dependence of the region are computed from geometry, not directly measured.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
