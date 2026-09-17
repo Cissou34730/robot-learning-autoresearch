@@ -3,8 +3,11 @@
 Issue #42: the research-evaluation default seed and episode count once matched
 the official benchmark exactly, so ``research_evaluation`` reproduced the
 terminal verdict panel during development and the official result was not held
-out. These tests fail loudly if the defaults are re-aligned later.
+out. The defaults remain decoupled, and requests that would overlap the
+protected episodes are rejected.
 """
+
+import pytest
 
 from robot_learning.benchmark import final_contract
 from robot_learning.benchmark.final_benchmark import official_environment
@@ -54,7 +57,7 @@ def test_default_development_target_sequence_differs_from_the_official_one():
     assert development != official
 
 
-def test_explicit_official_seed_request_stays_accepted():
+def test_explicit_official_panel_is_rejected():
     from research import runner_protocol as protocol
 
     request = {
@@ -69,8 +72,9 @@ def test_explicit_official_seed_request_stays_accepted():
                 "seed": final_contract.EVALUATION_SEED,
                 "selection": "explicitly choose the official episodes",
                 "omitted_alternative": None,
-                "purpose": "selection",
             }
         ],
     }
-    protocol.validate_evaluation_request(request, require_purpose=True)
+    protocol.validate_evaluation_request(request)
+    with pytest.raises(ValueError, match="protected benchmark evidence"):
+        protocol.validate_panel_independence(request, [])

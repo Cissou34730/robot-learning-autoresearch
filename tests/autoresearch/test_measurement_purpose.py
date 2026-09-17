@@ -1,9 +1,9 @@
-"""Declared measurement purpose and best-known designation provenance.
+"""Evaluation-request tolerance and best-known designation provenance.
 
-Audit findings 2 and 3: a new v4 request must declare why each measurement was
-requested, only research evaluation can be stopping-validation evidence, and a
-designation ordinal distinguishes a new best-known tenure from idempotent
-re-designation.
+The separate terminal-validation protocol was removed: a request needs no
+declared purpose, and a legacy ``purpose`` field is tolerated but ignored and
+never required. A designation ordinal still distinguishes a new best-known
+tenure from idempotent re-designation.
 """
 
 import pytest
@@ -30,40 +30,15 @@ def _request(*, purpose: str | None = None, instrument: str = "research_evaluati
     }
 
 
-def test_new_request_requires_a_declared_purpose():
-    with pytest.raises(ValueError, match="requires a purpose"):
-        protocol.validate_evaluation_request(_request(), require_purpose=True)
+def test_request_without_purpose_is_accepted():
+    protocol.validate_evaluation_request(_request())
+
+
+def test_legacy_purpose_field_is_tolerated():
+    # Historical requests may carry `purpose`; it is accepted and ignored.
+    protocol.validate_evaluation_request(_request(purpose="terminal_validation"))
     protocol.validate_evaluation_request(
-        _request(purpose="selection"), require_purpose=True
-    )
-
-
-def test_persisted_request_without_purpose_normalizes_to_selection():
-    request = _request()
-    protocol.normalize_measurement_purposes(request)
-    assert request["measurements"][0]["purpose"] == "selection"
-    protocol.validate_evaluation_request(request, require_purpose=True)
-
-
-def test_task_reference_cannot_be_terminal_validation_evidence():
-    with pytest.raises(ValueError, match="cannot be terminal-validation"):
-        protocol.validate_evaluation_request(
-            _request(purpose="terminal_validation", instrument="task_reference"),
-            require_purpose=True,
-        )
-
-
-def test_terminal_validation_requires_a_current_designation():
-    request = _request(purpose="terminal_validation")
-    with pytest.raises(TypeError):
-        protocol.validate_terminal_validation_request(request, {})
-    with pytest.raises(TypeError):
-        protocol.validate_terminal_validation_request(
-            request, {"best_known_lineage": {"fingerprint": "f"}}
-        )
-    protocol.validate_terminal_validation_request(
-        request,
-        {"best_known_lineage": {"fingerprint": "f", "designation_ordinal": 1}},
+        _request(purpose="selection", instrument="task_reference")
     )
 
 

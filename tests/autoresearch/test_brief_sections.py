@@ -106,7 +106,6 @@ def test_composed_brief_orders_each_section_once():
         "## Campaign experiment index",
         "## Development evidence index",
         "## Campaign cost accounting",
-        "## Terminal-readiness evidence",
         "## Provisional scientific synthesis",
         "## Repeated operations",
         "## Intervention surfaces",
@@ -162,6 +161,8 @@ def test_measurement_rounds_section_groups_rounds_in_order():
     assert "first question" in text
     assert "second question" in text
     assert "`c1` `research_evaluation`" in text
+    assert "episodes 1–10" in text
+    assert "(new panel)" in text
     assert "Paired comparison `c1` vs `working`" in text
 
 

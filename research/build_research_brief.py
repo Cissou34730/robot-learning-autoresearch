@@ -402,8 +402,7 @@ def _v4_measurements(candidate: dict) -> str:
         success = evaluation.get("success_percent")
         result = (
             f"{evaluation.get('panel', 'research_evaluation')}, "
-            f"seed {evaluation.get('seed', '-')}, "
-            f"{evaluation.get('episodes', '-')} episodes"
+            f"{_episode_interval(evaluation)}"
         )
         if success is not None:
             result += f", success {float(success):.2f}%"
@@ -998,58 +997,6 @@ def _cost_records(
     return records
 
 
-def _v4_terminal_readiness_section(
-    state: dict, results: list[dict], pending: dict | None
-) -> list[str]:
-    """Advisory deterministic terminal-readiness evidence (issue #37)."""
-    from research import stopping_policy
-
-    records = _cost_records(state, results, pending)
-    assessment = stopping_policy.assess_terminal_readiness(
-        state.get("best_known_lineage"), records
-    )
-    lines = [
-        "",
-        "## Terminal-readiness evidence",
-        "",
-        (
-            "Advisory, deterministic evidence for the frozen best-known model. It "
-            "does not authorize or block a terminal request; the Researcher "
-            "retains the stopping decision. See `research/stopping_contract.md`."
-        ),
-        "",
-    ]
-    if not assessment.get("assessed"):
-        reason = assessment.get("reason", "unknown")
-        lines.append(f"- Assessment: not assessed ({reason}).")
-        return lines
-    panel = assessment["panel"]
-    lines.extend(
-        [
-            (
-                f"- Fresh stopping-validation panel: seed {panel['seed']}, "
-                f"{assessment['episodes']} episodes "
-                f"(experiment {panel['experiment']})."
-            ),
-            (
-                f"- Observed success: {assessment['successes']}/"
-                f"{assessment['episodes']} "
-                f"({assessment['success_percent']:.2f}%)."
-            ),
-            (
-                f"- {int(assessment['confidence'] * 100)}% one-sided lower bound: "
-                f"{assessment['lower_bound_percent']:.2f}% (objective "
-                f"{assessment['objective_percent']:.1f}%)."
-            ),
-            (
-                "- Contract assessment: "
-                f"{'supported' if assessment['supported'] else 'not supported'}."
-            ),
-        ]
-    )
-    return lines
-
-
 def _v4_cost_accounting_section(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[str]:
@@ -1131,12 +1078,23 @@ def _v4_cost_accounting_section(
 
 
 def _round_entry_status(item: dict) -> str:
-    """A compact status/purpose marker for a round measurement entry."""
-    status = str(item.get("status", "executed"))
-    purpose = str(item.get("purpose", "selection"))
-    if purpose and purpose != "selection":
-        return f" ({status}, {purpose})"
-    return f" ({status})"
+    """A compact status marker for a round measurement entry."""
+    return f" ({item.get('status', 'executed')})"
+
+
+def _episode_interval(entry: dict) -> str:
+    """The evaluated episode interval of a research evaluation, e.g. 1208-1407."""
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if (
+        isinstance(seed, int)
+        and not isinstance(seed, bool)
+        and isinstance(episodes, int)
+        and not isinstance(episodes, bool)
+        and episodes > 0
+    ):
+        return f"episodes {seed}–{seed + episodes - 1}"
+    return "episodes unknown"
 
 
 def _v4_measurement_rounds_section(
@@ -1164,6 +1122,7 @@ def _v4_measurement_rounds_section(
             "resulting artifacts:"
         ),
     ]
+    seen_panels: set[tuple[int, int]] = set()
     for record in rounds:
         if not isinstance(record, dict):
             continue
@@ -1179,14 +1138,27 @@ def _v4_measurement_rounds_section(
         for item in results.get("research_evaluations") or []:
             if not isinstance(item, dict):
                 continue
-            detail = (
-                f"{item.get('episodes', '-')} episodes, seed {item.get('seed', '-')}"
+            seed = item.get("seed")
+            episodes = item.get("episodes")
+            panel = (
+                (seed, episodes)
+                if isinstance(seed, int)
+                and not isinstance(seed, bool)
+                and isinstance(episodes, int)
+                and not isinstance(episodes, bool)
+                else None
             )
+            panel_note = ""
+            if panel is not None:
+                panel_note = " (reused panel)" if panel in seen_panels else " (new panel)"
+                seen_panels.add(panel)
+            detail = _episode_interval(item)
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
                 f"- `{item.get('candidate', '-')}` "
-                f"`research_evaluation`{_round_entry_status(item)}: {detail}."
+                f"`research_evaluation`{_round_entry_status(item)}"
+                f"{panel_note}: {detail}."
             )
             if item.get("selection"):
                 lines.append(
@@ -1357,8 +1329,6 @@ def _render_v4_research_brief(
     lines.extend(_v4_measurement_rounds_section(pending, latest))
 
     lines.extend(_v4_cost_accounting_section(state, results, pending))
-
-    lines.extend(_v4_terminal_readiness_section(state, results, pending))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 

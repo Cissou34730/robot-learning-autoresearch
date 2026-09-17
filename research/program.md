@@ -235,23 +235,17 @@ best serves the human objective. Request terminal assessment when the Researcher
 judges that the selected best-known model is ready for the official verdict,
 stating the evidence and uncertainty behind that decision.
 
-`research/stopping_contract.md` defines the terminal-readiness evidence. A
-development result on the episodes used to select the model is not by itself
-readiness evidence, because selection biases that panel upward. A terminal
-request may cite a stopping-validation panel measured on the frozen best-known
-model during its current designation, on episodes not used for selection, and
-should state the uncertainty the evidence cannot remove. A task-reference
-measurement is fixed reused development evidence and can never be a
-stopping-validation panel. The
-contract is advisory in this version: it reports a deterministic assessment and
-neither blocks nor authorizes the request, and no automatic threshold decides
-when the campaign ends.
+Development measurements support model selection and scientific judgment. A
+measurement used to select a model is not automatically independent
+confirmation. After observing a promising result, the Researcher may request
+another measurement round on a disjoint panel before closing the experiment. The
+Researcher decides whether the available evidence justifies requesting the
+official benchmark: no task-reference measurement, confidence threshold, special
+evidence label, or predefined number of panels is mandatory.
 
 Another useful investigation does not prohibit stopping, and reaching a
 development threshold does not require stopping. No residual-failure criterion or
-proof that no better research direction exists is required. The pilot
-distinguishes selection evidence from stopping-validation evidence and reports
-whether the candidate rule is satisfied; a fresh panel is not currently required.
+proof that no better research direction exists is required.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. Requesting it ends the campaign after either verdict:

@@ -42,7 +42,7 @@ PROTECTED_RUNNER_PATHS = {
     "research/reset_campaign.py",
     "research/build_research_brief.py",
     "research/query_training_log.py",
-    "research/stopping_policy.py",
+    "research/panel_rules.py",
     "researcher_session.ps1",
     "run_research.ps1",
 }
@@ -62,7 +62,6 @@ PROTECTED_CONTEXT_PATHS = {
     "research/instruments.md",
     "research/program.md",
     "research/scenario.md",
-    "research/stopping_contract.md",
 }
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
@@ -144,6 +143,8 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 HYPOTHESIS_ASSESSMENT_LABEL = "Hypothesis assessment"
 # The researcher names the model; the panel behind this key is human-owned.
+# `purpose` is a tolerated legacy field: historical requests and records may
+# carry it, and it is accepted but ignored, never required or interpreted.
 RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "instrument",
     "candidate",
@@ -166,10 +167,6 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
-# Why a measurement was requested. `terminal_validation` marks a predeclared
-# stopping-validation panel; the fixed task-reference panel can never qualify.
-MEASUREMENT_PURPOSES = {"selection", "terminal_validation"}
-DEFAULT_MEASUREMENT_PURPOSE = "selection"
 
 
 # --- ownership -------------------------------------------------------------
@@ -801,7 +798,6 @@ def validate_evaluation_request(
     request: dict,
     *,
     allow_legacy_need_more_evidence: bool = False,
-    require_purpose: bool = False,
 ) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
@@ -858,22 +854,6 @@ def validate_evaluation_request(
             raise ValueError(
                 f"{instrument} measurement cannot set unsupported fields {unknown}"
             )
-        purpose = entry.get("purpose")
-        if purpose is None:
-            if require_purpose:
-                raise ValueError(
-                    f"{instrument} requires a purpose of "
-                    f"{sorted(MEASUREMENT_PURPOSES)} on a new request"
-                )
-        elif purpose not in MEASUREMENT_PURPOSES:
-            raise ValueError(
-                f"{instrument} purpose must be one of {sorted(MEASUREMENT_PURPOSES)}"
-            )
-        elif instrument == "task_reference" and purpose == "terminal_validation":
-            raise ValueError(
-                "task_reference measures a fixed reused panel and cannot be "
-                "terminal-validation evidence; use research_evaluation"
-            )
         if "label" in entry and not isinstance(entry["label"], str):
             raise ValueError("measurement label must be a string")
         # Record scientific usefulness without asking the Runner to rank candidates.
@@ -916,30 +896,94 @@ def validate_evaluation_request(
         )
 
 
-def normalize_measurement_purposes(request: dict) -> dict:
-    """Fill an omitted purpose with `selection` for persisted or legacy requests."""
-    for entry in request.get("measurements") or []:
-        if isinstance(entry, dict) and entry.get("purpose") is None:
-            entry["purpose"] = DEFAULT_MEASUREMENT_PURPOSE
-    return request
+def _research_panel(entry: dict) -> tuple[int, int] | None:
+    """The evaluated episode interval ``(seed, episodes)`` of one measurement."""
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return seed, episodes
 
 
-def validate_terminal_validation_request(request: dict, state: dict) -> None:
-    """A terminal-validation measurement needs a current best-known tenure."""
-    needs_validation = any(
-        isinstance(entry, dict) and entry.get("purpose") == "terminal_validation"
-        for entry in request.get("measurements") or []
+def _panels_overlap(left: tuple[int, int], right: tuple[int, int]) -> bool:
+    """Whether two half-open episode intervals share any episode seed."""
+    left_start, left_count = left
+    right_start, right_count = right
+    return max(left_start, right_start) < min(
+        left_start + left_count, right_start + right_count
     )
-    if not needs_validation:
-        return
-    best_known = state.get("best_known_lineage")
-    if not isinstance(best_known, dict):
-        raise TypeError("terminal_validation requires a designated best-known model")
-    if not isinstance(best_known.get("designation_ordinal"), int):
-        raise TypeError(
-            "terminal_validation requires a recorded best-known designation "
-            "ordinal; re-designate the model before requesting it"
-        )
+
+
+def _protected_episode_panel() -> tuple[int, int]:
+    """The official benchmark episode interval, read from the protected contract."""
+    from research import panel_rules
+
+    return panel_rules.protected_episode_panel()
+
+
+def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[int, int]]:
+    """Panels already recorded for this campaign's research evaluations."""
+    campaign_id = repository.current_campaign_id(state)
+    sources = list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
+    if isinstance(pending, dict):
+        sources.append(pending)
+    panels: list[tuple[int, int]] = []
+    for source in sources:
+        for entry in [
+            *(source.get("requested_evaluations") or []),
+            *(source.get("partial_evaluations") or []),
+        ]:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("instrument", "research_evaluation") != "research_evaluation":
+                continue
+            metrics = entry.get("metrics") or {}
+            panel = _research_panel({**metrics, **entry})
+            if panel is not None:
+                panels.append(panel)
+    return panels
+
+
+def validate_panel_independence(
+    request: dict, prior_panels: list[tuple[int, int]] | None = None
+) -> None:
+    """Reject research-evaluation panels that partially overlap other panels.
+
+    An identical panel is allowed for deliberate reuse, and a disjoint panel is
+    always allowed; only partial overlap is rejected. The protected benchmark
+    interval is rejected on any overlap, and is never named in the error.
+    """
+    protected = _protected_episode_panel()
+    seen: list[tuple[int, int]] = []
+    for entry in requested_measurements(request):
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("instrument") != "research_evaluation":
+            continue
+        panel = _research_panel(entry)
+        if panel is None:
+            continue
+        if _panels_overlap(panel, protected):
+            raise ValueError(
+                "research_evaluation panel overlaps protected benchmark evidence; "
+                "choose a panel disjoint from the protected episode range"
+            )
+        for other in seen:
+            if other != panel and _panels_overlap(panel, other):
+                raise ValueError(
+                    "research_evaluation panels within one request partially "
+                    "overlap; use an identical panel or disjoint panels"
+                )
+        for other in prior_panels or []:
+            if other != panel and _panels_overlap(panel, other):
+                raise ValueError(
+                    "research_evaluation panel partially overlaps a previously "
+                    "recorded research panel; reuse the identical panel or choose "
+                    "a disjoint panel"
+                )
+        seen.append(panel)
 
 
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:
@@ -1014,7 +1058,6 @@ def planned_measurements(
                     "label": spec.get(
                         "label", f"requested evaluation {len(evaluations) + 1}: {name}"
                     ),
-                    "purpose": spec.get("purpose", DEFAULT_MEASUREMENT_PURPOSE),
                 }
             )
         else:
@@ -1026,7 +1069,6 @@ def planned_measurements(
                     "label": spec.get(
                         "label", f"task reference {len(references) + 1}: {name}"
                     ),
-                    "purpose": spec.get("purpose", DEFAULT_MEASUREMENT_PURPOSE),
                 }
             )
     return evaluations, references

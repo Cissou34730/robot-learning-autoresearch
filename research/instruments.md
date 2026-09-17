@@ -81,7 +81,6 @@ Write `research/evaluation_request.json`:
       "candidate": "<model exposed by the brief or listed in the candidate inventory>",
       "selection": "<observed signal or explicit uncertainty, why this measurement is informative, and which next decision it could change>",
       "omitted_alternative": "<an available model left outside this request, or null only when every available model is requested>",
-      "purpose": "<selection | terminal_validation>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -118,19 +117,11 @@ identifier is available and is not measured in the same request. Use `null` only
 when the request measures every available model; the Runner verifies that
 condition.
 
-Every measurement on a newly submitted request also requires a `purpose`:
-
-- `selection` (the default for historical records): the measurement informs a
-  selection, comparison or diagnostic decision.
-- `terminal_validation`: the measurement is a predeclared stopping-validation
-  panel for the current best-known model. It is valid only for
-  `research_evaluation`, requires a designated best-known model, and is declared
-  before its result is observed. A task-reference measurement is fixed
-  development evidence and can never be a stopping-validation panel.
-
-The Runner records the declared purpose on the round and on the durable
-measurement; the stopping assessment uses only `terminal_validation` evidence
-from the current best-known designation.
+A `research_evaluation` panel is the half-open episode interval
+`[seed, seed + episodes)`. A request may reuse an identical panel or use a panel
+disjoint from every recorded research panel; partial overlap is rejected.
+Several measurements may share one identical panel. A panel overlapping the
+protected benchmark episodes is rejected, and historical records remain readable.
 
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
@@ -355,8 +346,8 @@ success.
 New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
 and conclusion belong to the Researcher; the Runner checks only that it is
 present. This assessment does not determine saved-policy usefulness, recipe,
-lineage, retention, or terminal-readiness decisions. Fresh baselines are exempt,
-and historical entries remain readable.
+lineage, retention, or the decision to request the official benchmark. Fresh
+baselines are exempt, and historical entries remain readable.
 
 ## Resolve lineage
 

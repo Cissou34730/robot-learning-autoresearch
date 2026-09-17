@@ -23,16 +23,18 @@ superseded. It does not instruct the autonomous researcher and does not replace
   `executed`, `reused` or `failed`. A reused operation links the original
   artifact, fingerprint and source round and adds no executions or distinct
   identities.
-- **Stopping evidence provenance:** A monotonic best-known designation ordinal
-  records each tenure; a new designation, including a return to an earlier
-  fingerprint, starts a new one. Each measurement on a new request declares a
-  purpose of `selection` or `terminal_validation`; only research evaluation can
-  be terminal validation. Integer successes and episode counts are authoritative,
-  and only a predeclared panel from the current tenure with disjoint episodes is
-  stopping evidence.
-- **Prospective validation:** The stopping rule is characterized by a
-  predeclared simulation study; it remains advisory until prospectively validated
-  on new campaigns.
+- **Panel independence:** A research-evaluation panel is the half-open episode
+  interval `[seed, seed + episodes)`. A request may reuse an identical panel or
+  use a disjoint panel; partial overlap with an earlier research panel, and any
+  overlap with the protected benchmark episodes, is rejected. Historical records
+  and legacy `purpose` fields remain readable and are ignored.
+- **Stopping decision:** Development measurements support model selection and
+  scientific judgment; a measurement used to select a model is not automatically
+  independent confirmation. The Researcher may run another round on a disjoint
+  panel and decides whether the available evidence justifies requesting the
+  official benchmark. No terminal-validation label, confidence threshold, special
+  evidence type, or panel count is required, and the official benchmark remains
+  terminal and irreversible.
 - **Deferred structural migration:** Relocating protected scenario adapters,
   reducing exception-based ownership, and moving the PowerShell phase machine
   into the Runner are scheduled as one coordinated campaign-boundary migration.

@@ -1,11 +1,9 @@
 """Presentation of the two measurement instruments.
 
-Issue #38 removed a presentation bias toward `task_reference`. An intermediate
-version presented `task_reference` as a benchmark "preview", which this
-deliberately supersedes: the two are now distinguished by measurement
-properties, neither is generally authoritative, and the fixed reused panel is
-neither a privileged lineage criterion nor terminal evidence. The documentation
-must still keep equal factual depth and no default.
+Issue #38 removed a presentation bias toward `task_reference`. The two are now
+distinguished by measurement properties, neither is generally authoritative, and
+the fixed reused panel is neither a privileged lineage criterion nor terminal
+evidence. The documentation must still keep equal factual depth and no default.
 """
 
 from pathlib import Path
@@ -68,14 +66,14 @@ def test_instruments_are_distinguished_by_measurement_properties():
     )
     assert "distinguished by their properties, not by authority" in program
     assert "not a privileged lineage criterion" in program
-    assert "can never be a stopping-validation panel" in program
+    assert "no task-reference measurement" in program
 
     prompt = " ".join(
         (ROOT / "run_research.ps1").read_text(encoding="utf-8").split()
     )
     assert "reused development panel" in prompt
     assert "not a privileged lineage criterion" in prompt
-    assert "terminal evidence, or a preview of the official outcome" in prompt
+    assert "disjoint panel to obtain independent evidence" in prompt
 
 
 def test_brief_phase_section_names_no_instrument_or_pairing():
