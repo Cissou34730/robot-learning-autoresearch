@@ -16,8 +16,13 @@ best-known policy is therefore the unchanged-recipe incumbent at 96.5%,
 which remains below the objective and lacks terminal-readiness evidence.
 Experiment 7's 74.0% and 81.0% challengers on a matched fresh panel weaken
 that representation result without showing that the added features are
-intrinsically harmful. This synthesis is provisional memory, not a prescribed
-direction.
+intrinsically harmful. Experiment 8's two quadratic hold-credit challengers
+also failed to exceed the incumbent: both scored 88.5% on a matched seed-1003
+panel versus 92.0% for the incumbent, and each had 4 versus 11 paired wins.
+This weakens the tested hold-credit explanation without establishing that
+quadratic shaping is intrinsically harmful or that the incumbent's 96.5%
+result generalizes unchanged to every panel. This synthesis is provisional
+memory, not a prescribed direction.
 
 **Lessons and limits:** Measured saved-policy success, not training reward or
 proxy success, governs progress. Proxies are non-monotonic: continuation
@@ -30,18 +35,22 @@ are a coverage signal, not proof of a coverage cause; focused coverage did not
 reduce them. The current reward already contains distance progress, a linear
 hold-progress potential, an exit forfeiture, and a completion bonus
 (`robot_learning/scenario/reward.py`), but reward shaping has not been
-separated from representation, optimization trajectory, or mechanics. Fresh
-training variability is demonstrated by the 89.5% baseline and 83.0%
-replication, not characterized as a seed distribution. Development
-measurements remain selection evidence rather than the official verdict.
+separated from representation, optimization trajectory, or mechanics. The
+quadratic hold-credit run reached a proxy peak without saved-policy
+improvement, and its measured challengers did not reduce the 120-165 degree
+failure sector relative to the matched incumbent. Fresh training variability
+is demonstrated by the 89.5% baseline and 83.0% replication, not characterized
+as a seed distribution. Development measurements remain selection evidence
+rather than the official verdict.
 
 **Open questions:** It remains unknown whether the residual failures are
 limited by temporal credit for completing the hold, state representation,
 optimization trajectory, target coverage, or task mechanics. It is also
-unknown whether a reward profile that emphasizes later hold steps changes
-saved-policy success without sacrificing reaching behavior. The unmeasured
-experiment-7 checkpoints remain unmeasured, and no terminal-readiness
-assessment has been established for the current best-known designation.
+unknown whether another reward design or a different intervention can address
+the residual failures; the tested quadratic hold profile did not. The
+unmeasured experiment-7 checkpoints remain unmeasured, and no
+terminal-readiness assessment has been established for the current best-known
+designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -369,3 +378,50 @@ experiment.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-7-checkpoint-120832-200ep-seed1002-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-7-working-200ep-seed1002-a69293a214ad.json`;
 `robot_learning/scenario/observations.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 8
+
+**Result:** Quadratic hold-progress credit did not improve the measured saved
+policy. The existing working and best-known incumbent remain selected, and
+the reward-only experiment recipe should be reverted.
+
+**Observed behavior:** The training log and candidate inventory show a proxy
+peak at checkpoint-65536 (training success 1.00, mean reward 355.1 and mean
+episode length 120), followed by a later proxy checkpoint at 105472 with
+training success 0.98 and mean reward 339.3; the endpoint had training success
+0.97 and mean reward 334.2. On the matched 200-episode seed-1003 research
+panel, both measured challengers scored 177/200 (88.5%), while the incumbent
+scored 184/200 (92.0%). Each challenger had 4 versus 11 discordant wins
+against the incumbent, and the two challengers were tied at 10 versus 10.
+All 23 challenger failures and all 16 incumbent failures truncated at 500
+steps. The 120-165 degree sector contained 11 failures for checkpoint-65536,
+10 for checkpoint-105472, and 11 for the incumbent.
+
+**Hypothesis assessment:** Weakened. The diagnostic expected convex
+hold-progress credit to produce fewer uninterrupted-hold failures and higher
+saved-policy success, with the strongest result at either the proxy peak or
+the later high-reward checkpoint. Neither challenger improved over the matched
+incumbent, neither reduced the targeted sector failures, and the two proxy
+choices had identical measured success. The result weakens the hold-credit
+explanation under this transferred trajectory and panel, but does not show
+that quadratic shaping is intrinsically harmful, establish a general
+distribution-wide effect, or separate reward shaping from trajectory
+variability.
+
+**Interpretation:** Measured task behavior, rather than the stronger training
+proxies, argues against selecting either experiment-8 candidate. The
+quadratic profile did not provide objective-relevant progress, while the
+incumbent remains meaningful progress toward 98% at its previously measured
+96.5% and is still below the objective. The seed-1003 incumbent result is a
+matched comparator, not evidence that the incumbent has degraded from its
+earlier 96.5% panels. These development measurements are not terminal
+evidence, so the experiment closes without requesting the official benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-8/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-8-checkpoint-65536-200ep-seed1003-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-8-checkpoint-105472-200ep-seed1003-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-8-working-200ep-seed1003-a69293a214ad.json`;
+`robot_learning/scenario/reward.py`.
