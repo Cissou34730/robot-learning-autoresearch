@@ -18,7 +18,9 @@ therefore the unchanged-recipe incumbent. Experiment 6's focused-angle
 transfer reached 93.5% on two fresh research panels, but retained 11
 failures among the 30 episodes in the 120-165 degree sector, matching the
 incumbent on those panels. This weakens the tested target-coverage route
-without establishing that target coverage is never useful. This synthesis is
+without establishing that target coverage is never useful. The campaign has
+not separated representation, reward/optimization trajectory, or task
+mechanics as explanations for the residual failures. This synthesis is
 provisional memory, not a prescribed direction.
 
 **Lessons and limits:** Training proxies and saved-policy task success are not
@@ -34,17 +36,22 @@ policy results, while one fresh seed-4 replication reached 83.0%; this
 demonstrates learning-process variability under the tested conditions, not a
 distribution-wide seed estimate. Same-panel comparisons establish only that
 the tested lower learning rate and focused-angle transfer were not useful for
-the measured selection decision. These limits are recorded in
+the measured selection decision. The detailed incumbent failures usually
+approach the 1 cm threshold without accumulating a sustained hold, but this
+does not identify whether the limiting factor is state representation,
+optimization, reward shaping, or mechanics. These limits are recorded in
 `research/brief.md`, `research/results.jsonl`, the experiment postmortems
 below, and the detailed evaluation artifacts.
 
 **Open questions:** The tested focused-angle transfer did not improve the
 repeatable 120-165 degree residual failures; whether a different coverage
-design or another mechanism can do so remains unresolved. Representation,
-optimization trajectory, and task mechanics are also not separated by the
-current evidence. Development measurements remain selection evidence rather
-than the official verdict, and no terminal-readiness assessment has been
-established for the current best-known designation.
+design or another mechanism can do so remains unresolved. It is also unknown
+whether an explicit continuous encoding of target radius and angle would make
+the residual geometry easier for the policy to use, whether reward shaping can
+improve near-threshold holding, and how much learning-process variability
+affects either route. Development measurements remain selection evidence
+rather than the official verdict, and no terminal-readiness assessment has
+been established for the current best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
