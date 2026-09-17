@@ -7,16 +7,18 @@ official 200-episode reach-and-hold panel. Unchanged PPO improved from the fresh
 baseline's 89.5% to a best development result of 96.5% (193/200) after
 continuation, and that incumbent reproduced 96.5% on the seed-2, seed-3, and
 seed-4 panels while scoring 92.0% on seed-1004 and seed-1005 and 95.5% on
-seed-1205. The incumbent's residual failures include a recurring 120-165 degree
-sector pattern, low-radius concentration, no-reach episodes, and tolerance
-interruptions, so angle and radius are signals rather than complete
-explanations. Lower-rate transfer, a fresh replication, focused-angle
-coverage, explicit target geometry, quadratic hold credit, gamma-0.995
-transfer, in-tolerance velocity penalization, and 6-10 cm oversampling each
-failed to exceed the unchanged incumbent under the measured conditions.
-Training proxies and reward remain unreliable indicators of saved-policy
-success. The current working and best-known policy is therefore meaningful
-development progress but remains below the objective and has no
+seed-1205. A fresh unchanged-PPO replication measured 88.0% and 90.5% at its
+selected checkpoints on seed-1206, so the incumbent-level trajectory was not
+recovered under the tested fresh seed. The incumbent's residual failures
+include a recurring 120-165 degree sector pattern, low-radius concentration,
+no-reach episodes, and tolerance interruptions, so angle and radius are signals
+rather than complete explanations. Lower-rate transfer, the fresh replication,
+focused-angle coverage, explicit target geometry, quadratic hold credit,
+gamma-0.995 transfer, in-tolerance velocity penalization, and 6-10 cm
+oversampling each failed to exceed the unchanged incumbent under the measured
+conditions. Training proxies and reward remain unreliable indicators of
+saved-policy success. The current working and best-known policy is therefore
+meaningful development progress but remains below the objective and has no
 terminal-readiness evidence.
 
 **Lessons and limits:** Saved-policy task success, not training reward or proxy
@@ -27,20 +29,24 @@ Reward shaping, target coverage, representation, discounting, and the tested
 stability penalty have each been weakened only under their particular recipes,
 transferred trajectories, or panels, not universally disproven
 (`research/postmortems.md`, Experiments 4 and 6-11). Fresh learning variance
-is material: Experiment 1 reached 89.5%, Experiment 5 reached 83.0%, while
-the incumbent's transferred policy was much stronger across several evaluation
-panels (Experiments 1, 2, 5). This demonstrates neither a seed distribution
-nor that the incumbent is reproducible from scratch. Development measurements
-are selection evidence, not the official verdict, and unmeasured checkpoints
-remain unmeasured.
+is material: Experiment 1 reached 89.5%, Experiment 5 reached 83.0%, and
+Experiment 12 reached 90.5%, while the incumbent's transferred policy was much
+stronger across several evaluation panels (Experiments 1, 2, 5, 12). This
+supports high variance under the tested seeds but does not estimate its
+distribution or establish a universal failure of fresh training. Experiment 12
+also shows that late proxy improvement can reduce no-reach failures while
+increasing interrupted holds; this is a diagnostic association, not a causal
+mechanism. Development measurements are selection evidence, not the official
+verdict, and unmeasured checkpoints remain unmeasured.
 
-**Open questions:** It remains unresolved whether fresh unchanged PPO can
-reproduce incumbent-level behavior or whether the 96.5% policy is a
-trajectory-specific outcome. The residual failures may still involve temporal
-credit, control stability, reachability, representation, target coverage, or
-task mechanics, and their relative contributions are unknown. The recurring
-sector and low-radius patterns may not generalize beyond the measured panels.
-The current best-known designation also lacks terminal-validation evidence.
+**Open questions:** Experiment 12 weakens, but does not fully resolve, whether
+fresh unchanged PPO can reproduce incumbent-level behavior; the result is one
+additional seed with two measured checkpoints and 22 unmeasured checkpoints.
+The residual failures may still involve temporal credit, control stability,
+reachability, representation, target coverage, or task mechanics, and their
+relative contributions are unknown. The recurring sector and low-radius
+patterns may not generalize beyond the measured panels. The current best-known
+designation also lacks terminal-validation evidence.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -574,3 +580,56 @@ fresh panel is development evidence and is not the official benchmark.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-checkpoint-120832-200ep-seed1205-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-working-200ep-seed1205-a69293a214ad.json`;
 `robot_learning/scenario/training_environment.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 12
+
+**Result:** The fresh unchanged-PPO replication did not reproduce the
+incumbent-level saved policy. The existing working and best-known lineage
+remains the useful development policy, the unchanged recipe is kept, and the
+replication candidates are not retained.
+
+**Observed behavior:** The fresh seed-6 run completed 120,832 steps and
+produced 24 checkpoints. Training proxies improved through the measured run:
+training success rose from 0.00 at early checkpoints to 0.41 at
+checkpoint-100352 and 0.78 at checkpoint-120832, while mean reward rose from
+-1969.7 to 72.5 and then 244.2. Twenty-two checkpoints were not measured and
+remain unmeasured, not failed measurements. On the independent 200-episode
+seed-1206 research panel, checkpoint-100352 achieved 176/200 (88.0%) and the
+endpoint achieved 181/200 (90.5%). The paired comparison between these two
+fresh candidates had 15 versus 10 discordant wins for the endpoint, a 2.5
+percentage-point improvement.
+
+Among failed episodes, checkpoint-100352 had 19 episodes with no recorded
+first reach and 5 with hold interruptions; the endpoint had 9 no-reach and 10
+interruption-bearing failures. The endpoint also had fewer failed episodes in
+the 120-165 degree sector (2 versus 8) and the 6-10 cm radius band (12 versus
+21), but more failed episodes in the 10-20 cm band (7 versus 3). These
+diagnostic counts overlap where applicable and describe this panel only.
+All failures in both measurements reached the 500-step horizon.
+
+**Hypothesis assessment:** Weakened under the tested fresh seed and selected
+checkpoints. The endpoint's proxy improvement transferred to a modest
+saved-policy improvement over the fresh run's earlier checkpoint, but neither
+checkpoint approached the incumbent's 193/200 (96.5%) development result.
+This supports the alternative that the incumbent-level trajectory is not
+reliably recovered from scratch under the current recipe, while the single
+fresh seed and two measured checkpoints do not establish a seed distribution
+or rule out a later unmeasured peak.
+
+**Interpretation:** Measured task behavior supports retaining the incumbent as
+meaningful progress toward the human objective, but the replication supplies
+no replacement policy and does not meet the 98% objective. The late endpoint
+is a partial and unexpected signal: its fewer no-reach and sector failures did
+not yield incumbent-level success because interruption-bearing failures
+increased. The proxy-to-policy gap and the failure-mode shift are diagnostic
+associations; they do not identify whether optimization, control stability,
+reachability, or another mechanism caused the outcome. The selected
+development evidence is not terminal-validation evidence, so no official
+benchmark is requested.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-12/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-12-checkpoint-100352-200ep-seed1206-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-12-checkpoint-120832-200ep-seed1206-a69293a214ad.json`.
