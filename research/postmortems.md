@@ -2,50 +2,60 @@
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Scientific strategy
 
-**Current synthesis:** The unchanged baseline recipe (PPO, 64x64 tanh, n_steps
-1024, ent_coef 0.01, 120k-step budget) learns the reach-and-hold task broadly
-but not completely. Its selected checkpoint `checkpoint-100352` scores 97.0% on
-the researcher 200-episode panel (seed 20260918) and 98.0% on the protected
-task-reference panel (task-reference-v1), close to but not safely above the 98%
-objective. Re-reading both panels' per-episode geometry shows the residual
-failures are not a broad angular wedge: all 6 research-panel and all 4
-task-reference failures are targets whose elbow-open inverse-kinematics
-solution violates the shoulder joint range (-170 to 170 degrees), so only the
-elbow-folded configuration reaches them. The 190 and 187 episodes whose
-elbow-open solution is feasible contain zero failures. Within the
-folded-required set failures are partial (6 of 10 and 4 of 13) and the stalled
-end effector stops about 0.8-1.4 cm outside the 1 cm tolerance without ever
-completing a hold, while folded-required episodes that succeed enter tolerance
-normally. That set is a thin, radius-dependent arc of roughly 5% of the
-official target area, moving from about -124 degrees at 6 cm to about -155
-degrees at 20 cm. The recipe's training distribution samples radii only in
-14-20 cm while the official task samples 6-20 cm, so the near-field part of
-this arc was never trained. A later checkpoint, `checkpoint-120832`, scores
-lower (94.5%) and adds oscillation failures outside this region, so training
-this recipe further, unchanged, degraded hold stability while the
-folded-required failures persisted.
+**Current synthesis:** Across two completed experiments the unchanged baseline
+recipe (PPO, 64x64 tanh, n_steps 1024, ent_coef 0.01) remains the strongest
+measured policy: `working`/`best_known` (`checkpoint-100352`, experiment 1)
+scores 97.0% on the researcher 200-episode panel (seed 20260918) and 98.0% on
+the protected task-reference panel, while experiment 2's change (full 6-20 cm
+radius support plus 30% folded-target oversampling) measured 94.0-94.5% and
+97.0-98.0% and was reverted without beating its parent. Recomputing both
+analytic inverse-kinematics branches for every measured episode in all five
+researcher panels and all three task-reference panels sharpens the
+residual-failure picture. Failures are almost entirely confined to targets
+whose elbow-open shoulder solution exceeds the +/-170 degree joint limit by only
+a small margin: episodes with |shoulder_open| in roughly (170, 184] succeed
+only 1/7 to 5/14 across the measured policies, while episodes whose open
+solution is more deeply infeasible (|shoulder_open| > ~184) succeed 24/24,
+26/26 and 27/27, and open-feasible episodes fail 0-2 of 160-169. In the
+near-limit band the end effector stalls about 0.8-1.5 cm outside the 1 cm
+tolerance, usually without any hold, and the pattern is reproduced by the
+unchanged parent, both experiment-2 checkpoints and both independent panels.
+Experiment 1 trained an unchanged recipe and experiment 2 oversampled folded
+targets roughly six-fold without removing the band failures, so the deficit is
+not explained by folded-target training density. The leading remaining
+explanation is representational: `reach_observation` supplies both
+inverse-kinematics solutions as wrapped joint-error features, so where the
+elbow-open solution is only slightly beyond the shoulder limit that infeasible
+branch is still an attractive near-target; the policy then commands a
+configuration whose shoulder saturates at the joint limit and stalls just
+outside tolerance. A competing explanation is a precision or optimization
+limit at the joint boundary that is independent of the observation.
 
-**Lessons and limits:** The folded-required explanation is a re-reading of two
-existing development panels and joint-limit geometry, not an independent
-confirmation, and the task-reference panel remains a repeated development
-measurement rather than held-out evidence. The association is exact over the
-400 measured episodes, but the region holds few episodes per panel (10 and 13),
-the 1 cm tolerance is close to the observed stall distance, and the mechanism
-is inferred rather than demonstrated. Within the measured evidence, task
-success and the training-time success proxy agree near the peak (0.97 ->
-97.0%), while training reward does not track success (e.g. 86,016: reward
-163.85 at 0.42 success; 95,232: reward 129.26 at 0.93), so reward is usable
-only as a shaped training signal. The recipe was trained unchanged in
-experiment 1, so no component of it can be causally credited for the
-folded-required deficit or for the post-peak degradation.
+**Lessons and limits:** The band pattern is a re-reading of deterministic
+development panels and analytic joint-limit geometry, not a new independent
+measurement, and the task-reference panel remains repeated development
+evidence rather than held-out confirmation. The association is strong over the
+measured episodes but the band holds only 7-14 episodes per panel, no joint
+trajectories are recorded, and the branch-attraction mechanism is inferred
+rather than observed. Training reward does not track task success (e.g. reward
+163.85 at 0.42 training success versus 129.26 at 0.93), so it is usable only as
+a shaped signal. Training this recipe past about 100k steps reduced hold
+stability and added oscillation failures on open-feasible targets (experiment 1
+`checkpoint-120832`, experiment 2 `checkpoint-120832`), so the recipe peaks near
+100k steps. The 98% objective is met on the task-reference panel but not on the
+researcher panel, and the two changed components of experiment 2 (full-radius
+sampling, folded oversampling) were not separated.
 
-**Open questions:** Whether the folded-required deficit is a training-density
-deficit (too few folded targets, especially near field), a precision limitation
-near the shoulder joint limit, or an artifact of the observation's two wrapped
-inverse-kinematics solutions conflicting at the limit is unresolved. It is
-unknown how much of the deficit raising folded-target density would remove and
-whether it would trade failures elsewhere. The exact angular extent and radius
-dependence of the region are computed from geometry, not directly measured.
+**Open questions:** Whether the near-limit band deficit is caused by the
+observation presenting the joint-infeasible inverse-kinematics branch as an
+error to reduce, or by a precision/optimization limit at the shoulder boundary
+that is independent of the observation, is unresolved. It is unknown how the
+two branches interact through the trained representation and the learned
+observation normalizer, whether suppressing the infeasible branch would fix the
+band or trade failures elsewhere, and whether the residual near-limit targets
+are reachable at all under a fixed 2 second continuous hold. The exact boundary
+of the affected band and its dependence on radius are computed from geometry,
+not directly measured.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
