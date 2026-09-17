@@ -69,7 +69,7 @@ researcher_opencode/
   package-lock.json
   tsconfig.json         no-emit; erasable-syntax-only checking
   src/main.ts           entry point and accounting
-  src/adapter.ts        server lifecycle, session identity, event reduction
+  src/adapter.ts        session identity, event reduction, server client
   src/policy.ts         the command policy, ported from the Copilot adapter
   src/console.ts        the human-visible console
   src/session-map.ts    harness session id to OpenCode session id
@@ -89,14 +89,18 @@ to its own directory, so the OpenCode server's project is the worktree you
 launched from, and linked worktrees work without configuration. Nothing is
 derived from the adapter's source location.
 
-Each invocation starts its own loopback server on a dynamically assigned port
-(`port: 0`) and closes only that server. Two worktrees therefore never silently
-share a server, and persisted OpenCode history is left intact.
+The PowerShell launcher starts one loopback server on a dynamically assigned
+port before entering the campaign loop and stops it in the launcher's outer
+`finally` block. Every phase adapter receives that server URL, so server startup
+and model initialization happen once per campaign rather than once per phase.
+The worktree-scoped launcher mutex gives each active worktree its own server,
+and persisted OpenCode history is left intact.
 
-Shutdown explicitly aborts the SDK event subscription before closing the
-server. Server termination alone is insufficient on Windows: a completed SSE
-read can otherwise retain Node handles after the session summary and prevent
-the PowerShell launcher from reaching deliverable validation.
+Each phase still owns its SDK event subscription and streams events directly to
+the console. Phase shutdown explicitly aborts and drains that subscription but
+does not close the campaign server. This prevents a completed SSE read from
+retaining Node handles after the session summary and blocking deliverable
+validation.
 
 ## Event stream supervision
 
@@ -124,8 +128,8 @@ re-established, up to three attempts with doubling delays.
 If the outcome still cannot be established, the invocation ends with exit code 6
 and says so, instead of waiting out the timeout and reporting an abort as a
 timeout the session never hit. Work in a session that cannot be observed is
-abandoned by design: the server is per-invocation, so it cannot outlive the
-invocation, and the launcher's retry and resume path is the recovery mechanism.
+abandoned by design, and the launcher's retry and resume path is the recovery
+mechanism. The campaign server remains available to the resumed phase.
 Watching a busy session by polling its status was rejected as a substitute,
 because permission requests arrive only on the event stream: a session blocked
 on one would sit until the timeout with no way to answer it.
@@ -209,8 +213,8 @@ Verified offline:
 Verified against a locally started OpenCode server (`1.18.23`):
 
 - The server starts and reports its listening URL after roughly five seconds.
-  This is why the runtime sets a 30 s startup timeout: the SDK's own 5 s default
-  is not sufficient on this machine.
+  The launcher allows up to 30 s for its readiness check because 5 s is not
+  sufficient on this machine.
 - `config.providers()`, `app.agents()` and `session.create()` / `delete()` all
   work through the pinned SDK.
 - `OPENCODE_API_KEY` is the environment variable for both `opencode-go` and

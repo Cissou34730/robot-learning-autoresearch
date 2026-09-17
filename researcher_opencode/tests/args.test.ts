@@ -13,6 +13,8 @@ test("parses the launcher's argument list", () => {
     "opencode-go/gpt-5.6-luna",
     "--reasoning",
     "high",
+    "--server-url",
+    "http://127.0.0.1:4096",
     "--experiment",
     "7",
     "--phase",
@@ -27,6 +29,7 @@ test("parses the launcher's argument list", () => {
   assert.equal(args.sessionId, "11111111-2222-3333-4444-555555555555");
   assert.equal(args.model, "opencode-go/gpt-5.6-luna");
   assert.equal(args.reasoning, "high");
+  assert.equal(args.serverUrl, "http://127.0.0.1:4096");
   assert.equal(args.experiment, 7);
   assert.equal(args.phase, "proposal");
   assert.equal(args.attempt, 2);
@@ -48,6 +51,7 @@ test("defaults match the adapter contract", () => {
   assert.equal(args.experiment, null);
   assert.equal(args.phase, null);
   assert.equal(args.campaignId, null);
+  assert.equal(args.serverUrl, null);
   assert.equal(args.model, "opencode-go/deepseek-v4.1-flash");
 });
 

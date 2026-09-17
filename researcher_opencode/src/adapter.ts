@@ -3,8 +3,8 @@
  * TypeScript SDK.
  *
  * The launcher owns the research protocol and decides whether a phase is
- * complete; this adapter owns only the OpenCode runtime: the server lifecycle,
- * session identity, the event stream that witnesses it, the tool profile, the
+ * complete; this adapter owns only the OpenCode session runtime: session
+ * identity, the event stream that witnesses it, the tool profile, the
  * command policy, and what reaches the console. Nothing printed here is read
  * back as a scientific fact.
  *
@@ -439,21 +439,22 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     );
   }
 
-  const server = await createOpencodeServer({
-    hostname: "127.0.0.1",
-    // 0 prefers the conventional port and otherwise takes a free one, so two
-    // worktrees never silently share a server.
-    port: 0,
-    timeout: 30_000,
-    config: serverConfig(providerID, modelID, args.reasoning),
-  });
+  const ownedServer = args.serverUrl
+    ? null
+    : await createOpencodeServer({
+        hostname: "127.0.0.1",
+        port: 0,
+        timeout: 30_000,
+        config: serverConfig(providerID, modelID, args.reasoning),
+      });
+  const serverUrl = args.serverUrl ?? ownedServer!.url;
   const eventAbort = new AbortController();
 
   // The stream ends when the closing server drops it; bounded below so a stuck
   // socket can never hold the launcher open after the summary.
   let drain: Promise<void> = Promise.resolve();
   try {
-    const client = createOpencodeClient({ baseUrl: server.url, directory: root });
+    const client = createOpencodeClient({ baseUrl: serverUrl, directory: root });
     await assertModelAvailable(client, providerID, modelID, console);
 
     const sessionID = await resolveSession(client, args, root);
@@ -775,8 +776,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
       sawUsage,
     };
   } finally {
-    // Only this invocation's server is closed; persisted OpenCode history stays.
-    await shutdownRuntime(eventAbort, () => server.close(), drain);
+    await shutdownRuntime(eventAbort, () => ownedServer?.close(), drain);
   }
 }
 

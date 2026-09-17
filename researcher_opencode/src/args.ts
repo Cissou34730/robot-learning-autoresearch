@@ -14,6 +14,7 @@ export type AdapterArgs = {
   reasoning: string;
   resume: boolean;
   timeout: number;
+  serverUrl: string | null;
   campaignId: string | null;
   experiment: number | null;
   phase: string | null;
@@ -26,6 +27,7 @@ const VALUE_FLAGS = new Set([
   "--model",
   "--reasoning",
   "--timeout",
+  "--server-url",
   "--campaign-id",
   "--experiment",
   "--phase",
@@ -110,6 +112,7 @@ export function parseArgs(
     reasoning,
     resume,
     timeout,
+    serverUrl: flags.get("--server-url") ?? null,
     campaignId: flags.get("--campaign-id") ?? null,
     experiment: experimentValue === undefined ? null : integer("--experiment", experimentValue),
     phase: flags.get("--phase") ?? null,

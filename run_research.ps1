@@ -52,6 +52,121 @@ function Get-OpenCodeNode {
     return @{ Path = $node.Source; Strip = $strip }
 }
 
+function Get-OpenCodeServerExecutable {
+    $command = Get-Command opencode -CommandType Application -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if (-not $command) {
+        throw "The OpenCode runtime needs the opencode CLI on PATH."
+    }
+    if ([System.IO.Path]::GetExtension($command.Source) -ieq ".exe") {
+        return $command.Source
+    }
+
+    $volta = Get-Command volta -CommandType Application -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($volta) {
+        $packageEntry = (& $volta.Source which opencode).Trim()
+        if ($LASTEXITCODE -eq 0 -and $packageEntry) {
+            $candidate = Join-Path (Split-Path -Parent $packageEntry) `
+                "node_modules\opencode-ai\bin\opencode.exe"
+            if (Test-Path -LiteralPath $candidate) {
+                return $candidate
+            }
+        }
+    }
+
+    throw "The OpenCode server executable could not be resolved behind $($command.Source)."
+}
+
+function Start-OpenCodeCampaignServer {
+    $separator = $Model.IndexOf("/")
+    if ($separator -le 0 -or $separator -eq ($Model.Length - 1)) {
+        throw "OpenCode needs a provider-qualified model, received '$Model'."
+    }
+    $providerId = $Model.Substring(0, $separator)
+    $modelId = $Model.Substring($separator + 1)
+    $models = @{}
+    $models[$modelId] = @{ options = @{ reasoningEffort = $Reasoning } }
+    $providers = @{}
+    $providers[$providerId] = @{ models = $models }
+    $config = @{
+        permission = @{ bash = "ask" }
+        provider = $providers
+    } | ConvertTo-Json -Depth 10 -Compress
+
+    $listener = [System.Net.Sockets.TcpListener]::new(
+        [System.Net.IPAddress]::Loopback,
+        0
+    )
+    $listener.Start()
+    $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
+    $listener.Stop()
+    $url = "http://127.0.0.1:$port"
+    $executable = Get-OpenCodeServerExecutable
+
+    $previousConfig = $env:OPENCODE_CONFIG_CONTENT
+    try {
+        $env:OPENCODE_CONFIG_CONTENT = $config
+        $process = Start-Process -FilePath $executable -ArgumentList @(
+            "serve",
+            "--hostname=127.0.0.1",
+            "--port=$port"
+        ) -PassThru -NoNewWindow
+    }
+    finally {
+        if ($null -eq $previousConfig) {
+            Remove-Item Env:OPENCODE_CONFIG_CONTENT -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:OPENCODE_CONFIG_CONTENT = $previousConfig
+        }
+    }
+
+    try {
+        $ready = $false
+        for ($attempt = 0; $attempt -lt 120; $attempt++) {
+            if ($process.HasExited) {
+                break
+            }
+            try {
+                $response = Invoke-WebRequest -Uri "$url/path" -TimeoutSec 1 -UseBasicParsing
+                if ($response.StatusCode -eq 200) {
+                    $ready = $true
+                    break
+                }
+            }
+            catch {
+            }
+            [System.Threading.Thread]::Sleep(250)
+        }
+        if (-not $ready) {
+            throw "The OpenCode campaign server did not become ready at $url."
+        }
+        Write-Status "OpenCode campaign server ready at $url" -Color DarkGray -Label researcher
+        return @{ Process = $process; Url = $url }
+    }
+    catch {
+        if (-not $process.HasExited) {
+            $process.Kill()
+            $process.WaitForExit()
+        }
+        $process.Dispose()
+        throw
+    }
+}
+
+function Stop-OpenCodeCampaignServer {
+    if ($script:OpenCodeServerProcess) {
+        if (-not $script:OpenCodeServerProcess.HasExited) {
+            $script:OpenCodeServerProcess.Kill()
+            $script:OpenCodeServerProcess.WaitForExit()
+        }
+        $script:OpenCodeServerProcess.Dispose()
+        $script:OpenCodeServerProcess = $null
+        $script:OpenCodeServerUrl = $null
+    }
+}
+
 # Exclusion is per worktree: two checkouts own separate campaign artifacts, so
 # only the same worktree must be serialized. The reset wrapper derives the same
 # name from this same helper and still excludes a loop running here.
@@ -120,6 +235,10 @@ function Invoke-ResearcherSession {
             throw "The OpenCode runtime entry point is missing: $entry"
         }
         $node = Get-OpenCodeNode
+        if (-not $script:OpenCodeServerUrl) {
+            throw "The OpenCode campaign server is not running."
+        }
+        $sessionArgs += @("--server-url", $script:OpenCodeServerUrl)
         $nodeArgs = @()
         $nodeArgs += $node.Strip
         $nodeArgs += $entry
@@ -317,6 +436,11 @@ function Get-AnalysisSessionStatus([int]$attempt) {
 }
 
 try {
+if ($ResearcherBackend -eq "opencode") {
+    $openCodeServer = Start-OpenCodeCampaignServer
+    $script:OpenCodeServerProcess = $openCodeServer.Process
+    $script:OpenCodeServerUrl = $openCodeServer.Url
+}
 while ($true) {
     if (Test-Path "research\GOAL_REACHED") {
         Write-Status "GOAL REACHED - research loop finished." Green
@@ -662,6 +786,7 @@ while ($true) {
 }
 }
 finally {
+    Stop-OpenCodeCampaignServer
     $loopMutex.ReleaseMutex()
     $loopMutex.Dispose()
 }
