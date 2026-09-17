@@ -73,3 +73,52 @@ explanation.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-1-checkpoint-120832-200ep-seed0-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-1-checkpoint-110592-200ep-seed0-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/task-reference-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-1-checkpoint-120832-task-reference-v1.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 2
+
+**Result:** Continuing the unchanged PPO recipe produced a useful
+improvement, but did not establish the 98% objective. Checkpoint-100352 is
+selected as the working and best-known lineage; checkpoint-120832 is retained
+as a near-tied alternative.
+
+**Observed behavior:** The continuation's training proxies peaked at
+checkpoint-100352: training success was 0.95, mean reward was 329.1, and mean
+episode length was 158. At checkpoint-120832 they were 0.87, 282.5, and 187.
+On the matched 200-episode research panel with seed 1, checkpoint-100352
+achieved 193/200 (96.5%) and checkpoint-120832 achieved 192/200 (96.0%).
+The prior working policy achieved 179/200 (89.5%) under the same evaluation
+semantics. All 7, 8, and 21 failures respectively exhausted the 500-step
+horizon. Paired comparisons had 2 versus 1 discordant wins for
+checkpoint-100352 versus checkpoint-120832, 15 versus 1 for
+checkpoint-100352 versus the prior working policy, and 15 versus 2 for
+checkpoint-120832 versus the prior working policy.
+
+**Hypothesis assessment:** Partially supported. The prediction that unchanged
+continuation could improve measured task behavior was supported: both measured
+continuation checkpoints substantially exceeded the prior working policy on
+the matched research panel. The prediction that later optimization would
+continue reducing horizon-exhaustion failures was not supported by the
+observed endpoint relative to checkpoint-100352: the endpoint had one more
+failure and one fewer success. The proxy decline is evidence of a late
+training change, but the one-panel, single-seed measurements do not establish
+policy degradation or a plateau across the task distribution.
+
+**Interpretation:** Training-time proxies and measured task success were not
+monotonic: the proxy peak was the strongest measured policy, while the later
+endpoint retained nearly the same task performance. The continuation therefore
+validated additional useful progress from the retained representation under
+these settings, without showing that extending the unchanged recipe past
+checkpoint-100352 is beneficial. The 96.5% research measurement is meaningful
+development progress but remains below the 98% human objective, and it is not
+official terminal evidence. Retaining checkpoint-120832 preserves a plausible
+near-equivalent branch for future development without treating the reused
+task-reference panel or checkpoint ordering as a lineage criterion.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-2/inventory.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-2-attempt-1.log`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-100352-200ep-seed1-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-120832-200ep-seed1-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-working-200ep-seed1-a69293a214ad.json`.
