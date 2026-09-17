@@ -7,8 +7,6 @@ policy learns but never how an already-saved policy is measured, so it is
 excluded from the research-evaluation semantics fingerprint.
 """
 
-from typing import Any
-
 import gymnasium as gym
 import numpy as np
 
@@ -17,23 +15,10 @@ from robot_learning.scenario.environment import TwoJointArmReachEnv
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 FOCUSED_TARGET_ANGLE_RANGE = (np.deg2rad(-170.0), np.deg2rad(-110.0))
 FOCUSED_TARGET_ANGLE_PROBABILITY = 0.25
-HORIZON_FAILURE_PENALTY = 100.0
 
 
 class FocusedAngleReachEnv(TwoJointArmReachEnv):
     """Training environment with extra coverage of the observed failure sector."""
-
-    def step(
-        self, action: np.ndarray
-    ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
-        observation, reward, terminated, truncated, info = super().step(action)
-        if truncated and not terminated:
-            reward -= HORIZON_FAILURE_PENALTY
-            info = dict(info)
-            reward_components = dict(info.get("reward_components", {}))
-            reward_components["horizon_failure"] = -HORIZON_FAILURE_PENALTY
-            info["reward_components"] = reward_components
-        return observation, reward, terminated, truncated, info
 
     def _sample_target_position(self) -> None:
         if self.np_random.random() < FOCUSED_TARGET_ANGLE_PROBABILITY:
