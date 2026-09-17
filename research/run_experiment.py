@@ -1321,6 +1321,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
+        "designation_counter": plan.get("designation_counter", 0),
     }
 
 

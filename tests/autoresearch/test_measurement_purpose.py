@@ -99,7 +99,7 @@ def test_designation_ordinal_is_a_valid_optional_lineage_field():
         repository.canonicalize_lineage_record(_lineage(designation_ordinal="1"))
 
 
-def test_designation_ordinal_is_monotonic_and_idempotent():
+def test_designation_counter_is_monotonic_and_idempotent():
     assert protocol.next_designation_ordinal(None, "a", 0) == 1
     assert (
         protocol.next_designation_ordinal(
@@ -120,3 +120,48 @@ def test_designation_ordinal_is_monotonic_and_idempotent():
         )
         == 3
     )
+
+
+def test_designation_counter_falls_back_to_the_current_ordinal():
+    assert (
+        protocol.designation_counter_for(
+            {"best_known_lineage": {"fingerprint": "f", "designation_ordinal": 3}}
+        )
+        == 3
+    )
+    assert (
+        protocol.designation_counter_for(
+            {
+                "best_known_lineage": {"fingerprint": "f", "designation_ordinal": 3},
+                "best_known_designation_counter": 5,
+            }
+        )
+        == 5
+    )
+    assert protocol.designation_counter_for({}) == 0
+
+
+def test_closure_serialization_preserves_the_designation_counter():
+    from research import run_experiment
+
+    plan = {
+        "pending": {},
+        "decision": {},
+        "working_name": "working",
+        "working_record": {},
+        "best_known_record": None,
+        "best_known_name": None,
+        "code_action": "keep",
+        "code_reason": "reason",
+        "code_plan": {"parent": None, "restore": [], "remove_created": []},
+        "retained": [],
+        "removed_retained": [],
+        "artifact_publications": [],
+        "request_final_benchmark": False,
+        "hypothesis_assessment": None,
+        "designation_counter": 4,
+    }
+    serialized = run_experiment._serialize_closure_plan(
+        plan, pending_field="pending_analysis"
+    )
+    assert serialized["designation_counter"] == 4

@@ -1580,6 +1580,22 @@ def next_designation_ordinal(
     return int(counter) + 1
 
 
+def designation_counter_for(state: dict) -> int:
+    """The highest designation ordinal this campaign has already issued.
+
+    Falls back to the current best-known ordinal so a campaign whose counter was
+    never persisted does not reissue ordinal 1 for a new designation.
+    """
+    existing = state.get("best_known_lineage")
+    ordinal = (
+        existing.get("designation_ordinal") if isinstance(existing, dict) else None
+    )
+    recorded = int(state.get("best_known_designation_counter", 0) or 0)
+    if isinstance(ordinal, int) and not isinstance(ordinal, bool):
+        return max(recorded, ordinal)
+    return recorded
+
+
 def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
     sources = {
         item["name"]: {**item, "_current_candidate": True}
@@ -2251,7 +2267,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             ),
         )
         code_plan["parent"] = parent
-    designation_counter = int(state.get("best_known_designation_counter", 0) or 0)
+    designation_counter = designation_counter_for(state)
     best_decision, best_record, best_name = (
         decision.get("best_known"),
         dict(state["best_known_lineage"])
