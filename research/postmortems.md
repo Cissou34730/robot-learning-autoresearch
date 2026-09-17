@@ -3,41 +3,45 @@
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success (196/200)
-on the official reach-and-hold panel. The unchanged PPO lineage remains the
-strongest development policy, reaching 193/200 (96.5%) after transfer and
-continuation, but it is below the objective and has no terminal-readiness
-evidence. Its measured success ranges from 92.0% to 96.5% across development
-panels, while fresh unchanged-PPO trajectories reached 83.0%, 89.5%, and
-90.5% at their measured checkpoints. Failures consistently exhaust the
-500-step horizon and include both no-reach and interrupted-hold episodes, with
-recurring but non-exclusive angle and radius associations. Across Experiments
-1-13, changes to optimization, continuation, target coverage, representation,
-hold credit, discounting, velocity stability, radial sampling, and a
-training-only horizon penalty did not exceed the unchanged incumbent under
-their tested conditions. Training reward and proxy success are not reliable
-selectors of saved-policy task success.
+on the official reach-and-hold panel. Experiment 14's transferred
+hold-recovery-credit endpoint reached 198/200 (99.0%) on the fresh seed-1208
+development panel, exceeding the unchanged incumbent's 191/200 (95.5%) there
+and the prior best development result of 193/200 (96.5%). This is the
+strongest measured development policy so far, but it is not an official result
+and has no terminal-validation evidence. Its two failures were interrupted
+holds at closely related positive angles and mid-range radii; the incumbent
+had both interrupted-hold and no-reach failures on the same panel. Across
+Experiments 1-13, changes to optimization, continuation, target coverage,
+representation, hold credit, discounting, velocity stability, radial sampling,
+and a training-only horizon penalty did not exceed the unchanged incumbent
+under their tested conditions. Experiment 14 is a measured exception under
+one transferred trajectory and panel, not a distribution-wide conclusion.
+Training reward and proxy success remain unreliable selectors of saved-policy
+task success: its 80896 proxy peak scored 98.5%, while the later endpoint
+scored 99.0% despite lower endpoint proxies.
 
 **Lessons and limits:** Saved-policy task success, not reward or training
 proxies, is the relevant progress measure (`research/brief.md`; Experiments
-1-13 in `research/postmortems.md`). Transfer preserves a useful learned
+1-14 in `research/postmortems.md`). Transfer preserves a useful learned
 policy and representation, whereas fresh learning has substantial variance;
-the fresh replications do not estimate its full distribution. The observed
-failure-mode shifts, including fewer no-reach episodes paired with more
-interrupted holds, are diagnostic associations rather than causal findings.
-The failed interventions weaken specific explanations under their tested
-conditions but do not identify a sufficient failure mechanism. In particular,
-the experiment-13 result is evidence against its terminal-penalty design, not
-against every horizon-aware signal. Development measurements are
-selection-contaminated when panels are reused, and unmeasured checkpoints are
-not failed measurements.
+the fresh replications do not estimate its full distribution. The experiment-
+14 endpoint's 7-versus-0 paired advantage over the incumbent and its reduction
+from 9 to 2 horizon failures support objective-relevant progress under the
+matched seed-1208 comparison. They do not isolate reward-credit causality from
+the single training trajectory, establish distribution-wide generalization, or
+show that every partial-forfeiture value is useful. Development measurements
+are selection-contaminated when panels are reused, and unmeasured checkpoints
+are not failed measurements. The fixed task-reference panel remains reused
+development evidence, not terminal evidence.
 
-**Open questions:** The relative roles of optimization trajectory, control
-stability, reachability, representation, target coverage, reward credit after
-hold interruption, and task mechanics remain unresolved. It is unknown whether
-the incumbent's full hold-credit forfeiture makes recovery from transient
-exits unnecessarily brittle, or whether that penalty is needed to preserve
-uninterrupted holding. The best-known designation still lacks
-terminal-validation evidence.
+**Open questions:** The experiment-14 endpoint needs fresh
+terminal-validation evidence before an official assessment can be scientifically
+well supported, and its residual positive-angle interrupted holds need not be
+the only remaining failure mode on the official distribution. The relative
+roles of optimization trajectory, control stability, reachability,
+representation, target coverage, reward credit after hold interruption, and
+task mechanics remain unresolved. It is also unknown whether the measured
+hold-recovery gain persists across another panel or training continuation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -571,6 +575,64 @@ fresh panel is development evidence and is not the official benchmark.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-checkpoint-120832-200ep-seed1205-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-working-200ep-seed1205-a69293a214ad.json`;
 `robot_learning/scenario/training_environment.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 14
+
+**Result:** Reducing hold-progress forfeiture from 100% to 50% produced the
+strongest measured development policy in this campaign. Checkpoint-120832 is
+selected as the working and best-known lineage, the reward recipe is kept, and
+checkpoint-80896 is retained as a near-tied alternative. No official benchmark
+is requested.
+
+**Observed behavior:** The transferred run completed 120,832 steps and saved
+24 checkpoints. Training proxies were non-monotonic: checkpoint-80896 was the
+proxy peak at 1.00 training success and 364.50 mean reward; checkpoint-115712
+also reached 1.00 and 355.95; the endpoint fell to 0.97 and 342.24. Twenty-two
+checkpoints remain unmeasured, not failed measurements. On the same fresh
+200-episode seed-1208 research panel, checkpoint-80896 achieved 197/200
+(98.5%), checkpoint-120832 achieved 198/200 (99.0%), and the incumbent achieved
+191/200 (95.5%). Paired comparisons recorded 7 challenger wins versus 1
+incumbent win for checkpoint-80896, and 7 versus 0 for checkpoint-120832.
+All nine incumbent failures, all three checkpoint-80896 failures, and both
+checkpoint-120832 failures exhausted the 500-step horizon. The endpoint's two
+failures both reached the target and then interrupted the hold, at angles about
+128 degrees and radii 11-13 cm; it had no no-reach failure. The incumbent had
+five no-reach and four interruption-bearing failures, while checkpoint-80896
+had two interruption-bearing failures at the same positive-angle locations and
+one additional low-radius interrupted hold.
+
+**Hypothesis assessment:** Partially supported under the tested transferred
+trajectory and seed-1208 panel. The expected saved-policy improvement and
+reduction in interruption-bearing horizon failures occurred: the endpoint
+improved from 191/200 to 198/200 and from nine to two failures relative to the
+matched incumbent, while preserving reach on every failed endpoint episode.
+The measured endpoint also exceeded the proxy-peak checkpoint despite lower
+late training proxies. This supports hold-credit brittleness as a useful
+objective-relevant explanation under these conditions, but the single
+trajectory and panel do not establish reward-credit causality, generalize to
+all forfeiture fractions, or show that the 99.0% result will transfer to the
+official panel.
+
+**Interpretation:** The saved-policy measurements support promoting
+checkpoint-120832: it exceeds the 98% objective on one fresh development
+panel and shows the predicted failure-mode improvement over the incumbent.
+The proxy peak and endpoint again show that training reward and proxy success
+are orthogonal to saved-policy selection. The close 197/200 alternative is
+retained because the endpoint's later proxy decline makes it a useful within-run
+fallback, not because checkpoint order is a lineage criterion. The result is
+development evidence rather than terminal-validation evidence; the stopping
+contract's fresh validation requirement is not met, so the official benchmark
+is not requested.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-14/inventory.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-14-attempt-1.log`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-14-checkpoint-80896-200ep-seed1208-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-14-checkpoint-120832-200ep-seed1208-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-14-working-200ep-seed1208-a69293a214ad.json`;
+`robot_learning/scenario/reward.py`;
+`research/stopping_contract.md`.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 12
 
