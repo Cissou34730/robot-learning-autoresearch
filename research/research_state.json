@@ -1,63 +1,18 @@
 {
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
-    "candidate": "checkpoint-105472",
-    "evaluation_artifacts": [
-      "research/evaluations/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/task-reference-052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a-experiment-1-checkpoint-105472-task-reference-v1.json"
-    ],
-    "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest measured task-reference success among the three evaluated checkpoints, 97.5% (195/200), exceeding checkpoint-115712 at 95.5% and checkpoint-120832 at 92.0%.",
-    "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
-    "training_steps": 105472
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "0c4e4183a26eb112523d141c6320f4b4b23f2d3e",
-    "id": "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a",
+    "base_commit": "7f007bd86c3e7f3db6ce8e7919889c061cf69151",
+    "id": "c30bed8c-1005-41b5-839d-ef2fb1b244b4",
     "recipe_source_commit": null,
-    "started_at": "2026-09-16T15:55:58.147851+00:00"
+    "started_at": "2026-09-17T09:56:20.274672+00:00"
   },
   "campaign_experiment_counters": {
-    "052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a": 5
+    "c30bed8c-1005-41b5-839d-ef2fb1b244b4": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 5 used the unchanged scientific recipe and its direct continuation degraded task-reference performance. Keeping the recipe preserves the complete context of the retained parent; the observed degradation does not identify a causal code change that should be applied during closure."
-    },
-    "code_parent_commit": "89d11c871aee0a5863f1d790a519d30bf71a28a3",
-    "continue_from": "working",
-    "experiment": 5,
-    "reason": "All six measured experiment-5 continuation checkpoints fell below the retained parent's 97.5% task-reference success, ranging from 94.5% after 5,120 additional steps to 89.0%-90.0% later, while training proxies reached 1.00. Keep the retained parent as working and best-known for further development; the evidence remains below the objective and does not justify the official benchmark."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -66,48 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "89d11c871aee0a5863f1d790a519d30bf71a28a3",
-    "experiment": 5,
-    "scientific_commit": "c6751595b46fd6d82603c830e1d87b9e86133465"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/052b98fa-ee96-41c6-ae7e-1c2ad99cfc0a/e1-ca3d05779-123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
-    "candidate": "checkpoint-105472",
-    "evaluation_artifacts": [],
-    "fingerprint": "123250b4cb0daa822392372ab76f0142cd29d64f0e1155296d9087ea0e5ce612",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "All six measured experiment-5 continuation checkpoints fell below the retained parent's 97.5% task-reference success, ranging from 94.5% after 5,120 additional steps to 89.0%-90.0% later, while training proxies reached 1.00. Keep the retained parent as working and best-known for further development; the evidence remains below the objective and does not justify the official benchmark.",
-    "scientific_commit": "23dea0fd249d128722138ddad2062108c5dd12f5",
-    "training_steps": 105472
-  }
+  "working_lineage": null
 }
