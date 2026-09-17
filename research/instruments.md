@@ -125,8 +125,8 @@ Every measurement on a newly submitted request also requires a `purpose`:
 - `terminal_validation`: the measurement is a predeclared stopping-validation
   panel for the current best-known model. It is valid only for
   `research_evaluation`, requires a designated best-known model, and is declared
-  before its result is observed. The fixed task-reference panel is selection
-  evidence and can never be a stopping-validation panel.
+  before its result is observed. The task-reference pre-validation preview can
+  never be a stopping-validation panel.
 
 The Runner records the declared purpose on the round and on the durable
 measurement; the stopping assessment uses only `terminal_validation` evidence
@@ -135,6 +135,18 @@ from the current best-known designation.
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
+
+The requestable measurements have different roles rather than being peer
+instruments:
+
+- `research_evaluation` is the development instrument: it measures the current
+  task mechanics on request-provided episodes.
+- `task_reference` is a pre-validation preview of the final benchmark: it
+  measures the protected task on one fixed, human-owned panel and approximates
+  the official verdict. Because that same panel is reused while models are
+  selected, the preview is approximate and selection-contaminated. It is
+  development evidence, never the terminal verdict, and it cannot be a
+  stopping-validation panel.
 
 ### `research_evaluation`
 

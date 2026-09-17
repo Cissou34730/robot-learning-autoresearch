@@ -173,10 +173,12 @@ new uncertainty arises during preparation, use available evidence or lightweight
 analysis and state any remaining assumption in the hypothesis; do not present it
 as an observed fact.
 
-Research and task-reference panels are development measurements. Repeated use of
-the same panel remains repeated evidence from that panel, not independent
-held-out confirmation. Do not change a protected panel or present development
-evidence as final validation.
+Research and task-reference panels are development measurements. A task-reference
+measurement previews the final benchmark on one fixed, human-owned panel; because
+that panel is reused while models are selected, the preview is approximate and
+selection-contaminated. Repeated use of the same panel remains repeated evidence
+from that panel, not independent held-out confirmation. Do not change a protected
+panel or present development evidence as final validation.
 
 ## Experiment closure
 
@@ -237,8 +239,8 @@ development result on the episodes used to select the model is not by itself
 readiness evidence, because selection biases that panel upward. A terminal
 request may cite a stopping-validation panel measured on the frozen best-known
 model during its current designation, on episodes not used for selection, and
-should state the uncertainty the evidence cannot remove. The fixed task-reference
-panel is selection evidence and can never be a stopping-validation panel. The
+should state the uncertainty the evidence cannot remove. The task-reference
+pre-validation preview can never be a stopping-validation panel. The
 contract is advisory in this version: it reports a deterministic assessment and
 neither blocks nor authorizes the request, and no automatic threshold decides
 when the campaign ends.

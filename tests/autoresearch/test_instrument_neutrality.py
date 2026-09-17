@@ -1,9 +1,10 @@
-"""Presentation neutrality between the two measurement instruments.
+"""Presentation of the two measurement roles.
 
-Issue #38: `task_reference` used to receive a dedicated capability explanation
-while `research_evaluation` did not, which nudged the Researcher toward always
-requesting both. Both instruments must now be documented with the same
-categories of factual information and no default or automatic pairing.
+Issue #38 removed a presentation bias toward `task_reference`. This was later
+deliberately revised: `research_evaluation` is presented as the development
+instrument and `task_reference` as a pre-validation preview of the final
+benchmark, approximate and selection-contaminated and never terminal evidence.
+The documentation must still keep equal factual depth and no default.
 """
 
 from pathlib import Path
@@ -50,6 +51,20 @@ def test_instrument_documentation_recommends_neither_instrument():
         "should request",
     ):
         assert wording not in text, f"instrument catalog says {wording!r}"
+
+
+def test_task_reference_is_documented_as_a_benchmark_preview():
+    normalized = " ".join(INSTRUMENTS.read_text(encoding="utf-8").split())
+    assert "pre-validation preview of the final benchmark" in normalized
+    assert "approximate and selection-contaminated" in normalized
+    assert "never the terminal verdict" in normalized
+    assert "can never be a stopping-validation panel" in normalized
+
+    program = " ".join(
+        (ROOT / "research" / "program.md").read_text(encoding="utf-8").split()
+    )
+    assert "previews the final benchmark" in program
+    assert "never be a stopping-validation panel" in program
 
 
 def test_brief_phase_section_names_no_instrument_or_pairing():
