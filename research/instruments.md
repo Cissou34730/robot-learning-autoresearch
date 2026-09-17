@@ -125,8 +125,8 @@ Every measurement on a newly submitted request also requires a `purpose`:
 - `terminal_validation`: the measurement is a predeclared stopping-validation
   panel for the current best-known model. It is valid only for
   `research_evaluation`, requires a designated best-known model, and is declared
-  before its result is observed. The task-reference pre-validation preview can
-  never be a stopping-validation panel.
+  before its result is observed. A task-reference measurement is fixed
+  development evidence and can never be a stopping-validation panel.
 
 The Runner records the declared purpose on the round and on the durable
 measurement; the stopping assessment uses only `terminal_validation` evidence
@@ -136,17 +136,23 @@ Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
 
-The requestable measurements have different roles rather than being peer
-instruments:
+The requestable measurements are distinguished by measurement properties, not by
+authority:
 
-- `research_evaluation` is the development instrument: it measures the current
-  task mechanics on request-provided episodes.
-- `task_reference` is a pre-validation preview of the final benchmark: it
-  measures the protected task on one fixed, human-owned panel and approximates
-  the official verdict. Because that same panel is reused while models are
-  selected, the preview is approximate and selection-contaminated. It is
-  development evidence, never the terminal verdict, and it cannot be a
-  stopping-validation panel.
+- `research_evaluation` is a configurable development measurement. It supports
+  fresh panels, paired comparisons, and researcher-defined diagnostics.
+- `task_reference` is a fixed development panel. It measures the protected task
+  consistently across research recipes. Because it is repeatedly reused during
+  model selection, its results are selection-contaminated and must not receive
+  automatic priority in lineage decisions.
+- Neither instrument is generally authoritative over the other. Evidential
+  weight depends on the scientific question, panel independence, comparability,
+  and the observed results.
+
+The protected task defines the objective, and the official benchmark remains the
+only terminal verdict. That does not make either development instrument
+authoritative: instruments are not ranked, and a reused panel is not a default
+lineage criterion.
 
 ### `research_evaluation`
 

@@ -1,10 +1,11 @@
-"""Presentation of the two measurement roles.
+"""Presentation of the two measurement instruments.
 
-Issue #38 removed a presentation bias toward `task_reference`. This was later
-deliberately revised: `research_evaluation` is presented as the development
-instrument and `task_reference` as a pre-validation preview of the final
-benchmark, approximate and selection-contaminated and never terminal evidence.
-The documentation must still keep equal factual depth and no default.
+Issue #38 removed a presentation bias toward `task_reference`. An intermediate
+version presented `task_reference` as a benchmark "preview", which this
+deliberately supersedes: the two are now distinguished by measurement
+properties, neither is generally authoritative, and the fixed reused panel is
+neither a privileged lineage criterion nor terminal evidence. The documentation
+must still keep equal factual depth and no default.
 """
 
 from pathlib import Path
@@ -53,18 +54,28 @@ def test_instrument_documentation_recommends_neither_instrument():
         assert wording not in text, f"instrument catalog says {wording!r}"
 
 
-def test_task_reference_is_documented_as_a_benchmark_preview():
+def test_instruments_are_distinguished_by_measurement_properties():
     normalized = " ".join(INSTRUMENTS.read_text(encoding="utf-8").split())
-    assert "pre-validation preview of the final benchmark" in normalized
-    assert "approximate and selection-contaminated" in normalized
-    assert "never the terminal verdict" in normalized
-    assert "can never be a stopping-validation panel" in normalized
+    assert "distinguished by measurement properties, not by authority" in normalized
+    assert "configurable development measurement" in normalized
+    assert "fixed development panel" in normalized
+    assert "must not receive automatic priority in lineage decisions" in normalized
+    assert "Neither instrument is generally authoritative" in normalized
+    assert "official benchmark remains the only terminal verdict" in normalized
 
     program = " ".join(
         (ROOT / "research" / "program.md").read_text(encoding="utf-8").split()
     )
-    assert "previews the final benchmark" in program
-    assert "never be a stopping-validation panel" in program
+    assert "distinguished by their properties, not by authority" in program
+    assert "not a privileged lineage criterion" in program
+    assert "can never be a stopping-validation panel" in program
+
+    prompt = " ".join(
+        (ROOT / "run_research.ps1").read_text(encoding="utf-8").split()
+    )
+    assert "reused development panel" in prompt
+    assert "not a privileged lineage criterion" in prompt
+    assert "terminal evidence, or a preview of the official outcome" in prompt
 
 
 def test_brief_phase_section_names_no_instrument_or_pairing():

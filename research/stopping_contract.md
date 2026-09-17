@@ -33,8 +33,9 @@ problem, not a reviewer-wording problem.
   is upward-biased.
 - **Declared purpose**: every measurement on a new request declares `selection`
   or `terminal_validation`. Historical records without a purpose normalise to
-  `selection`. Only `research_evaluation` can be `terminal_validation`; the fixed
-  task-reference panel is selection evidence.
+  `selection`. Only `research_evaluation` can be `terminal_validation`; a
+  task-reference measurement is fixed reused development evidence, not
+  stopping-validation evidence.
 - **Stopping-validation panel**: a `terminal_validation` measurement of the
   frozen best-known model, declared before its result is observed, executed
   within the snapshot tenure, using episode seeds not used by any earlier
