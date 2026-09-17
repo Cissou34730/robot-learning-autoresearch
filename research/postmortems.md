@@ -539,3 +539,58 @@ below the objective, so the official benchmark is not requested.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-10-working-200ep-seed1005-c47446effb50.json`;
 `robot_learning/scenario/reward.py`;
 `robot_learning/scenario/environment.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 11
+
+**Result:** Oversampling the 6-10 cm training-radius band did not produce a
+replacement policy. The unchanged incumbent remains the working and
+best-known lineage, and the experiment-11 training-environment change should
+be reverted.
+
+**Observed behavior:** The run produced 24 checkpoints through 120832 steps.
+Training proxies rose from 0.8966 success and 290.234 mean reward at
+checkpoint-5120 to a proxy peak of 1.00 success and 348.103 reward at
+checkpoint-95232, then fluctuated: checkpoint-100352 had 1.00 and 346.062,
+while the endpoint had 0.99 and 343.943. Twenty-two checkpoints were not
+measured and remain unmeasured, not failed measurements. On the same fresh
+200-episode seed-1205 research panel, the proxy peak achieved 185/200
+(92.5%), the endpoint achieved 175/200 (87.5%), and the incumbent achieved
+191/200 (95.5%). The paired comparison recorded 5 versus 11 discordant wins
+for checkpoint-95232 versus the incumbent, and 5 versus 21 for
+checkpoint-120832 versus the incumbent.
+
+The incumbent had 5 failures in the 6-10 cm band and 4 in the 10-20 cm band;
+the proxy peak had 7 and 8, and the endpoint had 3 and 22. In the
+120-165-degree sector, the incumbent and proxy peak each had 3 failures,
+while the endpoint had 2; in the sector's 6-10 cm subset, the counts were 1,
+1, and 0 respectively. Failure modes also shifted: the incumbent had 5
+no-reach and 4 interruption-bearing failures, the proxy peak had 9 and 6,
+and the endpoint had 2 and 23. The endpoint therefore showed a partial
+low-radius signal but a large loss on 10-20 cm targets and many more
+interruption-bearing episodes.
+
+**Hypothesis assessment:** Weakened under this transferred trajectory and
+seed-1205 development panel. The proxy peak did not reduce the recurring
+sector failures or improve either radius band relative to the incumbent. The
+endpoint had fewer low-radius failures and slightly fewer sector failures,
+but lost substantially more 10-20 cm episodes and had much worse overall
+reach-and-hold success. This does not establish that radial coverage is never
+useful, but it weakens it as the actionable explanation for the current
+objective gap under the tested recipe and shows that the training proxies do
+not identify a useful saved-policy checkpoint here.
+
+**Interpretation:** Measured task behavior supports retaining the incumbent as
+the best available development policy, but it remains below the 98% objective
+and has no terminal-validation evidence. The high and non-monotonic training
+proxies are orthogonal to saved-policy selection in this experiment. The
+endpoint's failure-mode shift toward interrupted holds leaves hold stability,
+reachability, representation, and optimization trajectory unresolved; the
+fresh panel is development evidence and is not the official benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-11/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-checkpoint-95232-200ep-seed1205-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-checkpoint-120832-200ep-seed1205-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-11-working-200ep-seed1205-a69293a214ad.json`;
+`robot_learning/scenario/training_environment.py`.
