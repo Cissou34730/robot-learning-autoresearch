@@ -2,11 +2,11 @@
 
 ## 800411fd-f254-463e-9a99-6a3020988477 / Scientific strategy
 
-**Current synthesis:** Measured reach-and-hold success, rather than training reward or logged success, is the relevant progress signal. The baseline learned a useful policy, with checkpoint-115712 performing better than the later endpoint on both available development comparisons. The best measured policy remains below the human objective, so subsequent work should target the residual failures rather than treat the late proxy increase as task progress.
+**Current synthesis:** The campaign objective is at least 196 successes on the official 200-episode panel. Measured reach-and-hold success, rather than training reward or logged success, is the relevant progress signal. The baseline learned a useful policy, and checkpoint-115712 is the strongest measured policy at 195/200 on the protected development panel; the later endpoint was worse despite higher training proxies. The objective remains unresolved.
 
-**Lessons and limits:** The training proxies improved steadily through the run, but the final checkpoint fell from 95.625% to 92.5% on the paired research panel and from 97.5% to 92.0% on the protected task-reference panel. These comparisons establish behavior for the saved artifacts under the measured panels, not a causal explanation for the late degradation. The task-reference panel is development selection evidence, not the official 200-episode verdict; the unmeasured checkpoints remain unmeasured.
+**Lessons and limits:** The final checkpoint fell from 95.625% to 92.5% on the paired research panel and from 97.5% to 92.0% on the protected task-reference panel while its logged success rose from 25% to 30% and mean reward rose from -4.88 to 24.03. The retained policy's five protected-panel failures all had target angles from -154.8° to -125.4°; this is a measured failure pattern, not a causal explanation. The panels are development selection evidence rather than the official verdict, and unmeasured checkpoints remain unmeasured.
 
-**Open questions:** Whether the negative-angle failures of checkpoint-115712 can be reduced without sacrificing its other behavior, and which learning or task-reward changes improve the remaining five protected-panel failures. The generalization of the observed ranking beyond these development panels and the official frozen-policy result remain unresolved.
+**Open questions:** Whether additional training coverage of the retained policy's observed negative-angle failure sector improves those episodes without sacrificing all-angle behavior, and whether any such gain generalizes beyond the development panels. The cause of late-proxy/behavior disagreement and the official frozen-policy result remain unresolved.
 
 ## 800411fd-f254-463e-9a99-6a3020988477 / Experiment 1
 
