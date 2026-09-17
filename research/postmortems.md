@@ -3,52 +3,39 @@
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success on the
-official 200-episode reach-and-hold panel. The fresh PPO baseline reached
-89.5% on research evaluation and 92.0% on the reused task-reference panel.
-Unchanged continuation improved the retained policy to 96.5% (193/200) at
-experiment-2 checkpoint-100352, while its later checkpoint reached 96.0%.
-Experiment 3 measured the retained working policy at 96.5% on a different
-seed-2 panel, but its continuation checkpoints reached only 86.5%, 89.5%, and
-86.0%. The campaign therefore has substantial, reproducible-across-panels
-evidence of progress over the baseline, but no development result reaches the
-objective and none is official terminal evidence. This synthesis is provisional
-memory rather than a prescribed direction. Experiment 4's transferred
-0.0001-learning-rate candidates reached 94.0% at the proxy peak and 85.5% at
-the endpoint on a seed-3 research panel, while the incumbent reached 96.5% on
-that same panel. The incumbent remains the best-supported working and
-best-known policy.
+official 200-episode reach-and-hold panel. The fresh unchanged PPO baseline
+reached 89.5% on research evaluation and 92.0% on the reused task-reference
+panel. Unchanged continuation later produced the strongest development result,
+96.5% (193/200), and the incumbent also measured 96.5% on independent seed-2
+and seed-3 research panels. This is meaningful progress but remains below the
+objective and is not official terminal evidence. The transferred lower-rate
+recipe reached 94.0% at its measured proxy peak and 85.5% at its endpoint,
+below the incumbent on the same seed-3 panel. The current working and
+best-known policy is therefore the unchanged-recipe incumbent, while the
+repeatability of its learned behavior remains unresolved. This synthesis is
+provisional memory rather than a prescribed direction.
 
-**Lessons and limits:** The raw logs show that the unchanged 0.0003 learning
-rate can produce strong proxy peaks followed by deterioration: experiment 2
-fell from 0.95 success and reward 329.1 at step 100352 to 0.87 and 282.5 at
-step 120832, and experiment 3 similarly declined from 0.99 and 342.5 at step
-70656 to 0.94 and 318.2 at its endpoint
-(`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-2-attempt-1.log`,
-`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-3-attempt-1.log`).
-Saved-policy success is not monotonic with those proxies: the experiment-2
-checkpoint-100352 policy scored 193/200, and the same incumbent scored 193/200
-on experiment 3's seed-2 panel, while every recorded failure in these detailed
-evaluations exhausted the horizon. The matched experiment-3 comparison favored
-the incumbent by 15 to 1 discordant episodes, but one continuation trajectory
-and one independent panel do not establish distribution-wide degradation.
-Experiment 4 adds a same-panel comparison in which its proxy peak lost to the
-incumbent by 94.0% to 96.5% (1 versus 6 discordant wins), and its endpoint
-lost by 85.5% to 96.5% (1 versus 23). All failures for both lower-rate
-checkpoints exhausted the 500-step horizon. The lower-rate endpoint retained
-higher training proxies than the earlier unchanged-rate endpoints, but this
-orthogonal signal did not transfer to saved-policy task success. There is still
-only one training seed and no replication, so learning-process variance and the
-generality of these intervention outcomes are unresolved
-(`research/results.jsonl`, `research/research_state.json`,
-`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-100352-200ep-seed1-a69293a214ad.json`,
-`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-working-200ep-seed2-a69293a214ad.json`).
+**Lessons and limits:** Training proxies and saved-policy task success are not
+monotonic: unchanged continuation reached proxy peaks before declining, and
+the lower-rate run retained stronger late proxies without transferring that
+signal to saved-policy success. All recorded detailed failures exhausted the
+500-step horizon, but this does not identify whether representation, task
+coverage, optimization trajectory, or another limitation causes them. The
+same unchanged recipe has produced both the 89.5% fresh baseline and 96.5%
+continued-policy results, but all four training experiments used one learning
+seed and the campaign has no replication. Same-panel comparisons establish
+that the tested lower-rate transfer was not useful under its measured
+conditions, not that every lower rate or intervention is ineffective. These
+limits are recorded in `research/brief.md`, `research/results.jsonl`, the
+experiment postmortems below, and the detailed evaluation artifacts.
 
-**Open questions:** The evidence does not yet distinguish a representation or
-task-coverage limit from other learning-method limitations; the tested
-learning-rate reduction did not resolve that uncertainty. The robustness of
-the 96.5% result across training seeds and independent task draws remains
-uncertain, and it is not established whether a different PPO recipe or a
-different scientific intervention can close the remaining gap to 98%.
+**Open questions:** How much of the gap between the fresh baseline and the
+96.5% incumbent reflects the training trajectory and seed rather than a
+repeatable property of the unchanged PPO recipe? It also remains unknown
+whether a different learned representation, task coverage, or learning
+method can close the remaining gap to 98%. Development measurements remain
+selection evidence rather than the official verdict, and no terminal-readiness
+assessment has been established for the current best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
