@@ -2,32 +2,34 @@
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior late in training. The latest measured checkpoint is the strongest
-available policy, but its development success remains below the 98% objective,
-so the campaign has evidence of progress rather than objective satisfaction.
+**Current synthesis:** The campaign objective remains at least 98% success on
+the official 200-episode reach-and-hold panel. The fresh PPO baseline learned
+substantial task behavior late in training, and checkpoint-120832 is the
+strongest available policy at 89.5% on a fresh research panel and 92.0% on the
+reused task-reference panel. The campaign therefore has clear progress toward
+the objective, but no evidence that the objective has been reached.
 
-**Lessons and limits:** Training proxies improved from 0.00 success and
--479.3 mean reward at step 100352 to 0.11 success and -168.5 mean reward at
-step 120832 (`research/results.jsonl`). On a matched 200-episode
-research-evaluation setting, measured success increased from 85.5% (171/200)
-at checkpoint-110592 to 89.5% (179/200) at checkpoint-120832, supporting
-transfer of the late improvement to task behavior and selecting checkpoint-
-120832 over the measured predecessor. The latest checkpoint reached 92.0%
-(184/200) on the reused `task-reference-v1` panel, which is corroborating
-development evidence but is selection-contaminated and not terminal evidence.
-All 21 research-evaluation failures and all 16 task-reference failures
-exhausted the 500-step horizon; the reference failures in this panel cluster
-at several targets around 119-164 degrees, with both near and far radii, but
-that pattern is descriptive of one fixed panel and not a causal or
-distribution-wide diagnosis. The 22 unmeasured checkpoints and raw training
-logs leave the learning trajectory and alternative-checkpoint behavior
-unresolved.
+**Lessons and limits:** The raw training log shows continued late improvement:
+between steps 90112 and 120832, mean reward rose from about -770 to -168,
+the training success proxy rose from 0.00 to 0.11, and mean episode length
+fell from 500 to 469 (`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-1-attempt-1.log`).
+On matched 200-episode research evaluations, success rose from 85.5%
+(171/200) at checkpoint-110592 to 89.5% (179/200) at checkpoint-120832, with
+9 versus 1 discordant paired wins (`research/research_state.json` and
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-1-checkpoint-120832-200ep-seed0-a69293a214ad.json`).
+The task-reference result is corroborating development evidence but uses a
+reused, selection-contaminated panel. Its 16 failures all exhausted the
+500-step horizon and cluster in this panel around 119-164 degrees across
+near and far radii; this is descriptive evidence, not a causal or
+distribution-wide diagnosis. The 22 unmeasured checkpoints, single training
+seed, and absence of replication leave learning-process variability and the
+eventual continuation trajectory unresolved.
 
-**Open questions:** Whether further training or a changed recipe can reduce
-the remaining horizon-exhaustion failures, and whether the observed
-reference-panel angular pattern persists on independent task draws, remain
-open.
+**Open questions:** It remains unknown whether the unchanged PPO process can
+continue reducing horizon-exhaustion failures from checkpoint-120832 or has
+begun to plateau or degrade, whether the reference-panel angular pattern
+persists on independent task draws, and whether a changed recipe is needed
+after the behavior of continued optimization is understood.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
