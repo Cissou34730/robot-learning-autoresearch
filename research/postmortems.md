@@ -6,35 +6,46 @@
 official 200-episode reach-and-hold panel. The unchanged PPO baseline reached
 89.5% on research evaluation and 92.0% on the reused task-reference panel, and
 unchanged continuation produced the strongest development result: 96.5%
-(193/200). That incumbent reproduced 96.5% on the
-seed-2, seed-3, and seed-4 research panels, while scoring 92.0% on the matched
-seed-1004 panel used for experiment 9. The incumbent's seven failures on the
-best-known panel cluster in the 120-165 degree sector, but detailed diagnostics
-also show that failures can involve repeated tolerance exits or only brief
-contacts; angle concentration is therefore a coverage signal rather than a
-complete explanation. Lower-rate transfer, fresh replication, focused-angle
-coverage, explicit target geometry, quadratic hold-progress credit, and
-gamma-0.995 transfer each failed to exceed the incumbent under their measured
-conditions. The current working and best-known policy is the unchanged-recipe
-incumbent at 96.5%, below the objective and without terminal-readiness
-evidence. The campaign's proxy peaks remain unreliable indicators of saved
-policy success. This is provisional memory, not a prescribed direction.
+(193/200). That incumbent reproduced 96.5% on the seed-2, seed-3, and seed-4
+research panels, while scoring 92.0% on the matched seed-1004 panel used for
+experiment 9. The incumbent's seven failures on the best-known panel cluster
+in the 120-165 degree sector, but detailed diagnostics also show that failures
+can involve repeated tolerance exits or only brief contacts; angle
+concentration is therefore a coverage signal rather than a complete
+explanation. Lower-rate transfer, fresh replication, focused-angle coverage,
+explicit target geometry, quadratic hold-progress credit, gamma-0.995 transfer,
+and the experiment-10 in-tolerance velocity penalty each failed to exceed the
+incumbent under their measured conditions. The current working and best-known
+policy is the unchanged-recipe incumbent at 96.5%, below the objective and
+without terminal-readiness evidence. The experiment-10 proxy peak reached
+92.5% on its matched panel but did not reduce interruption-bearing episodes or
+the recurring sector failures, and later high-proxy checkpoints degraded
+substantially. The campaign's proxy peaks remain unreliable indicators of
+saved-policy success. This is provisional memory, not a prescribed direction.
 
 **Lessons and limits:** Saved-policy task success, not training reward or proxy
 success, governs progress. Proxies are non-monotonic: continuation improved
 before declining, lower-rate training preserved late proxies without
-preserving task success, and fresh replication improved reward while remaining
-far below the incumbent. Detailed failures exhaust the 500-step horizon. The
-best-known panel contains six failures in the 120-165 degree sector and one
-near -103 degrees; the experiment-9 matched panel contains 11 sector failures
-among 16 failures, with many tolerance interruptions. This supports
-investigating hold stability but does not distinguish it from reachability,
-representation, optimization trajectory, or mechanics. The reward already
-combines distance progress, linear hold-progress potential, exit forfeiture,
-outside-band penalty, and completion bonus (`robot_learning/scenario/reward.py`);
-quadratic hold credit did not improve saved-policy behavior. The gamma
-experiment adds another proxy-to-policy mismatch: its 105472-step proxy peak
-was worse than the incumbent, and the endpoint was worse still. Fresh training
+preserving task success, fresh replication improved reward while remaining far
+below the incumbent, and experiment 10's best reward proxy coincided with
+73.5% saved-policy success at the endpoint. Detailed failures exhaust the
+500-step horizon. The best-known panel contains six failures in the 120-165
+degree sector and one near -103 degrees; the experiment-9 matched panel
+contains 11 sector failures among 16 failures, with many tolerance
+interruptions. Experiment 10's proxy-peak checkpoint had 15 horizon failures
+versus 16 for the incumbent on the same seed-1005 panel, but interruption
+episodes increased from 7 to 9 and sector failures remained 11 versus 11;
+the later 110592-step checkpoint had 38 failures and 34 interruption-bearing
+episodes, and the endpoint had 53 failures and 35 such episodes. These
+measurements weaken the tested velocity-penalty explanation under one
+transferred trajectory and panel; they do not distinguish all remaining
+failures from reachability, representation, optimization trajectory, or
+mechanics. The reward combines distance progress, linear hold-progress
+potential, exit forfeiture, outside-band penalty, and completion bonus
+(`robot_learning/scenario/reward.py`); quadratic hold credit and the tested
+velocity penalty did not improve saved-policy behavior. The gamma experiment
+adds another proxy-to-policy mismatch: its 105472-step proxy peak was worse
+than the incumbent, and the endpoint was worse still. Fresh training
 variability is demonstrated by the 89.5% baseline and 83.0% replication, but
 its seed distribution is unknown. Development measurements remain selection
 evidence, not the official verdict.
@@ -42,12 +53,13 @@ evidence, not the official verdict.
 **Open questions:** The residual failures could reflect temporal credit for
 completing the hold, control stability inside the tolerance, reachability,
 representation, target coverage, or task mechanics; current evidence does not
-distinguish them. It remains unknown whether a training-only stability signal
-can reduce tolerance exits without damaging already-solved geometries. The
-unmeasured experiment-7 checkpoints remain unmeasured, and no terminal-
-readiness assessment has been established for the current best-known
-designation. The seed distribution of the unchanged learning process and the
-generalization of the residual sector pattern also remain unresolved.
+distinguish them. The tested velocity penalty did not resolve the stability
+branch, but this is not a general result about every stability objective or
+coefficient. The unmeasured experiment-7 checkpoints remain unmeasured, and
+no terminal-readiness assessment has been established for the current
+best-known designation. The seed distribution of the unchanged learning
+process and the generalization of the residual sector pattern also remain
+unresolved.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -470,3 +482,59 @@ benchmark is requested.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-9-checkpoint-120832-200ep-seed1004-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-9-working-200ep-seed1004-a69293a214ad.json`;
 `research/query_training_log.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 10
+
+**Result:** The training-only in-tolerance end-effector velocity penalty did
+not produce a replacement policy. The unchanged incumbent remains the working
+and best-known lineage, and the experiment-10 reward and environment changes
+should be reverted.
+
+**Observed behavior:** The run completed 120832 steps. Training proxies peaked
+at checkpoint-65536 with training success 1.00 and mean episode reward
+-150.45; checkpoint-110592 had 0.98 and -166.18, checkpoint-115712 had 0.97
+and -159.94, and the endpoint checkpoint-120832 had 0.95 and -204.36. On the
+same 200-episode seed-1005 research panel, checkpoint-65536 achieved 185/200
+(92.5%) versus 184/200 (92.0%) for the working policy, with 4 versus 3
+discordant wins. Both had 11 failures in the 120-165 degree sector; the
+challenger had 9 episodes with hold interruptions versus 7 for the incumbent,
+and 15 versus 16 horizon-truncated failures. Checkpoint-110592 then achieved
+162/200 (81.0%), with 4 versus 26 discordant wins against working, 13 sector
+failures, and 34 interruption-bearing episodes. Checkpoint-115712 achieved
+147/200 (73.5%), with 3 versus 40 discordant wins, 18 sector failures, and 35
+interruption-bearing episodes. All measured challenger failures truncated at
+the 500-step horizon. The other 21 candidates were not measured and remain
+unmeasured, not failed measurements. No task-reference or official benchmark
+measurement was made.
+
+**Hypothesis assessment:** Weakened under the tested transferred trajectory and
+seed-1005 panel. The proxy-peak checkpoint provided a small saved-policy
+improvement and one fewer horizon failure, but it did not reduce the recurring
+sector failures or interruption-bearing episodes. The intermediate and late
+high-proxy checkpoints were substantially worse and showed that the endpoint
+collapse was not isolated to one final checkpoint. This contradicts the
+objective-relevant stability pattern expected by the proposal, while the
+single transferred trajectory and development panel do not establish that all
+velocity penalties or stability objectives are ineffective.
+
+**Interpretation:** The measured policy result supports retaining the
+unchanged incumbent as meaningful progress toward the 98% objective, but not
+claiming that the objective is met: its strongest development result remains
+96.5% (193/200), and the current matched panel result is 92.0% (184/200).
+The strong and non-monotonic training proxies are orthogonal to saved-policy
+selection here; reward totals are not used as cross-recipe policy evidence.
+The velocity penalty did not resolve the hold-stability branch, so the
+experiment recipe has no saved-policy or scientific-selection value. The
+current best-known designation has no terminal-validation evidence and remains
+below the objective, so the official benchmark is not requested.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-10/inventory.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-10-attempt-1.log`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-10-checkpoint-65536-200ep-seed1005-c47446effb50.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-10-checkpoint-110592-200ep-seed1005-c47446effb50.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-10-checkpoint-115712-200ep-seed1005-c47446effb50.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-10-working-200ep-seed1005-c47446effb50.json`;
+`robot_learning/scenario/reward.py`;
+`robot_learning/scenario/environment.py`.
