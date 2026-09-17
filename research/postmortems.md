@@ -2,60 +2,65 @@
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Scientific strategy
 
-**Current synthesis:** Across two completed experiments the unchanged baseline
-recipe (PPO, 64x64 tanh, n_steps 1024, ent_coef 0.01) remains the strongest
-measured policy: `working`/`best_known` (`checkpoint-100352`, experiment 1)
-scores 97.0% on the researcher 200-episode panel (seed 20260918) and 98.0% on
-the protected task-reference panel, while experiment 2's change (full 6-20 cm
-radius support plus 30% folded-target oversampling) measured 94.0-94.5% and
-97.0-98.0% and was reverted without beating its parent. Recomputing both
-analytic inverse-kinematics branches for every measured episode in all five
-researcher panels and all three task-reference panels sharpens the
-residual-failure picture. Failures are almost entirely confined to targets
-whose elbow-open shoulder solution exceeds the +/-170 degree joint limit by only
-a small margin: episodes with |shoulder_open| in roughly (170, 184] succeed
-only 1/7 to 5/14 across the measured policies, while episodes whose open
-solution is more deeply infeasible (|shoulder_open| > ~184) succeed 24/24,
-26/26 and 27/27, and open-feasible episodes fail 0-2 of 160-169. In the
-near-limit band the end effector stalls about 0.8-1.5 cm outside the 1 cm
-tolerance, usually without any hold, and the pattern is reproduced by the
-unchanged parent, both experiment-2 checkpoints and both independent panels.
-Experiment 1 trained an unchanged recipe and experiment 2 oversampled folded
-targets roughly six-fold without removing the band failures, so the deficit is
-not explained by folded-target training density. The leading remaining
-explanation is representational: `reach_observation` supplies both
-inverse-kinematics solutions as wrapped joint-error features, so where the
-elbow-open solution is only slightly beyond the shoulder limit that infeasible
-branch is still an attractive near-target; the policy then commands a
-configuration whose shoulder saturates at the joint limit and stalls just
-outside tolerance. A competing explanation is a precision or optimization
-limit at the joint boundary that is independent of the observation.
+**Current synthesis:** The unchanged baseline recipe (PPO, 64x64 tanh, n_steps
+1024, ent_coef 0.01) remains the strongest measured policy:
+`working`/`best_known` (`checkpoint-100352`, experiment 1) scores 194/200 =
+97.0% on the researcher panel (seed 20260918) and 196/200 = 98.0% on the
+protected task-reference panel. Experiment 2 (full 6-20 cm radius support plus
+30% folded-target oversampling) and experiment 3 (setting a joint-infeasible
+inverse-kinematics branch's two wrapped joint errors to 0.0), both trained by
+transfer from `working`, neither removed the residual failures nor beat the
+parent and both were reverted; experiment 3 additionally collapsed measured
+success to 71.0-74.0% (researcher) and 72.0% (task-reference). The single
+systematic failure mode is a narrow near-limit band: targets whose elbow-open
+analytic shoulder solution exceeds the +/-170 degree joint limit by a small
+margin (|shoulder_open| roughly (170, 184]). On the experiment-1 panel
+`working` fails 6 of the 10 episodes in that band, stalling 0.81-1.42 cm
+outside the 1 cm tolerance, mostly without entering tolerance at all.
+Recomputing the folded inverse-kinematics solution for those six failures
+places its shoulder at -67 to -130 degrees and its elbow at -56 to -139
+degrees, all inside the joint range, and that folded configuration reaches the
+target to within 0.0000 mm; every measured episode has at least one in-range
+analytic branch. The band is therefore a failure to select an available
+feasible solution, not a hard reachability limit. Experiment 3 showed the
+policy consumes the analytic branch errors and that replacing an infeasible
+branch's errors with a zero that reads as "already at goal" is harmful when
+transferred, so the leading explanation remains representational: the
+near-limit infeasible branch supplies a small wrapped joint error that attracts
+the policy to the shoulder limit while an exact folded solution exists. A
+competing explanation is an optimization or precision limit at the joint
+boundary that is independent of the observation's branch information.
 
-**Lessons and limits:** The band pattern is a re-reading of deterministic
+**Lessons and limits:** The band reading is a re-analysis of deterministic
 development panels and analytic joint-limit geometry, not a new independent
-measurement, and the task-reference panel remains repeated development
-evidence rather than held-out confirmation. The association is strong over the
-measured episodes but the band holds only 7-14 episodes per panel, no joint
-trajectories are recorded, and the branch-attraction mechanism is inferred
-rather than observed. Training reward does not track task success (e.g. reward
-163.85 at 0.42 training success versus 129.26 at 0.93), so it is usable only as
-a shaped signal. Training this recipe past about 100k steps reduced hold
-stability and added oscillation failures on open-feasible targets (experiment 1
-`checkpoint-120832`, experiment 2 `checkpoint-120832`), so the recipe peaks near
-100k steps. The 98% objective is met on the task-reference panel but not on the
-researcher panel, and the two changed components of experiment 2 (full-radius
-sampling, folded oversampling) were not separated.
+measurement; it holds only 7-14 episodes per panel and no joint trajectories
+are recorded, so the branch-attraction mechanism is inferred rather than
+observed. The reachability computation uses the analytic two-link solution and
+the model's joint ranges; it establishes that a feasible branch exists and is
+exact in joint space, not that a continuous 2 second hold through that branch
+is dynamically comfortable. Experiment 3 is direct evidence that a
+dimension-preserving observation change is not semantically compatible with the
+parent's learned representation: transferred from `working`, the gated policy
+kept behavior only on episodes whose observation was unchanged (140/140
+both-feasible) and failed 29/29 open-only, most folded-only and 7/7 band
+episodes. Experiment 2's folded-target oversampling at roughly six times the
+natural rate did not reduce the band, so a training-density deficit is not
+supported. Training reward does not track task success (reward 163.85 at 0.42
+training success versus 129.26 at 0.93) and is usable only as a shaped signal.
+This recipe peaks near 100k steps; training past about 100k reduced hold
+stability and added oscillation failures on open-feasible targets.
 
 **Open questions:** Whether the near-limit band deficit is caused by the
-observation presenting the joint-infeasible inverse-kinematics branch as an
-error to reduce, or by a precision/optimization limit at the shoulder boundary
-that is independent of the observation, is unresolved. It is unknown how the
-two branches interact through the trained representation and the learned
-observation normalizer, whether suppressing the infeasible branch would fix the
-band or trade failures elsewhere, and whether the residual near-limit targets
-are reachable at all under a fixed 2 second continuous hold. The exact boundary
-of the affected band and its dependence on radius are computed from geometry,
-not directly measured.
+observation presenting the joint-infeasible branch as an attractive target, or
+by an optimization/precision limit at the shoulder boundary independent of the
+observation, remains unresolved. It is unknown whether making each analytic
+branch's joint-limit feasibility explicit lets a policy learn to select the
+feasible folded solution, or whether it still follows the small wrapped error
+of the infeasible branch. It is unknown how the two branches interact through
+the learned observation normalizer, whether the residual near-limit targets are
+reachable under a fixed 2 second continuous hold even though their
+configuration is reachable, and how the affected band's boundary and radius
+dependence behave.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
