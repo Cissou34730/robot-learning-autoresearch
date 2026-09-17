@@ -7,66 +7,41 @@ official 200-episode reach-and-hold panel. The fresh unchanged PPO baseline
 reached 89.5% on research evaluation and 92.0% on the reused task-reference
 panel. Unchanged continuation produced the strongest development result,
 96.5% (193/200), and the incumbent reproduced that result on the seed-2,
-seed-3, and seed-4 research panels. The incumbent's seven failures are
-repeatable at the same target geometries on the seed-2/3/4 panels: six are in
-the 120-165 degree sector and one is near -103 degrees. This is meaningful
-progress toward the objective, but it remains below 98% and is not official
-terminal evidence. The lower-rate transfer reached 94.0% at its measured
-proxy peak and 85.5% at its endpoint, while the fresh unchanged seed-4
-replication reached 83.0%; the current working and best-known policy is
-therefore the unchanged-recipe incumbent. Experiment 6's focused-angle
-transfer reached 93.5% on two fresh research panels, but retained 11
-failures among the 30 episodes in the 120-165 degree sector, matching the
-incumbent on those panels. This weakens the tested target-coverage route
-without establishing that target coverage is never useful. The campaign has
-not separated representation, reward/optimization trajectory, or task
-mechanics as explanations for the residual failures. Experiment 7's explicit
-target-radius and sine/cosine-angle representation reached 81.0% at step
-115712 and 74.0% at step 120832 on a fresh matched panel, while the incumbent
-reached 92.0%; it therefore did not improve the measured policy. The working
-and best-known incumbent remain the useful measured lineage, and the
-experiment-7 representation change should be reverted. This synthesis is
-provisional memory, not a prescribed direction.
+seed-3, and seed-4 research panels. The incumbent's seven failures recur at
+the same target geometries: six in the 120-165 degree sector and one near
+-103 degrees. The lower-rate transfer, fresh replication, focused-angle
+coverage transfer, and explicit target-geometry representation all failed to
+exceed the incumbent under their measured conditions. The current working and
+best-known policy is therefore the unchanged-recipe incumbent at 96.5%,
+which remains below the objective and lacks terminal-readiness evidence.
+Experiment 7's 74.0% and 81.0% challengers on a matched fresh panel weaken
+that representation result without showing that the added features are
+intrinsically harmful. This synthesis is provisional memory, not a prescribed
+direction.
 
-**Lessons and limits:** Training proxies and saved-policy task success are not
-monotonic: unchanged continuation reached proxy peaks before declining, the
-lower-rate run retained stronger late proxies without transferring that signal
-to saved-policy success, and experiment 5's reward proxy improved to -568.3
-while its logged training success stayed at 0. All recorded detailed failures
-exhausted the 500-step horizon. The repeated incumbent failure geometries make
-the positive-angle sector a concrete coverage signal, but do not establish
-that coverage is causal or explain the remaining -103 degree failure. The
-unchanged recipe produced both the 89.5% fresh baseline and 96.5% continued
-policy results, while one fresh seed-4 replication reached 83.0%; this
-demonstrates learning-process variability under the tested conditions, not a
-distribution-wide seed estimate. Same-panel comparisons establish only that
-the tested lower learning rate and focused-angle transfer were not useful for
-the measured selection decision. In experiment 7, the endpoint had the
-strongest training proxies (0.20 training success and -125.85 reward) but
-underperformed its preceding measured checkpoint (74.0% versus 81.0%);
-the fresh-panel incumbent comparison favored the incumbent by 39 versus 3
-discordant wins against the endpoint and 25 versus 3 against the preceding
-checkpoint. These are trajectory- and panel-specific observations, not proof
-that the added features are intrinsically harmful. The detailed incumbent
-failures usually approach the 1 cm threshold without accumulating a sustained
-hold, but this does not identify whether the limiting factor is state
-representation, optimization, reward shaping, or mechanics. These limits are
-recorded in
-`research/brief.md`, `research/results.jsonl`, the experiment postmortems
-below, and the detailed evaluation artifacts.
+**Lessons and limits:** Measured saved-policy success, not training reward or
+proxy success, governs progress. Proxies are non-monotonic: continuation
+improved before declining, the lower-rate run preserved stronger late proxies
+without preserving task success, and the fresh replication improved reward
+while remaining far below the incumbent. All detailed failures exhausted the
+500-step horizon, and the incumbent generally approached the 1 cm threshold
+without sustaining the required hold. The repeated positive-angle failures
+are a coverage signal, not proof of a coverage cause; focused coverage did not
+reduce them. The current reward already contains distance progress, a linear
+hold-progress potential, an exit forfeiture, and a completion bonus
+(`robot_learning/scenario/reward.py`), but reward shaping has not been
+separated from representation, optimization trajectory, or mechanics. Fresh
+training variability is demonstrated by the 89.5% baseline and 83.0%
+replication, not characterized as a seed distribution. Development
+measurements remain selection evidence rather than the official verdict.
 
-**Open questions:** The tested focused-angle transfer did not improve the
-repeatable 120-165 degree residual failures; whether a different coverage
-design or another mechanism can do so remains unresolved. It is also unknown
-whether another representation or a matched optimization trajectory would
-make the residual geometry easier for the policy to use, whether reward
-shaping can improve near-threshold holding, and how much learning-process
-variability affects either route. Experiment 7's two measured checkpoints do
-not resolve representation effects independently of the fresh trajectory, and
-the 22 remaining checkpoints are unmeasured rather than failed. Development
-measurements remain selection evidence rather than the official verdict, and
-no terminal-readiness assessment has been established for the current
-best-known designation.
+**Open questions:** It remains unknown whether the residual failures are
+limited by temporal credit for completing the hold, state representation,
+optimization trajectory, target coverage, or task mechanics. It is also
+unknown whether a reward profile that emphasizes later hold steps changes
+saved-policy success without sacrificing reaching behavior. The unmeasured
+experiment-7 checkpoints remain unmeasured, and no terminal-readiness
+assessment has been established for the current best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
