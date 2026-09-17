@@ -975,3 +975,34 @@ def test_v4_measurement_flow_never_writes_legacy_evaluation_request(
     state = json.loads(state_path.read_text(encoding="utf-8"))
     assert state.get("pending_evaluation_request") is None
     assert state.get("pending_analysis") is not None
+
+
+def test_v4_measurement_flow_ignores_a_legacy_evaluation_request(
+    monkeypatch, tmp_path
+):
+    _state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    state = repository.read_state()
+    state["pending_evaluation_request"] = {"experiment": 99, "candidates": []}
+    repository.write_state(state)
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    persisted = repository.read_state()
+    assert persisted["pending_analysis"]["experiment"] == 1
+    assert persisted["pending_analysis"]["evaluation_rounds"][0]["experiment"] == 1

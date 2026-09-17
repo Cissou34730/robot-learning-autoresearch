@@ -33,6 +33,13 @@ superseded. It does not instruct the autonomous researcher and does not replace
 - **Prospective validation:** The stopping rule is characterized by a
   predeclared simulation study; it remains advisory until prospectively validated
   on new campaigns.
+- **Deferred structural migration:** Relocating protected scenario adapters,
+  reducing exception-based ownership, and moving the PowerShell phase machine
+  into the Runner are scheduled as one coordinated campaign-boundary migration.
+  Path moves legitimately change the evaluation-semantics fingerprint; existing
+  evidence stays readable but is not pooled automatically, and no fingerprint
+  aliasing is used. Runtime behaviour is otherwise unchanged, and the v4 lifecycle
+  is verified to never write the legacy evaluation-request state.
 
 ## 2026-09-16 - Measurement integrity on the protected side
 
