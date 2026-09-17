@@ -1037,6 +1037,7 @@ def _v4_cost_accounting_section(
     coverage = campaign_coverage(records)
     research_coverage = coverage["research_evaluation"]
     reference_coverage = coverage["task_reference"]
+    intervals = _consumed_research_intervals(records)
     return [
         "",
         "## Campaign cost accounting",
@@ -1074,6 +1075,15 @@ def _v4_cost_accounting_section(
             f"{reference_coverage['episode_executions']} episode executions; "
             f"{reference_coverage['repeated_episodes']} repeated."
         ),
+        (
+            "- research_evaluation intervals consumed: "
+            + (
+                ", ".join(_consumed_research_intervals(records))
+                if intervals
+                else "none"
+            )
+            + "."
+        ),
     ]
 
 
@@ -1097,21 +1107,82 @@ def _episode_interval(entry: dict) -> str:
     return "episodes unknown"
 
 
+def _research_panel_of(entry: dict) -> tuple[int, int] | None:
+    """The ``(seed, episodes)`` panel of a recorded research measurement."""
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return seed, episodes
+
+
+def _record_research_panels(record: dict) -> list[tuple[int, int]]:
+    """The research-evaluation panels a durable or pending record consumed."""
+    panels: list[tuple[int, int]] = []
+    for entry in record.get("requested_evaluations") or []:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("instrument", "research_evaluation") != "research_evaluation":
+            continue
+        metrics = entry.get("metrics") or {}
+        panel = _research_panel_of({**metrics, **entry})
+        if panel is not None:
+            panels.append(panel)
+    return panels
+
+
+def _consumed_research_intervals(records: list[dict]) -> list[str]:
+    """Every distinct research-evaluation interval already consumed, in first-use order."""
+    ordered: list[tuple[int, int]] = []
+    known: set[tuple[int, int]] = set()
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        for panel in _record_research_panels(record):
+            if panel not in known:
+                known.add(panel)
+                ordered.append(panel)
+    return [
+        f"{seed}–{seed + episodes - 1}" if episodes > 0 else f"{seed}"
+        for seed, episodes in ordered
+    ]
+
+
 def _v4_measurement_rounds_section(
-    pending: dict | None, latest: dict | None
+    state: dict, results: list[dict], pending: dict | None
 ) -> list[str]:
     """Completed and accepted measurement rounds in request order.
 
     Issue #39: the durable record keeps each request's question, selections and
     artifact references so the progression of scientific questions stays
     auditable after closure instead of being reconstructed from timestamps.
+
+    A panel is marked ``(reused panel)`` only when it was consumed before the
+    current round (by an earlier experiment or an earlier round). Candidates that
+    share one panel within a round share the same marker; they are not treated as
+    successive reuse.
     """
+    latest = (
+        pending.get("result")
+        if isinstance(pending, dict)
+        else (results[-1] if results else None)
+    )
     source = pending if isinstance(pending, dict) else latest
     if not isinstance(source, dict):
         return []
     rounds = source.get("evaluation_rounds")
     if not isinstance(rounds, list) or not rounds:
         return []
+    current_index = int(source.get("experiment") or source.get("index") or 0)
+    prior_panels: set[tuple[int, int]] = set()
+    for record in results:
+        if not isinstance(record, dict):
+            continue
+        if int(record.get("index", -1)) == current_index:
+            continue
+        prior_panels.update(_record_research_panels(record))
     lines = [
         "",
         "## Measurement rounds",
@@ -1122,7 +1193,6 @@ def _v4_measurement_rounds_section(
             "resulting artifacts:"
         ),
     ]
-    seen_panels: set[tuple[int, int]] = set()
     for record in rounds:
         if not isinstance(record, dict):
             continue
@@ -1135,23 +1205,17 @@ def _v4_measurement_rounds_section(
         results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
+        round_panels: set[tuple[int, int]] = set()
         for item in results.get("research_evaluations") or []:
             if not isinstance(item, dict):
                 continue
-            seed = item.get("seed")
-            episodes = item.get("episodes")
-            panel = (
-                (seed, episodes)
-                if isinstance(seed, int)
-                and not isinstance(seed, bool)
-                and isinstance(episodes, int)
-                and not isinstance(episodes, bool)
-                else None
-            )
+            panel = _research_panel_of(item)
             panel_note = ""
             if panel is not None:
-                panel_note = " (reused panel)" if panel in seen_panels else " (new panel)"
-                seen_panels.add(panel)
+                panel_note = (
+                    " (reused panel)" if panel in prior_panels else " (new panel)"
+                )
+                round_panels.add(panel)
             detail = _episode_interval(item)
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
@@ -1209,6 +1273,7 @@ def _v4_measurement_rounds_section(
                 f"vs {item.get('reference_wins', '-')} discordant wins over "
                 f"{item.get('episodes', '-')} episodes."
             )
+        prior_panels.update(round_panels)
     return lines
 
 
@@ -1326,7 +1391,7 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_evidence_section(pending, results))
 
-    lines.extend(_v4_measurement_rounds_section(pending, latest))
+    lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
     lines.extend(_v4_cost_accounting_section(state, results, pending))
 

@@ -90,7 +90,6 @@ def _request(seed: int) -> dict:
                 "seed": seed,
                 "selection": "the only checkpoint this experiment produced",
                 "omitted_alternative": None,
-                "purpose": "selection",
             }
         ],
     }

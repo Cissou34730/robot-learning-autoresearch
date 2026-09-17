@@ -1,9 +1,10 @@
-"""Evaluation-request tolerance and best-known designation provenance.
+"""Legacy `purpose` handling and best-known designation provenance.
 
-The separate terminal-validation protocol was removed: a request needs no
-declared purpose, and a legacy ``purpose`` field is tolerated but ignored and
-never required. A designation ordinal still distinguishes a new best-known
-tenure from idempotent re-designation.
+The separate terminal-validation protocol was removed. `purpose` is not part of
+the accepted schema: a new request carrying it is rejected as unsupported, while
+a historical or already-accepted request is loaded with the field ignored. A
+designation ordinal still distinguishes a new best-known tenure from idempotent
+re-designation.
 """
 
 import pytest
@@ -34,12 +35,22 @@ def test_request_without_purpose_is_accepted():
     protocol.validate_evaluation_request(_request())
 
 
-def test_legacy_purpose_field_is_tolerated():
-    # Historical requests may carry `purpose`; it is accepted and ignored.
-    protocol.validate_evaluation_request(_request(purpose="terminal_validation"))
-    protocol.validate_evaluation_request(
-        _request(purpose="selection", instrument="task_reference")
-    )
+def test_new_request_with_purpose_is_rejected():
+    with pytest.raises(ValueError, match="unsupported fields"):
+        protocol.validate_evaluation_request(_request(purpose="selection"))
+    with pytest.raises(ValueError, match="unsupported fields"):
+        protocol.validate_evaluation_request(
+            _request(purpose="terminal_validation", instrument="task_reference")
+        )
+
+
+def test_legacy_purpose_is_ignored_when_loading():
+    historical = _request(purpose="terminal_validation")
+    cleaned = protocol.ignore_legacy_purpose(historical)
+    assert "purpose" not in cleaned["measurements"][0]
+    protocol.validate_evaluation_request(cleaned)
+    # The original record is not mutated by ignoring its legacy field.
+    assert historical["measurements"][0]["purpose"] == "terminal_validation"
 
 
 def _lineage(**overrides) -> dict:

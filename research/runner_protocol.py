@@ -42,7 +42,6 @@ PROTECTED_RUNNER_PATHS = {
     "research/reset_campaign.py",
     "research/build_research_brief.py",
     "research/query_training_log.py",
-    "research/panel_rules.py",
     "researcher_session.ps1",
     "run_research.ps1",
 }
@@ -143,8 +142,9 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 HYPOTHESIS_ASSESSMENT_LABEL = "Hypothesis assessment"
 # The researcher names the model; the panel behind this key is human-owned.
-# `purpose` is a tolerated legacy field: historical requests and records may
-# carry it, and it is accepted but ignored, never required or interpreted.
+# `purpose` is not part of the accepted schema: a new request carrying it is
+# rejected as unsupported, while historical records that contain it stay
+# readable and are ignored when loaded.
 RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "instrument",
     "candidate",
@@ -153,7 +153,6 @@ RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "label",
     "selection",
     "omitted_alternative",
-    "purpose",
 }
 TASK_REFERENCE_ENTRY_FIELDS = {
     "instrument",
@@ -161,7 +160,6 @@ TASK_REFERENCE_ENTRY_FIELDS = {
     "label",
     "selection",
     "omitted_alternative",
-    "purpose",
 }
 SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
@@ -794,6 +792,27 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
+def ignore_legacy_purpose(request: dict) -> dict:
+    """Return the request without the legacy ``purpose`` field.
+
+    Historical or already-accepted requests may carry ``purpose``; it is ignored
+    when loading them. Newly submitted requests are validated without this and
+    reject the field as unsupported.
+    """
+    measurements = request.get("measurements")
+    if not isinstance(measurements, list):
+        return request
+    cleaned = [
+        (
+            {key: value for key, value in entry.items() if key != "purpose"}
+            if isinstance(entry, dict)
+            else entry
+        )
+        for entry in measurements
+    ]
+    return {**request, "measurements": cleaned}
+
+
 def validate_evaluation_request(
     request: dict,
     *,
@@ -916,13 +935,6 @@ def _panels_overlap(left: tuple[int, int], right: tuple[int, int]) -> bool:
     )
 
 
-def _protected_episode_panel() -> tuple[int, int]:
-    """The official benchmark episode interval, read from the protected contract."""
-    from research import panel_rules
-
-    return panel_rules.protected_episode_panel()
-
-
 def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[int, int]]:
     """Panels already recorded for this campaign's research evaluations."""
     campaign_id = repository.current_campaign_id(state)
@@ -947,15 +959,19 @@ def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[in
 
 
 def validate_panel_independence(
-    request: dict, prior_panels: list[tuple[int, int]] | None = None
+    request: dict,
+    prior_panels: list[tuple[int, int]] | None = None,
+    *,
+    protected_overlap=None,
 ) -> None:
     """Reject research-evaluation panels that partially overlap other panels.
 
     An identical panel is allowed for deliberate reuse, and a disjoint panel is
-    always allowed; only partial overlap is rejected. The protected benchmark
-    interval is rejected on any overlap, and is never named in the error.
+    always allowed; only partial overlap is rejected. ``protected_overlap`` is a
+    predicate supplied by the scenario boundary that reports whether a panel
+    overlaps the protected benchmark episodes; the generic Runner never reads the
+    protected range, and the error never names it.
     """
-    protected = _protected_episode_panel()
     seen: list[tuple[int, int]] = []
     for entry in requested_measurements(request):
         if not isinstance(entry, dict):
@@ -965,7 +981,7 @@ def validate_panel_independence(
         panel = _research_panel(entry)
         if panel is None:
             continue
-        if _panels_overlap(panel, protected):
+        if protected_overlap is not None and protected_overlap(*panel):
             raise ValueError(
                 "research_evaluation panel overlaps protected benchmark evidence; "
                 "choose a panel disjoint from the protected episode range"

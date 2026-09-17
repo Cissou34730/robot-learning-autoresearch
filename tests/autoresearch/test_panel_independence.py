@@ -59,6 +59,9 @@ def test_default_development_target_sequence_differs_from_the_official_one():
 
 def test_explicit_official_panel_is_rejected():
     from research import runner_protocol as protocol
+    from robot_learning.scenario.final_benchmark import (
+        research_panel_overlaps_protected,
+    )
 
     request = {
         "experiment": 1,
@@ -77,4 +80,6 @@ def test_explicit_official_panel_is_rejected():
     }
     protocol.validate_evaluation_request(request)
     with pytest.raises(ValueError, match="protected benchmark evidence"):
-        protocol.validate_panel_independence(request, [])
+        protocol.validate_panel_independence(
+            request, [], protected_overlap=research_panel_overlaps_protected
+        )

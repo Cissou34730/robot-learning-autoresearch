@@ -156,7 +156,7 @@ def test_measurement_rounds_section_groups_rounds_in_order():
             },
         ]
     }
-    text = "\n".join(brief._v4_measurement_rounds_section(pending, None))
+    text = "\n".join(brief._v4_measurement_rounds_section({}, [], pending))
     assert text.index("### Round 1 (completed)") < text.index("### Round 2 (completed)")
     assert "first question" in text
     assert "second question" in text
@@ -166,9 +166,97 @@ def test_measurement_rounds_section_groups_rounds_in_order():
     assert "Paired comparison `c1` vs `working`" in text
 
 
+def test_measurement_round_panel_novelty_is_round_scoped():
+    pending = {
+        "experiment": 2,
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "results": {
+                    "research_evaluations": [
+                        {"candidate": "c1", "seed": 100, "episodes": 200},
+                        {"candidate": "c2", "seed": 100, "episodes": 200},
+                    ]
+                },
+            },
+            {
+                "round": 2,
+                "results": {
+                    "research_evaluations": [
+                        {"candidate": "c3", "seed": 100, "episodes": 200}
+                    ]
+                },
+            },
+        ],
+    }
+    prior_results = [
+        {
+            "index": 1,
+            "requested_evaluations": [
+                {"candidate": "old", "seed": 900, "episodes": 200}
+            ],
+        }
+    ]
+    text = "\n".join(
+        brief._v4_measurement_rounds_section({}, prior_results, pending)
+    )
+    round_one = text.split("### Round 2")[0]
+    round_two = text.split("### Round 2")[1]
+    # Two candidates sharing one panel in the same round are both new.
+    assert round_one.count("(new panel)") == 2
+    assert "(reused panel)" not in round_one
+    # The identical panel in a later round is cross-round reuse.
+    assert "(reused panel)" in round_two
+
+
+def test_measurement_round_panel_novelty_recognises_prior_experiments():
+    pending = {
+        "experiment": 2,
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "results": {
+                    "research_evaluations": [
+                        {"candidate": "c1", "seed": 900, "episodes": 200}
+                    ]
+                },
+            }
+        ],
+    }
+    prior_results = [
+        {
+            "index": 1,
+            "requested_evaluations": [
+                {"candidate": "old", "seed": 900, "episodes": 200}
+            ],
+        }
+    ]
+    text = "\n".join(
+        brief._v4_measurement_rounds_section({}, prior_results, pending)
+    )
+    assert "(reused panel)" in text
+
+
+def test_cost_accounting_lists_consumed_research_intervals_factually():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "requested_evaluations": [
+                {"candidate": "c1", "seed": 4200, "episodes": 160},
+                {"candidate": "c2", "seed": 4200, "episodes": 160},
+                {"candidate": "c3", "seed": 4400, "episodes": 160},
+            ],
+        }
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "research_evaluation intervals consumed: 4200–4359, 4400–4559." in text
+    assert "recommend" not in text.lower()
+
+
 def test_measurement_rounds_section_is_absent_without_rounds():
-    assert brief._v4_measurement_rounds_section(None, None) == []
-    assert brief._v4_measurement_rounds_section({}, None) == []
+    assert brief._v4_measurement_rounds_section({}, [], None) == []
+    assert brief._v4_measurement_rounds_section({}, [], {}) == []
 
 
 def test_cost_accounting_counts_training_and_replication_factually():

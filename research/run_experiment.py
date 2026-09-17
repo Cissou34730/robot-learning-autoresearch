@@ -475,6 +475,19 @@ def check_evaluation_request() -> int:
     return 0
 
 
+def _protected_panel_overlap():
+    """Scenario-boundary predicate for protected benchmark panel overlap.
+
+    The generic Runner never reads the protected episode range; this adapter
+    reports overlap only, and the validation error never names the range.
+    """
+    from robot_learning.scenario.final_benchmark import (
+        research_panel_overlaps_protected,
+    )
+
+    return research_panel_overlaps_protected
+
+
 def check_analysis_deliverable() -> int:
     """Preflight the single actionable submission allowed during v4 analysis."""
     try:
@@ -494,7 +507,9 @@ def check_analysis_deliverable() -> int:
                 raise ValueError("evaluation request references the wrong experiment")
             protocol.validate_evaluation_request(request)
             protocol.validate_panel_independence(
-                request, protocol.recorded_research_panels(state, pending)
+                request,
+                protocol.recorded_research_panels(state, pending),
+                protected_overlap=_protected_panel_overlap(),
             )
             available = protocol.available_evaluation_candidates(pending, state)
             requested, _ = protocol.planned_measurements(request, available)
@@ -709,15 +724,20 @@ def execute_pending_evaluations() -> int:
         )
         if is_v4:
             protocol.validate_panel_independence(
-                request, protocol.recorded_research_panels(state, pending)
+                request,
+                protocol.recorded_research_panels(state, pending),
+                protected_overlap=_protected_panel_overlap(),
             )
     else:
-        request = pending.get("evaluation_plan")
-        if not isinstance(request, dict):
+        accepted_plan = pending.get("evaluation_plan")
+        if not isinstance(accepted_plan, dict):
             print("ERROR: research/evaluation_request.json not found.")
             return 1
+        request = protocol.ignore_legacy_purpose(accepted_plan)
     accepted_v4_plan = is_v4 and isinstance(pending.get("evaluation_plan"), dict)
-    if accepted_v4_plan and request != pending["evaluation_plan"]:
+    if accepted_v4_plan and request != protocol.ignore_legacy_purpose(
+        pending["evaluation_plan"]
+    ):
         raise ValueError("accepted measurement plan changed")
     experiment = int(pending["experiment"])
     if int(request.get("experiment", -1)) != experiment:
