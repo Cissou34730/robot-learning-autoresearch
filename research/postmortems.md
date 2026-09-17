@@ -97,3 +97,70 @@ and that later updates hurt hold stability. Neither observation can be
 attributed to a specific recipe component because the recipe was unchanged.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-1/inventory.json, research/brief.md
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 2
+
+**Result:** Training with the full 6-20 cm radius support and 30% folded-target
+oversampling by transfer from `working` did not reduce the residual failures.
+The best measured experiment-2 policy is slightly worse than its parent, so
+`working` remains the best-known policy and the recipe change is reverted.
+
+**Observed behavior:** Experiment 2 trained 120,832 steps (24 checkpoints,
+checkpoint_every 5,000) from the `working` parent. Two checkpoints were
+measured. `checkpoint-10240` scores 189/200 = 94.5% on the researcher panel
+(seed 20260918, semantics 9bbd51019e5e) and 196/200 = 98.0% on
+task-reference-v1; `checkpoint-120832` scores 188/200 = 94.0% and 194/200 =
+97.0%. The parent `working` re-measured in the same context scores 191/200 =
+95.5% on the researcher panel, and its task-reference result remains 196/200 =
+98.0%. Paired on the shared 200-episode panel, `working` vs `checkpoint-10240`
+has 2 discordant episodes, net -2 (exact p = 0.5); `working` vs
+`checkpoint-120832` has 3 discordant episodes, net -3 (exact p = 0.25) - i.e.
+the transfer checkpoints are equal-or-worse, not better. Recomputing the
+elbow-open inverse-kinematics solution for every measured episode (shoulder or
+elbow outside the +/-170 degree joint range) shows the failure set is still
+almost entirely folded-required: on the experiment-2 panel, of 16 folded
+targets, `working` fails 9 (7 succeed) while `checkpoint-10240` and
+`checkpoint-120832` each fail 11 (5 succeed); `checkpoint-120832` additionally
+fails one open-feasible target (episode 160, radius 16.4 cm, angle +19.5
+degrees) that the parent reaches. On task-reference (13 folded targets of
+200), `working` fails 4, `checkpoint-10240` fails 4 (episode 0 fixed, episode
+100 added) and `checkpoint-120832` fails 4 (a different set). The
+environment.py edit also reversed the target-sampler draw order (radius before
+angle instead of angle before radius) while keeping the uniform official
+distribution, so the seed-to-target mapping changed: the same `working`
+artifact scores 194/200 under the experiment-1 panel (semantics 6ba3ba6d7654)
+and 191/200 under the experiment-2 panel (semantics 9bbd51019e5e). This is a
+panel-composition effect, not a policy change - its folded-target count rose
+from 10 to 16. Exp-2 training-time success never exceeded the parent's 0.97; it
+was 0.8846 at step 10,240 and 0.86 at 120,832, on the run's harder training
+distribution.
+
+**Hypothesis assessment:** Contradicted within the measured evidence. The
+hypothesis predicted fewer folded-required failures than the parent's 6/200
+(researcher) and 4/200 (task-reference) and pooled success moving toward or
+beyond 98%, without new open-feasible failures. On a shared panel the
+folded-required failures did not decrease (9 to 11 at both measured
+checkpoints), overall researcher success fell (95.5% to 94.5%/94.0%) and
+`checkpoint-120832` added one open-feasible failure - exactly the proposal's
+stated contradicting observation, which favors the intrinsic-precision or
+wrapped-solution-conflict alternative over a pure sample-count deficit. Limits:
+only 2 of 24 checkpoints were measured; the paired differences are 2-3 episodes
+(p = 0.25-0.5) over a 16-episode folded subset, so the evidence establishes
+that this intervention produced no measurable improvement, not that the
+mechanism is impossible; unmeasured checkpoints remain unmeasured, and the
+two changed components (full-radius sampling, folded oversampling) are not
+separated.
+
+**Interpretation:** Oversampling the folded-required region at roughly six
+times its natural rate, while also extending training to the full official
+radius support, was not enough to move the residual failures; the transferred
+policy if anything lost a small amount of hold stability, and a previously
+clean open-feasible target began failing at the later checkpoint. The failure
+mode stays a near-constant roughly 1 cm stall just outside the tolerance across
+radii 6-19 cm, which is more consistent with a precision or solution-branch
+limitation than with a region the policy has simply never sampled. Because the
+parent still dominates every comparable measurement, the changed recipe is
+reverted; the full-radius-coverage component cannot be credited or blamed in
+isolation from this run and remains untested on its own.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-working-200ep-seed20260918-9bbd51019e5e.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-10240-200ep-seed20260918-9bbd51019e5e.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-120832-200ep-seed20260918-9bbd51019e5e.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-10240-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-2/inventory.json, research/results.jsonl, robot_learning/scenario/environment.py, robot_learning/robots/two_joint_arm.xml
