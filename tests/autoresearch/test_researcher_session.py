@@ -206,6 +206,28 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     assert "$script:ResearcherExitCode = if ($null -eq $LASTEXITCODE)" in LOOP
 
 
+def test_the_launcher_offers_both_runtimes_and_still_defaults_to_copilot():
+    normalized = " ".join(LOOP.split())
+
+    # Both runtimes are selectable; the default keeps existing commands behaving
+    # exactly as before this option existed.
+    assert '[ValidateSet("copilot", "opencode")]' in LOOP
+    assert '[string]$ResearcherBackend = "copilot"' in LOOP
+    assert "researcher_opencode/src/main.ts" in normalized
+
+    # A model id is only meaningful to the runtime that resolves it, so each
+    # runtime carries its own default rather than sharing one.
+    assert 'copilot  = "gpt-5.6-luna"' in LOOP
+    assert 'opencode = "opencode-go/deepseek-v4.1-flash"' in LOOP
+
+    # The OpenCode runtime has no 'max' effort; saying so beats substituting one.
+    assert '$ResearcherBackend -eq "opencode" -and $Reasoning -eq "max"' in LOOP
+
+    # A missing runtime is reported, never silently ignored.
+    assert "The OpenCode runtime entry point is missing" in LOOP
+    assert "The OpenCode runtime needs Node.js on PATH" in LOOP
+
+
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
     for phase in (
         "proposalStatus",

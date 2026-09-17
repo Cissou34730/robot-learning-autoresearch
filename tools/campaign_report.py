@@ -108,6 +108,12 @@ def usage_total(rows: list[dict], field: str) -> str:
     )
 
 
+def runtime_label(row: dict) -> str:
+    """Rows written before the OpenCode runtime existed carry no runtime field."""
+    runtime = row.get("runtime")
+    return str(runtime) if runtime else "copilot (legacy)"
+
+
 def comparison_metrics(campaign: dict) -> dict:
     rows, usage = campaign["rows"], campaign["usage"]
     initializations = Counter(
@@ -164,6 +170,10 @@ def comparison_metrics(campaign: dict) -> dict:
         "Final benchmark requested after experiments": ", ".join(final)
         or "none recorded",
         "Recorded Researcher invocations": str(len(usage)),
+        "Researcher runtime": "; ".join(
+            f"{k}: {v}" for k, v in Counter(runtime_label(u) for u in usage).items()
+        )
+        or NA,
         "Models / reasoning": "; ".join(
             f"{k[0]} / {k[1]}: {v}"
             for k, v in Counter(
@@ -178,7 +188,18 @@ def comparison_metrics(campaign: dict) -> dict:
             derived_usage, "new_input_tokens"
         ),
         "Output tokens": usage_total(usage, "output_tokens"),
+        # Copilot bills in AIU. Only Copilot rows carry it, so an OpenCode row's
+        # null leaves this visibly partial rather than counting as zero.
         "AIU": usage_total(usage, "aiu"),
+        "Cache-write tokens (OpenCode runtime only)": usage_total(
+            usage, "cache_write_tokens"
+        ),
+        "Reasoning tokens (OpenCode runtime only)": usage_total(
+            usage, "reasoning_tokens"
+        ),
+        "Estimated cost, USD (OpenCode runtime only)": usage_total(
+            usage, "reported_cost_usd"
+        ),
         "Tool calls": usage_total(usage, "tool_calls"),
         "Researcher duration, seconds": usage_total(usage, "duration_seconds"),
     }
@@ -489,11 +510,13 @@ def campaign_sections(campaign: dict) -> list[str]:
             [
                 "Exp",
                 "Phase",
+                "Runtime",
                 "Invocations",
                 "Input",
                 "Cache read",
                 "Output",
                 "AIU",
+                "Cost USD",
                 "Tools",
                 "Seconds",
                 "Nonzero exits",
@@ -501,6 +524,7 @@ def campaign_sections(campaign: dict) -> list[str]:
             [
                 [
                     *key,
+                    ", ".join(sorted({runtime_label(u) for u in group})),
                     len(group),
                     *(
                         usage_total(group, f)
@@ -509,6 +533,7 @@ def campaign_sections(campaign: dict) -> list[str]:
                             "cache_read_tokens",
                             "output_tokens",
                             "aiu",
+                            "reported_cost_usd",
                             "tool_calls",
                             "duration_seconds",
                         )

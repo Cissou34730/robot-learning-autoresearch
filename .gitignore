@@ -42,6 +42,10 @@ htmlcov/
 # Oversized researcher tool output, offloaded out of the model context
 .copilot/
 
+# Node dependencies for the optional OpenCode Researcher runtime. The manifest and
+# lockfile are committed; the installed tree is not.
+node_modules/
+
 # Human reports and campaign-scoped session accounting, never Researcher context
 reports/
 

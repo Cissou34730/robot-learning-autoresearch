@@ -1,0 +1,22 @@
+{
+  "name": "researcher-opencode",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Optional OpenCode runtime for one bounded Researcher session. Runs alongside researcher_copilot.py; it does not replace it.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "start": "node --experimental-strip-types src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@opencode-ai/sdk": "1.18.23"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.3",
+    "typescript": "7.0.2"
+  }
+}

@@ -48,6 +48,10 @@ PROTECTED_RUNNER_PATHS = {
 # The researcher runtime boundary: it decides which tools and commands a
 # research session may use, so a proposal must not be able to widen its own.
 PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
+# The optional OpenCode runtime is the same boundary expressed in another
+# language. Protected by prefix so that adding a module, a manifest or a lockfile
+# under it never silently hands part of the tool boundary to the researcher.
+PROTECTED_RUNTIME_PREFIXES = ("researcher_opencode/",)
 # Human-owned context defines the Researcher's protocol, permissions and task.
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
@@ -169,6 +173,7 @@ def is_protected_source(path: str) -> bool:
         or relative in PROTECTED_CONTEXT_PATHS
         or relative in DEPENDENCY_METADATA_PATHS
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
+        or relative.startswith(PROTECTED_RUNTIME_PREFIXES)
     )
 
 

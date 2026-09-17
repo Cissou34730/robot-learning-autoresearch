@@ -1,8 +1,15 @@
 # Token-efficient autonomous robot-learning loop.
 
 param(
+    # Which Researcher runtime executes a phase. Both are supported and neither
+    # is deprecated; Copilot stays the default so existing commands are unchanged.
+    [ValidateSet("copilot", "opencode")]
+    [string]$ResearcherBackend = "copilot",
+
+    # Left unset so the backend's own default can be resolved below; a
+    # provider-qualified id is only meaningful to the runtime that reads it.
     [ValidateNotNullOrEmpty()]
-    [string]$Model = "gpt-5.6-luna",
+    [string]$Model,
 
     [ValidateSet("low", "medium", "high", "xhigh", "max")]
     [string]$Reasoning = "high",
@@ -13,6 +20,37 @@ param(
 )
 
 Set-Location $PSScriptRoot
+
+$backendDefaultModel = @{
+    copilot  = "gpt-5.6-luna"
+    opencode = "opencode-go/deepseek-v4.1-flash"
+}
+if (-not $Model) {
+    $Model = $backendDefaultModel[$ResearcherBackend]
+}
+if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
+    throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
+}
+
+# Node gained default TypeScript type stripping in 23.6; earlier versions need
+# the experimental flag. Node is required only for the OpenCode backend.
+function Get-OpenCodeNode {
+    $node = Get-Command node -ErrorAction SilentlyContinue
+    if (-not $node) {
+        throw "The OpenCode runtime needs Node.js on PATH."
+    }
+    $version = (& node --version) -replace '^v', ''
+    $parts = $version.Split('.')
+    $major = [int]$parts[0]
+    $minor = if ($parts.Length -gt 1) { [int]$parts[1] } else { 0 }
+    $strip = if ($major -gt 23 -or ($major -eq 23 -and $minor -ge 6)) {
+        @()
+    }
+    else {
+        @('--experimental-strip-types')
+    }
+    return @{ Path = $node.Source; Strip = $strip }
+}
 
 $createdNew = $false
 $loopMutex = [System.Threading.Mutex]::new(
@@ -71,7 +109,22 @@ function Invoke-ResearcherSession {
     if ($Continue) {
         $sessionArgs += "--resume"
     }
-    uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt
+    if ($ResearcherBackend -eq "opencode") {
+        $entry = "researcher_opencode/src/main.ts"
+        if (-not (Test-Path -LiteralPath $entry)) {
+            throw "The OpenCode runtime entry point is missing: $entry"
+        }
+        $node = Get-OpenCodeNode
+        $nodeArgs = @()
+        $nodeArgs += $node.Strip
+        $nodeArgs += $entry
+        $nodeArgs += $sessionArgs
+        $nodeArgs += $Prompt
+        & $node.Path @nodeArgs
+    }
+    else {
+        uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt
+    }
     # An invocation that never reached a conventional exit reports the absence
     # rather than an invented code.
     $script:ResearcherExitCode = if ($null -eq $LASTEXITCODE) {

@@ -25,6 +25,7 @@ from research.runner_protocol import (
     evaluation_semantics_paths,
     experiment_family,
     is_protected_source,
+    is_researcher_owned,
     operation_description,
     parameter_change_records,
     plan_previous_result_decision,
@@ -72,6 +73,25 @@ def mentions(text: str, word: str) -> bool:
 
 def test_the_copilot_adapter_is_a_protected_protocol_source():
     assert is_protected_source("researcher_copilot.py")
+
+
+def test_both_researcher_runtimes_are_protected_protocol_sources():
+    """Either runtime decides which tools and commands a session may use.
+
+    Offering a second runtime must not widen the boundary that the first one
+    already had, and a proposal must not be able to reach either adapter, its
+    policy or its dependency manifest.
+    """
+    for path in (
+        "researcher_copilot.py",
+        "researcher_opencode/src/main.ts",
+        "researcher_opencode/src/adapter.ts",
+        "researcher_opencode/src/policy.ts",
+        "researcher_opencode/package.json",
+        "researcher_opencode/package-lock.json",
+    ):
+        assert is_protected_source(path), path
+        assert not is_researcher_owned(path), path
 
 
 @pytest.mark.parametrize(
