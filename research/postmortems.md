@@ -20,7 +20,12 @@ failures among the 30 episodes in the 120-165 degree sector, matching the
 incumbent on those panels. This weakens the tested target-coverage route
 without establishing that target coverage is never useful. The campaign has
 not separated representation, reward/optimization trajectory, or task
-mechanics as explanations for the residual failures. This synthesis is
+mechanics as explanations for the residual failures. Experiment 7's explicit
+target-radius and sine/cosine-angle representation reached 81.0% at step
+115712 and 74.0% at step 120832 on a fresh matched panel, while the incumbent
+reached 92.0%; it therefore did not improve the measured policy. The working
+and best-known incumbent remain the useful measured lineage, and the
+experiment-7 representation change should be reverted. This synthesis is
 provisional memory, not a prescribed direction.
 
 **Lessons and limits:** Training proxies and saved-policy task success are not
@@ -36,22 +41,32 @@ policy results, while one fresh seed-4 replication reached 83.0%; this
 demonstrates learning-process variability under the tested conditions, not a
 distribution-wide seed estimate. Same-panel comparisons establish only that
 the tested lower learning rate and focused-angle transfer were not useful for
-the measured selection decision. The detailed incumbent failures usually
-approach the 1 cm threshold without accumulating a sustained hold, but this
-does not identify whether the limiting factor is state representation,
-optimization, reward shaping, or mechanics. These limits are recorded in
+the measured selection decision. In experiment 7, the endpoint had the
+strongest training proxies (0.20 training success and -125.85 reward) but
+underperformed its preceding measured checkpoint (74.0% versus 81.0%);
+the fresh-panel incumbent comparison favored the incumbent by 39 versus 3
+discordant wins against the endpoint and 25 versus 3 against the preceding
+checkpoint. These are trajectory- and panel-specific observations, not proof
+that the added features are intrinsically harmful. The detailed incumbent
+failures usually approach the 1 cm threshold without accumulating a sustained
+hold, but this does not identify whether the limiting factor is state
+representation, optimization, reward shaping, or mechanics. These limits are
+recorded in
 `research/brief.md`, `research/results.jsonl`, the experiment postmortems
 below, and the detailed evaluation artifacts.
 
 **Open questions:** The tested focused-angle transfer did not improve the
 repeatable 120-165 degree residual failures; whether a different coverage
 design or another mechanism can do so remains unresolved. It is also unknown
-whether an explicit continuous encoding of target radius and angle would make
-the residual geometry easier for the policy to use, whether reward shaping can
-improve near-threshold holding, and how much learning-process variability
-affects either route. Development measurements remain selection evidence
-rather than the official verdict, and no terminal-readiness assessment has
-been established for the current best-known designation.
+whether another representation or a matched optimization trajectory would
+make the residual geometry easier for the policy to use, whether reward
+shaping can improve near-threshold holding, and how much learning-process
+variability affects either route. Experiment 7's two measured checkpoints do
+not resolve representation effects independently of the fresh trajectory, and
+the 22 remaining checkpoints are unmeasured rather than failed. Development
+measurements remain selection evidence rather than the official verdict, and
+no terminal-readiness assessment has been established for the current
+best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -328,3 +343,54 @@ is below the objective and is not terminal evidence.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-checkpoint-120832-200ep-seed1000-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-working-200ep-seed1000-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-working-200ep-seed1001-a69293a214ad.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 7
+
+**Result:** Adding explicit target radius and sine/cosine target-angle
+features did not improve the measured saved policy. The experiment-7 recipe
+should be reverted; the existing working and best-known lineages remain
+unchanged.
+
+**Observed behavior:** The added representation increased the observation
+from 14 to 17 features while preserving the state, error, velocity, action,
+reward, and task mechanics. Training proxies improved throughout the late
+run: training success rose from 0.00 at step 90112 to 0.20 at step 120832,
+mean reward improved from -361.89 to -125.85, and mean episode length fell
+from 500 to 447. On the same fresh 200-episode research panel, checkpoint
+115712 achieved 162/200 (81.0%) and checkpoint 120832 achieved 148/200
+(74.0%), while the incumbent achieved 184/200 (92.0%). The incumbent had
+25 versus 3 discordant wins over checkpoint 115712 and 39 versus 3 over
+checkpoint 120832; checkpoint 115712 had 22 versus 8 discordant wins over
+checkpoint 120832. The measured failures were horizon truncations: 38 for
+checkpoint 115712, 52 for checkpoint 120832, and 16 for the incumbent. The
+remaining 22 experiment-7 checkpoints were not measured.
+
+**Hypothesis assessment:** Weakened. The experiment's question was whether
+explicit target geometry would improve saved-policy reach-and-hold success
+and whether the late proxy improvement would identify a useful checkpoint.
+Neither measured challenger exceeded the matched incumbent, and the
+strongest-proxy endpoint was worse than the preceding measured checkpoint.
+This weakens both claims under the tested fresh trajectory and evaluation
+panel. It does not establish that the features are intrinsically harmful:
+the experiment changed the representation and fresh learning trajectory
+together, only two challengers were measured, and the research panel is
+development evidence rather than the official assessment.
+
+**Interpretation:** Measured task behavior supports retaining the incumbent as
+meaningful progress toward the 98% objective, but the experiment-7 candidates
+do not support changing the working lineage or requesting the irreversible
+official benchmark. The discrepancy between improving training proxies and
+declining saved-policy success is an orthogonal signal consistent with the
+campaign's earlier non-monotonic proxy behavior. The experiment does not
+separate representation from optimization variability or explain the
+incumbent's residual failures, so those questions remain open for a later
+experiment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-7/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-7-checkpoint-115712-200ep-seed1002-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-7-checkpoint-120832-200ep-seed1002-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-7-working-200ep-seed1002-a69293a214ad.json`;
+`robot_learning/scenario/observations.py`.
