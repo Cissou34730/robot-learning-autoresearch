@@ -2,39 +2,42 @@
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
-**Current synthesis:** The campaign objective is at least 98% success on the
-official 200-episode reach-and-hold panel. Unchanged PPO produced the strongest
-development policy at 193/200 (96.5%) after continuation, but it remains below
-the objective and has no terminal-readiness evidence. That policy reproduced
-96.5% on several panels but scored 92.0% and 95.5% on others, while fresh
-unchanged-PPO runs reached only 83.0%, 89.5%, and 90.5% at their measured
-checkpoints. The incumbent's failures repeatedly exhaust the 500-step horizon,
-with mixtures of no-reach and interrupted-hold episodes and recurring, but
-non-exclusive, angle and radius patterns. The tested changes to learning rate,
-continuation duration, target coverage, explicit geometry, hold credit,
-discounting, velocity stability, radial sampling, and a training-only
-horizon-failure penalty did not exceed the unchanged incumbent under their
-tested conditions. Training reward and proxy success remain unreliable
+**Current synthesis:** The campaign objective is at least 98% success (196/200)
+on the official reach-and-hold panel. The unchanged PPO lineage remains the
+strongest development policy, reaching 193/200 (96.5%) after transfer and
+continuation, but it is below the objective and has no terminal-readiness
+evidence. Its measured success ranges from 92.0% to 96.5% across development
+panels, while fresh unchanged-PPO trajectories reached 83.0%, 89.5%, and
+90.5% at their measured checkpoints. Failures consistently exhaust the
+500-step horizon and include both no-reach and interrupted-hold episodes, with
+recurring but non-exclusive angle and radius associations. Across Experiments
+1-13, changes to optimization, continuation, target coverage, representation,
+hold credit, discounting, velocity stability, radial sampling, and a
+training-only horizon penalty did not exceed the unchanged incumbent under
+their tested conditions. Training reward and proxy success are not reliable
 selectors of saved-policy task success.
 
-**Lessons and limits:** Saved-policy task success governs progress, not reward
-or training proxies (`research/brief.md`; Experiments 1-13 in
-`research/postmortems.md`). Transfer preserves a useful learned policy and
-representation, while fresh learning has material variance; the replication
-results do not estimate its distribution. The interventions so far weaken
-individual explanations but do not identify a sufficient failure mechanism:
-failure-mode shifts, including fewer no-reach episodes paired with more hold
-interruptions, are diagnostic associations rather than causal findings. The
-experiment-13 result is evidence against its tested terminal-penalty design,
-not against all horizon-aware training signals.
-Measurements are development evidence, selection-contaminated where panels are
-reused, and unmeasured checkpoints remain unmeasured.
+**Lessons and limits:** Saved-policy task success, not reward or training
+proxies, is the relevant progress measure (`research/brief.md`; Experiments
+1-13 in `research/postmortems.md`). Transfer preserves a useful learned
+policy and representation, whereas fresh learning has substantial variance;
+the fresh replications do not estimate its full distribution. The observed
+failure-mode shifts, including fewer no-reach episodes paired with more
+interrupted holds, are diagnostic associations rather than causal findings.
+The failed interventions weaken specific explanations under their tested
+conditions but do not identify a sufficient failure mechanism. In particular,
+the experiment-13 result is evidence against its terminal-penalty design, not
+against every horizon-aware signal. Development measurements are
+selection-contaminated when panels are reused, and unmeasured checkpoints are
+not failed measurements.
 
 **Open questions:** The relative roles of optimization trajectory, control
-stability, reachability, representation, target coverage, and task mechanics
-remain unresolved. It is also unknown whether a different horizon-aware signal
-could help without disturbing the incumbent's learned behavior. The current
-best-known designation still lacks terminal-validation evidence.
+stability, reachability, representation, target coverage, reward credit after
+hold interruption, and task mechanics remain unresolved. It is unknown whether
+the incumbent's full hold-credit forfeiture makes recovery from transient
+exits unnecessarily brittle, or whether that penalty is needed to preserve
+uninterrupted holding. The best-known designation still lacks
+terminal-validation evidence.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
