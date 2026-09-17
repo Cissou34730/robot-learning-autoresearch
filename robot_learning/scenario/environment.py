@@ -22,26 +22,12 @@ from robot_learning.benchmark.spec import (
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
-from robot_learning.robots.two_joint_arm import (
-    FOREARM_LENGTH,
-    TWO_JOINT_ARM_XML_PATH,
-    UPPER_ARM_LENGTH,
-)
+from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
-# Train over the full official target-radius support. The previous training
-# distribution sampled radii only in 14-20 cm while the official task samples
-# 6-20 cm, leaving the near field (about 57% of official episodes) unvisited.
-TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-
-# Fraction of training targets drawn from the "folded-required" region: targets
-# whose elbow-open inverse-kinematics solution violates the shoulder joint range,
-# so only the elbow-folded configuration reaches them. Oversampling this thin
-# region raises its training density above its natural share of the task.
-FOLDED_TARGET_SAMPLE_FRACTION = 0.3
-FOLDED_RESAMPLE_ATTEMPTS = 256
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -56,26 +42,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
-        folded_sample_fraction: float = 0.0,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
-        self.folded_sample_fraction = float(folded_sample_fraction)
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
-
-        shoulder_joint = mujoco.mj_name2id(
-            self.model, mujoco.mjtObj.mjOBJ_JOINT, "shoulder"
-        )
-        elbow_joint = mujoco.mj_name2id(
-            self.model, mujoco.mjtObj.mjOBJ_JOINT, "elbow"
-        )
-        self._shoulder_range = tuple(self.model.jnt_range[shoulder_joint])
-        self._elbow_range = tuple(self.model.jnt_range[elbow_joint])
 
         self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
@@ -105,49 +80,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
 
-    def _open_solution_angles(self, radius: float, angle: float) -> tuple[float, float]:
-        """Shoulder and elbow angles (radians) of the elbow-open IK solution."""
-        cos_elbow = (
-            radius**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
-        ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-        elbow = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
-        shoulder = angle - float(
-            np.arctan2(
-                FOREARM_LENGTH * np.sin(elbow),
-                UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+    def _sample_target_position(self) -> None:
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        radius = float(
+            self.np_random.uniform(
+                self.target_radius_range[0], self.target_radius_range[1]
             )
         )
-        return float((shoulder + np.pi) % (2.0 * np.pi) - np.pi), elbow
-
-    def _folded_solution_required(self, radius: float, angle: float) -> bool:
-        """Whether the elbow-open solution violates a joint range.
-
-        Such targets are reachable only through the elbow-folded configuration.
-        """
-        shoulder, elbow = self._open_solution_angles(radius, angle)
-        return not (
-            self._shoulder_range[0] <= shoulder <= self._shoulder_range[1]
-            and self._elbow_range[0] <= elbow <= self._elbow_range[1]
-        )
-
-    def _sample_target_geometry(self) -> tuple[float, float]:
-        low, high = self.target_radius_range
-        if (
-            self.folded_sample_fraction > 0.0
-            and float(self.np_random.random()) < self.folded_sample_fraction
-        ):
-            for _ in range(FOLDED_RESAMPLE_ATTEMPTS):
-                radius = float(self.np_random.uniform(low, high))
-                angle = float(self.np_random.uniform(-np.pi, np.pi))
-                if self._folded_solution_required(radius, angle):
-                    return radius, angle
-        return (
-            float(self.np_random.uniform(low, high)),
-            float(self.np_random.uniform(-np.pi, np.pi)),
-        )
-
-    def _sample_target_position(self) -> None:
-        radius, angle = self._sample_target_geometry()
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.
         target_z = float(self._end_effector_position()[2])
@@ -231,10 +170,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(
-        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        folded_sample_fraction=FOLDED_TARGET_SAMPLE_FRACTION,
-    )
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
