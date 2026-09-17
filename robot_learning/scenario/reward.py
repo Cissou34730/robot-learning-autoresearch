@@ -19,7 +19,6 @@ ACTION_COST_COEFFICIENT = 0.001
 HOLD_PROGRESS_BONUS = 100.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 1.0
-HOLD_VELOCITY_PENALTY_COEFFICIENT = 10.0
 OUTSIDE_BAND_WIDTH = 0.02
 OUTSIDE_BAND_PENALTY = 0.5
 HOLD_COMPLETE_BONUS = 300.0
@@ -49,7 +48,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    end_effector_velocity: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -68,14 +66,6 @@ def reach_reward(
     else:
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
-
-    hold_velocity_penalty = 0.0
-    if held_steps > 0 and end_effector_velocity is not None:
-        hold_velocity_penalty = -(
-            HOLD_VELOCITY_PENALTY_COEFFICIENT
-            * float(np.linalg.norm(end_effector_velocity))
-        )
-    reward += hold_velocity_penalty
 
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
@@ -104,7 +94,6 @@ def reach_reward(
             "progress": float(progress),
             "distance_cost": float(distance_cost),
             "hold_progress": float(hold_progress),
-            "hold_velocity_penalty": float(hold_velocity_penalty),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),

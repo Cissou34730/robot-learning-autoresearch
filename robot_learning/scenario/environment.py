@@ -155,15 +155,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
-        end_effector_velocity = np.zeros(6, dtype=np.float64)
-        mujoco.mj_objectVelocity(
-            self.model,
-            self.data,
-            mujoco.mjtObj.mjOBJ_SITE,
-            self.model.site("end_effector").id,
-            end_effector_velocity,
-            0,
-        )
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -173,7 +164,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            end_effector_velocity=end_effector_velocity[3:],
         )
         self._previous_distance = distance
 
