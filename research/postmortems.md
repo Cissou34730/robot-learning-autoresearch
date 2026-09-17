@@ -3,27 +3,28 @@
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success (196/200)
-on the official reach-and-hold panel. Experiment 14's transferred
-hold-recovery-credit endpoint reached 198/200 (99.0%) on the fresh seed-1208
-development panel, exceeding the unchanged incumbent's 191/200 (95.5%) there
-and the prior best development result of 193/200 (96.5%). This is the
-strongest measured development policy so far, but it is not an official result
-and has no terminal-validation evidence. Its two failures were interrupted
-holds at closely related positive angles and mid-range radii; the incumbent
-had both interrupted-hold and no-reach failures on the same panel. Across
-Experiments 1-13, changes to optimization, continuation, target coverage,
-representation, hold credit, discounting, velocity stability, radial sampling,
-and a training-only horizon penalty did not exceed the unchanged incumbent
-under their tested conditions. Experiment 14 is a measured exception under
-one transferred trajectory and panel, not a distribution-wide conclusion.
-Training reward and proxy success remain unreliable selectors of saved-policy
-task success: its 80896 proxy peak scored 98.5%, while the later endpoint
-scored 99.0% despite lower endpoint proxies.
+on the official reach-and-hold panel. The baseline and unchanged continuations
+established useful transferred policies, with the strongest pre-experiment-14
+development result at 193/200 (96.5%), while fresh replications showed that
+the same recipe does not reliably rediscover that regime. Across experiments
+4-13, the campaign tested learning-rate, target-coverage, representation,
+hold-credit profile, discounting, velocity, radial-sampling, and
+horizon-penalty changes; none replaced the incumbent under its tested
+trajectory and panel. Experiment 14's
+transferred hold-recovery-credit endpoint reached 198/200 (99.0%) on the fresh
+seed-1208 development panel, exceeding the unchanged incumbent's 191/200
+(95.5%) and reducing failures from nine to two. It is the strongest measured
+development policy, but it is not an official result and has no
+terminal-validation evidence. Its two failures were interrupted holds at
+closely related positive angles and mid-range radii. Training reward and proxy
+success remain unreliable selectors: the experiment-14 proxy peak scored
+98.5%, while the later endpoint scored 99.0% despite lower endpoint proxies.
 
 **Lessons and limits:** Saved-policy task success, not reward or training
 proxies, is the relevant progress measure (`research/brief.md`; Experiments
-1-14 in `research/postmortems.md`). Transfer preserves a useful learned
-policy and representation, whereas fresh learning has substantial variance;
+1-14 in `research/postmortems.md`). Transfer preserves a useful policy and
+learned representation when the observation, action, task, and runtime
+contracts remain aligned, whereas fresh learning has substantial variance;
 the fresh replications do not estimate its full distribution. The experiment-
 14 endpoint's 7-versus-0 paired advantage over the incumbent and its reduction
 from 9 to 2 horizon failures support objective-relevant progress under the
@@ -34,14 +35,14 @@ are selection-contaminated when panels are reused, and unmeasured checkpoints
 are not failed measurements. The fixed task-reference panel remains reused
 development evidence, not terminal evidence.
 
-**Open questions:** The experiment-14 endpoint needs fresh
-terminal-validation evidence before an official assessment can be scientifically
-well supported, and its residual positive-angle interrupted holds need not be
-the only remaining failure mode on the official distribution. The relative
-roles of optimization trajectory, control stability, reachability,
+**Open questions:** The experiment-14 endpoint's performance across fresh
+terminal-validation episodes remains unknown, as does whether it is likely to
+meet the official 196/200 result. Its residual positive-angle interrupted holds
+need not be the only remaining failure mode on the official distribution. The
+relative roles of optimization trajectory, control stability, reachability,
 representation, target coverage, reward credit after hold interruption, and
 task mechanics remain unresolved. It is also unknown whether the measured
-hold-recovery gain persists across another panel or training continuation.
+hold-recovery gain persists or degrades under unchanged further optimization.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
