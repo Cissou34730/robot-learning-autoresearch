@@ -147,6 +147,11 @@ command check, and a refused command is rejected with its reason. Delegation and
 the wider network are disabled, and the harness policy is carried over as session
 instructions.
 
+The server is configured with `permission.bash: "ask"`. OpenCode `1.18.23`
+emits these requests as `permission.asked`; the adapter also accepts the legacy
+`permission.updated` event. Without the explicit `ask` setting, shell commands
+execute without reaching the harness policy.
+
 ## Verification status
 
 Verified offline:
@@ -158,7 +163,7 @@ Verified offline:
 - The launcher parses cleanly and still routes every phase through the single
   researcher process boundary.
 
-Verified against a locally started OpenCode server (`1.18.23`, no model call):
+Verified against a locally started OpenCode server (`1.18.23`):
 
 - The server starts and reports its listening URL after roughly five seconds.
   This is why the runtime sets a 30 s startup timeout: the SDK's own 5 s default
@@ -173,23 +178,26 @@ Verified against a locally started OpenCode server (`1.18.23`, no model call):
   `deepseek-v4-pro`, `deepseek-v4-flash-vision-exp`; GLM is `glm-5.1`,
   `glm-5.2`, `glm-5.3`, `glm-5.3-flash`.
 - `build` exists as a primary agent, so agent selection resolves.
+- An authenticated `opencode-go/deepseek-v4.1-flash` prompt completed with exit
+  code 0, streamed `LIVE_OK` once, emitted step usage and a cost estimate, and
+  accepted the injected `reasoningEffort: high` option.
+- A permitted `pwd` shell call was approved automatically and completed without
+  a human prompt.
+- A restarted adapter resumed the exact mapped session. Its attempted `git init`
+  produced a `permission.asked` event, was rejected with the harness denial, and
+  did not create `.git`.
+- The timeout path aborted a waiting session and returned exit code 5 during the
+  permission compatibility diagnosis.
 
-Not yet verified, because each needs a model call:
+Not yet verified live:
 
 - Exact event ordering and whether text arrives as deltas, snapshots or both.
-- Whether `opencode-go/deepseek-v4.1-flash` accepts the injected
-  `reasoningEffort` option. It is an OpenAI-family model option, and Go serves
-  DeepSeek over an OpenAI-compatible chat-completions endpoint, so it may be
-  ignored. It is kept deliberately: a rejected option is a clear failure rather
-  than a silent scientific change.
-- Whether the permission request carries the shell command, and in which field.
 - The file-change event names and idle/busy transition timing.
-- Resume, timeout and interrupt behaviour end to end.
+- Ctrl+C interruption end to end.
 
 These are the compatibility-gate items recorded in
-[the implementation plan](opencode-runtime-plan.md). Until a live check is run,
-treat the runtime as implemented and unit-verified but not yet exercised against
-the provider.
+[the implementation plan](opencode-runtime-plan.md). The core provider and
+guardrail path is now live-verified; the remaining items are robustness checks.
 
 ## Troubleshooting
 

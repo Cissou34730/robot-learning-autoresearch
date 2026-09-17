@@ -27,6 +27,7 @@ test("reasoning is expressed as a provider model option", () => {
   assert.deepEqual(config.provider["opencode-go"].models["gpt-5.6-luna"].options, {
     reasoningEffort: "high",
   });
+  assert.deepEqual(config.permission, { bash: "ask" });
 });
 
 test("errors are described from the shapes the SDK actually returns", () => {

@@ -111,6 +111,20 @@ export type RunResult = {
 
 type Deferred<T> = { promise: Promise<T>; resolve: (value: T) => void };
 
+type PermissionAskedEvent = {
+  type: "permission.asked";
+  properties: {
+    id: string;
+    sessionID: string;
+    permission: string;
+    patterns: string[];
+    metadata: Record<string, unknown>;
+    tool?: { callID: string };
+  };
+};
+
+type RuntimeEvent = Event | PermissionAskedEvent;
+
 function deferred<T>(): Deferred<T> {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((inner) => {
@@ -162,6 +176,7 @@ export function serverConfig(
   reasoning: string,
 ): Record<string, unknown> {
   return {
+    permission: { bash: "ask" },
     provider: {
       [providerID]: {
         models: {
@@ -371,7 +386,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     let sawUsage = false;
 
     drain = (async (): Promise<void> => {
-      for await (const event of subscription.stream as AsyncGenerator<Event>) {
+      for await (const event of subscription.stream as AsyncGenerator<RuntimeEvent>) {
         if (muted.value) break;
         handleEvent(event);
       }
@@ -379,7 +394,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
       if (!muted.value) console.line(`  ! event stream ended: ${describeError(error)}`);
     });
 
-    function handleEvent(event: Event): void {
+    function handleEvent(event: RuntimeEvent): void {
       switch (event.type) {
         case "message.updated": {
           const info = event.properties.info;
@@ -438,6 +453,18 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
           const permission = event.properties;
           if (permission.sessionID !== sessionID) return;
           void answerPermission(client, sessionID, console, permission);
+          return;
+        }
+        case "permission.asked": {
+          const permission = event.properties;
+          if (permission.sessionID !== sessionID) return;
+          void answerPermission(client, sessionID, console, {
+            id: permission.id,
+            type: permission.permission,
+            pattern: permission.patterns,
+            metadata: permission.metadata,
+            callID: permission.tool?.callID,
+          });
           return;
         }
         case "file.watcher.updated": {

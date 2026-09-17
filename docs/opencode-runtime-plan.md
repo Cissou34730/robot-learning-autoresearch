@@ -1,8 +1,9 @@
 # Optional OpenCode TypeScript SDK Implementation Plan
 
 Status: implemented on branch `feature/opencode-researcher-backend`. Offline
-verification is green; the live-provider checks under "Verification And
-Acceptance" are still outstanding. The runtime itself is documented in
+verification is green, and the core authenticated provider, resume, usage, and
+permission checks pass. Remaining opt-in robustness checks are listed under
+"Verification And Acceptance". The runtime itself is documented in
 [opencode-runtime.md](opencode-runtime.md).
 
 ## Objective
@@ -343,7 +344,12 @@ Resolved by reading the installed package rather than assuming:
 - **Model verification** uses `config.providers()`, because the root client's
   `Global` class exposes only `event`, not `health`.
 
-Still requiring a live authenticated provider: event ordering, whether the
-injected `reasoningEffort` is accepted, which permission field carries the shell
-command, file-change event names, idle/busy timing, and resume, timeout and
-interrupt behaviour end to end.
+Live authenticated verification established that `reasoningEffort: high` is
+accepted, text and usage complete, process restart resumes the mapped session,
+permitted shell calls are approved once, prohibited shell calls are rejected
+before execution, and timeout abort returns exit code 5. OpenCode `1.18.23`
+emits shell approval requests as `permission.asked`, with the command in
+`patterns`; the root generated client declarations still expose the legacy
+`permission.updated` type, so the adapter handles both. Exact delta-versus-
+snapshot ordering, file-event timing, and Ctrl+C interruption remain live-check
+items.
