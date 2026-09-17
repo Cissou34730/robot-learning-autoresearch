@@ -13,7 +13,9 @@ transfer, fresh replication, focused-angle coverage, explicit target geometry,
 and quadratic hold-progress credit each failed to exceed the incumbent under
 their measured conditions. The current working and best-known policy is
 therefore the unchanged-recipe incumbent at 96.5%, below the objective and
-without terminal-readiness evidence. The experiment-7 challengers (74.0% and
+without terminal-readiness evidence. The gamma-0.995 challengers reached only
+81.0% and 78.0% on a matched fresh panel against 92.0% for the incumbent,
+despite stronger training proxies. The experiment-7 challengers (74.0% and
 81.0%) and experiment-8 challengers (both 88.5% versus 92.0% for the incumbent)
 weaken their tested explanations without proving those interventions
 intrinsically harmful. This is provisional memory, not a prescribed direction.
@@ -30,10 +32,14 @@ already combines distance progress, linear hold-progress potential, exit
 forfeiture, and completion bonus (`robot_learning/scenario/reward.py`), but
 reward shaping has not been separated from representation, optimization
 trajectory, or mechanics. The quadratic run reached a proxy peak without
-saved-policy improvement and did not reduce the residual sector. Fresh
-training variability is demonstrated by the 89.5% baseline and 83.0%
-replication, but its seed distribution is unknown. Development measurements
-remain selection evidence rather than the official verdict.
+saved-policy improvement and did not reduce the residual sector. The gamma
+experiment adds another proxy-to-policy mismatch: the 105472-step proxy peak
+was worse than the incumbent, and the endpoint was worse still, while the
+current incumbent's 92.0% on the fresh seed-1004 panel is lower than its
+96.5% results on earlier panels. Fresh training variability is demonstrated by
+the 89.5% baseline and 83.0% replication, but its seed distribution is
+unknown. Development measurements remain selection evidence rather than the
+official verdict.
 
 **Open questions:** The residual failures could reflect temporal credit for
 completing the hold, optimization trajectory, representation, target coverage,
@@ -41,7 +47,9 @@ or task mechanics; current evidence does not distinguish them. It remains
 unknown whether a reward or optimization change can address the failures
 without damaging already-solved geometries. The unmeasured experiment-7
 checkpoints remain unmeasured, and no terminal-readiness assessment has been
-established for the current best-known designation.
+established for the current best-known designation. The gamma experiment's
+research evaluator does not emit target geometry, so its effect on the
+recurring angular sector remains unresolved.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -416,3 +424,51 @@ evidence, so the experiment closes without requesting the official benchmark.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-8-checkpoint-105472-200ep-seed1003-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-8-working-200ep-seed1003-a69293a214ad.json`;
 `robot_learning/scenario/reward.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 9
+
+**Result:** Increasing PPO gamma from 0.99 to 0.995 did not improve the
+saved-policy task behavior. The incumbent remains the working and best-known
+lineage, and the gamma change should be reverted.
+
+**Observed behavior:** The gamma-0.995 training run reached training success
+1.0 by step 68608. Its highest recorded mean reward was 353.746 at checkpoint
+105472, with training success 1.0; the endpoint at step 120832 also had
+training success 1.0 but lower mean reward 349.215. On the same fresh
+200-episode seed-1004 research panel, checkpoint-105472 achieved 162/200
+(81.0%), checkpoint-120832 achieved 156/200 (78.0%), and the incumbent
+achieved 184/200 (92.0%). Paired comparisons favored the incumbent 26 to 4
+against checkpoint-105472 and 32 to 4 against checkpoint-120832. The two
+gamma checkpoints had 14 versus 8 discordant wins for checkpoint-105472
+against checkpoint-120832. All 38, 44, and 16 failures respectively
+truncated at the 500-step horizon. The research evaluator did not emit target
+geometry, so this round did not directly measure the proposed 120-165 degree
+sector.
+
+**Hypothesis assessment:** Contradicted under the tested transferred
+trajectory and matched panel. Neither gamma checkpoint improved saved-policy
+success or reduced horizon-exhaustion failures relative to the incumbent, and
+the lower endpoint result did not follow the training-proxy peak. This is
+evidence against the tested gamma change under these conditions, not proof
+that every discount change is ineffective or that temporal credit is unrelated
+to the residual sector. The incumbent's 92.0% on this fresh panel is also not
+evidence that its earlier 96.5% panels degraded; it is a matched-panel
+observation with different episode coverage.
+
+**Interpretation:** Measured task behavior supports keeping the incumbent as
+meaningful progress toward the 98% objective, while the gamma intervention
+does not provide a useful policy or recipe. The strong training proxies and
+weak saved-policy results reinforce that proxy success and reward are
+orthogonal to objective-relevant policy selection in this run. The result is
+below the objective and lacks terminal-validation evidence, so no official
+benchmark is requested.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-9/inventory.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-9-attempt-1.log`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-9-checkpoint-105472-200ep-seed1004-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-9-checkpoint-120832-200ep-seed1004-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-9-working-200ep-seed1004-a69293a214ad.json`;
+`research/query_training_log.py`.
