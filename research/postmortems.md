@@ -3,50 +3,37 @@
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success on the
-official 200-episode reach-and-hold panel. Unchanged PPO improved from the fresh
-baseline's 89.5% to a best development result of 96.5% (193/200) after
-continuation, and that incumbent reproduced 96.5% on the seed-2, seed-3, and
-seed-4 panels while scoring 92.0% on seed-1004 and seed-1005 and 95.5% on
-seed-1205. A fresh unchanged-PPO replication measured 88.0% and 90.5% at its
-selected checkpoints on seed-1206, so the incumbent-level trajectory was not
-recovered under the tested fresh seed. The incumbent's residual failures
-include a recurring 120-165 degree sector pattern, low-radius concentration,
-no-reach episodes, and tolerance interruptions, so angle and radius are signals
-rather than complete explanations. Lower-rate transfer, the fresh replication,
-focused-angle coverage, explicit target geometry, quadratic hold credit,
-gamma-0.995 transfer, in-tolerance velocity penalization, and 6-10 cm
-oversampling each failed to exceed the unchanged incumbent under the measured
-conditions. Training proxies and reward remain unreliable indicators of
-saved-policy success. The current working and best-known policy is therefore
-meaningful development progress but remains below the objective and has no
-terminal-readiness evidence.
+official 200-episode reach-and-hold panel. Unchanged PPO produced the strongest
+development policy at 193/200 (96.5%) after continuation, but it remains below
+the objective and has no terminal-readiness evidence. That policy reproduced
+96.5% on several panels but scored 92.0% and 95.5% on others, while fresh
+unchanged-PPO runs reached only 83.0%, 89.5%, and 90.5% at their measured
+checkpoints. The incumbent's failures repeatedly exhaust the 500-step horizon,
+with mixtures of no-reach and interrupted-hold episodes and recurring, but
+non-exclusive, angle and radius patterns. The tested changes to learning rate,
+continuation duration, target coverage, explicit geometry, hold credit,
+discounting, velocity stability, and radial sampling did not exceed the
+unchanged incumbent under their tested conditions. Training reward and proxy
+success remain unreliable selectors of saved-policy task success.
 
-**Lessons and limits:** Saved-policy task success, not training reward or proxy
-success, governs progress. The strongest policy's measured failures exhaust
-the 500-step horizon, and diagnostics mix no-reach and interrupted-hold
-episodes; the evidence does not identify one sufficient failure mechanism.
-Reward shaping, target coverage, representation, discounting, and the tested
-stability penalty have each been weakened only under their particular recipes,
-transferred trajectories, or panels, not universally disproven
-(`research/postmortems.md`, Experiments 4 and 6-11). Fresh learning variance
-is material: Experiment 1 reached 89.5%, Experiment 5 reached 83.0%, and
-Experiment 12 reached 90.5%, while the incumbent's transferred policy was much
-stronger across several evaluation panels (Experiments 1, 2, 5, 12). This
-supports high variance under the tested seeds but does not estimate its
-distribution or establish a universal failure of fresh training. Experiment 12
-also shows that late proxy improvement can reduce no-reach failures while
-increasing interrupted holds; this is a diagnostic association, not a causal
-mechanism. Development measurements are selection evidence, not the official
-verdict, and unmeasured checkpoints remain unmeasured.
+**Lessons and limits:** Saved-policy task success governs progress, not reward
+or training proxies (`research/brief.md`; Experiments 1-12 in
+`research/postmortems.md`). Transfer preserves a useful learned policy and
+representation, while fresh learning has material variance; the replication
+results do not estimate its distribution. The interventions so far weaken
+individual explanations but do not identify a sufficient failure mechanism:
+failure-mode shifts, including fewer no-reach episodes paired with more hold
+interruptions, are diagnostic associations rather than causal findings.
+Measurements are development evidence, selection-contaminated where panels are
+reused, and unmeasured checkpoints remain unmeasured.
 
-**Open questions:** Experiment 12 weakens, but does not fully resolve, whether
-fresh unchanged PPO can reproduce incumbent-level behavior; the result is one
-additional seed with two measured checkpoints and 22 unmeasured checkpoints.
-The residual failures may still involve temporal credit, control stability,
-reachability, representation, target coverage, or task mechanics, and their
-relative contributions are unknown. The recurring sector and low-radius
-patterns may not generalize beyond the measured panels. The current best-known
-designation also lacks terminal-validation evidence.
+**Open questions:** It remains unclear whether making horizon exhaustion
+explicitly costly during training can reduce the dominant saved-policy failure
+outcome without increasing interrupted holds or otherwise disturbing the
+incumbent's learned behavior. The relative roles of optimization trajectory,
+control stability, reachability, representation, target coverage, and task
+mechanics remain unresolved. The current best-known designation still lacks
+terminal-validation evidence.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
