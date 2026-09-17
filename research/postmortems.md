@@ -12,28 +12,29 @@ checkpoints. The incumbent's failures repeatedly exhaust the 500-step horizon,
 with mixtures of no-reach and interrupted-hold episodes and recurring, but
 non-exclusive, angle and radius patterns. The tested changes to learning rate,
 continuation duration, target coverage, explicit geometry, hold credit,
-discounting, velocity stability, and radial sampling did not exceed the
-unchanged incumbent under their tested conditions. Training reward and proxy
-success remain unreliable selectors of saved-policy task success.
+discounting, velocity stability, radial sampling, and a training-only
+horizon-failure penalty did not exceed the unchanged incumbent under their
+tested conditions. Training reward and proxy success remain unreliable
+selectors of saved-policy task success.
 
 **Lessons and limits:** Saved-policy task success governs progress, not reward
-or training proxies (`research/brief.md`; Experiments 1-12 in
+or training proxies (`research/brief.md`; Experiments 1-13 in
 `research/postmortems.md`). Transfer preserves a useful learned policy and
 representation, while fresh learning has material variance; the replication
 results do not estimate its distribution. The interventions so far weaken
 individual explanations but do not identify a sufficient failure mechanism:
 failure-mode shifts, including fewer no-reach episodes paired with more hold
-interruptions, are diagnostic associations rather than causal findings.
+interruptions, are diagnostic associations rather than causal findings. The
+experiment-13 result is evidence against its tested terminal-penalty design,
+not against all horizon-aware training signals.
 Measurements are development evidence, selection-contaminated where panels are
 reused, and unmeasured checkpoints remain unmeasured.
 
-**Open questions:** It remains unclear whether making horizon exhaustion
-explicitly costly during training can reduce the dominant saved-policy failure
-outcome without increasing interrupted holds or otherwise disturbing the
-incumbent's learned behavior. The relative roles of optimization trajectory,
-control stability, reachability, representation, target coverage, and task
-mechanics remain unresolved. The current best-known designation still lacks
-terminal-validation evidence.
+**Open questions:** The relative roles of optimization trajectory, control
+stability, reachability, representation, target coverage, and task mechanics
+remain unresolved. It is also unknown whether a different horizon-aware signal
+could help without disturbing the incumbent's learned behavior. The current
+best-known designation still lacks terminal-validation evidence.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -620,3 +621,53 @@ benchmark is requested.
 `research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-12/inventory.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-12-checkpoint-100352-200ep-seed1206-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-12-checkpoint-120832-200ep-seed1206-a69293a214ad.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 13
+
+**Result:** The training-only horizon-failure penalty did not produce a
+replacement policy. The unchanged incumbent remains the working and
+best-known lineage, and the penalty change should be reverted.
+
+**Observed behavior:** The training log's proxy success rose from 0.88 at
+5,120 steps to 0.98 at the 120,832-step endpoint, with a transient 1.00 at
+111,616 steps. Mean reward rose from 265.7 to 351.0 at that transient and was
+337.4 at the endpoint; the saved inventory contains 24 checkpoints, of which
+22 remain unmeasured. On the same fresh 200-episode seed-1207 research panel,
+checkpoint-80,896 achieved 179/200 (89.5%), checkpoint-120,832 achieved
+180/200 (90.0%), and the incumbent achieved 191/200 (95.5%). The challenger
+failures all truncated at the 500-step horizon: 21 for checkpoint-80,896 and
+20 for checkpoint-120,832, versus 9 for the incumbent. The early challenger
+had 14 no-reach and 9 hold-interruption episodes; the endpoint had 10 and 17,
+while the incumbent had 5 and 5. The endpoint therefore reduced no-reach
+episodes relative to the early challenger but increased interruptions and
+remained well below the incumbent.
+
+**Hypothesis assessment:** Weakened under the tested transferred trajectory
+and matched seed-1207 panel. The prediction that an explicit terminal penalty
+would improve saved-policy success and reduce horizon exhaustion without
+increasing hold interruptions was not observed: both measured challengers had
+lower success and more horizon failures than the incumbent, and the endpoint
+had more interruptions. The transient and late proxy improvements did not
+transfer to saved-policy task success. This is evidence against this penalty
+design under these conditions, not proof that all horizon-aware signals are
+ineffective or that the measured failure-mode associations are causal. The 22
+unmeasured checkpoints remain unmeasured rather than failed.
+
+**Interpretation:** The saved-policy measurements support retaining the
+incumbent as meaningful progress toward the 98% objective, but 191/200 on this
+matched development panel and the incumbent's best 193/200 development result
+do not establish the official objective. The proxy peak and endpoint are
+orthogonal to objective-relevant policy selection here. The reused
+task-reference panel is development evidence rather than a privileged lineage
+criterion, and no terminal-validation panel exists for the current best-known
+designation, so this experiment closes without requesting the official
+benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-13/inventory.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-13-attempt-1.log`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-13-working-200ep-seed1207-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-13-checkpoint-80896-200ep-seed1207-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-13-checkpoint-120832-200ep-seed1207-a69293a214ad.json`;
+`robot_learning/scenario/training_environment.py`.
