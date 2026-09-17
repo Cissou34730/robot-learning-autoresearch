@@ -52,3 +52,25 @@ def test_default_development_target_sequence_differs_from_the_official_one():
         official_environment(), final_contract.EVALUATION_SEED, episodes
     )
     assert development != official
+
+
+def test_explicit_official_seed_request_stays_accepted():
+    from research import runner_protocol as protocol
+
+    request = {
+        "experiment": 1,
+        "question": "question",
+        "reason": "reason",
+        "measurements": [
+            {
+                "instrument": "research_evaluation",
+                "candidate": "candidate",
+                "episodes": final_contract.EVALUATION_EPISODES,
+                "seed": final_contract.EVALUATION_SEED,
+                "selection": "explicitly choose the official episodes",
+                "omitted_alternative": None,
+                "purpose": "selection",
+            }
+        ],
+    }
+    protocol.validate_evaluation_request(request, require_purpose=True)

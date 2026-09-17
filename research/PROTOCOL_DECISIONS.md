@@ -7,6 +7,33 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-17 - Audit remediation
+
+- **Statistic ownership:** The protected paired module owns episode identity,
+  conflicting-outcome rejection, shared-panel reconciliation and the paired
+  contingency counts. The choice of inferential test is researcher-owned in
+  `robot_learning/training/comparison.py`; the Runner stores only the protected
+  counts, so a restored recipe can change a statistic but cannot corrupt the
+  measurement it is computed from.
+- **Coverage accounting:** Campaign episode coverage is computed per instrument
+  from deterministic identities (`(evaluation_semantics, episode_seed)` for
+  research evaluation, `(panel, episode_seed)` for task reference), deduplicated
+  across models, so reused panels are reported as repeated coverage.
+- **Round resolution:** Every requested operation is recorded in its round as
+  `executed`, `reused` or `failed`. A reused operation links the original
+  artifact, fingerprint and source round and adds no executions or distinct
+  identities.
+- **Stopping evidence provenance:** A monotonic best-known designation ordinal
+  records each tenure; a new designation, including a return to an earlier
+  fingerprint, starts a new one. Each measurement on a new request declares a
+  purpose of `selection` or `terminal_validation`; only research evaluation can
+  be terminal validation. Integer successes and episode counts are authoritative,
+  and only a predeclared panel from the current tenure with disjoint episodes is
+  stopping evidence.
+- **Prospective validation:** The stopping rule is characterized by a
+  predeclared simulation study; it remains advisory until prospectively validated
+  on new campaigns.
+
 ## 2026-09-16 - Measurement integrity on the protected side
 
 - **Comparison accounting placement:** Deterministic episode identity,

@@ -235,18 +235,19 @@ stating the evidence and uncertainty behind that decision.
 `research/stopping_contract.md` defines the terminal-readiness evidence. A
 development result on the episodes used to select the model is not by itself
 readiness evidence, because selection biases that panel upward. A terminal
-request should cite a stopping-validation panel measured on the frozen
-best-known model after its designation, on episodes not used for selection, and
-should state the uncertainty the evidence cannot remove. The contract is advisory
-in this version: it reports a deterministic assessment and neither blocks nor
-authorizes the request, and no automatic threshold decides when the campaign
-ends.
+request may cite a stopping-validation panel measured on the frozen best-known
+model during its current designation, on episodes not used for selection, and
+should state the uncertainty the evidence cannot remove. The fixed task-reference
+panel is selection evidence and can never be a stopping-validation panel. The
+contract is advisory in this version: it reports a deterministic assessment and
+neither blocks nor authorizes the request, and no automatic threshold decides
+when the campaign ends.
 
 Another useful investigation does not prohibit stopping, and reaching a
 development threshold does not require stopping. No residual-failure criterion or
-proof that no better research direction exists is required. Unlike the earlier
-wording, a fresh stopping-validation panel is expected for a terminal request;
-its margin is the one stated in the contract.
+proof that no better research direction exists is required. The pilot
+distinguishes selection evidence from stopping-validation evidence and reports
+whether the candidate rule is satisfied; a fresh panel is not currently required.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. Requesting it ends the campaign after either verdict:

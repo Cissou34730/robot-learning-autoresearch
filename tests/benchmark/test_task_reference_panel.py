@@ -355,6 +355,7 @@ def test_reference_entry_fields_stay_minimal():
         "label",
         "selection",
         "omitted_alternative",
+        "purpose",
     }
 
 

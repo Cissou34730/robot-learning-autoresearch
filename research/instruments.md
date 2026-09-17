@@ -81,6 +81,7 @@ Write `research/evaluation_request.json`:
       "candidate": "<model exposed by the brief or listed in the candidate inventory>",
       "selection": "<observed signal or explicit uncertainty, why this measurement is informative, and which next decision it could change>",
       "omitted_alternative": "<an available model left outside this request, or null only when every available model is requested>",
+      "purpose": "<selection | terminal_validation>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -116,6 +117,20 @@ model left outside the entire request. The Runner checks only that the
 identifier is available and is not measured in the same request. Use `null` only
 when the request measures every available model; the Runner verifies that
 condition.
+
+Every measurement on a newly submitted request also requires a `purpose`:
+
+- `selection` (the default for historical records): the measurement informs a
+  selection, comparison or diagnostic decision.
+- `terminal_validation`: the measurement is a predeclared stopping-validation
+  panel for the current best-known model. It is valid only for
+  `research_evaluation`, requires a designated best-known model, and is declared
+  before its result is observed. The fixed task-reference panel is selection
+  evidence and can never be a stopping-validation panel.
+
+The Runner records the declared purpose on the round and on the durable
+measurement; the stopping assessment uses only `terminal_validation` evidence
+from the current best-known designation.
 
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,

@@ -39,8 +39,12 @@ def test_accounting_module_is_protected_and_never_researcher_owned():
     assert not protocol.is_researcher_owned(PROTECTED_ACCOUNTING)
 
 
-def test_the_retired_researcher_owned_module_is_gone():
-    assert not (ROOT / "robot_learning" / "training" / "comparison.py").exists()
+def test_statistic_is_researcher_owned_and_the_module_is_not_protected():
+    assert not protocol.is_protected_source("robot_learning/training/comparison.py")
+    assert protocol.is_researcher_owned("robot_learning/training/comparison.py")
+    import robot_learning.paired_evidence as protected
+
+    assert not hasattr(protected, "exact_mcnemar_pvalue")
 
 
 def test_evaluator_and_runner_import_the_protected_accounting():

@@ -492,6 +492,8 @@ def check_analysis_deliverable() -> int:
                 raise TypeError("evaluation_request.json must contain a JSON object")
             if int(request.get("experiment", -1)) != int(pending["experiment"]):
                 raise ValueError("evaluation request references the wrong experiment")
+            protocol.validate_evaluation_request(request, require_purpose=True)
+            protocol.validate_terminal_validation_request(request, state)
             available = protocol.available_evaluation_candidates(pending, state)
             requested, _ = protocol.planned_measurements(request, available)
             resolved_models = protocol.resolved_measurement_models(request, available)
@@ -574,12 +576,16 @@ def _seal_paired_evidence_artifact(evidence_plan: list[dict], path: Path) -> Non
                     ] = fingerprint
 
 
-def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> dict:
+def _begin_evaluation_round(
+    pending: dict, experiment: int, request: dict, state: dict
+) -> dict:
     """Persist a new ordered measurement round before executing anything.
 
     The round keeps the request's question, reason and per-measurement
     selections so the order and purpose of successive requests survive closure
-    and can be recovered after an interruption.
+    and can be recovered after an interruption. A terminal-validation request
+    snapshots the current best-known tenure so the assessment can tell which
+    designation the panel belongs to.
     """
     rounds = pending.setdefault("evaluation_rounds", [])
     record = {
@@ -604,6 +610,16 @@ def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> di
             "paired_comparisons": [],
         },
     }
+    needs_validation = any(
+        str(entry.get("purpose", "selection")) == "terminal_validation"
+        for entry in record["measurements"]
+    )
+    if needs_validation:
+        best_known = state.get("best_known_lineage") or {}
+        record["terminal_validation_snapshot"] = {
+            "fingerprint": best_known.get("fingerprint"),
+            "designation_ordinal": best_known.get("designation_ordinal"),
+        }
     rounds.append(record)
     return record
 
@@ -701,14 +717,19 @@ def execute_pending_evaluations() -> int:
     validate_research_delta(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        # The preflight is the gate that requires a declared purpose on a new
+        # request; execution normalizes an already-accepted plan defensively.
         protocol.validate_evaluation_request(
             request, allow_legacy_need_more_evidence=not is_v4
         )
+        if is_v4:
+            protocol.validate_terminal_validation_request(request, state)
     else:
         request = pending.get("evaluation_plan")
         if not isinstance(request, dict):
             print("ERROR: research/evaluation_request.json not found.")
             return 1
+        protocol.normalize_measurement_purposes(request)
     accepted_v4_plan = is_v4 and isinstance(pending.get("evaluation_plan"), dict)
     if accepted_v4_plan and request != pending["evaluation_plan"]:
         raise ValueError("accepted measurement plan changed")
@@ -765,7 +786,7 @@ def execute_pending_evaluations() -> int:
         if is_v4:
             pending["evaluation_plan_models"] = resolved_models
             pending["evaluation_evidence_plan"] = evidence_plan
-            active_round = _begin_evaluation_round(pending, experiment, request)
+            active_round = _begin_evaluation_round(pending, experiment, request, state)
         pending.setdefault("partial_evaluations", [])
         repository.write_state(state)
     elif is_v4:
@@ -909,6 +930,7 @@ def execute_pending_evaluations() -> int:
                     "fingerprint"
                 ]
             contender.setdefault("evaluations", []).append(clean_metrics)
+            purpose = spec.get("purpose", "selection")
             executed.append(
                 {
                     "instrument": "research_evaluation",
@@ -918,6 +940,12 @@ def execute_pending_evaluations() -> int:
                     "selection": selection,
                     "omitted_alternative": omitted_alternative,
                     "label": label,
+                    "purpose": purpose,
+                    "terminal_validation_snapshot": (
+                        active_round.get("terminal_validation_snapshot")
+                        if purpose == "terminal_validation" and active_round is not None
+                        else None
+                    ),
                     "evaluation_semantics": semantics,
                     "metrics": clean_metrics,
                     **(
@@ -1341,6 +1369,9 @@ def apply_pending_v4_closure(state: dict) -> bool:
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
     state["retained_lineages"] = plan["retained"]
+    state["best_known_designation_counter"] = plan.get(
+        "designation_counter", state.get("best_known_designation_counter", 0)
+    )
     state["last_lineage_decision"] = {
         "experiment": int(pending["experiment"]),
         "continue_from": plan["working_name"],

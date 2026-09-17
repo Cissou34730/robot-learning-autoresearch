@@ -152,6 +152,7 @@ RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "label",
     "selection",
     "omitted_alternative",
+    "purpose",
 }
 TASK_REFERENCE_ENTRY_FIELDS = {
     "instrument",
@@ -159,11 +160,16 @@ TASK_REFERENCE_ENTRY_FIELDS = {
     "label",
     "selection",
     "omitted_alternative",
+    "purpose",
 }
 SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
+# Why a measurement was requested. `terminal_validation` marks a predeclared
+# stopping-validation panel; the fixed task-reference panel can never qualify.
+MEASUREMENT_PURPOSES = {"selection", "terminal_validation"}
+DEFAULT_MEASUREMENT_PURPOSE = "selection"
 
 
 # --- ownership -------------------------------------------------------------
@@ -792,7 +798,10 @@ def requested_measurements(request: dict) -> list[dict]:
 
 
 def validate_evaluation_request(
-    request: dict, *, allow_legacy_need_more_evidence: bool = False
+    request: dict,
+    *,
+    allow_legacy_need_more_evidence: bool = False,
+    require_purpose: bool = False,
 ) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
@@ -849,6 +858,22 @@ def validate_evaluation_request(
             raise ValueError(
                 f"{instrument} measurement cannot set unsupported fields {unknown}"
             )
+        purpose = entry.get("purpose")
+        if purpose is None:
+            if require_purpose:
+                raise ValueError(
+                    f"{instrument} requires a purpose of "
+                    f"{sorted(MEASUREMENT_PURPOSES)} on a new request"
+                )
+        elif purpose not in MEASUREMENT_PURPOSES:
+            raise ValueError(
+                f"{instrument} purpose must be one of {sorted(MEASUREMENT_PURPOSES)}"
+            )
+        elif instrument == "task_reference" and purpose == "terminal_validation":
+            raise ValueError(
+                "task_reference measures a fixed reused panel and cannot be "
+                "terminal-validation evidence; use research_evaluation"
+            )
         if "label" in entry and not isinstance(entry["label"], str):
             raise ValueError("measurement label must be a string")
         # Record scientific usefulness without asking the Runner to rank candidates.
@@ -888,6 +913,32 @@ def validate_evaluation_request(
         raise ValueError(
             f"an evaluation request may measure at most 3 distinct models; "
             f"{len(distinct_candidates)} requested: {sorted(distinct_candidates)}"
+        )
+
+
+def normalize_measurement_purposes(request: dict) -> dict:
+    """Fill an omitted purpose with `selection` for persisted or legacy requests."""
+    for entry in request.get("measurements") or []:
+        if isinstance(entry, dict) and entry.get("purpose") is None:
+            entry["purpose"] = DEFAULT_MEASUREMENT_PURPOSE
+    return request
+
+
+def validate_terminal_validation_request(request: dict, state: dict) -> None:
+    """A terminal-validation measurement needs a current best-known tenure."""
+    needs_validation = any(
+        isinstance(entry, dict) and entry.get("purpose") == "terminal_validation"
+        for entry in request.get("measurements") or []
+    )
+    if not needs_validation:
+        return
+    best_known = state.get("best_known_lineage")
+    if not isinstance(best_known, dict):
+        raise TypeError("terminal_validation requires a designated best-known model")
+    if not isinstance(best_known.get("designation_ordinal"), int):
+        raise TypeError(
+            "terminal_validation requires a recorded best-known designation "
+            "ordinal; re-designate the model before requesting it"
         )
 
 
@@ -963,6 +1014,7 @@ def planned_measurements(
                     "label": spec.get(
                         "label", f"requested evaluation {len(evaluations) + 1}: {name}"
                     ),
+                    "purpose": spec.get("purpose", DEFAULT_MEASUREMENT_PURPOSE),
                 }
             )
         else:
@@ -974,6 +1026,7 @@ def planned_measurements(
                     "label": spec.get(
                         "label", f"task reference {len(references) + 1}: {name}"
                     ),
+                    "purpose": spec.get("purpose", DEFAULT_MEASUREMENT_PURPOSE),
                 }
             )
     return evaluations, references
@@ -1507,6 +1560,24 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
         "request_final_benchmark": request_final,
     }
+
+
+def next_designation_ordinal(
+    existing_best: dict | None, fingerprint: str, counter: int
+) -> int:
+    """The designation ordinal for a best-known fingerprint.
+
+    Idempotently naming the current fingerprint preserves the ordinal. Any other
+    designation, including a return to an earlier fingerprint, starts a new
+    tenure and a new ordinal.
+    """
+    if (
+        isinstance(existing_best, dict)
+        and existing_best.get("fingerprint") == fingerprint
+        and isinstance(existing_best.get("designation_ordinal"), int)
+    ):
+        return int(existing_best["designation_ordinal"])
+    return int(counter) + 1
 
 
 def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
@@ -2180,6 +2251,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             ),
         )
         code_plan["parent"] = parent
+    designation_counter = int(state.get("best_known_designation_counter", 0) or 0)
     best_decision, best_record, best_name = (
         decision.get("best_known"),
         dict(state["best_known_lineage"])
@@ -2252,6 +2324,12 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 set(best_record["evaluation_artifacts"])
                 | {record["evaluation_artifact"] for record in selected_records}
             )
+            # A new designation, including a return to a previously designated
+            # fingerprint, starts a new tenure.
+            designation_counter = next_designation_ordinal(
+                existing_best, best_fingerprint, designation_counter
+            )
+            best_record["designation_ordinal"] = designation_counter
     retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
     removal_ids = decision.get("remove_retained", [])
     if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):
@@ -2331,4 +2409,5 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "removed_retained": removed,
         "request_final_benchmark": request_final,
         "hypothesis_assessment": hypothesis_assessment,
+        "designation_counter": designation_counter,
     }

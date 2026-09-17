@@ -1,26 +1,15 @@
-"""Frozen accounting for paired research measurements.
+"""Protected accounting for paired research measurements.
 
-Deterministic episode identity, distinct-coverage counting, and conflict
-rejection are correctness properties of measurement rather than scientific
-choices. They therefore live on the protected side of the ownership boundary so
-that restoring a research recipe can never silently revert them (issue #35).
+Deterministic episode identity, distinct-coverage counting, conflict rejection
+and the paired contingency counts are correctness properties of measurement
+rather than scientific choices. They therefore live on the protected side of the
+ownership boundary so that restoring a research recipe can never silently revert
+them (issue #35).
 
-The protected Runner replay reconciles shared episode identities from frozen
-panels before calling :func:`paired_comparison`; this module owns the accounting
-that both the Runner and the research evaluator share.
+The choice of inferential test is deliberately *not* here: the protected
+accounting stops at trustworthy counts, and a researcher-owned wrapper
+(`robot_learning.training.comparison`) may apply any statistic it prefers.
 """
-
-import math
-
-
-def exact_mcnemar_pvalue(candidate_wins: int, reference_wins: int) -> float:
-    """Return the two-sided exact sign test over discordant episodes."""
-    discordant = candidate_wins + reference_wins
-    if discordant == 0:
-        return 1.0
-    smaller = min(candidate_wins, reference_wins)
-    tail = sum(math.comb(discordant, value) for value in range(smaller + 1))
-    return min(1.0, 2 * tail / (2**discordant))
 
 
 def episode_outcomes(evaluations: list[dict]) -> dict[tuple[str, int], bool]:
@@ -44,7 +33,7 @@ def episode_outcomes(evaluations: list[dict]) -> dict[tuple[str, int], bool]:
 
 
 def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
-    """Compare policies on distinct, matching recorded episode identities."""
+    """Trustworthy paired contingency counts on shared episode identities."""
     candidate_outcomes = episode_outcomes(candidate)
     reference_outcomes = episode_outcomes(reference)
     if not candidate_outcomes or candidate_outcomes.keys() != reference_outcomes.keys():
@@ -67,5 +56,4 @@ def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
         "success_delta_percent": 100
         * (candidate_wins - reference_wins)
         / episode_count,
-        "exact_p_value": exact_mcnemar_pvalue(candidate_wins, reference_wins),
     }

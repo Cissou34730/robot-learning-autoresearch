@@ -90,6 +90,7 @@ def _request(seed: int) -> dict:
                 "seed": seed,
                 "selection": "the only checkpoint this experiment produced",
                 "omitted_alternative": None,
+                "purpose": "selection",
             }
         ],
     }
@@ -920,3 +921,57 @@ def test_v4_resumed_measurement_rejects_edited_accepted_request(monkeypatch, tmp
         run_experiment.execute_pending_evaluations()
 
     assert json.loads(state_path.read_text(encoding="utf-8")) == state
+
+
+def test_measurement_record_derives_integer_successes_from_sealed_outcomes():
+    record = repository.measurement_record(
+        {
+            "episodes": 3,
+            "success_percent": 66.67,
+            "episode_results": [
+                {"episode": 0, "episode_seed": 1, "success": True},
+                {"episode": 1, "episode_seed": 2, "success": False},
+                {"episode": 2, "episode_seed": 3, "success": True},
+            ],
+        }
+    )
+    assert record["successes"] == 2
+
+
+def test_analysis_preflight_requires_a_declared_purpose(monkeypatch, tmp_path, capsys):
+    _configure(monkeypatch, tmp_path)
+    request_path = tmp_path / "research" / "evaluation_request.json"
+    request = _request(10)
+    del request["measurements"][0]["purpose"]
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    assert run_experiment.check_analysis_deliverable() == 1
+    assert "requires a purpose" in capsys.readouterr().out
+
+
+def test_v4_measurement_flow_never_writes_legacy_evaluation_request(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state.get("pending_evaluation_request") is None
+    assert state.get("pending_analysis") is not None
