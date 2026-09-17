@@ -3,53 +3,51 @@
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% success on the
-official 200-episode reach-and-hold panel. The fresh unchanged PPO baseline
-reached 89.5% on research evaluation and 92.0% on the reused task-reference
-panel. Unchanged continuation produced the strongest development result,
-96.5% (193/200), and that incumbent reproduced 96.5% on the seed-2, seed-3,
-and seed-4 research panels. Its seven failures recur at the same geometries:
-six in the 120-165 degree sector and one near -103 degrees. Lower-rate
-transfer, fresh replication, focused-angle coverage, explicit target geometry,
-and quadratic hold-progress credit each failed to exceed the incumbent under
-their measured conditions. The current working and best-known policy is
-therefore the unchanged-recipe incumbent at 96.5%, below the objective and
-without terminal-readiness evidence. The gamma-0.995 challengers reached only
-81.0% and 78.0% on a matched fresh panel against 92.0% for the incumbent,
-despite stronger training proxies. The experiment-7 challengers (74.0% and
-81.0%) and experiment-8 challengers (both 88.5% versus 92.0% for the incumbent)
-weaken their tested explanations without proving those interventions
-intrinsically harmful. This is provisional memory, not a prescribed direction.
+official 200-episode reach-and-hold panel. The unchanged PPO baseline reached
+89.5% on research evaluation and 92.0% on the reused task-reference panel, and
+unchanged continuation produced the strongest development result: 96.5%
+(193/200). That incumbent reproduced 96.5% on the
+seed-2, seed-3, and seed-4 research panels, while scoring 92.0% on the matched
+seed-1004 panel used for experiment 9. The incumbent's seven failures on the
+best-known panel cluster in the 120-165 degree sector, but detailed diagnostics
+also show that failures can involve repeated tolerance exits or only brief
+contacts; angle concentration is therefore a coverage signal rather than a
+complete explanation. Lower-rate transfer, fresh replication, focused-angle
+coverage, explicit target geometry, quadratic hold-progress credit, and
+gamma-0.995 transfer each failed to exceed the incumbent under their measured
+conditions. The current working and best-known policy is the unchanged-recipe
+incumbent at 96.5%, below the objective and without terminal-readiness
+evidence. The campaign's proxy peaks remain unreliable indicators of saved
+policy success. This is provisional memory, not a prescribed direction.
 
 **Lessons and limits:** Saved-policy task success, not training reward or proxy
 success, governs progress. Proxies are non-monotonic: continuation improved
 before declining, lower-rate training preserved late proxies without
 preserving task success, and fresh replication improved reward while remaining
-far below the incumbent. All detailed failures exhausted the 500-step horizon;
-the incumbent usually approached the 1 cm threshold but did not sustain the
-required hold. Repeated positive-angle failures are a coverage signal, not
-proof of a coverage cause; focused coverage did not reduce them. The reward
-already combines distance progress, linear hold-progress potential, exit
-forfeiture, and completion bonus (`robot_learning/scenario/reward.py`), but
-reward shaping has not been separated from representation, optimization
-trajectory, or mechanics. The quadratic run reached a proxy peak without
-saved-policy improvement and did not reduce the residual sector. The gamma
-experiment adds another proxy-to-policy mismatch: the 105472-step proxy peak
-was worse than the incumbent, and the endpoint was worse still, while the
-current incumbent's 92.0% on the fresh seed-1004 panel is lower than its
-96.5% results on earlier panels. Fresh training variability is demonstrated by
-the 89.5% baseline and 83.0% replication, but its seed distribution is
-unknown. Development measurements remain selection evidence rather than the
-official verdict.
+far below the incumbent. Detailed failures exhaust the 500-step horizon. The
+best-known panel contains six failures in the 120-165 degree sector and one
+near -103 degrees; the experiment-9 matched panel contains 11 sector failures
+among 16 failures, with many tolerance interruptions. This supports
+investigating hold stability but does not distinguish it from reachability,
+representation, optimization trajectory, or mechanics. The reward already
+combines distance progress, linear hold-progress potential, exit forfeiture,
+outside-band penalty, and completion bonus (`robot_learning/scenario/reward.py`);
+quadratic hold credit did not improve saved-policy behavior. The gamma
+experiment adds another proxy-to-policy mismatch: its 105472-step proxy peak
+was worse than the incumbent, and the endpoint was worse still. Fresh training
+variability is demonstrated by the 89.5% baseline and 83.0% replication, but
+its seed distribution is unknown. Development measurements remain selection
+evidence, not the official verdict.
 
 **Open questions:** The residual failures could reflect temporal credit for
-completing the hold, optimization trajectory, representation, target coverage,
-or task mechanics; current evidence does not distinguish them. It remains
-unknown whether a reward or optimization change can address the failures
-without damaging already-solved geometries. The unmeasured experiment-7
-checkpoints remain unmeasured, and no terminal-readiness assessment has been
-established for the current best-known designation. The gamma experiment's
-research evaluator does not emit target geometry, so its effect on the
-recurring angular sector remains unresolved.
+completing the hold, control stability inside the tolerance, reachability,
+representation, target coverage, or task mechanics; current evidence does not
+distinguish them. It remains unknown whether a training-only stability signal
+can reduce tolerance exits without damaging already-solved geometries. The
+unmeasured experiment-7 checkpoints remain unmeasured, and no terminal-
+readiness assessment has been established for the current best-known
+designation. The seed distribution of the unchanged learning process and the
+generalization of the residual sector pattern also remain unresolved.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
