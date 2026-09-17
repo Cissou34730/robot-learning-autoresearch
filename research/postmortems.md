@@ -3,33 +3,38 @@
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
 **Current synthesis:** The campaign objective remains at least 98% success on
-the official 200-episode reach-and-hold panel. The fresh PPO baseline learned
-substantial task behavior late in training, and checkpoint-120832 is the
-strongest available policy at 89.5% on a fresh research panel and 92.0% on the
-reused task-reference panel. The campaign therefore has clear progress toward
-the objective, but no evidence that the objective has been reached.
+the official 200-episode reach-and-hold panel. The fresh PPO baseline achieved
+89.5% on a 200-episode research panel and 92.0% on the reused task-reference
+panel. Unchanged continuation then produced a 96.5% candidate at accumulated
+checkpoint-100352 steps on a matched seed-1 research panel; the later
+checkpoint-120832 result was 96.0%. This is substantial measured progress, but
+all development evidence remains below the objective and none is official
+terminal evidence.
 
 **Lessons and limits:** The raw training log shows continued late improvement:
-between steps 90112 and 120832, mean reward rose from about -770 to -168,
-the training success proxy rose from 0.00 to 0.11, and mean episode length
-fell from 500 to 469 (`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-1-attempt-1.log`).
-On matched 200-episode research evaluations, success rose from 85.5%
-(171/200) at checkpoint-110592 to 89.5% (179/200) at checkpoint-120832, with
-9 versus 1 discordant paired wins (`research/research_state.json` and
-`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-1-checkpoint-120832-200ep-seed0-a69293a214ad.json`).
-The task-reference result is corroborating development evidence but uses a
-reused, selection-contaminated panel. Its 16 failures all exhausted the
-500-step horizon and cluster in this panel around 119-164 degrees across
-near and far radii; this is descriptive evidence, not a causal or
-distribution-wide diagnosis. The 22 unmeasured checkpoints, single training
-seed, and absence of replication leave learning-process variability and the
-eventual continuation trajectory unresolved.
+between steps 90112 and 120832 in experiment 1, mean reward rose from about
+-770 to -168, the training success proxy rose from 0.00 to 0.11, and mean
+episode length fell from 500 to 469
+(`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-1-attempt-1.log`).
+In experiment 2, the same proxies peaked at local step 100352 (success 0.95,
+reward 329.1, episode length 158) and were lower at local step 120832
+(success 0.87, reward 282.5, episode length 187), while measured task success
+remained close (193/200 versus 192/200). Thus training proxies and saved-policy
+success were not monotonic. The experiment-2 research measurements and the
+experiment-1 task-reference measurement report horizon exhaustion for every
+failure; the reference panel is reused and selection-contaminated, so its
+angular pattern is descriptive rather than a distribution-wide diagnosis.
+There has been one training seed and no replication, so learning-process
+variability and the generality of the observed continuation trajectory remain
+uncertain (`research/results.jsonl`, `research/research_state.json`,
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-100352-200ep-seed1-a69293a214ad.json`,
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-120832-200ep-seed1-a69293a214ad.json`).
 
 **Open questions:** It remains unknown whether the unchanged PPO process can
-continue reducing horizon-exhaustion failures from checkpoint-120832 or has
-begun to plateau or degrade, whether the reference-panel angular pattern
-persists on independent task draws, and whether a changed recipe is needed
-after the behavior of continued optimization is understood.
+continue reducing horizon-exhaustion failures from the 96.5% candidate or has
+begun to plateau or degrade, how much of the improvement is robust across
+independent task draws and training seeds, and whether a changed recipe would
+improve the remaining gap to the official objective.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
