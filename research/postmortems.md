@@ -19,6 +19,11 @@ terminal-validation evidence. Its two failures were interrupted holds at
 closely related positive angles and mid-range radii. Training reward and proxy
 success remain unreliable selectors: the experiment-14 proxy peak scored
 98.5%, while the later endpoint scored 99.0% despite lower endpoint proxies.
+Experiment 15's unchanged continuation did not improve that policy on a new
+seed-1209 panel: the 90,112-step proxy peak tied the working policy at 198/200
+(99.0%), while the 120,832-step endpoint scored 197/200 (98.5%). The working
+policy therefore remains the strongest selected development lineage; the
+90,112-step checkpoint is a measured fallback, not a new best-known result.
 
 **Lessons and limits:** Saved-policy task success, not reward or training
 proxies, is the relevant progress measure (`research/brief.md`; Experiments
@@ -33,7 +38,11 @@ the single training trajectory, establish distribution-wide generalization, or
 show that every partial-forfeiture value is useful. Development measurements
 are selection-contaminated when panels are reused, and unmeasured checkpoints
 are not failed measurements. The fixed task-reference panel remains reused
-development evidence, not terminal evidence.
+development evidence, not terminal evidence. Experiment 15 further shows that
+unchanged optimization can retain aggregate saved-policy success at an
+intermediate checkpoint while changing the failure mode, then lose one success
+at the endpoint; the matched panel and one continuation trajectory do not
+separate optimization effects from episode or control variability.
 
 **Open questions:** The experiment-14 endpoint's performance across fresh
 terminal-validation episodes remains unknown, as does whether it is likely to
@@ -42,7 +51,9 @@ need not be the only remaining failure mode on the official distribution. The
 relative roles of optimization trajectory, control stability, reachability,
 representation, target coverage, reward credit after hold interruption, and
 task mechanics remain unresolved. It is also unknown whether the measured
-hold-recovery gain persists or degrades under unchanged further optimization.
+hold-recovery gain persists or degrades under unchanged further optimization,
+including whether the tied experiment-15 intermediate checkpoint generalizes
+beyond the seed-1209 panel.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -737,3 +748,59 @@ benchmark.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-13-checkpoint-80896-200ep-seed1207-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-13-checkpoint-120832-200ep-seed1207-a69293a214ad.json`;
 `robot_learning/scenario/training_environment.py`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 15
+
+**Result:** Unchanged continuation did not improve the selected experiment-14
+policy. The existing `working` and `best_known` lineages remain selected, the
+unchanged hold-recovery-credit recipe is kept, and checkpoint-90112 is retained
+as a measured fallback. No official benchmark is requested.
+
+**Observed behavior:** The transfer run completed 120,832 steps and produced
+24 checkpoints. Training proxies were non-monotonic: success and mean reward
+were 1.00 and 364.04 at checkpoint-5120, declined to 0.94 and 330.95 at
+checkpoint-40960, recovered to 1.00 and 361.91 at checkpoint-55296, and the
+checkpoint-90112 proxy peak reached 1.00 and 353.25 before the endpoint fell
+to 0.98 and 345.57. Twenty-two checkpoints were not measured and remain
+unmeasured, not failed measurements. On the fresh 200-episode seed-1209
+research panel, checkpoint-90112 and the prior working policy each achieved
+198/200 (99.0%), while checkpoint-120832 achieved 197/200 (98.5%). The
+checkpoint-90112 versus working comparison had no discordant wins. The
+checkpoint-120832 versus working comparison had zero challenger wins and one
+working win.
+
+All failures exhausted the 500-step horizon. The working policy had two
+interrupted-hold failures at approximately 128 degrees and 12.7 cm and
+127.6 degrees and 11.2 cm. Checkpoint-90112 failed on those same episode
+identities, with one interruption and one episode that never recorded first
+reach. The endpoint retained those two interruption failures and added a third
+interrupted hold at approximately 120.4 degrees and 16.4 cm; all three
+endpoint failures recorded first reach.
+
+**Hypothesis assessment:** Partially supported under the tested transferred
+trajectory and seed-1209 research panel. The expected preservation of aggregate
+saved-policy success occurred at checkpoint-90112, but it had no paired
+advantage over the prior working policy and changed one residual failure from
+an interruption to no recorded first reach. The endpoint's 197/200 result and
+additional interruption-bearing failure support the alternative that later
+unchanged optimization can plateau or degrade the measured policy. This is
+limited to one continuation trajectory and one development panel; it does not
+establish distribution-wide degradation, explain the failure-mode changes, or
+show that the unmeasured checkpoints fail.
+
+**Interpretation:** The measured policies remain meaningful progress toward the
+98% human objective, but experiment 15 supplies no objective-relevant gain over
+the experiment-14 working policy. The tied intermediate checkpoint is worth
+retaining as a fallback because it matches the working policy on the same fresh
+panel, while the endpoint should not replace it. The shared seed-1209
+panel makes the within-panel comparison useful, but neither it nor the reused
+development history is terminal-validation evidence.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-15/inventory.json`;
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-15-attempt-1.log`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-15-checkpoint-90112-200ep-seed1209-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-15-checkpoint-120832-200ep-seed1209-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-15-working-200ep-seed1209-a69293a214ad.json`;
+`research/stopping_contract.md`.
