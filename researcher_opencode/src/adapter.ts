@@ -4,8 +4,14 @@
  *
  * The launcher owns the research protocol and decides whether a phase is
  * complete; this adapter owns only the OpenCode runtime: the server lifecycle,
- * session identity, the tool profile, the command policy, and what reaches the
- * console. Nothing printed here is read back as a scientific fact.
+ * session identity, the event stream that witnesses it, the tool profile, the
+ * command policy, and what reaches the console. Nothing printed here is read
+ * back as a scientific fact.
+ *
+ * The event stream is a witness, not the authority. It can end or lose a
+ * connection while the session is still working, and the server cannot be asked
+ * to replay what was missed, so a stream that stops being trustworthy is
+ * settled against the session's own state instead of being waited out.
  *
  * It runs beside `researcher_copilot.py`, not instead of it. Both accept the same
  * argument list and speak the same console, so the launcher can choose a backend
@@ -93,6 +99,13 @@ const IGNORED_CHANGE_PATTERNS = [
 
 /** How long to wait for the event stream to end once the server is closing. */
 const DRAIN_TIMEOUT_MS = 3000;
+
+/** How many times a stream that ended while the session's outcome was still
+ * unknown is re-established before the run is reported as unobservable. */
+const STREAM_RECONNECT_ATTEMPTS = 3;
+
+/** Delay before the first reconnect; doubled for each further attempt. */
+const STREAM_RECONNECT_DELAY_MS = 500;
 
 /** An error that already knows which contract exit code it is. */
 export class AdapterError extends Error {
@@ -248,6 +261,65 @@ async function assertModelAvailable(
   }
 }
 
+/**
+ * What the server, rather than the event stream, says about a session.
+ *
+ * `working` is deliberately distinct from `unknown`: a busy session must never
+ * be reported as complete, while an unreadable one must never be reported as
+ * either.
+ */
+export type SessionLiveness = "done" | "working" | "unknown";
+
+/** The newest message in a session, captured before a run's prompt so an
+ * earlier turn's completed answer can never be read as this run's. */
+export async function lastMessageID(
+  client: OpencodeClient,
+  sessionID: string,
+): Promise<string | null> {
+  try {
+    const result = await client.session.messages({ path: { id: sessionID } });
+    const list = result.data ?? [];
+    return list[list.length - 1]?.info.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Ask the server what a session is doing.
+ *
+ * The status map is trusted when it answers; when it is silent the last message
+ * is consulted instead. Exactly one prompt is submitted per invocation, so a
+ * completed assistant message newer than the pre-run baseline is that prompt's
+ * answer.
+ */
+export async function sessionLiveness(
+  client: OpencodeClient,
+  sessionID: string,
+  baselineMessageID: string | null = null,
+): Promise<SessionLiveness> {
+  try {
+    const status = await client.session.status();
+    const entry = status.data?.[sessionID];
+    if (entry?.type === "idle") return "done";
+    // Busy or retrying: the session is demonstrably still working.
+    if (entry) return "working";
+  } catch {
+    // Unreachable server; the message check below may still answer.
+  }
+  try {
+    const result = await client.session.messages({ path: { id: sessionID } });
+    const list = result.data ?? [];
+    const last = list[list.length - 1]?.info;
+    if (last?.role === "assistant" && last.time.completed && last.id !== baselineMessageID) {
+      return "done";
+    }
+  } catch {
+    // Fall through: an unreadable state is unknown, never complete.
+  }
+  return "unknown";
+}
+
 /** Open a new session, or prove the recorded one may be resumed. */
 async function resolveSession(
   client: OpencodeClient,
@@ -389,25 +461,125 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     const before = worktreeStatus(root);
     const started = performance.now();
 
-    const subscription = await client.event.subscribe({ signal: eventAbort.signal });
     const idle = deferred<void>();
     const interrupted = deferred<void>();
+    /** The session's outcome could not be established from either the stream or
+     * the server. This is a distinct ending from a timeout. */
+    const unobservable = deferred<void>();
     const onSigint = (): void => interrupted.resolve();
     process.once("SIGINT", onSigint);
 
     const muted = { value: false };
+    // Set once the run has an outcome, so supervision stops second-guessing it.
+    const decided = { value: false };
+    // Set once this run's prompt exists, so no earlier state is read as its answer.
+    const submitted = { value: false };
+    let baseline: string | null = null;
     const printedChars = new Map<string, number>();
     const announcedTools = new Set<string>();
     let latestModelID = modelID;
     let sawUsage = false;
+    let reportedLoss = false;
+    let reconciling = false;
 
-    drain = (async (): Promise<void> => {
-      for await (const event of subscription.stream as AsyncGenerator<RuntimeEvent>) {
-        if (muted.value) break;
+    /**
+     * Settle the run against the session's own state.
+     *
+     * Used whenever the event stream stops being a reliable witness. Events
+     * emitted while the stream was down are never re-delivered, so the stream
+     * cannot be relied on to deliver the completion it witnessed; the server is
+     * asked instead, rather than waiting for the invocation timeout and then
+     * aborting work that may already be finished.
+     */
+    async function reconcile(): Promise<SessionLiveness> {
+      if (!submitted.value) return "unknown";
+      const liveness = await sessionLiveness(client, sessionID, baseline);
+      if (liveness === "done" && !muted.value && !decided.value) {
+        console.line(
+          "  ! session completion confirmed from the server, not from the event stream; " +
+            "usage may omit work the stream never delivered",
+        );
+        idle.resolve();
+      }
+      return liveness;
+    }
+
+    /**
+     * Open the event stream.
+     *
+     * The SDK retries a failed connection by itself, so connection churn is
+     * otherwise invisible; the first failure is reported and reconciled because
+     * the gap it opens can swallow the session's completion.
+     */
+    async function subscribe(): Promise<AsyncGenerator<RuntimeEvent>> {
+      const subscription = await client.event.subscribe({
+        signal: eventAbort.signal,
+        onSseError: (error: unknown): void => {
+          if (muted.value || decided.value || eventAbort.signal.aborted || reconciling) return;
+          if (!reportedLoss) {
+            reportedLoss = true;
+            console.line(`  ! event stream connection failed: ${describeError(error)}`);
+          }
+          reconciling = true;
+          void reconcile()
+            .catch((failure: unknown) => {
+              console.line(`  ! could not read the session state: ${describeError(failure)}`);
+            })
+            .finally(() => {
+              reconciling = false;
+            });
+        },
+      });
+      return subscription.stream as AsyncGenerator<RuntimeEvent>;
+    }
+
+    async function consume(stream: AsyncGenerator<RuntimeEvent>): Promise<void> {
+      for await (const event of stream) {
+        if (muted.value) return;
         handleEvent(event);
       }
+    }
+
+    // Subscribed before the prompt, because the server cannot subsequently be
+    // asked to replay what a late subscription missed.
+    let stream: AsyncGenerator<RuntimeEvent> | null = await subscribe();
+
+    drain = (async (): Promise<void> => {
+      for (let attempt = 0; ; attempt += 1) {
+        if (stream) {
+          try {
+            await consume(stream);
+          } catch (error) {
+            if (!muted.value) {
+              console.line(`  ! event stream ended: ${describeError(error)}`);
+            }
+          }
+        }
+        if (muted.value || decided.value || eventAbort.signal.aborted) return;
+        // The stream is over. Unless the session is provably finished, the
+        // runtime has lost its only witness and must not guess.
+        if ((await reconcile()) === "done") return;
+        if (attempt >= STREAM_RECONNECT_ATTEMPTS) {
+          unobservable.resolve();
+          return;
+        }
+        console.line(
+          "  ! event stream ended with the session's outcome still unknown; " +
+            `reconnecting (attempt ${attempt + 1} of ${STREAM_RECONNECT_ATTEMPTS})`,
+        );
+        await delay(STREAM_RECONNECT_DELAY_MS * 2 ** attempt);
+        if (muted.value || decided.value || eventAbort.signal.aborted) return;
+        stream = null;
+        try {
+          stream = await subscribe();
+        } catch (error) {
+          if (!muted.value) {
+            console.line(`  ! could not reopen the event stream: ${describeError(error)}`);
+          }
+        }
+      }
     })().catch((error: unknown) => {
-      if (!muted.value) console.line(`  ! event stream ended: ${describeError(error)}`);
+      if (!muted.value) console.line(`  ! event supervision failed: ${describeError(error)}`);
     });
 
     function handleEvent(event: RuntimeEvent): void {
@@ -522,8 +694,12 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
       timeoutHandle.id = setTimeout(() => resolve("timeout"), args.timeout * 1000);
     });
 
-    let outcome: "idle" | "timeout" | "interrupt" = "idle";
+    let outcome: "idle" | "timeout" | "interrupt" | "unobservable" = "idle";
     try {
+      // Where the session stood before this prompt. A resumed session already
+      // holds a completed answer, and only a message past this point is this
+      // run's.
+      baseline = await lastMessageID(client, sessionID);
       const prompt = await client.session.promptAsync({
         path: { id: sessionID },
         body: {
@@ -540,13 +716,17 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
           `could not submit the prompt: ${describeError(prompt.error)}`,
         );
       }
+      submitted.value = true;
 
       outcome = await Promise.race([
         idle.promise.then(() => "idle" as const),
         interrupted.promise.then(() => "interrupt" as const),
+        unobservable.promise.then(() => "unobservable" as const),
         timedOut,
       ]);
     } finally {
+      // The outcome is settled; supervision must not reopen anything now.
+      decided.value = true;
       if (timeoutHandle.id) clearTimeout(timeoutHandle.id);
       process.removeListener("SIGINT", onSigint);
     }
@@ -557,11 +737,16 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
       } catch (error) {
         console.line(`  ! could not abort the session: ${describeError(error)}`);
       }
-      console.line(
-        outcome === "timeout"
-          ? `  ! session timed out after ${args.timeout}s`
-          : "  ! session interrupted",
-      );
+      if (outcome === "timeout") {
+        console.line(`  ! session timed out after ${args.timeout}s`);
+      } else if (outcome === "interrupt") {
+        console.line("  ! session interrupted");
+      } else {
+        console.line(
+          "  ! the event stream could not be re-established and the server did not " +
+            "confirm the session finished",
+        );
+      }
     }
 
     // Everything the human sees has been decided; stop streaming so no late
@@ -578,6 +763,11 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     }
     if (outcome === "interrupt") {
       return { exitCode: EXIT_INTERRUPTED, runtimeSessionId: sessionID, sawUsage };
+    }
+    if (outcome === "unobservable") {
+      // Not a timeout: the invocation is ending because the runtime lost the
+      // ability to tell whether the session finished, and reports neither answer.
+      return { exitCode: EXIT_RUNTIME_FAILURE, runtimeSessionId: sessionID, sawUsage };
     }
     return {
       exitCode: console.sessionError ? EXIT_SESSION_ERROR : EXIT_OK,

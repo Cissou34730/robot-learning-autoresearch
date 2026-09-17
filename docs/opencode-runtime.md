@@ -98,6 +98,43 @@ server. Server termination alone is insufficient on Windows: a completed SSE
 read can otherwise retain Node handles after the session summary and prevent
 the PowerShell launcher from reaching deliverable validation.
 
+## Event stream supervision
+
+The event stream is the runtime's witness to a session, not its authority. The
+SDK reconnects a failed connection by itself, with exponential backoff and a
+`Last-Event-ID` header, so ordinary connection churn would otherwise be
+invisible and a stalled session would look like a slow one. The runtime reports
+the first failure and settles the run against the session's own state instead.
+
+Two cases matter, and neither is a timeout:
+
+- **A failed connection.** The SDK retries, but the server does not replay what
+  a gap missed. If the gap swallowed `session.idle`, the invocation would run to
+  the timeout and then abort a session that had already finished.
+- **A clean end of stream.** The SDK deliberately stops when the server closes
+  the stream, which leaves the runtime with no witness at all.
+
+In both cases the runtime asks the server what the session is doing
+(`session.status`, falling back to the newest message) rather than guessing. A
+session that is provably finished completes the invocation normally, with a
+console note that completion came from server state and that usage may omit work
+the stream never delivered. A session that is still working gets the stream
+re-established, up to three attempts with doubling delays.
+
+If the outcome still cannot be established, the invocation ends with exit code 6
+and says so, instead of waiting out the timeout and reporting an abort as a
+timeout the session never hit. Work in a session that cannot be observed is
+abandoned by design: the server is per-invocation, so it cannot outlive the
+invocation, and the launcher's retry and resume path is the recovery mechanism.
+Watching a busy session by polling its status was rejected as a substitute,
+because permission requests arrive only on the event stream: a session blocked
+on one would sit until the timeout with no way to answer it.
+
+A completion the stream never witnessed cannot improve the accounting. The
+tokens and cost of steps after the loss are not recoverable from the stream, so
+a degraded run can under-report usage. It never over-reports and never invents a
+value.
+
 ## Session identity and resume
 
 The launcher owns the phase identity and creates one UUID per phase, reusing it on
@@ -162,7 +199,8 @@ execute without reaching the harness policy.
 Verified offline:
 
 - Unit tests for the policy port, argument parsing, session mapping, worktree
-  path handling, change filtering and accounting (`npm test`).
+  path handling, change filtering, accounting and stream-loss reconciliation
+  (`npm test`).
 - A clean no-emit type check (`npm run typecheck`).
 - The complete human-owned AutoResearch suite, unchanged and passing.
 - The launcher parses cleanly and still routes every phase through the single
@@ -198,6 +236,9 @@ Not yet verified live:
 
 - Exact event ordering and whether text arrives as deltas, snapshots or both.
 - The file-change event names and idle/busy transition timing.
+- The reconciliation path itself: forcing a mid-session stream failure against a
+  live server, and confirming that a session completing while the stream is down
+  is still reported as complete rather than as a timeout.
 - Ctrl+C interruption end to end.
 
 These are the compatibility-gate items recorded in

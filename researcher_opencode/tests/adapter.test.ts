@@ -5,12 +5,47 @@ import {
   buildUsageRow,
   describeError,
   isIgnoredChange,
+  lastMessageID,
   relativeTo,
   serverConfig,
+  sessionLiveness,
   shutdownRuntime,
 } from "../src/adapter.ts";
+import type { OpencodeClient } from "@opencode-ai/sdk";
 import { parseArgs } from "../src/args.ts";
 import { Console } from "../src/console.ts";
+
+/** A client that answers only the two reads liveness reconciliation performs. */
+function fakeClient(parts: {
+  status?: unknown;
+  statusThrows?: boolean;
+  messages?: unknown;
+  messagesThrows?: boolean;
+}): OpencodeClient {
+  return {
+    session: {
+      status: async () => {
+        if (parts.statusThrows) throw new Error("server unreachable");
+        return { data: parts.status };
+      },
+      messages: async () => {
+        if (parts.messagesThrows) throw new Error("server unreachable");
+        return { data: parts.messages };
+      },
+    },
+  } as unknown as OpencodeClient;
+}
+
+function message(id: string, role: "assistant" | "user", completed?: number): unknown {
+  return {
+    info: {
+      id,
+      role,
+      time: completed === undefined ? { created: 1 } : { created: 1, completed },
+    },
+    parts: [],
+  };
+}
 
 test("worktree-relative paths are resolved across separator styles", () => {
   assert.equal(relativeTo("C:\\work\\tree", "C:\\work\\tree\\a\\b.py"), "a/b.py");
@@ -61,6 +96,64 @@ test("errors are described from the shapes the SDK actually returns", () => {
   assert.equal(describeError({ name: "ProviderAuthError" }), "ProviderAuthError");
   assert.equal(describeError("plain"), "plain");
   assert.equal(describeError(undefined), "unknown session error");
+});
+
+test("session liveness is read from the server, not from the event stream", async () => {
+  assert.equal(
+    await sessionLiveness(fakeClient({ status: { ses_1: { type: "idle" } } }), "ses_1"),
+    "done",
+  );
+  assert.equal(
+    await sessionLiveness(fakeClient({ status: { ses_1: { type: "busy" } } }), "ses_1"),
+    "working",
+  );
+  assert.equal(
+    await sessionLiveness(
+      fakeClient({ status: { ses_1: { type: "retry", attempt: 2, message: "busy", next: 5 } } }),
+      "ses_1",
+    ),
+    "working",
+  );
+});
+
+test("a still-busy session is never reported as complete", async () => {
+  // A resumed session already holds a completed answer. It must not be read as
+  // this run's answer while the session is demonstrably still working.
+  const client = fakeClient({
+    status: { ses_1: { type: "busy" } },
+    messages: [message("msg_old", "assistant", 1700000000000)],
+  });
+  assert.equal(await sessionLiveness(client, "ses_1", "msg_old"), "working");
+});
+
+test("only an answer newer than the pre-run baseline proves completion", async () => {
+  const newer = fakeClient({
+    status: {},
+    messages: [message("msg_old", "assistant", 1), message("msg_new", "assistant", 2)],
+  });
+  assert.equal(await sessionLiveness(newer, "ses_1", "msg_old"), "done");
+
+  // Without that baseline the completed answer is an earlier turn's, and proves
+  // nothing about the run whose stream was lost.
+  const stale = fakeClient({ status: {}, messages: [message("msg_old", "assistant", 1)] });
+  assert.equal(await sessionLiveness(stale, "ses_1", "msg_old"), "unknown");
+
+  const userTurn = fakeClient({ status: {}, messages: [message("msg_1", "user")] });
+  assert.equal(await sessionLiveness(userTurn, "ses_1", null), "unknown");
+});
+
+test("an unreadable session state is unknown, never complete", async () => {
+  const client = fakeClient({ statusThrows: true, messagesThrows: true });
+  assert.equal(await sessionLiveness(client, "ses_1", null), "unknown");
+});
+
+test("the pre-run baseline is the newest message the session already holds", async () => {
+  const existing = fakeClient({
+    messages: [message("msg_old", "assistant", 1), message("msg_new", "user")],
+  });
+  assert.equal(await lastMessageID(existing, "ses_1"), "msg_new");
+  assert.equal(await lastMessageID(fakeClient({ messages: [] }), "ses_1"), null);
+  assert.equal(await lastMessageID(fakeClient({ messagesThrows: true }), "ses_1"), null);
 });
 
 test("usage records nulls rather than inventing zero when nothing was reported", () => {
