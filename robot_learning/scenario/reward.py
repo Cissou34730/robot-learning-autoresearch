@@ -13,15 +13,16 @@ from dataclasses import dataclass
 
 import numpy as np
 
-PROGRESS_COEFFICIENT = 25.0
-DISTANCE_COST_COEFFICIENT = 25.0
-ACTION_COST_COEFFICIENT = 0.001
-HOLD_PROGRESS_BONUS = 100.0
+PROGRESS_COEFFICIENT = 10.0
+CLOSENESS_COEFFICIENT = 4.0
+CLOSENESS_LENGTH_SCALE = 0.05
+ACTION_COST_COEFFICIENT = 0.01
+HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 1.0
-OUTSIDE_BAND_WIDTH = 0.02
-OUTSIDE_BAND_PENALTY = 0.5
-HOLD_COMPLETE_BONUS = 100.0
+HOLD_EXIT_FORFEIT_FRACTION = 0.0
+OUTSIDE_BAND_WIDTH = 0.01
+OUTSIDE_BAND_PENALTY = 0.1
+HOLD_COMPLETE_BONUS = 50.0
 
 
 @dataclass(frozen=True)
@@ -30,6 +31,10 @@ class RewardResult:
 
     total: float
     components: dict[str, float]
+
+
+def _closeness_potential(distance: float) -> float:
+    return CLOSENESS_COEFFICIENT * float(np.exp(-distance / CLOSENESS_LENGTH_SCALE))
 
 
 def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float:
@@ -52,8 +57,10 @@ def reach_reward(
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
 
-    distance_cost = -(DISTANCE_COST_COEFFICIENT * current_distance)
-    reward += distance_cost
+    closeness = _closeness_potential(current_distance) - _closeness_potential(
+        previous_distance
+    )
+    reward += closeness
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -92,7 +99,7 @@ def reach_reward(
         total=float(reward),
         components={
             "progress": float(progress),
-            "distance_cost": float(distance_cost),
+            "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),

@@ -16,15 +16,15 @@ class CandidateCheckpointCallback(BaseCallback):
         self.output_dir = output_dir
         self.every_steps = every_steps
         self.next_checkpoint = every_steps
+        self.last_checkpoint_steps: int | None = None
 
     def _on_step(self) -> bool:
         return True
 
-    def _checkpoint_dir(self, timesteps: int) -> Path:
-        return self.output_dir / "candidate_pool" / f"checkpoint-{timesteps}"
-
     def _save(self) -> None:
-        checkpoint_dir = self._checkpoint_dir(self.num_timesteps)
+        checkpoint_dir = (
+            self.output_dir / "candidate_pool" / f"checkpoint-{self.num_timesteps}"
+        )
         checkpoint_dir.mkdir(parents=True, exist_ok=False)
         save_checkpoint(self.model, self.training_env, checkpoint_dir)
         rewards = [
@@ -46,6 +46,7 @@ class CandidateCheckpointCallback(BaseCallback):
             + "\n",
             encoding="utf-8",
         )
+        self.last_checkpoint_steps = self.num_timesteps
 
     def _on_rollout_start(self) -> None:
         if self.num_timesteps < self.next_checkpoint:
@@ -54,13 +55,6 @@ class CandidateCheckpointCallback(BaseCallback):
         while self.next_checkpoint <= self.num_timesteps:
             self.next_checkpoint += self.every_steps
 
-    def save_terminal_checkpoint(self) -> None:
-        """Save the run's actual final steps as an ordinary candidate.
-
-        Cadence alone can leave the run's true last steps unrepresented in the
-        candidate pool; this saves it like any other checkpoint, unless
-        cadence already covered the same step count.
-        """
-        if self._checkpoint_dir(self.num_timesteps).exists():
-            return
-        self._save()
+    def _on_training_end(self) -> None:
+        if self.last_checkpoint_steps != self.num_timesteps:
+            self._save()
