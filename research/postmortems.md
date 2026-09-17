@@ -174,3 +174,66 @@ reverted; the full-radius-coverage component cannot be credited or blamed in
 isolation from this run and remains untested on its own.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-working-200ep-seed20260918-9bbd51019e5e.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-10240-200ep-seed20260918-9bbd51019e5e.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-120832-200ep-seed20260918-9bbd51019e5e.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-10240-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-2-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-2/inventory.json, research/results.jsonl, robot_learning/scenario/environment.py, robot_learning/robots/two_joint_arm.xml
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 3
+
+**Result:** Gating the joint-infeasible inverse-kinematics branch's wrapped
+joint-error features to 0.0 did not remove the near-limit band deficit and
+collapsed measured success from the parent's 97.0% (researcher panel) and 98.0%
+(task-reference) to 71.0-74.0% and 72.0%. The change is not useful, so the
+working recipe is restored.
+
+**Observed behavior:** Transfer from `working` trained 120,832 steps (24
+checkpoints). Three checkpoints were measured on the researcher 200-episode
+panel (seed 20260918, semantics 6ba3ba6d7654): `checkpoint-10240` 142/200 =
+71.0%, `checkpoint-70656` 142/200 = 71.0%, `checkpoint-120832` 148/200 = 74.0%;
+`checkpoint-120832` measured 144/200 = 72.0% on task-reference-v1. Paired on the
+shared panel against `working`, every checkpoint loses net:
+`checkpoint-10240` and `checkpoint-70656` are -52 (0 wins, 52 losses, exact p
+~ 4.4e-16) and `checkpoint-120832` is -46 (0 wins, 46 losses, p ~ 2.8e-14). All
+failures are 500-step truncations with negative reward - no arrival - not the
+parent's just-outside-tolerance stall. Recomputing both analytic
+inverse-kinematics branches for every measured episode splits the researcher
+panel into 140 both-feasible, 29 open-feasible-only, 24 folded-feasible-only and
+7 near-limit-band episodes. The parent succeeds 140/140, 29/29, 24/24 and fails
+6/7 band; the gated checkpoints keep 140/140 (or 138/140 at `checkpoint-70656`)
+on both-feasible episodes but fail 29/29 open-only, 22/24 then 20/24 then 16/24
+folded-only, and 7/7 band. The independent task-reference panel reproduces the
+split: both-feasible 135/135 for both models; open-only parent 31/31 versus
+gated 0/31; folded-only parent 27/27 versus gated 9/27; band parent 3/7 versus
+gated 0/7. The training log's `success_rate` is already 0.75 at the first logged
+1,024 steps and never exceeds 0.81 over the run, so the transferred parent was
+immediately ~70-75% under the changed observation and 120k further steps did not
+recover it.
+
+**Hypothesis assessment:** Contradicted. The hypothesis predicted the band would
+improve from 1/7 toward the ceiling and total success would rise past the parent
+while open-feasible and deep-folded behavior was preserved. Instead the band
+stayed at 0-1/7 and success fell far below the parent. The proposal's own stated
+contradicting observation flagged that unchanged band success with preserved
+other behavior would favor the observation-independent precision-limit
+explanation, and that new open-feasible failures would instead indicate the edit
+damaged the learned representation; the observed collapse of the
+single-infeasible-branch episodes is the latter, stronger outcome. Limits: only
+3 of 24 checkpoints were measured (plus one task-reference), no joint
+trajectories were recorded, and the tested encoding sets the infeasible branch's
+errors to 0.0, which the policy can read as an already-satisfied branch; other
+encodings of "suppression" (dropping the features, or adding an explicit
+infeasibility flag) remain untested, so this is evidence about this
+implementation, not about all possible branch gating.
+
+**Interpretation:** The within-experiment contrast is sharp: on episodes whose
+observation is unchanged (both branches feasible) the gated policy behaves like
+the parent, while on episodes where either branch was gated it fails almost
+always, even when the one retained branch is itself feasible. This indicates the
+learned policy relies on the wrapped joint error of the near-infeasible branch
+for those targets, so replacing it with a zero - which is itself a valid "at
+goal" reading - removed signal the representation had come to depend on, rather
+than merely removing one attractive distractor. The band, the parent's only
+failure mode, gained nothing at all, which weakens the infeasible-branch
+attraction explanation and is more consistent with a precision or optimization
+limit at the shoulder boundary that is independent of the observation. This does
+not establish that the representation is irrelevant; it shows the tested
+suppression is harmful and leaves the band cause unresolved.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-10240-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-70656-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-3-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-3/inventory.json, research/results.jsonl, robot_learning/scenario/observations.py, research/brief.md
