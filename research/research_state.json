@@ -24731,7 +24731,7 @@
         "training_steps": 210944
       }
     },
-    "progress": "durable",
+    "progress": "cleanup_complete",
     "selected": "working"
   },
   "pending_evaluation_request": null,
