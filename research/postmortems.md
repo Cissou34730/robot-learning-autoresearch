@@ -2,47 +2,42 @@
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Scientific strategy
 
-**Current synthesis:** The campaign objective remains at least 98% success on
-the official 200-episode reach-and-hold panel. The fresh PPO baseline achieved
-89.5% on a 200-episode research panel and 92.0% on the reused task-reference
-panel. Unchanged continuation then produced a 96.5% candidate at accumulated
-checkpoint-100352 steps on a matched seed-1 research panel; the later
-checkpoint-120832 result was 96.0%. In experiment 3, the retained working
-policy also achieved 96.5% on the seed-2 panel, while continued checkpoints
-achieved 86.5%, 89.5%, and 86.0%. This is substantial measured progress from
-the baseline, but all development evidence remains below the objective and
-none is official terminal evidence.
+**Current synthesis:** The campaign objective is at least 98% success on the
+official 200-episode reach-and-hold panel. The fresh PPO baseline reached
+89.5% on research evaluation and 92.0% on the reused task-reference panel.
+Unchanged continuation improved the retained policy to 96.5% (193/200) at
+experiment-2 checkpoint-100352, while its later checkpoint reached 96.0%.
+Experiment 3 measured the retained working policy at 96.5% on a different
+seed-2 panel, but its continuation checkpoints reached only 86.5%, 89.5%, and
+86.0%. The campaign therefore has substantial, reproducible-across-panels
+evidence of progress over the baseline, but no development result reaches the
+objective and none is official terminal evidence. This synthesis is provisional
+memory rather than a prescribed direction.
 
-**Lessons and limits:** The raw training log shows continued late improvement:
-between steps 90112 and 120832 in experiment 1, mean reward rose from about
--770 to -168, the training success proxy rose from 0.00 to 0.11, and mean
-episode length fell from 500 to 469
-(`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-1-attempt-1.log`).
-In experiment 2, the same proxies peaked at local step 100352 (success 0.95,
-reward 329.1, episode length 158) and were lower at local step 120832
-(success 0.87, reward 282.5, episode length 187), while measured task success
-remained close (193/200 versus 192/200). Thus training proxies and saved-policy
-success were not monotonic. The experiment-2 research measurements and the
-experiment-1 task-reference measurement report horizon exhaustion for every
-failure; the reference panel is reused and selection-contaminated, so its
-angular pattern is descriptive rather than a distribution-wide diagnosis.
-Experiment 3's same-panel comparison makes its lower results more informative
-than the earlier cross-panel comparison: the working policy beat checkpoint-
-110592 on 15 versus 1 discordant episode, but this is still one independent
-panel and one training trajectory, not proof of distribution-wide degradation.
-There has been one training seed and no replication, so learning-process
-variability and the generality of the observed continuation trajectory remain
-uncertain (`research/results.jsonl`, `research/research_state.json`,
+**Lessons and limits:** The raw logs show that the unchanged 0.0003 learning
+rate can produce strong proxy peaks followed by deterioration: experiment 2
+fell from 0.95 success and reward 329.1 at step 100352 to 0.87 and 282.5 at
+step 120832, and experiment 3 similarly declined from 0.99 and 342.5 at step
+70656 to 0.94 and 318.2 at its endpoint
+(`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-2-attempt-1.log`,
+`research/training_logs/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-3-attempt-1.log`).
+Saved-policy success is not monotonic with those proxies: the experiment-2
+checkpoint-100352 policy scored 193/200, and the same incumbent scored 193/200
+on experiment 3's seed-2 panel, while every recorded failure in these detailed
+evaluations exhausted the horizon. The matched experiment-3 comparison favored
+the incumbent by 15 to 1 discordant episodes, but one continuation trajectory
+and one independent panel do not establish distribution-wide degradation.
+There is still only one training seed and no replication, so learning-process
+variance and the generality of the continuation outcome are unresolved
+(`research/results.jsonl`, `research/research_state.json`,
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-100352-200ep-seed1-a69293a214ad.json`,
-`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-120832-200ep-seed1-a69293a214ad.json`).
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-working-200ep-seed2-a69293a214ad.json`).
 
-**Open questions:** It remains unknown whether the unchanged PPO process can
-continue reducing horizon-exhaustion failures from the 96.5% candidate, how
-much of the improvement is robust across independent task draws and training
-seeds, and whether a changed recipe would improve the remaining gap to the
-official objective. The experiment-3 measurements do not resolve whether its
-lower continuation performance is a general late-training failure or a
-trajectory-specific outcome.
+**Open questions:** The evidence does not yet distinguish an update-size
+problem from a representation or task-coverage limit. It also leaves the
+robustness of the 96.5% result across training seeds and independent task draws
+uncertain, and does not establish whether a changed PPO recipe can close the
+remaining gap to 98%.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
