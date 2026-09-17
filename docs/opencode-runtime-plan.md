@@ -56,9 +56,9 @@ are absent. Sourcing launcher helpers must not redirect OpenCode to the script's
 worktree. Preserve existing Copilot launch behavior; do not bundle a Copilot
 working-directory refactor into this addition.
 
-The existing machine-wide campaign/reset mutex is independent of SDK server
-ports. Preserve it. Multiple worktrees must be selectable and isolated, but
-enabling simultaneous campaign loops is outside this addition.
+The campaign/reset mutex was machine-wide when this addition was planned; it is
+now scoped to the worktree and remains independent of SDK server ports.
+Multiple worktrees are selectable and isolated, each holding its own mutex.
 
 ## Backend Selection
 

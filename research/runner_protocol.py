@@ -44,6 +44,7 @@ PROTECTED_RUNNER_PATHS = {
     "research/query_training_log.py",
     "researcher_session.ps1",
     "run_research.ps1",
+    "researcher_mutex.ps1",
 }
 # The researcher runtime boundary: it decides which tools and commands a
 # research session may use, so a proposal must not be able to widen its own.

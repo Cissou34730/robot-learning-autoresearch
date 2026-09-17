@@ -42,8 +42,9 @@ The human may add `-RecipeRef <git-ref>` to `Fresh` to restore the complete
 researcher-owned scientific surface from one resolved commit before creating an
 empty v4 campaign. This imports no trained policy or evidence. `Baseline` is the
 separate operation for restoring a prepared experiment-1 policy and its evidence.
-The reset wrapper and research launcher share a machine-wide mutex. Reset
-backups resolve through Git's administrative path and support linked worktrees.
+The reset wrapper and research launcher share one mutex scoped to the worktree,
+so two checkouts never block each other. Reset backups resolve through Git's
+administrative path and support linked worktrees.
 Failed resets are restored with the human-only `-Recover <operation.json>
 -Force` operation, which validates the recorded manifest before writing.
 
@@ -101,7 +102,8 @@ The Researcher may read but not modify these paths through an experiment:
 
 - `AGENTS.md`, `research/program.md`, `research/scenario.md`,
   `research/instruments.md`;
-- `run_research.ps1`, `researcher_session.ps1`, `researcher_copilot.py`;
+- `run_research.ps1`, `researcher_mutex.ps1`, `researcher_session.ps1`,
+  `researcher_copilot.py`;
 - `tools/campaign_report.py`;
 - `research/run_experiment.py`, `research/reset_campaign.py`, `research/runner_*.py`,
   `research/build_research_brief.py`, `research/query_training_log.py`;

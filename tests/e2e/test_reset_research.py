@@ -11,6 +11,8 @@ from research import reset_campaign, runner_paths
 
 ROOT = Path(__file__).resolve().parents[2]
 RESET_FILES = (
+    # The wrapper sources this to derive its worktree-scoped mutex name.
+    "researcher_mutex.ps1",
     "research/reset_campaign.py",
     "research/runner_console.py",
     "research/runner_paths.py",
@@ -136,6 +138,7 @@ def test_fresh_reset_uses_linked_worktree_git_directory(tmp_path):
 
 SCRIPT = ROOT / "reset_research.ps1"
 HELPER = ROOT / "research" / "reset_campaign.py"
+MUTEX_HELPER = ROOT / "researcher_mutex.ps1"
 CAMPAIGN = "d04a0bde-a6d2-429f-a0d5-cd1a8c3a854f"
 EVALUATION = f"research/evaluations/{CAMPAIGN}/baseline.json"
 LOG = f"research/training_logs/{CAMPAIGN}/experiment-1-attempt-1.log"
@@ -158,7 +161,10 @@ def test_reset_entry_point_exposes_fresh_recipe_restoration():
     helper = HELPER.read_text(encoding="utf-8")
 
     assert "[string]$RecipeRef" in wrapper
-    assert '"Local\\RobotLearningAutoresearch"' in wrapper
+    # Exclusion is per worktree, so the name comes from the shared helper
+    # rather than a fixed machine-wide literal.
+    assert "researcher_mutex.ps1" in wrapper
+    assert "Get-WorktreeMutexName -Worktree $PSScriptRoot" in wrapper
     assert "uv run python research/reset_campaign.py" in wrapper
     assert 'parser.add_argument("--recipe-ref")' in helper
     assert '[Parameter(Mandatory, ParameterSetName = "Recover")]' in wrapper
@@ -580,11 +586,48 @@ def test_recipe_ref_refuses_invalid_sources_before_mutation(
     assert (root / "models/candidates/later/model.zip").read_bytes() == candidate
 
 
+def worktree_mutex_name(pwsh, worktree):
+    """The name the wrapper will actually use, asked of the shared helper.
+
+    Re-deriving it here would let the test lock a name nobody uses and still
+    pass, so the helper stays the single source of truth.
+    """
+    completed = subprocess.run(
+        [
+            pwsh,
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            f". '{MUTEX_HELPER}'; Get-WorktreeMutexName -Worktree '{worktree}'",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout.strip()
+
+
+def test_mutex_identity_is_scoped_to_the_worktree(tmp_path):
+    """A second checkout is a different lock, not a blocked campaign."""
+    pwsh = shutil.which("pwsh")
+    if not pwsh:
+        pytest.skip("PowerShell is unavailable")
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    first.mkdir()
+    second.mkdir()
+
+    assert worktree_mutex_name(pwsh, first) != worktree_mutex_name(pwsh, second)
+    # It is stable across processes, so a retry finds the same lock.
+    assert worktree_mutex_name(pwsh, first) == worktree_mutex_name(pwsh, first)
+
+
 def test_reset_refuses_while_campaign_mutex_is_held(baseline_repository):
     pwsh = shutil.which("pwsh")
     if not pwsh:
         pytest.skip("PowerShell is unavailable")
     root, _ = baseline_repository
+    held = worktree_mutex_name(pwsh, root)
     holder = subprocess.Popen(
         [
             pwsh,
@@ -593,7 +636,7 @@ def test_reset_refuses_while_campaign_mutex_is_held(baseline_repository):
             "-Command",
             (
                 "$created=$false; "
-                "$mutex=[Threading.Mutex]::new($true,'Local\\RobotLearningAutoresearch',[ref]$created); "
+                f"$mutex=[Threading.Mutex]::new($true,'{held}',[ref]$created); "
                 "[Console]::Out.WriteLine('READY'); [Console]::Out.Flush(); "
                 "[Console]::In.ReadLine() | Out-Null; $mutex.ReleaseMutex(); $mutex.Dispose()"
             ),

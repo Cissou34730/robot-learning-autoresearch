@@ -102,6 +102,7 @@ def test_both_researcher_runtimes_are_protected_protocol_sources():
         "research/scenario.md",
         "research/instruments.md",
         "run_research.ps1",
+        "researcher_mutex.ps1",
         "researcher_session.ps1",
         "research/build_research_brief.py",
         "research/reset_campaign.py",

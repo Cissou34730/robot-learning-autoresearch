@@ -52,15 +52,20 @@ function Get-OpenCodeNode {
     return @{ Path = $node.Source; Strip = $strip }
 }
 
+# Exclusion is per worktree: two checkouts own separate campaign artifacts, so
+# only the same worktree must be serialized. The reset wrapper derives the same
+# name from this same helper and still excludes a loop running here.
+. "$PSScriptRoot\researcher_mutex.ps1"
+
 $createdNew = $false
 $loopMutex = [System.Threading.Mutex]::new(
     $true,
-    "Local\RobotLearningAutoresearch",
+    (Get-WorktreeMutexName -Worktree $PSScriptRoot),
     [ref]$createdNew
 )
 if (-not $createdNew) {
     $loopMutex.Dispose()
-    throw "Another robot autoresearch loop is already running."
+    throw "Another robot autoresearch loop is already running in this worktree."
 }
 
 function Assert-ResearchRuntime {

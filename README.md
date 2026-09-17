@@ -106,8 +106,9 @@ code, tests, configuration, saved policy and evidence, preserving the current
 harness; research resumes at experiment 2 without retraining the baseline.
 Neither mode creates a branch or worktree.
 
-Both require a clean Git working tree and hold the same machine-wide mutex as
-the research launcher. A recipe reset commits restored science separately from
+Both require a clean Git working tree and hold the same mutex as the research
+launcher, scoped to the worktree so a second checkout never blocks. A recipe
+reset commits restored science separately from
 the new empty campaign state; all reset commits are pushed without rewriting
 history. Recovery backups are stored through Git's resolved administrative path,
 so reset works from both primary checkouts and linked worktrees. See

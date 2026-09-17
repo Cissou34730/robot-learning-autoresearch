@@ -37,15 +37,19 @@ if ($Mode -eq "Baseline" -and (-not $BaselineRef -or $RecipeRef)) {
     throw "Baseline requires -BaselineRef and does not accept -RecipeRef."
 }
 
+# The launcher derives the same worktree-scoped name, so a loop running in this
+# checkout is still excluded while another checkout stays free to run its own.
+. "$PSScriptRoot\researcher_mutex.ps1"
+
 $createdNew = $false
 $campaignMutex = [System.Threading.Mutex]::new(
     $true,
-    "Local\RobotLearningAutoresearch",
+    (Get-WorktreeMutexName -Worktree $PSScriptRoot),
     [ref]$createdNew
 )
 if (-not $createdNew) {
     $campaignMutex.Dispose()
-    throw "Another robot autoresearch loop or reset is already running."
+    throw "Another robot autoresearch loop or reset is already running in this worktree."
 }
 
 try {
