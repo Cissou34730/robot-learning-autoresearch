@@ -93,6 +93,11 @@ Each invocation starts its own loopback server on a dynamically assigned port
 (`port: 0`) and closes only that server. Two worktrees therefore never silently
 share a server, and persisted OpenCode history is left intact.
 
+Shutdown explicitly aborts the SDK event subscription before closing the
+server. Server termination alone is insufficient on Windows: a completed SSE
+read can otherwise retain Node handles after the session summary and prevent
+the PowerShell launcher from reaching deliverable validation.
+
 ## Session identity and resume
 
 The launcher owns the phase identity and creates one UUID per phase, reusing it on

@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { buildUsageRow, describeError, isIgnoredChange, relativeTo, serverConfig } from "../src/adapter.ts";
+import {
+  buildUsageRow,
+  describeError,
+  isIgnoredChange,
+  relativeTo,
+  serverConfig,
+  shutdownRuntime,
+} from "../src/adapter.ts";
 import { parseArgs } from "../src/args.ts";
 import { Console } from "../src/console.ts";
 
@@ -28,6 +35,24 @@ test("reasoning is expressed as a provider model option", () => {
     reasoningEffort: "high",
   });
   assert.deepEqual(config.permission, { bash: "ask" });
+});
+
+test("runtime shutdown aborts the event stream before closing the server", async () => {
+  const order: string[] = [];
+  const eventAbort = new AbortController();
+  let finishDrain!: () => void;
+  const drain = new Promise<void>((resolve) => {
+    finishDrain = resolve;
+  });
+  eventAbort.signal.addEventListener("abort", () => {
+    order.push("abort");
+    finishDrain();
+  });
+
+  await shutdownRuntime(eventAbort, () => order.push("close"), drain, 100);
+
+  assert.equal(eventAbort.signal.aborted, true);
+  assert.deepEqual(order, ["abort", "close"]);
 });
 
 test("errors are described from the shapes the SDK actually returns", () => {

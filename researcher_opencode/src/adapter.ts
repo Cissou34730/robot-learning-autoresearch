@@ -139,6 +139,21 @@ function delay(ms: number): Promise<void> {
   });
 }
 
+/** Release every runtime handle before returning control to the launcher. */
+export async function shutdownRuntime(
+  eventAbort: AbortController,
+  closeServer: () => void,
+  drain: Promise<void>,
+  drainTimeoutMs: number = DRAIN_TIMEOUT_MS,
+): Promise<void> {
+  // Do not rely on server shutdown to wake a blocked SSE read. On Windows the
+  // server may already be gone while the fetch stream still retains handles,
+  // which prevents Node from exiting and leaves the launcher waiting forever.
+  eventAbort.abort();
+  closeServer();
+  await Promise.race([drain, delay(drainTimeoutMs)]);
+}
+
 export function describeError(error: unknown): string {
   if (error === null || error === undefined) return "unknown session error";
   if (typeof error === "string") return error;
@@ -360,6 +375,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     timeout: 30_000,
     config: serverConfig(providerID, modelID, args.reasoning),
   });
+  const eventAbort = new AbortController();
 
   // The stream ends when the closing server drops it; bounded below so a stuck
   // socket can never hold the launcher open after the summary.
@@ -373,7 +389,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     const before = worktreeStatus(root);
     const started = performance.now();
 
-    const subscription = await client.event.subscribe();
+    const subscription = await client.event.subscribe({ signal: eventAbort.signal });
     const idle = deferred<void>();
     const interrupted = deferred<void>();
     const onSigint = (): void => interrupted.resolve();
@@ -570,8 +586,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     };
   } finally {
     // Only this invocation's server is closed; persisted OpenCode history stays.
-    server.close();
-    await Promise.race([drain, delay(DRAIN_TIMEOUT_MS)]);
+    await shutdownRuntime(eventAbort, () => server.close(), drain);
   }
 }
 
