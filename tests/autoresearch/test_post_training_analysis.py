@@ -228,6 +228,50 @@ def test_v4_evaluation_round_survives_interruption_without_duplicating(
     ] == [10, 20]
 
 
+def test_v4_reused_measurement_links_source_round_without_reexecuting(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    calls: list[int] = []
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+    assert run_experiment.execute_pending_evaluations() == 0
+
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+    assert run_experiment.execute_pending_evaluations() == 0
+    # The identity is resolved from the original measurement, not re-executed.
+    assert calls == [10]
+
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    rounds = state["pending_analysis"]["evaluation_rounds"]
+    assert [record["round"] for record in rounds] == [1, 2]
+    assert rounds[0]["results"]["research_evaluations"][0]["status"] == "executed"
+    reused = rounds[1]["results"]["research_evaluations"]
+    assert len(reused) == 1
+    assert reused[0]["status"] == "reused"
+    assert reused[0]["reused_from_round"] == 1
+    assert reused[0]["evaluation_artifact"] == (
+        rounds[0]["results"]["research_evaluations"][0]["evaluation_artifact"]
+    )
+    assert len(state["pending_analysis"]["partial_evaluations"]) == 1
+
+
 def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tmp_path):
     state_path, request_path, _ = _configure(monkeypatch, tmp_path)
     working_artifact = tmp_path / "archive" / "working"

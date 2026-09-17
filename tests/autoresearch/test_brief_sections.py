@@ -199,6 +199,74 @@ def test_cost_accounting_counts_training_and_replication_factually():
     assert "Replication experiments recorded: 3." in text
 
 
+def _measurement(
+    candidate: str,
+    *,
+    seed: int = 4200,
+    episodes: int = 160,
+    semantics: str = "semantics",
+) -> dict:
+    return {
+        "candidate": candidate,
+        "seed": seed,
+        "episodes": episodes,
+        "evaluation_semantics": semantics,
+        "metrics": {"seed": seed, "episodes": episodes, "evaluation_semantics": semantics},
+    }
+
+
+def _task_reference(candidate: str, *, seed: int = 7300, episodes: int = 200) -> dict:
+    return {
+        "candidate": candidate,
+        "panel": "task-reference-v1",
+        "seed": seed,
+        "episodes": episodes,
+    }
+
+
+def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "requested_evaluations": [
+                _measurement("c1"),
+                _measurement("c2"),
+            ],
+            "task_reference_evaluations": [_task_reference("c1")],
+        },
+        {
+            "index": 2,
+            "kind": "training",
+            "requested_evaluations": [_measurement("c3")],
+            "task_reference_evaluations": [_task_reference("c3")],
+        },
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "Instrument executions: 3 research_evaluation, 2 task_reference." in text
+    assert "research_evaluation coverage: 160 distinct episodes; 480 episode" in text
+    assert "320 repeated." in text
+    assert "task_reference coverage: 200 distinct episodes; 400 episode" in text
+    assert "200 repeated." in text
+
+
+def test_cost_accounting_distinguishes_overlapping_research_panels():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "requested_evaluations": [
+                _measurement("c1", seed=4200, semantics="v1"),
+                _measurement("c2", seed=4360, semantics="v1"),
+            ],
+        }
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    # Two disjoint 160-episode panels: 320 distinct identities, no repetition.
+    assert "research_evaluation coverage: 320 distinct episodes; 320 episode" in text
+    assert "0 repeated." in text
+
+
 def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
     results = [
         {
@@ -206,37 +274,18 @@ def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
             "kind": "training",
             "training_budget_steps": 100,
             "completed_training_steps": 100,
-            "evaluation_rounds": [
-                {
-                    "round": 1,
-                    "results": {
-                        "research_evaluations": [{"episodes": 10}, {"episodes": 10}]
-                    },
-                },
-                {
-                    "round": 2,
-                    "results": {
-                        "research_evaluations": [{"episodes": 10}],
-                        "task_reference_evaluations": [{"episodes": 200}],
-                    },
-                },
-            ],
-            "candidates": [
-                {
-                    "summary": {
-                        "episodes": 15,
-                        "episode_executions": 30,
-                        "repeated_episodes": 15,
-                    }
-                }
+            "evaluation_rounds": [{"round": 1}, {"round": 2}],
+            "requested_evaluations": [
+                _measurement("c1", episodes=10, seed=1),
+                _measurement("c2", episodes=10, seed=1),
             ],
         }
     ]
     text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
-    assert "Evaluation rounds: 2" in text
-    assert "research_evaluation: 3 executions, 30 episodes" in text
-    assert "task_reference: 1 executions, 200 episodes" in text
-    assert "15 distinct; 30 executions; 15 repeated" in text
+    assert "Evaluation rounds: 2." in text
+    assert "Instrument executions: 2 research_evaluation, 0 task_reference." in text
+    assert "research_evaluation coverage: 10 distinct episodes; 20 episode" in text
+    assert "10 repeated." in text
 
 
 def test_cost_accounting_does_not_recommend_confirmation():

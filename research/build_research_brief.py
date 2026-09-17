@@ -12,7 +12,11 @@ from research.runner_protocol import (
     operation_description,
     scientific_strategy_section,
 )
-from research.runner_repository import ARTIFACT_FILES, compact_measurement_summary
+from research.runner_repository import (
+    ARTIFACT_FILES,
+    campaign_coverage,
+    compact_measurement_summary,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -1074,37 +1078,18 @@ def _v4_cost_accounting_section(
         rounds.extend(
             item for item in record.get("evaluation_rounds") or [] if isinstance(item, dict)
         )
-    research_executions = 0
-    research_episode_executions = 0
-    reference_executions = 0
-    reference_episode_executions = 0
-    for round_record in rounds:
-        round_results = (
-            round_record.get("results")
-            if isinstance(round_record.get("results"), dict)
-            else {}
-        )
-        for item in round_results.get("research_evaluations") or []:
-            if not isinstance(item, dict):
-                continue
-            research_executions += 1
-            research_episode_executions += int(item.get("episodes", 0) or 0)
-        for item in round_results.get("task_reference_evaluations") or []:
-            if not isinstance(item, dict):
-                continue
-            reference_executions += 1
-            reference_episode_executions += int(item.get("episodes", 0) or 0)
-    distinct_episodes = 0
-    episode_executions = 0
-    repeated_episodes = 0
+    instrument_executions = {"research_evaluation": 0, "task_reference": 0}
     for record in records:
-        for candidate in record.get("candidates") or []:
-            summary = candidate.get("summary") if isinstance(candidate, dict) else None
-            if not isinstance(summary, dict):
-                continue
-            distinct_episodes += int(summary.get("episodes", 0) or 0)
-            episode_executions += int(summary.get("episode_executions", 0) or 0)
-            repeated_episodes += int(summary.get("repeated_episodes", 0) or 0)
+        instrument_executions["research_evaluation"] += sum(
+            isinstance(item, dict) for item in record.get("requested_evaluations") or []
+        )
+        instrument_executions["task_reference"] += sum(
+            isinstance(item, dict)
+            for item in record.get("task_reference_evaluations") or []
+        )
+    coverage = campaign_coverage(records)
+    research_coverage = coverage["research_evaluation"]
+    reference_coverage = coverage["task_reference"]
     return [
         "",
         "## Campaign cost accounting",
@@ -1124,17 +1109,34 @@ def _v4_cost_accounting_section(
             + (", ".join(str(index) for index in replications) if replications else "none")
             + "."
         ),
+        f"- Evaluation rounds: {len(rounds)}.",
         (
-            f"- Evaluation rounds: {len(rounds)} "
-            f"(research_evaluation: {research_executions} executions, "
-            f"{research_episode_executions} episodes; task_reference: "
-            f"{reference_executions} executions, {reference_episode_executions} episodes)."
+            f"- Instrument executions: "
+            f"{instrument_executions['research_evaluation']} research_evaluation, "
+            f"{instrument_executions['task_reference']} task_reference."
         ),
         (
-            f"- Research-evaluation episode coverage: {distinct_episodes} distinct; "
-            f"{episode_executions} executions; {repeated_episodes} repeated."
+            f"- research_evaluation coverage: "
+            f"{research_coverage['distinct_episodes']} distinct episodes; "
+            f"{research_coverage['episode_executions']} episode executions; "
+            f"{research_coverage['repeated_episodes']} repeated."
+        ),
+        (
+            f"- task_reference coverage: "
+            f"{reference_coverage['distinct_episodes']} distinct episodes; "
+            f"{reference_coverage['episode_executions']} episode executions; "
+            f"{reference_coverage['repeated_episodes']} repeated."
         ),
     ]
+
+
+def _round_entry_status(item: dict) -> str:
+    """A compact status/purpose marker for a round measurement entry."""
+    status = str(item.get("status", "executed"))
+    purpose = str(item.get("purpose", "selection"))
+    if purpose and purpose != "selection":
+        return f" ({status}, {purpose})"
+    return f" ({status})"
 
 
 def _v4_measurement_rounds_section(
@@ -1183,11 +1185,16 @@ def _v4_measurement_rounds_section(
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
-                f"- `{item.get('candidate', '-')}` `research_evaluation`: {detail}."
+                f"- `{item.get('candidate', '-')}` "
+                f"`research_evaluation`{_round_entry_status(item)}: {detail}."
             )
             if item.get("selection"):
                 lines.append(
                     f"  - Selection: {_compact(str(item['selection']), 300)}"
+                )
+            if item.get("reused_from_round") is not None:
+                lines.append(
+                    f"  - Reused from round {item['reused_from_round']}"
                 )
             if item.get("evaluation_artifact"):
                 lines.append(
@@ -1203,11 +1210,16 @@ def _v4_measurement_rounds_section(
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
-                f"- `{item.get('candidate', '-')}` `task_reference`: {detail}."
+                f"- `{item.get('candidate', '-')}` "
+                f"`task_reference`{_round_entry_status(item)}: {detail}."
             )
             if item.get("selection"):
                 lines.append(
                     f"  - Selection: {_compact(str(item['selection']), 300)}"
+                )
+            if item.get("reused_from_round") is not None:
+                lines.append(
+                    f"  - Reused from round {item['reused_from_round']}"
                 )
             if item.get("evaluation_artifact"):
                 lines.append(
