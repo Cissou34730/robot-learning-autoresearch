@@ -1,67 +1,18 @@
 {
-  "best_known_designation_counter": 0,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/800411fd-f254-463e-9a99-6a3020988477/e2-ccfa903b6-364fd6d7a597a7f2ddd00ebd4abbd3c802381ce53aa845ea73f89292b2934c44",
-    "candidate": "checkpoint-95232",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/800411fd-f254-463e-9a99-6a3020988477/evaluation-800411fd-f254-463e-9a99-6a3020988477-experiment-2-checkpoint-95232-160ep-seed4200-a69293a214ad.json",
-      "research/evaluations/800411fd-f254-463e-9a99-6a3020988477/evaluation-800411fd-f254-463e-9a99-6a3020988477-experiment-2-checkpoint-95232-200ep-seed5200-a69293a214ad.json",
-      "research/evaluations/800411fd-f254-463e-9a99-6a3020988477/task-reference-800411fd-f254-463e-9a99-6a3020988477-experiment-2-checkpoint-95232-task-reference-v1.json"
-    ],
-    "fingerprint": "364fd6d7a597a7f2ddd00ebd4abbd3c802381ce53aa845ea73f89292b2934c44",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It reached 197/200 on both the protected development panel and the fresh 200-episode all-angle research panel, exceeding the retained policy's prior 195/200 protected-panel result and matching it on fresh research coverage. The result remains development evidence rather than the official benchmark.",
-    "scientific_commit": "f34f2f20d897678313cfbe73aa50dc0f880fe13e",
-    "training_steps": 210944
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "fe0c3b0056ccbaf36805bdbe56dc322c96444f20",
-    "id": "800411fd-f254-463e-9a99-6a3020988477",
+    "base_commit": "efbba1455b5eaadb0838e93886efd10ed3c20398",
+    "id": "5befb592-3256-436e-bf6a-a4733c512ad9",
     "recipe_source_commit": null,
-    "started_at": "2026-09-17T11:08:43.167434+00:00"
+    "started_at": "2026-09-17T12:52:45.116498+00:00"
   },
   "campaign_experiment_counters": {
-    "800411fd-f254-463e-9a99-6a3020988477": 3
+    "5befb592-3256-436e-bf6a-a4733c512ad9": 0
   },
-  "last_allocated_experiment": 3,
-  "last_experiment": 3,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 3 used the unchanged scientific recipe and made no researcher-owned code or parameter changes; keep that recipe with the working lineage."
-    },
-    "code_parent_commit": "ae04a770bddb38fe22b222bae32f4d7a4faa935b",
-    "continue_from": "working",
-    "experiment": 3,
-    "reason": "Experiment 3's three measured continuation checkpoints achieved 191-194/200 on the research panel and 191-193/200 on the task-reference panel, below the working parent checkpoint-95232 at 197/200 on both development surfaces. The unchanged continuation therefore did not improve the learned policy, while the current best-known remains useful for further development. Do not request the official benchmark yet: the current evidence is selection evidence, no stopping-validation panel has been measured for the current best-known tenure, and the residual failures remain unresolved."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -70,51 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "ae04a770bddb38fe22b222bae32f4d7a4faa935b",
-    "experiment": 3,
-    "scientific_commit": "a7e6ed472f8aa4df9fc33e2745bf9290c6d32a12"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/800411fd-f254-463e-9a99-6a3020988477/e2-ccfa903b6-364fd6d7a597a7f2ddd00ebd4abbd3c802381ce53aa845ea73f89292b2934c44",
-    "candidate": "checkpoint-95232",
-    "evaluation_artifacts": [
-      "research/evaluations/800411fd-f254-463e-9a99-6a3020988477/evaluation-800411fd-f254-463e-9a99-6a3020988477-experiment-2-checkpoint-95232-160ep-seed4200-a69293a214ad.json",
-      "research/evaluations/800411fd-f254-463e-9a99-6a3020988477/evaluation-800411fd-f254-463e-9a99-6a3020988477-experiment-2-checkpoint-95232-200ep-seed5200-a69293a214ad.json"
-    ],
-    "fingerprint": "364fd6d7a597a7f2ddd00ebd4abbd3c802381ce53aa845ea73f89292b2934c44",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 3's three measured continuation checkpoints achieved 191-194/200 on the research panel and 191-193/200 on the task-reference panel, below the working parent checkpoint-95232 at 197/200 on both development surfaces. The unchanged continuation therefore did not improve the learned policy, while the current best-known remains useful for further development. Do not request the official benchmark yet: the current evidence is selection evidence, no stopping-validation panel has been measured for the current best-known tenure, and the residual failures remain unresolved.",
-    "scientific_commit": "f34f2f20d897678313cfbe73aa50dc0f880fe13e",
-    "training_steps": 210944
-  }
+  "working_lineage": null
 }
