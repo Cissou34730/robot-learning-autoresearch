@@ -365,6 +365,9 @@ LINEAGE_RECORD_FIELDS = {
     "evaluation_artifacts",
     "reason",
 }
+# Optional lineage fields. `designation_ordinal` records the best-known tenure;
+# it is present on a designated best-known record and absent elsewhere.
+LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal"}
 
 
 def canonicalize_lineage_record(lineage: dict) -> None:
@@ -372,7 +375,12 @@ def canonicalize_lineage_record(lineage: dict) -> None:
     if not isinstance(lineage, dict):
         raise TypeError("lineage record must be an object")
     missing = LINEAGE_RECORD_FIELDS - set(lineage)
-    extra = set(lineage) - LINEAGE_RECORD_FIELDS - {"id", "campaign_id"}
+    extra = (
+        set(lineage)
+        - LINEAGE_RECORD_FIELDS
+        - LINEAGE_RECORD_OPTIONAL_FIELDS
+        - {"id", "campaign_id"}
+    )
     if missing or extra:
         raise ValueError(
             "lineage record fields are invalid: "
@@ -394,6 +402,12 @@ def canonicalize_lineage_record(lineage: dict) -> None:
         raise ValueError(
             "lineage record experiment and training steps must be positive"
         )
+    if "designation_ordinal" in lineage:
+        ordinal = lineage["designation_ordinal"]
+        if not isinstance(ordinal, int) or isinstance(ordinal, bool):
+            raise TypeError("lineage record designation_ordinal must be an integer")
+        if ordinal < 1:
+            raise ValueError("lineage record designation_ordinal must be positive")
     if not isinstance(lineage["parameters"], dict):
         raise TypeError("lineage record parameters must be an object")
     evaluations = lineage["evaluation_artifacts"]
