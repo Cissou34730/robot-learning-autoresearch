@@ -12,7 +12,11 @@ seed-2 panel, but its continuation checkpoints reached only 86.5%, 89.5%, and
 86.0%. The campaign therefore has substantial, reproducible-across-panels
 evidence of progress over the baseline, but no development result reaches the
 objective and none is official terminal evidence. This synthesis is provisional
-memory rather than a prescribed direction.
+memory rather than a prescribed direction. Experiment 4's transferred
+0.0001-learning-rate candidates reached 94.0% at the proxy peak and 85.5% at
+the endpoint on a seed-3 research panel, while the incumbent reached 96.5% on
+that same panel. The incumbent remains the best-supported working and
+best-known policy.
 
 **Lessons and limits:** The raw logs show that the unchanged 0.0003 learning
 rate can produce strong proxy peaks followed by deterioration: experiment 2
@@ -27,17 +31,24 @@ on experiment 3's seed-2 panel, while every recorded failure in these detailed
 evaluations exhausted the horizon. The matched experiment-3 comparison favored
 the incumbent by 15 to 1 discordant episodes, but one continuation trajectory
 and one independent panel do not establish distribution-wide degradation.
-There is still only one training seed and no replication, so learning-process
-variance and the generality of the continuation outcome are unresolved
+Experiment 4 adds a same-panel comparison in which its proxy peak lost to the
+incumbent by 94.0% to 96.5% (1 versus 6 discordant wins), and its endpoint
+lost by 85.5% to 96.5% (1 versus 23). All failures for both lower-rate
+checkpoints exhausted the 500-step horizon. The lower-rate endpoint retained
+higher training proxies than the earlier unchanged-rate endpoints, but this
+orthogonal signal did not transfer to saved-policy task success. There is still
+only one training seed and no replication, so learning-process variance and the
+generality of these intervention outcomes are unresolved
 (`research/results.jsonl`, `research/research_state.json`,
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-2-checkpoint-100352-200ep-seed1-a69293a214ad.json`,
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-working-200ep-seed2-a69293a214ad.json`).
 
-**Open questions:** The evidence does not yet distinguish an update-size
-problem from a representation or task-coverage limit. It also leaves the
-robustness of the 96.5% result across training seeds and independent task draws
-uncertain, and does not establish whether a changed PPO recipe can close the
-remaining gap to 98%.
+**Open questions:** The evidence does not yet distinguish a representation or
+task-coverage limit from other learning-method limitations; the tested
+learning-rate reduction did not resolve that uncertainty. The robustness of
+the 96.5% result across training seeds and independent task draws remains
+uncertain, and it is not established whether a different PPO recipe or a
+different scientific intervention can close the remaining gap to 98%.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -173,3 +184,45 @@ the irreversible official benchmark.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-checkpoint-110592-200ep-seed2-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-checkpoint-120832-200ep-seed2-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-3-working-200ep-seed2-a69293a214ad.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 4
+
+**Result:** The transferred lower-learning-rate recipe did not improve the
+incumbent. The incumbent remains the working and best-known lineage, and the
+experiment recipe is reverted.
+
+**Observed behavior:** The lower-rate run's strongest training proxies were at
+checkpoint-70656: training success 1.00 and mean reward 349.57. Its endpoint
+checkpoint-120832 retained training success 0.97 and mean reward 329.10, but
+both checkpoints were below the incumbent on saved-policy task measurement.
+On the same 200-episode seed-3 research panel, checkpoint-70656 achieved
+188/200 (94.0%), checkpoint-120832 achieved 171/200 (85.5%), and the working
+policy achieved 193/200 (96.5%). The paired comparisons had 1 lower-rate win
+versus 6 incumbent wins for checkpoint-70656 and 1 versus 23 for
+checkpoint-120832. All 12 and 29 lower-rate failures, respectively, exhausted
+the 500-step horizon. The other 22 experiment-4 checkpoints remain unmeasured,
+not failed measurements.
+
+**Hypothesis assessment:** Weakened. The lower-rate run retained higher
+training-time proxies at its endpoint than the earlier unchanged-rate
+endpoints, but it still declined from its own proxy peak, and neither measured
+saved policy preserved the incumbent's 96.5% task success or reduced
+horizon-exhaustion failures. The proxy preservation therefore did not support
+the objective-relevant part of the hypothesis. This conclusion is limited to
+one transferred trajectory and one research panel; it does not establish that
+every lower learning rate is ineffective or that representation or task
+coverage is the cause.
+
+**Interpretation:** Measured task behavior, rather than the proxy peak, argues
+against selecting the lower-rate candidates or keeping their recipe. The
+incumbent's 96.5% result is meaningful progress toward the 98% objective but
+is still development evidence below the target and is not terminal evidence.
+The lower-rate intervention does not justify an official benchmark request.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-4/inventory.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-4-checkpoint-70656-200ep-seed3-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-4-checkpoint-120832-200ep-seed3-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-4-working-200ep-seed3-a69293a214ad.json`.
