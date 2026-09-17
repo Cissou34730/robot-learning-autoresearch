@@ -14,8 +14,12 @@ progress toward the objective, but it remains below 98% and is not official
 terminal evidence. The lower-rate transfer reached 94.0% at its measured
 proxy peak and 85.5% at its endpoint, while the fresh unchanged seed-4
 replication reached 83.0%; the current working and best-known policy is
-therefore the unchanged-recipe incumbent. This synthesis is provisional
-memory, not a prescribed direction.
+therefore the unchanged-recipe incumbent. Experiment 6's focused-angle
+transfer reached 93.5% on two fresh research panels, but retained 11
+failures among the 30 episodes in the 120-165 degree sector, matching the
+incumbent on those panels. This weakens the tested target-coverage route
+without establishing that target coverage is never useful. This synthesis is
+provisional memory, not a prescribed direction.
 
 **Lessons and limits:** Training proxies and saved-policy task success are not
 monotonic: unchanged continuation reached proxy peaks before declining, the
@@ -29,17 +33,18 @@ unchanged recipe produced both the 89.5% fresh baseline and 96.5% continued
 policy results, while one fresh seed-4 replication reached 83.0%; this
 demonstrates learning-process variability under the tested conditions, not a
 distribution-wide seed estimate. Same-panel comparisons establish only that
-the tested lower learning rate was not useful under its measured conditions.
-These limits are recorded in `research/brief.md`, `research/results.jsonl`,
-the experiment postmortems below, and the detailed evaluation artifacts.
+the tested lower learning rate and focused-angle transfer were not useful for
+the measured selection decision. These limits are recorded in
+`research/brief.md`, `research/results.jsonl`, the experiment postmortems
+below, and the detailed evaluation artifacts.
 
-**Open questions:** Whether changing training target coverage can improve the
-repeatable 120–165 degree residual failures without degrading the rest of the
-official distribution remains unresolved. Representation, optimization
-trajectory, and task mechanics are also not separated by the current
-evidence. Development measurements remain selection evidence rather than the
-official verdict, and no terminal-readiness assessment has been established
-for the current best-known designation.
+**Open questions:** The tested focused-angle transfer did not improve the
+repeatable 120-165 degree residual failures; whether a different coverage
+design or another mechanism can do so remains unresolved. Representation,
+optimization trajectory, and task mechanics are also not separated by the
+current evidence. Development measurements remain selection evidence rather
+than the official verdict, and no terminal-readiness assessment has been
+established for the current best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
@@ -268,3 +273,51 @@ has no predeclared terminal-validation evidence.
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-checkpoint-120832-200ep-seed4-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-working-200ep-seed3-a69293a214ad.json`;
 `research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-5-working-200ep-seed4-a69293a214ad.json`.
+
+## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 6
+
+**Result:** Redirecting focused training coverage to 120-165 degrees did not
+resolve the residual sector or exceed the incumbent. The working and
+best-known lineages remain unchanged, and the focused-angle code change should
+be reverted.
+
+**Observed behavior:** Training proxies peaked at checkpoint-75776 with
+training success 0.96 and mean reward 329.904, then declined to 0.89 and
+283.051 at checkpoint-120832. Checkpoint-75776 measured 91.0% (182/200),
+checkpoint-70656 measured 93.5% (187/200) on both seed-1000 and seed-1001
+panels, and checkpoint-120832 measured 92.5% (185/200). The incumbent scored
+92.0% (184/200) on both fresh panels. Each panel contained 30 episodes in the
+120-165 degree sector: checkpoint-70656 failed 11 there, exactly matching the
+incumbent; it had 2 failures outside the sector versus the incumbent's 5.
+Checkpoint-75776 and checkpoint-120832 failed 11 and 12 sector episodes,
+respectively. The detailed failures exhausted the 500-step horizon.
+
+**Hypothesis assessment:** Weakened. The predicted reduction in targeted
+120-165 degree failures and improvement above the incumbent's 96.5% development
+result were not observed. Checkpoint-70656 did reproduce 93.5% on an
+independent panel and showed fewer outside-sector failures than the incumbent
+on the matched fresh panels, so the intervention produced a useful
+objective-relevant signal under those panels. That signal is insufficient to
+support selecting the candidate, and the single transferred trajectory does
+not establish that the angle shift caused the outside-sector difference.
+
+**Interpretation:** Measured task behavior, rather than the proxy peak, argues
+against replacing the incumbent with an experiment-6 checkpoint. The exact
+targeted residual count remained unchanged for the best challenger, while the
+endpoint's lower proxy and 92.5% success again show that training proxies do
+not determine saved-policy task behavior. The intervention weakens the tested
+target-coverage explanation for the residual sector, but does not separate
+coverage from representation, optimization trajectory, or task mechanics. The
+incumbent remains meaningful progress toward 98%, but the development evidence
+is below the objective and is not terminal evidence.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/ff836c6c-01b3-4764-9bf2-e4f349ac707b/experiment-6/inventory.json`;
+`robot_learning/scenario/training_environment.py`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-checkpoint-75776-200ep-seed1000-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-checkpoint-70656-200ep-seed1000-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-checkpoint-70656-200ep-seed1001-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-checkpoint-120832-200ep-seed1000-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-working-200ep-seed1000-a69293a214ad.json`;
+`research/evaluations/ff836c6c-01b3-4764-9bf2-e4f349ac707b/evaluation-ff836c6c-01b3-4764-9bf2-e4f349ac707b-experiment-6-working-200ep-seed1001-a69293a214ad.json`.
