@@ -5,42 +5,41 @@
 **Current synthesis:** The campaign objective is at least 98% success on the
 official 200-episode reach-and-hold panel. The fresh unchanged PPO baseline
 reached 89.5% on research evaluation and 92.0% on the reused task-reference
-panel. Unchanged continuation later produced the strongest development result,
-96.5% (193/200), and the incumbent also measured 96.5% on independent seed-2,
-seed-3, and seed-4 research panels. This is meaningful progress but remains
-below the objective and is not official terminal evidence. The transferred
-lower-rate recipe reached 94.0% at its measured proxy peak and 85.5% at its
-endpoint, below the incumbent on the same seed-3 panel. A fresh seed-4 run of
-the unchanged recipe reached only 83.0% at its endpoint on both seed-3 and
-seed-4 research panels, so the incumbent's saved-policy behavior is stable
-across these evaluation panels while reproducing the learning trajectory is
-not established. The current working and best-known policy is therefore the
-unchanged-recipe incumbent. This synthesis is provisional memory rather than
-a prescribed direction.
+panel. Unchanged continuation produced the strongest development result,
+96.5% (193/200), and the incumbent reproduced that result on the seed-2,
+seed-3, and seed-4 research panels. The incumbent's seven failures are
+repeatable at the same target geometries on the seed-2/3/4 panels: six are in
+the 120-165 degree sector and one is near -103 degrees. This is meaningful
+progress toward the objective, but it remains below 98% and is not official
+terminal evidence. The lower-rate transfer reached 94.0% at its measured
+proxy peak and 85.5% at its endpoint, while the fresh unchanged seed-4
+replication reached 83.0%; the current working and best-known policy is
+therefore the unchanged-recipe incumbent. This synthesis is provisional
+memory, not a prescribed direction.
 
 **Lessons and limits:** Training proxies and saved-policy task success are not
 monotonic: unchanged continuation reached proxy peaks before declining, the
 lower-rate run retained stronger late proxies without transferring that signal
 to saved-policy success, and experiment 5's reward proxy improved to -568.3
 while its logged training success stayed at 0. All recorded detailed failures
-exhausted the 500-step horizon, but this does not identify whether
-representation, task coverage, optimization trajectory, or another limitation
-causes them. The unchanged recipe produced both the 89.5% fresh baseline and
-96.5% continued-policy results, while the one fresh seed-4 replication reached
-83.0%; this demonstrates learning-process variability under the tested
-conditions, not a distribution-wide estimate of seed variance or a causal
-explanation. Same-panel comparisons establish that the tested lower-rate
-transfer was not useful under its measured conditions, not that every lower
-rate or intervention is ineffective. These limits are recorded in
-`research/brief.md`, `research/results.jsonl`, the experiment postmortems
-below, and the detailed evaluation artifacts.
+exhausted the 500-step horizon. The repeated incumbent failure geometries make
+the positive-angle sector a concrete coverage signal, but do not establish
+that coverage is causal or explain the remaining -103 degree failure. The
+unchanged recipe produced both the 89.5% fresh baseline and 96.5% continued
+policy results, while one fresh seed-4 replication reached 83.0%; this
+demonstrates learning-process variability under the tested conditions, not a
+distribution-wide seed estimate. Same-panel comparisons establish only that
+the tested lower learning rate was not useful under its measured conditions.
+These limits are recorded in `research/brief.md`, `research/results.jsonl`,
+the experiment postmortems below, and the detailed evaluation artifacts.
 
-**Open questions:** What training trajectory, representation, task coverage,
-or learning method can close the remaining gap from 96.5% to 98%? More
-replications would quantify the observed learning-process variability, but
-experiment 5 does not establish its cause. Development measurements remain
-selection evidence rather than the official verdict, and no terminal-readiness
-assessment has been established for the current best-known designation.
+**Open questions:** Whether changing training target coverage can improve the
+repeatable 120–165 degree residual failures without degrading the rest of the
+official distribution remains unresolved. Representation, optimization
+trajectory, and task mechanics are also not separated by the current
+evidence. Development measurements remain selection evidence rather than the
+official verdict, and no terminal-readiness assessment has been established
+for the current best-known designation.
 
 ## ff836c6c-01b3-4764-9bf2-e4f349ac707b / Experiment 1
 
