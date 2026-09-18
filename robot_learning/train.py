@@ -11,7 +11,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 from robot_learning.policy_runtime import RUNTIME_FILE, frozen_scientific_modules
-from robot_learning.scenario.training_environment import make_training_env
+from robot_learning.scenario.environment import make_training_env
 from robot_learning.scenario.viewer import make_training_viewer_callback
 from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
