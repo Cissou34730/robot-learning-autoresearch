@@ -43060,7 +43060,7 @@
         "training_steps": 352256
       }
     },
-    "progress": "durable",
+    "progress": "cleanup_complete",
     "selected": "checkpoint-110592"
   },
   "pending_evaluation_request": null,
