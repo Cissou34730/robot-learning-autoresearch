@@ -4,67 +4,86 @@
 
 **Current synthesis:** The campaign objective is at least 98% official episode
 success on the two-joint reach-and-hold task. The strongest measured policy is
-still experiment 8's `checkpoint-120832` (`working` and `best_known`): 197/200 =
-98.5% on the protected task-reference panel and 194/200 = 97.0% on the researcher
-panel, with a persistent six-episode researcher wedge {7, 56, 64, 75, 107, 145}
-at rear angles -122 to -155 degrees and radii 8.0-19.5 cm. Ten experiments have
-not moved it. Re-inspecting the experiment-9 joint-margin diagnostics reframes
-the wedge: on the researcher panel 10 targets have a joint-infeasible open branch
-and a feasible folded branch, yet at the closest-approach step the elbow is
-positive (open sign) in every one of the 200 episodes and no episode ever reaches
-tolerance with a folded (negative-elbow) posture; within the band the four
-successes and six failures separate by how far the shoulder is pressed past the
-nominal +/-170 degree limit (successes at 170.5-172.7 degrees, failures at
-173.3-174.1 degrees). The residual therefore reads less like a branch-selection
-error than like a soft joint-limit reach-and-precision wall the controller leans
-on. Inference, not measurement: PPO's advantage estimator has an effective
-horizon of roughly 1/(1 - gamma*lambda) ~ 17 steps at the active gamma=0.99,
-lambda=0.95, while the candidate escape (a 60-110 degree shoulder reconfiguration
-followed by a 100-step hold) is much longer, so a myopic estimate need not credit
-it; this is consistent with two opposite near-limit signals (experiment 9's
-penalty, experiment 10's folded-branch guidance) changing trajectories and the
-protected failure set without moving deterministic outcomes. Method variance
-remains large (seed 0: 97.0-98.5%; seed 1: 47.0-49.5%), so the near-threshold
-level is one realized trajectory rather than a stable method property, and no
-completed intervention has exceeded the seed-0 policy.
+experiment 8's `checkpoint-120832` (`working` and `best_known`), the endpoint of a
+full-official-radius transfer from the experiment-1 seed-0 baseline: 197/200 =
+98.5% on the protected task-reference panel (the campaign's only measurement at or
+above the objective, by one episode) and 194/200 = 97.0% on the researcher
+200-episode panel, with a persistent six-episode rear wedge
+{7, 56, 64, 75, 107, 145} at angles -122 to -155 degrees and radii 8.0-19.5 cm.
+Recomputing both analytic branches with the +/-170 degree hinge range applied
+modulo 360 degrees, that diagnostic panel splits into 177 both-feasible, 13
+open-only and 10 folded-required targets; the policy solves all 190
+open-feasible targets and fails 6 of the 10 folded-required ones. Per-episode
+joint diagnostics on the experiment-9 endpoint and its parent show that at every
+failure the shoulder is driven 3.3-4.1 degrees past the nominal +/-170 degree
+limit and the end effector stalls 0.5-1.5 cm outside the 1 cm tolerance, while no
+episode on the panel reaches tolerance with a negative-elbow (folded) posture; the
+four folded-required successes instead press the shoulder 0.5-2.7 degrees past
+the limit and arrive. The residual therefore reads as a discrete
+branch-selection/precision wall at the soft shoulder limit: the policy commits to
+the open elbow sign and succeeds or fails by how many degrees of limit penetration
+the target needs. The wedge is not transfer-specific - the fresh seed-0 baseline
+(experiment 1) already failed the same six rear targets. Three targeted
+interventions have not moved it: a per-step joint-limit penalty (experiment 9)
+that saturated on every failure, folded-branch wrapped-error guidance (experiment
+10) that changed trajectories and the protected failure set but not the six
+outcomes, and a longer effective advantage horizon (experiment 11) that left all
+six failures intact while regressing both panels monotonically (97.0% -> 96.0% ->
+86.5% researcher; 98.5% -> 88.0% protected) as the policy shifted toward
+non-terminating proximity. Method variance remains large: the two characterized
+fresh runs of the older recipe measured 97.0%/98.0% (seed 0, experiment 1) and
+47.0%/49.5% (seed 1, experiment 5), so the near-threshold level is one realized
+trajectory and its representativeness is unresolved; the current full-radius
+recipe itself has only the single transfer realization of experiment 8.
 
 **Lessons and limits:** Full-radius coverage by transfer did not repair the
-wedge (net +1 on task-reference, researcher failure set unchanged; experiment 8),
-so it is not a region the policy never sampled. Editing occupied observation
-slots is semantically incompatible with a transferred policy: writing 0.0 into,
-or mirroring a feasible branch into, the infeasible branch's wrapped-error slots
-keeps both-feasible behavior but collapses single-branch targets (experiments 3,
+wedge (net +1 protected episode, researcher failure set bit-identical; experiment
+8), so the wedge is not a region the policy never sampled, and the same six
+targets fail in the fresh experiment-1 baseline, so it is not a
+transfer-inherited artifact either. Editing occupied observation slots is
+semantically incompatible with a transferred policy: writing 0.0 into, or
+mirroring a feasible branch into, the infeasible branch's wrapped-error slots
+kept both-feasible behavior but collapsed single-branch targets (experiments 3,
 6), so unchanged tensor dimensions alone do not establish compatibility. Adding
 observation content forces fresh training, and fresh 120k-step runs on altered
 11- or 13-dimensional observations underconverged (experiments 4, 6), so the
 fixed budget cannot cleanly test an added-dimension representation. A globally
 tightened success tolerance degrades a competent transferred policy and erases
 its fragile 6-14 cm generalization (experiment 7), and folded-target oversampling
-was confounded with radius-support and draw-order changes (experiment 2). A weak
-per-step joint-limit proximity penalty (experiment 9) and folded-branch
-wrapped-error guidance (experiment 10) both fired on the actual failure states
-yet left the deterministic failure set and success level unchanged, so those
-signal magnitudes did not move the argmax policy. Run-to-run variability is large
-(seed 0: 97.0%/98.0%; seed 1: 47.0%/49.5% at the same budget), so single runs
-cannot establish a method property or attribute a change causally (experiments 1,
-5). Training reward does not track task success (experiments 1, 7). All wedge
-evidence rests on a few episodes per panel (about 3-14), every mechanism claim is
-scoped to the seed-0 lineage, and the direct joint-posture evidence comes from
-one diagnostic round on the experiment-9 endpoint and its parent.
+was confounded with radius-support and draw-order changes (experiment 2). Weak
+near-limit signals do not move the deterministic argmax: a per-step joint-limit
+penalty (experiment 9) and a folded-branch potential (experiment 10) both fired
+on the actual failing states yet left the six outcomes, and in experiment 9's
+case the success level, unchanged. Both postmortems note the tested magnitudes
+were an order of magnitude or more below the hold shaping, so signal scale
+remains a live but untested explanation. Extending the effective advantage
+horizon (experiment 11) is harmful rather than a repair: gamma*lambda 0.9405 ->
+0.989 shifted behavior toward non-terminating proximity and regressed both panels
+monotonically. Run-to-run variability is large (seed 0: 97.0%/98.0%; seed 1:
+47.0%/49.5% at the same 120k budget on the older recipe), so single runs cannot
+establish a method property or attribute a change causally (experiments 1, 5).
+Training reward does not track task success (experiments 1, 7). All wedge evidence
+rests on a few episodes per panel (about 6-10 folded-required), every mechanism
+claim is scoped to the seed-0 lineage, and the direct joint-posture evidence comes
+from one diagnostic round on the experiment-9 endpoint and its parent; the current
+full-radius recipe has a single realization.
 
-**Open questions:** Whether the wedge is a myopic credit-assignment limit that a
-longer effective planning horizon would relax, or a soft-limit reach-and-
-precision limit independent of the horizon, is unresolved. Whether the folded
-basin - which the policy never enters at closest approach - is learnable at all
-within the fixed budget, and whether being exposed to it would change the
-deterministic outcomes, is unmeasured. Whether a fresh policy trained on the full
-official support from the start would place its branch boundary differently from
-the transfer-inherited one is open. The method's run-to-run distribution is
-characterised by only two seeds, so whether any seed reliably reproduces the
-97-98% level, and whether the wedge is seed-stable, is unknown. It is also
-unknown why the seed-0 policy peaks near 100k steps and then degrades, and
-whether a continuous two-second hold at the limit posture is dynamically
-comfortable for a learned controller.
+**Open questions:** Whether the unchanged full-radius method, run fresh from
+scratch, reproduces a near-threshold competent policy or underconverges like the
+seed-1 replication is unmeasured, so the incumbent's 97-98.5% is one realized
+trajectory of unknown representativeness. Whether the rear wedge is seed-stable
+across competent runs is unknown. The longer-horizon branch of the myopia
+explanation has been tested once and was harmful, but an intermediate horizon or
+a different return decomposition remains untested. Whether the folded
+(negative-elbow) basin is learnable at all within the fixed budget, and whether
+any training condition would make the policy enter it from the canonical start,
+is unresolved - the failures are exactly the folded-required targets, yet every
+observation and reward route tried so far has left the argmax there. Whether the
+soft-limit penetration exploited by the four folded-required successes (0.5-2.7
+degrees past +/-170) is a physical ceiling or an artifact of the solver and
+control timing is unmeasured. Why the seed-0 policy peaks near 100k steps under
+the older recipe and then degrades, and whether a continuous two-second hold at a
+near-limit posture is dynamically comfortable, remain unexplained.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
