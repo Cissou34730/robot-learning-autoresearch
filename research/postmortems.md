@@ -2,80 +2,84 @@
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Scientific strategy
 
-**Current synthesis:** The objective is at least 98% official success on the
-reach-and-hold task; only the unchanged PPO recipe (64x64 tanh, n_steps 1024,
-ent_coef 0.01, trained on targets 14-20 cm from the base) has produced a
-competent measured policy. Experiment 1 (`checkpoint-100352`, seed 0) measured
-194/200 = 97.0% on the researcher panel and 196/200 = 98.0% on the protected
-task-reference panel and is `working`/`best_known`; experiment 5, a seed-1
-replication of the same recipe and budget, reached only 47.0%/49.5%, so
-experiment 1's near-threshold level is one realized trajectory of a strongly
-seed-sensitive learning process rather than a stable method property.
-Re-analysing the experiment-1 researcher panel, all six residual failures are
-folded-required targets whose elbow-open analytic inverse-kinematics branch lies
-just outside the +/-170 degree shoulder range (about -176 to -181.5 degrees)
-while the folded branch lies inside it and reaches the target exactly; the
-failures span radii 8.0-19.5 cm and stall 0.81-1.42 cm outside the 1 cm
-tolerance (five of six never enter it). A geometric check of each failure
-compares the observed closest approach with the best reachable configuration
-under the joint limits and with the exact folded solution: the policy comes
-close to the best shoulder-pinned configuration and the folded solution is
-essentially exact, i.e. it settles near the limit instead of adopting an
-available feasible branch. The near-limit shell is roughly 3.9% of the 14-20 cm
-training distribution, so the residual is not plausibly a sample-coverage gap,
-and raising the folded-target sampling rate left folded failures unchanged
-(experiment 2). Three interventions have failed to remove the band: full-radius
-support with folded oversampling (experiment 2), zeroing the infeasible branch's
-wrapped joint errors (experiment 3, which also collapsed the transferred
-policy), and added per-branch joint-limit features at 13 dimensions (experiment
-4, fresh, which underconverged). The failures therefore remain consistent with
-the observation presenting the joint-infeasible open branch as an attractive
-target, with an optimization or precision limit at the shoulder boundary
-independent of that presentation, or with both; the campaign's tests do not
-separate these.
+**Current synthesis:** The campaign objective is at least 98% official episode
+success on the two-joint reach-and-hold task. Only the unchanged PPO recipe
+(64x64 tanh, n_steps 1024, ent_coef 0.01, trained on targets 14-20 cm from the
+base) has produced a competent measured policy: experiment 1's
+`checkpoint-100352` (seed 0) measured 194/200 = 97.0% on the researcher panel
+and 196/200 = 98.0% on the protected task-reference panel, and is
+`working`/`best_known`. Its six researcher-panel failures are all
+folded-required near-limit targets (angles -122 to -155 degrees, radii
+8.0-19.5 cm) whose elbow-open analytic inverse-kinematics branch lies just
+outside the +/-170 degree shoulder range while the folded branch is essentially
+exact; the policy settles 0.81-1.42 cm outside the 1 cm tolerance, and five of
+six never enter it. A geometric check shows the policy reaches close to the best
+shoulder-pinned configuration and leaves the feasible folded branch unused.
+Experiment 5, a seed-1 replication of the same recipe and budget, reached only
+47.0%/49.5% and was still improving at the budget end, so the 97-98% level is
+one realized trajectory of a strongly seed-sensitive learning process rather
+than a stable method property; experiments 4 and 6 confirm that fresh runs of
+altered recipes can underconverge within the same 120k budget (36.0-36.5% and
+55.0%). Three observation interventions have not removed the band: full-radius
+sampling with folded oversampling by transfer (experiment 2), zeroing the
+joint-infeasible branch's wrapped errors (experiment 3, whose transfer collapsed
+to 71.0-74.0%), and added per-branch joint-limit features at 13 dimensions
+(experiment 4, fresh, underconverged). Experiment 6 mirrored the joint-feasible
+branch's angles into the infeasible slot at 11 dimensions (fresh, 55.0%): it
+again left most both-feasible behavior intact while failing every single-branch
+episode (0/29 open-only, 0/31 folded-only) and repairing no band episode. The
+band therefore remains consistent with an observation-advertised branch
+attraction, with an optimization/precision or branch-selection limit at the
+shoulder boundary independent of the observation, or with both; the campaign's
+tests do not separate these.
 
-**Lessons and limits:** Run-to-run variability of the unchanged method is
-large: at the same 120k-step budget seed 0 reached 97.0%/98.0% while seed 1
-reached 47.0%/49.5% and was still improving at the budget end, so single-run
-measurements cannot establish a method property or attribute a change causally
-(experiments 1, 5). Within experiment 1's seed-0 run the policy was strongest
-near 100k steps (97.0%) and had degraded by 120832 (94.5%, with added
-oscillation failures), so the useful level is a within-run transient rather than
-a stable endpoint. A dimension-preserving edit to the values of the existing
-IK-branch observation features is not semantically compatible with a transferred
-policy: zeroing the infeasible branch's wrapped errors immediately dropped the
-transferred policy to 71.0-74.0% and destroyed the open-only episodes (0/29)
-while leaving both-feasible behavior intact, because a zero is itself a valid
-"at goal" reading of a feature the policy had come to rely on (experiment 3).
-Adding observation dimensions forces fresh training, and a fresh 120k run on the
-13-dimensional observation underconverged (36.0-36.5%), so the fixed budget
-cannot cleanly test an added-dimension representation (experiment 4). Folded
-target oversampling at roughly six times the natural rate did not reduce folded
+**Lessons and limits:** Run-to-run variability of the unchanged method is large
+(seed 0: 97.0%/98.0%; seed 1: 47.0%/49.5% at the same budget, and the
+distribution is characterised by only two seeds), so single runs cannot
+establish a method property or attribute a change causally (experiments 1, 5).
+Within the seed-0 run the policy peaked near 100k steps (97.0%) and degraded by
+120832 (94.5%, with added boundary oscillation), so the useful level is a
+within-run transient rather than a stable endpoint (experiment 1). Transfer from
+the competent parent did not exceed it in any completed test: a benign
+training-distribution change stayed slightly below (94.0-94.5% versus 95.5%
+re-measured on the changed panel, experiment 2) and an observation-value edit
+collapsed it (experiment 3). A dimension-preserving edit to the values of
+existing observation features is not semantically compatible with a transferred
+policy, because a value such as 0.0 is a valid "at goal" reading of a feature
+the policy had come to rely on (experiment 3). Adding or mirroring observation
+content forces fresh training, and fresh 120k-step runs on altered 11- or
+13-dimensional observations underconverged, so the fixed budget cannot cleanly
+test an added-dimension or mirrored representation (experiments 4, 6). Two
+different edits to the same infeasible-branch slots (zero, and a copy of the
+feasible branch) both left both-feasible episodes largely intact while
+collapsing single-branch episodes, indicating the controller depends on the
+distinct per-branch wrapped-error signal (experiments 3, 6). Folded-target
+oversampling at roughly six times the natural rate did not reduce folded
 failures, but that run also changed the radius support and target draw order and
 used transfer, so it does not isolate coverage (experiment 2). Training reward
 does not track task success (163.85 at 0.42 training success versus 129.26 at
-0.93) and is usable only as a shaped signal. All band evidence still rests on
-the single seed-0 run: only about 6-14 episodes per
-panel are involved, no joint trajectories are recorded, the position of the arm
-during a stall is inferred from target geometry rather than observed, and every
+0.93) and is usable only as a shaped signal (experiment 1). All band evidence
+still rests on the single seed-0 run: only about 6-14 episodes per panel are
+involved, no joint trajectories are recorded, the arm's stall position during a
+failure is inferred from target geometry rather than observed, and every
 mechanism claim remains scoped to that one run.
 
 **Open questions:** Whether the residual near-limit band is caused by the
 observation advertising a joint-infeasible open branch as an attractive target,
-or by an optimization or branch-selection limit at the shoulder boundary
-independent of that advertisement, is unresolved: experiments 3 and 4 each
-tested a single encoding and were confounded by transfer collapse and
-underconvergence respectively, so neither isolated the representation. It is
-unknown whether a representation that presents only a joint-feasible target can
-be learned within the fixed 120k-step budget, and whether such a policy would
-remove the band or merely move the failure. The method's run-to-run distribution
-is characterized by only two seeds, so whether any seed reliably reproduces the
-97-98% level, and whether the band is seed-stable, is unknown. The folded-branch
-solution is exact in joint space and statically reachable, but it is unknown
-whether a continuous two-second hold through it is dynamically comfortable for a
-learned controller, and how the learned observation normalizer couples the two
-branches. It is also unknown why the seed-0 policy peaks near 100k steps and
-then degrades.
+or by an optimization/precision or branch-selection limit at the shoulder
+boundary independent of that advertisement, remains unresolved; experiments 3
+and 6 each tested one value encoding and were confounded by transfer collapse or
+underconvergence, so neither isolated the representation. It is unknown whether
+a representation presenting only a joint-feasible target can be learned within
+the fixed 120k-step budget, and whether such a policy would remove the band or
+merely move the failure. The method's run-to-run distribution is characterised
+by only two seeds, so whether any seed reliably reproduces the 97-98% level, and
+whether the band is seed-stable, is unknown. It is also unknown whether a
+continuous two-second hold through the exact folded branch is dynamically
+comfortable for a learned controller, and why the seed-0 policy peaks near 100k
+steps and then degrades. Whether the residual is a hard limit of the reachable
+set at the shoulder boundary or a precision/reward-magnitude limit that tighter
+training conditions could close has not been tested.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
