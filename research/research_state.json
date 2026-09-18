@@ -1,67 +1,18 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/df7588aa-bb83-4dcf-a7c3-300afb63ee97/e1-cada55eb5-64cbf81346a7d87fd0fff8bab5adc8270ec17cd1ff7334a307db2722482d6952",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/df7588aa-bb83-4dcf-a7c3-300afb63ee97/evaluation-df7588aa-bb83-4dcf-a7c3-300afb63ee97-experiment-1-checkpoint-100352-200ep-seed4200-543af51fd137.json",
-      "research/evaluations/df7588aa-bb83-4dcf-a7c3-300afb63ee97/evaluation-df7588aa-bb83-4dcf-a7c3-300afb63ee97-experiment-1-checkpoint-100352-200ep-seed4400-543af51fd137.json",
-      "research/evaluations/df7588aa-bb83-4dcf-a7c3-300afb63ee97/task-reference-df7588aa-bb83-4dcf-a7c3-300afb63ee97-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "64cbf81346a7d87fd0fff8bab5adc8270ec17cd1ff7334a307db2722482d6952",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest success among the measured candidates on the shared research panel, repeated the same 94.5% result on a disjoint panel, and also reached 98.0% on the reused task-reference panel.",
-    "scientific_commit": "c82f295d22a217a16d87b7bafce7ce3df34cd27b",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "id": "df7588aa-bb83-4dcf-a7c3-300afb63ee97",
+    "base_commit": "c110fd49c20201373a9270754de6c0010db066e4",
+    "id": "c92ccfe2-1135-4ec4-bc5a-eded729fc461",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-18T11:46:00.593869+00:00"
+    "started_at": "2026-09-18T13:53:10.881747+00:00"
   },
   "campaign_experiment_counters": {
-    "df7588aa-bb83-4dcf-a7c3-300afb63ee97": 4
+    "c92ccfe2-1135-4ec4-bc5a-eded729fc461": 0
   },
-  "last_allocated_experiment": 4,
-  "last_experiment": 4,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Revert the transferred training-radius change because its two fresh-panel measurements did not show a consistent task benefit, while preserving the unchanged working recipe that served as the matched control."
-    },
-    "code_parent_commit": "9aa87ff93be547306ed46945cf6d0c78beb186f9",
-    "continue_from": "working",
-    "experiment": 4,
-    "reason": "The full-radius intervention produced only a one-success advantage on seed 5200 and then exactly matched the unchanged working policy at 96.5% with identical failures on the disjoint seed-5400 panel. The intervention therefore does not provide stable evidence of progress toward the complete-task objective; continue from the established working lineage for the next ordinary experiment, without requesting the terminal benchmark."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -70,51 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "9aa87ff93be547306ed46945cf6d0c78beb186f9",
-    "experiment": 4,
-    "scientific_commit": "a674adca198bf8f9f1d6d36cb8c853cd6bf67d32"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/df7588aa-bb83-4dcf-a7c3-300afb63ee97/e1-cada55eb5-64cbf81346a7d87fd0fff8bab5adc8270ec17cd1ff7334a307db2722482d6952",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/df7588aa-bb83-4dcf-a7c3-300afb63ee97/evaluation-df7588aa-bb83-4dcf-a7c3-300afb63ee97-experiment-1-checkpoint-100352-200ep-seed4200-543af51fd137.json",
-      "research/evaluations/df7588aa-bb83-4dcf-a7c3-300afb63ee97/evaluation-df7588aa-bb83-4dcf-a7c3-300afb63ee97-experiment-1-checkpoint-100352-200ep-seed4400-543af51fd137.json"
-    ],
-    "fingerprint": "64cbf81346a7d87fd0fff8bab5adc8270ec17cd1ff7334a307db2722482d6952",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The full-radius intervention produced only a one-success advantage on seed 5200 and then exactly matched the unchanged working policy at 96.5% with identical failures on the disjoint seed-5400 panel. The intervention therefore does not provide stable evidence of progress toward the complete-task objective; continue from the established working lineage for the next ordinary experiment, without requesting the terminal benchmark.",
-    "scientific_commit": "c82f295d22a217a16d87b7bafce7ce3df34cd27b",
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
