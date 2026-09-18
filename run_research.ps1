@@ -111,7 +111,7 @@ function Start-OpenCodeCampaignServer {
             "serve",
             "--hostname=127.0.0.1",
             "--port=$port"
-        ) -PassThru -NoNewWindow
+        ) -PassThru -WindowStyle Hidden
     }
     finally {
         if ($null -eq $previousConfig) {

@@ -347,6 +347,32 @@ def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
     assert assert_research_surface() == ["research/current_params.json"]
 
 
+def test_interrupted_git_stops_its_complete_process_group(monkeypatch):
+    class InterruptedGit:
+        pid = 4242
+
+        def communicate(self):
+            raise KeyboardInterrupt
+
+    process = InterruptedGit()
+    stopped = []
+
+    def start_process(*args, **kwargs):
+        assert kwargs["start_new_session"] is True
+        return process
+
+    monkeypatch.setattr(
+        repository, "git_process_group_options", lambda: {"start_new_session": True}
+    )
+    monkeypatch.setattr(repository.subprocess, "Popen", start_process)
+    monkeypatch.setattr(repository, "stop_git_process", stopped.append)
+
+    with pytest.raises(KeyboardInterrupt):
+        repository.git("push", "origin", "HEAD")
+
+    assert stopped == [process]
+
+
 # --- runner memory versus scientific change --------------------------------
 
 SCIENTIFIC_CHANGE = "robot_learning/scenario/reward.py"

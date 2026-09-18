@@ -228,6 +228,11 @@ def test_the_launcher_offers_both_runtimes_and_still_defaults_to_copilot():
     assert "The OpenCode runtime needs Node.js on PATH" in LOOP
 
 
+def test_the_opencode_server_is_isolated_from_foreground_console_interrupts():
+    assert "-WindowStyle Hidden" in LOOP
+    assert "-NoNewWindow" not in LOOP
+
+
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
     for phase in (
         "proposalStatus",

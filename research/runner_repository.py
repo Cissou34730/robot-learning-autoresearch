@@ -7,6 +7,8 @@ a protocol decision; it executes the ones the Runner already took.
 import copy
 import hashlib
 import json
+import os
+import signal
 import shutil
 import subprocess
 import time
@@ -90,19 +92,56 @@ EXPERIMENT_LOG_HEADER = (
 # --- Git -------------------------------------------------------------------
 
 
+def git_process_group_options() -> dict:
+    if os.name == "nt":
+        return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    return {"start_new_session": True}
+
+
+def stop_git_process(process: subprocess.Popen) -> None:
+    if os.name == "nt":
+        subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True,
+            check=False,
+        )
+    else:
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        if os.name == "nt":
+            process.kill()
+        else:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        process.wait()
+
+
 def git(*args: str) -> str:
-    result = subprocess.run(
+    process = subprocess.Popen(
         ["git", *args],
         cwd=paths.ROOT,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
         encoding="utf-8",
         errors="replace",
-        check=False,
+        **git_process_group_options(),
     )
-    if result.returncode != 0:
-        raise RuntimeError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
-    return result.stdout
+    try:
+        stdout, stderr = process.communicate()
+    except KeyboardInterrupt:
+        stop_git_process(process)
+        raise
+    if process.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} failed: {stderr.strip()}")
+    return stdout
 
 
 def status_paths(scope: tuple[str, ...]) -> list[str]:
