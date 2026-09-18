@@ -317,3 +317,73 @@ does not isolate the near-limit band cause. Whether a different feasibility
 encoding, or simply more steps on this observation, would help remains untested.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-4-checkpoint-115712-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-4-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-4-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-4/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-1/inventory.json, research/results.jsonl, research/research_state.json, robot_learning/scenario/observations.py, robot_learning/robots/two_joint_arm.xml, training logs for experiments 1 and 4 (research/query_training_log.py).
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 5
+
+**Result:** A fresh replication of the unchanged recipe at training seed 1 (120k
+steps) reached only 30.5% at `checkpoint-100352` and 47.0% at
+`checkpoint-120832` on the researcher panel, and 49.5% on task-reference-v1 at
+`checkpoint-120832`, far below experiment 1's seed-0 97.0% and 98.0%. The seed-1
+training curve was still rising at the budget end, so the run reads as much
+slower learning rather than a distinct convergent failure mode. `working`
+remains the only competent measured policy; no seed-1 checkpoint is retained.
+
+**Observed behavior:** Experiment 5 was a `replication` of experiment 1 with
+`training_seed` 1, fresh initialization, unchanged code (`code_changes` empty)
+and parameters, 120,000 requested / 120,832 completed steps and 24 checkpoints.
+On the researcher 200-episode panel (seed 20260918, semantics 6ba3ba6d7654):
+`checkpoint-100352` 61/200 = 30.5% and `checkpoint-120832` 94/200 = 47.0%;
+`checkpoint-120832` measured 99/200 = 49.5% on task-reference-v1. The raw log
+shows success_rate 0 through 86,016 steps, 0.01 at 94,208, 0.04 at 100,352 and
+0.13 at 120,832; `ep_len_mean` stays 500 through 86,016 and falls to 462 at
+120,832, while `ep_rew_mean` rises from 24.9 (70,656) to 107.4 (120,832).
+Experiment 1's seed-0 run instead reached training success 0.97 at 100,352 and
+0.95 at 120,832 with reward 112-129, and measured 97.0%/98.0%. On the shared
+researcher panel every one of experiment 5's 61 (100,352) and 94 (120,832)
+successes is also an experiment-1 success: it adds 0 exclusive successes and
+loses 133 and 100 of experiment 1's successes, and the 6 episodes neither policy
+solves are exactly experiment 1's near-limit band. On task-reference it shares
+98 successes, adds 1 exclusive success (episode 0, a band target at radius
+6.7 cm, angle -116 degrees, where experiment 1 stalls 0.99 cm out) and leaves 3
+shared failures. Experiment 5's 106 researcher-panel failures at
+`checkpoint-120832` are all 500-step truncations with reward below 50 (no
+arrival); none is a high-reward interrupted hold, whereas `checkpoint-100352`
+had 6 such high-reward failures. On task-reference only 6 of its 101 failures
+end within 2 cm of the target (the rest 2-40 cm away), and failures span sectors
+-180 (19/19), -150 (13/17), 0 (2/13), 30 (5/13), 60 (9/11), 90 (15/15), 120
+(24/24) and 150 (14/14) while sectors -120 through -30 succeed fully.
+
+**Hypothesis assessment:** The proposal's hypothesis - that the near-limit-band
+residual and the roughly 97% level are stable properties of the unchanged
+learning method rather than of the seed-0 run - is contradicted within the
+tested 120k-step budget: the seed-1 policy's success level is far lower and its
+failure set is broad and angularly structured, predominantly a failure to
+arrive, not concentrated in the near-limit band. This is the proposal's own
+stated contradicting observation (a clearly different success level and a
+failure set not concentrated in the band). Limits: the seed-1 training-success
+curve was still rising and its episodes still lengthening at the budget end, so
+the evidence establishes that experiment 1's level is seed-sensitive and not
+reproduced at this budget, but it does not distinguish a lower seed-1 ceiling
+from slower convergence, nor does it test the band against a converged seed-1
+policy. Only 2 of 24 checkpoints plus one task-reference panel were measured,
+and two training seeds are not a variance estimate.
+
+**Interpretation:** Run-to-run variability of the unchanged method is large: on
+the same recipe and budget, seed 0 measured 97.0%/98.0% while seed 1 measured
+47.0%/49.5%, so experiment 1's near-threshold result is best read as one
+favorable realized trajectory, not the method's expected performance. The
+seed-1 failure profile is an undertraining signature rather than a narrow
+precision deficit: failures are almost all failures to reach anywhere near the
+target, they spread across the upper and rear angular sectors, and its successes
+are essentially a subset of experiment 1's. Experiment 1's six-episode band is
+unaddressed here (both policies fail those six), but with the seed-1 policy
+still improving at the budget end this experiment cannot cleanly test whether a
+converged seed-1 policy would exhibit the band. The gap between experiment 5's
+training success (0.13) and its deterministic measured success (47.0%) at the
+same checkpoint is recorded as an observation; it may reflect the stochastic
+training policy and a marginal hold margin, but it is unexplained here. Prior
+band-mechanism claims remain conditioned on the single seed-0 run, and the
+primary practical uncertainty is now the stability of the learning process
+itself.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-5/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-5/parameters.json, research/results.jsonl, research/research_state.json, research/brief.md, training log for experiment 5 (research/query_training_log.py).
