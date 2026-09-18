@@ -120,9 +120,109 @@ def test_report_exposes_early_unmeasured_peak_and_selection_rationale(tmp_path):
     text = report.render_report([campaign])
     assert "exact peak positions: 20000" in text
     assert "checkpoint-20000" in text
+    assert "2/2 distinct values" in text
+    assert "1; best checkpoint-20000 (0.99)" in text
     assert "Historical matched position" in text
     assert "Historical consumption is unavailable, not zero" in text
     assert "not proof of a better model" in text
+    assert "Campaign stop or interruption reason: unavailable" in text
+
+
+def test_report_exposes_decision_chain_recipe_state_and_compact_evidence(tmp_path):
+    lineage = {
+        "origin_experiment": 1,
+        "candidate": "checkpoint-20000",
+        "fingerprint": "model-one",
+        "scientific_commit": "1234567890abcdef",
+    }
+    first = {
+        "index": 1,
+        "family": "training.baseline",
+        "kind": "training",
+        "initialization": "fresh",
+        "status": "closed",
+        "hypothesis_assessment": "Supported within the measured evidence.",
+        "working_lineage": lineage,
+        "best_known_lineage": lineage,
+        "closure_decision": {
+            "continue_from": "checkpoint-20000",
+            "code": {"action": "keep", "reason": "retain baseline"},
+            "reason": "best measured baseline",
+        },
+        "proposal_snapshot": {
+            "hypothesis": "baseline learns",
+            "change": "baseline",
+            "reasoning": {"evidence": []},
+        },
+    }
+    second = {
+        "index": 2,
+        "family": "reward.targeted",
+        "kind": "training",
+        "initialization": "transfer",
+        "status": "closed",
+        "hypothesis_assessment": "Contradicted by the result.",
+        "code_changes": "robot_learning/scenario/reward.py",
+        "parameter_changes": [{"path": "reward.scale", "before": 1.0, "after": 2.0}],
+        "working_lineage": lineage,
+        "best_known_lineage": lineage,
+        "closure_decision": {
+            "continue_from": "working",
+            "code": {"action": "revert", "reason": "no measured gain"},
+            "reason": "working remains stronger",
+        },
+        "proposal_snapshot": {
+            "hypothesis": "targeted reward helps",
+            "change": "change reward scale",
+            "reasoning": {
+                "initialization_reason": "compatible transfer",
+                "objective_link": "repeated objective text",
+                "expected_observation": "higher success",
+                "contradicting_observation": "no gain",
+                "evidence": [
+                    {
+                        "source": "research/evaluations/experiment-1.json",
+                        "observation": "verbose observation must not be duplicated",
+                    }
+                ],
+            },
+        },
+    }
+    usage = [
+        {
+            "experiment": 2,
+            "phase": "post-training analysis",
+            "attempt": 1,
+            "runtime": "opencode",
+            "reported_cost_usd": 0.25,
+            "tool_calls": 3,
+            "duration_seconds": 5,
+            "exit_code": 0,
+        }
+    ]
+    campaign = {
+        "repo": tmp_path,
+        "id": CAMPAIGN,
+        "state": {},
+        "rows": [first, second],
+        "usage": usage,
+    }
+
+    text = report.render_report([campaign])
+
+    assert "### Scientific search coverage" in text
+    assert "### Cross-experiment decision chain" in text
+    assert "### Recipe and lineage state" in text
+    assert "robot_learning/scenario/reward.py" in text
+    assert "reward.scale: 1.0 -> 2.0" in text
+    assert "Explicit prior experiment references: 1" in text
+    assert "experiment-1.json" in text
+    assert "verbose observation must not be duplicated" not in text
+    assert "Objective link:" not in text
+    assert "Recipe rationale:" not in text
+    assert "#### Analysis and measurement flow" in text
+    assert "Cost USD" in text
+    assert "0.25" in text
 
 
 def test_comparison_keeps_campaigns_separate_and_deduplicates_artifacts(tmp_path):

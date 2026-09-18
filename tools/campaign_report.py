@@ -6,6 +6,7 @@ import argparse
 import json
 import re
 from collections import Counter, defaultdict
+from itertools import pairwise
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,6 +113,97 @@ def runtime_label(row: dict) -> str:
     """Rows written before the OpenCode runtime existed carry no runtime field."""
     runtime = row.get("runtime")
     return str(runtime) if runtime else "copilot (legacy)"
+
+
+def proposal_reasoning(row: dict) -> dict:
+    proposal = row.get("proposal_snapshot") or {}
+    return proposal.get("reasoning") or row.get("reasoning") or {}
+
+
+def prior_experiment_references(row: dict) -> list[int]:
+    """Return only explicit references recorded in the proposal evidence."""
+    references = set()
+    for evidence in proposal_reasoning(row).get("evidence", []):
+        text = f"{evidence.get('source', '')} {evidence.get('observation', '')}"
+        references.update(
+            int(number)
+            for number in re.findall(r"experiment[-_ ](\d+)", text, re.IGNORECASE)
+            if int(number) < row["index"]
+        )
+    return sorted(references)
+
+
+def family_area(value: object) -> str:
+    family = str(value or NA)
+    return re.split(r"[.]", family, maxsplit=1)[0]
+
+
+def lineage_identity(lineage: dict | None) -> tuple:
+    lineage = lineage or {}
+    return (
+        lineage.get("origin_experiment"),
+        lineage.get("candidate"),
+        lineage.get("fingerprint"),
+    )
+
+
+def changed_from(previous: dict | None, current: dict | None) -> str:
+    if not current:
+        return NA
+    if not previous:
+        return "initial"
+    return "yes" if lineage_identity(previous) != lineage_identity(current) else "no"
+
+
+def changed_paths(row: dict) -> str:
+    paths = row.get("code_changes") or []
+    if isinstance(paths, str):
+        paths = [paths]
+    return ", ".join(paths) or "none"
+
+
+def parameter_change_summary(row: dict) -> str:
+    changes = row.get("parameter_changes") or []
+    if isinstance(changes, dict):
+        changes = [changes]
+    rendered = []
+    for change in changes:
+        if not isinstance(change, dict):
+            rendered.append(str(change))
+            continue
+        path = change.get("path", NA)
+        before = change.get("before", NA)
+        after = change.get("after", NA)
+        rendered.append(f"{path}: {before} -> {after}")
+    return "; ".join(rendered) or "none"
+
+
+def proxy_rank(candidate: dict, proxies: list[dict]) -> str:
+    value = candidate.get("training_success")
+    if not isinstance(value, (int, float)):
+        return NA
+    values = sorted({item["training_success"] for item in proxies}, reverse=True)
+    return f"{values.index(value) + 1}/{len(values)} distinct values"
+
+
+def higher_proxy_summary(
+    candidate: dict, proxies: list[dict], selected: set[str]
+) -> str:
+    value = candidate.get("training_success")
+    if not isinstance(value, (int, float)):
+        return "none / unavailable"
+    higher = [
+        item
+        for item in proxies
+        if item["training_success"] > value and item.get("name") not in selected
+    ]
+    if not higher:
+        return "none"
+    best = max(higher, key=lambda item: item["training_success"])
+    return (
+        f"{len(higher)}; best {best.get('name', NA)} "
+        f"({number(best.get('training_success'))})"
+    )
 
 
 def comparison_metrics(campaign: dict) -> dict:
@@ -228,6 +320,11 @@ def campaign_sections(campaign: dict) -> list[str]:
         "This is persisted state, not a check of live processes.",
         "",
     ]
+    if status == "no terminal status recorded" and pending == "none recorded":
+        lines += [
+            "Campaign stop or interruption reason: unavailable in persisted data.",
+            "",
+        ]
     for name in ("working_lineage", "best_known_lineage"):
         lineage = state.get(name) or (rows[-1].get(name) if rows else None) or {}
         lines.append(
@@ -236,6 +333,7 @@ def campaign_sections(campaign: dict) -> list[str]:
         )
     lines += ["", "### Experiment progression", ""]
     progression = []
+    previous_best_known = None
     for row in rows:
         evidence = measurements(row)
         best = {}
@@ -254,6 +352,7 @@ def campaign_sections(campaign: dict) -> list[str]:
         )
         decision = row.get("closure_decision") or {}
         best_known = row.get("best_known_lineage") or {}
+        references = prior_experiment_references(row)
         progression.append(
             [
                 row["index"],
@@ -262,11 +361,14 @@ def campaign_sections(campaign: dict) -> list[str]:
                 row.get("training_parent", NA),
                 row.get("status", NA),
                 outcome,
+                ", ".join(map(str, references)) or "none recorded",
                 decision.get("continue_from", NA),
                 (decision.get("code") or {}).get("action", NA),
+                changed_from(previous_best_known, best_known),
                 f"exp {best_known.get('origin_experiment', NA)} / {best_known.get('candidate', NA)}",
             ]
         )
+        previous_best_known = best_known or previous_best_known
     lines += table(
         [
             "Exp",
@@ -275,8 +377,10 @@ def campaign_sections(campaign: dict) -> list[str]:
             "Parent",
             "Status",
             "Best measured by instrument",
+            "Prior experiments cited",
             "Working choice",
             "Recipe action",
+            "Best-known changed",
             "Best-known snapshot",
         ],
         progression,
@@ -297,6 +401,78 @@ def campaign_sections(campaign: dict) -> list[str]:
                 strategy.group(1).strip(),
                 "",
             ]
+    areas = defaultdict(list)
+    for row in rows:
+        areas[family_area(row.get("family"))].append(row)
+    lines += [
+        "### Scientific search coverage",
+        "",
+        (
+            "This groups recorded experiment families by their top-level scientific surface. "
+            "It describes coverage; it does not rank surfaces or judge whether repetition was justified."
+        ),
+        "",
+    ]
+    lines += table(
+        [
+            "Surface",
+            "Experiments",
+            "Families",
+            "Operations / initialization",
+            "Experiments closed with code action=keep",
+        ],
+        [
+            [
+                area,
+                ", ".join(str(row["index"]) for row in area_rows),
+                "; ".join(sorted({str(row.get("family", NA)) for row in area_rows})),
+                "; ".join(
+                    f"{row['index']}: {row.get('kind', NA)}/{row.get('initialization', NA)}"
+                    for row in area_rows
+                ),
+                ", ".join(
+                    str(row["index"])
+                    for row in area_rows
+                    if ((row.get("closure_decision") or {}).get("code") or {}).get(
+                        "action"
+                    )
+                    == "keep"
+                )
+                or "none",
+            ]
+            for area, area_rows in sorted(areas.items())
+        ],
+    )
+    if len(rows) > 1:
+        lines += [
+            "### Cross-experiment decision chain",
+            "",
+            (
+                "Explicit citations come only from the next proposal's recorded evidence. "
+                "No continuity is inferred from similar wording or family names."
+            ),
+            "",
+        ]
+        lines += table(
+            [
+                "Closed experiment",
+                "Next experiment",
+                "Next family",
+                "Next operation / initialization",
+                "Earlier experiments explicitly cited by next proposal",
+            ],
+            [
+                [
+                    current["index"],
+                    following["index"],
+                    following.get("family", NA),
+                    f"{following.get('kind', NA)} / {following.get('initialization', NA)}",
+                    ", ".join(map(str, prior_experiment_references(following)))
+                    or "none recorded",
+                ]
+                for current, following in pairwise(rows)
+            ],
+        )
     lines += [
         "### Checkpoint selection and trajectory coverage",
         "",
@@ -338,13 +514,6 @@ def campaign_sections(campaign: dict) -> list[str]:
         for m in measurements(row):
             c = by_name.get(m.get("candidate"), {})
             proxy = c.get("training_success")
-            higher = [
-                p["name"]
-                for p in proxies
-                if proxy is not None
-                and p["training_success"] > proxy
-                and p["name"] not in selected
-            ]
             selections.append(
                 [
                     m.get("candidate", NA),
@@ -352,7 +521,8 @@ def campaign_sections(campaign: dict) -> list[str]:
                     c.get("timesteps", "saved lineage"),
                     number(proxy),
                     number(c.get("ep_rew_mean")),
-                    ", ".join(higher) or "none / unavailable",
+                    proxy_rank(c, proxies),
+                    higher_proxy_summary(c, proxies, selected),
                     m.get("selection", NA),
                 ]
             )
@@ -363,7 +533,8 @@ def campaign_sections(campaign: dict) -> list[str]:
                 "Steps",
                 "Training success",
                 "Training reward",
-                "Unmeasured higher proxy",
+                "Proxy rank",
+                "Unmeasured higher proxies",
                 "Recorded selection rationale",
             ],
             selections,
@@ -371,7 +542,11 @@ def campaign_sections(campaign: dict) -> list[str]:
     lines += [
         "### Initialization, hypothesis memory and lineage decisions",
         "",
-        "Citations and rationales are Researcher-authored records; they do not prove that an artifact was inspected or that a causal claim is correct.",
+        (
+            "Questions, assessments and rationales are Researcher-authored records; "
+            "they do not prove that a causal claim is correct. Detailed observations remain in the linked sources."
+        ),
+        f"Campaign postmortems: {link(repo, 'research/postmortems.md')}",
         "",
     ]
     families = defaultdict(list)
@@ -389,8 +564,6 @@ def campaign_sections(campaign: dict) -> list[str]:
             "",
             f"Initialization basis: {cell(reasoning.get('initialization_reason'))}",
             "",
-            f"Objective link: {cell(reasoning.get('objective_link'))}",
-            "",
             f"Expected / sought observation: {cell(reasoning.get('expected_observation') or reasoning.get('observations_sought'))}",
             "",
             f"Contradicting observation / exploratory uncertainty: {cell(reasoning.get('contradicting_observation') or reasoning.get('uncertainty'))}",
@@ -399,34 +572,21 @@ def campaign_sections(campaign: dict) -> list[str]:
             "",
             f"Lineage rationale: {cell(decision.get('reason'))}",
             "",
-            f"Recipe rationale: {cell((decision.get('code') or {}).get('reason'))}",
-            "",
         ]
-        for e in reasoning.get("evidence", []):
-            source = e.get("source", "")
-            # Explicit reference extraction only: never infer use of prior history from a broad file citation.
-            refs = sorted(
-                {
-                    int(n)
-                    for n in re.findall(
-                        r"experiment[-_ ](\d+)",
-                        source + " " + e.get("observation", ""),
-                        re.IGNORECASE,
-                    )
-                }
+        sources = list(
+            dict.fromkeys(
+                evidence.get("source")
+                for evidence in reasoning.get("evidence", [])
+                if evidence.get("source")
             )
-            prior = [n for n in refs if n < row["index"]]
-            lines.append(
-                f"- Evidence: {link(repo, source) if source else NA}; {cell(e.get('observation'))}"
-                + (
-                    f" [explicit prior experiment references: {', '.join(map(str, prior))}]"
-                    if prior
-                    else ""
-                )
-            )
+        )
+        references = prior_experiment_references(row)
         lines += [
+            "Evidence sources: "
+            + (", ".join(f"`{cell(source)}`" for source in sources) or NA),
             "",
-            f"Postmortem: {link(repo, row.get('postmortem') or 'research/postmortems.md')}",
+            "Explicit prior experiment references: "
+            + (", ".join(map(str, references)) or "none recorded"),
             "",
         ]
     lines += ["Repeated families (not automatically unjustified repetition):", ""]
@@ -437,6 +597,54 @@ def campaign_sections(campaign: dict) -> list[str]:
     ] or ["- None recorded."]
     lines += [
         "",
+        "### Recipe and lineage state",
+        "",
+        (
+            "This table exposes the tested surface and the persisted state after closure. "
+            "A commit is a recorded scientific provenance identifier, not a harness version."
+        ),
+        "",
+    ]
+    recipe_rows = []
+    previous_working = None
+    previous_best_known = None
+    for row in rows:
+        decision = row.get("closure_decision") or {}
+        working = row.get("working_lineage") or {}
+        best_known = row.get("best_known_lineage") or {}
+        scientific_commit = working.get("scientific_commit") or row.get(
+            "scientific_commit"
+        )
+        recipe_rows.append(
+            [
+                row["index"],
+                changed_paths(row),
+                parameter_change_summary(row),
+                (decision.get("code") or {}).get("action", NA),
+                changed_from(previous_working, working),
+                f"exp {working.get('origin_experiment', NA)} / {working.get('candidate', NA)}",
+                changed_from(previous_best_known, best_known),
+                f"exp {best_known.get('origin_experiment', NA)} / {best_known.get('candidate', NA)}",
+                str(scientific_commit)[:12] if scientific_commit else NA,
+            ]
+        )
+        previous_working = working or previous_working
+        previous_best_known = best_known or previous_best_known
+    lines += table(
+        [
+            "Exp",
+            "Tested code paths",
+            "Tested parameter changes",
+            "Recipe action",
+            "Working changed",
+            "Working after closure",
+            "Best-known changed",
+            "Best-known after closure",
+            "Scientific commit",
+        ],
+        recipe_rows,
+    )
+    lines += [
         "### Evaluation exposure and terminal requests",
         "",
         (
@@ -468,6 +676,57 @@ def campaign_sections(campaign: dict) -> list[str]:
             [*key, len(ids), ", ".join(map(str, sorted(set(ids))))]
             for key, ids in panels.items()
         ],
+    )
+    usage_by_experiment = defaultdict(list)
+    for invocation in campaign["usage"]:
+        usage_by_experiment[invocation.get("experiment")].append(invocation)
+    lines += [
+        "#### Analysis and measurement flow",
+        "",
+        (
+            "Researcher invocations are recorded runtime sessions, not reconstructed evaluation rounds. "
+            "The persisted data does not identify rejected deliverables whose process exited successfully."
+        ),
+        "",
+    ]
+    flow_rows = []
+    for row in rows:
+        evidence = measurements(row)
+        invocations = usage_by_experiment.get(row["index"], [])
+        post_training = [
+            invocation
+            for invocation in invocations
+            if invocation.get("phase") == "post-training analysis"
+        ]
+        attempts = [
+            invocation.get("attempt")
+            for invocation in invocations
+            if isinstance(invocation.get("attempt"), int)
+        ]
+        flow_rows.append(
+            [
+                row["index"],
+                sum(m["instrument"] == "research_evaluation" for m in evidence),
+                sum(m["instrument"] == "task_reference" for m in evidence),
+                len(row.get("paired_comparisons") or []),
+                len(post_training) if invocations else NA,
+                max(attempts) if attempts else NA,
+                sum(invocation.get("exit_code", 0) != 0 for invocation in invocations)
+                if invocations
+                else NA,
+            ]
+        )
+    lines += table(
+        [
+            "Exp",
+            "Research evaluations",
+            "Task-reference evaluations",
+            "Paired comparisons",
+            "Post-training invocations",
+            "Highest recorded attempt",
+            "Nonzero process exits",
+        ],
+        flow_rows,
     )
     for row in rows:
         decision = row.get("closure_decision") or {}
