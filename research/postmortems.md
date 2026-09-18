@@ -476,3 +476,81 @@ representation to be harmful in principle. The mirrored recipe is reverted and n
 experiment-6 artifact is retained.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-6-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-6-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-6/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-6/parameters.json, research/results.jsonl, research/brief.md, robot_learning/scenario/observations.py, training log for experiment 6 (research/query_training_log.py).
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 7
+
+**Result:** Transfer from `working` with a tighter 7 mm training success-and-hold
+tolerance repaired none of the residual near-limit band and measured lower
+official-tolerance success at every measured checkpoint (`checkpoint-50176`
+181/200 = 90.5%, `checkpoint-100352` 168/200 = 84.0%, `checkpoint-120832`
+157/200 = 78.5% on the researcher panel; `checkpoint-120832` 162/200 = 81.0% on
+task-reference-v1), all strictly below `working`'s 97.0%/98.0%. The tolerance
+recipe is reverted and `working` remains the selected policy.
+
+**Observed behavior:** Experiment 7 was a diagnostic `training` run, transfer
+from `working`, seed 0, 120,000 requested / 120,832 completed steps and 24
+checkpoints. The only code change added
+`robot_learning/scenario/training_environment.py` (`TRAINING_SUCCESS_THRESHOLD =
+0.007`, unchanged 14-20 cm radius support) and pointed `robot_learning/train.py`
+at it; the environment class, 11-dimensional observation, PolicyIO, action
+space, reward form and PPO parameters were unchanged, and `make_evaluation_env`
+plus the protected benchmark kept the official 10 mm tolerance. On the
+researcher panel (seed 20260918, semantics 6ba3ba6d7654) the three measured
+checkpoints scored 90.5%, 84.0% and 78.5%; on task-reference-v1 the endpoint
+scored 81.0%. Paired against `working` on the identical panels, no measured
+experiment-7 checkpoint added a single exclusive success: net -13, -26 and -37
+on the researcher panel and -34 on task-reference, and the episodes both
+policies miss are exactly `working`'s 6 researcher-panel and 4 task-reference
+failures. The four task-reference band failures of `working` (episode 0 r 6.73 cm
+a -116.4 degrees; episode 10 r 7.24 cm a -125.4 degrees; episode 84 r 9.91 cm
+a -122.9 degrees; episode 102 r 9.36 cm a -127.9 degrees) all remain failures,
+and episodes 10 and 102 now terminate 16.3 cm and 19.6 cm from the target instead
+of `working`'s 0.99-1.33 cm stalls. Every experiment-7 task-reference failure has
+target radius at most 10.26 cm; all 23 targets at 12-14 cm and all 95 at 14-20 cm
+succeed, and the failures span all angular sectors (-177 to +117 degrees).
+`working` fails 4/31 at r 6-8 cm and 2/26 at r 8-10 cm; experiment 7 fails 27/31
+and 10/26 in the same bins, while `working`'s 4 failures are confined to -115 to
+-128 degrees. The 7 mm training proxy saturated early and stayed high (0.97 at
+`checkpoint-50176`, 0.94 at `checkpoint-100352`, 0.98 at `checkpoint-120832`)
+while official-tolerance success declined monotonically with further training,
+and on the trained 14-20 cm support experiment 7 succeeds on 95/95
+task-reference targets, so the proxy/measured gap tracks the untrained
+inner-radius region rather than a proxy inconsistency. On the 162 shared
+task-reference successes, experiment 7 terminates at larger final distances than
+`working` (mean 0.49 versus 0.31 cm) and 31 versus 5 terminate between 7 and
+10 mm, so its successful holds are not deeper despite the tighter training
+tolerance.
+
+**Hypothesis assessment:** Contradicted. The proposal predicted that the 7 mm
+tolerance would make the policy reach inside the band, repair the folded-required
+near-limit failures and lift success toward or above 98% while leaving
+already-deep episodes unchanged. Observed instead: a strict subset of the
+parent's successes (0 exclusive wins), success fell 6.5-19.5 points on the
+researcher panel and 17 points on task-reference, and the band was not repaired -
+the proposal's own stated contradicting observation. This supports the stated
+alternative that the residual band is not a tolerance or precision-magnitude
+limit and that forcing tighter holds degrades the competent representation.
+Limits: the transferred run also lost competence broadly on every target with
+radius below the 14 cm training minimum, and the four band targets (r 6.7-9.9 cm)
+lie inside that same untrained region, so the band-specific claim is confounded
+by the general inner-radius regression and remains inconclusive; only 3 of 24
+checkpoints plus one task-reference panel were measured, and one seed-0 transfer
+run cannot causally attribute the success level to the tolerance change beyond
+the observed strict-subset dominance.
+
+**Interpretation:** The tighter training tolerance changed the reward's hold
+condition - hold progress and termination require the end effector within 7 mm,
+and the outside-band penalty is scaled from that threshold - so within the
+trained 14-20 cm support the finetuned policy still holds, while it lost the
+parent's generalization to the untrained 6-14 cm radii and became a strict subset
+of the parent. The residual near-limit band lives inside that unsampled inner
+region (task-reference radii 6.7-9.9 cm), so this run masks the band behind a
+broad inner-radius regression rather than testing it: the curriculum neither
+confirms precision as the band's cause nor delivers a usable policy. That the
+successful holds are not deeper, and that the high 7 mm proxy coexists with low
+official success, argue against a simple precision-gain mechanism. Because
+`working` dominates every comparable measurement and no experiment-7 checkpoint
+offers a better continuation base, the tolerance change is reverted,
+`working`/`best_known` stay selected, and no experiment-7 artifact is retained.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-50176-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-7/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-7/parameters.json, research/results.jsonl, research/brief.md, robot_learning/scenario/training_environment.py, robot_learning/scenario/environment.py, robot_learning/scenario/reward.py, robot_learning/train.py
