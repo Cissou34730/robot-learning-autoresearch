@@ -388,3 +388,87 @@ primary practical uncertainty is now the stability of the learning process
 itself.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-5/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-5/parameters.json, research/results.jsonl, research/research_state.json, research/brief.md, training log for experiment 5 (research/query_training_log.py).
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 6
+
+**Result:** A fresh, seed-0 run whose only change mirrored the joint-feasible analytic
+inverse-kinematics branch into the infeasible branch's observation slots (11
+dimensions, no other change) measured 110/200 = 55.0% on the researcher panel and
+101/200 = 50.5% on task-reference-v1, far below `working`'s 97.0%/98.0% and with
+zero exclusive successes. The folded-required band was not repaired (0/31) and
+single-branch targets collapsed (0/29 open-only, 0/31 folded-only). The mirrored
+recipe is not useful, so `working` remains the selected policy and the
+`observations.py` change is reverted.
+
+**Observed behavior:** Experiment 6 was a diagnostic fresh `training` run, seed 0,
+120,000 requested / 120,832 completed steps, 24 checkpoints, with the only code
+change in `robot_learning/scenario/observations.py`: adding `JOINT_LIMIT` and,
+when exactly one analytic branch is joint-feasible, copying the feasible branch's
+shoulder/elbow angles into the infeasible branch's slots before computing the four
+wrapped joint errors; `OBSERVATION_SIZE` stayed 11, and both-feasible and
+neither-feasible episodes kept their existing observation. One checkpoint was
+measured: `checkpoint-120832` scored 110/200 = 55.0% on the researcher panel
+(seed 20260918, semantics 6ba3ba6d7654) and 101/200 = 50.5% on task-reference-v1.
+Paired on the shared 200-episode researcher panel against `working`
+(`checkpoint-100352`, experiment 1): 0 episodes where experiment 6 succeeds and
+`working` fails, 84 where `working` succeeds and experiment 6 fails, 110 both
+succeed, 6 both fail (net -84, exact p ~ 1.0e-25). On task-reference the pairing is
+0 exclusive / 95 lost / 101 shared / 4 both fail. Recomputing both analytic IK
+branches for every researcher-panel target splits it into 140 both-feasible, 29
+open-feasible-only and 31 folded-feasible-only episodes. Experiment 6 succeeds on
+110/140 both-feasible but 0/29 open-only and 0/31 folded-only; `working` succeeds
+on 140/140, 29/29 and 25/31 respectively. Every experiment-6 success therefore
+falls on an episode whose observation the edit leaves unchanged, and it fails all
+60 single-branch episodes. Its 90 failures are dominated by non-arrival: 81 never
+enter the tolerance (`max_held_steps` 0) with minimum distances mostly 1.5-4.6 cm,
+and 9 enter and are interrupted; the six episodes `working` misses (all
+folded-only) are failed at minimum distances 2.65-4.61 cm with `max_held_steps` 0,
+i.e. no arrival rather than `working`'s near-limit stall. The raw log shows
+`success_rate` 0 through 96,256 steps, 0.03 at 97,280, 0.04 at 100,352, 0.08 at
+105,472, 0.13 at 106,496, 0.20 at 110,592, 0.34 at 114,688-115,712 and 0.46 at
+120,832, with `ep_len_mean` falling 500 to 357 and `ep_rew_mean` rising from ~116
+to ~131 over the same span - still improving at the budget end. For comparison,
+experiment 1 (same fresh seed-0 unchanged recipe) reached training success 0.97 at
+100,352 and 0.95 at 120,832, while experiment 5 (unchanged seed 1) reached 0.04 at
+100,352 and 0.13 at 120,832 and measured 47.0%; experiment 6 is roughly 60-80k
+steps behind experiment 1 and modestly ahead of experiment 5 (paired: experiment 6
+adds 38 episodes and loses 22).
+
+**Hypothesis assessment:** Contradicted for the tested intervention, with the
+underlying diagnostic left inconclusive. The proposal predicted a fresh
+canonicalized policy would reach baseline competence, solve most folded-required
+band targets, and raise researcher success toward or above 98% while leaving
+both-feasible and open-only outcomes essentially unchanged. Observed instead: no
+baseline competence (55.0%/50.5%), no band repair (0/31 folded-only, and
+`working`'s six band failures remain failures), and a collapse rather than
+preservation of open-only episodes (0/29). This is precisely the proposal's stated
+contradicting observation - a run that underconverges broadly with no
+band-specific improvement - which favors the optimization/precision alternative
+over the representation-attraction proposition, and it weakens the case that
+presenting only a joint-feasible branch redirects the policy. Limits: the training
+curve was still rising steeply and episodes still lengthening at the budget end,
+so the run never reached the competence at which the band question could be
+cleanly tested; the representation-versus-optimization diagnostic therefore
+remains unresolved. Only 1 of 24 checkpoints plus one task-reference panel were
+measured, the run is a single fresh seed-0 trajectory, and its measured level sits
+between the two characterized unchanged seeds (seed 0 97.0%, seed 1 47.0%), so the
+causal attribution of the level to the mirroring edit is not established by this
+run; only the within-policy failure structure is directly observed.
+
+**Interpretation:** Within the fixed 120k-step budget the mirrored representation
+did not provide a usable target signal. The within-policy contrast is sharp: the
+policy succeeds only where the edit did not touch the observation (both-feasible
+episodes) and fails every episode where one branch was infeasible, including the
+29 open-only episodes that are otherwise easy. This parallels experiment 3, where
+setting the infeasible branch's wrapped errors to 0.0 also left both-feasible
+behavior intact while collapsing open-only episodes (0/29). Two different edits to
+the same infeasible-branch slots - one to zero, one to a copy of the feasible
+branch - both break single-branch targets and neither repairs the band, which
+suggests the learned controller depends on the distinct per-branch wrapped-error
+signal and that remapping the infeasible slot is not a viable route to the band.
+Because this run never converged, these structural observations are confounded
+with undertraining and do not establish the band's cause or show the mirrored
+representation to be harmful in principle. The mirrored recipe is reverted and no
+experiment-6 artifact is retained.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-6-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-6-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-5-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-6/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-6/parameters.json, research/results.jsonl, research/brief.md, robot_learning/scenario/observations.py, training log for experiment 6 (research/query_training_log.py).
