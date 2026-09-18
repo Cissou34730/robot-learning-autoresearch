@@ -34,7 +34,22 @@ two seeds (seed 0: 97.0-98.5%; seed 1: 47.0-49.5%), so the near-threshold level
 is one realized trajectory rather than a stable method property. The wedge
 remains consistent with a branch-selection local optimum at the shoulder
 boundary, an optimization/precision limit independent of the observation, or
-both; no completed intervention has exceeded the seed-0 policy.
+both; no completed intervention has exceeded the seed-0 policy. Experiment 9
+attacked that choice directly: a transfer from experiment 8 with a training-only
+per-step joint-limit proximity penalty (6-degree soft margin, 0.05 saturating)
+left the researcher panel exactly unchanged (194/200 = 97.0% at 20,480, 100,352
+and 120,832 steps, identical failures {7, 56, 64, 75, 107, 145}) and tied the
+protected task-reference panel (197/200 = 98.5%, failures {84, 102, 175}). New
+joint-margin diagnostics on the endpoint and on the parent show the penalized
+state is genuinely reached and fully active: every one of the six failures
+drives the closest joint 3.3-4.1 degrees past the +/-170 degree limit and incurs
+the maximum penalty, while only 9-10 of the 194 successes do, and endpoint and
+parent differ only by small trajectory perturbations. The penalty is therefore
+active and failure-targeted but inert on outcomes, which favours an
+optimization/credit-assignment limit at the shoulder boundary over a pure
+absence of a joint-limit signal; because only one small penalty magnitude and
+shape was tested, the stronger claim that joint-limit behaviour is irrelevant is
+not established.
 
 **Lessons and limits:** Full-radius coverage of the official 6-20 cm support,
 applied by transfer, did not repair the residual wedge: it was a net +1 episode
@@ -62,23 +77,33 @@ is isolated (experiment 2). Run-to-run variability of the unchanged method is
 large (seed 0: 97.0%/98.0%; seed 1: 47.0%/49.5% at the same budget), so single
 runs cannot establish a method property or attribute a change causally
 (experiments 1, 5). Training reward does not track task success and is usable
-only as a shaped signal (experiments 1, 7). All wedge evidence still rests on a
-small number of episodes per panel (about 6-14), no joint trajectories are
-recorded, the stalled joint configuration is inferred from target geometry
-rather than observed, and every mechanism claim remains scoped to the seed-0
-lineage.
+only as a shaped signal (experiments 1, 7). All wedge evidence rests on a
+small number of episodes per panel (about 6-14), and every mechanism claim
+remains scoped to the seed-0 lineage, though the failure states are now directly
+observed: per-episode joint-margin diagnostics show the six researcher-panel
+failures push a joint 3.3-4.1 degrees past the nominal +/-170 degree range
+(173-174 degrees), so the competent policy already operates at or beyond the
+hinge range and the reward's joint limit is not a boundary the policy avoids. A
+0.05-per-step saturating proximity penalty fires on all six failures and on
+roughly 5% of successes (9-10 of 194) and still changes no outcome, so this
+penalty magnitude and shape are too weak to alter the reach-and-hold optimum; a
+substantially stronger or differently shaped joint-limit signal remains untested
+and could trade the wedge against the successes that also touch the margin.
 
 **Open questions:** Whether the residual wedge is driven by the observation
 advertising the nearby joint-infeasible branch as an attractive target, by an
 optimization, exploration or credit-assignment limit at the shoulder boundary
 that is independent of that advertisement, or by both, remains unresolved; the
 completed tests each changed one representation or threshold and were confounded
-by transfer collapse or underconvergence, so none isolated the mechanism. It is
-unknown whether a training-only reward signal that discourages parking a joint
-against its limit can move the deterministic policy off the stall and onto the
-feasible folded branch, or whether the progress and closeness shaping - which
-penalise the temporary increase in distance that a large shoulder reconfiguration
-requires - itself traps the policy. Whether a representation presenting only a
+by transfer collapse or underconvergence, so none isolated the mechanism. Experiment 9 showed that a weak (0.05-per-step)
+joint-limit proximity penalty is active at the observed stall but cannot move the
+deterministic policy, so whether a substantially stronger or differently shaped
+joint-limit signal - or a learning-method change that raises its gradient
+relative to the reach-and-hold shaping - can move the policy off the stall
+without sacrificing the successes that also reach the margin is unknown, as is
+whether the progress and closeness shaping, which penalise the temporary
+increase in distance a large shoulder reconfiguration requires, itself traps the
+policy. Whether a representation presenting only a
 joint-feasible target could be learned within the fixed 120k-step budget, and
 whether it would remove the wedge or merely move the failure, is untested.
 Whether a fresh policy trained on the full official support from the start places
@@ -634,3 +659,83 @@ kept; it does not by itself move the official-distribution estimate toward the
 selection residual rather than radius coverage.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-working-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-105472-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-105472-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-8/inventory.json, research/results.jsonl, research/brief.md, robot_learning/scenario/environment.py, training log for experiment 8 (research/query_training_log.py)
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 9
+
+**Result:** A training-only per-step joint-limit proximity penalty, applied by
+transfer from `working`, left the researcher panel exactly unchanged (194/200 =
+97.0% with the parent's identical six failures {7, 56, 64, 75, 107, 145} at
+20,480, 100,352 and 120,832 steps) and tied the protected task-reference panel
+(197/200 = 98.5%, failures {84, 102, 175}). Newly recorded joint-margin
+diagnostics show the penalized state is actually reached: every wedge failure
+drives the closest joint 3.3-4.1 degrees past the +/-170 degree limit and incurs
+the maximum 0.05 per-step penalty, yet no outcome changes. The reward change is
+reverted and `working` (experiment 8 `checkpoint-120832`) remains the selected
+policy.
+
+**Observed behavior:** Experiment 9 was a diagnostic transfer `training` run
+from `working`, seed 0, 120,000 requested / 120,832 completed steps, 24
+checkpoints. The only change added a per-step joint-limit proximity term to
+`robot_learning/scenario/reward.py` (soft 6-degree margin, `JOINT_LIMIT_PENALTY =
+0.05`, summed over the two joints, saturating linearly) and passed the current
+joint positions from `robot_learning/scenario/environment.py`; observation,
+PolicyIO, action space, environment class, success and hold semantics, PPO
+parameters and the protected benchmark were unchanged. Training-time success was
+0.99 at 20,480 and 0.97 at 120,832, `ep_rew_mean` 113.38 at 20,480 and 103.23 at
+120,832. On the researcher panel (seed 20260918, semantics 9ea08384b3a2) all
+three measured checkpoints score 194/200 = 97.0% and fail exactly {7, 56, 64, 75,
+107, 145}, the parent's failure set. On task-reference-v1 the endpoint scores
+197/200 = 98.5% (failures {84, 102, 175}), identical to the experiment-8
+endpoint. A second measurement round added per-episode joint-limit diagnostics
+(semantics 6db0b3ca786d) for the experiment-9 endpoint (fingerprint 29e91fb8) and
+the parent (fingerprint a1ed461); both score 97.0% with the same six failures.
+For every failure, the maximum absolute joint angle over the episode is 173.0-174.1
+degrees, i.e. 3.3-4.1 degrees beyond the +/-170 limit (`min_joint_margin_degrees`
+-3.28 to -4.07), and `max_joint_limit_penalty` saturates at 0.05. Across the
+panel the parent exceeds the limit on 11/200 episodes and enters the 6-degree
+margin on 15/200; all 6/6 failures and 9/194 successes incur the penalty. The
+endpoint exceeds the limit on 11/200, enters the margin on 16/200, and has 6/6
+failures and 10/194 successes incurring the penalty. Endpoint and parent
+trajectories differ slightly at the failures (for example episode 56 minimum
+distance 1.51 versus 1.69 cm, episode 145 0.52 versus 0.63 cm) but no episode
+changes outcome.
+
+**Hypothesis assessment:** Weakened, and the proposal's own stated contradicting
+observation was observed. The proposal predicted that a per-step penalty on
+joint-limit proximity would move the deterministic policy off the shoulder stall
+onto the feasible folded branch - researcher panel above 194/200, the six wedge
+episodes entering tolerance, no new failures, task-reference not below 197/200 -
+and named the alternative that the wedge is an optimization or precision limit
+at the shoulder boundary independent of the stalled configuration. Observed: the
+penalty's target state is genuinely reached and fully penalized (6/6 failures,
+margin negative, penalty saturated), the failure set and success level are
+bit-identical to the parent on both panels at three checkpoints spanning early,
+proxy-plateau and endpoint steps, and only small trajectory perturbations
+distinguish the transferred policy. This refutes the "penalty never touches the
+stall" explanation and leaves the optimization/precision alternative standing.
+Limit: exactly one penalty magnitude and shape was tested (linear, saturating at
+0.05 per step, far smaller than the progress coefficient 10, closeness 4 and
+hold bonuses 50), so the result establishes the insufficiency of this signal, not
+that joint-limit behaviour is irrelevant; all evidence is three deterministic
+200-episode panels on the single seed-0 lineage.
+
+**Interpretation:** The experiment separates two explanations the earlier
+geometry-based inference could not. The stall is real and reaches the joint
+limit - the closest joint sits 3-4 degrees past +/-170 at every failure - so the
+penalty was not a no-op; it fires on essentially only the failing states (6/6
+versus 9-10 of 194 successes) and at its maximum value, yet the deterministic
+behavior is unchanged. Given that a full-magnitude penalty of 0.05 per step is
+roughly an order of magnitude below a single hold-progress increment and two
+orders below the hold-complete bonus, the result is most consistent with the
+penalty being too weak to outweigh the reach-and-hold shaping the policy already
+optimized, i.e. an optimization/credit-assignment limit at the shoulder boundary
+rather than the absence of any signal against parking a joint at its limit. It
+also establishes that the wedge is not a region the policy never reaches: the
+competent parent already drives joints past the nominal range on about 5% of
+episodes, most of which still succeed. The new per-episode joint-margin
+instrumentation closes the earlier gap where the stalled configuration was
+inferred rather than observed. `working`/`best_known` (experiment 8
+`checkpoint-120832`) remains the strongest measured policy, no experiment-9
+artifact is preferred to it, and the reward change is reverted.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-20480-200ep-seed20260918-9ea08384b3a2.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-100352-200ep-seed20260918-9ea08384b3a2.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-120832-200ep-seed20260918-9ea08384b3a2.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-120832-200ep-seed20260918-6db0b3ca786d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-working-200ep-seed20260918-6db0b3ca786d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-9/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-9/parameters.json, research/results.jsonl, research/research_state.json, research/brief.md, robot_learning/scenario/reward.py, robot_learning/scenario/environment.py, robot_learning/scenario/evaluation.py, robot_learning/robots/two_joint_arm.xml, training log for experiment 9 (research/query_training_log.py)
