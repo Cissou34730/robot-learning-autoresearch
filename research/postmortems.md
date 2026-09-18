@@ -868,3 +868,72 @@ panel, the parameter change is reverted and the experiment-8 recipe and policy
 are kept.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-25600-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-50176-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-25600-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-50176-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-11/inventory.json, research/results.jsonl, research/brief.md, research/current_params.json, training log for experiment 11 (research/query_training_log.py)
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 12
+
+**Result:** A fresh 120,000-step run of the unchanged full-radius method at
+training seed 2 did not reproduce the incumbent's near-threshold competence. It
+measured 135/200 = 67.5% at `checkpoint-100352` and 132/200 = 66.0% at
+`checkpoint-120832` on the researcher panel and 127/200 = 63.5% at the endpoint on
+task-reference-v1, against the incumbent's 194/200 = 97.0% and 197/200 = 98.5%.
+Its failures are broad non-arrival across the rear and upper sectors rather than
+the incumbent's six-episode rear wedge. The run changed no code or parameters, so
+the full-radius recipe is kept and no experiment-12 artifact is selected.
+
+**Observed behavior:** Experiment 12 was a diagnostic `replication` of
+experiment 8 with `training_seed` 2, fresh initialization, empty `code_changes`
+and no parameter overrides; 120,000 requested / 120,832 completed steps, 24
+checkpoints. Training-time `success_rate` was 0 through 58,368 steps and then rose
+monotonically to 0.26 at 120,832 while `ep_len_mean` fell steadily from 500 to
+412, so the run was still improving at the budget end (experiment 1, the fresh
+seed-0 run at the same budget on the older 14-20 cm recipe, reached 0.95 training
+success at 120,832; experiment 5, the seed-1 replication, reached 0.13). On the
+researcher 200-episode panel (seed 20260918, semantics ffdccdbf3357) the two
+measured checkpoints score 67.5% and 66.0%. The endpoint's 68 failures include the
+incumbent's wedge episodes 56 and 64 plus 66 new failures; it succeeds on 4 of the
+incumbent's 6 wedge episodes {7, 75, 107, 145}. Failure diagnostics show 57 of 68
+failures never enter tolerance (`max_held_steps` 0) and 43 stall with minimum
+distance > 5 cm; failures cover whole sectors the incumbent solves - sector -180
+(18/18 fail), 120 (19/19), 150 (13/13), plus -150 (10/14) and 90 (7/21) - while
+-120, -90, -60, -30, 0 and 30 succeed completely. On task-reference-v1 the
+endpoint scores 127/200 = 63.5% with 73 failures, 71 of them new relative to the
+incumbent and 40 ending more than 10 cm from the target; it shares only failures
+102 and 175 with the incumbent's {84, 102, 175}. The recorded paired comparison
+against `working` on the shared researcher panel gives 4 candidate wins and net
+-62 discordant episodes (exact p ~ 1.7e-15).
+
+**Hypothesis assessment:** Contradicted. The proposition was that a fresh seed-2
+run of the unchanged full-radius method reproduces the incumbent's near-threshold
+competence (researcher success in the 90s) with failures concentrated in the same
+rear folded-required band. Observed instead: success is 66.0-67.5% (researcher)
+and 63.5% (protected), far below the 90s, and the dominant failure mode is broad
+non-arrival across the rear and upper sectors rather than the rear wedge - the run
+even solves 4 of the incumbent's 6 researcher-panel wedge episodes. This is the
+proposal's own stated contradicting observation and favors the alternative that
+the incumbent's level and wedge are a favourable seed-0 trajectory. The outcome is
+not the seed-1 extreme either: at 66-67.5% the seed-2 run sits between seed-0
+(97.0%) and seed-1 (47.0%), so the evidence establishes large run-to-run
+variability and non-reproduction of the incumbent's level, not a single seed-2
+ceiling. Limits: only 2 of 24 checkpoints plus one task-reference panel were
+measured; the training-success curve was still rising and `ep_len_mean` still
+falling at the budget end, so slower convergence cannot be separated from a lower
+converged level; and three independent fresh realizations are not a variance
+estimate.
+
+**Interpretation:** Three independent fresh runs of essentially the same method
+at the same 120k budget now span 47.0% (seed 1), 66.0-67.5% (seed 2) and 97.0%
+(seed 0) on the researcher panel, and the full-radius recipe has no competent
+fresh realization at all. The incumbent's 97.0%/98.5% is therefore best read as a
+favourable draw of a high-variance learning process whose expected official
+success is well below the 98% objective, and the rear wedge - already shown to be
+present in the seed-0 baseline and unfixed by five targeted interventions - is not
+even the seed-2 policy's dominant failure; its failures are a much broader
+failure to arrive. The seed-2 run's still-rising training curve means this
+experiment cannot decide whether the method merely needs more steps or converges
+to a lower level; that is a training-budget question left to the next experiment,
+not a measurement question. Because the incumbent remains the only policy measured
+near or above threshold and no experiment-12 artifact is competitive on either
+panel, `working`/`best_known` (experiment 8 `checkpoint-120832`) stay selected,
+the unchanged recipe is kept, and no experiment-12 artifact is retained.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-12-checkpoint-100352-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-12-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-12-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-12/inventory.json, research/results.jsonl, research/brief.md, training log for experiment 12 (research/query_training_log.py)
