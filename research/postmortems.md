@@ -3,38 +3,43 @@
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% official episode
-success on the two-joint reach-and-hold task. The strongest measured policy is
-experiment 8's `checkpoint-120832` (`working` and `best_known`), the endpoint of a
-full-official-radius transfer from the experiment-1 seed-0 baseline: 197/200 =
-98.5% on the protected task-reference panel (the campaign's only measurement at or
-above the objective, by one episode) and 194/200 = 97.0% on the researcher
-200-episode panel, with a persistent six-episode rear wedge
+success on the two-joint reach-and-hold task. The strongest measured policy
+remains experiment 8's `checkpoint-120832` (`working` and `best_known`), the
+endpoint of a full-official-radius transfer from the experiment-1 seed-0
+baseline: 194/200 = 97.0% on the researcher 200-episode panel and 197/200 = 98.5%
+on the protected task-reference panel (the campaign's only measurement at or
+above the objective, by one episode), with a persistent six-episode rear wedge
 {7, 56, 64, 75, 107, 145} at angles -122 to -155 degrees and radii 8.0-19.5 cm.
 Recomputing both analytic branches with the +/-170 degree hinge range applied
-modulo 360 degrees, that diagnostic panel splits into 177 both-feasible, 13
-open-only and 10 folded-required targets; the policy solves all 190
-open-feasible targets and fails 6 of the 10 folded-required ones. Per-episode
-joint diagnostics on the experiment-9 endpoint and its parent show that at every
-failure the shoulder is driven 3.3-4.1 degrees past the nominal +/-170 degree
-limit and the end effector stalls 0.5-1.5 cm outside the 1 cm tolerance, while no
-episode on the panel reaches tolerance with a negative-elbow (folded) posture; the
-four folded-required successes instead press the shoulder 0.5-2.7 degrees past
-the limit and arrive. The residual therefore reads as a discrete
+modulo 360 degrees, that panel splits into 177 both-feasible, 13 open-only and 10
+folded-required targets; the policy solves all 190 open-feasible targets and
+fails 6 of the 10 folded-required ones. Per-episode joint diagnostics on the
+experiment-9 endpoint and its parent show that at every failure the shoulder is
+driven 3.3-4.1 degrees past the nominal +/-170 degree limit and the end effector
+stalls 0.5-1.5 cm outside the 1 cm tolerance, while no episode on the panel
+reaches tolerance with a negative-elbow (folded) posture; the four
+folded-required successes instead press the shoulder 0.5-2.7 degrees past the
+limit and arrive. The residual therefore reads as a discrete
 branch-selection/precision wall at the soft shoulder limit: the policy commits to
-the open elbow sign and succeeds or fails by how many degrees of limit penetration
-the target needs. The wedge is not transfer-specific - the fresh seed-0 baseline
-(experiment 1) already failed the same six rear targets. Three targeted
-interventions have not moved it: a per-step joint-limit penalty (experiment 9)
-that saturated on every failure, folded-branch wrapped-error guidance (experiment
-10) that changed trajectories and the protected failure set but not the six
-outcomes, and a longer effective advantage horizon (experiment 11) that left all
-six failures intact while regressing both panels monotonically (97.0% -> 96.0% ->
-86.5% researcher; 98.5% -> 88.0% protected) as the policy shifted toward
-non-terminating proximity. Method variance remains large: the two characterized
-fresh runs of the older recipe measured 97.0%/98.0% (seed 0, experiment 1) and
-47.0%/49.5% (seed 1, experiment 5), so the near-threshold level is one realized
-trajectory and its representativeness is unresolved; the current full-radius
-recipe itself has only the single transfer realization of experiment 8.
+the open elbow sign and succeeds or fails by how many degrees of limit
+penetration the target needs. The wedge is not transfer-specific - the fresh
+seed-0 baseline (experiment 1) already failed the same six rear targets - and
+neither full-radius coverage nor five targeted interventions has moved the
+deterministic outcome: a per-step joint-limit penalty (experiment 9) saturated on
+every failure, folded-branch wrapped-error guidance (experiment 10) changed
+trajectories and the protected failure set but not the six outcomes, a longer
+effective advantage horizon (experiment 11) left all six failures intact while
+regressing both panels monotonically (97.0% -> 96.0% -> 86.5% researcher; 98.5%
+-> 88.0% protected), the observation-slot edits of experiments 3 and 6 collapsed
+single-branch targets, and a tightened tolerance (experiment 7) degraded the
+competent transferred policy. Method variance is now characterized as large:
+three independent fresh runs of essentially the same method at the fixed 120k
+budget span 97.0%/98.0% (seed 0, older 14-20 cm recipe, experiment 1),
+47.0%/49.5% (seed 1, same recipe, experiment 5) and 66.0-67.5%/63.5% (seed 2,
+current full-radius recipe, experiment 12), and the seed-2 run was still rising
+at the budget end. The full-radius recipe has no competent fresh realization, so
+the incumbent is the sole near-threshold measured policy and its
+representativeness remains unresolved.
 
 **Lessons and limits:** Full-radius coverage by transfer did not repair the
 wedge (net +1 protected episode, researcher failure set bit-identical; experiment
@@ -54,36 +59,41 @@ was confounded with radius-support and draw-order changes (experiment 2). Weak
 near-limit signals do not move the deterministic argmax: a per-step joint-limit
 penalty (experiment 9) and a folded-branch potential (experiment 10) both fired
 on the actual failing states yet left the six outcomes, and in experiment 9's
-case the success level, unchanged. Both postmortems note the tested magnitudes
-were an order of magnitude or more below the hold shaping, so signal scale
-remains a live but untested explanation. Extending the effective advantage
-horizon (experiment 11) is harmful rather than a repair: gamma*lambda 0.9405 ->
-0.989 shifted behavior toward non-terminating proximity and regressed both panels
-monotonically. Run-to-run variability is large (seed 0: 97.0%/98.0%; seed 1:
-47.0%/49.5% at the same 120k budget on the older recipe), so single runs cannot
-establish a method property or attribute a change causally (experiments 1, 5).
-Training reward does not track task success (experiments 1, 7). All wedge evidence
-rests on a few episodes per panel (about 6-10 folded-required), every mechanism
-claim is scoped to the seed-0 lineage, and the direct joint-posture evidence comes
-from one diagnostic round on the experiment-9 endpoint and its parent; the current
-full-radius recipe has a single realization.
+case the success level, unchanged; both tested magnitudes were an order of
+magnitude or more below the hold shaping, so signal scale remains a live but
+untested explanation. Extending the effective advantage horizon (experiment 11)
+is harmful rather than a repair: gamma*lambda 0.9405 -> 0.989 shifted behavior
+toward non-terminating proximity and regressed both panels monotonically.
+Run-to-run variability is large (seed 0: 97.0%/98.0% on the older recipe; seed 1:
+47.0%/49.5% on the older recipe; seed 2: 66.0-67.5%/63.5% fresh on the
+full-radius recipe and still rising at the budget end), so single runs cannot
+establish a method property or attribute a change causally (experiments 1, 5,
+12). Training reward does not track task success (experiments 1, 7). All wedge
+evidence rests on a few episodes per panel (about 6-10 folded-required), every
+mechanism claim is scoped to the seed-0 lineage, and the direct joint-posture
+evidence comes from one diagnostic round on the experiment-9 endpoint and its
+parent; the current full-radius recipe has a single competent realization
+(experiment 8) and no fresh one.
 
-**Open questions:** Whether the unchanged full-radius method, run fresh from
-scratch, reproduces a near-threshold competent policy or underconverges like the
-seed-1 replication is unmeasured, so the incumbent's 97-98.5% is one realized
-trajectory of unknown representativeness. Whether the rear wedge is seed-stable
-across competent runs is unknown. The longer-horizon branch of the myopia
-explanation has been tested once and was harmful, but an intermediate horizon or
-a different return decomposition remains untested. Whether the folded
+**Open questions:** The seed-2 fresh full-radius run was still rising at the
+budget end, so whether the unchanged method underconverges at 120k or converges
+to a low level is unresolved, and the three fresh realizations are not a variance
+estimate; the incumbent's 97-98.5% is one realized trajectory of unknown
+representativeness. Whether the rear wedge is seed-stable across competent runs
+is unknown. Whether additional training of the incumbent itself would move the
+deterministic wedge or the panel estimates, or degrade them as the longer-horizon
+run did, has not been tested directly. Whether an intermediate horizon or a
+different return decomposition could be beneficial is unknown, since only the
+large longer-horizon change was tested and it regressed. Whether the folded
 (negative-elbow) basin is learnable at all within the fixed budget, and whether
 any training condition would make the policy enter it from the canonical start,
 is unresolved - the failures are exactly the folded-required targets, yet every
 observation and reward route tried so far has left the argmax there. Whether the
 soft-limit penetration exploited by the four folded-required successes (0.5-2.7
 degrees past +/-170) is a physical ceiling or an artifact of the solver and
-control timing is unmeasured. Why the seed-0 policy peaks near 100k steps under
-the older recipe and then degrades, and whether a continuous two-second hold at a
-near-limit posture is dynamically comfortable, remain unexplained.
+control timing is unmeasured. Why the seed-0 policy peaks near 100k steps and
+then drifts, and whether a continuous two-second hold at a near-limit posture is
+dynamically comfortable, remain unexplained.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
