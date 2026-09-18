@@ -23,6 +23,9 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+JOINT_LIMIT = 2.9670597283903604
+JOINT_LIMIT_SOFT_MARGIN = 0.10471975511965977
+JOINT_LIMIT_PENALTY = 0.05
 
 
 @dataclass(frozen=True)
@@ -44,6 +47,21 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _joint_limit_proximity(joint_positions: np.ndarray | None) -> float:
+    if joint_positions is None:
+        return 0.0
+    if JOINT_LIMIT_SOFT_MARGIN <= 0:
+        raise ValueError("JOINT_LIMIT_SOFT_MARGIN must be positive")
+    proximity = np.clip(
+        (np.abs(np.asarray(joint_positions, dtype=np.float64)) -
+         (JOINT_LIMIT - JOINT_LIMIT_SOFT_MARGIN))
+        / JOINT_LIMIT_SOFT_MARGIN,
+        0.0,
+        1.0,
+    )
+    return -JOINT_LIMIT_PENALTY * float(np.sum(proximity))
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -53,6 +71,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    joint_positions: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -95,6 +114,9 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    joint_limit_proximity = _joint_limit_proximity(joint_positions)
+    reward += joint_limit_proximity
+
     return RewardResult(
         total=float(reward),
         components={
@@ -104,5 +126,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "joint_limit_proximity": float(joint_limit_proximity),
         },
     )
