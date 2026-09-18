@@ -571,3 +571,75 @@ offers a better continuation base, the tolerance change is reverted,
 `working`/`best_known` stay selected, and no experiment-7 artifact is retained.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-50176-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-120832-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-7-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-200ep-seed20260918-6ba3ba6d7654.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-7/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-7/parameters.json, research/results.jsonl, research/brief.md, robot_learning/scenario/training_environment.py, robot_learning/scenario/environment.py, robot_learning/scenario/reward.py, robot_learning/train.py
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 8
+
+**Result:** Full-radius training by transfer from `working` left the researcher
+panel exactly unchanged (194/200 = 97.0% at both measured checkpoints, with the
+parent's identical six failures) and raised the protected task-reference panel
+from 196/200 = 98.0% to 197/200 = 98.5% at the endpoint, repairing the two
+smallest-radius task-reference failures (episodes 0 and 10) while adding one new
+failure at 18.2 cm (episode 175). The full-radius recipe is kept and
+`checkpoint-120832` is the strongest measured policy.
+
+**Observed behavior:** Experiment 8 was a diagnostic transfer `training` run from
+`working`, seed 0, 120,000 requested / 120,832 completed steps, 24 checkpoints;
+the only change was `TRAINING_TARGET_RADIUS_RANGE` in
+`robot_learning/scenario/environment.py` from (0.14, 0.20) to the official
+(0.06, 0.20). Training-time success was 0.93 at 10,240 and stayed 0.94-1.0 for
+the rest of the run (1.0 at 105,472, 0.94 at the 120,832 endpoint), reflecting
+immediate competence on the harder distribution, while `ep_len_mean` rose from
+124 (105,472) to 149 (120,832). On the researcher 200-episode panel (seed
+20260918, semantics ffdccdbf3357) the re-measured parent `working` and both
+measured checkpoints all score 194/200 = 97.0% and fail exactly the same six
+episodes {7, 56, 64, 75, 107, 145}; the paired comparisons are 0 candidate wins,
+0 losses and 0 discordant episodes for both checkpoints against `working`. Those
+six failures are the familiar rear wedge (angles -122.3 to -154.6 degrees) at
+radii 7.99-19.47 cm, and four of them (r 13.97, 14.92, 15.96 and 19.47 cm) lie
+inside the trained 14-20 cm support. On task-reference-v1 the parent scores
+196/200 = 98.0% (failures 0, 10, 84, 102), `checkpoint-105472` scores 196/200 =
+98.0% (failures 0, 84, 102, 175) and `checkpoint-120832` scores 197/200 = 98.5%
+(failures 84, 102, 175). The transfer therefore repaired the two smallest-radius
+inner-band failures (episode 0, r 6.73 cm, a -116.4 degrees; episode 10, r 7.24
+cm, a -125.4 degrees) by the endpoint, but added episode 175 (r 18.24 cm,
+a -154.8 degrees, inside the trained support) and left the r 9.4-9.9 cm wedge
+failures 84 and 102 unrepaired. All measurements are single deterministic
+200-episode panels.
+
+**Hypothesis assessment:** Partially supported, with the radius-coverage
+mechanism weakened for the residual wedge. The proposal predicted that covering
+the official 6-20 cm radius support would repair folded-required inner-radius
+failures, especially the four task-reference failures at 6.7-9.9 cm, raise
+success toward or above 98%, and add no failures at the trained 14-20 cm radii.
+Observed: two of the four task-reference inner-band failures were repaired and
+task-reference success rose above the 98% objective to 98.5%, but the researcher
+panel was exactly unchanged at 97.0% with the identical failure set - including
+its own inner-radius failures at r 7.99 and 8.74 cm - and one new failure was
+added at r 18.24 cm inside the trained support, which is the proposal's stated
+contradicting condition. The prediction of a radius-coverage repair is thus
+supported on one panel and only at the two smallest radii, and the prediction of
+no added trained-radius failures is contradicted. Limits: the two measured
+checkpoints are the run's plateau and endpoint (22 of 24 unmeasured); the
+task-reference gain is a net +1 episode (2 repaired, 1 added) on one fixed
+200-episode panel, within single-episode noise; and `working` and both
+experiment-8 checkpoints are indistinguishable on the researcher panel, so no
+within-run checkpoint effect is established there.
+
+**Interpretation:** Exposing the transferred policy to the full official radius
+support changed almost nothing about the residual failure structure. On the
+researcher panel the policy is behaviorally identical to its parent at both the
+proxy-best plateau and the endpoint, and the persistent failures include targets
+well inside the trained 14-20 cm support, so the wedge cannot be explained by the
+untrained inner-radius band. The task-reference improvement is real but thin and
+not spatially systematic: it repairs two targets at r 6.7-7.2 cm while leaving
+the r 9.4-9.9 cm wedge failures, adding a failure at r 18.2 cm, and leaving the
+researcher-panel inner-radius failures at r 7.99 and 8.74 cm untouched. This is
+most consistent with a small, idiosyncratic reallocation of the decision
+boundary rather than a radius-coverage mechanism, and it strengthens the
+branch-selection/precision interpretation of the wedge. The full-radius recipe is
+nevertheless safe and semantically aligned with the official task, so it is
+kept; it does not by itself move the official-distribution estimate toward the
+98% objective, and the next investigation should target the angular/branch
+selection residual rather than radius coverage.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-working-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-105472-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-105472-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-1-checkpoint-100352-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-8/inventory.json, research/results.jsonl, research/brief.md, robot_learning/scenario/environment.py, training log for experiment 8 (research/query_training_log.py)
