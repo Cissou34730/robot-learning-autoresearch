@@ -23,13 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-# Training-only potential that rewards reducing the summed wrapped joint error
-# to the selected analytic inverse-kinematics branch. The environment selects
-# the joint-feasible branch only when the nominal open branch is joint-infeasible,
-# so the term is inert for targets the policy already handles and supplies a
-# gradient toward the feasible folded configuration exactly in the near-limit
-# band. Expressed per radian of summed absolute wrapped angular error.
-BRANCH_GUIDANCE_COEFFICIENT = 20.0
 
 
 @dataclass(frozen=True)
@@ -60,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    branch_error: float | None = None,
-    previous_branch_error: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -70,13 +61,6 @@ def reach_reward(
         previous_distance
     )
     reward += closeness
-
-    branch_guidance = 0.0
-    if branch_error is not None and previous_branch_error is not None:
-        branch_guidance = BRANCH_GUIDANCE_COEFFICIENT * (
-            previous_branch_error - branch_error
-        )
-    reward += branch_guidance
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -116,7 +100,6 @@ def reach_reward(
         components={
             "progress": float(progress),
             "closeness": float(closeness),
-            "branch_guidance": float(branch_guidance),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),

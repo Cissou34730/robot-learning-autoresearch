@@ -22,21 +22,12 @@ from robot_learning.benchmark.spec import (
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
-from robot_learning.robots.two_joint_arm import (
-    FOREARM_LENGTH,
-    TWO_JOINT_ARM_XML_PATH,
-    UPPER_ARM_LENGTH,
-)
+from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-JOINT_LIMIT_DEGREES = 170.0
-
-
-def _wrap_to_pi(angle: float) -> float:
-    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -80,8 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._guidance_branch: tuple[float, float] | None = None
-        self._previous_branch_error: float | None = None
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -107,49 +96,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             target_z,
         ]
 
-    def _ik_branches(self) -> tuple[tuple[float, float], tuple[float, float]]:
-        target_x = float(self.data.mocap_pos[0][0])
-        target_y = float(self.data.mocap_pos[0][1])
-        cos_elbow = (
-            target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
-        ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-        elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
-        base = float(np.arctan2(target_y, target_x))
-        shoulder_open = base - float(
-            np.arctan2(
-                FOREARM_LENGTH * np.sin(elbow_open),
-                UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow_open),
-            )
-        )
-        elbow_folded = -elbow_open
-        shoulder_folded = base - float(
-            np.arctan2(
-                FOREARM_LENGTH * np.sin(elbow_folded),
-                UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow_folded),
-            )
-        )
-        return (shoulder_open, elbow_open), (shoulder_folded, elbow_folded)
-
-    def _is_joint_feasible(self, branch: tuple[float, float]) -> bool:
-        limit = np.deg2rad(JOINT_LIMIT_DEGREES)
-        return bool(np.all(np.abs(np.asarray(branch)) <= limit + 1e-9))
-
-    def _select_guidance_branch(self) -> tuple[float, float] | None:
-        open_branch, folded_branch = self._ik_branches()
-        if self._is_joint_feasible(open_branch):
-            return None
-        if self._is_joint_feasible(folded_branch):
-            return folded_branch
-        return None
-
-    def _branch_error(self, branch: tuple[float, float] | None) -> float | None:
-        if branch is None:
-            return None
-        shoulder, elbow = branch
-        shoulder_error = _wrap_to_pi(shoulder - float(self.data.qpos[0]))
-        elbow_error = _wrap_to_pi(elbow - float(self.data.qpos[1]))
-        return float(abs(shoulder_error) + abs(elbow_error))
-
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
 
@@ -171,8 +117,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        self._guidance_branch = self._select_guidance_branch()
-        self._previous_branch_error = self._branch_error(self._guidance_branch)
         return self._observation(), {}
 
     def step(
@@ -198,7 +142,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
-        branch_error = self._branch_error(self._guidance_branch)
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -208,11 +151,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            branch_error=branch_error,
-            previous_branch_error=self._previous_branch_error,
         )
         self._previous_distance = distance
-        self._previous_branch_error = branch_error
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
