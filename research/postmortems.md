@@ -947,3 +947,80 @@ panel, `working`/`best_known` (experiment 8 `checkpoint-120832`) stay selected,
 the unchanged recipe is kept, and no experiment-12 artifact is retained.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-12-checkpoint-100352-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-12-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-12-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-12/inventory.json, research/results.jsonl, research/brief.md, training log for experiment 12 (research/query_training_log.py)
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 13
+
+**Result:** Continuing the unchanged full-radius recipe from `working` for a
+further 120,832 steps did not improve deterministic task success. The researcher
+panel stayed 194/200 = 97.0% at both 20,480 and 120,832 steps with the parent's
+identical six wedge failures, and the protected task-reference panel fell from
+197/200 = 98.5% to 195/200 = 97.5% at both measured checkpoints. No
+experiment-13 checkpoint exceeds `working`, so the unchanged recipe is kept and
+`working`/`best_known` (experiment 8 `checkpoint-120832`) remain selected.
+
+**Observed behavior:** Experiment 13 was a diagnostic `continuation` of
+`working`, transfer initialization, seed 0, 120,000 requested / 120,832 completed
+steps, 24 checkpoints, with empty `code_changes` and no parameter overrides. On
+the researcher 200-episode panel (seed 20260918, semantics ffdccdbf3357)
+`checkpoint-20480` scores 194/200 = 97.0% failing exactly {7, 56, 64, 75, 107,
+145}, `checkpoint-105472` scores 190/200 = 95.0% failing {7, 15, 27, 56, 64, 75,
+95, 107, 145, 190}, and `checkpoint-120832` scores 194/200 = 97.0% failing
+exactly {7, 56, 64, 75, 107, 145} - the parent's failure set. The four extra
+`checkpoint-105472` failures (episode 15 r 10.9 cm a -60.5 degrees, episode 27
+r 8.0 cm a 17.9 degrees, episode 95 r 9.3 cm a -50.7 degrees, episode 190
+r 8.0 cm a 112.2 degrees) are interrupted holds (`in_tolerance_steps` 9-74,
+`hold_interruptions` 168-240), not non-arrival, and are gone by 120,832. The six
+wedge episodes' minimum distances move only marginally across the run (for
+example episode 7 0.84-0.92 cm, episode 56 1.45-1.58 cm, episode 107 0.94-1.04
+cm) and none converts to success. On task-reference-v1 (seed 7300,
+task-reference-v1) `checkpoint-105472` scores 195/200 = 97.5% failing {67, 84,
+102, 175, 176} and `checkpoint-120832` scores 195/200 = 97.5% failing {10, 84,
+102, 175, 196}, against the parent's 197/200 = 98.5% failing {84, 102, 175}: the
+continuation repairs none of the parent's three protected failures and adds two
+new ones at each measured length - {67, r 9.77 cm a 24.8 degrees; 176, r 8.0 cm
+a -5.4 degrees} at 105,472 and {10, r 7.24 cm a -125.4 degrees; 196, r 15.84 cm
+a -166.4 degrees} at 120,832, while the wedge failures 84, 102 and 175 persist.
+The training proxy behaved opposite to the proposal's prediction: instead of
+continuing the parent's late-run drift (`success_rate` 0.94, `ep_len_mean` 149 at
+the experiment-8 endpoint), the continuation's `success_rate` rose to 1.0 at
+102,400-105,472 and ended 0.98 at 120,832, with `ep_len_mean` 123 and `ep_rew_mean`
+106.
+
+**Hypothesis assessment:** Supported for the deterministic claim, with the
+proposal's training-proxy sub-prediction contradicted. The proposition was that
+the incumbent is at a method or optimization limit rather than a training-budget
+limit, so 120,000 further unchanged steps do not improve deterministic task
+success. Observed: none of the six researcher wedge episodes converted at either
+20,480 or 120,832 steps, the researcher panel stayed at 194/200 with the parent's
+identical failure set, and the protected panel did not exceed 197/200 (it fell to
+195/200) - the proposal's supporting observation and the negation of its stated
+budget-limited alternative. The named proxy expectation (success_rate at or below
+about 0.94 with `ep_len_mean` at or above 149) was contradicted: the proxy
+recovered toward the run peak while task success did not, extending the campaign's
+observation that training reward and success do not track measured task
+performance. Limits: only 3 of 24 checkpoints were measured on the researcher
+panel and 2 on the protected panel, all on the single seed-0 lineage; each panel
+is one deterministic 200-episode panel, so the protected-panel change (197 to 195,
+two episodes) is not separable from panel composition, and the mid-run
+`checkpoint-105472` degradation shows the continuation is not behaviorally inert
+where panel totals are flat. The claim is scoped to this lineage, recipe and
+budget.
+
+**Interpretation:** Directly extending the competent lineage by another 120k
+steps of the same method did not move the deterministic wedge: the earliest
+measured checkpoint (+20,480) already reproduces the parent's exact researcher
+failure set and the endpoint matches it, while the protected panel loses two
+episodes. Additional optimization of this lineage therefore leaves the
+objective-relevant estimate unchanged or slightly worse, which, together with the
+experiment-11 horizon regression, indicates the residual is not a simple
+step-budget or horizon shortfall for this recipe. The protected-panel failures
+reallocated across training length (new near-limit failures at r 6.7-9.8 cm and
+r 15.8-18.2 cm that differ between 105,472 and 120,832) read as a small,
+sensitive near-limit decision boundary rather than a systematic repair. The
+recovered training proxy coexisting with flat deterministic success again shows
+the proxy is not a task-success or budget indicator here. Because no
+experiment-13 checkpoint is measured at or above the parent on either panel, the
+incumbent remains the strongest policy and the next investigation should target
+the wedge's branch-selection/precision limit rather than more unchanged training.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-13-checkpoint-20480-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-13-checkpoint-105472-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-13-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-13-checkpoint-105472-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-13-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-13/inventory.json, research/results.jsonl, research/brief.md, training logs for experiments 8 and 13 (research/query_training_log.py)
