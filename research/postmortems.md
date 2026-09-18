@@ -770,3 +770,82 @@ sensitivity is not aligned with aggregate task success. `working`/`best_known`
 exceeded by any experiment-10 artifact, and the reward change is reverted.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-10-checkpoint-120832-200ep-seed20260918-36aff4660c2d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-10-checkpoint-20480-200ep-seed20260918-36aff4660c2d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-10-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-10/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-10/parameters.json, research/results.jsonl, research/research_state.json, research/brief.md, robot_learning/scenario/environment.py, robot_learning/scenario/reward.py, robot_learning/scenario/observations.py, robot_learning/robots/two_joint_arm.xml
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 11
+
+**Result:** Raising PPO's effective advantage-estimation horizon by transfer from
+`working` (ppo.gamma 0.99 -> 0.999, ppo.gae_lambda 0.95 -> 0.99) repaired none of
+the six researcher-panel wedge episodes and degraded task success monotonically
+with training: measured 192/200 = 96.0% at 25,600, 184/200 = 92.0% at 50,176 and
+173/200 = 86.5% at 120,832 on the researcher panel, and 96.0%/93.5%/88.0% on
+task-reference-v1, all below the parent's 97.0%/98.5%. Every measured checkpoint
+retains the parent's wedge {7, 56, 64, 75, 107, 145} and adds failures. The
+parameter change is reverted and `working`/`best_known` (experiment 8
+`checkpoint-120832`) remain selected.
+
+**Observed behavior:** Experiment 11 was a parameter-only diagnostic transfer
+`training` run from `working`, seed 0, 120,000 requested / 120,832 completed
+steps, 24 checkpoints, with `code_changes` empty and only `ppo.gamma` and
+`ppo.gae_lambda` overridden, so gamma*lambda moved 0.9405 -> 0.989 and the nominal
+effective horizon 1/(1 - gamma*lambda) moved from about 17 to about 91 steps. The
+raw log shows `success_rate` peaking at 0.97-0.98 around 24,576-25,600 steps and
+then declining monotonically to 0.54 at 120,832, while `ep_len_mean` rose from
+122 (1,024 steps) to 343 (120,832) and `ep_rew_mean` rose from 110 to 172; over
+the same span `entropy_loss` grew more negative (-0.13 to -0.58) and the policy
+`std` rose from 0.258 to 0.324. On the researcher 200-episode panel (seed
+20260918, semantics ffdccdbf3357) the three measured checkpoints score 96.0%,
+92.0% and 86.5%: `checkpoint-25600` fails {7, 56, 64, 75, 107, 136, 145, 169},
+`checkpoint-50176` fails 16 episodes including all six wedge episodes plus
+{0, 2, 23, 25, 58, 133, 136, 148, 154, 175}, and `checkpoint-120832` fails 27
+episodes including all six wedge episodes and widespread new rear-radius and
+rear-angle failures. The parent `working` scores 194/200 = 97.0% failing exactly
+{7, 56, 64, 75, 107, 145}. On task-reference-v1 the checkpoints score 96.0%, 93.5%
+and 88.0% against the parent's 98.5%; `checkpoint-25600` fails 8 episodes
+including the parent's {84, 102, 175} plus {10, 91, 111, 139, 149}, and the
+endpoint fails 24 including 10 and 18 at the smallest radii and new failures at
+r 18-20 cm. All measured episodes are single deterministic 200-episode panels;
+the recorded paired comparisons against `working` give 0 candidate wins and net
+-2 (p = 0.5), -10 (p = 0.0020) and -21 (p = 9.5e-7) at the three checkpoints. On
+the researcher panel the success step count rose (mean 111.4 to 123.2, maximum
+339) and the mean failure reward total rose from -6.66 for the parent to 65.43 at
+the endpoint, with every failure still a 500-step truncation: the endpoint's
+successes are a subset of the parent's with 21 losses and 0 gains.
+
+**Hypothesis assessment:** Contradicted. The proposal predicted that the longer
+horizon would let the transferred policy credit the multi-step shoulder
+reconfiguration toward the joint-feasible folded branch, converting at least one
+of the six wedge episodes {7, 56, 64, 75, 107, 145} to success without losing
+existing successes. Observed instead: none of the six wedge episodes converted at
+any of the three measured checkpoints - all six fail at 25,600, 50,176 and
+120,832 - the researcher panel fell to 96.0% and then steadily to 86.5%, the
+protected panel fell to 96.0% and then to 88.0%, and new failures appeared at
+every checkpoint on both panels, which is the proposal's own stated contradicting
+observation (a broad regression with no wedge repair). The alternative that the
+wedge is a soft joint-limit reach-and-precision wall that no change in the
+advantage horizon moves is favored. Limits: exactly one intermediate-and-long
+horizon pair was tested (gamma*lambda 0.9405 -> 0.989) in a single seed-0
+transfer run; only 3 of 24 checkpoints were measured; the decline was still
+ongoing at the budget end, so the run establishes that this horizon increase is
+harmful to the competent policy and does not repair the wedge, not that no
+credit-assignment formulation could ever do so.
+
+**Interpretation:** The horizon increase did not merely fail to help - it
+converted the policy's objective from reaching and completing the terminating
+hold to prolonging and hovering near the target. The success step count and the
+failure reward totals rose together across checkpoints while completion fell, and
+`ep_len_mean` roughly tripled, the signature expected when a longer discount
+horizon makes accumulating per-step shaping and proximity reward preferable to
+terminating. Read together with experiment 9 (a fully active joint-limit penalty
+that changed trajectories but not outcomes) and experiment 10 (a branch-guidance
+potential that changed the protected failure set but not the researcher wedge),
+three distinct interventions over signals and credit assignment have now each
+left the deterministic wedge intact, while the direction that changed the
+effective horizon most aggressively produced the largest task-level regression.
+This strengthens the soft-limit / precision-wall reading of the residual and
+weakens the myopic-credit-assignment explanation; it does not exclude an
+intermediate horizon or a different return decomposition, which were not tested.
+Because no experiment-11 artifact is measured at or above the parent on either
+panel, the parameter change is reverted and the experiment-8 recipe and policy
+are kept.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-25600-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-50176-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-25600-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-50176-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-11-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-11/inventory.json, research/results.jsonl, research/brief.md, research/current_params.json, training log for experiment 11 (research/query_training_log.py)
