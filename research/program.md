@@ -12,6 +12,12 @@ works, and establishing training reproducibility are distinct questions. Answer
 the question that helps the campaign; causal explanation and reproducibility are
 not prerequisites for accepting a useful policy.
 
+When several scientifically valid questions are available, compare them by the
+concrete campaign decisions their possible outcomes could change and by their
+expected contribution to the human objective. Exploratory value need not be
+certain in advance, but an unresolved question is not by itself sufficient
+reason to spend a full training run.
+
 Repository operation and ownership are defined in `AGENTS.md`, the current
 scientific problem in `research/scenario.md`, and every available instrument and
 request contract in `research/instruments.md`. `research/brief.md` supplies the
@@ -112,15 +118,22 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence, choose continuation,
-an intervention with fresh or transfer initialization, or replication, and state
-the scientific question and how it serves the human objective. Declare the
-investigation type. A confirmatory or diagnostic investigation states a
-proposition, a plausible alternative, and the observations that would
-distinguish them. An exploratory investigation states the question, the
-uncertainty, the observations it seeks and what those observations could
-clarify. Do not invent a causal mechanism or a prediction merely to satisfy the
-proposal format.
+Inspect relevant repository state and completed evidence, then identify the
+scientific question and the concrete downstream decision that its possible
+outcomes could change; only then choose the operation that answers it. State how
+the question serves the human objective. Declare the investigation type. A
+confirmatory or diagnostic investigation states a proposition, a plausible
+alternative, and the observations that would distinguish them. An exploratory
+investigation states the question, the uncertainty, the observations it seeks
+and what those observations could clarify. Do not invent a causal mechanism or a
+prediction merely to satisfy the proposal format.
+
+For a replication or other process-variance question, the reasoning must
+distinguish what decision follows from the expected result and what decision
+follows from the contradicting result, using the existing `expected_observation`,
+`contradicting_observation`, and `objective_link` fields. If both outcomes would
+leave the relevant development decision unchanged, unresolved reproducibility
+alone does not justify a full training run.
 
 Justify the training parent and fresh-or-transfer initialization by their
 expected value for the question and semantic compatibility with the policy and
@@ -219,7 +232,10 @@ compact decision aid, not a second experiment history:
 
 - `Current synthesis`: the present interpretation of relevant campaign evidence.
 - `Lessons and limits`: reusable findings, their sources, and uncertainty.
-- `Open questions`: useful uncertainties, not a mandatory experiment queue.
+- `Open questions`: recorded uncertainties and useful unresolved questions, not
+  priorities and not a mandatory experiment queue. Their presence does not
+  justify selecting them for the next experiment; selection still depends on
+  their current decision value relative to other plausible questions.
 
 Preserve historical observations and decisions; revise current interpretations
 in the synthesis rather than rewriting what was believed at the time. Write the

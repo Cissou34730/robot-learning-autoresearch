@@ -65,8 +65,11 @@ closing the current trained experiment. Researcher-owned instrumentation may be
 changed before submitting the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
-`measurements` selects the instruments and models to run. `paired_comparisons`
-selects comparisons to compute from compatible measurements and is optional.
+The request-level `reason` should explain why the selected candidate or
+instrument set is useful relative to at least one available alternative for the
+stated uncertainty. `measurements` selects the instruments and models to run.
+`paired_comparisons` selects comparisons to compute from compatible measurements
+and is optional.
 
 Write `research/evaluation_request.json`:
 
@@ -296,6 +299,13 @@ integer `replication_of`, which must name an existing experiment in the current
 campaign. It groups the new run with the referenced experiment for replication
 evidence; it does not restore that experiment’s code or configuration and does
 not claim exact replay.
+
+A `replication_of` group therefore records related evidence. It does not
+establish an exact reproduction of a previous learning trajectory. A fresh run
+of a recipe previously exercised through transfer does not reproduce the
+transferred learning trajectory; it tests whether the current recipe can learn
+from fresh initialization. Scientific claims about replication must use that
+narrower interpretation.
 
 ## Record the postmortem
 

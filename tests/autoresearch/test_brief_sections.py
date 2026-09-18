@@ -237,6 +237,45 @@ def test_measurement_round_panel_novelty_recognises_prior_experiments():
     assert "(reused panel)" in text
 
 
+def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
+    record = {
+        "index": 1,
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "question": "does it reproduce",
+                "reason": "round reason",
+                "status": "completed",
+                "results": {
+                    "research_evaluations": [
+                        {
+                            "candidate": "checkpoint-100",
+                            "seed": 100,
+                            "episodes": 200,
+                            "success_percent": 90.0,
+                            "selection": "proxy peak template",
+                            "evaluation_artifact": "research/evaluations/e.json",
+                        }
+                    ]
+                },
+            }
+        ],
+    }
+    analysis = "\n".join(brief._v4_measurement_rounds_section({}, [], record))
+    preparation = "\n".join(
+        brief._v4_measurement_rounds_section({}, [record], None)
+    )
+
+    # Follow-up analysis keeps the evidence needed to adapt the next round.
+    assert "Selection: proxy peak template" in analysis
+    # Preparation retains outcomes and references without replaying exemplars.
+    assert "does it reproduce" in preparation
+    assert "success 90.00%" in preparation
+    assert "Selection: proxy peak template" not in preparation
+    assert "Completed measurement rounds" in preparation
+    assert "Measurement rounds for the current experiment" in analysis
+
+
 def test_cost_accounting_lists_consumed_research_intervals_factually():
     results = [
         {

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from collections import Counter, defaultdict
@@ -71,6 +72,99 @@ def measurements(row: dict) -> list[dict]:
         )
         found[key] = item
     return list(found.values())
+
+
+def _candidate_identity(candidate: dict) -> str:
+    for key in ("fingerprint", "model_fingerprint", "artifact", "name"):
+        value = candidate.get(key)
+        if value:
+            return str(value)
+    return json.dumps(candidate, sort_keys=True, separators=(",", ":"))
+
+
+def display_order(candidates: list[dict]) -> list[dict]:
+    """Mirror build_research_brief.candidate_display_order.
+
+    The order is a metric-independent stable permutation of artifact identity so
+    it never ranks candidates by training proxy, timestep or input position.
+    """
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            hashlib.sha256(
+                _candidate_identity(candidate).encode("utf-8")
+            ).hexdigest(),
+            _candidate_identity(candidate),
+        ),
+    )
+
+
+def selection_diagnostics(rows: list[dict]) -> list[list]:
+    """Factual selection ranks for each measured checkpoint candidate.
+
+    Exposes how measured candidates sit in the rendered (metric-independent)
+    order and in the previous proxy-ranked order, whether they were the endpoint,
+    and their timestep rank. It is an audit of presentation and selection, not a
+    recommendation.
+    """
+    diagnostics = []
+    for row in rows:
+        candidates = [
+            candidate
+            for candidate in (row.get("candidates") or [])
+            if isinstance(candidate, dict)
+        ]
+        if not candidates:
+            continue
+        names = {candidate.get("name") for candidate in candidates}
+        displayed = {
+            candidate.get("name"): position + 1
+            for position, candidate in enumerate(display_order(candidates))
+        }
+        proxy_sorted = sorted(
+            candidates,
+            key=lambda candidate: (
+                candidate.get("training_success") is None,
+                -float(candidate.get("training_success") or 0.0),
+                int(candidate.get("timesteps") or 0),
+            ),
+        )
+        proxy_rank = {
+            candidate.get("name"): position + 1
+            for position, candidate in enumerate(proxy_sorted)
+        }
+        timestep_sorted = sorted(
+            candidates, key=lambda candidate: int(candidate.get("timesteps") or 0)
+        )
+        timestep_rank = {
+            candidate.get("name"): position + 1
+            for position, candidate in enumerate(timestep_sorted)
+        }
+        latest = max(int(candidate.get("timesteps") or 0) for candidate in candidates)
+        endpoints = {
+            candidate.get("name")
+            for candidate in candidates
+            if int(candidate.get("timesteps") or 0) == latest
+        }
+        selected = sorted(
+            {
+                measurement.get("candidate")
+                for measurement in measurements(row)
+                if measurement.get("candidate") in names
+            }
+        )
+        for candidate in selected:
+            diagnostics.append(
+                [
+                    row.get("index"),
+                    candidate,
+                    displayed.get(candidate),
+                    proxy_rank.get(candidate),
+                    f"{timestep_rank.get(candidate)}/{len(candidates)}",
+                    "yes" if candidate in endpoints else "no",
+                ]
+            )
+    return diagnostics
 
 
 def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
@@ -259,6 +353,27 @@ def campaign_sections(campaign: dict) -> list[str]:
             "Best-known snapshot",
         ],
         progression,
+    )
+    lines += ["", "### Selection diagnostics", ""]
+    lines += [
+        (
+            "Ranks audit how measured checkpoints sit in the rendered brief. "
+            "Displayed position uses the current metric-independent order; proxy "
+            "rank is the order a training-proxy-ranked inventory would have shown. "
+            "These ranks are factual and do not rank models for the Researcher."
+        ),
+        "",
+    ]
+    lines += table(
+        [
+            "Exp",
+            "Selected candidate",
+            "Displayed position",
+            "Proxy rank",
+            "Timestep rank",
+            "Endpoint",
+        ],
+        selection_diagnostics(rows),
     )
     postmortem = repo / "research/postmortems.md"
     if postmortem.exists():

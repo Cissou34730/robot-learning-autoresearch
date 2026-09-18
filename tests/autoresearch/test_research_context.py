@@ -164,7 +164,7 @@ def test_brief_renders_checkpoint_aligned_facts_for_every_pending_candidate(
     assert "| Candidate | Steps | Training success | Training reward | Artifact |" in brief
     assert "| `earlier` | 20 | unavailable | unavailable | `research/checkpoints/earlier` |" in brief
     assert "| `later` | 120 | 0 | 0 | `research/checkpoints/later` |" in brief
-    assert brief.index("`later`") < brief.index("`earlier`")
+    # Presentation order is metric-independent and asserted by its own test.
     assert "Most recent training dynamics" not in brief
 
 
@@ -524,8 +524,12 @@ def test_v4_brief_compacts_unmeasured_checkpoints_and_keeps_measured_rows(
     assert "distinct models" not in inventory
     assert "not task measurements" in inventory
     assert len(rows) == 24
-    assert rows[0].startswith("| `checkpoint-10240` | 10,240 | 0.4 | 4 |")
-    assert rows[-1].startswith("| `checkpoint-5120` | 5,120 | 0.1 | 1 |")
+    assert any(
+        row.startswith("| `checkpoint-10240` | 10,240 | 0.4 | 4 |") for row in rows
+    )
+    assert any(
+        row.startswith("| `checkpoint-5120` | 5,120 | 0.1 | 1 |") for row in rows
+    )
 
 
 def test_v4_brief_surfaces_candidate_metrics_at_selection(monkeypatch, tmp_path):
@@ -568,71 +572,89 @@ def test_v4_brief_surfaces_candidate_metrics_at_selection(monkeypatch, tmp_path)
     assert "Candidate inventory: 5 candidates (0 measured, 5 unmeasured)." in inventory
     assert "`research/checkpoints/inventory.json`" in inventory
     assert "not task measurements" in inventory
-    assert [row.split("|")[1].strip() for row in rows] == [
+    assert {row.split("|")[1].strip() for row in rows} == {
         "`checkpoint-5120`",
         "`checkpoint-10240`",
         "`checkpoint-100352`",
         "`checkpoint-105472`",
         "`checkpoint-120832`",
-    ]
+    }
 
 
-def test_v4_brief_orders_candidate_metrics_by_training_proxy(
-    monkeypatch, tmp_path
-):
+def test_v4_brief_candidate_order_is_metric_independent(monkeypatch, tmp_path):
     research_dir = tmp_path / "research"
     research_dir.mkdir()
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
     (research_dir / "postmortems.md").write_text("", encoding="utf-8")
-    proxies = {5120: 0.2, 10240: 1.0, 20480: 1.0, 30720: 1.0, 40960: 0.7}
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign", "base_commit": "base"},
-        "pending_analysis": {
-            "experiment": 3,
-            "result": {"index": 3},
-            "candidates": [
-                {
-                    "name": f"checkpoint-{steps}",
-                    "timesteps": steps,
-                    "training_success": proxy,
-                    "ep_rew_mean": 100.0,
-                    "artifact": f"research/checkpoints/checkpoint-{steps}",
-                    "evaluations": [],
-                }
-                for steps, proxy in proxies.items()
-            ],
-        },
-    }
-    (research_dir / "research_state.json").write_text(
-        json.dumps(state), encoding="utf-8"
-    )
     (research_dir / "results.jsonl").write_text("", encoding="utf-8")
     monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
-
-    brief = render_research_brief()
-    latest = brief.split("## Latest experiment", 1)[1].split(
-        "## Current lineages and scientific recipes", 1
-    )[0]
-    inventory = brief.split(
-        "### Current experiment candidate inventory", 1
-    )[1].split("## Working lineage", 1)[0]
-
-    assert "training success" not in latest
-    assert "episode reward" not in latest
-    assert "checkpoint ranking" not in latest
-    rows = [
-        line for line in inventory.splitlines() if line.startswith("| `checkpoint-")
+    names = [
+        "checkpoint-5120",
+        "checkpoint-10240",
+        "checkpoint-20480",
+        "checkpoint-30720",
+        "checkpoint-40960",
     ]
-    assert [row.split("|")[1].strip() for row in rows] == [
-        "`checkpoint-10240`",
-        "`checkpoint-20480`",
-        "`checkpoint-30720`",
-        "`checkpoint-40960`",
-        "`checkpoint-5120`",
-    ]
-    assert "`research/checkpoints/inventory.json`" in inventory
+    artifacts = {name: f"research/checkpoints/{name}" for name in names}
+
+    def render(proxies, order, timestep_offset=0):
+        state = {
+            "schema_version": 4,
+            "campaign": {"id": "campaign", "base_commit": "base"},
+            "pending_analysis": {
+                "experiment": 3,
+                "result": {"index": 3},
+                "candidates": [
+                    {
+                        "name": name,
+                        "timesteps": int(name.split("-")[-1]) + timestep_offset,
+                        "training_success": proxies[name],
+                        "ep_rew_mean": 100.0,
+                        "artifact": artifacts[name],
+                        "evaluations": [],
+                    }
+                    for name in order
+                ],
+            },
+        }
+        (research_dir / "research_state.json").write_text(
+            json.dumps(state), encoding="utf-8"
+        )
+        brief = render_research_brief()
+        latest = brief.split("## Latest experiment", 1)[1].split(
+            "## Current lineages and scientific recipes", 1
+        )[0]
+        inventory = brief.split(
+            "### Current experiment candidate inventory", 1
+        )[1].split("## Working lineage", 1)[0]
+        rows = [
+            line
+            for line in inventory.splitlines()
+            if line.startswith("| `checkpoint-")
+        ]
+        return latest, inventory, [row.split("|")[1].strip() for row in rows]
+
+    high = {name: 0.9 for name in names}
+    high["checkpoint-40960"] = 0.0
+    low = {name: 0.1 for name in names}
+    low["checkpoint-40960"] = 0.05
+
+    first_latest, first_inventory, first_order = render(high, names)
+    _, second_inventory, second_order = render(low, list(reversed(names)))
+    _, _, third_order = render(high, names, timestep_offset=1)
+
+    # Proxy values, timesteps and input order never change the rendered order.
+    assert first_order == second_order == third_order
+    assert len(first_order) == len(names)
+    assert set(first_order) == {f"`{name}`" for name in names}
+    # Proxy metrics stay visible as evidence rather than disappearing.
+    assert "0.9" in first_inventory
+    assert "0.05" in second_inventory
+    assert "training success" not in first_latest
+    assert "episode reward" not in first_latest
+    assert "checkpoint ranking" not in first_latest
+    assert "`research/checkpoints/inventory.json`" in first_inventory
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):
@@ -935,7 +957,6 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     normalized_protocol = " ".join(protocol.lower().split())
 
     for scientific_preference in (
-        "use additional diagnosis, measurement, or replication only when",
         "prefer the simplest evidence sufficient",
         "training proxy is the only signal",
         "chosen over the other available checkpoints",
@@ -973,3 +994,81 @@ def test_researcher_contract_preserves_investigative_freedom_across_layers():
     assert "provisional scientific synthesis" in normalized_brief_builder
     assert "training proxy observations" not in normalized_brief_builder
     assert "model is useful for the current scientific question" in normalized_protocol
+
+
+def _normalized(path: Path) -> str:
+    return " ".join(path.read_text(encoding="utf-8").lower().split())
+
+
+def test_decision_value_precedes_operation_selection():
+    root = Path(__file__).resolve().parents[2]
+    program = _normalized(root / "research" / "program.md")
+    launcher = _normalized(root / "run_research.ps1")
+
+    # Principle: compare valid questions by decisions and objective contribution.
+    assert (
+        "compare them by the concrete campaign decisions their possible outcomes "
+        "could change" in program
+    )
+    assert (
+        "an unresolved question is not by itself sufficient reason to spend a "
+        "full training run" in program
+    )
+
+    # Preparation: question, then decision, then operation.
+    assert (
+        "identify the scientific question and the concrete downstream decision "
+        "that its possible outcomes could change" in program
+    )
+    assert "only then choose the operation that answers it" in program
+    assert (
+        "unresolved reproducibility alone does not justify a full training run"
+        in program
+    )
+
+    # Memory: open questions are recorded uncertainties, not priorities.
+    assert (
+        "their presence does not justify selecting them for the next experiment"
+        in program
+    )
+
+    # Prompt order: objective and evidence, decision comparison, operation, parent.
+    objective = launcher.index("start from the campaign objective")
+    comparison = launcher.index(
+        "identify the scientific question, then identify the concrete campaign decision"
+    )
+    operation = launcher.index("only then choose the operation that best answers it")
+    parent = launcher.index(
+        "justify the parent and fresh-or-transfer initialization"
+    )
+    assert objective < comparison < operation < parent
+
+
+def test_replication_available_and_no_operation_universally_preferred():
+    root = Path(__file__).resolve().parents[2]
+    program = _normalized(root / "research" / "program.md")
+    instruments = _normalized(root / "research" / "instruments.md")
+    launcher = _normalized(root / "run_research.ps1")
+
+    # Replication stays available and no initialization is universally preferred.
+    assert "replication" in instruments
+    assert "continuation, training with fresh or transfer initialization, and replication" in launcher
+    assert "neither fresh initialization nor transfer is preferred" in program
+    # The requirement uses existing reasoning fields, not a new proposal field.
+    for text in (program, instruments, launcher):
+        assert "decision_value" not in text
+
+
+def test_replication_semantics_distinguish_replay_from_fresh_learning():
+    root = Path(__file__).resolve().parents[2]
+    instruments = _normalized(root / "research" / "instruments.md")
+
+    assert (
+        "does not establish an exact reproduction of a previous learning trajectory"
+        in instruments
+    )
+    assert "does not reproduce the transferred learning trajectory" in instruments
+    assert (
+        "it tests whether the current recipe can learn from fresh initialization"
+        in instruments
+    )

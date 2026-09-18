@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path, PureWindowsPath
@@ -410,14 +411,34 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
-def _candidate_proxy_order(candidate: dict) -> tuple:
-    """Order candidates by recorded training proxy, not by position in the run."""
-    success = candidate.get("training_success")
-    return (
-        success is None,
-        -float(success) if success is not None else 0.0,
-        int(candidate.get("timesteps") or 0),
-    )
+def _candidate_identity(candidate: dict) -> str:
+    """The stable identity used only to order candidates in the brief.
+
+    It prefers a recorded fingerprint, then the artifact path. It deliberately
+    ignores training proxy values, timesteps, input order and measurement status
+    so that presentation cannot rank candidates by apparent promise.
+    """
+    for key in ("fingerprint", "model_fingerprint", "artifact", "name"):
+        value = candidate.get(key)
+        if value:
+            return str(value)
+    return _stable_json({key: candidate.get(key) for key in sorted(candidate)})
+
+
+def _candidate_order_key(candidate: dict) -> tuple:
+    """A deterministic, metric-independent order key.
+
+    The order is a stable permutation derived only from candidate identity. It
+    does not depend on training proxy values, timesteps, candidate input order,
+    or whether the candidate has been measured.
+    """
+    identity = _candidate_identity(candidate)
+    return (hashlib.sha256(identity.encode("utf-8")).hexdigest(), identity)
+
+
+def candidate_display_order(candidates: list[dict]) -> list[dict]:
+    """Candidates in their deterministic, metric-independent display order."""
+    return sorted(candidates, key=_candidate_order_key)
 
 
 def _candidate_steps(candidate: dict) -> str:
@@ -453,7 +474,7 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
         "| Candidate | Steps | Training success | Training reward | Measurements |",
         "|---|---:|---:|---:|---:|",
     ]
-    for candidate in sorted(candidates, key=_candidate_proxy_order):
+    for candidate in candidate_display_order(candidates):
         lines.append(
             f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
             f"{_candidate_metric(candidate, 'training_success')} | "
@@ -1183,6 +1204,11 @@ def _v4_measurement_rounds_section(
         if int(record.get("index", -1)) == current_index:
             continue
         prior_panels.update(_record_research_panels(record))
+    # Issue #43: during preparation the brief summarizes the prior experiment's
+    # outcomes and artifact references without replaying per-candidate selection
+    # prose, which would otherwise act as an exemplar template for the next
+    # request. The durable record keeps the full rationale.
+    include_selections = isinstance(pending, dict)
     lines = [
         "",
         "## Measurement rounds",
@@ -1191,6 +1217,11 @@ def _v4_measurement_rounds_section(
             "Measurement rounds for the current experiment in the order they were "
             "requested. Each round records its own question, selections and "
             "resulting artifacts:"
+            if include_selections
+            else "Completed measurement rounds from the most recent experiment, in "
+            "the order they were requested. Questions, results and artifact "
+            "references are retained; per-candidate selection rationale stays in "
+            "the durable record:"
         ),
     ]
     for record in rounds:
@@ -1224,7 +1255,7 @@ def _v4_measurement_rounds_section(
                 f"`research_evaluation`{_round_entry_status(item)}"
                 f"{panel_note}: {detail}."
             )
-            if item.get("selection"):
+            if include_selections and item.get("selection"):
                 lines.append(
                     f"  - Selection: {_compact(str(item['selection']), 300)}"
                 )
@@ -1249,7 +1280,7 @@ def _v4_measurement_rounds_section(
                 f"- `{item.get('candidate', '-')}` "
                 f"`task_reference`{_round_entry_status(item)}: {detail}."
             )
-            if item.get("selection"):
+            if include_selections and item.get("selection"):
                 lines.append(
                     f"  - Selection: {_compact(str(item['selection']), 300)}"
                 )
@@ -1490,9 +1521,7 @@ def render_research_brief() -> str:
             "| Candidate | Steps | Training success | Training reward | Artifact |",
             "|---|---:|---:|---:|---|",
         ]
-        for candidate in sorted(
-            pending_evaluation["candidates"], key=_candidate_proxy_order
-        ):
+        for candidate in candidate_display_order(pending_evaluation["candidates"]):
             evaluation_lines.append(
                 f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
                 f"{_candidate_metric(candidate, 'training_success')} | "
