@@ -1,14 +1,14 @@
-"""Scenario-owned training and evaluation environment mechanics.
+"""Shared scenario mechanics for training and evaluation.
 
 This module owns every behavior shared by training and evaluation: the MuJoCo
 model, target sampling, success and hold semantics, observations and reward.
-The training-only target distribution and environment construction live in
-`robot_learning/scenario/training_environment.py` so they can change without
+Training-only target construction lives in
+`robot_learning/scenario/training_environment.py` so it can change without
 altering how a saved policy is measured.
 
-The benchmark constants are training defaults, not a contract: research may
-train on a different distribution, tolerance or horizon. The human-defined task
-is enforced only by the protected benchmark in `robot_learning/benchmark/`.
+The benchmark constants are defaults, not a contract: research may train on a
+different distribution, tolerance or horizon. The human-defined task is
+enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
 from typing import Any, ClassVar
@@ -42,15 +42,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
-        target_radius_bands: tuple[tuple[float, float], ...] | None = None,
-        target_radius_band_probabilities: tuple[float, ...] | None = None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.target_radius_bands = target_radius_bands
-        self.target_radius_band_probabilities = target_radius_band_probabilities
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -86,20 +82,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
-        if self.target_radius_bands is None:
-            radius = float(
-                self.np_random.uniform(
-                    self.target_radius_range[0], self.target_radius_range[1]
-                )
+        radius = float(
+            self.np_random.uniform(
+                self.target_radius_range[0], self.target_radius_range[1]
             )
-        else:
-            band_index = int(
-                self.np_random.choice(
-                    len(self.target_radius_bands),
-                    p=self.target_radius_band_probabilities,
-                )
-            )
-            radius = float(self.np_random.uniform(*self.target_radius_bands[band_index]))
+        )
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.
         target_z = float(self._end_effector_position()[2])
