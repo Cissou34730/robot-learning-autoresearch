@@ -1,66 +1,18 @@
 {
-  "best_known_designation_counter": 4,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/f3356be0-50ce-45d0-a495-b909a50b054c/e9-c720dc389-3c4315fa3ca265753cbaab1f072cf9701e201ab678535af7f7c677c1211e66eb",
-    "candidate": "checkpoint-110592",
-    "designation_ordinal": 4,
-    "evaluation_artifacts": [
-      "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-9-checkpoint-110592-200ep-seed1300000-a69293a214ad.json",
-      "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-9-checkpoint-110592-200ep-seed1400000-a69293a214ad.json"
-    ],
-    "fingerprint": "3c4315fa3ca265753cbaab1f072cf9701e201ab678535af7f7c677c1211e66eb",
-    "origin_experiment": 9,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest complete-hold success in experiment 9, 387/400 pooled across two disjoint panels, and it beats the current working lineage in paired outcomes 84-0. This is measured development progress, not official benchmark confirmation.",
-    "scientific_commit": "6d83491047aec5ccf39feb8f94b719c9f0d5f389",
-    "training_steps": 110592
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "2c1cb52f360de3703cadd1d674acefc5bf3797b6",
-    "id": "f3356be0-50ce-45d0-a495-b909a50b054c",
+    "base_commit": "fc1b988754e9a8f0feff323b9c5f4912a6b62601",
+    "id": "6e0a71b5-86ea-4fc3-8385-4b55623f2972",
     "recipe_source_commit": null,
-    "started_at": "2026-09-18T05:52:03.182561+00:00"
+    "started_at": "2026-09-18T10:54:48.525426+00:00"
   },
   "campaign_experiment_counters": {
-    "f3356be0-50ce-45d0-a495-b909a50b054c": 9
+    "6e0a71b5-86ea-4fc3-8385-4b55623f2972": 0
   },
-  "last_allocated_experiment": 9,
-  "last_experiment": 9,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-110592",
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 9 replicated the current reward-plus-positive-extreme scientific recipe without changing researcher-owned code or parameters; keeping the complete recipe preserves the measured policy's training and inference semantics."
-    },
-    "code_parent_commit": "13fac98ec96378c345c7f4eeac1298c983660350",
-    "continue_from": "checkpoint-110592",
-    "experiment": 9,
-    "reason": "Experiment 9's checkpoint-110592 achieved 387/400 complete uninterrupted holds across two disjoint development panels, versus 303/400 for the current working lineage, with an 84-0 paired advantage. It is the strongest task-measured current candidate, but its 97.5% best panel result remains below the 196/200 official objective, so development should continue after closure rather than request terminal assessment."
-  },
-  "last_verdict": "researcher selected checkpoint-110592 as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -69,203 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "13fac98ec96378c345c7f4eeac1298c983660350",
-    "experiment": 9,
-    "scientific_commit": "6d83491047aec5ccf39feb8f94b719c9f0d5f389"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/f3356be0-50ce-45d0-a495-b909a50b054c/e1-c8cf701d5-3b5b6fe0335ed742acc277c8d910e6314c6cefec56e68a7014b1dfd574e90e1f",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-1-checkpoint-120832-100ep-seed100000-a69293a214ad.json"
-      ],
-      "fingerprint": "3b5b6fe0335ed742acc277c8d910e6314c6cefec56e68a7014b1dfd574e90e1f",
-      "id": "baseline-e1-120832",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the unchanged baseline as a measured control and alternative lineage because it has comparable development measurements and preserves the ability to assess future reward or control interventions against the original recipe.",
-      "scientific_commit": "d36db3ae93516416c2b5669c957217e3ccc24781",
-      "training_steps": 120832
-    },
-    {
-      "artifact": "research/checkpoints/retained/f3356be0-50ce-45d0-a495-b909a50b054c/e5-cada55eb5-552a6a61e8be77605e60558d01f08151e4c996d06970b4590b951cc87c84e2b0",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-5-checkpoint-100352-200ep-seed600000-a69293a214ad.json",
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-5-checkpoint-100352-200ep-seed700000-a69293a214ad.json"
-      ],
-      "fingerprint": "552a6a61e8be77605e60558d01f08151e4c996d06970b4590b951cc87c84e2b0",
-      "id": "e5-positive-coverage-100352",
-      "origin_experiment": 5,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain this non-active alternative because it achieved 52/65 success in the explicitly targeted [110, 170] degree sector versus 37/65 for checkpoint-110592, while still reaching 284/400 pooled aggregate success. It preserves a useful focused-sector tradeoff for future scientific comparison.",
-      "scientific_commit": "6506aaee0ae15099081813b7de66f95cf13eed4a",
-      "training_steps": 342016
-    },
-    {
-      "artifact": "research/checkpoints/retained/f3356be0-50ce-45d0-a495-b909a50b054c/e7-c720dc389-c0c4b42d092dfd43729a62ef084b1960bd0d7c4752e220d7030e04b219f89f0f",
-      "candidate": "checkpoint-110592",
-      "evaluation_artifacts": [
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-7-checkpoint-110592-200ep-seed900000-a69293a214ad.json",
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-7-checkpoint-110592-200ep-seed1000000-a69293a214ad.json"
-      ],
-      "fingerprint": "c0c4b42d092dfd43729a62ef084b1960bd0d7c4752e220d7030e04b219f89f0f",
-      "id": "e7-fresh-positive-coverage-110592",
-      "origin_experiment": 7,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain this fresh-initialization alternative because it recovered the positive-extreme sector on both disjoint panels (31/31 and 34/36 versus 12/31 and 17/36 for working). Its lower 265/400 pooled aggregate success keeps it non-active, but the distinct policy is useful for future comparison of sector behavior and learning-process variance.",
-      "scientific_commit": "756b4730609286c9eefcb9526ec58286255f188c",
-      "training_steps": 110592
-    },
-    {
-      "artifact": "research/checkpoints/retained/f3356be0-50ce-45d0-a495-b909a50b054c/e9-c8cf701d5-f9aba692827d8a511542563d5c07a1aa788ea5493cc22d7535403e92499a3dc0",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-9-checkpoint-120832-200ep-seed1300000-a69293a214ad.json",
-        "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-9-checkpoint-120832-200ep-seed1400000-a69293a214ad.json"
-      ],
-      "fingerprint": "f9aba692827d8a511542563d5c07a1aa788ea5493cc22d7535403e92499a3dc0",
-      "id": "e9-proxy-endpoint-120832",
-      "origin_experiment": 9,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the proxy-selected endpoint as a distinct measured alternative because it reached 384/400 complete holds while having the strongest training proxies, documenting the recurring proxy/task-selection discrepancy for future development.",
-      "scientific_commit": "6d83491047aec5ccf39feb8f94b719c9f0d5f389",
-      "training_steps": 120832
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/f3356be0-50ce-45d0-a495-b909a50b054c/e9-c720dc389-3c4315fa3ca265753cbaab1f072cf9701e201ab678535af7f7c677c1211e66eb",
-    "candidate": "checkpoint-110592",
-    "evaluation_artifacts": [
-      "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-9-checkpoint-110592-200ep-seed1300000-a69293a214ad.json",
-      "research/evaluations/f3356be0-50ce-45d0-a495-b909a50b054c/evaluation-f3356be0-50ce-45d0-a495-b909a50b054c-experiment-9-checkpoint-110592-200ep-seed1400000-a69293a214ad.json"
-    ],
-    "fingerprint": "3c4315fa3ca265753cbaab1f072cf9701e201ab678535af7f7c677c1211e66eb",
-    "origin_experiment": 9,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 9's checkpoint-110592 achieved 387/400 complete uninterrupted holds across two disjoint development panels, versus 303/400 for the current working lineage, with an 84-0 paired advantage. It is the strongest task-measured current candidate, but its 97.5% best panel result remains below the 196/200 official objective, so development should continue after closure rather than request terminal assessment.",
-    "scientific_commit": "6d83491047aec5ccf39feb8f94b719c9f0d5f389",
-    "training_steps": 110592
-  }
+  "working_lineage": null
 }
