@@ -8,8 +8,8 @@ import copy
 import hashlib
 import json
 import os
-import signal
 import shutil
+import signal
 import subprocess
 import time
 from pathlib import Path, PureWindowsPath
@@ -268,6 +268,10 @@ def push_head() -> None:
         ) from error
 
 
+def campaign_commit_message(message: str) -> str:
+    return f"camp: {message}"
+
+
 def commit_and_push(message: str, scope: tuple[str, ...] = ()) -> None:
     git("commit", "-m", message, *(("--", *scope) if scope else ()))
     push_head()
@@ -286,13 +290,15 @@ def commit_paths(message: str, scope: list[str]) -> bool:
 
 def publish_scientific_recipe(experiment: int, scope: list[str]) -> str:
     """Publish an experiment's validated scientific recipe and return its revision."""
-    if not commit_paths(f"experiment {experiment} scientific recipe", scope):
+    if not commit_paths(
+        campaign_commit_message(f"experiment {experiment} scientific recipe"), scope
+    ):
         push_head()
     return git("rev-parse", "HEAD").strip()
 
 
 def commit_runner_memory(message: str) -> bool:
-    return commit_paths(message, changed_runner_memory())
+    return commit_paths(campaign_commit_message(message), changed_runner_memory())
 
 
 def commit_result(index: int, change: str) -> None:
@@ -311,9 +317,11 @@ def commit_lineage_decision(
     # memory that must outlive it whatever the next lineage decision does.
     reverted = code_action == "revert"
     commit_paths(
-        f"experiment {experiment} code reverted to its scientific parent"
-        if reverted
-        else f"experiment {experiment} code retained for {selected}",
+        campaign_commit_message(
+            f"experiment {experiment} code reverted to its scientific parent"
+            if reverted
+            else f"experiment {experiment} code retained for {selected}"
+        ),
         assert_research_surface(),
     )
     if state is not None:

@@ -520,7 +520,13 @@ def publish_reset_changes(
         git("diff", "--cached", "--name-only", "--", *stageable)
     ).strip():
         return None
-    git("commit", "-m", message, "--", *stageable)
+    git(
+        "commit",
+        "-m",
+        repository.campaign_commit_message(message),
+        "--",
+        *stageable,
+    )
     commit = str(git("rev-parse", "HEAD")).strip()
     operation["commits"].append(
         {"purpose": purpose, "commit": commit, "pushed": False}

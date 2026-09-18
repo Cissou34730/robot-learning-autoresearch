@@ -168,6 +168,9 @@ experiment's current code state or delta. It requests restoration through the
 existing keep / revert lineage contract; it does not reconstruct ancestry or
 select restoration commits.
 
+Automated campaign commits use the `camp: ` subject prefix. Ordinary code,
+harness and documentation commits must not use that prefix.
+
 `research/results.jsonl` is written before `research/EXPERIMENTS.md` is
 regenerated atomically. Validation-only commands do not reconcile or mutate the
 derived view. Researcher-owned tests and scientific code travel together in the

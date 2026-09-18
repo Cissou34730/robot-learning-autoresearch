@@ -277,7 +277,7 @@ function Save-ResearchMemory {
     git add -- research/postmortems.md
     git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {
-        git commit -m "record research postmortem"
+        git commit -m "camp: record research postmortem"
         if ($LASTEXITCODE -ne 0) {
             throw "Could not commit the research postmortem."
         }

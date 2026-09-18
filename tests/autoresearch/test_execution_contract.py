@@ -456,7 +456,7 @@ def test_invalid_experiment_memory_is_persisted_without_its_science(monkeypatch)
 
     commits = commits_of(calls)
     assert len(commits) == 1
-    assert commits[0][2] == "exp 3: Reshape the shaping term"
+    assert commits[0][2] == "camp: exp 3: Reshape the shaping term"
     assert set(committed_paths(commits[0])) == set(history)
     assert calls[-1] == ("push", "origin", "HEAD")
     assert assert_research_surface() == [SCIENTIFIC_CHANGE]
@@ -470,7 +470,7 @@ def test_lineage_closure_separates_the_science_from_the_memory_commit(monkeypatc
     science, memory = commits_of(calls)
     assert committed_paths(science) == [SCIENTIFIC_CHANGE]
     assert set(committed_paths(memory)) == set(RUNNER_MEMORY_WORKTREE)
-    assert memory[2] == "select experiment 4 working lineage: checkpoint-120832"
+    assert memory[2] == "camp: select experiment 4 working lineage: checkpoint-120832"
 
 
 def test_lineage_closure_retry_pushes_an_existing_local_commit(monkeypatch):
@@ -1316,7 +1316,7 @@ def test_scientific_recipe_publication_commits_its_scoped_changes(monkeypatch):
     revision = repository.publish_scientific_recipe(4, [SCIENTIFIC_CHANGE])
 
     assert committed_paths(commits_of(calls)[0]) == [SCIENTIFIC_CHANGE]
-    assert commits_of(calls)[0][2] == "experiment 4 scientific recipe"
+    assert commits_of(calls)[0][2] == "camp: experiment 4 scientific recipe"
     assert revision == ""
 
 
