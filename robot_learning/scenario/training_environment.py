@@ -13,24 +13,16 @@ import numpy as np
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-FOCUSED_TARGET_ANGLE_RANGES = (
-    (np.deg2rad(-180.0), np.deg2rad(-120.0)),
-    (np.deg2rad(120.0), np.deg2rad(180.0)),
-)
-FOCUSED_TARGET_ANGLE_PROBABILITY = 0.5
+FOCUSED_TARGET_ANGLE_RANGE = (np.deg2rad(-170.0), np.deg2rad(-110.0))
+FOCUSED_TARGET_ANGLE_PROBABILITY = 0.25
 
 
 class FocusedAngleReachEnv(TwoJointArmReachEnv):
-    """Training environment with extra coverage of both extreme-angle sectors."""
+    """Training environment with extra coverage of the observed failure sector."""
 
     def _sample_target_position(self) -> None:
         if self.np_random.random() < FOCUSED_TARGET_ANGLE_PROBABILITY:
-            range_index = int(
-                self.np_random.integers(len(FOCUSED_TARGET_ANGLE_RANGES))
-            )
-            angle = float(
-                self.np_random.uniform(*FOCUSED_TARGET_ANGLE_RANGES[range_index])
-            )
+            angle = float(self.np_random.uniform(*FOCUSED_TARGET_ANGLE_RANGE))
         else:
             angle = float(self.np_random.uniform(-np.pi, np.pi))
 
