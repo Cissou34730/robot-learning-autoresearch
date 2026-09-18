@@ -3,116 +3,101 @@
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Scientific strategy
 
 **Current synthesis:** The campaign objective is at least 98% official episode
-success on the two-joint reach-and-hold task. The strongest measured policy is
-experiment 8's `checkpoint-120832`, a full-radius transfer from experiment 1's
-seed-0 parent; it measures 197/200 = 98.5% on the protected task-reference panel
-and 194/200 = 97.0% on the researcher panel and is `working`/`best_known`. The
-residual is a narrow, angularly and configurationally specific wedge, not a
-radius band: on the researcher panel the same six failures persist across
-experiments 1 and 8 at angles -122 to -155 degrees and radii 8.0-19.5 cm, and
-recomputing both analytic inverse-kinematics branches for every failure episode
-shows the open branch's shoulder just outside the +/-170 degree range (-176 to
--185 degrees) while the folded branch (shoulder -60 to -130 degrees) is fully
-feasible; the policy stalls 0.5-1.5 cm outside tolerance and mostly never enters
-it. Because those targets are only a few degrees beyond the limit, the wrapped
-error to the infeasible open branch is small relative to the large error to the
-feasible folded branch, so the observation advertises the unreachable branch
-more strongly than the reachable one. Experiment 8's full-official-support
-training by transfer repaired two smallest-radius task-reference failures
-(episodes 0 and 10) and raised task-reference to 98.5%, but added one failure at
-18.2 cm inside the trained support and left the researcher panel, the r 9.4-9.9
-cm task-reference wedge, and its own r 7.99 and 8.74 cm researcher-panel
-failures unchanged, so radius coverage alone does not explain or remove the
-wedge. Experiments have repeatedly failed to move it: folded-target oversampling
-with transfer did not reduce folded failures (experiment 2); zeroing or mirroring
-the infeasible branch's wrapped errors collapsed every single-branch episode
-(experiments 3 and 6); per-branch joint-limit features at 13 dimensions
-underconverged when trained fresh (experiment 4); and a tighter training
-tolerance destroyed inner-radius competence (experiment 7). Run-to-run
-variability of the unchanged method remains large and is characterised by only
-two seeds (seed 0: 97.0-98.5%; seed 1: 47.0-49.5%), so the near-threshold level
-is one realized trajectory rather than a stable method property. The wedge
-remains consistent with a branch-selection local optimum at the shoulder
-boundary, an optimization/precision limit independent of the observation, or
-both; no completed intervention has exceeded the seed-0 policy. Experiment 9
-attacked that choice directly: a transfer from experiment 8 with a training-only
-per-step joint-limit proximity penalty (6-degree soft margin, 0.05 saturating)
-left the researcher panel exactly unchanged (194/200 = 97.0% at 20,480, 100,352
-and 120,832 steps, identical failures {7, 56, 64, 75, 107, 145}) and tied the
-protected task-reference panel (197/200 = 98.5%, failures {84, 102, 175}). New
-joint-margin diagnostics on the endpoint and on the parent show the penalized
-state is genuinely reached and fully active: every one of the six failures
-drives the closest joint 3.3-4.1 degrees past the +/-170 degree limit and incurs
-the maximum penalty, while only 9-10 of the 194 successes do, and endpoint and
-parent differ only by small trajectory perturbations. The penalty is therefore
-active and failure-targeted but inert on outcomes, which favours an
-optimization/credit-assignment limit at the shoulder boundary over a pure
-absence of a joint-limit signal; because only one small penalty magnitude and
-shape was tested, the stronger claim that joint-limit behaviour is irrelevant is
-not established.
+success on the two-joint reach-and-hold task. The strongest measured policy
+remains experiment 8's `checkpoint-120832` (`working` and `best_known`), a
+full-official-radius transfer from experiment 1's seed-0 parent that measures
+197/200 = 98.5% on the protected task-reference panel and 194/200 = 97.0% on the
+researcher panel. The residual is a narrow, angularly and configurationally
+specific wedge rather than a radius or coverage deficit: on the researcher panel
+the same six episodes {7, 56, 64, 75, 107, 145} fail across experiments 1, 8 and
+9 at angles -122 to -155 degrees and radii 8.0-19.5 cm, including radii inside
+the trained support. Recomputing both analytic inverse-kinematics branches places
+every one of these targets in a near-limit band where the nominal open branch's
+shoulder sits just past the +/-170 degree range (-176 to -185 degrees) while the
+folded branch is fully feasible. Per-episode joint-margin diagnostics from
+experiment 9 show the failure state is a genuine near-limit posture: the closest
+joint reaches 173.0-174.1 degrees, 3.3-4.1 degrees past the nominal limit at all
+six failures, and the competent seed-0 policy already exceeds the nominal range
+on about 5% of episodes, so the stall is a learned equilibrium rather than a hard
+mechanical constraint. Within that posture the policy stalls 0.5-1.7 cm outside
+tolerance; three of the six briefly enter tolerance for one or two steps and lose
+it, while three never enter. This is consistent with a branch-selection local
+optimum in which the near-limit open branch attracts because its wrapped joint
+error is small while the feasible folded branch's large error supplies no
+competing gradient, and with an optimization/credit-assignment limit at the
+shoulder boundary; the campaign has not separated the two. Every attempted fix
+has failed to move the wedge: folded-target oversampling with full radius
+(experiment 2), zeroing or mirroring the infeasible branch's wrapped errors
+(experiments 3 and 6), per-branch feasibility features without transfer
+(experiment 4), a tighter training tolerance (experiment 7), and a weak per-step
+joint-limit proximity penalty (experiment 9). Experiment 9 is the most
+informative: the penalty fired at its maximum on 6/6 failures and on 9-10 of 194
+successes, its target state was reached and fully penalized, yet the
+deterministic failure set and success level were bit-identical to the parent at
+three checkpoints and tied on the protected panel (197/200). Run-to-run
+variability of the unchanged method is large and characterised by only two seeds
+(seed 0: 97.0-98.5%; seed 1: 47.0-49.5%), so the near-threshold level is one
+realized trajectory rather than a stable method property, and no completed
+intervention has exceeded the seed-0 policy.
 
 **Lessons and limits:** Full-radius coverage of the official 6-20 cm support,
-applied by transfer, did not repair the residual wedge: it was a net +1 episode
-on the task-reference panel (two smallest-radius failures repaired, one
-trained-radius failure added) and left the researcher-panel failure set exactly
-unchanged (experiment 8), so the wedge is not a region the policy has simply
-never sampled. The wedge is instead localised to target geometries whose
-near-limit open analytic branch is only a few degrees beyond the shoulder range
-while the folded branch is feasible, which is consistent with the controller
-preferring the nearby infeasible branch and its wrapped error (experiments 1, 8).
-Representation-level fixes have not succeeded and can be actively harmful: an in
-place value edit to an occupied observation slot is not semantically compatible
-with a transferred policy, because a value such as 0.0 is a valid "at goal"
-reading of a feature the policy relied on, and mirroring a feasible branch into
-an infeasible slot has the same defect (experiments 3, 6). Adding observation
-content forces fresh training, and fresh 120k-step runs on altered 11- or
-13-dimensional observations underconverged (experiments 4, 6), so the fixed
-budget cannot cleanly test an added-dimension or mirrored representation. A
-reward-semantics change that tightens the success threshold globally degrades a
-competent transferred policy rather than refining it and erases its fragile
-6-14 cm generalization (experiment 7). Folded-target oversampling at roughly six
-times the natural rate did not reduce folded failures, but that run also changed
-the radius support and target draw order and used transfer, so neither component
-is isolated (experiment 2). Run-to-run variability of the unchanged method is
-large (seed 0: 97.0%/98.0%; seed 1: 47.0%/49.5% at the same budget), so single
-runs cannot establish a method property or attribute a change causally
-(experiments 1, 5). Training reward does not track task success and is usable
-only as a shaped signal (experiments 1, 7). All wedge evidence rests on a
-small number of episodes per panel (about 6-14), and every mechanism claim
-remains scoped to the seed-0 lineage, though the failure states are now directly
-observed: per-episode joint-margin diagnostics show the six researcher-panel
-failures push a joint 3.3-4.1 degrees past the nominal +/-170 degree range
-(173-174 degrees), so the competent policy already operates at or beyond the
-hinge range and the reward's joint limit is not a boundary the policy avoids. A
-0.05-per-step saturating proximity penalty fires on all six failures and on
-roughly 5% of successes (9-10 of 194) and still changes no outcome, so this
-penalty magnitude and shape are too weak to alter the reach-and-hold optimum; a
-substantially stronger or differently shaped joint-limit signal remains untested
-and could trade the wedge against the successes that also touch the margin.
+applied by transfer, did not repair the wedge: it was a net +1 episode on
+task-reference (two smallest-radius failures repaired, one trained-radius failure
+added) and left the researcher-panel failure set exactly unchanged (experiment
+8), so the wedge is not simply a region the policy never sampled. The wedge is
+localised to near-limit-band targets whose nominal open branch is only a few
+degrees beyond the +/-170 degree shoulder range while the folded branch is
+feasible, which is consistent with the controller preferring the nearby
+infeasible branch and its small wrapped error (experiments 1, 8, 9).
+Representation-level fixes are not semantically compatible with a transferred
+policy and can be actively harmful: an in-place value edit to an occupied
+observation slot, such as writing 0.0 into the infeasible branch's wrapped
+errors, is a valid "at goal" reading of a feature the policy relied on, and
+mirroring a feasible branch into an infeasible slot has the same defect
+(experiments 3, 6). Unchanged tensor dimensions alone therefore do not establish
+compatibility; here the per-branch wrapped errors are load-bearing. Adding
+observation content forces fresh training, and fresh 120k-step runs on altered
+11- or 13-dimensional observations underconverged (experiments 4, 6), so the
+fixed budget cannot cleanly test an added-dimension or mirrored representation. A
+reward change that globally tightens the success threshold degrades a competent
+transferred policy rather than refining it and erases its fragile 6-14 cm
+generalization (experiment 7). Folded-target oversampling at roughly six times
+the natural rate did not reduce folded failures, but that run also changed the
+radius support and target draw order and used transfer, so neither component is
+isolated (experiment 2). Run-to-run variability of the unchanged method is large
+(seed 0: 97.0%/98.0%; seed 1: 47.0%/49.5% at the same budget), so single runs
+cannot establish a method property or attribute a change causally (experiments
+1, 5). Training reward does not track task success and is usable only as a shaped
+signal (experiments 1, 7). All wedge evidence rests on a small number of episodes
+per panel (about 3-14), every mechanism claim is scoped to the seed-0 lineage,
+and the direct joint-margin evidence comes from one diagnostic round on the
+experiment-9 endpoint and its parent.
 
-**Open questions:** Whether the residual wedge is driven by the observation
-advertising the nearby joint-infeasible branch as an attractive target, by an
+**Open questions:** Whether the wedge is driven by the observation advertising
+the near-limit infeasible branch (whose wrapped error is small) while the
+feasible folded branch's large error yields no competing gradient, by an
 optimization, exploration or credit-assignment limit at the shoulder boundary
-that is independent of that advertisement, or by both, remains unresolved; the
-completed tests each changed one representation or threshold and were confounded
-by transfer collapse or underconvergence, so none isolated the mechanism. Experiment 9 showed that a weak (0.05-per-step)
-joint-limit proximity penalty is active at the observed stall but cannot move the
-deterministic policy, so whether a substantially stronger or differently shaped
-joint-limit signal - or a learning-method change that raises its gradient
-relative to the reach-and-hold shaping - can move the policy off the stall
-without sacrificing the successes that also reach the margin is unknown, as is
-whether the progress and closeness shaping, which penalise the temporary
-increase in distance a large shoulder reconfiguration requires, itself traps the
-policy. Whether a representation presenting only a
-joint-feasible target could be learned within the fixed 120k-step budget, and
-whether it would remove the wedge or merely move the failure, is untested.
-Whether a fresh policy trained on the full official support from the start places
-its branch boundary differently from the transfer-inherited one is open. The
-method's run-to-run distribution is characterised by only two seeds, so whether
-any seed reliably reproduces the 97-98% level, and whether the wedge is
-seed-stable, is unknown. It is also unknown whether a continuous two-second hold
-through the exact folded branch is dynamically comfortable for a learned
-controller, and why the seed-0 policy peaks near 100k steps and then degrades.
+that is independent of the observation, or by both, remains unresolved; the
+completed tests each changed one representation, threshold or weak penalty and
+none isolated the mechanism. Experiment 9 established that a 0.05-per-step
+joint-limit proximity penalty is active at the observed stall but inert, so
+whether a substantially stronger or differently shaped joint-limit signal, or a
+positive training-time gradient toward the joint-feasible analytic branch, can
+move the deterministic policy onto that branch without sacrificing the successes
+that also touch the joint margin is unknown. Whether the progress and closeness
+shaping penalise the temporary distance increase a large shoulder reconfiguration
+requires enough to trap the policy is also unmeasured; because that shaping
+telescopes toward endpoint distance, any such trap would operate through
+discounting and the learned value function rather than through an unbounded
+per-step cost. Whether a representation presenting only a joint-feasible target
+could be learned within the fixed 120k-step budget, and whether a fresh policy
+trained on the full official support from the start would place its branch
+boundary differently from the transfer-inherited one, is open. The method's
+run-to-run distribution is characterised by only two seeds, so whether any seed
+reliably reproduces the 97-98% level, and whether the wedge is seed-stable, is
+unknown. It is also unknown why the seed-0 policy peaks near 100k steps and then
+degrades, and whether a continuous two-second hold through the exact folded
+branch is dynamically comfortable for a learned controller.
 
 ## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 1
 
