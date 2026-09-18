@@ -475,6 +475,19 @@ def check_evaluation_request() -> int:
     return 0
 
 
+def _protected_panel_overlap():
+    """Scenario-boundary predicate for protected benchmark panel overlap.
+
+    The generic Runner never reads the protected episode range; this adapter
+    reports overlap only, and the validation error never names the range.
+    """
+    from robot_learning.scenario.final_benchmark import (
+        research_panel_overlaps_protected,
+    )
+
+    return research_panel_overlaps_protected
+
+
 def check_analysis_deliverable() -> int:
     """Preflight the single actionable submission allowed during v4 analysis."""
     try:
@@ -492,6 +505,12 @@ def check_analysis_deliverable() -> int:
                 raise TypeError("evaluation_request.json must contain a JSON object")
             if int(request.get("experiment", -1)) != int(pending["experiment"]):
                 raise ValueError("evaluation request references the wrong experiment")
+            protocol.validate_evaluation_request(request)
+            protocol.validate_panel_independence(
+                request,
+                protocol.recorded_research_panels(state, pending),
+                protected_overlap=_protected_panel_overlap(),
+            )
             available = protocol.available_evaluation_candidates(pending, state)
             requested, _ = protocol.planned_measurements(request, available)
             resolved_models = protocol.resolved_measurement_models(request, available)
@@ -574,6 +593,115 @@ def _seal_paired_evidence_artifact(evidence_plan: list[dict], path: Path) -> Non
                     ] = fingerprint
 
 
+def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> dict:
+    """Persist a new ordered measurement round before executing anything.
+
+    The round keeps the request's question, reason and per-measurement
+    selections so the order and purpose of successive requests survive closure
+    and can be recovered after an interruption.
+    """
+    rounds = pending.setdefault("evaluation_rounds", [])
+    record = {
+        "round": len(rounds) + 1,
+        "experiment": int(experiment),
+        "question": str(request.get("question", "")),
+        "reason": str(request.get("reason", "")),
+        "measurements": [
+            dict(entry)
+            for entry in request.get("measurements") or []
+            if isinstance(entry, dict)
+        ],
+        "paired_comparisons": [
+            dict(entry)
+            for entry in request.get("paired_comparisons") or []
+            if isinstance(entry, dict)
+        ],
+        "status": "accepted",
+        "results": {
+            "research_evaluations": [],
+            "task_reference_evaluations": [],
+            "paired_comparisons": [],
+        },
+    }
+    rounds.append(record)
+    return record
+
+
+def _round_measurement_reference(item: dict) -> dict:
+    """A round keeps the request rationale and the artifact, not the detail."""
+    reference = {
+        "instrument": item.get("instrument"),
+        "candidate": item.get("candidate"),
+        "selection": item.get("selection"),
+        "omitted_alternative": item.get("omitted_alternative"),
+        "label": item.get("label"),
+        "status": "executed",
+    }
+    reference.update(repository.evaluation_reference(item.get("metrics") or {}))
+    return reference
+
+
+def _find_source_round(
+    rounds: list[dict],
+    *,
+    instrument: str,
+    candidate: str,
+    seed: int = 0,
+    panel: str = "",
+) -> int | None:
+    """The round that first resolved a measurement identity, if recorded."""
+    key = (
+        "research_evaluations"
+        if instrument == "research_evaluation"
+        else "task_reference_evaluations"
+    )
+    for record in rounds:
+        results = record.get("results")
+        if not isinstance(results, dict):
+            continue
+        for item in results.get(key) or []:
+            if not isinstance(item, dict) or item.get("candidate") != candidate:
+                continue
+            if instrument == "research_evaluation":
+                if int(item.get("seed", -1)) == seed:
+                    return int(record.get("round", 0))
+            elif str(item.get("panel", "")) == panel:
+                return int(record.get("round", 0))
+    return None
+
+
+def _round_already_resolves(
+    round_record: dict,
+    *,
+    instrument: str,
+    candidate: str,
+    seed: int = 0,
+    panel: str = "",
+) -> bool:
+    """Whether this round already carries a resolution for the identity.
+
+    On resume, the accepted round is re-iterated; the measurements it already
+    recorded must not gain a second, spurious reuse entry.
+    """
+    key = (
+        "research_evaluations"
+        if instrument == "research_evaluation"
+        else "task_reference_evaluations"
+    )
+    results = round_record.get("results")
+    if not isinstance(results, dict):
+        return False
+    for item in results.get(key) or []:
+        if not isinstance(item, dict) or item.get("candidate") != candidate:
+            continue
+        if instrument == "research_evaluation":
+            if int(item.get("seed", -1)) == seed:
+                return True
+        elif str(item.get("panel", "")) == panel:
+            return True
+    return False
+
+
 def execute_pending_evaluations() -> int:
     from robot_learning.scenario.evaluation import summarize_research_evaluations
     from robot_learning.scenario.task_reference import task_reference_panel
@@ -594,13 +722,22 @@ def execute_pending_evaluations() -> int:
         protocol.validate_evaluation_request(
             request, allow_legacy_need_more_evidence=not is_v4
         )
+        if is_v4:
+            protocol.validate_panel_independence(
+                request,
+                protocol.recorded_research_panels(state, pending),
+                protected_overlap=_protected_panel_overlap(),
+            )
     else:
-        request = pending.get("evaluation_plan")
-        if not isinstance(request, dict):
+        accepted_plan = pending.get("evaluation_plan")
+        if not isinstance(accepted_plan, dict):
             print("ERROR: research/evaluation_request.json not found.")
             return 1
+        request = protocol.ignore_legacy_purpose(accepted_plan)
     accepted_v4_plan = is_v4 and isinstance(pending.get("evaluation_plan"), dict)
-    if accepted_v4_plan and request != pending["evaluation_plan"]:
+    if accepted_v4_plan and request != protocol.ignore_legacy_purpose(
+        pending["evaluation_plan"]
+    ):
         raise ValueError("accepted measurement plan changed")
     experiment = int(pending["experiment"])
     if int(request.get("experiment", -1)) != experiment:
@@ -649,13 +786,19 @@ def execute_pending_evaluations() -> int:
             state=state if is_v4 else None,
             resolved_models=resolved_models if is_v4 else None,
         )
+    active_round: dict | None = None
     if paths.EVALUATION_REQUEST_PATH.exists() and not accepted_v4_plan:
         pending["evaluation_plan"] = request
         if is_v4:
             pending["evaluation_plan_models"] = resolved_models
             pending["evaluation_evidence_plan"] = evidence_plan
+            active_round = _begin_evaluation_round(pending, experiment, request)
         pending.setdefault("partial_evaluations", [])
         repository.write_state(state)
+    elif is_v4:
+        rounds = pending.get("evaluation_rounds")
+        if isinstance(rounds, list) and rounds:
+            active_round = rounds[-1]
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -704,19 +847,76 @@ def execute_pending_evaluations() -> int:
             key = request_key(name, episodes, seed, semantics)
             if key in completed_keys:
                 console.announce(f"[evaluation] already complete; reusing {label}")
+                if active_round is not None and not _round_already_resolves(
+                    active_round,
+                    instrument="research_evaluation",
+                    candidate=name,
+                    seed=seed,
+                ):
+                    original = next(
+                        (
+                            item
+                            for item in executed
+                            if request_key(
+                                item["candidate"],
+                                int(item["episodes"]),
+                                int(item["seed"]),
+                                str(item.get("evaluation_semantics", "")),
+                            )
+                            == key
+                        ),
+                        None,
+                    )
+                    resolution = {
+                        "instrument": "research_evaluation",
+                        "candidate": name,
+                        "selection": selection,
+                        "omitted_alternative": omitted_alternative,
+                        "label": label,
+                        "status": "reused",
+                        "reused_from_round": _find_source_round(
+                            pending.get("evaluation_rounds") or [],
+                            instrument="research_evaluation",
+                            candidate=name,
+                            seed=seed,
+                        ),
+                    }
+                    if original is not None:
+                        resolution.update(
+                            repository.evaluation_reference(
+                                original.get("metrics") or {}
+                            )
+                        )
+                    active_round["results"]["research_evaluations"].append(resolution)
+                    repository.write_state(state)
                 continue
             eval_dir = paths.campaign_evaluation_dir(campaign_id)
             eval_dir.mkdir(parents=True, exist_ok=True)
             output_path = eval_dir / protocol.evaluation_artifact_name(
                 experiment, name, episodes, seed, semantics, campaign_id=campaign_id
             )
-            metrics = execution.evaluate_artifact(
-                repository.resolve_repo_path(contender["artifact"]),
-                seed,
-                label=label,
-                episodes=episodes,
-                output_path=output_path,
-            )
+            try:
+                metrics = execution.evaluate_artifact(
+                    repository.resolve_repo_path(contender["artifact"]),
+                    seed,
+                    label=label,
+                    episodes=episodes,
+                    output_path=output_path,
+                )
+            except Exception:
+                if active_round is not None:
+                    active_round["results"]["research_evaluations"].append(
+                        {
+                            "instrument": "research_evaluation",
+                            "candidate": name,
+                            "selection": selection,
+                            "omitted_alternative": omitted_alternative,
+                            "label": label,
+                            "status": "failed",
+                        }
+                    )
+                    repository.write_state(state)
+                raise
             if is_v4:
                 _seal_paired_evidence_artifact(evidence_plan, output_path)
             # The artifact keeps the detail, including whatever researcher-owned
@@ -754,6 +954,10 @@ def execute_pending_evaluations() -> int:
             )
             completed_keys.add(key)
             pending["partial_evaluations"] = executed
+            if active_round is not None:
+                active_round["results"]["research_evaluations"].append(
+                    _round_measurement_reference(executed[-1])
+                )
             repository.write_state(state)
 
         for spec in requested_references:
@@ -765,20 +969,70 @@ def execute_pending_evaluations() -> int:
             reference_key = (name, panel["panel"])
             if reference_key in completed_reference_keys:
                 console.announce(f"[task reference] already complete; reusing {label}")
+                if active_round is not None and not _round_already_resolves(
+                    active_round,
+                    instrument="task_reference",
+                    candidate=name,
+                    panel=panel["panel"],
+                ):
+                    original = next(
+                        (
+                            item
+                            for item in reference_executed
+                            if item["candidate"] == name
+                            and str(item.get("panel", "")) == panel["panel"]
+                        ),
+                        None,
+                    )
+                    resolution = {
+                        "instrument": "task_reference",
+                        "candidate": name,
+                        "selection": selection,
+                        "omitted_alternative": omitted_alternative,
+                        "label": label,
+                        "status": "reused",
+                        "reused_from_round": _find_source_round(
+                            pending.get("evaluation_rounds") or [],
+                            instrument="task_reference",
+                            candidate=name,
+                            panel=panel["panel"],
+                        ),
+                    }
+                    if original is not None:
+                        resolution.update(dict(original))
+                    active_round["results"]["task_reference_evaluations"].append(
+                        resolution
+                    )
+                    repository.write_state(state)
                 continue
             eval_dir = paths.campaign_evaluation_dir(campaign_id)
             eval_dir.mkdir(parents=True, exist_ok=True)
             output_path = eval_dir / protocol.task_reference_artifact_name(
                 experiment, name, panel["panel"], campaign_id=campaign_id
             )
-            metrics = execution.evaluate_artifact(
-                repository.resolve_repo_path(contender["artifact"]),
-                panel["seed"],
-                label=label,
-                episodes=panel["episodes"],
-                output_path=output_path,
-                task_reference=True,
-            )
+            try:
+                metrics = execution.evaluate_artifact(
+                    repository.resolve_repo_path(contender["artifact"]),
+                    panel["seed"],
+                    label=label,
+                    episodes=panel["episodes"],
+                    output_path=output_path,
+                    task_reference=True,
+                )
+            except Exception:
+                if active_round is not None:
+                    active_round["results"]["task_reference_evaluations"].append(
+                        {
+                            "instrument": "task_reference",
+                            "candidate": name,
+                            "selection": selection,
+                            "omitted_alternative": omitted_alternative,
+                            "label": label,
+                            "status": "failed",
+                        }
+                    )
+                    repository.write_state(state)
+                raise
             reference_executed.append(
                 {
                     "instrument": "task_reference",
@@ -808,6 +1062,13 @@ def execute_pending_evaluations() -> int:
             )
             completed_reference_keys.add(reference_key)
             pending["partial_task_reference_evaluations"] = reference_executed
+            if active_round is not None:
+                active_round["results"]["task_reference_evaluations"].append(
+                    {
+                        **dict(reference_executed[-1]),
+                        "status": "executed",
+                    }
+                )
             repository.write_state(state)
     except KeyboardInterrupt:
         console.announce(
@@ -859,6 +1120,13 @@ def execute_pending_evaluations() -> int:
             "paired_comparisons": comparisons,
         }
     )
+    if active_round is not None:
+        active_round["results"]["paired_comparisons"] = list(comparisons)
+        active_round["status"] = "completed"
+    if is_v4:
+        rounds = pending.get("evaluation_rounds")
+        if isinstance(rounds, list):
+            result["evaluation_rounds"] = [dict(round_record) for round_record in rounds]
     measured = [item for item in candidates if item.get("summary") is not None]
     if measured and not is_v4:
         primary = measured[0]["summary"]
@@ -1047,6 +1315,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
+        "designation_counter": plan.get("designation_counter", 0),
     }
 
 
@@ -1095,6 +1364,9 @@ def apply_pending_v4_closure(state: dict) -> bool:
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
     state["retained_lineages"] = plan["retained"]
+    state["best_known_designation_counter"] = plan.get(
+        "designation_counter", state.get("best_known_designation_counter", 0)
+    )
     state["last_lineage_decision"] = {
         "experiment": int(pending["experiment"]),
         "continue_from": plan["working_name"],

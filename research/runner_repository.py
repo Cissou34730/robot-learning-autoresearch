@@ -379,6 +379,18 @@ def _canonicalize_result_artifacts(result: dict) -> None:
     for evaluation in result.get("task_reference_evaluations") or []:
         if isinstance(evaluation, dict):
             _canonicalize_evaluation_artifact(evaluation)
+    for round_record in result.get("evaluation_rounds") or []:
+        if not isinstance(round_record, dict):
+            continue
+        round_results = round_record.get("results")
+        if not isinstance(round_results, dict):
+            continue
+        for evaluation in round_results.get("research_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
+        for evaluation in round_results.get("task_reference_evaluations") or []:
+            if isinstance(evaluation, dict):
+                _canonicalize_evaluation_artifact(evaluation)
 
 
 LINEAGE_RECORD_FIELDS = {
@@ -392,6 +404,9 @@ LINEAGE_RECORD_FIELDS = {
     "evaluation_artifacts",
     "reason",
 }
+# Optional lineage fields. `designation_ordinal` records the best-known tenure;
+# it is present on a designated best-known record and absent elsewhere.
+LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal"}
 
 
 def canonicalize_lineage_record(lineage: dict) -> None:
@@ -399,7 +414,12 @@ def canonicalize_lineage_record(lineage: dict) -> None:
     if not isinstance(lineage, dict):
         raise TypeError("lineage record must be an object")
     missing = LINEAGE_RECORD_FIELDS - set(lineage)
-    extra = set(lineage) - LINEAGE_RECORD_FIELDS - {"id", "campaign_id"}
+    extra = (
+        set(lineage)
+        - LINEAGE_RECORD_FIELDS
+        - LINEAGE_RECORD_OPTIONAL_FIELDS
+        - {"id", "campaign_id"}
+    )
     if missing or extra:
         raise ValueError(
             "lineage record fields are invalid: "
@@ -421,6 +441,12 @@ def canonicalize_lineage_record(lineage: dict) -> None:
         raise ValueError(
             "lineage record experiment and training steps must be positive"
         )
+    if "designation_ordinal" in lineage:
+        ordinal = lineage["designation_ordinal"]
+        if not isinstance(ordinal, int) or isinstance(ordinal, bool):
+            raise TypeError("lineage record designation_ordinal must be an integer")
+        if ordinal < 1:
+            raise ValueError("lineage record designation_ordinal must be positive")
     if not isinstance(lineage["parameters"], dict):
         raise TypeError("lineage record parameters must be an object")
     evaluations = lineage["evaluation_artifacts"]
@@ -867,15 +893,91 @@ def measurement_record(metrics: dict) -> dict:
     """State keeps the episode outcomes paired comparison needs, nothing more.
 
     Researcher-defined evidence stays in the artifact so the protocol state
-    never becomes a second, opaque evidence store.
+    never becomes a second, opaque evidence store. The integer success count is
+    derived from the sealed episode outcomes and is authoritative: percentages
+    are presentation only.
     """
     record = {
         key: value
         for key, value in metrics.items()
         if key not in ("model", "research_evidence")
     }
+    episode_results = metrics.get("episode_results")
+    if isinstance(episode_results, list) and episode_results:
+        record["successes"] = sum(
+            bool(item.get("success"))
+            for item in episode_results
+            if isinstance(item, dict)
+        )
+    elif metrics.get("successes") is not None:
+        record["successes"] = int(metrics["successes"])
     _canonicalize_evaluation_artifact(record)
     return record
+
+
+def campaign_coverage(records: list[dict]) -> dict:
+    """Campaign-level episode identity coverage, per instrument.
+
+    Deterministic episode identity does not depend on the model: research
+    evaluations are identified by ``(evaluation_semantics, episode_seed)`` and
+    task-reference measurements by ``(panel, episode_seed)``. Distinct coverage
+    counts each identity once across every model and round; executions count
+    every episode run. Repeated coverage is the difference, so the same panel
+    reused across models is reported as repetition rather than as new coverage.
+    """
+    buckets: dict[str, dict] = {
+        "research_evaluation": {"identities": set(), "executions": 0},
+        "task_reference": {"identities": set(), "executions": 0},
+    }
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        for item in record.get("requested_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            metrics = item.get("metrics") or {}
+            bucket = buckets["research_evaluation"]
+            _add_episode_identities(
+                bucket,
+                instrument="research_evaluation",
+                marker=str(
+                    item.get(
+                        "evaluation_semantics",
+                        metrics.get("evaluation_semantics", ""),
+                    )
+                ),
+                seed=int(item.get("seed", metrics.get("seed", 0)) or 0),
+                episodes=int(item.get("episodes", metrics.get("episodes", 0)) or 0),
+            )
+        for item in record.get("task_reference_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            _add_episode_identities(
+                buckets["task_reference"],
+                instrument="task_reference",
+                marker=str(item.get("panel", "")),
+                seed=int(item.get("seed", 0) or 0),
+                episodes=int(item.get("episodes", 0) or 0),
+            )
+    return {
+        name: {
+            "distinct_episodes": len(bucket["identities"]),
+            "episode_executions": bucket["executions"],
+            "repeated_episodes": bucket["executions"] - len(bucket["identities"]),
+        }
+        for name, bucket in buckets.items()
+    }
+
+
+def _add_episode_identities(
+    bucket: dict, *, instrument: str, marker: str, seed: int, episodes: int
+) -> None:
+    if episodes <= 0:
+        return
+    bucket["executions"] += episodes
+    identities = bucket["identities"]
+    for offset in range(episodes):
+        identities.add((instrument, marker, seed + offset))
 
 
 def compact_result_record(result: dict) -> dict:

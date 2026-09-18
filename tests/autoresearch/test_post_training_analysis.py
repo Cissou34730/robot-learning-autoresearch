@@ -95,7 +95,7 @@ def _request(seed: int) -> dict:
     }
 
 
-@pytest.mark.parametrize("second_seed", [20, 11])
+@pytest.mark.parametrize("second_seed", [20, 30])
 def test_v4_measurements_return_to_analysis_and_upsert_result(
     monkeypatch, tmp_path, second_seed
 ):
@@ -145,11 +145,131 @@ def test_v4_measurements_return_to_analysis_and_upsert_result(
         second_seed,
     ]
     summary = records[0]["candidates"][0]["summary"]
-    distinct_episodes = 3 if second_seed == 11 else 4
+    distinct_episodes = 4
     assert summary["episodes"] == distinct_episodes
     assert summary["episode_executions"] == 4
-    assert summary["repeated_episodes"] == 4 - distinct_episodes
+    assert summary["repeated_episodes"] == 0
     assert summary["success_percent"] == pytest.approx(100 * 2 / distinct_episodes)
+    rounds = records[0]["evaluation_rounds"]
+    assert [record["round"] for record in rounds] == [1, 2]
+    assert [record["status"] for record in rounds] == ["completed", "completed"]
+    assert rounds[0]["question"] == "Does this checkpoint behave consistently?"
+    assert rounds[0]["measurements"][0]["seed"] == 10
+    assert rounds[1]["measurements"][0]["seed"] == second_seed
+    assert [
+        item["seed"] for item in rounds[0]["results"]["research_evaluations"]
+    ] == [10]
+    assert [
+        item["seed"] for item in rounds[1]["results"]["research_evaluations"]
+    ] == [second_seed]
+
+
+def test_v4_evaluation_round_survives_interruption_without_duplicating(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    calls: list[int] = []
+    interrupt = {"pending": True}
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        if interrupt["pending"] and seed == 20:
+            interrupt["pending"] = False
+            raise KeyboardInterrupt
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request = _request(10)
+    request["measurements"].append(
+        {
+            "instrument": "research_evaluation",
+            "candidate": "checkpoint",
+            "episodes": 2,
+            "seed": 20,
+            "selection": "compare a second panel of the same checkpoint",
+            "omitted_alternative": None,
+        }
+    )
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 130
+    partial = json.loads(state_path.read_text(encoding="utf-8"))
+    rounds = partial["pending_analysis"]["evaluation_rounds"]
+    assert [record["round"] for record in rounds] == [1]
+    assert rounds[0]["status"] == "accepted"
+    assert [
+        item["seed"] for item in rounds[0]["results"]["research_evaluations"]
+    ] == [10]
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    # The interrupted measurement is retried; the completed one is not repeated.
+    assert calls == [10, 20, 20]
+    completed = json.loads(state_path.read_text(encoding="utf-8"))
+    rounds = completed["pending_analysis"]["evaluation_rounds"]
+    assert rounds[0]["status"] == "completed"
+    assert [
+        item["seed"] for item in rounds[0]["results"]["research_evaluations"]
+    ] == [10, 20]
+    record = repository.result_records()[0]
+    assert [
+        item["seed"]
+        for item in record["evaluation_rounds"][0]["results"]["research_evaluations"]
+    ] == [10, 20]
+
+
+def test_v4_reused_measurement_links_source_round_without_reexecuting(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    calls: list[int] = []
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        calls.append(seed)
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+    assert run_experiment.execute_pending_evaluations() == 0
+
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+    assert run_experiment.execute_pending_evaluations() == 0
+    # The identity is resolved from the original measurement, not re-executed.
+    assert calls == [10]
+
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    rounds = state["pending_analysis"]["evaluation_rounds"]
+    assert [record["round"] for record in rounds] == [1, 2]
+    assert rounds[0]["results"]["research_evaluations"][0]["status"] == "executed"
+    reused = rounds[1]["results"]["research_evaluations"]
+    assert len(reused) == 1
+    assert reused[0]["status"] == "reused"
+    assert reused[0]["reused_from_round"] == 1
+    assert reused[0]["evaluation_artifact"] == (
+        rounds[0]["results"]["research_evaluations"][0]["evaluation_artifact"]
+    )
+    assert len(state["pending_analysis"]["partial_evaluations"]) == 1
 
 
 def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tmp_path):
@@ -249,7 +369,7 @@ def test_v4_paired_comparison_reuses_historical_working_evidence(monkeypatch, tm
     assert comparison["source_artifacts"][1] == "research/evaluations/working.json"
 
 
-def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
+def test_v4_paired_comparison_reuses_an_identical_historical_panel(
     monkeypatch, tmp_path
 ):
     state_path, request_path, _ = _configure(monkeypatch, tmp_path)
@@ -260,17 +380,17 @@ def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
     candidate_fingerprint = repository.artifact_fingerprint(
         tmp_path / "archive" / "checkpoint"
     )
-    historical_path = tmp_path / "research" / "evaluations" / "working-1000.json"
+    historical_path = tmp_path / "research" / "evaluations" / "working-200.json"
     historical_path.parent.mkdir(parents=True)
     historical_path.write_text(
         json.dumps(
             {
-                "episodes": 1000,
+                "episodes": 200,
                 "seed": 10,
                 "success_percent": 0.0,
                 "episode_results": [
                     {"episode": episode, "episode_seed": 10 + episode, "success": False}
-                    for episode in range(1000)
+                    for episode in range(200)
                 ],
             }
         ),
@@ -285,7 +405,7 @@ def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
         "parameters": {},
         "scientific_commit": "base",
         "training_steps": 100,
-        "evaluation_artifacts": ["research/evaluations/working-1000.json"],
+        "evaluation_artifacts": ["research/evaluations/working-200.json"],
         "reason": "Historical working model.",
     }
     state_path.write_text(json.dumps(state), encoding="utf-8")
@@ -297,16 +417,16 @@ def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
             "requested_evaluations": [
                 {
                     "candidate": "historical-working",
-                    "episodes": 1000,
+                    "episodes": 200,
                     "seed": 10,
                     "evaluation_semantics": "test",
                     "model_fingerprint": working_fingerprint,
                     "metrics": {
-                        "episodes": 1000,
+                        "episodes": 200,
                         "seed": 10,
                         "evaluation_semantics": "test",
                         "model_fingerprint": working_fingerprint,
-                        "evaluation_artifact": "research/evaluations/working-1000.json",
+                        "evaluation_artifact": "research/evaluations/working-200.json",
                     },
                 }
             ],
@@ -344,7 +464,7 @@ def test_v4_paired_comparison_uses_shared_subset_of_larger_historical_panel(
     assert comparison["candidate_model_fingerprint"] == candidate_fingerprint
     assert comparison["panels"][0]["shared_episode_seeds"] == list(range(10, 210))
     assert comparison["panels"][0]["candidate_episodes"] == 200
-    assert comparison["panels"][0]["reference_episodes"] == 1000
+    assert comparison["panels"][0]["reference_episodes"] == 200
 
 
 def test_v4_paired_comparison_reports_incompatible_historical_semantics(
@@ -800,3 +920,77 @@ def test_v4_resumed_measurement_rejects_edited_accepted_request(monkeypatch, tmp
         run_experiment.execute_pending_evaluations()
 
     assert json.loads(state_path.read_text(encoding="utf-8")) == state
+
+
+def test_measurement_record_derives_integer_successes_from_sealed_outcomes():
+    record = repository.measurement_record(
+        {
+            "episodes": 3,
+            "success_percent": 66.67,
+            "episode_results": [
+                {"episode": 0, "episode_seed": 1, "success": True},
+                {"episode": 1, "episode_seed": 2, "success": False},
+                {"episode": 2, "episode_seed": 3, "success": True},
+            ],
+        }
+    )
+    assert record["successes"] == 2
+
+
+def test_v4_measurement_flow_never_writes_legacy_evaluation_request(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state.get("pending_evaluation_request") is None
+    assert state.get("pending_analysis") is not None
+
+
+def test_v4_measurement_flow_ignores_a_legacy_evaluation_request(
+    monkeypatch, tmp_path
+):
+    _state_path, request_path, _ = _configure(monkeypatch, tmp_path)
+    state = repository.read_state()
+    state["pending_evaluation_request"] = {"experiment": 99, "candidates": []}
+    repository.write_state(state)
+
+    def evaluate(artifact, seed, output_path, **kwargs):
+        del artifact, kwargs
+        payload = {
+            "episodes": 2,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(payload), encoding="utf-8")
+        return payload
+
+    monkeypatch.setattr("research.runner_execution.evaluate_artifact", evaluate)
+    request_path.write_text(json.dumps(_request(10)), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    persisted = repository.read_state()
+    assert persisted["pending_analysis"]["experiment"] == 1
+    assert persisted["pending_analysis"]["evaluation_rounds"][0]["experiment"] == 1

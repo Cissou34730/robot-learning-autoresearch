@@ -53,6 +53,13 @@ PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
 # language. Protected by prefix so that adding a module, a manifest or a lockfile
 # under it never silently hands part of the tool boundary to the researcher.
 PROTECTED_RUNTIME_PREFIXES = ("researcher_opencode/",)
+# Measurement-accounting invariants shared by the Runner and the research
+# evaluator. Deterministic episode identity and conflict rejection are
+# correctness properties, not scientific choices, so restoring a research recipe
+# must never be able to revert them (issue #35).
+PROTECTED_MEASUREMENT_PATHS = {
+    "robot_learning/paired_evidence.py",
+}
 # Human-owned context defines the Researcher's protocol, permissions and task.
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
@@ -140,6 +147,9 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 HYPOTHESIS_ASSESSMENT_LABEL = "Hypothesis assessment"
 # The researcher names the model; the panel behind this key is human-owned.
+# `purpose` is not part of the accepted schema: a new request carrying it is
+# rejected as unsupported, while historical records that contain it stay
+# readable and are ignored when loaded.
 RESEARCH_EVALUATION_ENTRY_FIELDS = {
     "instrument",
     "candidate",
@@ -171,6 +181,7 @@ def is_protected_source(path: str) -> bool:
         relative in PROTECTED_BENCHMARK_PATHS
         or relative in PROTECTED_RUNNER_PATHS
         or relative in PROTECTED_RUNTIME_PATHS
+        or relative in PROTECTED_MEASUREMENT_PATHS
         or relative in PROTECTED_CONTEXT_PATHS
         or relative in DEPENDENCY_METADATA_PATHS
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
@@ -192,6 +203,33 @@ def is_researcher_owned(path: str) -> bool:
         return False
     return relative in RESEARCHER_OWNED_PATHS or relative.startswith(
         RESEARCHER_OWNED_PREFIXES
+    )
+
+
+def declared_paths_exist(root: Path | None = None) -> list[str]:
+    """Every explicitly declared classification that is missing on disk.
+
+    A declared-but-missing classification silently changes which files define
+    evaluation semantics, so it must fail loudly instead of being ignored
+    (issue #41).
+    """
+    base = root or paths.ROOT
+    declared = {
+        *PROTECTED_BENCHMARK_PATHS,
+        *PROTECTED_RUNNER_PATHS,
+        *PROTECTED_RUNTIME_PATHS,
+        *PROTECTED_MEASUREMENT_PATHS,
+        *PROTECTED_CONTEXT_PATHS,
+        *DEPENDENCY_METADATA_PATHS,
+        *RESEARCHER_OWNED_PATHS,
+        *PARAMETER_ONLY_PATHS,
+        *PRESENTATION_ONLY_PATHS,
+        *TRAINING_ONLY_PATHS,
+        *MODEL_CONTAINED_RUNTIME_PATHS,
+        *EVALUATION_RUNTIME_PATHS,
+    }
+    return sorted(
+        relative for relative in declared if not (base / relative).is_file()
     )
 
 
@@ -760,8 +798,31 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
+def ignore_legacy_purpose(request: dict) -> dict:
+    """Return the request without the legacy ``purpose`` field.
+
+    Historical or already-accepted requests may carry ``purpose``; it is ignored
+    when loading them. Newly submitted requests are validated without this and
+    reject the field as unsupported.
+    """
+    measurements = request.get("measurements")
+    if not isinstance(measurements, list):
+        return request
+    cleaned = [
+        (
+            {key: value for key, value in entry.items() if key != "purpose"}
+            if isinstance(entry, dict)
+            else entry
+        )
+        for entry in measurements
+    ]
+    return {**request, "measurements": cleaned}
+
+
 def validate_evaluation_request(
-    request: dict, *, allow_legacy_need_more_evidence: bool = False
+    request: dict,
+    *,
+    allow_legacy_need_more_evidence: bool = False,
 ) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
@@ -858,6 +919,93 @@ def validate_evaluation_request(
             f"an evaluation request may measure at most 3 distinct models; "
             f"{len(distinct_candidates)} requested: {sorted(distinct_candidates)}"
         )
+
+
+def _research_panel(entry: dict) -> tuple[int, int] | None:
+    """The evaluated episode interval ``(seed, episodes)`` of one measurement."""
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return seed, episodes
+
+
+def _panels_overlap(left: tuple[int, int], right: tuple[int, int]) -> bool:
+    """Whether two half-open episode intervals share any episode seed."""
+    left_start, left_count = left
+    right_start, right_count = right
+    return max(left_start, right_start) < min(
+        left_start + left_count, right_start + right_count
+    )
+
+
+def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[int, int]]:
+    """Panels already recorded for this campaign's research evaluations."""
+    campaign_id = repository.current_campaign_id(state)
+    sources = list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
+    if isinstance(pending, dict):
+        sources.append(pending)
+    panels: list[tuple[int, int]] = []
+    for source in sources:
+        for entry in [
+            *(source.get("requested_evaluations") or []),
+            *(source.get("partial_evaluations") or []),
+        ]:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("instrument", "research_evaluation") != "research_evaluation":
+                continue
+            metrics = entry.get("metrics") or {}
+            panel = _research_panel({**metrics, **entry})
+            if panel is not None:
+                panels.append(panel)
+    return panels
+
+
+def validate_panel_independence(
+    request: dict,
+    prior_panels: list[tuple[int, int]] | None = None,
+    *,
+    protected_overlap=None,
+) -> None:
+    """Reject research-evaluation panels that partially overlap other panels.
+
+    An identical panel is allowed for deliberate reuse, and a disjoint panel is
+    always allowed; only partial overlap is rejected. ``protected_overlap`` is a
+    predicate supplied by the scenario boundary that reports whether a panel
+    overlaps the protected benchmark episodes; the generic Runner never reads the
+    protected range, and the error never names it.
+    """
+    seen: list[tuple[int, int]] = []
+    for entry in requested_measurements(request):
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("instrument") != "research_evaluation":
+            continue
+        panel = _research_panel(entry)
+        if panel is None:
+            continue
+        if protected_overlap is not None and protected_overlap(*panel):
+            raise ValueError(
+                "research_evaluation panel overlaps protected benchmark evidence; "
+                "choose a panel disjoint from the protected episode range"
+            )
+        for other in seen:
+            if other != panel and _panels_overlap(panel, other):
+                raise ValueError(
+                    "research_evaluation panels within one request partially "
+                    "overlap; use an identical panel or disjoint panels"
+                )
+        for other in prior_panels or []:
+            if other != panel and _panels_overlap(panel, other):
+                raise ValueError(
+                    "research_evaluation panel partially overlaps a previously "
+                    "recorded research panel; reuse the identical panel or choose "
+                    "a disjoint panel"
+                )
+        seen.append(panel)
 
 
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:
@@ -1476,6 +1624,40 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
         "request_final_benchmark": request_final,
     }
+
+
+def next_designation_ordinal(
+    existing_best: dict | None, fingerprint: str, counter: int
+) -> int:
+    """The designation ordinal for a best-known fingerprint.
+
+    Idempotently naming the current fingerprint preserves the ordinal. Any other
+    designation, including a return to an earlier fingerprint, starts a new
+    tenure and a new ordinal.
+    """
+    if (
+        isinstance(existing_best, dict)
+        and existing_best.get("fingerprint") == fingerprint
+        and isinstance(existing_best.get("designation_ordinal"), int)
+    ):
+        return int(existing_best["designation_ordinal"])
+    return int(counter) + 1
+
+
+def designation_counter_for(state: dict) -> int:
+    """The highest designation ordinal this campaign has already issued.
+
+    Falls back to the current best-known ordinal so a campaign whose counter was
+    never persisted does not reissue ordinal 1 for a new designation.
+    """
+    existing = state.get("best_known_lineage")
+    ordinal = (
+        existing.get("designation_ordinal") if isinstance(existing, dict) else None
+    )
+    recorded = int(state.get("best_known_designation_counter", 0) or 0)
+    if isinstance(ordinal, int) and not isinstance(ordinal, bool):
+        return max(recorded, ordinal)
+    return recorded
 
 
 def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
@@ -2149,6 +2331,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             ),
         )
         code_plan["parent"] = parent
+    designation_counter = designation_counter_for(state)
     best_decision, best_record, best_name = (
         decision.get("best_known"),
         dict(state["best_known_lineage"])
@@ -2221,6 +2404,12 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 set(best_record["evaluation_artifacts"])
                 | {record["evaluation_artifact"] for record in selected_records}
             )
+            # A new designation, including a return to a previously designated
+            # fingerprint, starts a new tenure.
+            designation_counter = next_designation_ordinal(
+                existing_best, best_fingerprint, designation_counter
+            )
+            best_record["designation_ordinal"] = designation_counter
     retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
     removal_ids = decision.get("remove_retained", [])
     if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):
@@ -2300,4 +2489,5 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "removed_retained": removed,
         "request_final_benchmark": request_final,
         "hypothesis_assessment": hypothesis_assessment,
+        "designation_counter": designation_counter,
     }

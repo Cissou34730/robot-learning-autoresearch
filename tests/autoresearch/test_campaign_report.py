@@ -272,6 +272,70 @@ def test_checkpoint_frequency_counts_experiments_not_instruments(tmp_path):
     assert metrics["Measurement executions"] == "2"
 
 
+def test_display_order_mirrors_the_brief_metric_independent_order():
+    from research import build_research_brief as brief
+
+    candidates = [
+        {"name": "checkpoint-100", "artifact": "research/checkpoints/a"},
+        {"name": "checkpoint-200", "artifact": "research/checkpoints/b"},
+        {"name": "checkpoint-300", "artifact": "research/checkpoints/c"},
+    ]
+    assert [c["name"] for c in report.display_order(candidates)] == [
+        c["name"] for c in brief.candidate_display_order(candidates)
+    ]
+
+
+def test_selection_diagnostics_expose_presentation_and_ranks(tmp_path):
+    row = {
+        "index": 3,
+        "candidates": [
+            {
+                "name": "checkpoint-100",
+                "timesteps": 100,
+                "training_success": 0.1,
+                "artifact": "research/checkpoints/checkpoint-100",
+            },
+            {
+                "name": "checkpoint-200",
+                "timesteps": 200,
+                "training_success": 0.9,
+                "artifact": "research/checkpoints/checkpoint-200",
+            },
+        ],
+        "requested_evaluations": [
+            {
+                "candidate": "checkpoint-100",
+                "instrument": "research_evaluation",
+                "episodes": 10,
+                "seed": 0,
+                "selection": "explicit uncertainty",
+                "metrics": {"success_percent": 50},
+            }
+        ],
+    }
+    diagnostics = report.selection_diagnostics([row])
+    assert len(diagnostics) == 1
+    experiment, name, displayed, proxy_rank, timestep_rank, endpoint = diagnostics[0]
+    assert experiment == 3
+    assert name == "checkpoint-100"
+    assert displayed in (1, 2)
+    assert proxy_rank == 2
+    assert timestep_rank == "1/2"
+    assert endpoint == "no"
+
+    campaign = {
+        "repo": tmp_path,
+        "id": CAMPAIGN,
+        "state": {},
+        "rows": [row],
+        "usage": [],
+    }
+    text = report.render_report([campaign])
+    assert "### Selection diagnostics" in text
+    assert "| Proxy rank |" in text
+    assert "| 3 | checkpoint-100 |" in text
+
+
 def test_accounting_failure_does_not_fail_a_successful_invocation(monkeypatch, capsys):
     async def succeed(args):
         return adapter.EXIT_OK

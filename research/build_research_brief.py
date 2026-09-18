@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path, PureWindowsPath
@@ -12,7 +13,11 @@ from research.runner_protocol import (
     operation_description,
     scientific_strategy_section,
 )
-from research.runner_repository import ARTIFACT_FILES, compact_measurement_summary
+from research.runner_repository import (
+    ARTIFACT_FILES,
+    campaign_coverage,
+    compact_measurement_summary,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
@@ -398,8 +403,7 @@ def _v4_measurements(candidate: dict) -> str:
         success = evaluation.get("success_percent")
         result = (
             f"{evaluation.get('panel', 'research_evaluation')}, "
-            f"seed {evaluation.get('seed', '-')}, "
-            f"{evaluation.get('episodes', '-')} episodes"
+            f"{_episode_interval(evaluation)}"
         )
         if success is not None:
             result += f", success {float(success):.2f}%"
@@ -407,14 +411,34 @@ def _v4_measurements(candidate: dict) -> str:
     return "; ".join(panels)
 
 
-def _candidate_proxy_order(candidate: dict) -> tuple:
-    """Order candidates by recorded training proxy, not by position in the run."""
-    success = candidate.get("training_success")
-    return (
-        success is None,
-        -float(success) if success is not None else 0.0,
-        int(candidate.get("timesteps") or 0),
-    )
+def _candidate_identity(candidate: dict) -> str:
+    """The stable identity used only to order candidates in the brief.
+
+    It prefers a recorded fingerprint, then the artifact path. It deliberately
+    ignores training proxy values, timesteps, input order and measurement status
+    so that presentation cannot rank candidates by apparent promise.
+    """
+    for key in ("fingerprint", "model_fingerprint", "artifact", "name"):
+        value = candidate.get(key)
+        if value:
+            return str(value)
+    return _stable_json({key: candidate.get(key) for key in sorted(candidate)})
+
+
+def _candidate_order_key(candidate: dict) -> tuple:
+    """A deterministic, metric-independent order key.
+
+    The order is a stable permutation derived only from candidate identity. It
+    does not depend on training proxy values, timesteps, candidate input order,
+    or whether the candidate has been measured.
+    """
+    identity = _candidate_identity(candidate)
+    return (hashlib.sha256(identity.encode("utf-8")).hexdigest(), identity)
+
+
+def candidate_display_order(candidates: list[dict]) -> list[dict]:
+    """Candidates in their deterministic, metric-independent display order."""
+    return sorted(candidates, key=_candidate_order_key)
 
 
 def _candidate_steps(candidate: dict) -> str:
@@ -450,7 +474,7 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
         "| Candidate | Steps | Training success | Training reward | Measurements |",
         "|---|---:|---:|---:|---:|",
     ]
-    for candidate in sorted(candidates, key=_candidate_proxy_order):
+    for candidate in candidate_display_order(candidates):
         lines.append(
             f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
             f"{_candidate_metric(candidate, 'training_success')} | "
@@ -800,26 +824,16 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
     return lines
 
 
-def _render_v4_research_brief(
+def _v4_phase_section(
     state: dict,
-    results: list[dict],
-    postmortems: str,
+    pending: dict | None,
+    latest: dict | None,
+    latest_experiment,
+    terminal,
     campaign_id: str | None,
     campaign_base_commit: str | None,
-    current_method: str,
-    current_params: dict,
-) -> str:
-    pending = state.get("pending_analysis")
-    latest = (
-        pending.get("result")
-        if isinstance(pending, dict)
-        else (results[-1] if results else None)
-    )
-    latest_experiment = (
-        pending.get("experiment")
-        if isinstance(pending, dict)
-        else (latest or {}).get("index", "none")
-    )
+) -> list[str]:
+    """The campaign header: where the campaign is and what it expects next."""
     phase = (
         "post-training analysis"
         if isinstance(pending, dict)
@@ -827,7 +841,6 @@ def _render_v4_research_brief(
     )
     if state.get("pending_final_benchmark") is not None:
         phase = "official assessment"
-    terminal = state.get("terminal_campaign_status")
     if terminal:
         phase = "terminal official assessment"
     lines = [
@@ -852,6 +865,496 @@ def _render_v4_research_brief(
     ]
     if terminal:
         lines.append(f"- Terminal campaign status: {terminal}")
+    return lines
+
+
+def _v4_lineage_section(state: dict, current_params: dict) -> list[str]:
+    """Lineage facts and the current experiment candidate inventory."""
+    lines = ["", *_current_lineages_and_recipes_lines(state, current_params)]
+    lines.extend(["", "## Working lineage", ""])
+    lines.append(
+        "- See `working` under **Current lineages and scientific recipes**."
+        if state.get("working_lineage")
+        else "- Working: unset"
+    )
+    return lines
+
+
+def _v4_experiment_index_section(results: list[dict]) -> list[str]:
+    """One row per completed experiment, newest first."""
+    lines = [
+        "",
+        "## Campaign experiment index",
+        "",
+        "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
+        "|---:|---|---|---|---|---|---|---|",
+    ]
+    for result in sorted(
+        results, key=lambda item: int(item.get("index", 0)), reverse=True
+    ):
+        checkpoints = compact_measurement_summary(result)
+        closure = result.get("closure_decision") or {}
+        lines.append(
+            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
+            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
+            f"{_compact(checkpoints, 140).replace('|', '/')} | "
+            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
+            f"working {closure.get('continue_from', 'unmeasured')}; "
+            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
+            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
+            f"{_postmortem_reference(result.get('postmortem'))} |"
+        )
+    if not results:
+        lines.append("| - | - | - | - | - | - | - | - |")
+    return lines
+
+
+def _v4_evidence_section(pending: dict | None, results: list[dict]) -> list[str]:
+    """Aggregate fingerprint-bound development evidence."""
+    return [
+        "",
+        "## Development evidence index",
+        "",
+        *_v4_evidence_lines(pending, results),
+    ]
+
+
+def _v4_synthesis_section(postmortems: str, campaign_id: str | None) -> list[str]:
+    """The Researcher-authored, revisable scientific synthesis."""
+    strategy = scientific_strategy_section(postmortems, campaign_id)
+    lines = [
+        "",
+        "## Provisional scientific synthesis",
+        "",
+        (
+            "Researcher-authored interpretation of the campaign evidence. "
+            "It is memory for reassessment, not a prescribed next direction:"
+        ),
+        "",
+    ]
+    lines.append(
+        "\n".join(strategy.splitlines()[1:]).strip()
+        if strategy
+        else "No scientific strategy recorded for this campaign yet."
+    )
+    return lines
+
+
+def _v4_repeated_operations_section(results: list[dict]) -> list[str]:
+    """Replication groups, stated as facts rather than a next direction."""
+    lines = ["", "## Repeated operations", ""]
+    groups = _replication_groups(results)
+    if groups:
+        for original, entries in groups:
+            experiments = ", ".join(str(entry.get("index", "-")) for entry in entries)
+            lines.append(
+                f"- Replication group `{original}`: {len(entries)} runs; "
+                f"experiments {experiments}."
+            )
+    else:
+        lines.append("No repeated operations recorded.")
+    return lines
+
+
+def _v4_intervention_surfaces_section(results: list[dict]) -> list[str]:
+    """Where the campaign has intervened, without suggesting where to next."""
+    lines = ["", "## Intervention surfaces", ""]
+    surfaces, parameter_only, unchanged = _intervention_surfaces(results)
+    if surfaces:
+        lines.append(
+            "Experiments that changed each researcher-owned source, including "
+            "sources never changed. This is a record of where the campaign has "
+            "intervened, not a suggestion about where to intervene next:"
+        )
+        lines.append("")
+        for source, count in surfaces:
+            lines.append(f"- `{source}`: {count}")
+        lines.append(
+            f"- Experiments with no researcher-owned source change: "
+            f"{parameter_only} parameter-only, {unchanged} unchanged."
+        )
+    else:
+        lines.append("No researcher-owned sources found.")
+    return lines
+
+
+def _v4_reusable_lineages_section(state: dict) -> list[str]:
+    """Retained alternative lineages available as training parents."""
+    lines = ["", "## Reusable lineages", ""]
+    retained = state.get("retained_lineages") or []
+    if retained:
+        for lineage in retained:
+            lines.append(
+                f"- See `{lineage.get('id', '-')}` under "
+                "**Current lineages and scientific recipes**."
+            )
+    else:
+        lines.append("No retained alternatives.")
+    return lines
+
+
+def _v4_best_known_section(state: dict) -> list[str]:
+    """Pointer to the best-known lineage among the current lineages."""
+    lines = ["", "## Best-known model", ""]
+    best_known = state.get("best_known_lineage")
+    lines.append(
+        "- See `best_known` under **Current lineages and scientific recipes**."
+        if best_known
+        else "- Best known: unset"
+    )
+    return lines
+
+
+def _cost_records(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[dict]:
+    """Experiment records once each, preferring the full pending result."""
+    records = [record for record in results if isinstance(record, dict)]
+    indices = {int(record.get("index", -1)) for record in records}
+    if isinstance(pending, dict):
+        result = pending.get("result")
+        if isinstance(result, dict) and int(result.get("index", -1)) not in indices:
+            records.append(result)
+    return records
+
+
+def _v4_cost_accounting_section(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[str]:
+    """Factual campaign accounting in non-overlapping units.
+
+    Issue #34: surfaces training and evaluation work without implying a budget,
+    a preferred allocation, or an automatic stopping decision.
+    """
+    records = _cost_records(state, results, pending)
+    completed_steps = 0
+    requested_steps = 0
+    for record in records:
+        if record.get("completed_training_steps") is not None:
+            completed_steps += int(record["completed_training_steps"])
+        elif record.get("training_budget_steps") is not None:
+            completed_steps += int(record["training_budget_steps"])
+        if record.get("training_budget_steps") is not None:
+            requested_steps += int(record["training_budget_steps"])
+    replications = sorted(
+        int(record["index"])
+        for record in records
+        if str(record.get("kind")) == "replication"
+    )
+    rounds: list[dict] = []
+    for record in records:
+        rounds.extend(
+            item for item in record.get("evaluation_rounds") or [] if isinstance(item, dict)
+        )
+    instrument_executions = {"research_evaluation": 0, "task_reference": 0}
+    for record in records:
+        instrument_executions["research_evaluation"] += sum(
+            isinstance(item, dict) for item in record.get("requested_evaluations") or []
+        )
+        instrument_executions["task_reference"] += sum(
+            isinstance(item, dict)
+            for item in record.get("task_reference_evaluations") or []
+        )
+    coverage = campaign_coverage(records)
+    research_coverage = coverage["research_evaluation"]
+    reference_coverage = coverage["task_reference"]
+    intervals = _consumed_research_intervals(records)
+    return [
+        "",
+        "## Campaign cost accounting",
+        "",
+        (
+            "Factual record of the work this campaign has performed and the "
+            "evidence coverage it has produced. It sets no budget, target, or "
+            "preferred allocation:"
+        ),
+        "",
+        (
+            f"- Training experiments: {len(records)} "
+            f"(completed steps: {completed_steps:,}; requested steps: {requested_steps:,})."
+        ),
+        (
+            "- Replication experiments recorded: "
+            + (", ".join(str(index) for index in replications) if replications else "none")
+            + "."
+        ),
+        f"- Evaluation rounds: {len(rounds)}.",
+        (
+            f"- Instrument executions: "
+            f"{instrument_executions['research_evaluation']} research_evaluation, "
+            f"{instrument_executions['task_reference']} task_reference."
+        ),
+        (
+            f"- research_evaluation coverage: "
+            f"{research_coverage['distinct_episodes']} distinct episodes; "
+            f"{research_coverage['episode_executions']} episode executions; "
+            f"{research_coverage['repeated_episodes']} repeated."
+        ),
+        (
+            f"- task_reference coverage: "
+            f"{reference_coverage['distinct_episodes']} distinct episodes; "
+            f"{reference_coverage['episode_executions']} episode executions; "
+            f"{reference_coverage['repeated_episodes']} repeated."
+        ),
+        (
+            "- research_evaluation intervals consumed: "
+            + (
+                ", ".join(_consumed_research_intervals(records))
+                if intervals
+                else "none"
+            )
+            + "."
+        ),
+    ]
+
+
+def _round_entry_status(item: dict) -> str:
+    """A compact status marker for a round measurement entry."""
+    return f" ({item.get('status', 'executed')})"
+
+
+def _episode_interval(entry: dict) -> str:
+    """The evaluated episode interval of a research evaluation, e.g. 1208-1407."""
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if (
+        isinstance(seed, int)
+        and not isinstance(seed, bool)
+        and isinstance(episodes, int)
+        and not isinstance(episodes, bool)
+        and episodes > 0
+    ):
+        return f"episodes {seed}–{seed + episodes - 1}"
+    return "episodes unknown"
+
+
+def _research_panel_of(entry: dict) -> tuple[int, int] | None:
+    """The ``(seed, episodes)`` panel of a recorded research measurement."""
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return seed, episodes
+
+
+def _record_research_panels(record: dict) -> list[tuple[int, int]]:
+    """The research-evaluation panels a durable or pending record consumed."""
+    panels: list[tuple[int, int]] = []
+    for entry in record.get("requested_evaluations") or []:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("instrument", "research_evaluation") != "research_evaluation":
+            continue
+        metrics = entry.get("metrics") or {}
+        panel = _research_panel_of({**metrics, **entry})
+        if panel is not None:
+            panels.append(panel)
+    return panels
+
+
+def _consumed_research_intervals(records: list[dict]) -> list[str]:
+    """Every distinct research-evaluation interval already consumed, in first-use order."""
+    ordered: list[tuple[int, int]] = []
+    known: set[tuple[int, int]] = set()
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        for panel in _record_research_panels(record):
+            if panel not in known:
+                known.add(panel)
+                ordered.append(panel)
+    return [
+        f"{seed}–{seed + episodes - 1}" if episodes > 0 else f"{seed}"
+        for seed, episodes in ordered
+    ]
+
+
+def _v4_measurement_rounds_section(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[str]:
+    """Completed and accepted measurement rounds in request order.
+
+    Issue #39: the durable record keeps each request's question, selections and
+    artifact references so the progression of scientific questions stays
+    auditable after closure instead of being reconstructed from timestamps.
+
+    A panel is marked ``(reused panel)`` only when it was consumed before the
+    current round (by an earlier experiment or an earlier round). Candidates that
+    share one panel within a round share the same marker; they are not treated as
+    successive reuse.
+    """
+    latest = (
+        pending.get("result")
+        if isinstance(pending, dict)
+        else (results[-1] if results else None)
+    )
+    source = pending if isinstance(pending, dict) else latest
+    if not isinstance(source, dict):
+        return []
+    rounds = source.get("evaluation_rounds")
+    if not isinstance(rounds, list) or not rounds:
+        return []
+    current_index = int(source.get("experiment") or source.get("index") or 0)
+    prior_panels: set[tuple[int, int]] = set()
+    for record in results:
+        if not isinstance(record, dict):
+            continue
+        if int(record.get("index", -1)) == current_index:
+            continue
+        prior_panels.update(_record_research_panels(record))
+    # Issue #43: during preparation the brief summarizes the prior experiment's
+    # outcomes and artifact references without replaying per-candidate selection
+    # prose, which would otherwise act as an exemplar template for the next
+    # request. The durable record keeps the full rationale.
+    include_selections = isinstance(pending, dict)
+    lines = [
+        "",
+        "## Measurement rounds",
+        "",
+        (
+            "Measurement rounds for the current experiment in the order they were "
+            "requested. Each round records its own question, selections and "
+            "resulting artifacts:"
+            if include_selections
+            else "Completed measurement rounds from the most recent experiment, in "
+            "the order they were requested. Questions, results and artifact "
+            "references are retained; per-candidate selection rationale stays in "
+            "the durable record:"
+        ),
+    ]
+    for record in rounds:
+        if not isinstance(record, dict):
+            continue
+        status = str(record.get("status", "accepted"))
+        lines.extend(["", f"### Round {record.get('round', '-')} ({status})"])
+        if record.get("question"):
+            lines.append(f"- Question: {_compact(str(record['question']), 400)}")
+        if record.get("reason"):
+            lines.append(f"- Reason: {_compact(str(record['reason']), 400)}")
+        results = (
+            record.get("results") if isinstance(record.get("results"), dict) else {}
+        )
+        round_panels: set[tuple[int, int]] = set()
+        for item in results.get("research_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            panel = _research_panel_of(item)
+            panel_note = ""
+            if panel is not None:
+                panel_note = (
+                    " (reused panel)" if panel in prior_panels else " (new panel)"
+                )
+                round_panels.add(panel)
+            detail = _episode_interval(item)
+            if item.get("success_percent") is not None:
+                detail += f", success {float(item['success_percent']):.2f}%"
+            lines.append(
+                f"- `{item.get('candidate', '-')}` "
+                f"`research_evaluation`{_round_entry_status(item)}"
+                f"{panel_note}: {detail}."
+            )
+            if include_selections and item.get("selection"):
+                lines.append(
+                    f"  - Selection: {_compact(str(item['selection']), 300)}"
+                )
+            if item.get("reused_from_round") is not None:
+                lines.append(
+                    f"  - Reused from round {item['reused_from_round']}"
+                )
+            if item.get("evaluation_artifact"):
+                lines.append(
+                    "  - Artifact: "
+                    + _existing_artifact_reference(
+                        item["evaluation_artifact"], kind="file"
+                    )
+                )
+        for item in results.get("task_reference_evaluations") or []:
+            if not isinstance(item, dict):
+                continue
+            detail = f"panel `{item.get('panel', '-')}`"
+            if item.get("success_percent") is not None:
+                detail += f", success {float(item['success_percent']):.2f}%"
+            lines.append(
+                f"- `{item.get('candidate', '-')}` "
+                f"`task_reference`{_round_entry_status(item)}: {detail}."
+            )
+            if include_selections and item.get("selection"):
+                lines.append(
+                    f"  - Selection: {_compact(str(item['selection']), 300)}"
+                )
+            if item.get("reused_from_round") is not None:
+                lines.append(
+                    f"  - Reused from round {item['reused_from_round']}"
+                )
+            if item.get("evaluation_artifact"):
+                lines.append(
+                    "  - Artifact: "
+                    + _existing_artifact_reference(
+                        item["evaluation_artifact"], kind="file"
+                    )
+                )
+        for item in results.get("paired_comparisons") or []:
+            if not isinstance(item, dict):
+                continue
+            lines.append(
+                f"- Paired comparison `{item.get('candidate', '-')}` vs "
+                f"`{item.get('reference', '-')}`: {item.get('candidate_wins', '-')} "
+                f"vs {item.get('reference_wins', '-')} discordant wins over "
+                f"{item.get('episodes', '-')} episodes."
+            )
+        prior_panels.update(round_panels)
+    return lines
+
+
+def _v4_official_section(state: dict, terminal) -> list[str]:
+    """The terminal official report, present only after a verdict."""
+    official = state.get("official_metrics")
+    if official is None:
+        return []
+    official_model = state.get("official_benchmark_model") or {}
+    return [
+        "",
+        "## Official report",
+        "",
+        f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
+        f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
+        f"- Result: {official}",
+        f"- Terminal assessment: {terminal or 'not recorded'}",
+    ]
+
+
+def _render_v4_research_brief(
+    state: dict,
+    results: list[dict],
+    postmortems: str,
+    campaign_id: str | None,
+    campaign_base_commit: str | None,
+    current_method: str,
+    current_params: dict,
+) -> str:
+    pending = state.get("pending_analysis")
+    latest = (
+        pending.get("result")
+        if isinstance(pending, dict)
+        else (results[-1] if results else None)
+    )
+    latest_experiment = (
+        pending.get("experiment")
+        if isinstance(pending, dict)
+        else (latest or {}).get("index", "none")
+    )
+    terminal = state.get("terminal_campaign_status")
+    lines = _v4_phase_section(
+        state,
+        pending,
+        latest,
+        latest_experiment,
+        terminal,
+        campaign_id,
+        campaign_base_commit,
+    )
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
@@ -913,125 +1416,26 @@ def _render_v4_research_brief(
     else:
         lines.append("No experiment has completed in this campaign.")
 
-    lines.extend(["", *_current_lineages_and_recipes_lines(state, current_params)])
+    lines.extend(_v4_lineage_section(state, current_params))
 
-    lines.extend(["", "## Working lineage", ""])
-    lines.append(
-        "- See `working` under **Current lineages and scientific recipes**."
-        if state.get("working_lineage")
-        else "- Working: unset"
-    )
+    lines.extend(_v4_experiment_index_section(results))
 
-    lines.extend(
-        [
-            "",
-            "## Campaign experiment index",
-            "",
-            "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
-            "|---:|---|---|---|---|---|---|---|",
-        ]
-    )
-    for result in sorted(
-        results, key=lambda item: int(item.get("index", 0)), reverse=True
-    ):
-        checkpoints = compact_measurement_summary(result)
-        closure = result.get("closure_decision") or {}
-        lines.append(
-            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
-            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
-            f"{_compact(checkpoints, 140).replace('|', '/')} | "
-            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
-            f"working {closure.get('continue_from', 'unmeasured')}; "
-            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
-            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
-            f"{_postmortem_reference(result.get('postmortem'))} |"
-        )
-    if not results:
-        lines.append("| - | - | - | - | - | - | - | - |")
+    lines.extend(_v4_evidence_section(pending, results))
 
-    lines.extend(["", "## Development evidence index", ""])
-    lines.extend(_v4_evidence_lines(pending, results))
+    lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
-    strategy = scientific_strategy_section(postmortems, campaign_id)
-    lines.extend(
-        [
-            "",
-            "## Provisional scientific synthesis",
-            "",
-            (
-                "Researcher-authored interpretation of the campaign evidence. "
-                "It is memory for reassessment, not a prescribed next direction:"
-            ),
-            "",
-        ]
-    )
-    lines.append(
-        "\n".join(strategy.splitlines()[1:]).strip()
-        if strategy
-        else "No scientific strategy recorded for this campaign yet."
-    )
+    lines.extend(_v4_cost_accounting_section(state, results, pending))
 
-    lines.extend(["", "## Repeated operations", ""])
-    groups = _replication_groups(results)
-    if groups:
-        for original, entries in groups:
-            experiments = ", ".join(str(entry.get("index", "-")) for entry in entries)
-            lines.append(
-                f"- Replication group `{original}`: {len(entries)} runs; "
-                f"experiments {experiments}."
-            )
-    else:
-        lines.append("No repeated operations recorded.")
+    lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 
-    lines.extend(["", "## Intervention surfaces", ""])
-    surfaces, parameter_only, unchanged = _intervention_surfaces(results)
-    if surfaces:
-        lines.append(
-            "Experiments that changed each researcher-owned source, including "
-            "sources never changed. This is a record of where the campaign has "
-            "intervened, not a suggestion about where to intervene next:"
-        )
-        lines.append("")
-        for source, count in surfaces:
-            lines.append(f"- `{source}`: {count}")
-        lines.append(
-            f"- Experiments with no researcher-owned source change: "
-            f"{parameter_only} parameter-only, {unchanged} unchanged."
-        )
-    else:
-        lines.append("No researcher-owned sources found.")
+    lines.extend(_v4_repeated_operations_section(results))
 
-    lines.extend(["", "## Reusable lineages", ""])
-    retained = state.get("retained_lineages") or []
-    if retained:
-        for lineage in retained:
-            lines.append(
-                f"- See `{lineage.get('id', '-')}` under "
-                "**Current lineages and scientific recipes**."
-            )
-    else:
-        lines.append("No retained alternatives.")
-    lines.extend(["", "## Best-known model", ""])
-    best_known = state.get("best_known_lineage")
-    lines.append(
-        "- See `best_known` under **Current lineages and scientific recipes**."
-        if best_known
-        else "- Best known: unset"
-    )
-    official = state.get("official_metrics")
-    if official is not None:
-        official_model = state.get("official_benchmark_model") or {}
-        lines.extend(
-            [
-                "",
-                "## Official report",
-                "",
-                f"- Model: {official_model.get('selected', 'legacy official assessment')} ({official_model.get('artifact', 'not recorded')})",
-                f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
-                f"- Result: {official}",
-                f"- Terminal assessment: {terminal or 'not recorded'}",
-            ]
-        )
+    lines.extend(_v4_intervention_surfaces_section(results))
+
+    lines.extend(_v4_reusable_lineages_section(state))
+    lines.extend(_v4_best_known_section(state))
+
+    lines.extend(_v4_official_section(state, terminal))
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -1117,9 +1521,7 @@ def render_research_brief() -> str:
             "| Candidate | Steps | Training success | Training reward | Artifact |",
             "|---|---:|---:|---:|---|",
         ]
-        for candidate in sorted(
-            pending_evaluation["candidates"], key=_candidate_proxy_order
-        ):
+        for candidate in candidate_display_order(pending_evaluation["candidates"]):
             evaluation_lines.append(
                 f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
                 f"{_candidate_metric(candidate, 'training_success')} | "

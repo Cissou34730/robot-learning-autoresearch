@@ -1,6 +1,17 @@
-"""Paired statistics available for researcher-designed comparisons."""
+"""Researcher-owned inferential statistics over protected paired counts.
+
+Episode identity, conflict rejection, shared-panel reconciliation and the paired
+contingency counts are protected in `robot_learning.paired_evidence`. This module
+is the researcher-owned choice of what to do with those counts, so a Researcher
+may replace the statistic without weakening measurement integrity.
+
+The Runner stores the protected counts only; any statistic computed here is a
+research-side presentation of them, not part of the durable measurement contract.
+"""
 
 import math
+
+from robot_learning.paired_evidence import paired_comparison as paired_counts
 
 
 def exact_mcnemar_pvalue(candidate_wins: int, reference_wins: int) -> float:
@@ -13,49 +24,12 @@ def exact_mcnemar_pvalue(candidate_wins: int, reference_wins: int) -> float:
     return min(1.0, 2 * tail / (2**discordant))
 
 
-def episode_outcomes(evaluations: list[dict]) -> dict[tuple[str, int], bool]:
-    """Count each deterministic episode once within its evaluation semantics."""
-    outcomes: dict[tuple[str, int], bool] = {}
-    for evaluation in evaluations:
-        episodes = evaluation.get("episode_results")
-        if not episodes or len(episodes) != int(evaluation["episodes"]):
-            raise ValueError("evaluation requires complete detailed episode outcomes")
-        semantics = str(evaluation.get("evaluation_semantics", ""))
-        for episode in episodes:
-            identity = semantics, int(episode["episode_seed"])
-            success = bool(episode["success"])
-            if identity in outcomes and outcomes[identity] != success:
-                raise ValueError(
-                    "conflicting deterministic measurements for episode "
-                    f"{identity[1]}"
-                )
-            outcomes[identity] = success
-    return outcomes
-
-
 def paired_comparison(candidate: list[dict], reference: list[dict]) -> dict:
-    """Compare policies on distinct, matching recorded episode identities."""
-    candidate_outcomes = episode_outcomes(candidate)
-    reference_outcomes = episode_outcomes(reference)
-    if not candidate_outcomes or candidate_outcomes.keys() != reference_outcomes.keys():
-        raise ValueError("paired evaluations do not cover identical episodes")
-    candidate_wins = sum(
-        candidate_outcomes[key] and not reference_outcomes[key]
-        for key in candidate_outcomes
-    )
-    reference_wins = sum(
-        reference_outcomes[key] and not candidate_outcomes[key]
-        for key in candidate_outcomes
-    )
-    episode_count = len(candidate_outcomes)
+    """Protected paired counts with the researcher's exact statistic added."""
+    result = paired_counts(candidate, reference)
     return {
-        "episodes": episode_count,
-        "candidate_wins": candidate_wins,
-        "reference_wins": reference_wins,
-        "discordant_episodes": candidate_wins + reference_wins,
-        "net_wins": candidate_wins - reference_wins,
-        "success_delta_percent": 100
-        * (candidate_wins - reference_wins)
-        / episode_count,
-        "exact_p_value": exact_mcnemar_pvalue(candidate_wins, reference_wins),
+        **result,
+        "exact_p_value": exact_mcnemar_pvalue(
+            int(result["candidate_wins"]), int(result["reference_wins"])
+        ),
     }

@@ -12,6 +12,12 @@ works, and establishing training reproducibility are distinct questions. Answer
 the question that helps the campaign; causal explanation and reproducibility are
 not prerequisites for accepting a useful policy.
 
+When several scientifically valid questions are available, compare them by the
+concrete campaign decisions their possible outcomes could change and by their
+expected contribution to the human objective. Exploratory value need not be
+certain in advance, but an unresolved question is not by itself sufficient
+reason to spend a full training run.
+
 Repository operation and ownership are defined in `AGENTS.md`, the current
 scientific problem in `research/scenario.md`, and every available instrument and
 request contract in `research/instruments.md`. `research/brief.md` supplies the
@@ -112,15 +118,22 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence, choose continuation,
-an intervention with fresh or transfer initialization, or replication, and state
-the scientific question and how it serves the human objective. Declare the
-investigation type. A confirmatory or diagnostic investigation states a
-proposition, a plausible alternative, and the observations that would
-distinguish them. An exploratory investigation states the question, the
-uncertainty, the observations it seeks and what those observations could
-clarify. Do not invent a causal mechanism or a prediction merely to satisfy the
-proposal format.
+Inspect relevant repository state and completed evidence, then identify the
+scientific question and the concrete downstream decision that its possible
+outcomes could change; only then choose the operation that answers it. State how
+the question serves the human objective. Declare the investigation type. A
+confirmatory or diagnostic investigation states a proposition, a plausible
+alternative, and the observations that would distinguish them. An exploratory
+investigation states the question, the uncertainty, the observations it seeks
+and what those observations could clarify. Do not invent a causal mechanism or a
+prediction merely to satisfy the proposal format.
+
+For a replication or other process-variance question, the reasoning must
+distinguish what decision follows from the expected result and what decision
+follows from the contradicting result, using the existing `expected_observation`,
+`contradicting_observation`, and `objective_link` fields. If both outcomes would
+leave the relevant development decision unchanged, unresolved reproducibility
+alone does not justify a full training run.
 
 Justify the training parent and fresh-or-transfer initialization by their
 expected value for the question and semantic compatibility with the policy and
@@ -173,7 +186,10 @@ new uncertainty arises during preparation, use available evidence or lightweight
 analysis and state any remaining assumption in the hypothesis; do not present it
 as an observed fact.
 
-Research and task-reference panels are development measurements. Repeated use of
+Research and task-reference panels are development measurements distinguished by
+their properties, not by authority. A task-reference measurement is a fixed panel
+reused across recipes; because it is reused during model selection its results are
+selection-contaminated and are not a privileged lineage criterion. Repeated use of
 the same panel remains repeated evidence from that panel, not independent
 held-out confirmation. Do not change a protected panel or present development
 evidence as final validation.
@@ -216,7 +232,10 @@ compact decision aid, not a second experiment history:
 
 - `Current synthesis`: the present interpretation of relevant campaign evidence.
 - `Lessons and limits`: reusable findings, their sources, and uncertainty.
-- `Open questions`: useful uncertainties, not a mandatory experiment queue.
+- `Open questions`: recorded uncertainties and useful unresolved questions, not
+  priorities and not a mandatory experiment queue. Their presence does not
+  justify selecting them for the next experiment; selection still depends on
+  their current decision value relative to other plausible questions.
 
 Preserve historical observations and decisions; revise current interpretations
 in the synthesis rather than rewriting what was believed at the time. Write the
@@ -229,12 +248,20 @@ investigations does not require resolving every open question.
 
 Continue development while the Researcher judges that further investigation
 best serves the human objective. Request terminal assessment when the Researcher
-judges that the selected best-known policy is ready for the official verdict,
-stating the evidence and uncertainty behind that decision. Another useful
-investigation does not prohibit stopping, and reaching a development threshold
-does not require stopping. No development margin, residual-failure criterion,
-replication count, or proof that no better research direction exists is
-required.
+judges that the selected best-known model is ready for the official verdict,
+stating the evidence and uncertainty behind that decision.
+
+Development measurements support model selection and scientific judgment. A
+measurement used to select a model is not automatically independent
+confirmation. After observing a promising result, the Researcher may request
+another measurement round on a disjoint panel before closing the experiment. The
+Researcher decides whether the available evidence justifies requesting the
+official benchmark: no task-reference measurement, confidence threshold, special
+evidence label, or predefined number of panels is mandatory.
+
+Another useful investigation does not prohibit stopping, and reaching a
+development threshold does not require stopping. No residual-failure criterion or
+proof that no better research direction exists is required.
 
 Request the official benchmark only through closure, targeting the frozen
 best-known model. Requesting it ends the campaign after either verdict:

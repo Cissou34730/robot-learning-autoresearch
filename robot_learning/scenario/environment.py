@@ -1,12 +1,14 @@
-"""Scenario-owned training environment.
+"""Shared scenario mechanics for training and evaluation.
 
-Generic training code only calls `make_training_env()`; every mechanic below
-(MuJoCo model, target sampling, success and hold semantics, observations,
-reward) belongs to this scenario and may be replaced wholesale.
+This module owns every behavior shared by training and evaluation: the MuJoCo
+model, target sampling, success and hold semantics, observations and reward.
+Training-only target construction lives in
+`robot_learning/scenario/training_environment.py` so it can change without
+altering how a saved policy is measured.
 
-The benchmark constants are training defaults, not a contract: research may
-train on a different distribution, tolerance or horizon. The human-defined task
-is enforced only by the protected benchmark in `robot_learning/benchmark/`.
+The benchmark constants are defaults, not a contract: research may train on a
+different distribution, tolerance or horizon. The human-defined task is
+enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
 from typing import Any, ClassVar
@@ -26,8 +28,6 @@ from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
-
-TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -166,11 +166,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "reward_components": reward.components,
         }
         return self._observation(), float(reward.total), terminated, truncated, info
-
-
-def make_training_env() -> gym.Env:
-    """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:

@@ -43,6 +43,7 @@ from research.runner_repository import (
     measurement_record,
     write_state,
 )
+from robot_learning.paired_evidence import paired_comparison as paired_counts
 from robot_learning.scenario.evaluation import (
     summarize_research_evaluations as summarize_evaluations,
 )
@@ -167,6 +168,15 @@ def test_evaluation_summary_consolidates_the_actual_panels():
 
 def test_exact_p_value_is_one_without_discordant_episodes():
     assert exact_mcnemar_pvalue(0, 0) == 1.0
+
+
+def test_protected_paired_counts_exclude_the_statistic():
+    counts = paired_counts(
+        [evaluation(3000, [True, True])], [evaluation(3000, [False, False])]
+    )
+    assert counts["candidate_wins"] == 2
+    assert counts["episodes"] == 2
+    assert "exact_p_value" not in counts
 
 
 def test_requested_evaluations_resume_without_repeating_completed_work(

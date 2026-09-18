@@ -1,0 +1,422 @@
+"""Per-section seams for the research brief.
+
+Issue #41.2: the brief's sections are independent builders so that changes to
+candidates, evidence, lineages, or cost accounting can be reviewed and tested
+one section at a time instead of editing one large renderer.
+"""
+
+from research import build_research_brief as brief
+
+
+def test_phase_section_tracks_the_lifecycle_state():
+    assert "experiment preparation" in "\n".join(
+        brief._v4_phase_section({}, None, None, "none", None, "cid", "base")
+    )
+    assert "post-training analysis" in "\n".join(
+        brief._v4_phase_section({}, {"experiment": 1}, None, 1, None, "cid", "base")
+    )
+    assert "terminal official assessment" in "\n".join(
+        brief._v4_phase_section(
+            {"terminal_campaign_status": "goal_reached"},
+            None,
+            None,
+            "none",
+            "goal_reached",
+            "cid",
+            "base",
+        )
+    )
+
+
+def test_lineage_section_points_at_the_authoritative_lineages():
+    lines = brief._v4_lineage_section({}, {})
+    text = "\n".join(lines)
+    assert "## Current lineages and scientific recipes" in text
+    assert "## Working lineage" in text
+    assert "Working: unset" in text
+
+
+def test_experiment_index_section_renders_one_row_per_experiment():
+    assert brief._v4_experiment_index_section([]) == [
+        "",
+        "## Campaign experiment index",
+        "",
+        "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
+        "|---:|---|---|---|---|---|---|---|",
+        "| - | - | - | - | - | - | - | - |",
+    ]
+
+    lines = brief._v4_experiment_index_section(
+        [{"index": 2, "kind": "training", "family": "f"}]
+    )
+    assert any(line.startswith("| 2 | training / f |") for line in lines)
+
+
+def test_evidence_section_reports_an_empty_record_clearly():
+    lines = brief._v4_evidence_section(None, [])
+    assert lines[:3] == ["", "## Development evidence index", ""]
+    assert lines[3] == "No fingerprint-bound development evidence recorded yet."
+
+
+def test_synthesis_section_falls_back_when_no_strategy_exists():
+    lines = brief._v4_synthesis_section("", "cid")
+    assert "## Provisional scientific synthesis" in lines
+    assert lines[-1] == "No scientific strategy recorded for this campaign yet."
+
+
+def test_repeated_operations_section_is_factual_when_empty():
+    lines = brief._v4_repeated_operations_section([])
+    assert lines == ["", "## Repeated operations", "", "No repeated operations recorded."]
+
+
+def test_intervention_surfaces_section_is_factual_when_empty():
+    lines = brief._v4_intervention_surfaces_section([])
+    assert "## Intervention surfaces" in lines
+    assert any("unchanged" in line for line in lines)
+
+
+def test_reusable_lineages_and_best_known_default_to_unset():
+    reusable = brief._v4_reusable_lineages_section({})
+    assert reusable[-1] == "No retained alternatives."
+    best_known = brief._v4_best_known_section({})
+    assert best_known[-1] == "- Best known: unset"
+
+
+def test_official_section_is_absent_until_a_verdict_exists():
+    assert brief._v4_official_section({}, None) == []
+    lines = brief._v4_official_section(
+        {
+            "official_metrics": {"success_percent": 98.0},
+            "official_benchmark_model": {"selected": "working", "artifact": "a"},
+            "official_benchmark_verdict": "goal_reached",
+        },
+        "goal_reached",
+    )
+    assert "## Official report" in lines
+    assert "- Verdict: goal_reached" in lines
+
+
+def test_composed_brief_orders_each_section_once():
+    text = brief._render_v4_research_brief({}, [], "", "cid", "base", "PPO", {})
+    headings = [
+        "## Current phase and latest event",
+        "## Latest experiment",
+        "## Current lineages and scientific recipes",
+        "## Working lineage",
+        "## Campaign experiment index",
+        "## Development evidence index",
+        "## Campaign cost accounting",
+        "## Provisional scientific synthesis",
+        "## Repeated operations",
+        "## Intervention surfaces",
+        "## Reusable lineages",
+        "## Best-known model",
+    ]
+    positions = [text.index(heading) for heading in headings]
+    assert positions == sorted(positions)
+
+
+def test_measurement_rounds_section_groups_rounds_in_order():
+    pending = {
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "question": "first question",
+                "reason": "first reason",
+                "status": "completed",
+                "results": {
+                    "research_evaluations": [
+                        {
+                            "candidate": "c1",
+                            "episodes": 10,
+                            "seed": 1,
+                            "success_percent": 90.0,
+                            "selection": "observed signal",
+                            "evaluation_artifact": "research/evaluations/x.json",
+                        }
+                    ]
+                },
+            },
+            {
+                "round": 2,
+                "question": "second question",
+                "reason": "second reason",
+                "status": "completed",
+                "results": {
+                    "paired_comparisons": [
+                        {
+                            "candidate": "c1",
+                            "reference": "working",
+                            "candidate_wins": 3,
+                            "reference_wins": 1,
+                            "episodes": 10,
+                        }
+                    ]
+                },
+            },
+        ]
+    }
+    text = "\n".join(brief._v4_measurement_rounds_section({}, [], pending))
+    assert text.index("### Round 1 (completed)") < text.index("### Round 2 (completed)")
+    assert "first question" in text
+    assert "second question" in text
+    assert "`c1` `research_evaluation`" in text
+    assert "episodes 1–10" in text
+    assert "(new panel)" in text
+    assert "Paired comparison `c1` vs `working`" in text
+
+
+def test_measurement_round_panel_novelty_is_round_scoped():
+    pending = {
+        "experiment": 2,
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "results": {
+                    "research_evaluations": [
+                        {"candidate": "c1", "seed": 100, "episodes": 200},
+                        {"candidate": "c2", "seed": 100, "episodes": 200},
+                    ]
+                },
+            },
+            {
+                "round": 2,
+                "results": {
+                    "research_evaluations": [
+                        {"candidate": "c3", "seed": 100, "episodes": 200}
+                    ]
+                },
+            },
+        ],
+    }
+    prior_results = [
+        {
+            "index": 1,
+            "requested_evaluations": [
+                {"candidate": "old", "seed": 900, "episodes": 200}
+            ],
+        }
+    ]
+    text = "\n".join(
+        brief._v4_measurement_rounds_section({}, prior_results, pending)
+    )
+    round_one = text.split("### Round 2")[0]
+    round_two = text.split("### Round 2")[1]
+    # Two candidates sharing one panel in the same round are both new.
+    assert round_one.count("(new panel)") == 2
+    assert "(reused panel)" not in round_one
+    # The identical panel in a later round is cross-round reuse.
+    assert "(reused panel)" in round_two
+
+
+def test_measurement_round_panel_novelty_recognises_prior_experiments():
+    pending = {
+        "experiment": 2,
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "results": {
+                    "research_evaluations": [
+                        {"candidate": "c1", "seed": 900, "episodes": 200}
+                    ]
+                },
+            }
+        ],
+    }
+    prior_results = [
+        {
+            "index": 1,
+            "requested_evaluations": [
+                {"candidate": "old", "seed": 900, "episodes": 200}
+            ],
+        }
+    ]
+    text = "\n".join(
+        brief._v4_measurement_rounds_section({}, prior_results, pending)
+    )
+    assert "(reused panel)" in text
+
+
+def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
+    record = {
+        "index": 1,
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "question": "does it reproduce",
+                "reason": "round reason",
+                "status": "completed",
+                "results": {
+                    "research_evaluations": [
+                        {
+                            "candidate": "checkpoint-100",
+                            "seed": 100,
+                            "episodes": 200,
+                            "success_percent": 90.0,
+                            "selection": "proxy peak template",
+                            "evaluation_artifact": "research/evaluations/e.json",
+                        }
+                    ]
+                },
+            }
+        ],
+    }
+    analysis = "\n".join(brief._v4_measurement_rounds_section({}, [], record))
+    preparation = "\n".join(
+        brief._v4_measurement_rounds_section({}, [record], None)
+    )
+
+    # Follow-up analysis keeps the evidence needed to adapt the next round.
+    assert "Selection: proxy peak template" in analysis
+    # Preparation retains outcomes and references without replaying exemplars.
+    assert "does it reproduce" in preparation
+    assert "success 90.00%" in preparation
+    assert "Selection: proxy peak template" not in preparation
+    assert "Completed measurement rounds" in preparation
+    assert "Measurement rounds for the current experiment" in analysis
+
+
+def test_cost_accounting_lists_consumed_research_intervals_factually():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "requested_evaluations": [
+                {"candidate": "c1", "seed": 4200, "episodes": 160},
+                {"candidate": "c2", "seed": 4200, "episodes": 160},
+                {"candidate": "c3", "seed": 4400, "episodes": 160},
+            ],
+        }
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "research_evaluation intervals consumed: 4200–4359, 4400–4559." in text
+    assert "recommend" not in text.lower()
+
+
+def test_measurement_rounds_section_is_absent_without_rounds():
+    assert brief._v4_measurement_rounds_section({}, [], None) == []
+    assert brief._v4_measurement_rounds_section({}, [], {}) == []
+
+
+def test_cost_accounting_counts_training_and_replication_factually():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+        },
+        {
+            "index": 2,
+            "kind": "training",
+            "training_budget_steps": 100,
+            "completed_training_steps": 120,
+        },
+        {
+            "index": 3,
+            "kind": "replication",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+            "replication_of": 1,
+        },
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "Training experiments: 3" in text
+    assert "completed steps: 320" in text
+    assert "requested steps: 300" in text
+    assert "Replication experiments recorded: 3." in text
+
+
+def _measurement(
+    candidate: str,
+    *,
+    seed: int = 4200,
+    episodes: int = 160,
+    semantics: str = "semantics",
+) -> dict:
+    return {
+        "candidate": candidate,
+        "seed": seed,
+        "episodes": episodes,
+        "evaluation_semantics": semantics,
+        "metrics": {"seed": seed, "episodes": episodes, "evaluation_semantics": semantics},
+    }
+
+
+def _task_reference(candidate: str, *, seed: int = 7300, episodes: int = 200) -> dict:
+    return {
+        "candidate": candidate,
+        "panel": "task-reference-v1",
+        "seed": seed,
+        "episodes": episodes,
+    }
+
+
+def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "requested_evaluations": [
+                _measurement("c1"),
+                _measurement("c2"),
+            ],
+            "task_reference_evaluations": [_task_reference("c1")],
+        },
+        {
+            "index": 2,
+            "kind": "training",
+            "requested_evaluations": [_measurement("c3")],
+            "task_reference_evaluations": [_task_reference("c3")],
+        },
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "Instrument executions: 3 research_evaluation, 2 task_reference." in text
+    assert "research_evaluation coverage: 160 distinct episodes; 480 episode" in text
+    assert "320 repeated." in text
+    assert "task_reference coverage: 200 distinct episodes; 400 episode" in text
+    assert "200 repeated." in text
+
+
+def test_cost_accounting_distinguishes_overlapping_research_panels():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "requested_evaluations": [
+                _measurement("c1", seed=4200, semantics="v1"),
+                _measurement("c2", seed=4360, semantics="v1"),
+            ],
+        }
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    # Two disjoint 160-episode panels: 320 distinct identities, no repetition.
+    assert "research_evaluation coverage: 320 distinct episodes; 320 episode" in text
+    assert "0 repeated." in text
+
+
+def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+            "evaluation_rounds": [{"round": 1}, {"round": 2}],
+            "requested_evaluations": [
+                _measurement("c1", episodes=10, seed=1),
+                _measurement("c2", episodes=10, seed=1),
+            ],
+        }
+    ]
+    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    assert "Evaluation rounds: 2." in text
+    assert "Instrument executions: 2 research_evaluation, 0 task_reference." in text
+    assert "research_evaluation coverage: 10 distinct episodes; 20 episode" in text
+    assert "10 repeated." in text
+
+
+def test_cost_accounting_does_not_recommend_confirmation():
+    text = "\n".join(brief._v4_cost_accounting_section({}, [], None)).lower()
+    for wording in ("budget limit", "warning", "should", "enough", "stop"):
+        assert wording not in text

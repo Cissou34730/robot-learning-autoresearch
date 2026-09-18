@@ -17,7 +17,7 @@ from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 def _policy_observation_contract() -> tuple[int, Callable[[Any], np.ndarray]]:
     """Resolved on use: the scenario package imports the verdict built here."""
-    from robot_learning.training.observations import (
+    from robot_learning.scenario.observations import (
         OBSERVATION_SIZE,
         reach_observation,
     )

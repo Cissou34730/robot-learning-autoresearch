@@ -7,6 +7,82 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-17 - Audit remediation
+
+- **Statistic ownership:** The protected paired module owns episode identity,
+  conflicting-outcome rejection, shared-panel reconciliation and the paired
+  contingency counts. The choice of inferential test is researcher-owned in
+  `robot_learning/training/comparison.py`; the Runner stores only the protected
+  counts, so a restored recipe can change a statistic but cannot corrupt the
+  measurement it is computed from.
+- **Coverage accounting:** Campaign episode coverage is computed per instrument
+  from deterministic identities (`(evaluation_semantics, episode_seed)` for
+  research evaluation, `(panel, episode_seed)` for task reference), deduplicated
+  across models, so reused panels are reported as repeated coverage.
+- **Round resolution:** Every requested operation is recorded in its round as
+  `executed`, `reused` or `failed`. A reused operation links the original
+  artifact, fingerprint and source round and adds no executions or distinct
+  identities.
+- **Panel independence:** A research-evaluation panel is the half-open episode
+  interval `[seed, seed + episodes)`. A request may reuse an identical panel or
+  use a disjoint panel; partial overlap with an earlier research panel, and any
+  overlap with the protected benchmark episodes, is rejected. Historical records
+  and legacy `purpose` fields remain readable and are ignored.
+- **Stopping decision:** Development measurements support model selection and
+  scientific judgment; a measurement used to select a model is not automatically
+  independent confirmation. The Researcher may run another round on a disjoint
+  panel and decides whether the available evidence justifies requesting the
+  official benchmark. No terminal-validation label, confidence threshold, special
+  evidence type, or panel count is required, and the official benchmark remains
+  terminal and irreversible.
+- **Deferred structural migration:** Relocating protected scenario adapters,
+  reducing exception-based ownership, and moving the PowerShell phase machine
+  into the Runner are scheduled as one coordinated campaign-boundary migration.
+  Path moves legitimately change the evaluation-semantics fingerprint; existing
+  evidence stays readable but is not pooled automatically, and no fingerprint
+  aliasing is used. Runtime behaviour is otherwise unchanged, and the v4 lifecycle
+  is verified to never write the legacy evaluation-request state.
+
+## 2026-09-16 - Measurement integrity on the protected side
+
+- **Comparison accounting placement:** Deterministic episode identity,
+  distinct-coverage counting, and conflicting-outcome rejection are correctness
+  properties of measurement, not scientific choices. They live in the protected
+  `robot_learning/benchmark/paired_evidence.py`, so restoring a research recipe
+  cannot silently revert the shared-episode fix. The optional statistic and the
+  decision to request a comparison remain the Researcher's.
+- **Development versus official panel:** The research-evaluation default seed and
+  episode count are deliberately distinct from the official benchmark panel.
+  Coinciding defaults would make development measurement reproduce the terminal
+  verdict panel, so the official result would not be held out.
+- **Evaluation-round provenance:** Each completed measurement request is kept as
+  an ordered, identifiable round with its question, reason, per-measurement
+  selections and artifact references. It is written before execution and carried
+  into the closed experiment record, so restart recovery cannot duplicate or
+  lose a round. Aggregate measurement views remain derivable from the rounds.
+- **Cost visibility:** The brief reports training experiments, completed and
+  requested steps, recorded replications, evaluation rounds, instrument
+  executions, distinct episode coverage and repeated coverage as facts. It sets
+  no budget, target, or preferred allocation, and implies no stopping decision.
+- **Optional researcher tests:** During a campaign a researcher-owned source
+  change runs only the protected AutoResearch boundary checks. Researcher-authored
+  tests remain an optional instrument, never a completion obligation, while
+  parameter-only changes run no suites and human-owned, protected, dependency or
+  unclassified changes keep full validation.
+- **Ownership registry guard and housekeeping:** every explicitly declared
+  classification is checked against the files on disk, so a declared-but-missing
+  path fails loudly instead of silently changing evaluation semantics. The dead
+  compatibility shims in `robot_learning/environments/`, `robot_learning/rewards/`
+  and `robot_learning/training/observations.py`, plus the unclassified
+  `research/benchmark_envs.py` throughput probe, are removed. Moving the protected
+  scenario files and the PowerShell phase machine is deferred to a campaign
+  boundary because those path moves change measurement identity.
+- **Phase consolidation:** the v4 lifecycle exposes exactly three Researcher
+  phases - experiment design ("new hypothesis"), investigation ("post-training
+  analysis", which may request another measurement round) and closure ("lineage
+  decision"). The separate "evaluation design" session is retained only as the
+  legacy schema-v3-compatibility path and is not part of the v4 lifecycle.
+
 ## 2026-09-07 - Research harness evidence and context
 
 - **Authoritative context:** The brief exposes current lineage identities,

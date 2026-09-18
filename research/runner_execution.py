@@ -621,7 +621,7 @@ def requested_paired_comparisons(
     *,
     evidence_plan: list[dict] | None = None,
 ) -> list[dict]:
-    from robot_learning.training.comparison import paired_comparison
+    from robot_learning.paired_evidence import paired_comparison
 
     comparisons = request.get("paired_comparisons", [])
     if not isinstance(comparisons, list):

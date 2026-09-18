@@ -65,8 +65,11 @@ closing the current trained experiment. Researcher-owned instrumentation may be
 changed before submitting the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
-`measurements` selects the instruments and models to run. `paired_comparisons`
-selects comparisons to compute from compatible measurements and is optional.
+The request-level `reason` should explain why the selected candidate or
+instrument set is useful relative to at least one available alternative for the
+stated uncertainty. `measurements` selects the instruments and models to run.
+`paired_comparisons` selects comparisons to compute from compatible measurements
+and is optional.
 
 Write `research/evaluation_request.json`:
 
@@ -117,20 +120,59 @@ identifier is available and is not measured in the same request. Use `null` only
 when the request measures every available model; the Runner verifies that
 condition.
 
+A `research_evaluation` panel is the half-open episode interval
+`[seed, seed + episodes)`. A request may reuse an identical panel or use a panel
+disjoint from every recorded research panel; partial overlap is rejected.
+Several measurements may share one identical panel. A panel overlapping the
+protected benchmark episodes is rejected, and historical records remain readable.
+
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
 
-| Instrument            | Additional fields                                                       | Operation                                                          |
-| --------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `research_evaluation` | `episodes`: positive integer; `seed`: integer; optional `label`: string | Measures a saved policy using researcher-owned evaluation code and request-provided settings |
-| `task_reference`      | Optional `label`: string                                                | Measures a saved policy on the protected original task using a fixed development panel distinct from the final benchmark |
+The requestable measurements are distinguished by measurement properties, not by
+authority:
 
-Task-reference measurement is independent of researcher-owned environments and
-evaluation code. It reports task success and per-episode target geometry and
-outcomes. The panel definition is in
-`robot_learning/benchmark/reference_contract.py`; its execution and reported
-quantities are in `robot_learning/benchmark/reference_evaluation.py`.
+- `research_evaluation` is a configurable development measurement. It supports
+  fresh panels, paired comparisons, and researcher-defined diagnostics.
+- `task_reference` is a fixed development panel. It measures the protected task
+  consistently across research recipes. Because it is repeatedly reused during
+  model selection, its results are selection-contaminated and must not receive
+  automatic priority in lineage decisions.
+- Neither instrument is generally authoritative over the other. Evidential
+  weight depends on the scientific question, panel independence, comparability,
+  and the observed results.
+
+The protected task defines the objective, and the official benchmark remains the
+only terminal verdict. That does not make either development instrument
+authoritative: instruments are not ranked, and a reused panel is not a default
+lineage criterion.
+
+### `research_evaluation`
+
+- Ownership: researcher-owned evaluation code and instrumentation, changed with
+  the research recipe.
+- Settings: request-provided `episodes` (positive integer) and `seed` (integer);
+  optional `label` (string).
+- Measured task: the current researcher-owned task and environment mechanics.
+- Outputs: per-episode success and any researcher-defined evidence the scenario
+  evaluator emits.
+- Artifact semantics: measurement identity covers the evaluator, environment and
+  task mechanics, and instrumentation outside the saved artifact.
+
+### `task_reference`
+
+- Ownership: human-owned panel and evaluator, not changed with the research
+  recipe.
+- Settings: optional `label` (string); the fixed panel's episodes and seed are
+  not request-configurable.
+- Measured task: the protected original task, independent of researcher-owned
+  environments and evaluation code.
+- Outputs: per-episode success plus target geometry and outcomes.
+- Artifact semantics: the panel is fixed and versioned, so measurements remain
+  comparable across research changes. Panel definition is in
+  `robot_learning/benchmark/reference_contract.py`; execution and reported
+  quantities are in `robot_learning/benchmark/reference_evaluation.py`.
 
 Add one entry per model and instrument.
 
@@ -258,6 +300,13 @@ campaign. It groups the new run with the referenced experiment for replication
 evidence; it does not restore that experiment’s code or configuration and does
 not claim exact replay.
 
+A `replication_of` group therefore records related evidence. It does not
+establish an exact reproduction of a previous learning trajectory. A fresh run
+of a recipe previously exercised through transfer does not reproduce the
+transferred learning trajectory; it tests whether the current recipe can learn
+from fresh initialization. Scientific claims about replication must use that
+narrower interpretation.
+
 ## Record the postmortem
 
 **Phase:** Experiment closure.
@@ -307,8 +356,8 @@ success.
 New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
 and conclusion belong to the Researcher; the Runner checks only that it is
 present. This assessment does not determine saved-policy usefulness, recipe,
-lineage, retention, or terminal-readiness decisions. Fresh baselines are exempt,
-and historical entries remain readable.
+lineage, retention, or the decision to request the official benchmark. Fresh
+baselines are exempt, and historical entries remain readable.
 
 ## Resolve lineage
 
