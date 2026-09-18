@@ -724,3 +724,82 @@ inferred rather than observed. `working`/`best_known` (experiment 8
 artifact is preferred to it, and the reward change is reverted.
 
 **Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-20480-200ep-seed20260918-9ea08384b3a2.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-100352-200ep-seed20260918-9ea08384b3a2.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-120832-200ep-seed20260918-9ea08384b3a2.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-120832-200ep-seed20260918-6db0b3ca786d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-working-200ep-seed20260918-6db0b3ca786d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-9-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-9/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-9/parameters.json, research/results.jsonl, research/research_state.json, research/brief.md, robot_learning/scenario/reward.py, robot_learning/scenario/environment.py, robot_learning/scenario/evaluation.py, robot_learning/robots/two_joint_arm.xml, training log for experiment 9 (research/query_training_log.py)
+
+## 603a61bf-d5d0-437a-9aea-3d5988940d85 / Experiment 10
+
+**Result:** A training-only potential that rewards reducing the summed wrapped
+joint error to the joint-feasible analytic branch, applied by transfer from
+`working`, left the researcher panel exactly unchanged (194/200 = 97.0% with the
+parent's identical six failures {7, 56, 64, 75, 107, 145} at both 20,480 and
+120,832 steps) and net-regressed the protected task-reference panel to 196/200 =
+98.0%, down from the parent's 197/200 = 98.5%. On the protected panel the
+endpoint repaired near-limit failure episode 175 and newly failed near-limit
+episodes 0 and 10. The branch-guidance reward is reverted and `working`
+(experiment 8 `checkpoint-120832`) remains the selected policy.
+
+**Observed behavior:** Experiment 10 was a diagnostic transfer `training` run
+from `working`, seed 0, 120,000 requested / 120,832 completed steps, 24
+checkpoints. The change computed both analytic inverse-kinematics branches in
+`robot_learning/scenario/environment.py`, selected the folded branch when the
+open branch was joint-infeasible (shoulder or elbow outside +/-170 degrees) and
+the folded branch feasible, and added a potential term `BRANCH_GUIDANCE_COEFFICIENT
+= 20.0` times the per-step decrease of the summed absolute wrapped joint error to
+that branch in `robot_learning/scenario/reward.py`; observation, PolicyIO, action
+space, target distribution, success and hold semantics, PPO parameters and the
+protected benchmark were unchanged. Training-time success was 0.99 at 20,480 and
+0.94 at 120,832 (`ep_rew_mean` 110.22 and 119.62). On the researcher panel (seed
+20260918, semantics 36aff4660c2d) both measured checkpoints score 194/200 = 97.0%
+and fail exactly {7, 56, 64, 75, 107, 145}, the parent's failure set; a recorded
+paired comparison of the two checkpoints shows 0 discordant episodes (p = 1.0)
+even though all 200 per-episode reward totals differ, so the weights and
+trajectories changed while the deterministic success outcomes did not. On
+task-reference-v1 the endpoint scores 196/200 = 98.0% with failures {0, 10, 84,
+102}, against the parent's 197/200 = 98.5% with {84, 102, 175}. Recomputing the
+branches from the recorded per-episode geometry shows all six researcher-panel
+failures and all of episodes {0, 10, 175, 84, 102} lie in the guidance-active
+band: the open branch is joint-infeasible (open shoulder -172.8 to -185.4
+degrees) while the folded branch is feasible, so the added term was active on
+every one of these targets. At the researcher-panel failures the policy stalls
+0.5-1.7 cm outside the 1 cm tolerance with 0-2 held steps; the newly failed
+task-reference episodes 0 and 10 stall at 1.05 and 1.03 cm, and repaired episode
+175 now succeeds at 0.998 cm in 123 steps. `working`/`best_known` and the
+experiment-8 recipe are restored; no experiment-10 artifact is retained.
+
+**Hypothesis assessment:** Contradicted for the stated prediction. The proposal
+predicted that the six researcher-panel wedge episodes would move onto the
+joint-feasible folded branch, complete the 100-step hold, raise researcher success
+above 194/200, and leave the protected panel not below 197/200, and it named the
+alternative that the wedge is an optimization or precision limit the reward
+branch gradient would not repair. Observed: none of the six wedge episodes
+changed outcome at either checkpoint, researcher success stayed at 194/200, and
+the protected panel recorded the proposal's own stated contradicting observation
+by adding new failures (episodes 0 and 10) on targets the parent solves. The
+alternative is left standing. The result is not complete inertness: the reward
+changed every per-episode researcher reward total and the protected-panel failure
+set, so the term influenced the policy; that influence redistributed which
+near-limit targets are solved rather than repairing the wedge, and its net
+protected-panel effect was negative. Scope: two measured checkpoints (the
+training-proxy peak and the endpoint), one seed-0 lineage, one coefficient and
+potential shape, and deterministic 200-episode panels.
+
+**Interpretation:** The experiment weakens the simplest "no branch gradient"
+explanation for the wedge. A potential-based term that is active precisely on the
+near-limit band, and that measurably altered trajectories and the protected failure
+set, still left the six researcher-panel failures at exactly the same success
+outcomes, while shifting protected-panel borderline results (repairing one 18.2 cm
+near-limit target and breaking two 6.7-7.2 cm near-limit targets). Combined with
+experiment 9's fully-active but outcome-inert joint-limit penalty, two oppositely
+directed near-limit signals - a penalty for the infeasible posture and a reward for
+the feasible branch - have now both failed to move the deterministic wedge. This
+is most consistent with an optimization/credit-assignment or precision limit at the
+shoulder boundary that the reach-and-hold shaping dominates, though the tested
+coefficient of 20 per radian may still be too weak relative to the progress term
+(10 per metre) and the hold bonuses (50), or the potential may be evaluated along a
+path that does not cross the barrier toward the folded configuration, so a stronger
+or differently shaped branch signal is not excluded. The protected-panel trade also
+shows the branch boundary is sensitive to a near-limit reward term, and that its
+sensitivity is not aligned with aggregate task success. `working`/`best_known`
+(experiment 8 `checkpoint-120832`) remains the strongest measured policy, is not
+exceeded by any experiment-10 artifact, and the reward change is reverted.
+
+**Evidence inspected:** research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-10-checkpoint-120832-200ep-seed20260918-36aff4660c2d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-10-checkpoint-20480-200ep-seed20260918-36aff4660c2d.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-10-checkpoint-120832-task-reference-v1.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/evaluation-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-200ep-seed20260918-ffdccdbf3357.json, research/evaluations/603a61bf-d5d0-437a-9aea-3d5988940d85/task-reference-603a61bf-d5d0-437a-9aea-3d5988940d85-experiment-8-checkpoint-120832-task-reference-v1.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-10/inventory.json, research/checkpoints/challengers/603a61bf-d5d0-437a-9aea-3d5988940d85/experiment-10/parameters.json, research/results.jsonl, research/research_state.json, research/brief.md, robot_learning/scenario/environment.py, robot_learning/scenario/reward.py, robot_learning/scenario/observations.py, robot_learning/robots/two_joint_arm.xml
