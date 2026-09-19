@@ -598,7 +598,7 @@ def test_v4_brief_candidate_order_is_metric_independent(monkeypatch, tmp_path):
     ]
     artifacts = {name: f"research/checkpoints/{name}" for name in names}
 
-    def render(proxies, order, timestep_offset=0):
+    def render(proxies, order, timestep_offset=0, reward_offset=0.0, measured=frozenset()):
         state = {
             "schema_version": 4,
             "campaign": {"id": "campaign", "base_commit": "base"},
@@ -610,9 +610,9 @@ def test_v4_brief_candidate_order_is_metric_independent(monkeypatch, tmp_path):
                         "name": name,
                         "timesteps": int(name.split("-")[-1]) + timestep_offset,
                         "training_success": proxies[name],
-                        "ep_rew_mean": 100.0,
+                        "ep_rew_mean": 100.0 + reward_offset,
                         "artifact": artifacts[name],
-                        "evaluations": [],
+                        "evaluations": [{"seed": 1}] if name in measured else [],
                     }
                     for name in order
                 ],
@@ -643,9 +643,16 @@ def test_v4_brief_candidate_order_is_metric_independent(monkeypatch, tmp_path):
     first_latest, first_inventory, first_order = render(high, names)
     _, second_inventory, second_order = render(low, list(reversed(names)))
     _, _, third_order = render(high, names, timestep_offset=1)
+    _, _, fourth_order = render(high, names, reward_offset=500.0)
+    _, _, fifth_order = render(
+        high, names, measured={"checkpoint-5120", "checkpoint-40960"}
+    )
 
-    # Proxy values, timesteps and input order never change the rendered order.
-    assert first_order == second_order == third_order
+    # Proxy values, timesteps, reward, input order, and measurement status never
+    # change the rendered order.
+    assert (
+        first_order == second_order == third_order == fourth_order == fifth_order
+    )
     assert len(first_order) == len(names)
     assert set(first_order) == {f"`{name}`" for name in names}
     # Proxy metrics stay visible as evidence rather than disappearing.
@@ -655,6 +662,61 @@ def test_v4_brief_candidate_order_is_metric_independent(monkeypatch, tmp_path):
     assert "episode reward" not in first_latest
     assert "checkpoint ranking" not in first_latest
     assert "`research/checkpoints/inventory.json`" in first_inventory
+
+
+def test_v4_brief_candidate_order_is_scoped_by_experiment(monkeypatch, tmp_path):
+    research_dir = tmp_path / "research"
+    research_dir.mkdir()
+    (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
+    (research_dir / "postmortems.md").write_text("", encoding="utf-8")
+    (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    monkeypatch.setattr("research.build_research_brief.ROOT", tmp_path)
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", research_dir)
+    names = [f"checkpoint-{n}" for n in range(1, 9)]
+
+    def render(experiment):
+        state = {
+            "schema_version": 4,
+            "campaign": {"id": "campaign", "base_commit": "base"},
+            "pending_analysis": {
+                "experiment": experiment,
+                "result": {"index": experiment},
+                "candidates": [
+                    {
+                        "name": name,
+                        # A campaign-stable fingerprint that does not vary with
+                        # experiment number, so only the scope can move order.
+                        "fingerprint": f"fp-{name}",
+                        "timesteps": 1000,
+                        "training_success": 0.5,
+                        "ep_rew_mean": 100.0,
+                        "artifact": f"research/checkpoints/{name}",
+                        "evaluations": [],
+                    }
+                    for name in names
+                ],
+            },
+        }
+        (research_dir / "research_state.json").write_text(
+            json.dumps(state), encoding="utf-8"
+        )
+        brief = render_research_brief()
+        inventory = brief.split(
+            "### Current experiment candidate inventory", 1
+        )[1].split("## Working lineage", 1)[0]
+        rows = [
+            line
+            for line in inventory.splitlines()
+            if line.startswith("| `checkpoint-")
+        ]
+        return [row.split("|")[1].strip() for row in rows]
+
+    experiment_3_order = render(3)
+    experiment_4_order = render(4)
+
+    # A fingerprint that is stable across experiments must not fix the same
+    # permutation in every experiment; the scope must still vary the order.
+    assert experiment_3_order != experiment_4_order
 
 
 def test_v4_brief_reports_a_terminal_official_assessment(monkeypatch, tmp_path):

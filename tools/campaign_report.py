@@ -83,17 +83,24 @@ def _candidate_identity(candidate: dict) -> str:
     return json.dumps(candidate, sort_keys=True, separators=(",", ":"))
 
 
-def display_order(candidates: list[dict]) -> list[dict]:
+def display_order(
+    candidates: list[dict],
+    campaign_id: str | None = None,
+    experiment: object = None,
+) -> list[dict]:
     """Mirror build_research_brief.candidate_display_order.
 
-    The order is a metric-independent stable permutation of artifact identity so
-    it never ranks candidates by training proxy, timestep or input position.
+    The order is a metric-independent stable permutation of artifact identity
+    salted by campaign/experiment scope, so it never ranks candidates by
+    training proxy, timestep or input position, and does not collapse to one
+    fixed permutation across experiments.
     """
+    scope = f"{campaign_id or ''}|{experiment if experiment is not None else ''}"
     return sorted(
         candidates,
         key=lambda candidate: (
             hashlib.sha256(
-                _candidate_identity(candidate).encode("utf-8")
+                f"{scope}|{_candidate_identity(candidate)}".encode("utf-8")
             ).hexdigest(),
             _candidate_identity(candidate),
         ),
@@ -120,7 +127,9 @@ def selection_diagnostics(rows: list[dict]) -> list[list]:
         names = {candidate.get("name") for candidate in candidates}
         displayed = {
             candidate.get("name"): position + 1
-            for position, candidate in enumerate(display_order(candidates))
+            for position, candidate in enumerate(
+                display_order(candidates, row.get("campaign_id"), row.get("index"))
+            )
         }
         proxy_sorted = sorted(
             candidates,

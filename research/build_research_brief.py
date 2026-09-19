@@ -425,20 +425,29 @@ def _candidate_identity(candidate: dict) -> str:
     return _stable_json({key: candidate.get(key) for key in sorted(candidate)})
 
 
-def _candidate_order_key(candidate: dict) -> tuple:
+def _candidate_order_key(candidate: dict, scope: str) -> tuple:
     """A deterministic, metric-independent order key.
 
-    The order is a stable permutation derived only from candidate identity. It
-    does not depend on training proxy values, timesteps, candidate input order,
-    or whether the candidate has been measured.
+    The order is a stable permutation derived from candidate identity salted by
+    the campaign/experiment scope. It does not depend on training proxy values,
+    timesteps, candidate input order, or whether the candidate has been
+    measured. Scoping by campaign and experiment keeps the permutation from
+    collapsing to one fixed ordering if a candidate identifier ever becomes
+    stable across experiments (e.g. a content fingerprint).
     """
     identity = _candidate_identity(candidate)
-    return (hashlib.sha256(identity.encode("utf-8")).hexdigest(), identity)
+    salted = f"{scope}|{identity}"
+    return (hashlib.sha256(salted.encode("utf-8")).hexdigest(), identity)
 
 
-def candidate_display_order(candidates: list[dict]) -> list[dict]:
+def candidate_display_order(
+    candidates: list[dict],
+    campaign_id: str | None = None,
+    experiment: object = None,
+) -> list[dict]:
     """Candidates in their deterministic, metric-independent display order."""
-    return sorted(candidates, key=_candidate_order_key)
+    scope = f"{campaign_id or ''}|{experiment if experiment is not None else ''}"
+    return sorted(candidates, key=lambda candidate: _candidate_order_key(candidate, scope))
 
 
 def _candidate_steps(candidate: dict) -> str:
@@ -446,7 +455,11 @@ def _candidate_steps(candidate: dict) -> str:
     return "-" if timesteps is None else f"{int(timesteps):,}"
 
 
-def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
+def _checkpoint_inventory_lines(
+    candidates: list[dict],
+    campaign_id: str | None = None,
+    experiment: object = None,
+) -> list[str]:
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
     parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
     common_parts = list(parents[0].parts) if parents else []
@@ -474,7 +487,7 @@ def _checkpoint_inventory_lines(candidates: list[dict]) -> list[str]:
         "| Candidate | Steps | Training success | Training reward | Measurements |",
         "|---|---:|---:|---:|---:|",
     ]
-    for candidate in candidate_display_order(candidates):
+    for candidate in candidate_display_order(candidates, campaign_id, experiment):
         lines.append(
             f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
             f"{_candidate_metric(candidate, 'training_success')} | "
@@ -678,7 +691,14 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         else []
     )
     if candidates:
-        lines.extend(_checkpoint_inventory_lines(candidates))
+        pending_analysis = state.get("pending_analysis") or {}
+        lines.extend(
+            _checkpoint_inventory_lines(
+                candidates,
+                campaign_id=state.get("campaign", {}).get("id"),
+                experiment=pending_analysis.get("experiment"),
+            )
+        )
     else:
         lines.append("No current experiment candidates are recorded.")
     return lines
@@ -1205,9 +1225,10 @@ def _v4_measurement_rounds_section(
             continue
         prior_panels.update(_record_research_panels(record))
     # Issue #43: during preparation the brief summarizes the prior experiment's
-    # outcomes and artifact references without replaying per-candidate selection
-    # prose, which would otherwise act as an exemplar template for the next
-    # request. The durable record keeps the full rationale.
+    # outcomes and artifact references without replaying the round-level `reason`
+    # or per-candidate `selection` prose, either of which would otherwise act as
+    # a comparative-selection exemplar template for the next request. The
+    # durable record keeps the full rationale.
     include_selections = isinstance(pending, dict)
     lines = [
         "",
@@ -1220,7 +1241,7 @@ def _v4_measurement_rounds_section(
             if include_selections
             else "Completed measurement rounds from the most recent experiment, in "
             "the order they were requested. Questions, results and artifact "
-            "references are retained; per-candidate selection rationale stays in "
+            "references are retained; comparative selection rationale stays in "
             "the durable record:"
         ),
     ]
@@ -1231,13 +1252,16 @@ def _v4_measurement_rounds_section(
         lines.extend(["", f"### Round {record.get('round', '-')} ({status})"])
         if record.get("question"):
             lines.append(f"- Question: {_compact(str(record['question']), 400)}")
-        if record.get("reason"):
+        # Issue #43: the round-level `reason` explains the selected candidates
+        # relative to an alternative, so it is comparative selection prose too
+        # and is suppressed during preparation for the same reason as `selection`.
+        if include_selections and record.get("reason"):
             lines.append(f"- Reason: {_compact(str(record['reason']), 400)}")
-        results = (
+        round_results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
         round_panels: set[tuple[int, int]] = set()
-        for item in results.get("research_evaluations") or []:
+        for item in round_results.get("research_evaluations") or []:
             if not isinstance(item, dict):
                 continue
             panel = _research_panel_of(item)
@@ -1270,7 +1294,7 @@ def _v4_measurement_rounds_section(
                         item["evaluation_artifact"], kind="file"
                     )
                 )
-        for item in results.get("task_reference_evaluations") or []:
+        for item in round_results.get("task_reference_evaluations") or []:
             if not isinstance(item, dict):
                 continue
             detail = f"panel `{item.get('panel', '-')}`"
@@ -1295,7 +1319,7 @@ def _v4_measurement_rounds_section(
                         item["evaluation_artifact"], kind="file"
                     )
                 )
-        for item in results.get("paired_comparisons") or []:
+        for item in round_results.get("paired_comparisons") or []:
             if not isinstance(item, dict):
                 continue
             lines.append(
@@ -1521,7 +1545,11 @@ def render_research_brief() -> str:
             "| Candidate | Steps | Training success | Training reward | Artifact |",
             "|---|---:|---:|---:|---|",
         ]
-        for candidate in candidate_display_order(pending_evaluation["candidates"]):
+        for candidate in candidate_display_order(
+            pending_evaluation["candidates"],
+            campaign_id=campaign_id,
+            experiment=pending_evaluation.get("experiment"),
+        ):
             evaluation_lines.append(
                 f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
                 f"{_candidate_metric(candidate, 'training_success')} | "

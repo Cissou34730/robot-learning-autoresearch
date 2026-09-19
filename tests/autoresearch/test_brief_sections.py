@@ -268,10 +268,14 @@ def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
 
     # Follow-up analysis keeps the evidence needed to adapt the next round.
     assert "Selection: proxy peak template" in analysis
+    assert "Reason: round reason" in analysis
     # Preparation retains outcomes and references without replaying exemplars.
     assert "does it reproduce" in preparation
     assert "success 90.00%" in preparation
     assert "Selection: proxy peak template" not in preparation
+    # Issue #43: the round-level `reason` is comparative selection prose too,
+    # so it is suppressed during preparation just like per-candidate `selection`.
+    assert "Reason: round reason" not in preparation
     assert "Completed measurement rounds" in preparation
     assert "Measurement rounds for the current experiment" in analysis
 
