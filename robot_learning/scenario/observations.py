@@ -10,17 +10,10 @@ from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
 OBSERVATION_SIZE = 11
 
-# Hinge range of the two-joint arm in `robots/two_joint_arm.xml` (degrees). An
-# IK branch whose joint angle falls outside this range is unreachable.
-JOINT_LIMIT_DEGREES = 170.0
-
 
 def reach_observation(data) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
-
-    def within_joint_limits(angle: float) -> bool:
-        return abs(wrap_to_pi(angle)) <= np.radians(JOINT_LIMIT_DEGREES)
 
     def shoulder_for_elbow(elbow: float) -> float:
         return float(
@@ -40,14 +33,6 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    # The open-elbow solution can name a shoulder angle beyond the hinge range:
-    # an unreachable configuration is not a usable target. Where the open branch
-    # is infeasible, expose the reachable folded configuration in its place so
-    # the primary branch input always names a configuration the joint limits
-    # admit. The rest of the layout is unchanged.
-    if not within_joint_limits(shoulder_open) or not within_joint_limits(elbow_open):
-        shoulder_open = shoulder_folded
-        elbow_open = elbow_folded
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
