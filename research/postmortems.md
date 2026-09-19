@@ -33,3 +33,21 @@
 - robot_learning/scenario/training_environment.py
 - robot_learning/scenario/environment.py
 - robot_learning/scenario/evaluation.py
+
+## c92ccfe2-1135-4ec4-bc5a-eded729fc461 / Experiment 3
+
+**Result:** The 50% lower-left curriculum intervention did not improve the measured policy. The transferred working policy remains the best-known lineage, and the changed recipe is reverted.
+
+**Observed behavior:** The experiment-3 candidate inventory reports a strong early training proxy for checkpoint-5120 (0.96875 training success, 117.45 mean training reward), followed by lower proxy values at later checkpoints; checkpoint-120832 reports 0.85 training success and 99.27 mean training reward. These are training-time proxies, not task measurements. On the same disjoint research-evaluation panel of 1,000 episodes with seed 10000, working succeeded on 972/1000 (97.2%), checkpoint-5120 on 964/1000 (96.4%), and checkpoint-120832 on 918/1000 (91.8%). Paired comparisons favored working by 0 to 8 discordant wins against checkpoint-5120 and by 1 to 55 against checkpoint-120832. The diagnostic panel showed no lower-left repair: working versus checkpoint-5120 versus checkpoint-120832 succeeded in the [-180,-150) degree bin at 96.3%, 90.2%, and 81.7%, and in [-150,-120) at 71.1%, 68.7%, and 63.9%. The final challenger also introduced unexpected failures outside the target sector, including 69.7% success in [150,180) degrees and 81.7% and 82.7% success in the 6-8 cm and 8-10 cm radius bands, compared with working's 100%, 97.2%, and 95.0% in those bins. The early proxy peak therefore did not translate into task success; hold interruptions and near-target failures were orthogonal warning signals in the saved-policy diagnostics.
+
+**Hypothesis assessment:** The hypothesis is weakened under this transferred recipe and training budget. The expected observation of improved lower-left success with preserved broad-distribution performance was not observed: both measured challengers were below working on the shared panel, and the final checkpoint regressed in positive-angle and near-target sectors. This does not establish that coverage can never help or prove the joint-limit/IK explanation; it shows that increasing this unchanged angular curriculum probability from 0.25 to 0.50 did not produce a useful policy in the tested run. The early training proxy is not evidence of progress toward the human objective. The 97.2% working result is also below the 98% objective, so this closure selects the best measured development policy rather than declaring the objective reached; the reused task-reference panel is not used as independent confirmation.
+
+**Interpretation:** Stronger sampling of the already targeted angular range was insufficient to repair the residual lower-left behavior and was associated with broader degradation by the final checkpoint. The shared panel is directly comparable for the three policies and provides measured evidence against retaining either experiment-3 challenger, while the single transferred recipe does not identify whether the remaining deficit is geometric, representational, reward-related, or optimization-related. Reverting preserves the measured 97.2-97.3% working baseline and leaves future work free to test a less disruptive explanation.
+
+**Evidence inspected:**
+- research/brief.md
+- research/checkpoints/challengers/c92ccfe2-1135-4ec4-bc5a-eded729fc461/experiment-3/inventory.json
+- research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-3-working-1000ep-seed10000-543af51fd137.json
+- research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-3-checkpoint-5120-1000ep-seed10000-543af51fd137.json
+- research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-3-checkpoint-120832-1000ep-seed10000-543af51fd137.json
+- robot_learning/scenario/training_environment.py
