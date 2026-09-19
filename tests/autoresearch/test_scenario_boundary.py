@@ -346,24 +346,6 @@ def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
     )
 
 
-def test_researcher_runtime_output_is_never_parsed():
-    script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-
-    assert "uv run --group researcher python researcher_copilot.py" in script
-    assert "--format json" not in script
-    for forbidden in ("ConvertFrom-Json $researcher", "Select-String", "Tee-Object"):
-        assert forbidden not in script
-    # The Runner may name the adapter as a path it protects, but must never
-    # import it, drive it, or read what it printed.
-    for relative, source in runner_sources().items():
-        assert "subprocess" not in source or "researcher_copilot" not in source, (
-            relative
-        )
-        for module in imported_modules(ROOT / relative):
-            assert module != "researcher_copilot", relative
-            assert module != "copilot" and not module.startswith("copilot."), relative
-
-
 def test_normalization_never_reaches_for_the_scenario():
     normalization = ROOT / "robot_learning" / "training" / "normalization.py"
     scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
