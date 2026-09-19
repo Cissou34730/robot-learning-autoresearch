@@ -103,3 +103,29 @@
 - `robot_learning/scenario/environment.py`
 - `robot_learning/benchmark/reference_evaluation.py`
 - `robot_learning/benchmark/spec.py`
+
+## 59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed / Experiment 5
+
+**Result:** Conditioning the open-branch observation on joint-limit feasibility did not reduce the folded-required failure rate; it eliminated it. On the fresh 600-episode panel seed 24000 the untouched parent `working` scored 97.50% (585/600) with 54.5% (18/33) on folded-required targets, while both measured experiment-5 checkpoints scored 94.50% (567/600) with 0% (0/33) on folded-required targets; the parent won both paired comparisons 18 vs 0.
+
+**Observed behavior:**
+- Round 1 measured all three models on the identical fresh panel seed 24000, episodes 24000-24599 (600 episodes, research_evaluation semantics `543af51fd137`): `working` 585/600 = 97.50%; experiment-5 `checkpoint-100352` 567/600 = 94.50%; experiment-5 `checkpoint-120832` 567/600 = 94.50%. All recorded as new panel coverage.
+- Paired comparisons over the same 600 episodes: `checkpoint-100352` vs `working` 0 vs 18 discordant wins; `checkpoint-120832` vs `working` 0 vs 18; `checkpoint-120832` vs `checkpoint-100352` 0 vs 0.
+- Reconstructing IK-branch feasibility from the recorded target geometry (open `arccos` solution inside the +/-170 degree hinge range) partitions the panel into 567 open-feasible and 33 folded-required episodes. `working`: open-feasible 567/567 = 100.0%, folded-required 18/33 = 54.5%. Both experiment-5 checkpoints: open-feasible 567/567 = 100.0%, folded-required 0/33 = 0.0%.
+- All 18 `working`-only wins have open-infeasible targets (open shoulder magnitude up to about 174.7 degrees), target angles -120.5 to -159.9 degrees and radii 6.95-18.59 cm. The two experiment-5 checkpoints recovered none of them; their 33-failure set is the union of the 15 failures `working` also had and those 18 episodes.
+- Failure mode shifts from mixed to pure reach failure. `working`'s 15 failures split 11 never-reached (max_held 0) / 4 reached-then-lost; both experiment-5 checkpoints never entered tolerance on all 33 failures (max_held 0, in_tolerance_steps 0).
+- Training log experiment 5 (transfer from `working`): training `success_rate` 1.0 and `ep_rew_mean` 124 at step 1024, drifting to 0.94 / 99.4 at 120,832 with `entropy_loss` rising from -1.16 to -0.53. Candidate inventory training success spans 0.91-0.98 and `ep_rew_mean` 97.3-121.1 across the run; these proxies did not flag the measured folded-sector collapse.
+
+**Hypothesis assessment:** Contradicted. The diagnostic proposition was that exposing the reachable folded configuration in the open-branch slots would reduce the folded-required failure rate of the working policy while leaving open-feasible behavior unchanged. The secondary clause held exactly (open-feasible stayed 567/567 = 100% for both checkpoints), but the primary proposition is contradicted: folded-required measured success fell from 54.5% (18/33) to 0% (0/33), and the parent won every discordant episode. Limits: one transfer run and training seed, one fresh 600-episode panel, and only the two training-proxy plateau extremes (checkpoint-100352 and checkpoint-120832) of 24 candidates. The two measured checkpoints are behaviorally identical on this panel (0 discordant of 600), so a different late-plateau checkpoint would not be expected to differ; an unmeasured early checkpoint is not covered. The folded/open partition is a kinematic feasibility computation from target geometry and joint limits, not a joint-trajectory or limit-contact observation.
+
+**Interpretation:** Replacing the open-branch input with the folded configuration whenever the open branch is infeasible did not give the policy a usable folded target; it removed the signal that previously let the policy reach tolerance on about half of the folded-required episodes. A plausible reading is that duplicating the folded configuration in both branch slots destroys the branch distinction the policy used to select and commit to the folded solution, but this mechanism is an inference from measured outcomes and is not isolated by this run. What is measured is that the intervention is mildly harmful overall and sharply harmful exactly in the sector it targeted, so it should not be carried forward. The untouched `working` lineage remains the best measured policy: this panel raises its pooled estimate to 2330/2400 = 97.08% over five distinct research panels, still below the 98% objective, with its entire measured residual still in the folded-required sector. The run again shows training proxies disagreeing with measured behavior (training `success_rate` near 1.0 at the start of the transfer while measured success fell).
+
+**Evidence inspected:**
+- `research/brief.md`
+- `research/postmortems.md`
+- `research/results.jsonl`
+- `research/checkpoints/challengers/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/experiment-5/inventory.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-5-working-600ep-seed24000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-5-checkpoint-100352-600ep-seed24000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-5-checkpoint-120832-600ep-seed24000-543af51fd137.json`
+- `robot_learning/scenario/observations.py`
