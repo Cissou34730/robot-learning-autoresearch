@@ -73,3 +73,24 @@
 - research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-4-working-1000ep-seed12000-543af51fd137.json
 - research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-4-checkpoint-5120-1000ep-seed12000-543af51fd137.json
 - robot_learning/scenario/reward.py
+
+## c92ccfe2-1135-4ec4-bc5a-eded729fc461 / Experiment 5
+
+**Result:** The fresh unchanged PPO recipe did not reproduce the near-97% working policy. The measured fresh checkpoints achieved 15.1% and 17.4% on a new 1,000-episode panel, while the working control achieved 96.1%. The objective is not reached; the working lineage remains the evidence-backed policy and the unchanged recipe is kept for the next experiment.
+
+**Observed behavior:** The experiment-5 training log shows `ep_rew_mean` increasing from -3.57 at 1,024 steps to 31.7 at 120,832 steps, while `success_rate` remained 0 and `ep_len_mean` remained 500. On the disjoint seed-13000 panel, checkpoint-100352 succeeded on 151/1000 episodes and checkpoint-120832 on 174/1000; the same-panel working control succeeded on 961/1000. The final fresh checkpoint had 787 never-enter failures, 39 episodes that entered tolerance but failed the hold, and 2,261 hold interruptions; the mid-run checkpoint had 804, 45, and 2,006 respectively, versus 16, 23, and 501 for working. The fresh final checkpoint had no successes in the 6-14 cm radius bins and failures across many angle bins, rather than only the working policy's lower-left residual. These are development measurements on one disjoint panel; the 22 other fresh checkpoints remain unmeasured.
+
+**Hypothesis assessment:** The confirmatory hypothesis is contradicted under this fresh initialization and training budget. The expected near-97% success and concentrated lower-left residual did not appear at either measured checkpoint; the late checkpoint's rising training proxy also did not translate into task success. The alternative that fresh initialization can produce materially different behavior is supported by this run, but one replication does not quantify initialization variance or show that no fresh run can reach the objective. The working control on the same panel makes a panel-wide explanation for the fresh run's low scores implausible, without establishing a causal mechanism for the learning failure.
+
+**Interpretation:** The saved fresh policies are not useful lineage replacements and do not justify measuring the remaining unmeasured checkpoints before closure: the same-step fresh checkpoint, the highest-proxy final checkpoint, and a directly measured working control already answer the replication question for this run. The result supports prioritizing a changed scientific intervention over another unchanged fresh baseline, while leaving the mechanism of the broad fresh-run failure unresolved. The measured working policy remains below the official 98% objective, so this closure is a development decision rather than terminal assessment.
+
+**Evidence inspected:**
+- research/brief.md
+- research/results.jsonl
+- research/current_params.json
+- research/checkpoints/challengers/c92ccfe2-1135-4ec4-bc5a-eded729fc461/experiment-5/inventory.json
+- research/checkpoints/challengers/c92ccfe2-1135-4ec4-bc5a-eded729fc461/experiment-5/parameters.json
+- research/training_logs/c92ccfe2-1135-4ec4-bc5a-eded729fc461/experiment-5-attempt-1.log
+- research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-5-checkpoint-100352-1000ep-seed13000-543af51fd137.json
+- research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-5-checkpoint-120832-1000ep-seed13000-543af51fd137.json
+- research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-5-working-1000ep-seed13000-543af51fd137.json
