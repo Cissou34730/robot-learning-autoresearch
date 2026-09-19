@@ -15,7 +15,7 @@ from robot_learning.scenario.environment import TwoJointArmReachEnv
 TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 CURRICULUM_ANGLE_RANGE = (np.radians(-165.0), np.radians(-115.0))
-CURRICULUM_PROBABILITY = 0.50
+CURRICULUM_PROBABILITY = 0.25
 
 
 class CurriculumTwoJointArmReachEnv(TwoJointArmReachEnv):
