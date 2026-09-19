@@ -24,6 +24,7 @@ from research import runner_execution as execution
 from research import runner_paths as paths
 from research import runner_protocol as protocol
 from research import runner_repository as repository
+from research.stop_control import interrupt_on_stop_request
 from robot_learning.training import research_config
 
 TIMESTEPS = 120_000
@@ -2215,8 +2216,33 @@ def main() -> int:
     if proposal_contract == "lineage":
         validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
-    return run_training_experiment(proposal, args)
+    try:
+        return run_training_experiment(proposal, args)
+    except KeyboardInterrupt:
+        if (
+            not paths.RECOVERY_PENDING_PATH.exists()
+            and not paths.RESTART_PENDING_PATH.exists()
+            and paths.PROPOSAL_PATH.exists()
+        ):
+            paths.RESTART_PENDING_PATH.write_text(
+                "Restart the preserved proposal from the beginning.\n",
+                encoding="utf-8",
+            )
+        console.announce(
+            "[runner] Experiment stopped before its recovery handler was ready; "
+            "the same experiment will restart from the beginning."
+        )
+        return 130
+
+
+def run_with_stop_control() -> int:
+    try:
+        with interrupt_on_stop_request():
+            return main()
+    except KeyboardInterrupt:
+        console.announce("[runner] Operation interrupted by the launcher.")
+        return 130
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run_with_stop_control())

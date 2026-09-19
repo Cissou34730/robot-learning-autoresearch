@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { test } from "node:test";
 
 import {
@@ -10,6 +13,7 @@ import {
   serverConfig,
   sessionLiveness,
   shutdownRuntime,
+  watchStopRequest,
 } from "../src/adapter.ts";
 import type { OpencodeClient } from "@opencode-ai/sdk";
 import { parseArgs } from "../src/args.ts";
@@ -88,6 +92,29 @@ test("runtime shutdown aborts the event stream before closing the server", async
 
   assert.equal(eventAbort.signal.aborted, true);
   assert.deepEqual(order, ["abort", "close"]);
+});
+
+test("a run-scoped stop request reaches the interrupt outcome", async () => {
+  const directory = mkdtempSync(join(tmpdir(), "opencode-stop-"));
+  const request = join(directory, "stop.request");
+  let resolve!: () => void;
+  const stopped = new Promise<void>((done) => {
+    resolve = done;
+  });
+  const close = watchStopRequest(resolve, request, 5);
+
+  try {
+    writeFileSync(request, "");
+    await Promise.race([
+      stopped,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("stop request was not observed")), 1000),
+      ),
+    ]);
+  } finally {
+    close();
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("errors are described from the shapes the SDK actually returns", () => {

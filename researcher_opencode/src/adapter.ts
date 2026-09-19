@@ -20,6 +20,7 @@
 
 import { createOpencodeClient, createOpencodeServer } from "@opencode-ai/sdk";
 import type { Event, OpencodeClient } from "@opencode-ai/sdk";
+import { existsSync } from "node:fs";
 
 import {
   appendUsage,
@@ -45,6 +46,24 @@ export const EXIT_MODEL_UNAVAILABLE = 4;
 export const EXIT_TIMEOUT = 5;
 export const EXIT_RUNTIME_FAILURE = 6;
 export const EXIT_INTERRUPTED = 130;
+const STOP_REQUEST_ENV = "ROBOT_RESEARCH_STOP_REQUEST";
+const STOP_POLL_MS = 100;
+
+export function watchStopRequest(
+  onStop: () => void,
+  requestPath = process.env[STOP_REQUEST_ENV],
+  pollMs = STOP_POLL_MS,
+): () => void {
+  if (!requestPath) return () => undefined;
+
+  const poll = (): void => {
+    if (existsSync(requestPath)) onStop();
+  };
+  poll();
+  const timer = setInterval(poll, pollMs);
+  timer.unref();
+  return () => clearInterval(timer);
+}
 
 /** Tools that would exceed the Researcher profile: delegation, the wider
  * network, and the session todo list. Disabling a name the server does not have
@@ -469,6 +488,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
     const unobservable = deferred<void>();
     const onSigint = (): void => interrupted.resolve();
     process.once("SIGINT", onSigint);
+    const stopWatching = watchStopRequest(() => interrupted.resolve());
 
     const muted = { value: false };
     // Set once the run has an outcome, so supervision stops second-guessing it.
@@ -730,6 +750,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
       decided.value = true;
       if (timeoutHandle.id) clearTimeout(timeoutHandle.id);
       process.removeListener("SIGINT", onSigint);
+      stopWatching();
     }
 
     if (outcome !== "idle") {

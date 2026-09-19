@@ -28,6 +28,10 @@ Start the autonomous loop from PowerShell:
 .\run_research.ps1
 ```
 
+External controllers must use the run-scoped cooperative request plus a
+kill-on-close Windows Job Object described in
+[the external stop contract](docs/external-campaign-stop.md).
+
 The first run after an infrastructure change is an automatic unchanged baseline.
 Training saves neutral checkpoints; the researcher then analyzes logs and
 artifacts before deciding whether any development measurements are useful.

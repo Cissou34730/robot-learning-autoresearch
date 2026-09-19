@@ -16,10 +16,108 @@ param(
 
     # 0 runs until the campaign reaches its own terminal state.
     [ValidateRange(0, [int]::MaxValue)]
-    [int]$MaxExperiments = 15
+    [int]$MaxExperiments = 15,
+
+    # Optional external control channel. The orchestrator owns this unique path
+    # for one launcher invocation and raises the request by creating the file.
+    [string]$StopRequestPath,
+
+    [ValidateRange(1, 3600)]
+    [int]$StopTimeoutSeconds = 180
 )
 
 Set-Location $PSScriptRoot
+
+# Windows delivers Ctrl-C to every process sharing the console. Consume the
+# first launcher event for cooperative shutdown; later events reach PowerShell.
+if (-not ([System.Management.Automation.PSTypeName]'RobotResearchConsoleInterruptV2').Type) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using System.Threading;
+
+public static class RobotResearchConsoleInterruptV2
+{
+    private const uint CtrlCEvent = 0;
+    private static readonly HandlerRoutine Handler = Handle;
+    private static int installed;
+    private static int interruptCount;
+
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private delegate bool HandlerRoutine(uint controlType);
+
+    [DllImport("Kernel32", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetConsoleCtrlHandler(
+        HandlerRoutine handler,
+        [MarshalAs(UnmanagedType.Bool)] bool add
+    );
+
+    private static bool Handle(uint controlType)
+    {
+        if (controlType != CtrlCEvent)
+        {
+            return false;
+        }
+        return Interlocked.Increment(ref interruptCount) == 1;
+    }
+
+    public static bool Install()
+    {
+        Interlocked.Exchange(ref interruptCount, 0);
+        if (Interlocked.CompareExchange(ref installed, 1, 0) != 0)
+        {
+            return true;
+        }
+        if (SetConsoleCtrlHandler(Handler, true))
+        {
+            return true;
+        }
+        Interlocked.Exchange(ref installed, 0);
+        return false;
+    }
+
+    public static bool IsRequested()
+    {
+        return Interlocked.CompareExchange(ref interruptCount, 0, 0) != 0;
+    }
+
+    public static bool IsEscalated()
+    {
+        return Interlocked.CompareExchange(ref interruptCount, 0, 0) > 1;
+    }
+
+    public static void Uninstall()
+    {
+        if (Interlocked.Exchange(ref installed, 0) != 0)
+        {
+            SetConsoleCtrlHandler(Handler, false);
+        }
+    }
+}
+'@
+}
+
+$script:CampaignExitCode = 0
+$script:ImmediateEscalationExitCode = 125
+$script:CampaignStopRequested = $false
+$script:StopDeadlineExceeded = $false
+$script:StopDeadline = $null
+$script:StopRequestPath = if ($StopRequestPath) {
+    [System.IO.Path]::GetFullPath($StopRequestPath)
+}
+else {
+    $null
+}
+if ($script:StopRequestPath) {
+    $stopParent = Split-Path -Parent $script:StopRequestPath
+    if (-not (Test-Path -LiteralPath $stopParent -PathType Container)) {
+        throw "The stop-request parent directory does not exist: $stopParent"
+    }
+    if (Test-Path -LiteralPath $script:StopRequestPath -PathType Container) {
+        throw "The stop-request path is a directory, not a file: $($script:StopRequestPath)"
+    }
+}
 
 $backendDefaultModel = @{
     copilot  = "gpt-5.6-luna"
@@ -30,6 +128,118 @@ if (-not $Model) {
 }
 if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
     throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
+}
+
+function Request-CampaignStop([string]$message) {
+    if ($script:CampaignStopRequested) {
+        return $true
+    }
+    $script:CampaignStopRequested = $true
+    $script:StopDeadline = [DateTime]::UtcNow.AddSeconds($StopTimeoutSeconds)
+    Write-Status (
+        "$message; waiting up to $StopTimeoutSeconds seconds " +
+        "for cooperative shutdown."
+    ) -Color Yellow -Label launcher
+    return $true
+}
+
+function Test-CampaignStopRequested {
+    if ($script:CampaignStopRequested) {
+        return $true
+    }
+    if (
+        $script:StopRequestPath -and
+        (Test-Path -LiteralPath $script:StopRequestPath -PathType Leaf)
+    ) {
+        return Request-CampaignStop "External stop requested"
+    }
+    if ([RobotResearchConsoleInterruptV2]::IsRequested()) {
+        return Request-CampaignStop "Console interrupt requested"
+    }
+    return $false
+}
+
+function Invoke-CooperativeProcess {
+    param(
+        [Parameter(Mandatory)][string]$FilePath,
+        [Parameter(Mandatory)][string[]]$ArgumentList,
+        [Parameter(Mandatory)][string]$Operation
+    )
+
+    if ([RobotResearchConsoleInterruptV2]::IsRequested()) {
+        [void](Request-CampaignStop "Console interrupt requested")
+        return 130
+    }
+
+    $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = $FilePath
+    $startInfo.WorkingDirectory = $PSScriptRoot
+    $startInfo.UseShellExecute = $false
+    foreach ($argument in $ArgumentList) {
+        [void]$startInfo.ArgumentList.Add($argument)
+    }
+    if ($script:StopRequestPath) {
+        $startInfo.Environment["ROBOT_RESEARCH_STOP_REQUEST"] = $script:StopRequestPath
+    }
+    else {
+        [void]$startInfo.Environment.Remove("ROBOT_RESEARCH_STOP_REQUEST")
+    }
+
+    $process = [System.Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
+    try {
+        if (-not $process.Start()) {
+            throw "Could not start $Operation."
+        }
+        while (-not $process.WaitForExit(100)) {
+            if (
+                (Test-CampaignStopRequested) -and
+                [DateTime]::UtcNow -ge $script:StopDeadline
+            ) {
+                $script:StopDeadlineExceeded = $true
+                throw (
+                    "The cooperative stop deadline expired while waiting for " +
+                    "$Operation (PID $($process.Id))."
+                )
+            }
+        }
+        $process.WaitForExit()
+        [void](Test-CampaignStopRequested)
+        return [int]$process.ExitCode
+    }
+    finally {
+        $process.Dispose()
+    }
+}
+
+function Invoke-Runner {
+    param([string[]]$Arguments = @())
+
+    $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
+        Select-Object -First 1
+    $runnerArguments = @("run", "python", "research/run_experiment.py")
+    $runnerArguments += $Arguments
+    return Invoke-CooperativeProcess -FilePath $uv.Source `
+        -ArgumentList $runnerArguments -Operation "research runner"
+}
+
+function Test-StopAfterOperation {
+    param(
+        [AllowNull()][Nullable[int]]$ExitCode,
+        [Parameter(Mandatory)][string]$Operation
+    )
+
+    if (-not (Test-CampaignStopRequested)) {
+        return $false
+    }
+    if ($null -eq $ExitCode -or $ExitCode -notin @(0, 130)) {
+        throw (
+            "$Operation exited with code $ExitCode instead of completing " +
+            "cooperatively after the stop request."
+        )
+    }
+    $script:CampaignExitCode = 130
+    return $true
 }
 
 # Node gained default TypeScript type stripping in 23.6; earlier versions need
@@ -244,18 +454,21 @@ function Invoke-ResearcherSession {
         $nodeArgs += $entry
         $nodeArgs += $sessionArgs
         $nodeArgs += $Prompt
-        & $node.Path @nodeArgs
+        $script:ResearcherExitCode = Invoke-CooperativeProcess `
+            -FilePath $node.Path -ArgumentList $nodeArgs `
+            -Operation "OpenCode researcher"
     }
     else {
-        uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt
-    }
-    # An invocation that never reached a conventional exit reports the absence
-    # rather than an invented code.
-    $script:ResearcherExitCode = if ($null -eq $LASTEXITCODE) {
-        $null
-    }
-    else {
-        [int]$LASTEXITCODE
+        $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
+            Select-Object -First 1
+        $copilotArgs = @(
+            "run", "--group", "researcher", "python", "researcher_copilot.py"
+        )
+        $copilotArgs += $sessionArgs
+        $copilotArgs += $Prompt
+        $script:ResearcherExitCode = Invoke-CooperativeProcess `
+            -FilePath $uv.Source -ArgumentList $copilotArgs `
+            -Operation "Copilot researcher"
     }
 }
 
@@ -435,13 +648,20 @@ function Get-AnalysisSessionStatus([int]$attempt) {
         -Present $present -Valid $valid -Reason $reason
 }
 
+[void][RobotResearchConsoleInterruptV2]::Install()
+
 try {
 if ($ResearcherBackend -eq "opencode") {
     $openCodeServer = Start-OpenCodeCampaignServer
     $script:OpenCodeServerProcess = $openCodeServer.Process
     $script:OpenCodeServerUrl = $openCodeServer.Url
 }
-while ($true) {
+:CampaignLoop while ($true) {
+    if (Test-CampaignStopRequested) {
+        $script:CampaignExitCode = 130
+        break
+    }
+
     if (Test-Path "research\GOAL_REACHED") {
         Write-Status "GOAL REACHED - research loop finished." Green
         break
@@ -464,12 +684,17 @@ while ($true) {
             throw "Recovery candidate is missing: $recoveryCandidate"
         }
         Write-Status "=== Resuming interrupted experiment: $recoveryCandidate ==="
-        uv run python research/run_experiment.py --reuse-candidate $recoveryCandidate
-        if ($LASTEXITCODE -eq 130) {
+        $runnerExitCode = Invoke-Runner -Arguments @(
+            "--reuse-candidate", $recoveryCandidate
+        )
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
             Write-Status "=== Experiment paused again; progress remains saved ===" Yellow
             break
         }
-        if ($LASTEXITCODE -ne 0) {
+        if ($runnerExitCode -ne 0) {
             throw "Resumed experiment failed. Its recovery state was preserved."
         }
         Update-ResearchBrief
@@ -482,12 +707,15 @@ while ($true) {
             throw "Interrupted experiment has no proposal to restart."
         }
         Write-Status "=== Restarting interrupted experiment from its beginning ==="
-        uv run python research/run_experiment.py
-        if ($LASTEXITCODE -eq 130) {
+        $runnerExitCode = Invoke-Runner
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
             Write-Status "=== Experiment paused again ===" Yellow
             break
         }
-        if ($LASTEXITCODE -ne 0) {
+        if ($runnerExitCode -ne 0) {
             throw "Restarted experiment failed."
         }
         Update-ResearchBrief
@@ -498,8 +726,11 @@ while ($true) {
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
     if ($null -ne $researchState.pending_final_benchmark) {
         Write-Status "=== Evaluating the committed accepted lineage on the final benchmark ==="
-        uv run python research/run_experiment.py --evaluate-pending-final
-        if ($LASTEXITCODE -ne 0) {
+        $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending-final")
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -ne 0) {
             throw "Final benchmark failed. The committed lineage remains pending for recovery."
         }
         Update-ResearchBrief
@@ -512,12 +743,15 @@ while ($true) {
         $analysisExperiment = [int]$researchState.pending_analysis.experiment
         if ($null -ne $researchState.pending_analysis.evaluation_plan) {
             Write-Status "=== Resuming the researcher's accepted measurement plan ==="
-            uv run python research/run_experiment.py --evaluate-pending
-            if ($LASTEXITCODE -eq 130) {
+            $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
+            if (Test-StopAfterOperation $runnerExitCode "research runner") {
+                break
+            }
+            if ($runnerExitCode -eq 130) {
                 Write-Status "=== Requested measurement paused; completed measurements were saved ===" Yellow
                 break
             }
-            if ($LASTEXITCODE -ne 0) {
+            if ($runnerExitCode -ne 0) {
                 throw "Runner execution of the accepted measurement request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
             }
             Update-ResearchBrief
@@ -546,6 +780,9 @@ while ($true) {
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
         Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis" -Experiment $analysisExperiment
+        if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+            break
+        }
         $analysisStatus = Get-AnalysisSessionStatus 1
         Write-ResearcherSessionStatus $analysisStatus
         if (-not $analysisStatus.Complete) {
@@ -558,6 +795,9 @@ while ($true) {
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
             Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Experiment $analysisExperiment -Continue
+            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                break CampaignLoop
+            }
             $analysisStatus = Get-AnalysisSessionStatus 2
             Write-ResearcherSessionStatus $analysisStatus
             if (-not $analysisStatus.Complete) {
@@ -565,16 +805,19 @@ while ($true) {
             }
         }
         if (Test-Path "research\evaluation_request.json") {
-            uv run python research/run_experiment.py --evaluate-pending
+            $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
         }
         else {
-            uv run python research/run_experiment.py
+            $runnerExitCode = Invoke-Runner
         }
-        if ($LASTEXITCODE -eq 130) {
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
             Write-Status "=== Analysis execution paused; completed work remains saved ===" Yellow
             break
         }
-        if ($LASTEXITCODE -ne 0) {
+        if ($runnerExitCode -ne 0) {
             throw "Runner execution of the accepted analysis deliverable failed. The researcher phase is not reopened."
         }
         Update-ResearchBrief
@@ -599,6 +842,9 @@ while ($true) {
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
             Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design" -Experiment $researchState.pending_evaluation_request.experiment
+            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                break
+            }
             $evaluationStatus = Get-EvaluationSessionStatus 1
             Write-ResearcherSessionStatus $evaluationStatus
             if (-not $evaluationStatus.Complete) {
@@ -611,6 +857,9 @@ while ($true) {
                     "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
                 ) -join " "
                 Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Experiment $researchState.pending_evaluation_request.experiment -Continue
+                if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                    break CampaignLoop
+                }
                 $evaluationStatus = Get-EvaluationSessionStatus 2
                 Write-ResearcherSessionStatus $evaluationStatus
                 if (-not $evaluationStatus.Complete) {
@@ -621,12 +870,15 @@ while ($true) {
         else {
             Write-Status "=== Resuming the researcher's evaluation plan ==="
         }
-        uv run python research/run_experiment.py --evaluate-pending
-        if ($LASTEXITCODE -eq 130) {
+        $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
             Write-Status "=== Requested evaluation paused; completed measurements were saved ===" Yellow
             break
         }
-        if ($LASTEXITCODE -ne 0) {
+        if ($runnerExitCode -ne 0) {
             throw "Runner execution of the validated evaluation request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
@@ -644,12 +896,15 @@ while ($true) {
             initialization = "fresh"
         } | ConvertTo-Json | Set-Content "research\proposal.json"
 
-        uv run python research/run_experiment.py
-        if ($LASTEXITCODE -eq 130) {
+        $runnerExitCode = Invoke-Runner
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
             Write-Status "=== Baseline interrupted cleanly; it remains pending ===" Yellow
             break
         }
-        if ($LASTEXITCODE -ne 0) {
+        if ($runnerExitCode -ne 0) {
             throw "Baseline failed. The research loop stopped instead of silently continuing."
         }
         Update-ResearchBrief
@@ -671,6 +926,9 @@ while ($true) {
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
         Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment
+        if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+            break
+        }
         $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
         $lineageStatus = Get-LineageSessionStatus $pendingExperiment 1
         Write-ResearcherSessionStatus $lineageStatus
@@ -684,14 +942,20 @@ while ($true) {
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
             Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment -Continue
+            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                break CampaignLoop
+            }
             $lineageStatus = Get-LineageSessionStatus $pendingExperiment 2
             Write-ResearcherSessionStatus $lineageStatus
             if (-not $lineageStatus.Complete) {
                 throw "Researcher ended twice without valid lineage deliverables for experiment $pendingExperiment. Last validation error: $($lineageStatus.Reason)"
             }
         }
-        uv run python research/run_experiment.py
-        if ($LASTEXITCODE -ne 0) {
+        $runnerExitCode = Invoke-Runner
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -ne 0) {
             throw "Runner application of the validated lineage decision failed. The researcher deliverables were already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
@@ -712,8 +976,11 @@ while ($true) {
 
     # Anchor the rollback baseline before the researcher can change or commit
     # science. An unfinished experiment keeps the anchor it already established.
-    uv run python research/run_experiment.py --begin-hypothesis
-    if ($LASTEXITCODE -ne 0) {
+    $runnerExitCode = Invoke-Runner -Arguments @("--begin-hypothesis")
+    if (Test-StopAfterOperation $runnerExitCode "research runner") {
+        break
+    }
+    if ($runnerExitCode -ne 0) {
         throw "Could not establish the scientific parent of the next experiment."
     }
 
@@ -734,6 +1001,9 @@ while ($true) {
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
     Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment
+    if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+        break
+    }
 
     $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     if ($resultCountAfter -gt $resultCountBefore) {
@@ -757,6 +1027,9 @@ while ($true) {
             "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Experiment $nextExperiment -Continue
+        if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+            break CampaignLoop
+        }
 
         $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
         if ($resultCountAfter -gt $resultCountBefore) {
@@ -772,21 +1045,70 @@ while ($true) {
             throw "Researcher ended twice without a proposal valid for the current phase. The loop stopped safely: $($proposalStatus.Reason)"
         }
     }
-    uv run python research/run_experiment.py
-    if ($LASTEXITCODE -eq 130) {
+    $runnerExitCode = Invoke-Runner
+    if (Test-StopAfterOperation $runnerExitCode "research runner") {
+        break
+    }
+    if ($runnerExitCode -eq 130) {
         Write-Status "=== Experiment interrupted cleanly; no model decision was made ===" Yellow
         break
     }
-    if ($LASTEXITCODE -ne 0) {
+    if ($runnerExitCode -ne 0) {
         throw "Experiment runner failed. The loop stopped safely."
     }
     Update-ResearchBrief
     Write-Status "=== Experiment $nextExperiment session closed ===" Green
-    Start-Sleep -Seconds 5
+    for ($delay = 0; $delay -lt 50; $delay++) {
+        if (Test-CampaignStopRequested) {
+            $script:CampaignExitCode = 130
+            break CampaignLoop
+        }
+        Start-Sleep -Milliseconds 100
+    }
 }
+}
+catch {
+    if ($script:StopDeadlineExceeded) {
+        $script:CampaignExitCode = 124
+        Write-Error $_
+    }
+    elseif ([RobotResearchConsoleInterruptV2]::IsRequested()) {
+        [void](Request-CampaignStop "Console interrupt requested")
+        $script:CampaignExitCode = 130
+    }
+    else {
+        throw
+    }
 }
 finally {
-    Stop-OpenCodeCampaignServer
-    $loopMutex.ReleaseMutex()
-    $loopMutex.Dispose()
+    $reportedImmediateEscalation = [RobotResearchConsoleInterruptV2]::IsEscalated()
+    if ($reportedImmediateEscalation) {
+        [Console]::Error.WriteLine(
+            "Additional console interrupt requested; escalating immediately."
+        )
+    }
+    try {
+        Stop-OpenCodeCampaignServer
+    }
+    finally {
+        try {
+            $loopMutex.ReleaseMutex()
+            $loopMutex.Dispose()
+        }
+        finally {
+            $immediateEscalation = [RobotResearchConsoleInterruptV2]::IsEscalated()
+            if ($immediateEscalation -and -not $reportedImmediateEscalation) {
+                [Console]::Error.WriteLine(
+                    "Additional console interrupt requested; escalating immediately."
+                )
+            }
+            [RobotResearchConsoleInterruptV2]::Uninstall()
+            if ($immediateEscalation) {
+                [Environment]::Exit($script:ImmediateEscalationExitCode)
+            }
+        }
+    }
+}
+if ($script:CampaignExitCode -ne 0) {
+    exit $script:CampaignExitCode
 }

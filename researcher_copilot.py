@@ -17,6 +17,8 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+from research.stop_control import stop_requested, wait_for_stop_request
+
 ROOT = Path(__file__).resolve().parent
 
 EXIT_OK = 0
@@ -807,6 +809,9 @@ async def run(args) -> int:
     finished = asyncio.Event()
     model = normalize_model(args.model)
 
+    if stop_requested():
+        return EXIT_INTERRUPTED
+
     async with CopilotClient(working_directory=str(ROOT)) as client:
         status = await client.get_auth_status()
         if not getattr(status, "isAuthenticated", False):
@@ -831,9 +836,29 @@ async def run(args) -> int:
         before = worktree_status()
         before_offload = offload_snapshot()
         started = time.monotonic()
+        finished_task = asyncio.create_task(finished.wait())
+        stop_task = asyncio.create_task(wait_for_stop_request())
         try:
             await session.send(args.prompt)
-            await asyncio.wait_for(finished.wait(), timeout=args.timeout)
+            done, _ = await asyncio.wait(
+                (finished_task, stop_task),
+                timeout=args.timeout,
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            if stop_task in done:
+                await session.abort()
+                console.line("  ! session interrupted")
+                return EXIT_INTERRUPTED
+            if finished_task not in done:
+                await session.abort()
+                console.line(f"  ! session timed out after {args.timeout}s")
+                console.summary(
+                    session.session_id,
+                    changed_since(before),
+                    offloaded_since(before_offload),
+                    elapsed_seconds=time.monotonic() - started,
+                )
+                return EXIT_TIMEOUT
         except TimeoutError:
             await session.abort()
             console.line(f"  ! session timed out after {args.timeout}s")
@@ -849,6 +874,9 @@ async def run(args) -> int:
             console.line("  ! session interrupted")
             return EXIT_INTERRUPTED
         finally:
+            finished_task.cancel()
+            stop_task.cancel()
+            await asyncio.gather(finished_task, stop_task, return_exceptions=True)
             await session.disconnect()
 
         console.summary(
