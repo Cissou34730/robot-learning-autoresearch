@@ -188,3 +188,34 @@
 - `robot_learning/scenario/observations.py`
 - `robot_learning/robots/two_joint_arm.py`
 - `research/query_training_log.py` (experiment 7 log, steps 0-130000)
+
+## 59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed / Experiment 8
+
+**Result:** The fresh-initialization feasible-primary-input run did not learn the folded branch; it collapsed folded-required success from the parent's 53.6% to 8.9% and 10.7% while preserving open-feasible success. On the fresh 2000-episode panel seed 27000 the untouched `working` parent scored 97.40% (1948/2000) while `checkpoint-115712` scored 94.90% and `checkpoint-120832` scored 94.60%; `working` won both paired comparisons decisively.
+
+**Observed behavior:**
+- Round 1 measured all three models on the identical fresh panel seed 27000, episodes 27000-28999 (2000 episodes, research_evaluation semantics `8387e90f790b`): `working` 1948/2000 = 97.40%; `checkpoint-115712` 1898/2000 = 94.90%; `checkpoint-120832` 1892/2000 = 94.60%. All recorded as new panel coverage.
+- Paired comparisons over the same 2000 episodes: `checkpoint-115712` vs `working` 4 vs 54 discordant wins (58 discordant, net -50); `checkpoint-120832` vs `working` 6 vs 62 (68 discordant, net -56); `checkpoint-120832` vs `checkpoint-115712` 4 vs 10 (14 discordant, net -6).
+- Reconstructing the open/folded kinematic partition from the evaluator's recorded target geometry (open `arccos` elbow solution, shoulder wrapped to +/-180 degrees, folded-required iff |wrapped open shoulder| > 170 degrees): 112/2000 (5.6%) targets are folded-required. `working`: open-feasible 1888/1888 = 100.0%, folded-required 60/112 = 53.6%. `checkpoint-115712`: 1888/1888 = 100.0% and 10/112 = 8.9%. `checkpoint-120832`: 1880/1888 = 99.6% and 12/112 = 10.7%.
+- The intervention targeted the folded sector but damaged even its shallowest band. By wrapped |open shoulder| band within the folded sector: [170,174) degrees `working` 46/46 = 100%, `checkpoint-115712` 6/46 = 13.0%, `checkpoint-120832` 5/46 = 10.9%; [174,176) 13/19 = 68.4%, 1/19 = 5.3%, 2/19 = 10.5%; [176,180] 1/47 = 2.1%, 3/47 = 6.4%, 5/47 = 10.6%.
+- All folded-required failures remain near-misses against the 1 cm tolerance: failure min distance 0.61-1.46 cm (`working`), 0.82-1.71 cm (`checkpoint-115712`), 0.89-1.64 cm (`checkpoint-120832`). Open-feasible behavior is essentially untouched at `checkpoint-115712`; `checkpoint-120832` additionally lost 8 open-feasible episodes, all at radii 19.2-20.0 cm (min distance 0.14-0.79 cm, hold_interruptions 1-68), a late extreme-reach precision degradation absent in `checkpoint-115712` and `working`.
+- Training log experiment 8 (fresh, requested 120,000 steps, completed 120,832): training `success_rate` is 0 through ~54k, rises slowly through the 70k-95k range, and reaches 0.72 at 100,352, a 0.91 peak at 114,688-115,712 and 0.89 at the endpoint; `ep_rew_mean` peaks about 154 at 96,256-97,280 and declines to 111 by 120,832; `ep_len_mean` falls from 500 to 189-200 late; `speed`-independent `std` declines from 1.0 to about 0.40 and `entropy_loss` rises from -2.84 to -1.02. The proxy and reward peaks do not mark the measured optimum.
+
+**Hypothesis assessment:** Contradicted. The confirmatory proposition was that a fresh training of the unchanged method with a joint-limit-feasible primary branch input would raise folded-required success clearly above the parent's ~52% pooled level and lift the deep 176-180 degree band above about 0%, while open-feasible success stayed high. Instead folded-required success fell to 8.9%/10.7% against the parent's 53.6% on the same panel, the deep band stayed at 2-6%, and even the shallow [170,174) band dropped from 100% to 11-13%; only the secondary clause held (open-feasible 100.0% and 99.6%). The pre-stated alternative - an intrinsic optimization/representation limit, with the feasible substitution removing the open-branch signal the policy uses - is supported, and this fresh run removes the transfer-drift confound that limited experiment 5: the harm is caused by the input redefinition itself. Limits: one fresh run and training seed; one fresh 2000-episode panel; only the two late checkpoints (training-proxy plateau extremes, behaviorally close) of 24 candidates were measured; the folded/open partition and band weights are kinematic computations from recorded target geometry and joint limits, not observations of the policy's internal state; this round contains no joint-trajectory or limit-contact diagnostic.
+
+**Interpretation:** A fresh feasible-input run learns an excellent open-feasible policy but almost no folded-required behavior, so the change is actively harmful rather than neutral in exactly the sector it targets. The most consistent reading is that the parent's residual folded success does not come from the unreachable open input being a defect; the policy follows the clamped open-branch solution into shoulder saturation and that occasionally lands inside the 1 cm tolerance, and substituting the folded configuration there removes the branch distinction and the only route the policy had to those targets. The untouched `working` lineage remains the best measured policy: this panel raises its pooled estimate to 6232/6400 = 97.375% over eight distinct research panels, still below the 98% objective with all residual behavior in the folded-required sector, dominated by the 176-180 degree band (1/47 here). `checkpoint-115712` is the best experiment-8 state (94.9%) but sits 2.5 points below `working` and its only distinctive property is a collapse in the targeted sector; `checkpoint-120832` is worse and adds an extreme-reach open-feasible failure mode. No experiment-8 checkpoint is competitive or worth retaining, and the observation change should not be carried forward. This does not justify terminal assessment.
+
+**Evidence inspected:**
+- `research/brief.md`
+- `research/postmortems.md`
+- `research/results.jsonl`
+- `research/research_state.json`
+- `research/checkpoints/challengers/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/experiment-8/inventory.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-8-working-2000ep-seed27000-8387e90f790b.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-8-checkpoint-115712-2000ep-seed27000-8387e90f790b.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-8-checkpoint-120832-2000ep-seed27000-8387e90f790b.json`
+- `robot_learning/scenario/observations.py`
+- `robot_learning/scenario/evaluation.py`
+- `robot_learning/scenario/_branch_diagnostic.py`
+- `robot_learning/robots/two_joint_arm.xml`
+- `research/query_training_log.py` (experiment 8 log, steps 0-125000)
