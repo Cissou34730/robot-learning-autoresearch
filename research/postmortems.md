@@ -41,3 +41,30 @@
 - `robot_learning/scenario/training_environment.py`
 - `robot_learning/scenario/evaluation.py`
 - `robot_learning/benchmark/spec.py`
+
+## 59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed / Experiment 3
+
+**Result:** Fine-tuning the working policy on the full official 0.06-0.20 m target radius range did not improve measured task success. On one shared, previously unused 600-episode research panel the parent scored 96.67% (580/600) and the two measured fine-tuned checkpoints 96.33% (578/600) and 96.50% (579/600); the parent won both paired comparisons, and the failure set was almost exactly unchanged.
+
+**Observed behavior:**
+- Round 1 measured all three models on the identical fresh panel seed 22000, episodes 22000-22599 (600 episodes, research_evaluation semantics `543af51fd137`): `working` (experiment-2 checkpoint-100352) 580/600 = 96.67%; `checkpoint-120832` 579/600 = 96.50%; `checkpoint-105472` 578/600 = 96.33%. All recorded as new panel coverage.
+- Paired comparisons over the same 600 episodes: `checkpoint-120832` vs `working` 1 vs 2 discordant wins; `checkpoint-105472` vs `working` 1 vs 3; `checkpoint-120832` vs `checkpoint-105472` 1 vs 0.
+- Failure sets are near-identical: 23 union failures over the panel, 19 failing in all three models. Distinct failures per model were 20 (`working`), 22 (`checkpoint-105472`), and 21 (`checkpoint-120832`); `working`-unique {(273)}, `checkpoint-105472`-unique {(216)}, `checkpoint-120832`-unique {}. The two checkpoints that recovered an episode failed differ in which one.
+- Every union failure lies at target angle −116.2 to −156.1 degrees, i.e. the shoulder-limit folded-branch sector, and spans the full radius range 6.4-19.6 cm. Ten of the failures sit at radii 14.0-19.6 cm, which both the restricted parent recipe and the full-range fine-tune trained on.
+- Failure margins are marginal against the 1 cm tolerance: minimum distance 0.45-1.70 cm. Failure modes: `working` 7 never-reached / 13 reached-then-lost-hold; `checkpoint-105472` 3 / 19; `checkpoint-120832` 6 / 15. Hold failures usually show 1-3 interruptions and max held 1-8 steps; two `checkpoint-105472` episodes (targets 14.4 cm/−141.9° and 18.4 cm/−156.1°) reached tolerance but oscillated (hold_interruptions 240 and 218, max held 5 and 47).
+- Training log for experiment 3: the transferred run started already near its ceiling (`success_rate` 1.0 and `ep_rew_mean` ≈124 at step 1024) and showed no task-progress trend over 120,832 steps: `success_rate` drifted 1.0 to 0.94 and `ep_rew_mean` 124 to 111, with `entropy_loss` rising from ≈−1.16 to ≈−0.15. This mirrors the unreliable training proxies seen in experiment 2 and provides no evidence of a separate, better policy in the run.
+
+**Hypothesis assessment:** Contradicted. The confirmatory prediction was that full-range fine-tuning would lift measured success above the 96.2% pooled estimate toward 98%, with fewer failures at angles about −117 to −155 degrees and radii below 14 cm. Instead all three policies landed within 0.34 points of each other, the untouched parent was marginally best, and the same folded-branch angles failed at both small and large radii. The pre-stated alternative — a control/representation limitation at the shoulder-limit folded-elbow branch rather than a restricted-radius coverage artifact — is supported by this test. Limits: one fine-tuning run and one 600-episode panel; the two measured fine-tuned checkpoints are the run's endpoint and training-proxy extreme, so an unmeasured mid-run checkpoint is not covered; the folded-branch attribution remains a kinematic feasibility computation from the joint limits, not a causal diagnosis of the policy's internal state; the small success-rate differences (≤3 discordant episodes of 600) are within panel resolution.
+
+**Interpretation:** Removing the training/deployment radius mismatch did not change the policy's behavior or its failure set. Because 19 of 23 failures persist across independently fine-tuned weights, including several at radii both recipes trained on, the residual deficit is not explained by training-distribution coverage. It is localized to the shoulder-limit folded-elbow branch, where the policy approaches the tolerance boundary only marginally and usually cannot sustain the 100-step hold. The measured plateau is behaviorally homogeneous at the episode level: the parent and the fine-tuned checkpoints disagree on at most three of 600 episodes. This redirects the next investigation to the folded-branch control/representation (for example hold-stability reward shaping near tolerance, or observations that expose joint-limit/branch geometry) rather than to the radius distribution, and it does not justify promoting an experiment-3 checkpoint or requesting terminal assessment.
+
+**Evidence inspected:**
+- `research/brief.md`
+- `research/postmortems.md`
+- `research/results.jsonl`
+- `research/checkpoints/challengers/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/experiment-3/inventory.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-3-working-600ep-seed22000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-3-checkpoint-105472-600ep-seed22000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-3-checkpoint-120832-600ep-seed22000-543af51fd137.json`
+- `robot_learning/scenario/training_environment.py`
+- `robot_learning/robots/two_joint_arm.xml`
