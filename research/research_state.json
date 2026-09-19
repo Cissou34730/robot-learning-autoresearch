@@ -1,68 +1,18 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/c92ccfe2-1135-4ec4-bc5a-eded729fc461/e1-cada55eb5-a07be8413d6ce134c43a712be3ba536798901650b0ca54a35e7fc137bfcb2a35",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-1000ep-seed6000-543af51fd137.json",
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-1000ep-seed8000-543af51fd137.json",
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-200ep-seed5000-543af51fd137.json",
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/task-reference-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "a07be8413d6ce134c43a712be3ba536798901650b0ca54a35e7fc137bfcb2a35",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has recorded measurements in this campaign (three research_evaluation panels and one task_reference panel) and is the best-scoring measured checkpoint on every large and paired comparison, making it the evidence-backed best-known policy at this stage.",
-    "scientific_commit": "2517f44be749e014841a12ffaf1a018d4758ca4e",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "c110fd49c20201373a9270754de6c0010db066e4",
-    "id": "c92ccfe2-1135-4ec4-bc5a-eded729fc461",
+    "base_commit": "bab4fc76e65d8f011dff489b8a7eeefbd43e5c87",
+    "id": "59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-18T13:53:10.881747+00:00"
+    "started_at": "2026-09-19T11:38:20.057796+00:00"
   },
   "campaign_experiment_counters": {
-    "c92ccfe2-1135-4ec4-bc5a-eded729fc461": 7
+    "59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed": 0
   },
-  "last_allocated_experiment": 7,
-  "last_experiment": 7,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "The 13-value observation contract was the intervention under test and performed substantially worse than the established 11-value working contract. Revert the complete scientific recipe to the experiment-1 working lineage."
-    },
-    "code_parent_commit": "4dcde0b0bb45dbbb95659762a6df34463b28f6de",
-    "continue_from": "working",
-    "experiment": 7,
-    "reason": "Experiment 7's two measured fresh candidates reached only 21.3% and 24.2% on the disjoint seed-15000 panel, versus 96.8% for the working control, with 732 never-enter failures each versus 18. The explicit branch-feasibility observation contract therefore did not yield a useful policy, and its broad degradation makes further measurement of the remaining candidates unlikely to change the lineage decision. Preserve the established working policy and continue development below the official objective."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -71,91 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "4dcde0b0bb45dbbb95659762a6df34463b28f6de",
-    "experiment": 7,
-    "scientific_commit": "6da1d4f54e260832ca0fb02ae6dd9b241501bcf4"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/c92ccfe2-1135-4ec4-bc5a-eded729fc461/e1-c8cf701d5-c666023d9af70c33276f511239a8bf5af7c05b8953b9a09e5de14bcc2741bdcb",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-120832-200ep-seed5000-543af51fd137.json",
-        "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-120832-1000ep-seed6000-543af51fd137.json"
-      ],
-      "fingerprint": "c666023d9af70c33276f511239a8bf5af7c05b8953b9a09e5de14bcc2741bdcb",
-      "id": "exp1-final-checkpoint",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Final checkpoint with the most accumulated training and a residual failure profile distinct from checkpoint-100352 (hold-boundary oscillation at lateral/positive angles rather than negative-angle reach misses), providing a reusable alternative parent if a future transfer experiment wants a differently-trained late baseline.",
-      "scientific_commit": "2517f44be749e014841a12ffaf1a018d4758ca4e",
-      "training_steps": 120832
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/c92ccfe2-1135-4ec4-bc5a-eded729fc461/e1-cada55eb5-a07be8413d6ce134c43a712be3ba536798901650b0ca54a35e7fc137bfcb2a35",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-200ep-seed5000-543af51fd137.json",
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-1000ep-seed6000-543af51fd137.json",
-      "research/evaluations/c92ccfe2-1135-4ec4-bc5a-eded729fc461/evaluation-c92ccfe2-1135-4ec4-bc5a-eded729fc461-experiment-1-checkpoint-100352-1000ep-seed8000-543af51fd137.json"
-    ],
-    "fingerprint": "a07be8413d6ce134c43a712be3ba536798901650b0ca54a35e7fc137bfcb2a35",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 7's two measured fresh candidates reached only 21.3% and 24.2% on the disjoint seed-15000 panel, versus 96.8% for the working control, with 732 never-enter failures each versus 18. The explicit branch-feasibility observation contract therefore did not yield a useful policy, and its broad degradation makes further measurement of the remaining candidates unlikely to change the lineage decision. Preserve the established working policy and continue development below the official objective.",
-    "scientific_commit": "2517f44be749e014841a12ffaf1a018d4758ca4e",
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
