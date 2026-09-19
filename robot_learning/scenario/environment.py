@@ -122,7 +122,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def step(
         self, action: np.ndarray
     ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
-        previous_joint_positions = self.data.qpos.copy()
         action = np.clip(
             np.asarray(self.policy_io.action(action), dtype=np.float64),
             self.action_space.low,
@@ -152,9 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            previous_joint_positions=previous_joint_positions,
-            current_joint_positions=self.data.qpos.copy(),
-            target_position=self.data.mocap_pos[0].copy(),
         )
         self._previous_distance = distance
 

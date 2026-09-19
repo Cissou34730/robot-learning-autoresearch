@@ -13,14 +13,10 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
-
 PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
-IK_ALIGNMENT_COEFFICIENT = 1.0
-JOINT_LIMIT_RADIANS = np.radians(170.0)
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -48,39 +44,6 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
-def _wrap_to_pi(angles: np.ndarray) -> np.ndarray:
-    return (angles + np.pi) % (2.0 * np.pi) - np.pi
-
-
-def _feasible_ik_distance(
-    joint_positions: np.ndarray, target_position: np.ndarray
-) -> float:
-    target_x, target_y = np.asarray(target_position, dtype=np.float64)[:2]
-    cosine = (
-        target_x**2
-        + target_y**2
-        - UPPER_ARM_LENGTH**2
-        - FOREARM_LENGTH**2
-    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-    elbow = float(np.arccos(np.clip(cosine, -1.0, 1.0)))
-    target_angle = float(np.arctan2(target_y, target_x))
-    offset = float(
-        np.arctan2(
-            FOREARM_LENGTH * np.sin(elbow),
-            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
-        )
-    )
-    candidates = np.asarray(
-        [[target_angle - offset, elbow], [target_angle + offset, -elbow]]
-    )
-    candidates = _wrap_to_pi(candidates)
-    feasible = np.all(np.abs(candidates) <= JOINT_LIMIT_RADIANS, axis=1)
-    if np.any(feasible):
-        candidates = candidates[feasible]
-    errors = _wrap_to_pi(candidates - np.asarray(joint_positions, dtype=np.float64))
-    return float(np.min(np.sum(np.square(errors), axis=1)))
-
-
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -90,9 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    previous_joint_positions: np.ndarray | None = None,
-    current_joint_positions: np.ndarray | None = None,
-    target_position: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -135,23 +95,6 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
-    ik_alignment = 0.0
-    if (
-        previous_joint_positions is not None
-        and current_joint_positions is not None
-        and target_position is not None
-    ):
-        previous_ik_distance = _feasible_ik_distance(
-            previous_joint_positions, target_position
-        )
-        current_ik_distance = _feasible_ik_distance(
-            current_joint_positions, target_position
-        )
-        ik_alignment = IK_ALIGNMENT_COEFFICIENT * (
-            previous_ik_distance - current_ik_distance
-        )
-        reward += ik_alignment
-
     return RewardResult(
         total=float(reward),
         components={
@@ -161,6 +104,5 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
-            "ik_alignment": float(ik_alignment),
         },
     )
