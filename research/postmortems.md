@@ -68,3 +68,38 @@
 - `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-3-checkpoint-120832-600ep-seed22000-543af51fd137.json`
 - `robot_learning/scenario/training_environment.py`
 - `robot_learning/robots/two_joint_arm.xml`
+
+## 59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed / Experiment 4
+
+**Result:** The reward reshape did not improve measured task behavior and degraded it. On the fresh shared 600-episode panel seed 23000 the untouched transfer parent `working` (experiment-2 checkpoint-100352) scored 98.0% (588/600), while the two experiment-4 checkpoints scored 96.0% (576/600, checkpoint-100352) and 94.67% (568/600, checkpoint-105472); the parent won both paired comparisons.
+
+**Observed behavior:**
+- Training log experiment 4 (transfer from `working`): started at success_rate 1.0 and ep_rew_mean 103 at step 1024, was perturbed by the reshaped reward to success_rate 0.933 / ep_rew_mean 95.1 by step 8192, recovered to success_rate 1.0 / ep_rew_mean ~103.1 over roughly 90k-106k steps, then declined to success_rate 0.93 / ep_rew_mean 94.6 at 120832 with ep_len_mean rising 119 -> 156 and entropy_loss rising -0.70 -> -0.57.
+- Round 1 measured all three policies on the identical fresh panel seed 23000, episodes 23000-23599 (600 episodes, research_evaluation semantics `543af51fd137`): `working` 588/600 = 98.00%; experiment-4 `checkpoint-100352` 576/600 = 96.00%; experiment-4 `checkpoint-105472` 568/600 = 94.67%.
+- Paired comparisons over the same 600 episodes: `checkpoint-100352` vs `working` 1 vs 13 discordant wins; `checkpoint-105472` vs `working` 1 vs 21.
+- The experiment-4 checkpoints did not fix the folded-branch band and added failures elsewhere. Band [-150,-120) degrees: `working` 37/47, `checkpoint-100352` 36/47, `checkpoint-105472` 36/47. `checkpoint-100352` added failures in [0,30), [30,60), [60,90) and [90,120); `checkpoint-105472` added failures in [-90,-60), [-60,-30), [-30,0), [0,30), [30,60) and [90,120). All other bands were 100% for `working`.
+- Reached-then-lost hold failures rose sharply: 20 of 24 failures for `checkpoint-100352` and 27 of 32 for `checkpoint-105472`, versus 7 of 12 for `working` (5 never reached for each of `working` and `checkpoint-100352`, 5 for `checkpoint-105472`).
+- Failure overlap on seed 23000: 11 failures common to all three policies, all in angles -117 to -153 degrees; `working`-unique {23292}; `checkpoint-100352`-unique {23117, 23414, 23517}; `checkpoint-105472`-unique 11 episodes spread across the weakly-failed bands.
+- `working`'s only seed-23000 failure outside the common set, episode seed 23292 (r=6.98 cm, angle -117.0), was oscillatory (min distance 0.99 cm, in_tolerance_steps 234, hold_interruptions 233) and both experiment-4 checkpoints succeeded on it.
+- The 98.0% seed-23000 reading is a favorable draw, not a change of policy. The same unchanged `working` artifact scored 97.5% (195/200, seed 20000), 95.5% (382/400, seed 21000) and 96.67% (580/600, seed 22000); pooled 1745/1800 = 96.94%. Its hard band [-150,-120) scored 68.8%, 63.4%, 66.7% and 78.7% on those four panels respectively; the failure angle set is the same sector in all panels.
+
+**Hypothesis assessment:** Contradicted. The confirmatory prediction was that sharpening terminal precision and hold completion (CLOSENESS_LENGTH_SCALE 0.05 -> 0.015 m, HOLD_PROGRESS_EXPONENT 1.0 -> 2.0, HOLD_EXIT_FORFEIT_FRACTION 0.0 -> 1.0) would reduce the folded-branch terminal failures and raise measured success above the parent's level. Instead the reshaped-reward checkpoints measured clearly below the untouched parent, the folded-branch band was unchanged (36/47 vs 37/47), and hold precision degraded in bands the parent handles at 100%, with far more reached-then-lost failures. Limits: only the run's training-proxy plateau extremes (checkpoint-100352 and checkpoint-105472) were measured of 24 candidates; one 600-episode panel; the transfer perturbed then recovered, so an unmeasured early checkpoint is not covered; the small remaining differences are within panel resolution.
+
+**Interpretation:** The reward reshape changed the policy's terminal behavior in the wrong direction: under the steeper closeness potential and squared hold capital the transferred policy lost fine hold behavior across the workspace while still failing the folded-branch sector, and the training proxies (success_rate 1.0, ep_rew_mean ~103) again did not reflect the measured degradation. The reshape is not uniformly harmful - it resolved one oscillatory low-radius failure - but its net measured effect is negative, so it should not be carried forward. The working policy's genuine level is about 96.9% pooled over 1800 distinct research episodes; the 98.0% seed-23000 reading and the reused task-reference 98.0% (196/200) are favorable 200-600 episode samples, not independent confirmation of a 98% policy. The residual deficit is unchanged and remains a folded-branch terminal-precision and hold-stability limitation; it is not reachability, radius coverage or reward scale, and no measured checkpoint is competitive with the working lineage. This does not justify terminal assessment.
+
+**Evidence inspected:**
+- `research/brief.md`
+- `research/postmortems.md`
+- `research/results.jsonl`
+- `research/checkpoints/challengers/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/experiment-4/inventory.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-4-working-600ep-seed23000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-4-checkpoint-100352-600ep-seed23000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-4-checkpoint-105472-600ep-seed23000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-3-working-600ep-seed22000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-200ep-seed20000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-400ep-seed21000-543af51fd137.json`
+- `research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/task-reference-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-task-reference-v1.json`
+- `robot_learning/scenario/reward.py`
+- `robot_learning/scenario/environment.py`
+- `robot_learning/benchmark/reference_evaluation.py`
+- `robot_learning/benchmark/spec.py`
