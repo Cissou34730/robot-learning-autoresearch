@@ -2,25 +2,29 @@
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior. Checkpoint-100352 is the strongest measured policy: it achieved
-93.75% and 94.375% on two disjoint 160-episode research panels, or 301/320
-pooled successes. This is progress toward the objective but remains below the
-98% target. Continuing to checkpoint-120832 regressed task success despite
-similar training-time proxies.
+**Current synthesis:** The campaign objective remains at least 98% success on the
+official 6-20 cm reach-and-hold distribution. The fresh PPO baseline learned
+substantial task behavior, with checkpoint-100352 the strongest measured policy at
+150/160 and 151/160 successes on two disjoint panels (301/320 pooled, 94.06%).
+Checkpoint-105472 and later checkpoints were weaker, including 134/160 at
+checkpoint-120832, so the measured task outcome, not the training proxy, currently
+identifies the useful policy point.
 
-**Lessons and limits:** Task success is the relevant selection signal here;
-training success and reward did not identify the best checkpoint reliably.
-Checkpoint-100352 consistently exceeded checkpoint-105472 and checkpoint-110592
-in paired development comparisons, while all observed failures ran to the
-500-step truncation. The two research panels provide independent episode
-coverage, but this is not an official assessment and no causal explanation for
-the late regression has been established.
+**Lessons and limits:** All 19 recorded failures of checkpoint-100352 occurred in
+the target-angle bin from -180 to -90 degrees; 11/19 were also below 14 cm, a
+region absent from the baseline training radius range. The failures generally
+truncated at 500 steps, although some later checkpoints reached the tolerance and
+then lost the hold. These observations support a training-support mismatch as one
+plausible contributor, but do not separate it from angular control asymmetry or
+late-training degradation. The two research panels provide independent development
+coverage, not an official verdict, and no causal claim has been established.
 
-**Open questions:** The cause of the late-training regression and the structure
-of the remaining reach-and-hold failures are unresolved. It is also unknown
-whether a changed training recipe can raise the measured policy from roughly
-94% toward the human objective.
+**Open questions:** It remains unresolved whether adding the official inner-radius
+support improves the residual failures without sacrificing outer-radius behavior,
+whether the negative-angle concentration reflects a separate representation or
+control issue, and why the baseline regressed after its strongest measured
+checkpoint. The transfer value of the learned outer-radius representation and the
+variance of a changed recipe are also unknown.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
