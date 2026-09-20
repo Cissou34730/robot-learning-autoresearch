@@ -110,19 +110,27 @@ def test_execution_belongs_to_the_launcher(command):
 def test_a_repository_wide_test_run_is_refused():
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
-    # A separate option value is not a selector, so this still runs everything.
-    assert adapter.command_denial("uv run pytest --maxfail 1") == adapter.SUITE_DENIAL
+    # A value-taking option is not a test selector, whatever its name, so an
+    # option-only invocation still runs everything.
+    assert adapter.command_denial("uv run pytest --color no") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial("uv run pytest --durations-min 1")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial("uv run pytest --code-highlight yes")
+        == adapter.SUITE_DENIAL
+    )
 
 
 def test_a_targeted_test_run_remains_permitted():
     # AGENTS.md and research/instruments.md allow targeted tests and focused
     # checks, so the command layer refuses only repository-wide runs.
-    assert adapter.command_denial("uv run pytest tests/autoresearch/test_x.py") is None
+    existing = "tests/autoresearch/test_copilot_researcher.py"
+    assert adapter.command_denial(f"uv run pytest {existing}") is None
     assert adapter.command_denial("uv run pytest tests/autoresearch -k foo") is None
-    assert (
-        adapter.command_denial("uv run pytest --maxfail 1 tests/autoresearch/test_x.py")
-        is None
-    )
+    assert adapter.command_denial(f"uv run pytest --maxfail 1 {existing}") is None
+    assert adapter.command_denial(f"uv run pytest {existing}::test_x") is None
 
 
 @pytest.mark.parametrize(
@@ -872,8 +880,21 @@ def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
     assert "Targeted tests and focused checks on researcher-owned code" in content
     assert "Pytest execution belongs to the runner." not in content
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
-    assert adapter.command_denial("uv run pytest --maxfail 1") == adapter.SUITE_DENIAL
-    assert adapter.command_denial("uv run pytest tests/autoresearch/test_x.py") is None
+    assert adapter.command_denial("uv run pytest --color no") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial("uv run pytest --durations-min 1")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial("uv run pytest --code-highlight yes")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial(
+            "uv run pytest tests/autoresearch/test_copilot_researcher.py"
+        )
+        is None
+    )
 
 
 def test_the_policy_does_not_steer_the_researcher_to_read_less_or_stop_early():
