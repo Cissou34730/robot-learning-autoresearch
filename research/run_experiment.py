@@ -326,6 +326,21 @@ def anchored_scientific_delta(raw_state: dict) -> list[str]:
     return repository.scientific_delta(parent)
 
 
+def reanchor_phase_parent(raw_state: dict) -> str | None:
+    """Re-anchor an existing scientific parent to HEAD at a phase boundary.
+
+    Every phase reads its scientific delta relative to this parent, so a commit
+    made since the previous anchor (for example a human-owned harness fix) must
+    be adopted before the phase judges the delta. Only what is still uncommitted
+    remains attributed to the researcher. A frozen training operation keeps its
+    anchor, because it resumes the phase that established it.
+    """
+    parent = str(raw_state.get("pending_scientific_parent") or "").strip()
+    if not parent or isinstance(raw_state.get("pending_training_operation"), dict):
+        return parent or None
+    return repository.reanchor_scientific_parent(raw_state)
+
+
 def fresh_baseline_scientific_parent(state: dict) -> str:
     """Adopt committed harness fixes before an unfrozen Fresh baseline starts."""
     parent = repository.anchor_scientific_parent(state)
@@ -372,9 +387,13 @@ def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
 
 
 def begin_hypothesis_phase() -> int:
-    """Anchor the parent before the researcher may change or commit any science."""
+    """Anchor the parent at HEAD before the researcher may change any science.
+
+    Commits made since the previous anchor are adopted here rather than
+    attributed to the proposal the researcher is about to write.
+    """
     state = repository.read_state()
-    parent = repository.anchor_scientific_parent(state)
+    parent = repository.reanchor_scientific_parent(state)
     repository.write_state(state)
     console.announce(
         f"[runner] scientific parent of the next experiment: {parent[:12]}"
@@ -404,6 +423,7 @@ def check_proposal() -> int:
     try:
         proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
         state = repository.read_state()
+        reanchor_phase_parent(state)
         contract = protocol.validate_proposal_against_state(proposal, state)
         if contract == "training":
             validate_training_proposal_delta(proposal, state)
@@ -430,6 +450,7 @@ def check_evaluation_request() -> int:
         return 1
     try:
         state = repository.read_state()
+        reanchor_phase_parent(state)
         pending = state.get("pending_evaluation_request")
         if not isinstance(pending, dict):
             raise TypeError("no experiment is awaiting a research evaluation")
@@ -493,6 +514,7 @@ def check_analysis_deliverable() -> int:
     """Preflight the single actionable submission allowed during v4 analysis."""
     try:
         state = repository.read_state()
+        reanchor_phase_parent(state)
         pending = state.get("pending_analysis")
         if state.get("schema_version") != 4 or not isinstance(pending, dict):
             raise TypeError("no experiment is awaiting post-training analysis")
@@ -556,6 +578,7 @@ def check_analysis_deliverable() -> int:
 def check_lineage_evidence(experiment: int) -> int:
     """Preflight for the loop: is the pending lineage decision attested yet?"""
     state = repository.read_state()
+    reanchor_phase_parent(state)
     pending = state.get("pending_researcher_decision")
     if not isinstance(pending, dict) or int(pending.get("experiment", -1)) != (
         experiment
@@ -708,6 +731,7 @@ def execute_pending_evaluations() -> int:
     from robot_learning.scenario.task_reference import task_reference_panel
 
     state = repository.read_state()
+    reanchor_phase_parent(state)
     campaign_id = repository.current_campaign_id(state)
     is_v4 = state.get("schema_version") == 4
     pending = (
@@ -2214,6 +2238,7 @@ def main() -> int:
         print(f"ERROR: invalid proposal for current phase: {error}")
         return 1
     if proposal_contract == "lineage":
+        reanchor_phase_parent(raw_state)
         validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
     try:

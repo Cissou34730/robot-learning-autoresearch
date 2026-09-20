@@ -854,6 +854,31 @@ def anchor_scientific_parent(state: dict) -> str:
     return parent
 
 
+def git_work_tree_present() -> bool:
+    """Whether the runner's root is a Git work tree, so HEAD can be resolved.
+
+    Re-anchoring is a Git operation. A root without a work tree has no HEAD to
+    adopt, so the stored anchor stays the only available one.
+    """
+    return (paths.ROOT / ".git").exists()
+
+
+def reanchor_scientific_parent(state: dict) -> str:
+    """Move the scientific parent to HEAD at a phase boundary.
+
+    A phase reads its scientific delta relative to this parent. Anchoring it at
+    the current HEAD adopts every commit made since the previous anchor, so a
+    committed harness fix is judged as committed context instead of being
+    attributed to the researcher's working tree. Only what is still uncommitted
+    remains in the delta the ownership validator judges.
+    """
+    if not git_work_tree_present():
+        return str(state.get("pending_scientific_parent") or "").strip()
+    parent = git("rev-parse", "HEAD").strip()
+    state["pending_scientific_parent"] = parent
+    return parent
+
+
 def current_campaign_id(state: dict) -> str | None:
     """Retrieve the active campaign ID from persisted state, or None if missing."""
     campaign = state.get("campaign", {})
