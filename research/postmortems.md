@@ -8,8 +8,11 @@ substantial task behavior, with checkpoint-100352 the strongest measured policy 
 150/160 and 151/160 successes on two disjoint panels (301/320 pooled, 94.06%).
 Experiment 2's full-radius training-support change did not improve the transferred
 policy: checkpoint-30720 reached 154/160 and 150/160 on two new disjoint panels,
-while the parent reached 155/160 and 150/160. The measured task outcome, not the
-training proxy, still identifies the useful policy point.
+while the parent reached 155/160 and 150/160. Detailed episode diagnostics show
+that the baseline's 19 failures and nearly all subsequent parent/challenger
+failures are concentrated in target angles from -180 to -90 degrees. The measured
+task outcome, rather than training proxy success, identifies the useful policy
+point.
 
 **Lessons and limits:** All 19 recorded baseline failures occurred in the
 target-angle bin from -180 to -90 degrees; 11/19 were also below 14 cm, a region
@@ -23,15 +26,17 @@ recovery measured only 61.25% on its panel. These observations weaken the tested
 radius-support explanation without establishing that it is impossible or
 separating it from angular control asymmetry or late-training degradation. The
 research panels provide independent development coverage, not an official
-verdict, and the research-evaluation artifacts do not emit target geometry for
-direct inner-radius or angle-specific analysis.
+verdict. Their detailed artifacts do expose target geometry, but the panels are
+not large enough to establish the official result or isolate representation and
+control causes.
 
-**Open questions:** It remains unresolved whether a differently designed
-inner-radius intervention can improve the residual failures without sacrificing
-outer-radius behavior, whether the negative-angle concentration reflects a
-separate representation or control issue, and why both recipes can regress after
-their strongest proxy period. The transfer value of the learned outer-radius
-representation and the variance of changed recipes are also unknown.
+**Open questions:** It remains unresolved whether increased training exposure to
+the negative-angle sector can improve the residual failures without sacrificing
+the rest of the official angular range, whether the concentration instead
+reflects a representation or control issue, and why both recipes can regress
+after their strongest proxy period. The transfer value of the learned
+outer-radius representation and the variance of changed recipes are also
+unknown.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
