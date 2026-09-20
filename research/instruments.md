@@ -327,6 +327,29 @@ parent's recipe, was in effect. A `continuation` restores the parent's recipe
 before training: without `params` it is the unchanged recipe, and with `params`
 it applies those overrides on top of the restored recipe. Its record names the
 extended lineage and records that the parent's recipe was restored.
+
+### Training-parent eligibility and retention
+
+Eligibility is a provenance invariant, not a preference about a form field. A
+`training_parent` resolves only through `working`, `best_known`, or a retained
+lineage ID because only those names carry a closure-produced record with all the
+facts training and recovery require: the complete inference artifact (`model.zip`
+and its preprocessing runtime), a `fingerprint` that still matches the bytes on
+disk, a `scientific_commit` for restoring the recipe that produced the parent,
+and the effective `parameters` in force when it was trained. A raw candidate
+checkpoint has none of those records, so the Runner cannot name its recipe or
+verify its identity and it cannot serve as a parent.
+
+The usable-parent set is also the surviving-weights set. At closure,
+`finalize_pending_v4_closure` removes `model.zip`, `vecnormalize.pkl`,
+`replay_buffer.pkl` and `policy_runtime.pkl` from every candidate that is not
+named `working` or `best_known` and is not explicitly retained. Retention is
+therefore the only mechanism that turns a candidate into a future
+`training_parent`; a candidate that receives no role can never be extended,
+re-measured, or compared against later, and its removal is irreversible.
+Retention has no budget and no preferred count: retain any checkpoint whose
+future value is uncertain.
+
 The `reasoning` object contains the common and type-specific fields shown in the
 schemas. `evidence` is a non-empty array of source/observation objects. Every
 listed type-specific string, `initialization_reason`, and `objective_link` is

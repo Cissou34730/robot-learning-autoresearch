@@ -861,11 +861,20 @@ def _checkpoint_inventory_lines(
         ),
         "",
         (
+            "Every candidate listed below loses its weights at closure unless the "
+            "closure names it `working`, `best_known`, or retains it with an ID. A "
+            "candidate without a role cannot later be extended, re-measured, or "
+            "compared against, and cannot become a future `training_parent`. "
+            "Retention has no budget and no preferred count. The `Weights if no "
+            "role` column marks the candidates this applies to."
+        ),
+        "",
+        (
             "| Candidate | Steps | Training success | Training reward | "
             "Measurements | Run position | Success location and shape | "
-            "Reward location and shape |"
+            "Reward location and shape | Weights if no role |"
         ),
-        "|---|---:|---:|---:|---:|---:|---|---|",
+        "|---|---:|---:|---:|---:|---:|---|---|---|",
     ]
     series = _raw_training_series(campaign_id, experiment)
     discriminators = _candidate_discriminator_cells(candidates, series)
@@ -878,7 +887,8 @@ def _checkpoint_inventory_lines(
             f"{_candidate_metric(candidate, 'training_success')} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
             f"{len(candidate.get('evaluations') or [])} | "
-            f"{position} | {success_context} | {reward_context} |"
+            f"{position} | {success_context} | {reward_context} | "
+            "removed unless named |"
         )
     lines.append("")
     lines.extend(_training_proxy_spread_lines(series))
@@ -1036,6 +1046,15 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         "## Current lineages and scientific recipes",
         "",
         f"- Valid `training_parent` identifiers: {identifiers or 'not recorded'}",
+        (
+            "These are the only models the Runner can verify and restore as a "
+            "parent. A new identifier is created only by a closure that names a "
+            "candidate `working` or `best_known`, or retains it with an ID; the "
+            "complete inference artifact, matching fingerprint, scientific commit "
+            "and effective parameters are recorded at that moment. Candidates "
+            "without such a role have their weights removed at closure and cannot "
+            "become training parents later."
+        ),
         "",
         "### Lineages",
         "",

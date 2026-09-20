@@ -237,6 +237,15 @@ known. A separate explicit, evidence-backed `best_known` designation identifies
 the selected policy, not a required training parent. Selecting it does not decide
 whether to end development or request final assessment.
 
+An eligible `training_parent` can only be `working`, `best_known`, or an
+explicitly retained lineage ID, because only a closure-produced record carries
+the complete inference artifact, a matching fingerprint, a `scientific_commit`
+and effective parameters. Retention is therefore the only way to create a future
+training parent from a candidate: a candidate that receives no role has its
+weights removed at closure and can never be extended, re-measured, or compared
+against later. There is no budget or preferred count for retention, so retain any
+checkpoint whose future value is uncertain.
+
 Assess the investigation's outcome, saved-policy usefulness, scientific recipe,
 training parent, artifact retention, and readiness for terminal assessment as
 distinct decisions. A weakened or unresolved investigation does not by itself
