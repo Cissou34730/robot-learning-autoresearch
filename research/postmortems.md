@@ -6,25 +6,32 @@
 official 6-20 cm reach-and-hold distribution. The fresh PPO baseline learned
 substantial task behavior, with checkpoint-100352 the strongest measured policy at
 150/160 and 151/160 successes on two disjoint panels (301/320 pooled, 94.06%).
-Checkpoint-105472 and later checkpoints were weaker, including 134/160 at
-checkpoint-120832, so the measured task outcome, not the training proxy, currently
-identifies the useful policy point.
+Experiment 2's full-radius training-support change did not improve the transferred
+policy: checkpoint-30720 reached 154/160 and 150/160 on two new disjoint panels,
+while the parent reached 155/160 and 150/160. The measured task outcome, not the
+training proxy, still identifies the useful policy point.
 
-**Lessons and limits:** All 19 recorded failures of checkpoint-100352 occurred in
-the target-angle bin from -180 to -90 degrees; 11/19 were also below 14 cm, a
-region absent from the baseline training radius range. The failures generally
-truncated at 500 steps, although some later checkpoints reached the tolerance and
-then lost the hold. These observations support a training-support mismatch as one
-plausible contributor, but do not separate it from angular control asymmetry or
-late-training degradation. The two research panels provide independent development
-coverage, not an official verdict, and no causal claim has been established.
+**Lessons and limits:** All 19 recorded baseline failures occurred in the
+target-angle bin from -180 to -90 degrees; 11/19 were also below 14 cm, a region
+absent from the baseline training radius range. Expanding the radius range in one
+transferred run did not remove the parent's residual pattern: on the first new
+panel the challenger added one failure, and on the second it exchanged two
+failure identities with the parent while retaining the same success rate. The
+training proxy was non-monotonic (0.99 success and -2.70 reward at 30,720 steps,
+degradation near 90,112-100,352, then 0.96 and -6.11 at 115,712), but the later
+recovery measured only 61.25% on its panel. These observations weaken the tested
+radius-support explanation without establishing that it is impossible or
+separating it from angular control asymmetry or late-training degradation. The
+research panels provide independent development coverage, not an official
+verdict, and the research-evaluation artifacts do not emit target geometry for
+direct inner-radius or angle-specific analysis.
 
-**Open questions:** It remains unresolved whether adding the official inner-radius
-support improves the residual failures without sacrificing outer-radius behavior,
-whether the negative-angle concentration reflects a separate representation or
-control issue, and why the baseline regressed after its strongest measured
-checkpoint. The transfer value of the learned outer-radius representation and the
-variance of a changed recipe are also unknown.
+**Open questions:** It remains unresolved whether a differently designed
+inner-radius intervention can improve the residual failures without sacrificing
+outer-radius behavior, whether the negative-angle concentration reflects a
+separate representation or control issue, and why both recipes can regress after
+their strongest proxy period. The transfer value of the learned outer-radius
+representation and the variance of changed recipes are also unknown.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
@@ -69,3 +76,52 @@ success will equal the official result.
 and the six artifacts under
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/` for checkpoints
 100352, 105472, 110592, and 120832 on seeds 4200 and 4360.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 2
+
+**Result:** Expanding the training target-radius support to the official 6-20 cm
+range produced a useful but not improved policy checkpoint, so the experiment's
+scientific recipe is reverted to the parent and the existing baseline remains
+working and best-known. The campaign objective is not demonstrated.
+
+**Observed behavior:** The training trace improved from 0.75 success and -8.94
+reward at 1,024 steps to a proxy peak of 0.99 and -2.70 at 30,720 steps. The
+proxy then degraded through 0.83 success and -9.55 reward at 90,112 steps before
+recovering to 0.96 and -6.11 at 115,712; it ended at 0.92 and -7.47 at 120,832.
+On research panel 4520, checkpoint-30720 achieved 154/160 (96.25%) versus the
+parent's 155/160 (96.875%); the challenger had the parent's five failed episode
+identities plus episode 4527. On disjoint panel 4680, both achieved 150/160
+(93.75%); eight failed episode identities were shared, while each policy had two
+panel-specific failures. The paired comparisons therefore favored the parent by
+one discordant episode on panel 4520 and by one net episode across both panels.
+The later proxy-recovery checkpoint-115712 achieved only 61.25% (98/160), with
+62 failures, so proxy recovery did not indicate useful saved-policy behavior.
+The measured failures in these artifacts were truncated at 500 steps. The
+research-evaluation records contain success, reward and step outcomes but no
+target geometry, so this round does not directly establish whether inner-radius
+or negative-angle rates changed.
+
+**Hypothesis assessment:** The radius-support proposition is weakened under the
+tested transferred recipe. The early proxy peak produced near-parent measured
+performance on two disjoint panels, but did not improve pooled success or
+systematically remove residual failures, and the later proxy recovery was
+strongly contradicted by its poor measurement. This is evidence against the
+usefulness of this intervention and training trajectory for the present
+decision, not a causal disproof of every possible radius curriculum or a claim
+that the parent would meet the official 98% criterion.
+
+**Interpretation:** The parent is the safer working policy because it matches or
+slightly exceeds the changed recipe on comparable independent development panels
+and remains the strongest measured lineage. The early checkpoint is not retained:
+its measured behavior is comparable rather than superior, while its recipe did
+not resolve the residual problem. The large gap between training proxies and
+saved-policy measurements reinforces that checkpoint selection must use measured
+task success; neither development evidence nor the training log is an official
+verdict.
+
+**Evidence inspected:** `research/brief.md`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-2/inventory.json`;
+`research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-2-attempt-1.log`;
+and the five experiment-2 artifacts under
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/` for checkpoint-30720,
+checkpoint-115712 and `working` on seeds 4520 and 4680.
