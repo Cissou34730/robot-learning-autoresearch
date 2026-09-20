@@ -79,3 +79,54 @@ learned policy.
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-120832-200ep-seed10000-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-120832-200ep-seed10400-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-86016-200ep-seed10000-543af51fd137.json`.
+
+## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 2
+
+**Result:** Expanding the training radius range to 6-20 cm did not improve
+measured reach-and-hold success on the matched disjoint panel. The retained
+baseline remains the working and best-known lineage; the experiment recipe is
+reverted and terminal assessment remains deferred.
+
+**Observed behavior:** The changed recipe reached training success 0.99 at
+100352 steps and 1.0 at 105472 steps, but those training proxies measured
+192/200 successes (96.0%) at both checkpoints on episodes 10600-10799. The
+retained baseline measured 193/200 (96.5%) on the same panel. Paired
+comparisons recorded no discordant wins for either changed checkpoint against
+the baseline, with one baseline win; the two changed checkpoints had no
+discordant wins against each other. The changed checkpoint-100352 and
+checkpoint-105472 failures were the baseline's seven failures plus episode 42,
+whereas the baseline failed on episodes 75, 140, 165, 185, 196, 197, and 199.
+Training reward was an orthogonal proxy: it was 121.367 at 10240 steps and
+110.176 at 105472 steps, while the measured task success stayed at 96.0% for
+both measured changed checkpoints. The research-evaluation artifacts report
+success, reward, steps, termination and truncation, but not target geometry or
+held-step diagnostics for this round.
+
+**Hypothesis assessment:** Weakened. The confirmatory prediction that broader
+radial coverage would reduce the observed failure pattern without sacrificing
+performance was not observed on the matched disjoint panel: the changed
+policies were slightly worse in aggregate and added a failure while retaining
+the baseline failures. This is evidence against this intervention under the
+tested transferred run and panel, not proof that radial coverage can never
+help; because target geometry and hold subdiagnostics were not emitted here,
+the result cannot distinguish radial effects from angle-dependent control or
+hold dynamics.
+
+**Interpretation:** The saved baseline policy remains useful progress toward the
+98% official objective, but this intervention does not provide a stronger
+candidate or evidence that the negative-angle and interrupted-hold failures
+were caused by the 14-20 cm training-radius restriction. The matched control
+and disjoint episode coverage are directly comparable for this decision, while
+the measured 96.0%/96.5% values are development evidence rather than an
+official verdict. Reverting the changed training distribution preserves the
+best-supported policy and leaves further training as a separate future
+experiment.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/checkpoints/challengers/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-2/inventory.json`;
+`research/training_logs/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-2-attempt-1.log`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-2-checkpoint-100352-200ep-seed10600-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-2-checkpoint-105472-200ep-seed10600-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-2-working-200ep-seed10600-543af51fd137.json`;
+`robot_learning/scenario/training_environment.py`.
