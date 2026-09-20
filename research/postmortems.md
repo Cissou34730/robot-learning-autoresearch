@@ -4,34 +4,42 @@
 
 **Current synthesis:** The campaign objective is at least 98% success on the
 official 6-20 cm, full-angle reach-and-hold task. The unchanged PPO baseline
-learned a useful policy, and checkpoint-100352 is the best-supported current
-lineage: it reached 587/600 pooled success, including 97.0% on each of two
-disjoint research panels. The evidence supports substantial progress, but the
-official objective remains unresolved because no official benchmark has been
-run.
+learned a useful policy, and checkpoint-100352 remains the best-supported
+current lineage: it reached 587/600 pooled success, including 97.0% on each of
+two disjoint research panels. The experiment-3 angle-biased transfer produced
+191/200 on a further disjoint panel, below its matched baseline control at
+192/200, so it does not improve the current policy. The evidence supports
+substantial progress, but the official objective remains unresolved because no
+official benchmark has been run.
 
 **Lessons and limits:** Training success and reward are useful for locating
 checkpoints but are not interchangeable with complete task success. The
-reward-peak checkpoint-86016 measured 95.0%, while checkpoint-100352 measured
-97.83% pooled; later endpoint behavior was weaker on the available comparison.
-The retained recipe samples radii 14-20 cm while the official task samples
-6-20 cm. Across the two disjoint baseline panels, all 12 checkpoint-100352
-failures were at negative angles: five never reached tolerance and seven
-reached it only briefly. The experiment-2 working policy also failed only at
-negative angles on its matched panel, and expanding the radius range to
-6-20 cm did not improve its 96.0% result over the 96.5% baseline. These
-observations identify a robust failure pattern under the measured panels, but
-do not by themselves distinguish angle-specific control from generalization
-or hold-reward limitations. The reused first panel is selection-contaminated;
-seeds 10200, 10400, and 10600 provide the relevant disjoint development
-coverage.
+experiment-3 proxy reached 0.98 around 15,360-25,600 steps, then declined to
+0.93 at checkpoint-100352 and 0.95 at checkpoint-120832, while both measured
+checkpoints reached only 95.5% complete task success. The reward-peak
+checkpoint-86016 measured 95.0%, while checkpoint-100352 measured 97.83%
+pooled; later endpoint behavior was weaker on the available comparisons. The
+retained recipe samples radii 14-20 cm while the official task samples 6-20 cm.
+Across the two disjoint baseline panels, all 12 checkpoint-100352 failures were
+at negative angles: five never reached tolerance and seven reached it only
+briefly. On the experiment-3 panel, both angle-biased checkpoints also failed
+only at negative angles, with 9 failures each versus 8 for the matched
+baseline; the paired comparisons gave neither changed checkpoint a discordant
+win over the baseline. Oversampling negative angles therefore did not reduce
+the observed failure pattern in this transferred run and panel, while the zero
+nonnegative failures for all three policies do not identify whether the
+residual is angle-specific control, representation, or hold-reward behavior.
+The experiment-2 working policy also failed only at negative angles on its
+matched panel, and expanding the radius range to 6-20 cm did not improve its
+96.0% result over the 96.5% baseline. The reused first panel is
+selection-contaminated; seeds 10200, 10400, 10600, and 10800 provide disjoint
+development coverage for the relevant comparisons.
 
-**Open questions:** It remains unresolved whether changing the training
-angle distribution can reduce the negative-angle failures without degrading
-the nonnegative half of the official uniform distribution. It is also
-unresolved whether the remaining failures are primarily angle-dependent
-control/generalization failures or incomplete hold shaping. The official
-result for the current best-known policy remains unmeasured.
+**Open questions:** It remains unresolved whether a different control or hold
+objective can reduce the persistent negative-angle failures, and whether that
+would transfer without harming the nonnegative half of the official uniform
+distribution. The official result for the current best-known policy remains
+unmeasured.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
 
@@ -133,4 +141,51 @@ experiment.
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-2-checkpoint-100352-200ep-seed10600-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-2-checkpoint-105472-200ep-seed10600-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-2-working-200ep-seed10600-543af51fd137.json`;
+`robot_learning/scenario/training_environment.py`.
+
+## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 3
+
+**Result:** The angle-biased training distribution did not improve the
+measured policy. Both measured experiment-3 checkpoints reached 95.5% on the
+fresh panel, versus 96.0% for the matched retained baseline. The experiment
+recipe is reverted, the retained baseline remains working and best-known, and
+terminal assessment is deferred.
+
+**Observed behavior:** The training log's proxy success reached 0.98 around
+15,360-25,600 steps, then declined to 0.93 at checkpoint-100352 and recovered
+to 0.95 at checkpoint-120832; listed rewards followed the same broad
+non-monotonic pattern. On the disjoint episodes 10800-10999, checkpoint-100352
+and checkpoint-120832 each achieved 191/200 successes, while the working
+baseline achieved 192/200. Every failure for all three policies was at a
+negative target angle. The changed checkpoints had 9 failures each versus 8
+for the baseline; the paired comparisons recorded 0 discordant wins for each
+changed checkpoint and 1 for the baseline. The failure mix was also partial:
+the 100352-step changed policy never reached tolerance in 5 failures and
+reached it without a complete hold in 4, while the 120832-step policy had 3
+never-reached and 6 incomplete-hold failures.
+
+**Hypothesis assessment:** Weakened. The confirmatory prediction that
+oversampling negative angles would reduce negative-angle failures while
+preserving nonnegative performance was not observed on the fresh full-angle
+panel: the changed policies had one more failure than the control and no
+paired wins. The absence of nonnegative failures is consistent with preserved
+nonnegative behavior on this panel, but does not show improvement. This
+weakens the training-frequency explanation under the tested transferred run
+and evaluation panel; it does not prove that angle sampling can never help or
+distinguish angle control, representation, and hold-shaping causes.
+
+**Interpretation:** Complete task measurements, rather than the higher early
+training proxies, show that the intervention did not advance the policy toward
+the 98% objective in this comparison. The same-panel control, disjoint episode
+range, and failure diagnostics support reverting the changed recipe and
+continuing from the established baseline. The development result remains
+below the official criterion and is not an official verdict.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/checkpoints/challengers/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-3/inventory.json`;
+`research/training_logs/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-3-attempt-1.log`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-3-checkpoint-100352-200ep-seed10800-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-3-checkpoint-120832-200ep-seed10800-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-3-working-200ep-seed10800-543af51fd137.json`;
 `robot_learning/scenario/training_environment.py`.
