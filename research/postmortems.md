@@ -7,35 +7,35 @@ official 6-20 cm, full-angle reach-and-hold task. The unchanged PPO baseline
 learned a useful policy, and checkpoint-100352 remains the best-supported
 current lineage at 587/600 pooled success (97.83%), including 97.0% on each of
 two disjoint panels. Expanding the training radius range, oversampling negative
-angles, and forfeiting accumulated hold progress all failed to improve the
-unchanged recipe on fresh or matched panels. The unchanged working parent did
-reach 196/200 (98.0%) on the latest disjoint panel, while the experiment-4
-challengers reached 191/200 (95.5%) and 179/200 (89.5%). The campaign therefore
-has substantial but uncertain progress toward the objective, and the official
-result remains unmeasured.
+angles, forfeiting accumulated hold progress, and adding explicit target-polar
+features all failed to improve the unchanged recipe on fresh or matched panels.
+The unchanged working parent reached 195/200 (97.5%) on the experiment-5
+disjoint panel, while its observation challenger reached 103/200 (51.5%).
+The campaign therefore has substantial but uncertain progress toward the
+objective, and the official result remains unmeasured.
 
 **Lessons and limits:** Complete reach-and-hold success, rather than training
 success or reward, governs progress. The reward-peak checkpoint-86016 measured
-95.0%, whereas checkpoint-100352 measured 97.83% pooled; the late endpoint was
-weaker on the available comparisons. The characterized checkpoint-100352
+95.0%, whereas checkpoint-100352 measured 97.83% pooled; the late endpoints
+were weaker on the available comparisons. The characterized checkpoint-100352
 failures across the two disjoint baseline panels were all at negative angles:
 five never reached tolerance and seven reached it only briefly. The experiment-3
 challengers showed the same negative-angle concentration, while the experiment-4
 challengers added failures outside that pattern. The radius, angle-distribution,
-and full hold-forfeiture interventions provide evidence against those tested
-transferred recipes, not against all possible control, representation, or reward
-changes. Experiment 4 emitted no hold-specific diagnostics, so its lower
-aggregate success and zero paired wins weaken the hold-shaping explanation
-without identifying the cause. The reused first panel is selection-contaminated;
-seeds 10200, 10400, 10600, 10800, and 11000 provide disjoint development
-coverage. The pre-intervention observation contained joint, velocity,
-Cartesian-error, and inverse-kinematics features, but no explicit smooth
-target-polar encoding; whether that omission matters is untested.
+full hold-forfeiture, and tested target-polar representation recipes provide
+evidence against those tested runs, not against all possible control,
+representation, or reward changes. Experiment 4 emitted no hold-specific
+diagnostics, and experiment 5 emitted no target-geometry or hold diagnostics, so
+their aggregate regressions do not identify the failure mechanism. The
+experiment-5 fresh run also combines representation and learning-process
+effects, limiting causal attribution. The reused first panel is
+selection-contaminated; seeds 10200, 10400, 10600, 10800, 11000, and 11200
+provide disjoint development coverage.
 
 **Open questions:** Whether the remaining never-reach failures arise from
 angle-specific control or observation representation rather than reward shaping.
-Whether an observation change can improve the current policy without losing its
-broad reach-and-hold behavior. How much learning-process variance would affect
+Whether a different intervention can improve the current policy without losing
+its broad reach-and-hold behavior. How much learning-process variance affects
 conclusions drawn from a fresh recipe. Whether the current best-known policy
 satisfies the official 98% criterion on the frozen 200-episode assessment.
 
@@ -237,3 +237,48 @@ representation.
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-4-checkpoint-105472-200ep-seed11000-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-4-working-200ep-seed11000-543af51fd137.json`;
 `robot_learning/scenario/reward.py`.
+
+## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 5
+
+**Result:** The fresh target-polar observation recipe did not improve the
+learned policy. The unchanged `working` lineage remains the working and
+best-known policy; the observation change is reverted and terminal assessment
+remains deferred.
+
+**Observed behavior:** The experiment-5 training proxies rose late: training
+success was 0 through checkpoint-100352, then 0.01, 0.06, 0.10 and 0.17 at
+105472, 110592, 115712 and 120832 steps, while listed reward rose to 115.775
+at the endpoint. These are training proxies, not task measurements. On the
+fresh disjoint research panel covering episodes 11200-11399, the endpoint
+checkpoint-120832 achieved 103/200 (51.5%) complete reach-and-hold successes.
+The unchanged parent achieved 195/200 (97.5%) on the same panel. The paired
+comparison had 0 challenger wins and 92 parent wins over 92 discordant
+episodes, a 46 percentage-point success gap. The measurement emitted no target
+geometry or hold-specific diagnostics, and the other 23 experiment-5
+checkpoints remain unmeasured.
+
+**Hypothesis assessment:** Weakened. The exploratory question asked whether
+smooth target-polar features could address recurring negative-angle failures
+without sacrificing broad behavior. The measured endpoint showed the opposite
+under the tested fresh recipe and panel: it lost broadly relative to the
+matched control rather than providing evidence of a targeted negative-angle
+improvement. The result weakens this representation intervention, but does not
+establish that target features can never help because the fresh run also
+contains learning-process variation, only one challenger checkpoint was
+measured, and the panel lacked geometry and hold diagnostics.
+
+**Interpretation:** The complete-task measurement is inconsistent with treating
+the rising training proxies as transferred task progress. The same-panel
+control and paired outcomes make the unchanged policy the more useful saved
+artifact and do not justify an additional measurement of this clearly weaker
+candidate. The result does not identify whether the regression came from the
+new input representation, fresh-training variance, or their interaction.
+Restoring the established recipe preserves the best-supported route toward the
+98% objective; the official benchmark remains the only terminal verdict.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/checkpoints/challengers/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-5/inventory.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-5-checkpoint-120832-200ep-seed11200-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-5-working-200ep-seed11200-543af51fd137.json`;
+`robot_learning/scenario/observations.py`.
