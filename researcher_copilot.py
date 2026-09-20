@@ -304,28 +304,28 @@ def denied_git_subcommand(tokens: list[str]) -> str | None:
     return "git"
 
 
-def names_existing_test_path(token: str) -> bool:
-    """Whether a pytest argument selects an existing path inside the worktree.
+def names_targeted_test_file(token: str) -> bool:
+    """Whether a pytest argument selects a specific test file in the worktree.
 
-    Enumerating value-taking options is unbounded, so selection is decided by
-    the filesystem instead: an argument is a selector only when it names a file
-    or directory that exists strictly inside the worktree. Node ids keep their
-    file part, and `.` or the worktree root itself is not "inside" the worktree,
-    so an option-only invocation is never mistaken for a targeted run.
+    A selector is an existing file, or a node id inside one, never a directory:
+    `pytest tests` runs the whole tree, so it stays repository-wide.
     """
     path = Path(token.split("::", 1)[0])
     resolved = (ROOT / path).resolve() if not path.is_absolute() else path.resolve()
-    return resolved != ROOT and resolved.is_relative_to(ROOT) and resolved.exists()
+    return resolved.is_file() and resolved.is_relative_to(ROOT)
 
 
 def is_repository_wide_pytest(tokens: list[str]) -> bool:
     if "pytest" not in tokens:
         return False
-    return not any(
-        names_existing_test_path(token)
-        for token in tokens[tokens.index("pytest") + 1 :]
-        if not token.startswith("-")
-    )
+    rest = tokens[tokens.index("pytest") + 1 :]
+    for previous, token in zip(["pytest", *rest], rest):
+        # An option, and the value it consumes, is never a test selector.
+        if token.startswith("-") or previous.startswith("-"):
+            continue
+        if names_targeted_test_file(token):
+            return False
+    return True
 
 
 def is_dependency_management(tokens: list[str]) -> bool:
