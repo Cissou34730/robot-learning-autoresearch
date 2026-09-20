@@ -298,3 +298,51 @@ does not by itself establish the 98% objective.
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-6-checkpoint-75776-160ep-seed5000-543af51fd137.json`;
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-6-working-160ep-seed5000-543af51fd137.json`;
 and `robot_learning/scenario/reward.py`.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 8
+
+**Result:** Targeted hard-region training did not improve the transferred
+working policy. The changed sampler is reverted, and the measured `working`
+and unchanged `best_known` lineages are preserved. The human objective remains
+undemonstrated.
+
+**Observed behavior:** Training completed 120,832 steps and produced 24
+checkpoints. The two selected proxy peaks, checkpoints 70656 and 75776, both
+reported 0.92 training success; checkpoint 75776 had the better recorded mean
+reward (-5.8437 versus -6.0370). On the fresh research panel with episodes
+5160-5319, checkpoint 70656 achieved 152/160 (95.00%), checkpoint 75776
+achieved 151/160 (94.375%), and the unchanged working policy achieved 156/160
+(97.50%). The working policy won all four discordant episodes against
+checkpoint 70656 and all five discordant episodes against checkpoint 75776.
+Each challenger retained the parent's four failed episode identities and added
+four or five failures; all recorded failures were truncated at 500 steps.
+The research-evaluation artifacts do not include target geometry, so they do
+not establish whether the targeted inner negative-angle failure rate itself
+changed.
+
+**Hypothesis assessment:** The diagnostic hypothesis is weakened under the
+tested transferred recipe. The expected improvement or preservation of
+complete reach-and-hold success was absent on a comparable fresh panel, and
+the paired results favor the unchanged parent. The training-proxy peaks are
+therefore an orthogonal process signal rather than evidence of task progress.
+Because this panel lacks target geometry, the result does not distinguish a
+failure to correct the intended hard region from a correction offset by new
+failures elsewhere; it is evidence against this sampler and trajectory, not a
+causal disproof of targeted exposure in general.
+
+**Interpretation:** The measured parent is the safer working policy and remains
+the strongest available lineage, but its 156/160 result and prior development
+panels do not establish the official 196/200 objective. Reverting the sampler
+avoids carrying forward a changed recipe with lower measured success. No
+additional measurement round is warranted for this experiment because both
+proxy-selected challengers lose to the same-panel control and no unmeasured
+checkpoint has task evidence; the campaign should continue from the unchanged
+lineage rather than request terminal assessment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-8/inventory.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-8-checkpoint-70656-160ep-seed5160-543af51fd137.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-8-checkpoint-75776-160ep-seed5160-543af51fd137.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-8-working-160ep-seed5160-543af51fd137.json`;
+and `robot_learning/scenario/training_environment.py`.
