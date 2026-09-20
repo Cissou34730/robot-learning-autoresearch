@@ -49,8 +49,9 @@ def test_experiment_index_section_renders_one_row_per_experiment():
         (
             "Each row records what one experiment did and concluded. Past closure "
             "choices answered the question that experiment asked; they are not a "
-            "default for the next one. The recorded rationale for the most recent "
-            "experiment is kept, de-templated, under Measurement rounds."
+            "default for the next one. Each recorded closure is shown with the "
+            "de-templated rationale that answered its question; a closure whose "
+            "rationale is not reproduced here is withheld."
         ),
         "",
         "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
@@ -343,48 +344,133 @@ def test_measurement_rounds_retain_de_templated_rationale_during_preparation():
     assert "Measurement rounds for the current experiment" in analysis
 
 
-def test_preparation_treats_rationale_and_outcomes_symmetrically():
+def _closed_experiment(
+    index: int,
+    family: str,
+    *,
+    continue_from: str,
+    best_known: str,
+    code: str,
+    reason: str | None,
+    selection: str | None,
+) -> dict:
     record = {
-        "index": 1,
+        "index": index,
+        "kind": "training",
+        "family": family,
         "closure_decision": {
-            "continue_from": "checkpoint-100",
-            "best_known": {"candidate": "checkpoint-100"},
-            "code": {"action": "keep"},
+            "continue_from": continue_from,
+            "best_known": {"candidate": best_known},
+            "code": {"action": code},
         },
-        "evaluation_rounds": [
-            {
-                "round": 1,
-                "question": "does it reproduce",
-                "reason": "round reason",
-                "status": "completed",
-                "results": {
-                    "research_evaluations": [
-                        {
-                            "candidate": "checkpoint-100",
-                            "seed": 100,
-                            "episodes": 200,
-                            "success_percent": 90.0,
-                            "selection": "proxy peak template",
-                        }
-                    ]
-                },
-            }
-        ],
+        "evaluation_rounds": [],
     }
-    rounds = "\n".join(brief._v4_measurement_rounds_section({}, [record], None))
-    index = "\n".join(brief._v4_experiment_index_section([record], None))
+    if reason is not None or selection is not None:
+        round_record = {
+            "round": 1,
+            "question": f"question-{index}",
+            "status": "completed",
+            "results": {},
+        }
+        if reason is not None:
+            round_record["reason"] = reason
+        if selection is not None:
+            round_record["results"] = {
+                "research_evaluations": [
+                    {
+                        "candidate": best_known,
+                        "seed": index,
+                        "episodes": 10,
+                        "selection": selection,
+                    }
+                ]
+            }
+        record["evaluation_rounds"] = [round_record]
+    return record
 
-    # One documented predicate governs both sections during preparation.
+
+def test_composed_preparation_brief_pairs_every_closure_with_its_rationale():
+    results = [
+        _closed_experiment(
+            1,
+            "alpha",
+            continue_from="checkpoint-10",
+            best_known="checkpoint-10",
+            code="keep",
+            reason="reason-alpha",
+            selection="selection-alpha",
+        ),
+        _closed_experiment(
+            2,
+            "beta",
+            continue_from="checkpoint-20",
+            best_known="checkpoint-20",
+            code="revert",
+            reason="reason-beta",
+            selection="selection-beta",
+        ),
+        # A recorded closure whose rationale is not reproduced must be withheld.
+        _closed_experiment(
+            3,
+            "gamma",
+            continue_from="checkpoint-30",
+            best_known="checkpoint-30",
+            code="keep",
+            reason=None,
+            selection=None,
+        ),
+        # The most recent experiment also carries its rationale in the rounds.
+        _closed_experiment(
+            4,
+            "delta",
+            continue_from="checkpoint-40",
+            best_known="checkpoint-40",
+            code="keep",
+            reason="reason-delta",
+            selection="selection-delta",
+        ),
+    ]
+    text = brief._render_v4_research_brief(
+        {"schema_version": 4, "campaign": {"id": "cid", "base_commit": "base"}},
+        results,
+        "",
+        "cid",
+        "base",
+        "PPO",
+        {},
+    )
+
+    # One documented predicate governs the whole preparation brief.
     assert brief._precedent_prose_inline(None) is False
-    assert brief._precedent_prose_inline({"experiment": 2}) is True
-    # The rationale is present but not as an inline form, and the outcome is
-    # present but explicitly not a default for the next request.
-    assert "round reason" in rounds and "proxy peak template" in rounds
-    assert "Reason: round reason" not in rounds
-    assert "Selection: proxy peak template" not in rounds
-    assert "working checkpoint-100; best known checkpoint-100; code keep" in index
-    assert "not a default for the next one" in index
-    assert "de-templated" in index
+    assert brief._precedent_prose_inline({"experiment": 5}) is True
+    # Every visible closure is paired with the rationale that answered it.
+    paired = [
+        (
+            "working checkpoint-10; best known checkpoint-10; code keep",
+            "reason-alpha",
+            "selection-alpha",
+        ),
+        (
+            "working checkpoint-20; best known checkpoint-20; code revert",
+            "reason-beta",
+            "selection-beta",
+        ),
+        (
+            "working checkpoint-40; best known checkpoint-40; code keep",
+            "reason-delta",
+            "selection-delta",
+        ),
+    ]
+    for outcome, reason, selection in paired:
+        assert outcome in text
+        assert reason in text
+        assert selection in text
+    # A closure with no reproduced rationale is withheld rather than shown bare.
+    assert "working checkpoint-30; best known checkpoint-30; code keep" not in text
+    assert "closure withheld during preparation" in text
+    # The rationale is de-templated, never the inline answer-form field names.
+    assert "Reason:" not in text
+    assert "Selection:" not in text
 
 
 def test_activity_record_lists_consumed_research_intervals_factually():

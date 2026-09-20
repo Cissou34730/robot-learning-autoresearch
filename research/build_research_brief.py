@@ -993,6 +993,45 @@ def _precedent_prose_inline(pending: dict | None) -> bool:
     return isinstance(pending, dict)
 
 
+def _experiment_rationale(result: dict) -> list[str]:
+    """De-templated rationale recorded by one experiment's measurement rounds.
+
+    Issue #54: an indexed closure outcome must be shown together with the
+    rationale that answered its question. This renders the same content as the
+    measurement-rounds section without the inline ``Reason:`` / ``Selection:``
+    field names, so it cannot be read as a form the next request should fill in.
+    """
+    items: list[str] = []
+    rounds = result.get("evaluation_rounds")
+    if not isinstance(rounds, list):
+        return items
+    for record in rounds:
+        if not isinstance(record, dict):
+            continue
+        if record.get("reason"):
+            items.extend(
+                _indented_label_block(
+                    "Round rationale", str(record["reason"]), 400, RESULTS_REFERENCE
+                )
+            )
+        round_results = record.get("results")
+        if not isinstance(round_results, dict):
+            continue
+        for key in ("research_evaluations", "task_reference_evaluations"):
+            for item in round_results.get(key) or []:
+                if not isinstance(item, dict) or not item.get("selection"):
+                    continue
+                items.extend(
+                    _indented_label_block(
+                        f"Choice rationale for `{item.get('candidate', '-')}`",
+                        str(item["selection"]),
+                        600,
+                        RESULTS_REFERENCE,
+                    )
+                )
+    return items
+
+
 def _v4_experiment_index_section(
     results: list[dict], pending: dict | None = None
 ) -> list[str]:
@@ -1000,17 +1039,21 @@ def _v4_experiment_index_section(
 
     Issue #54: the section states that a recorded closure answered that
     experiment's question, so it is not a default for the next one. During
-    preparation it also points at where the de-templated rationale lives.
+    preparation every recorded closure is shown with its de-templated rationale,
+    and a closure whose rationale is not reproduced here is withheld, so outcome
+    and rationale stay symmetric across the whole index.
     """
+    preparing = not _precedent_prose_inline(pending)
     preamble = (
         "Each row records what one experiment did and concluded. Past closure "
         "choices answered the question that experiment asked; they are not a "
         "default for the next one."
     )
-    if not _precedent_prose_inline(pending):
+    if preparing:
         preamble += (
-            " The recorded rationale for the most recent experiment is kept, "
-            "de-templated, under Measurement rounds."
+            " Each recorded closure is shown with the de-templated rationale "
+            "that answered its question; a closure whose rationale is not "
+            "reproduced here is withheld."
         )
     lines = [
         "",
@@ -1021,23 +1064,50 @@ def _v4_experiment_index_section(
         "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
         "|---:|---|---|---|---|---|---|---|",
     ]
+    rationale_notes: list[str] = []
     for result in sorted(
         results, key=lambda item: int(item.get("index", 0)), reverse=True
     ):
         checkpoints = compact_measurement_summary(result)
         closure = result.get("closure_decision") or {}
+        rationale = _experiment_rationale(result) if preparing else []
+        if preparing and closure and not rationale:
+            decisions = (
+                "closure withheld during preparation; its rationale is not "
+                "reproduced here"
+            )
+        else:
+            decisions = (
+                f"working {closure.get('continue_from', 'not recorded')}; "
+                f"best known {(closure.get('best_known') or {}).get('candidate', 'not recorded')}; "
+                f"code {(closure.get('code') or {}).get('action', 'not recorded')}"
+            )
         lines.append(
             f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
             f"{result.get('training_parent', '-')} | {_table_cell(_compact(_change_details(result), 100, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(result.get('hypothesis_assessment', 'unavailable'))} | "
-            f"working {closure.get('continue_from', 'not recorded')}; "
-            f"best known {(closure.get('best_known') or {}).get('candidate', 'not recorded')}; "
-            f"code {(closure.get('code') or {}).get('action', 'not recorded')} | "
+            f"{decisions} | "
             f"{_postmortem_reference(result.get('postmortem'))} |"
         )
+        if rationale:
+            rationale_notes.extend(
+                ["", f"**Experiment {result.get('index', '-')}**", *rationale]
+            )
     if not results:
         lines.append("| - | - | - | - | - | - | - | - |")
+    if rationale_notes:
+        lines.extend(
+            [
+                "",
+                (
+                    "Recorded rationale for past decisions; each answered a "
+                    "question that is not yours. It is retained for audit, not as "
+                    "a template to copy:"
+                ),
+                *rationale_notes,
+            ]
+        )
     return lines
 
 
