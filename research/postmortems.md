@@ -9,8 +9,11 @@ current lineage at 587/600 pooled success (97.83%), including 97.0% on each of
 two disjoint panels. Expanding the training radius range and then oversampling
 negative angles both failed to improve matched or fresh-panel performance; the
 experiment-3 transfer reached 191/200 versus 192/200 for its retained control.
-The campaign has therefore made substantial but sub-objective development
-progress, and the official result remains unmeasured.
+On the fresh experiment-4 panel, the unchanged working parent reached 196/200
+(98.0%), while full hold-progress forfeiture reached 191/200 (95.5%) at 100352
+steps and 179/200 (89.5%) at 105472 steps. The campaign has therefore made
+substantial but sub-objective development progress, and the official result
+remains unmeasured.
 
 **Lessons and limits:** Complete reach-and-hold success, rather than training
 success or reward, governs progress. The reward-peak checkpoint-86016 measured
@@ -19,21 +22,20 @@ weaker on the available comparisons. Across the two disjoint baseline panels,
 all 12 checkpoint-100352 failures were at negative angles: five never reached
 tolerance and seven reached it only briefly. On the experiment-3 panel, both
 changed checkpoints again failed only at negative angles, with five never-reach
-and four incomplete-hold failures for the 100352-step checkpoint. The radius
-and angle-distribution interventions provide evidence against those training
-distributions under their tested transferred recipes, not against all possible
-control, representation, or reward changes. The current reward gives zero
-explicit forfeiture for accumulated hold progress when a hold exits, making
-hold shaping a plausible explanation for the interrupted subset but not an
-established cause. The reused first panel is selection-contaminated; seeds
-10200, 10400, 10600, and 10800 provide disjoint development coverage.
+and four incomplete-hold failures for the 100352-step checkpoint. The radius,
+angle-distribution, and full hold-forfeiture interventions provide evidence
+against those tested transferred recipes, not against all possible control,
+representation, or reward changes. Experiment 4 emitted no hold-specific
+diagnostics; its lower aggregate success and zero paired wins weaken the
+hold-shaping explanation under the tested recipe without establishing why it
+failed. The reused first panel is selection-contaminated; seeds 10200, 10400,
+10600, 10800, and 11000 provide disjoint development coverage.
 
-**Open questions:** Whether making broken holds costly reduces the incomplete
-hold failures without sacrificing reach or nonnegative-angle performance.
-Whether the remaining never-reach failures arise from angle-specific control
-or observation representation rather than reward shaping. Whether the current
-best-known policy satisfies the official 98% criterion on the frozen
-200-episode assessment.
+**Open questions:** Whether the remaining never-reach failures arise from
+angle-specific control or observation representation rather than reward
+shaping. Whether a future intervention can improve the current policy without
+losing its broad reach-and-hold behavior. Whether the current best-known policy
+satisfies the official 98% criterion on the frozen 200-episode assessment.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
 
@@ -183,3 +185,53 @@ below the official criterion and is not an official verdict.
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-3-checkpoint-120832-200ep-seed10800-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-3-working-200ep-seed10800-543af51fd137.json`;
 `robot_learning/scenario/training_environment.py`.
+
+## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 4
+
+**Result:** Full forfeiture of accumulated hold progress did not improve the
+measured policy. The unchanged working parent remains the working and
+best-known lineage; the reward recipe is reverted and terminal assessment is
+deferred.
+
+**Observed behavior:** The training log reached 1.00 proxy success and a
+103.472 reward at 35,840 steps, then remained non-monotonic: proxy success was
+0.99 around 95,232-108,544 steps and declined to 0.95 by 120,832, while the
+listed reward declined to 98.006 at the endpoint. These are training proxies,
+not task acceptance measurements. On the fresh, disjoint research panel
+covering episodes 11000-11199, the unchanged parent achieved 196/200 (98.0%),
+checkpoint-100352 achieved 191/200 (95.5%), and checkpoint-105472 achieved
+179/200 (89.5%). The paired comparisons recorded 0 challenger wins versus 5
+parent wins for checkpoint-100352 and 0 versus 17 for checkpoint-105472. The
+100352-step challenger failed on the parent's four failed episodes plus five
+additional episodes; the 105472-step challenger failed on those four plus
+seventeen additional episodes. This measurement artifact emitted no target
+geometry or held-step failure diagnostics, so the incomplete-hold prediction
+cannot be assessed directly. Episode reward totals are not compared because
+the intervention changed the reward definition.
+
+**Hypothesis assessment:** Weakened. The confirmatory prediction that full
+forfeiture would reduce interrupted holds while preserving reach and
+nonnegative-angle behavior was not supported by complete-task success: both
+changed checkpoints underperformed the same-panel parent, and neither won a
+paired episode. The missing hold-specific diagnostics prevent a claim that the
+intervention failed specifically by leaving interrupted holds unchanged.
+This is evidence against the tested transferred reward recipe on this panel,
+not proof that every hold-shaping change or explanation is ineffective.
+
+**Interpretation:** The unchanged parent is the more useful saved policy and
+the only current lineage supported by both the prior disjoint panels and this
+fresh panel. The training proxies' peak and late fluctuations again do not
+identify a reliable policy checkpoint. Reverting the reward change restores
+the parent's complete scientific recipe; the current development evidence is
+still not an official benchmark result and does not establish whether the
+remaining failures are caused by hold shaping, angle-specific control, or
+representation.
+
+**Evidence inspected:** `research/results.jsonl`;
+`research/brief.md`;
+`research/checkpoints/challengers/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-4/inventory.json`;
+`research/training_logs/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-4-attempt-1.log`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-4-checkpoint-100352-200ep-seed11000-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-4-checkpoint-105472-200ep-seed11000-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-4-working-200ep-seed11000-543af51fd137.json`;
+`robot_learning/scenario/reward.py`.
