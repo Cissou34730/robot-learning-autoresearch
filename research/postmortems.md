@@ -6,35 +6,37 @@
 official 6-20 cm, full-angle reach-and-hold task. The unchanged PPO baseline
 learned a useful policy, and checkpoint-100352 remains the best-supported
 current lineage at 587/600 pooled success (97.83%), including 97.0% on each of
-two disjoint panels. Expanding the training radius range and then oversampling
-negative angles both failed to improve matched or fresh-panel performance; the
-experiment-3 transfer reached 191/200 versus 192/200 for its retained control.
-On the fresh experiment-4 panel, the unchanged working parent reached 196/200
-(98.0%), while full hold-progress forfeiture reached 191/200 (95.5%) at 100352
-steps and 179/200 (89.5%) at 105472 steps. The campaign has therefore made
-substantial but sub-objective development progress, and the official result
-remains unmeasured.
+two disjoint panels. Expanding the training radius range, oversampling negative
+angles, and forfeiting accumulated hold progress all failed to improve the
+unchanged recipe on fresh or matched panels. The unchanged working parent did
+reach 196/200 (98.0%) on the latest disjoint panel, while the experiment-4
+challengers reached 191/200 (95.5%) and 179/200 (89.5%). The campaign therefore
+has substantial but uncertain progress toward the objective, and the official
+result remains unmeasured.
 
 **Lessons and limits:** Complete reach-and-hold success, rather than training
 success or reward, governs progress. The reward-peak checkpoint-86016 measured
 95.0%, whereas checkpoint-100352 measured 97.83% pooled; the late endpoint was
-weaker on the available comparisons. Across the two disjoint baseline panels,
-all 12 checkpoint-100352 failures were at negative angles: five never reached
-tolerance and seven reached it only briefly. On the experiment-3 panel, both
-changed checkpoints again failed only at negative angles, with five never-reach
-and four incomplete-hold failures for the 100352-step checkpoint. The radius,
-angle-distribution, and full hold-forfeiture interventions provide evidence
-against those tested transferred recipes, not against all possible control,
-representation, or reward changes. Experiment 4 emitted no hold-specific
-diagnostics; its lower aggregate success and zero paired wins weaken the
-hold-shaping explanation under the tested recipe without establishing why it
-failed. The reused first panel is selection-contaminated; seeds 10200, 10400,
-10600, 10800, and 11000 provide disjoint development coverage.
+weaker on the available comparisons. The characterized checkpoint-100352
+failures across the two disjoint baseline panels were all at negative angles:
+five never reached tolerance and seven reached it only briefly. The experiment-3
+challengers showed the same negative-angle concentration, while the experiment-4
+challengers added failures outside that pattern. The radius, angle-distribution,
+and full hold-forfeiture interventions provide evidence against those tested
+transferred recipes, not against all possible control, representation, or reward
+changes. Experiment 4 emitted no hold-specific diagnostics, so its lower
+aggregate success and zero paired wins weaken the hold-shaping explanation
+without identifying the cause. The reused first panel is selection-contaminated;
+seeds 10200, 10400, 10600, 10800, and 11000 provide disjoint development
+coverage. The pre-intervention observation contained joint, velocity,
+Cartesian-error, and inverse-kinematics features, but no explicit smooth
+target-polar encoding; whether that omission matters is untested.
 
 **Open questions:** Whether the remaining never-reach failures arise from
-angle-specific control or observation representation rather than reward
-shaping. Whether a future intervention can improve the current policy without
-losing its broad reach-and-hold behavior. Whether the current best-known policy
+angle-specific control or observation representation rather than reward shaping.
+Whether an observation change can improve the current policy without losing its
+broad reach-and-hold behavior. How much learning-process variance would affect
+conclusions drawn from a fresh recipe. Whether the current best-known policy
 satisfies the official 98% criterion on the frozen 200-episode assessment.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
