@@ -19,6 +19,7 @@ from research.run_experiment import (
 )
 from research.runner_execution import training_budget
 from research.runner_protocol import (
+    EVALUATION_RUNTIME_PATHS,
     _evidence_records_compatible,
     evaluation_artifact_name,
     evaluation_semantics_fingerprint,
@@ -756,12 +757,10 @@ def _semantics_tree(tmp_path):
     training.mkdir(parents=True)
     for name in ("algorithms.py", "normalization.py"):
         (training / name).write_text("original\n", encoding="utf-8")
-    (tmp_path / "robot_learning" / "evaluate.py").write_text(
-        "original\n", encoding="utf-8"
-    )
-    (tmp_path / "robot_learning" / "policy_runtime.py").write_text(
-        "original\n", encoding="utf-8"
-    )
+    for relative in EVALUATION_RUNTIME_PATHS:
+        non_scenario = tmp_path / relative
+        non_scenario.parent.mkdir(parents=True, exist_ok=True)
+        non_scenario.write_text("original\n", encoding="utf-8")
     research = tmp_path / "research"
     research.mkdir(parents=True)
     (research / "build_research_brief.py").write_text("original\n", encoding="utf-8")
@@ -775,12 +774,13 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
     scenario = _semantics_tree(tmp_path)
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
-    assert evaluation_semantics_paths() == [
-        "robot_learning/evaluate.py",
-        "robot_learning/policy_runtime.py",
-        "robot_learning/scenario/environment.py",
-        "robot_learning/scenario/evaluation.py",
-    ]
+    assert evaluation_semantics_paths() == sorted(
+        [
+            *EVALUATION_RUNTIME_PATHS,
+            "robot_learning/scenario/environment.py",
+            "robot_learning/scenario/evaluation.py",
+        ]
+    )
 
     original = evaluation_semantics_fingerprint()
     assert original == evaluation_semantics_fingerprint()
@@ -900,13 +900,7 @@ def test_evaluation_semantics_are_the_compatibility_identity(
     assert _evidence_records_compatible(candidate, reference) is compatible
 
 
-@pytest.mark.parametrize(
-    "relative",
-    [
-        "robot_learning/evaluate.py",
-        "robot_learning/policy_runtime.py",
-    ],
-)
+@pytest.mark.parametrize("relative", EVALUATION_RUNTIME_PATHS)
 def test_non_scenario_evaluation_dependencies_change_measurement_identity(
     monkeypatch, tmp_path, relative
 ):

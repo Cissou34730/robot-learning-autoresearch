@@ -1274,10 +1274,14 @@ def evaluation_semantics_paths() -> list[str]:
 
 
 def evaluation_semantics_fingerprint() -> str:
-    """Identify the researcher-owned state that defines what a measurement means.
+    """Identify every file that defines what a research measurement means.
 
-    Paths are hashed with their contents so an added, renamed or deleted file
-    changes measurement identity just like an edited one.
+    The hashed set is the researcher-owned scenario surface plus the protected
+    human-owned inputs named in ``EVALUATION_RUNTIME_PATHS`` - including the
+    benchmark constants and metrics that fix the development success criterion
+    and episode geometry. Paths are hashed with their contents so an added,
+    renamed or deleted file changes measurement identity just like an edited
+    one.
     """
     digest = hashlib.sha256()
     for relative in evaluation_semantics_paths():

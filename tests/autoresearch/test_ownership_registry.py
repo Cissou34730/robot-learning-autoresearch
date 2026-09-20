@@ -44,17 +44,41 @@ def test_every_documented_human_owned_path_is_enforced():
     """The AGENTS.md contract and the enforced classification must not drift.
 
     Issue #58: the documentation called the whole benchmark package human-owned
-    while enforcement listed files by hand and omitted two. Parsing the
-    documented list makes that disagreement fail here instead of silently
-    changing what a measurement means.
+    while enforcement listed files by hand and omitted two. Each documented
+    literal, directory and glob is resolved against the repository so that a
+    typo or a moved path fails here, and every resolved path must be classified
+    human-owned.
     """
     text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     section = text.split("## Human-owned paths", 1)[1].split("\n## ", 1)[0]
-    documented = re.findall(r"`([^`]+)`", section)
+    listing = section[section.index("- ") :].split("\n\n", 1)[0]
+    documented = re.findall(r"`([^`]+)`", listing)
 
     assert documented
+    resolved: list[str] = []
     for entry in documented:
-        assert protocol.is_human_owned(entry), entry
+        assert not entry.startswith("/"), entry
+        if any(wildcard in entry for wildcard in "*?["):
+            matches = sorted(
+                path.relative_to(ROOT).as_posix() for path in ROOT.glob(entry)
+            )
+            assert matches, f"documented glob matches nothing: {entry}"
+            resolved.extend(matches)
+        elif entry.endswith("/"):
+            directory = ROOT / entry.rstrip("/")
+            assert directory.is_dir(), f"documented directory is missing: {entry}"
+            resolved.extend(
+                path.relative_to(ROOT).as_posix()
+                for path in directory.rglob("*")
+                if path.is_file()
+            )
+        else:
+            assert (ROOT / entry).is_file(), f"documented path is missing: {entry}"
+            resolved.append(entry)
+
+    assert resolved
+    for relative in resolved:
+        assert protocol.is_human_owned(relative), relative
 
 
 def test_a_proposal_touching_an_immutable_benchmark_constant_is_rejected():
