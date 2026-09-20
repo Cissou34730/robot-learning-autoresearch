@@ -112,6 +112,13 @@ def test_a_repository_wide_test_run_is_refused():
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
 
 
+def test_a_targeted_test_run_remains_permitted():
+    # AGENTS.md and research/instruments.md allow targeted tests and focused
+    # checks, so the command layer refuses only repository-wide runs.
+    assert adapter.command_denial("uv run pytest tests/autoresearch/test_x.py") is None
+    assert adapter.command_denial("uv run pytest tests/autoresearch -k foo") is None
+
+
 @pytest.mark.parametrize(
     "command",
     [
@@ -853,6 +860,13 @@ def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
     assert "when they resolve uncertainty introduced by the work" in content
     assert "Runner owns final contract and execution validation" in content
     assert "Reviewing your own scientific reasoning against the evidence" in content
+    # The pytest clause claims exactly what the command layer enforces: only
+    # repository-wide runs are refused, targeted runs stay permitted.
+    assert "Repository-wide pytest execution belongs to the runner" in content
+    assert "Targeted tests and focused checks on researcher-owned code" in content
+    assert "Pytest execution belongs to the runner." not in content
+    assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("uv run pytest tests/autoresearch/test_x.py") is None
 
 
 def test_the_policy_does_not_steer_the_researcher_to_read_less_or_stop_early():

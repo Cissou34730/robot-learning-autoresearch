@@ -201,7 +201,8 @@ instead of retrying the same command.
     Read-only Git is available only when the current task specifically requires
     inspecting the experiment's current code state or delta. To revert this
     experiment's code, use the lineage proposal's "code" decision.
-- Pytest execution belongs to the runner.
+- Repository-wide pytest execution belongs to the runner. Targeted tests and
+  focused checks on researcher-owned code remain permitted instruments.
 </harness_boundary>
 
 <researcher_guidance>
