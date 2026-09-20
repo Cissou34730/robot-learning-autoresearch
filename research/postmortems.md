@@ -6,26 +6,26 @@
 episodes, on the official 6-20 cm reach-and-hold distribution. The unchanged
 transferred baseline remains the strongest measured lineage: it scored 150/160,
 151/160, 155/160, and 159/160 on four disjoint development panels (615/640,
-96.09% pooled), with a later same-panel control at 156/160. Its measured failures
-are concentrated at negative target angles: 23 of 25 failures across the four
-baseline panels were below -90 degrees, 13 were at radii at or below 12 cm, and
-11 had both properties. The official 200-episode result is unknown; experiment 7
-contributed no valid training or task evidence.
+96.09% pooled), with later same-panel controls at 156/160 and 154/160. Its
+measured failures are concentrated at negative target angles: 23 of 25 failures
+across the four baseline panels were below -90 degrees, 13 were at radii at or
+below 12 cm, and 11 had both properties. The official 200-episode result is
+unknown; experiment 7 contributed no valid training or task evidence.
 
 **Lessons and limits:** Complete measured reach-and-hold success is more reliable
 for policy selection than training reward or proxy success. Transferred full-radius
-support, angle balancing, a 75/25 targeted sampler, and a hold-progress reward did
-not improve the unchanged parent; the reward challenger reached a 0.99 training
-proxy but scored 118/160 against the parent's 159/160. The experiment-8
-challengers scored 152/160 and 151/160 against 156/160 for the same-panel parent,
-so fixed hard-target exposure can trade away broad behavior under the tested
-recipe, although its geometry was not recorded in that panel. The fresh periodic
-representation and baseline replication had no measured challengers, while later
-baseline checkpoints regressed after the selected 100352-step checkpoint. These
-results weaken the tested interventions and trajectories without disproving every
-curriculum, reward, control, or representation design. Unmeasured checkpoints are
-not failed policies, and development panels remain distinct from the official
-assessment.
+support, angle balancing, a 75/25 targeted sampler, a staged hard-radius sampler,
+and a hold-progress reward did not improve the unchanged parent; the reward
+challenger reached a 0.99 training proxy but scored 118/160 against the parent's
+159/160. The experiment-8 challengers scored 152/160 and 151/160 against 156/160,
+and experiment 9's proxy-selected challenger scored 144/160 against 154/160 on a
+fresh paired panel, winning none of 10 discordant episodes. In experiment 9 the
+challenger retained all six parent failures and added ten, including failures at
+positive and negative angles, so the measured curriculum trajectory did not
+correct the observed residuals. These results weaken the tested interventions and
+trajectories without disproving every curriculum, reward, control, or
+representation design. Unmeasured checkpoints are not failed policies, and
+development panels remain distinct from the official assessment.
 
 **Open questions:** The campaign has not established whether the residual
 inner-radius failures can be reduced without worsening the dominant negative-angle
@@ -347,4 +347,49 @@ lineage rather than request terminal assessment.
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-8-checkpoint-70656-160ep-seed5160-543af51fd137.json`;
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-8-checkpoint-75776-160ep-seed5160-543af51fd137.json`;
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-8-working-160ep-seed5160-543af51fd137.json`;
+and `robot_learning/scenario/training_environment.py`.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 9
+
+**Result:** The staged hard-radius curriculum did not improve the transferred
+working policy. The curriculum recipe is reverted, and the unchanged `working`
+and `best_known` lineages are preserved. The human objective remains
+undemonstrated.
+
+**Observed behavior:** Training success reached 0.97 with mean reward -2.69066
+at checkpoint-45056, then declined to 0.71-0.72 during the hard-target exposure
+and recovered to 0.93 with mean reward -6.08460 at checkpoint-120832. On the
+fresh research panel with episodes 5320-5479, checkpoint-45056 achieved 144/160
+(90.00%) while the unchanged working policy achieved 154/160 (96.25%). The
+paired comparison favored the parent in all 10 discordant episodes. The
+challenger had 16 actual failures and the parent had 6; all six parent failure
+identities were retained by the challenger, which added ten failures. Among
+challenger failures, 12 were below -90 degrees and 8 had radius at or below
+12 cm; the parent failures were all below -90 degrees and 3 had radius at or
+below 12 cm. The remaining 23 checkpoints were not measured.
+
+**Hypothesis assessment:** The diagnostic hypothesis is weakened under the
+tested transferred recipe. The expected translation of the 0.97 training proxy
+peak into improved complete reach-and-hold behavior was absent, and the
+contradicting paired result shows lower task success than the unchanged parent.
+The proxy peak and later recovery are orthogonal process signals rather than
+evidence of task progress. This conclusion applies to the tested staged sampler,
+parent, and trajectory; it does not causally disprove other curricula or explain
+why the added failures appeared.
+
+**Interpretation:** The same-panel control and paired outcomes make the measured
+loss directly relevant to lineage selection, while the fresh panel provides
+comparable development evidence. No additional measurement round is warranted:
+the only measured challenger loses clearly to the parent, and the unmeasured
+checkpoints have no task evidence that would justify selecting them. Reverting
+the sampler preserves the strongest available measured policy for continued
+development, but its development results remain below the official 196/200
+criterion and do not justify terminal assessment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-9/inventory.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-9-checkpoint-45056-160ep-seed5320-543af51fd137.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-9-working-160ep-seed5320-543af51fd137.json`;
+`research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-9-attempt-1.log`;
 and `robot_learning/scenario/training_environment.py`.
