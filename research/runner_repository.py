@@ -414,7 +414,10 @@ LINEAGE_RECORD_FIELDS = {
 }
 # Optional lineage fields. `designation_ordinal` records the best-known tenure;
 # it is present on a designated best-known record and absent elsewhere.
-LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal"}
+# `selected_panels` records the research-evaluation panels a lineage was selected
+# on, so repeated measurement on those episodes can be recognized as
+# selection-contaminated rather than independent confirmation (issue #57).
+LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
 
 
 def canonicalize_lineage_record(lineage: dict) -> None:
@@ -455,6 +458,25 @@ def canonicalize_lineage_record(lineage: dict) -> None:
             raise TypeError("lineage record designation_ordinal must be an integer")
         if ordinal < 1:
             raise ValueError("lineage record designation_ordinal must be positive")
+    if "selected_panels" in lineage:
+        panels = lineage["selected_panels"]
+        if not isinstance(panels, list):
+            raise TypeError("lineage record selected_panels must be a list")
+        normalized_panels = []
+        for panel in panels:
+            if (
+                not isinstance(panel, (list, tuple))
+                or len(panel) != 2
+                or any(
+                    not isinstance(value, int) or isinstance(value, bool)
+                    for value in panel
+                )
+            ):
+                raise ValueError(
+                    "lineage record selected_panels must be [seed, episodes] pairs"
+                )
+            normalized_panels.append([int(panel[0]), int(panel[1])])
+        lineage["selected_panels"] = normalized_panels
     if not isinstance(lineage["parameters"], dict):
         raise TypeError("lineage record parameters must be an object")
     evaluations = lineage["evaluation_artifacts"]

@@ -132,6 +132,15 @@ disjoint from every recorded research panel; partial overlap is rejected.
 Several measurements may share one identical panel. A panel overlapping the
 protected benchmark episodes is rejected, and historical records remain readable.
 
+Identical reuse is permitted, but it is selection-contaminating and it is
+accounted for. Any panel reused during model selection - a `research_evaluation`
+panel measured across rounds or experiments as much as the fixed `task_reference`
+panel - yields selection-contaminated evidence for the models selected on it.
+Choosing a model on a panel's episodes and later measuring those same episodes
+again is repeated evidence from that panel, not independent held-out
+confirmation. A reused panel is not a default lineage criterion; every reuse is
+reported with its history so it cannot read as fresh evidence.
+
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
@@ -141,10 +150,11 @@ authority:
 
 - `research_evaluation` is a configurable development measurement. It supports
   fresh panels, paired comparisons, and researcher-defined diagnostics.
-- `task_reference` is a fixed development panel. It measures the protected task
-  consistently across research recipes. Because it is repeatedly reused during
-  model selection, its results are selection-contaminated and must not receive
-  automatic priority in lineage decisions.
+- `task_reference` is a fixed development panel. It is the permanently reused
+  case of the rule above: it measures the protected task consistently across
+  research recipes, and because it is repeatedly reused during model selection
+  its results are selection-contaminated and must not receive automatic priority
+  in lineage decisions.
 - Neither instrument is generally authoritative over the other. Evidential
   weight depends on the scientific question, panel independence, comparability,
   and the observed results.

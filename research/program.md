@@ -215,12 +215,15 @@ available evidence cannot resolve is a legitimate reason to choose a diagnostic
 experiment or request such a measurement rather than to rationalise a guess.
 
 Research and task-reference panels are development measurements distinguished by
-their properties, not by authority. A task-reference measurement is a fixed panel
-reused across recipes; because it is reused during model selection its results are
-selection-contaminated and are not a privileged lineage criterion. Repeated use of
-the same panel remains repeated evidence from that panel, not independent
-held-out confirmation. Do not change a protected panel or present development
-evidence as final validation.
+their properties, not by authority. Any panel reused during model selection - the
+fixed task-reference panel as much as an identically reused research panel -
+yields selection-contaminated evidence for the models selected on it: a model
+chosen on a panel's episodes is not independently confirmed by measuring those
+same episodes again. Repeated use of the same panel remains repeated evidence from
+that panel, not independent held-out confirmation, and it is not a privileged
+lineage criterion. The fixed task-reference panel is the permanently reused case
+of this rule. Do not change a protected panel or present development evidence as
+final validation.
 
 ## Experiment closure
 

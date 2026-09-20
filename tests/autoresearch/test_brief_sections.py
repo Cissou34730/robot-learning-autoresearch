@@ -267,7 +267,7 @@ def test_measurement_round_panel_novelty_is_round_scoped():
     assert round_one.count("(new panel)") == 2
     assert "(reused panel)" not in round_one
     # The identical panel in a later round is cross-round reuse.
-    assert "(reused panel)" in round_two
+    assert "(reused panel: 2 prior measurements on these episodes)" in round_two
 
 
 def test_measurement_round_panel_novelty_recognises_prior_experiments():
@@ -295,7 +295,7 @@ def test_measurement_round_panel_novelty_recognises_prior_experiments():
     text = "\n".join(
         brief._v4_measurement_rounds_section({}, prior_results, pending)
     )
-    assert "(reused panel)" in text
+    assert "(reused panel: 1 prior measurement on these episodes)" in text
 
 
 def test_measurement_rounds_retain_de_templated_rationale_during_preparation():

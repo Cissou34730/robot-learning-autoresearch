@@ -2065,6 +2065,52 @@ def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
     return sources
 
 
+def _selection_panels_for(
+    source: dict, pending: dict, fingerprint: str
+) -> list[list[int]]:
+    """The research panels a newly selected lineage was measured on.
+
+    Issue #57: a lineage selected on a panel's episodes is not independently
+    confirmed by re-measuring those same episodes. The panels of the model's
+    measurements in this experiment are recorded on the lineage so the brief can
+    surface its selection exposure. Panels already recorded on a carried-over
+    lineage are preserved.
+    """
+    panels: list[list[int]] = []
+    seen: set[tuple[int, int]] = set()
+    for item in source.get("selected_panels") or []:
+        if (
+            isinstance(item, (list, tuple))
+            and len(item) == 2
+            and all(isinstance(value, int) and not isinstance(value, bool) for value in item)
+        ):
+            panel = (int(item[0]), int(item[1]))
+            if panel not in seen:
+                seen.add(panel)
+                panels.append([panel[0], panel[1]])
+    for entry in [
+        *(pending.get("requested_evaluations") or []),
+        *(pending.get("partial_evaluations") or []),
+        *(pending.get("preparation_evaluations") or []),
+    ]:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("instrument", "research_evaluation") != "research_evaluation":
+            continue
+        metrics = entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+        entry_fingerprint = entry.get("model_fingerprint") or metrics.get(
+            "model_fingerprint"
+        )
+        if fingerprint and entry_fingerprint and str(entry_fingerprint) != str(fingerprint):
+            continue
+        panel = _research_panel({**metrics, **entry})
+        if panel is None or panel in seen:
+            continue
+        seen.add(panel)
+        panels.append([panel[0], panel[1]])
+    return panels
+
+
 def _v4_lineage_record(
     source: dict, pending: dict, artifact: Path, reason: str
 ) -> dict:
@@ -2075,9 +2121,10 @@ def _v4_lineage_record(
         if current and pending.get("initialization") == "transfer"
         else checkpoint_steps
     )
+    fingerprint = repository.artifact_fingerprint(artifact)
     return {
         "artifact": repository.repo_relative_path(artifact),
-        "fingerprint": repository.artifact_fingerprint(artifact),
+        "fingerprint": fingerprint,
         "origin_experiment": int(pending["experiment"])
         if current
         else int(source["origin_experiment"]),
@@ -2095,6 +2142,7 @@ def _v4_lineage_record(
         )
         if current
         else list(source.get("evaluation_artifacts", [])),
+        "selected_panels": _selection_panels_for(source, pending, fingerprint),
         "reason": reason,
     }
 

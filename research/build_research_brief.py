@@ -957,6 +957,34 @@ def _parameter_differences(current: dict, lineage: dict | None) -> str:
     return "; ".join(differences) or "none"
 
 
+def _selected_panels_lines(lineage: dict) -> list[str]:
+    """The panels a lineage was selected on, with the non-independence caveat.
+
+    Issue #57: a model chosen on a panel's episodes and later re-measured on the
+    same episodes has an inflated score for that panel. Surfacing the selection
+    exposure lets the Researcher see when a fresh disjoint panel is required.
+    """
+    panels = lineage.get("selected_panels")
+    if not isinstance(panels, list):
+        return []
+    rendered = []
+    for panel in panels:
+        if (
+            isinstance(panel, (list, tuple))
+            and len(panel) == 2
+            and all(isinstance(value, int) and not isinstance(value, bool) for value in panel)
+        ):
+            seed, episodes = int(panel[0]), int(panel[1])
+            rendered.append(_episode_interval({"seed": seed, "episodes": episodes}))
+    if not rendered:
+        return []
+    return [
+        "  - Panels this lineage was selected on: "
+        + ", ".join(rendered)
+        + "; re-measuring on these episodes is not independent confirmation."
+    ]
+
+
 def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
     evaluation_artifacts = lineage.get("evaluation_artifacts")
     evidence = (
@@ -979,6 +1007,7 @@ def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
         ),
         f"  - Recorded evaluation artifacts: {evidence}",
         f"  - Researcher reason: {_recorded_value(lineage.get('reason'))}",
+        *_selected_panels_lines(lineage),
     ]
 
 
@@ -1747,6 +1776,44 @@ def _record_research_panels(record: dict) -> list[tuple[int, int]]:
     return panels
 
 
+def _record_research_panel_uses(record: dict) -> list[tuple[tuple[int, int], str]]:
+    """``(panel, candidate)`` for every research measurement in a record.
+
+    Issue #57: reuse depth needs both the interval and which lineage was measured
+    on it, so a reused panel can be reported with how often, and for whom, it was
+    already consumed.
+    """
+    uses: list[tuple[tuple[int, int], str]] = []
+    for entry in record.get("requested_evaluations") or []:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("instrument", "research_evaluation") != "research_evaluation":
+            continue
+        metrics = entry.get("metrics") or {}
+        panel = _research_panel_of({**metrics, **entry})
+        if panel is None:
+            continue
+        candidate = entry.get("candidate", metrics.get("candidate"))
+        uses.append((panel, "" if candidate is None else str(candidate)))
+    return uses
+
+
+def _closure_selected_candidates(record: dict) -> set[str]:
+    """The candidate identifiers a recorded closure chose for a lineage role."""
+    closure = record.get("closure_decision") or {}
+    selected: set[str] = set()
+    working = closure.get("continue_from")
+    if working is not None:
+        selected.add(str(working))
+    best = closure.get("best_known")
+    if isinstance(best, dict) and best.get("candidate") is not None:
+        selected.add(str(best["candidate"]))
+    for retained in closure.get("retain") or []:
+        if isinstance(retained, dict) and retained.get("candidate") is not None:
+            selected.add(str(retained["candidate"]))
+    return selected
+
+
 def _consumed_research_intervals(records: list[dict]) -> list[str]:
     """Every distinct research-evaluation interval already consumed, in first-use order."""
     ordered: list[tuple[int, int]] = []
@@ -1773,10 +1840,13 @@ def _v4_measurement_rounds_section(
     artifact references so the progression of scientific questions stays
     auditable after closure instead of being reconstructed from timestamps.
 
-    A panel is marked ``(reused panel)`` only when it was consumed before the
-    current round (by an earlier experiment or an earlier round). Candidates that
-    share one panel within a round share the same marker; they are not treated as
-    successive reuse.
+    Issue #57: a reused panel is reported with its reuse history - how many prior
+    measurements consumed this exact interval and how many of them preceded a
+    closure that selected the measured lineage - and carries an explicit
+    non-independence qualifier. A panel is counted as reused only when it was
+    consumed before the current round (by an earlier experiment or an earlier
+    round). Candidates that share one panel within a round share the same history;
+    they are not treated as successive reuse.
     """
     preparation_source = False
     if isinstance(pending, dict):
@@ -1811,13 +1881,19 @@ def _v4_measurement_rounds_section(
     if not isinstance(rounds, list) or not rounds:
         return []
     current_index = int(source.get("experiment") or source.get("index") or 0)
-    prior_panels: set[tuple[int, int]] = set()
+    prior_uses: dict[tuple[int, int], int] = {}
+    prior_selected: dict[tuple[int, int], dict[str, int]] = {}
     for record in results:
         if not isinstance(record, dict):
             continue
         if int(record.get("index", -1)) == current_index:
             continue
-        prior_panels.update(_record_research_panels(record))
+        selected_candidates = _closure_selected_candidates(record)
+        for panel, candidate in _record_research_panel_uses(record):
+            prior_uses[panel] = prior_uses.get(panel, 0) + 1
+            if candidate and candidate in selected_candidates:
+                by_candidate = prior_selected.setdefault(panel, {})
+                by_candidate[candidate] = by_candidate.get(candidate, 0) + 1
     # Issue #54 (correcting #43): the rationale is retained in both phases. While
     # preparing a request it is rendered de-templated at the foot of the round
     # instead of inline, so it stays auditable without reading as a form to copy.
@@ -1882,24 +1958,41 @@ def _v4_measurement_rounds_section(
         round_results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
-        round_panels: set[tuple[int, int]] = set()
+        round_panels: list[tuple[tuple[int, int], str]] = []
         for item in round_results.get("research_evaluations") or []:
             if not isinstance(item, dict):
                 continue
             panel = _research_panel_of(item)
+            candidate_key = (
+                "" if item.get("candidate") is None else str(item.get("candidate"))
+            )
             panel_note = ""
+            qualifier = ""
             if panel is not None:
-                panel_note = (
-                    " (reused panel)" if panel in prior_panels else " (new panel)"
-                )
-                round_panels.add(panel)
+                uses = prior_uses.get(panel, 0)
+                selected = prior_selected.get(panel, {}).get(candidate_key, 0)
+                if uses:
+                    suffix = "" if uses == 1 else "s"
+                    history = [f"{uses} prior measurement{suffix} on these episodes"]
+                    if selected:
+                        history.append(
+                            f"{selected} preceded a closure that selected this lineage"
+                        )
+                    panel_note = " (reused panel: " + "; ".join(history) + ")"
+                    qualifier = (
+                        " Reused panel: comparable to earlier results on the same "
+                        "episodes, not independent confirmation."
+                    )
+                else:
+                    panel_note = " (new panel)"
+                round_panels.append((panel, candidate_key))
             detail = _episode_interval(item)
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
                 f"- `{item.get('candidate', '-')}` "
                 f"`research_evaluation`{_round_entry_status(item)}"
-                f"{panel_note}: {detail}."
+                f"{panel_note}: {detail}.{qualifier}"
             )
             if item.get("selection"):
                 if inline_precedent:
@@ -1984,7 +2077,8 @@ def _v4_measurement_rounds_section(
                     *precedent,
                 ]
             )
-        prior_panels.update(round_panels)
+        for panel, _candidate in round_panels:
+            prior_uses[panel] = prior_uses.get(panel, 0) + 1
     return lines
 
 
