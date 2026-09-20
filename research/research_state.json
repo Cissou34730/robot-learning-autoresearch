@@ -61,58 +61,30 @@
     "experiment": 1,
     "reason": "Checkpoint-100352 is the strongest measured policy for the human task: it reached 98.0% on the second disjoint 200-episode research panel, 94.375% on the first disjoint panel, and 98.0% on the reused task-reference panel. It matched or exceeded checkpoint-120832 on every comparable panel and was better than the reward-peak checkpoint-86016 on the measured task. The fresh-panel variation means development evidence is not itself the official verdict, so request the official 200-episode assessment of this frozen candidate."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
-  "pending_analysis": null,
-  "pending_closure_operation": null,
-  "pending_evaluation_request": null,
-  "pending_final_benchmark": {
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "960694ba85a81725af39cd249a7e3a96e739c3e24698571aa3290e8b613ae58e",
+  "official_benchmark_model": {
     "artifact": "research/checkpoints/retained/0a384c0e-6049-41b0-b65f-51378059913c/e1-cada55eb5-960694ba85a81725af39cd249a7e3a96e739c3e24698571aa3290e8b613ae58e",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/0a384c0e-6049-41b0-b65f-51378059913c/e1-cada55eb5-960694ba85a81725af39cd249a7e3a96e739c3e24698571aa3290e8b613ae58e",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/0a384c0e-6049-41b0-b65f-51378059913c/evaluation-0a384c0e-6049-41b0-b65f-51378059913c-experiment-1-checkpoint-100352-160ep-seed4200-543af51fd137.json",
-        "research/evaluations/0a384c0e-6049-41b0-b65f-51378059913c/evaluation-0a384c0e-6049-41b0-b65f-51378059913c-experiment-1-checkpoint-100352-200ep-seed5200-543af51fd137.json",
-        "research/evaluations/0a384c0e-6049-41b0-b65f-51378059913c/task-reference-0a384c0e-6049-41b0-b65f-51378059913c-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "960694ba85a81725af39cd249a7e3a96e739c3e24698571aa3290e8b613ae58e",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the highest pooled fresh research success (347/360, 96.39%), the highest result on the second disjoint panel (196/200, 98.0%), and a 2-to-0 paired advantage over checkpoint-120832, while the reward-peak checkpoint-86016 was lower at 93.125%.",
-      "scientific_commit": "9e57f38befcead49a0ae8689d884edbf6e3002ce",
-      "training_steps": 100352
-    },
-    "experiment": 1,
     "fingerprint": "960694ba85a81725af39cd249a7e3a96e739c3e24698571aa3290e8b613ae58e",
     "selected": "best_known"
   },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
+  "pending_analysis": null,
+  "pending_closure_operation": null,
+  "pending_evaluation_request": null,
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "9e57f38befcead49a0ae8689d884edbf6e3002ce",
@@ -162,7 +134,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/0a384c0e-6049-41b0-b65f-51378059913c/e1-cada55eb5-960694ba85a81725af39cd249a7e3a96e739c3e24698571aa3290e8b613ae58e",
     "candidate": "checkpoint-100352",
