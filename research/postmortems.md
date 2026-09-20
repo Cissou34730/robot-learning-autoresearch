@@ -4,34 +4,32 @@
 
 **Current synthesis:** The campaign objective remains at least 98% success on the
 official 6-20 cm reach-and-hold distribution. The fresh PPO baseline learned
-substantial task behavior, with checkpoint-100352 the strongest measured policy at
-150/160 and 151/160 successes on two disjoint panels (301/320 pooled, 94.06%).
-Experiment 2's full-radius training-support change did not improve the transferred
-policy, and experiment 3's angle-balanced training-support change also did not
-improve the parent on a fresh panel: the parent reached 155/160, versus 152/160
-and 149/160 for the measured challengers. Measured task outcome, rather than
-training proxy success, identifies the useful policy point.
+substantial task behavior, with checkpoint-100352 at 150/160 and 151/160
+successes on two disjoint panels (301/320 pooled, 94.06%), while the unchanged
+working parent reached 155/160 on the latest panel (96.88%). Experiment 2's
+full-radius training-support change and experiment 3's angle-balanced
+training-support change both failed to improve the transferred parent. Measured
+task outcome, rather than training proxy success, identifies the useful policy
+point.
 
-**Lessons and limits:** All 19 recorded baseline failures occurred in the
-target-angle bin from -180 to -90 degrees; 11/19 were also below 14 cm, a region
-absent from the baseline training radius range. Expanding the radius range in one
-transferred run did not remove the parent's residual pattern. The angle-balanced
-run likewise did not reduce negative-sector failures on its measured panel:
-checkpoint-5120 had 4 such failures and checkpoint-25600 had 4, versus 3 for the
-parent, while the challengers also had more complementary-sector failures. Its
-training proxy was high early (0.968 at 5,120 steps and 0.95 at 25,600) but the
-saved policies measured below the parent, and the proxy declined through most of
-the later run before a partial endpoint recovery. These observations weaken the
-tested radius-support and angle-exposure explanations without establishing that
-every curriculum or angular control intervention is ineffective, and they do not
-separate representation, control, or late-training causes. The research panels
-provide independent development coverage, not an official verdict.
+**Lessons and limits:** Across the baseline panels, failures were concentrated in
+the target-angle bin from -180 to -90 degrees, and 11 of 19 were also below 14
+cm, a region absent from baseline training. The radius-support change did not
+remove that residual pattern. The angle-balanced run likewise had 4 negative-sector
+failures at both measured challenger checkpoints versus 3 for the parent, and
+introduced more complementary-sector failures. Most parent failures never held
+for more than five steps, so the evidence is primarily about reaching and
+stabilizing at difficult targets rather than long partial holds. Training proxies
+peaked or recovered without identifying better saved policies. These observations
+weaken the tested support interventions without disproving other representation,
+control, or schedule treatments; the independent research panels remain
+development evidence, not an official verdict.
 
-**Open questions:** It remains unresolved whether a different representation,
-control treatment, or training schedule can address the residual failures without
-the proxy-to-task regressions seen in the changed recipes. The variance of changed
-recipes and the transfer value of the learned outer-radius representation are
-also unknown.
+**Open questions:** It remains unresolved whether an explicitly periodic angular
+representation can reduce the negative-sector residual without a complementary
+sector tradeoff. The usefulness of other control or schedule treatments, the
+variance of fresh learning, and the transfer value of the learned outer-radius
+representation are also unknown.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
