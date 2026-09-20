@@ -374,7 +374,7 @@ def _intervention_surfaces(
             parameter_only += 1
         else:
             unchanged += 1
-    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    ordered = sorted(counts.items(), key=lambda item: item[0])
     return ordered, parameter_only, unchanged
 
 
@@ -1051,18 +1051,37 @@ def _v4_repeated_operations_section(results: list[dict]) -> list[str]:
 
 
 def _v4_intervention_surfaces_section(results: list[dict]) -> list[str]:
-    """Where the campaign has intervened, without suggesting where to next."""
+    """Where the campaign has intervened, in path order, without ranking."""
     lines = ["", "## Intervention surfaces", ""]
     surfaces, parameter_only, unchanged = _intervention_surfaces(results)
     if surfaces:
         lines.append(
             "Experiments that changed each researcher-owned source, including "
-            "sources never changed. This is a record of where the campaign has "
-            "intervened, not a suggestion about where to intervene next:"
+            "sources never changed. Listed in path order; frequency of past "
+            "change carries no information about where the next intervention "
+            "should be. This is a record of where the campaign has intervened, "
+            "not a suggestion about where to intervene next:"
         )
         lines.append("")
-        for source, count in surfaces:
-            lines.append(f"- `{source}`: {count}")
+        changed = [(source, count) for source, count in surfaces if count]
+        never_changed = [source for source, count in surfaces if not count]
+        lines.append("### Changed in this campaign")
+        lines.append("")
+        if changed:
+            for source, count in changed:
+                noun = "experiment" if count == 1 else "experiments"
+                lines.append(f"- `{source}` — changed in {count} {noun}")
+        else:
+            lines.append("- None.")
+        lines.append("")
+        lines.append("### Not yet changed")
+        lines.append("")
+        if never_changed:
+            for source in never_changed:
+                lines.append(f"- `{source}`")
+        else:
+            lines.append("- None.")
+        lines.append("")
         lines.append(
             f"- Experiments with no researcher-owned source change: "
             f"{parameter_only} parameter-only, {unchanged} unchanged."

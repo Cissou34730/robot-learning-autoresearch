@@ -80,6 +80,54 @@ def test_intervention_surfaces_section_is_factual_when_empty():
     assert any("unchanged" in line for line in lines)
 
 
+def test_intervention_surfaces_are_ordered_by_path_not_count(monkeypatch):
+    sources = [
+        "robot_learning/scenario/alpha.py",
+        "robot_learning/scenario/beta.py",
+        "robot_learning/training/zeta.py",
+    ]
+    monkeypatch.setattr(brief, "_researcher_owned_sources", lambda: list(sources))
+    results = [
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/scenario/beta.py"]},
+    ]
+    surfaces, _, _ = brief._intervention_surfaces(results)
+    # Issue #55: path order, never count order.
+    assert surfaces == [
+        ("robot_learning/scenario/alpha.py", 0),
+        ("robot_learning/scenario/beta.py", 1),
+        ("robot_learning/training/zeta.py", 2),
+    ]
+
+
+def test_intervention_surface_section_is_not_count_ranked(monkeypatch):
+    sources = [
+        "robot_learning/scenario/alpha.py",
+        "robot_learning/scenario/beta.py",
+        "robot_learning/training/zeta.py",
+    ]
+    monkeypatch.setattr(brief, "_researcher_owned_sources", lambda: list(sources))
+    results = [
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/scenario/beta.py"]},
+    ]
+    text = "\n".join(brief._v4_intervention_surfaces_section(results))
+    changed = text.split("### Not yet changed")[0]
+    never_changed = text.split("### Not yet changed")[1]
+    # Path order holds inside the changed group; the count leader is not first.
+    assert changed.index("robot_learning/scenario/beta.py") < changed.index(
+        "robot_learning/training/zeta.py"
+    )
+    assert "changed in 1 experiment" in changed
+    assert "changed in 2 experiments" in changed
+    # Never-changed sources get their own group rather than trailing zeros.
+    assert "robot_learning/scenario/alpha.py" in never_changed
+    assert "path order" in text
+
+
+
 def test_reusable_lineages_and_best_known_default_to_unset():
     reusable = brief._v4_reusable_lineages_section({})
     assert reusable[-1] == "No retained alternatives."
