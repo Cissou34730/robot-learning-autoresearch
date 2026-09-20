@@ -12,6 +12,7 @@ first reaches the required hold length:
 
     reward = -(DISTANCE_COST_COEFFICIENT * current_distance)
     reward += -STEP_COST
+    reward += HOLD_PROGRESS_BONUS if held_steps > 0 else 0.0
     reward += SUCCESS_BONUS if held_steps >= hold_steps_required
               and previous_held_steps < hold_steps_required else 0.0
 
@@ -25,6 +26,7 @@ import numpy as np
 
 DISTANCE_COST_COEFFICIENT = 5.0
 STEP_COST = 0.01
+HOLD_PROGRESS_BONUS = 0.05
 SUCCESS_BONUS = 10.0
 
 
@@ -48,18 +50,20 @@ def reach_reward(
 ) -> RewardResult:
     distance_cost = -(DISTANCE_COST_COEFFICIENT * current_distance)
     step_cost = -STEP_COST
+    hold_progress = HOLD_PROGRESS_BONUS if held_steps > 0 else 0.0
 
     success_bonus = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         success_bonus = SUCCESS_BONUS
 
-    reward = distance_cost + step_cost + success_bonus
+    reward = distance_cost + step_cost + hold_progress + success_bonus
 
     return RewardResult(
         total=float(reward),
         components={
             "distance_cost": float(distance_cost),
             "step_cost": float(step_cost),
+            "hold_progress": float(hold_progress),
             "success_bonus": float(success_bonus),
         },
     )
