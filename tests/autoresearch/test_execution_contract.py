@@ -586,25 +586,20 @@ def validate_worktree(monkeypatch, *entries: str | tuple[str, ...]) -> list[str]
     return changes
 
 
-def test_protected_test_directories_are_prefix_based():
-    assert PROTECTED_TEST_PREFIXES == (
-        "tests/benchmark/",
-        "tests/autoresearch/",
-        "tests/e2e/",
-        "tests/scenario/",
-        "tests/training/",
-    )
+def test_the_whole_test_surface_is_prefix_protected():
+    # No test path is part of the researcher's write surface.
+    assert PROTECTED_TEST_PREFIXES == ("tests/",)
 
 
 @pytest.mark.parametrize("protected_path", PROTECTED_TEST_PATHS)
 def test_modifying_a_protected_test_is_rejected(monkeypatch, protected_path):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(monkeypatch, f" M {protected_path}")
 
 
 @pytest.mark.parametrize("protected_path", PROTECTED_TEST_PATHS)
 def test_deleting_a_protected_test_is_rejected(monkeypatch, protected_path):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(monkeypatch, f" D {protected_path}")
 
 
@@ -625,7 +620,7 @@ def test_status_keeps_unquoted_paths_containing_spaces(monkeypatch):
 
 
 def test_renaming_a_protected_test_is_rejected(monkeypatch):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(
             monkeypatch,
             renamed(
@@ -651,7 +646,7 @@ def test_renaming_a_protected_test_is_rejected(monkeypatch):
 def test_renaming_researcher_code_into_a_protected_domain_is_rejected(
     monkeypatch, origin, destination
 ):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(monkeypatch, renamed(origin, destination))
 
 
@@ -671,7 +666,7 @@ def test_renaming_researcher_code_into_a_protected_domain_is_rejected(
 def test_renaming_a_protected_test_into_researcher_code_is_rejected(
     monkeypatch, origin, destination
 ):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(monkeypatch, renamed(origin, destination))
 
 
@@ -689,24 +684,21 @@ def test_renaming_between_researcher_owned_source_domains_is_allowed(monkeypatch
 
 
 def test_creating_a_new_protected_test_is_rejected(monkeypatch):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
-        validate_worktree(monkeypatch, "?? tests/autoresearch/test_invented_rule.py")
-
-    with pytest.raises(ValueError, match="human-owned .* tests"):
-        validate_worktree(monkeypatch, "?? tests/benchmark/test_invented_rule.py")
-
-    with pytest.raises(ValueError, match="human-owned and retired tests"):
-        validate_worktree(monkeypatch, "?? tests/scenario/test_invented_rule.py")
-
-    with pytest.raises(ValueError, match="human-owned and retired tests"):
-        validate_worktree(monkeypatch, "?? tests/training/test_invented_rule.py")
+    for invented in (
+        "tests/autoresearch/test_invented_rule.py",
+        "tests/benchmark/test_invented_rule.py",
+        "tests/scenario/test_invented_rule.py",
+        "tests/training/test_invented_rule.py",
+    ):
+        with pytest.raises(ValueError, match="not part of the researcher's surface"):
+            validate_worktree(monkeypatch, f"?? {invented}")
 
 
 def test_protected_test_protection_ignores_path_separator(monkeypatch):
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(monkeypatch, "?? tests\\autoresearch\\test_invented.py")
 
-    with pytest.raises(ValueError, match="human-owned .* tests"):
+    with pytest.raises(ValueError, match="not part of the researcher's surface"):
         validate_worktree(monkeypatch, " M tests\\benchmark\\test_task_contract.py")
 
 
@@ -1220,9 +1212,9 @@ def test_validated_test_paths_are_the_human_owned_repository_domains():
 
 
 def test_the_end_to_end_suite_is_never_validated_during_a_campaign():
-    # tests/e2e holds slow whole-lifecycle checks. It is human-owned like the
-    # other protected domains, but no experiment ever waits on it.
-    assert "tests/e2e/" in protocol.PROTECTED_TEST_PREFIXES
+    # tests/e2e holds slow whole-lifecycle checks. It is protected like every
+    # test path, but no experiment ever waits on it.
+    assert not protocol.is_researcher_owned("tests/e2e/test_reset_research.py")
     selected = {
         *protocol.VALIDATED_TEST_PATHS,
         *protocol.RESEARCHER_VALIDATED_TEST_PATHS,

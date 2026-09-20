@@ -70,15 +70,10 @@ PROTECTED_CONTEXT_PATHS = {
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
 PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
-# Human-owned test domains and retired researcher-test locations. Prefix-based
-# so that creating, renaming or deleting a file underneath them is rejected.
-PROTECTED_TEST_PREFIXES = (
-    "tests/benchmark/",
-    "tests/autoresearch/",
-    "tests/e2e/",
-    "tests/scenario/",
-    "tests/training/",
-)
+# No test path belongs to the researcher's write surface. The whole tests/ tree
+# is prefix-protected, so creating, renaming or deleting any test file -- in a
+# human-owned domain or a retired researcher-test location -- is rejected.
+PROTECTED_TEST_PREFIXES = ("tests/",)
 VALIDATED_TEST_PATHS = (
     "tests/benchmark",
     "tests/autoresearch",
@@ -571,8 +566,26 @@ def validate_research_memory(proposal: dict, state: dict) -> None:
             raise ValueError(f"scientific strategy needs a non-empty '{label}' entry")
 
 
+# The Researcher owns science, not tests. Any test path in a proposal is a path
+# the Researcher does not own, so the rejection names those paths and asks for
+# them to be dropped from the proposal. It never asks the Researcher to edit,
+# restore or otherwise modify a file it does not own.
+TEST_SURFACE_REJECTION = (
+    "tests are not part of the researcher's surface and cannot be changed by a "
+    "research proposal"
+)
+NOT_OWNED_PATHS_REMEDY = (
+    "drop those paths from the proposal, because they are not the researcher's "
+    "changes to make"
+)
+
+
 def validate_research_delta_ownership(code_changes: list[str]) -> None:
-    """Reject changes to every human-owned source and test surface."""
+    """Reject changes to every human-owned source and test surface.
+
+    An unowned path is removed from the proposal, never repaired by the
+    Researcher, so no rejection message prescribes an edit to it.
+    """
     normalized = [path.replace("\\", "/") for path in code_changes]
     protected_sources = sorted(
         {path for path in normalized if is_protected_source(path)}
@@ -581,17 +594,14 @@ def validate_research_delta_ownership(code_changes: list[str]) -> None:
         raise ValueError(
             "human-owned task, context, dependency and protocol surfaces cannot "
             "be changed by a research proposal: "
-            f"{protected_sources}; restore them to their content at the "
-            "scientific parent before proposing another experiment"
+            f"{protected_sources}; {NOT_OWNED_PATHS_REMEDY}"
         )
     protected_tests = sorted(
         path for path in normalized if path.startswith(PROTECTED_TEST_PREFIXES)
     )
     if protected_tests:
         raise ValueError(
-            "human-owned and retired tests cannot be changed "
-            f"by a research proposal: {protected_tests}; restore them to their "
-            "content at the scientific parent before proposing another experiment"
+            f"{TEST_SURFACE_REJECTION}: {protected_tests}; {NOT_OWNED_PATHS_REMEDY}"
         )
 
 

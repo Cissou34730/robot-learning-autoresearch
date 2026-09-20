@@ -31,8 +31,10 @@ working around it.
 
 **Researcher** - owns scientific decisions and researcher-owned code: the
 learning method within the installed stack, reward, observations, training
-environment, research evaluation, measurement instrumentation and associated
-tests. The current implementation is a starting point, not a prescribed method.
+environment, research evaluation and measurement instrumentation. Tests are not
+part of the Researcher's surface: it never creates, modifies or maintains test
+files, and any path under `tests/` in its delta is rejected as a path it does not
+own. The current implementation is a starting point, not a prescribed method.
 
 **Runner** - validates deliverables, executes training and measurements,
 persists results, applies lineage decisions and runs the final benchmark. It

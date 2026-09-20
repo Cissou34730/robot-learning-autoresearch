@@ -50,6 +50,12 @@ observation layout. Task mechanics and success measurement remain shared.
 
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
+Tests are outside the Researcher's surface. The Researcher does not create,
+modify or maintain test files, and it never repairs a test file on the Runner's
+instruction. Any path under `tests/` in a proposal is rejected as a path the
+Researcher does not own; such paths must be dropped from the proposal, because
+they are not the Researcher's changes to make.
+
 During post-training analysis and its optional refinement rounds, the Researcher
 may modify researcher-owned measurement and analysis code before requesting
 another measurement round. The existing request flow can measure current

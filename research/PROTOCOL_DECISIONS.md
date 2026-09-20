@@ -7,6 +7,30 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-21 - Tests are never part of the researcher's surface
+
+- **Supersedes:** the 2026-08-29 "Tests organized by repository domain" decision
+  that `tests/scenario/` and `tests/training/` are researcher-owned, and the
+  2026-09-16 "Optional researcher tests" decision that researcher-authored tests
+  are an optional instrument. Tests leave the researcher-owned surface entirely.
+- **Decision:** No test path belongs to the researcher's write surface. The whole
+  `tests/` tree is prefix-protected, so creating, modifying, renaming or deleting
+  any test file is rejected as a path the researcher does not own, including
+  under `tests/scenario/` and `tests/training/`. The researcher never creates,
+  modifies or maintains test files.
+- **Decision:** An ownership rejection names the offending paths and never
+  instructs the researcher to edit, restore or otherwise modify them. It states
+  what the researcher must do instead: drop those paths from the proposal,
+  because they are not the researcher's changes to make.
+- **Reason:** On 2026-09-20 a rejection told the researcher to restore a
+  human-owned test to its content at the scientific parent, and the researcher
+  edited that file. Prescribing an edit to a path the researcher does not own is
+  the defect, not the researcher's compliance with it.
+- **Unchanged:** Human-owned paths are still rejected, researcher-owned paths are
+  still accepted, and the researcher's live changes remain listed in the
+  proposal's `code_changes`. `research/program.md`, `research/instruments.md` and
+  `AGENTS.md` state that tests are outside the researcher's surface.
+
 ## 2026-09-17 - Audit remediation
 
 - **Statistic ownership:** The protected paired module owns episode identity,

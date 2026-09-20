@@ -116,7 +116,8 @@ The Researcher may read but not modify these paths through an experiment:
   `robot_learning/scenario/__init__.py` (minimal protected package initializer);
 - `robot_learning/scenario/final_benchmark.py` and
   `robot_learning/scenario/task_reference.py`;
-- `tests/benchmark/`, `tests/autoresearch/` and `tests/e2e/`.
+- `tests/` - every test path; the Researcher does not create, modify or maintain
+  test files.
 
 Protection is enforced centrally by `research/runner_protocol.py`. A protected
 path takes precedence over any researcher-owned prefix.
@@ -133,6 +134,11 @@ path takes precedence over any researcher-owned prefix.
   post-training analysis, exactly one actionable request is submitted: a
   measurement request or a closure proposal with its postmortem.
 
+Tests are not part of the Researcher-owned surface. The Researcher does not
+create, modify or maintain test files, and any path under `tests/` in its delta
+is rejected as a path it does not own: it must drop those paths from the
+proposal rather than edit or restore them.
+
 Scientific analysis, diagnostics and temporary tooling must be created within a
 researcher-owned code prefix. They are ordinary experiment code: they travel
 with its code lineage and validation, and are not an ignored scratch surface.
@@ -145,8 +151,8 @@ The Runner validates changed Python syntax with `ruff check`, parses changed JSO
 files, and runs selected human-owned pytest suites. A fresh baseline runs the
 benchmark and targeted AutoResearch boundary checks. Researcher-owned code
 changes run only the targeted AutoResearch boundary checks; parameter-only
-proposals and decisions without code changes run no suites. The Researcher is
-not required to author, maintain or run tests for scientific changes.
+proposals and decisions without code changes run no suites. The Researcher never
+authors, modifies or maintains test files; tests are not part of its surface.
 
 Tests assert the behavior owned by their domain. Human-owned benchmark and
 AutoResearch tests remain method-neutral. Architecture guards derive the
@@ -173,8 +179,9 @@ harness and documentation commits must not use that prefix.
 
 `research/results.jsonl` is written before `research/EXPERIMENTS.md` is
 regenerated atomically. Validation-only commands do not reconcile or mutate the
-derived view. Researcher-owned tests and scientific code travel together in the
-experiment's `code_changes` and Git lineage.
+derived view. Researcher-owned scientific code travels in the experiment's
+`code_changes` and Git lineage; tests never do, because the Researcher does not
+own them.
 
 Version-4 closure publishes every selected working or best-known candidate to
 `research/checkpoints/retained/<campaign-id>/` before candidate cleanup and
