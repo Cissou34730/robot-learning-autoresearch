@@ -174,6 +174,16 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
+# Reasoning fields whose honest answer may be its absence (issue #56). The
+# researcher still records an explicit, non-empty reason, so the validator keeps
+# checking explicitness and never scientific merit.
+NOT_APPLICABLE_REASONING_FIELDS = frozenset(
+    {"alternative", "contradicting_observation"}
+)
+# An optional qualifier for a prediction the researcher holds with less than
+# full force, so a contradicted weak prediction is not read as a refuted strong
+# one.
+REASONING_CONFIDENCE_LEVELS = ("strong", "moderate", "weak")
 
 
 # --- ownership -------------------------------------------------------------
@@ -565,6 +575,28 @@ def resolved_training_parent(
 # --- proposal validation ---------------------------------------------------
 
 
+def _validate_reasoning_statement(field: str, value: object) -> None:
+    """Require an explicit statement, or its justified absence (issue #56).
+
+    The check is still explicitness, not merit. ``alternative`` and
+    ``contradicting_observation`` may be recorded as an object naming why no
+    honest content exists, provided the reason itself is a non-empty string.
+    Every other field must be a non-empty string.
+    """
+    if isinstance(value, str) and value.strip():
+        return
+    if field in NOT_APPLICABLE_REASONING_FIELDS:
+        if isinstance(value, dict) and set(value) == {"not_applicable"}:
+            reason = value["not_applicable"]
+            if isinstance(reason, str) and reason.strip():
+                return
+        raise ValueError(
+            f"reasoning.{field} must be a non-empty string or a "
+            "not-applicable object with a non-empty reason"
+        )
+    raise ValueError(f"reasoning.{field} must be a non-empty string")
+
+
 def validate_scientific_reasoning(proposal: dict) -> None:
     """Check explicit reasoning, not its scientific merit or truthfulness."""
     reasoning = proposal.get("reasoning")
@@ -584,9 +616,12 @@ def validate_scientific_reasoning(proposal: dict) -> None:
             ("alternative", "expected_observation", "contradicting_observation")
         )
     for field in fields:
-        value = reasoning.get(field)
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"reasoning.{field} must be a non-empty string")
+        _validate_reasoning_statement(field, reasoning.get(field))
+    confidence = reasoning.get("confidence")
+    if confidence is not None and confidence not in REASONING_CONFIDENCE_LEVELS:
+        raise ValueError(
+            "reasoning.confidence must be strong, moderate or weak when present"
+        )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
         raise ValueError("reasoning.evidence must be a non-empty list")

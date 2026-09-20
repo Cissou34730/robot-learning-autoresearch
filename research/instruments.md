@@ -259,6 +259,30 @@ For `exploratory`, replace `hypothesis`, `alternative`,
 The exploratory `reasoning` object also contains the common `evidence`,
 `initialization_reason`, and `objective_link` fields from the first schema.
 
+Where a confirmatory or diagnostic investigation has no honest competing
+explanation, `alternative` or `contradicting_observation` may record why rather
+than invent content. The reason itself must be a non-empty string:
+
+```json
+{
+  "reasoning": {
+    "alternative": {"not_applicable": "<why no competing explanation applies>"}
+  }
+}
+```
+
+The `reasoning` object may also carry an optional `confidence` that qualifies a
+prediction. It is one of `strong`, `moderate` or `weak`, and is omitted when no
+prediction is held:
+
+```json
+{
+  "reasoning": {
+    "confidence": "<strong | moderate | weak>"
+  }
+}
+```
+
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
 | `training` | Trains a changed scientific recipe for any investigation type. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
@@ -277,7 +301,8 @@ boundaries may make the completed count exceed the request. A selected lineage's
 `training_steps` instead records its accumulated training through the selected
 checkpoint.
 
-All `reasoning` strings must be non-empty; `evidence` contains at least one
+Every `reasoning` field must be non-empty content or, where the schema allows
+it, a justified `not_applicable` record; `evidence` contains at least one
 source/observation pair. Cite inspected campaign artifacts, logs, postmortems or
 code with precise observations; these are not restricted to evaluation results.
 `source` is a file path without a line-number suffix or fragment; put the relevant
@@ -304,7 +329,10 @@ extended lineage and records that the parent's recipe was restored.
 The `reasoning` object contains the common and type-specific fields shown in the
 schemas. `evidence` is a non-empty array of source/observation objects. Every
 listed type-specific string, `initialization_reason`, and `objective_link` is
-non-empty. Their scientific use is defined in `research/program.md`.
+non-empty, except that `alternative` and `contradicting_observation` may be a
+`not_applicable` object carrying a non-empty reason. An optional
+`reasoning.confidence` of `strong`, `moderate` or `weak` qualifies a prediction.
+Their scientific use is defined in `research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 

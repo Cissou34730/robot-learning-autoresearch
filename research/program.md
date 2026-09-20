@@ -127,7 +127,9 @@ confirmatory or diagnostic investigation states a proposition, a plausible
 alternative, and the observations that would distinguish them. An exploratory
 investigation states the question, the uncertainty, the observations it seeks
 and what those observations could clarify. Do not invent a causal mechanism or a
-prediction merely to satisfy the proposal format.
+prediction merely to satisfy the proposal format. Where a required field has no
+honest content, record it as not applicable with the reason, and where a
+prediction is held weakly, say so through `reasoning.confidence`.
 
 For a replication or other process-variance question, the reasoning must
 distinguish what decision follows from the expected result and what decision
@@ -169,7 +171,10 @@ the uncertainty and sought observations of an exploratory investigation. That
 reasoning frames informative possibilities; it is not an acceptance threshold
 for a saved policy or a binary limit on interpretation. Use `supported`, `partially
 supported`, `weakened`, `contradicted`, or `inconclusive`, and record partial,
-unexpected, or orthogonal signals as well as limitations. An unmeasured
+unexpected, or orthogonal signals as well as limitations. When the proposal
+recorded a prediction as weakly held or a field as not applicable, say so in the
+assessment: a contradicted weak prediction is not a refuted strong one, and a
+field recorded as not applicable was never a commitment. An unmeasured
 checkpoint remains unmeasured, not a failed policy.
 
 Decide whether to request measurements before resolving lineage. A measurement

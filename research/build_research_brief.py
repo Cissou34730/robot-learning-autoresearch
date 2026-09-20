@@ -1057,6 +1057,25 @@ def _experiment_rationale(result: dict) -> list[str]:
     return items
 
 
+def _assessment_with_confidence(result: dict) -> str:
+    """Render the recorded hypothesis assessment beside its prediction confidence.
+
+    Issue #56: a prediction may be recorded as weakly held, so a contradicted
+    weak prediction is not read as a refuted strong one.
+    """
+    assessment = result.get("hypothesis_assessment")
+    rendered = (
+        assessment.strip()
+        if isinstance(assessment, str) and assessment.strip()
+        else "unavailable"
+    )
+    reasoning = result.get("reasoning")
+    confidence = reasoning.get("confidence") if isinstance(reasoning, dict) else None
+    if isinstance(confidence, str) and confidence.strip():
+        return f"{rendered} (prediction confidence: {confidence.strip()})"
+    return rendered
+
+
 def _v4_experiment_index_section(
     results: list[dict], pending: dict | None = None
 ) -> list[str]:
@@ -1119,7 +1138,7 @@ def _v4_experiment_index_section(
             f"| {result.get('index', '-')} | {_table_cell(operation)} / {result.get('family', '-')} | "
             f"{result.get('training_parent', '-')} | {_table_cell(_compact(intervention, 100, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
-            f"{_table_cell(result.get('hypothesis_assessment', 'unavailable'))} | "
+            f"{_table_cell(_assessment_with_confidence(result))} | "
             f"{decisions} | "
             f"{_postmortem_reference(result.get('postmortem'))} |"
         )
@@ -1748,7 +1767,7 @@ def _render_v4_research_brief(
                 f"- Parent: {latest.get('training_parent', '-')}",
                 f"- Intervention: {_change_details(latest)}",
                 f"- Measurements: {_v4_result_measurements(latest)}",
-                f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
+                f"- Hypothesis assessment: {_assessment_with_confidence(latest)}",
                 f"- Working lineage selected: {selected_lineage}",
             ]
         )
