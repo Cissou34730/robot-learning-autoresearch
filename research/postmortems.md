@@ -7,10 +7,10 @@ episodes, on the official 6-20 cm reach-and-hold distribution. The unchanged
 baseline is the strongest measured lineage: it achieved 150/160, 151/160,
 155/160, and 159/160 on four disjoint development panels (615/640, 96.09%
 pooled), with the latest 159/160 control remaining development evidence rather
-than an official assessment. Its failures repeatedly concentrate around
-negative target angles and often inner radii. The current hard-region sampler
-has no task measurement, so it adds no evidence that the measured parent has
-been surpassed; the official result remains unknown.
+than an official assessment. Across those panels, 23 of 25 failures had target
+angles below -90 degrees, 13 had radii at or below 12 cm, and 11 had both
+properties. The invalid experiment-7 record supplied no training or task
+evidence; the official result remains unknown.
 
 **Lessons and limits:** Complete measured task success is more reliable for
 policy selection than training reward or proxy success. The hold-progress
@@ -25,13 +25,13 @@ challenger. Fresh learning is therefore variable, and unmeasured checkpoints
 remain unmeasured rather than failed policies. Research panels are development
 evidence and remain distinct from the official 200-episode assessment.
 
-**Open questions:** It remains unresolved whether a limited amount of
-training support for the recurrent inner-radius, negative-angle failures can
-improve complete reach-and-hold success while preserving broad-angle behavior.
-The value of alternative reward, control, representation, curriculum, and
-training-support designs remains uncertain, as do the official result and the
-generalization of the strongest development panel. These are recorded
-uncertainties, not a prescribed action list.
+**Open questions:** It remains unresolved whether targeted training support can
+correct the recurring inner-radius, negative-angle failures without trading
+away broad-angle behavior. The value of alternative reward, control,
+representation, curriculum, and other training-support designs remains
+uncertain, as do the official result and the generalization of the strongest
+development panel. These are recorded uncertainties, not a prescribed action
+list.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
