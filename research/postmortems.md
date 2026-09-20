@@ -8,30 +8,36 @@ fresh PPO baseline learned substantial task behavior: checkpoint-100352 achieved
 150/160 and 151/160 on two disjoint panels (301/320 pooled, 94.06%), and the
 unchanged working lineage achieved 155/160 (96.88%) on the latest panel. The
 full-radius and angle-balanced training-support changes did not improve the
-transferred parent. The fresh periodic-observation run learned very slowly and
-had no task measurements, so it supplies no replacement policy. Measured task
-outcome, rather than training proxy success or final checkpoint position, is
-the strongest evidence of policy usefulness. The best development evidence is
-therefore still below the objective and is not an official verdict.
+transferred parent. The fresh periodic-observation and fresh unchanged-baseline
+runs learned slowly enough to provide no measured replacement policy. The
+current reward combines distance and step costs with a one-time terminal bonus;
+the measured failures are truncated episodes, including failures with long
+partial holds. Measured task outcome, rather than training proxy success or
+checkpoint position, remains the strongest evidence of policy usefulness. The
+best development evidence is below the objective and is not an official verdict.
 
-**Lessons and limits:** Baseline failures were concentrated in the -180 to -90
-degree target sector, with many also inside 14 cm, but neither tested support
-intervention removed that pattern. The angle-balanced challengers added failures
-outside the intended sector. Later checkpoints on the baseline trajectory
-regressed from the selected 100352-step policy, so proxy peaks and recovery do
-not identify a useful saved policy. These results weaken the tested support
-recipes and the fresh periodic recipe under their tested conditions; they do
-not disprove other representation, control, reward, schedule, or curriculum
-treatments. Unmeasured checkpoints remain unmeasured, and independent
-development panels remain distinct from the official assessment.
+**Lessons and limits:** Available baseline failures are concentrated in the
+-180 to -90 degree target sector, with many also inside 14 cm, but neither
+tested support intervention removed that pattern. The angle-balanced challengers
+added failures outside the intended sector. Later checkpoints on the baseline
+trajectory regressed from the selected 100352-step policy, so proxy peaks and
+recovery do not identify a useful saved policy. These results weaken the tested
+support recipes and fresh periodic recipe under their tested conditions; they
+do not disprove other reward, control, schedule, curriculum, or representation
+treatments. The measured parent uses the same 11-dimensional observation and
+physical action mapping throughout the current lineage. Unmeasured checkpoints
+remain unmeasured, and independent development panels remain distinct from the
+official assessment.
 
-**Open questions:** The variability of fresh learning under the unchanged
-baseline recipe, and whether another fresh run can produce a stronger measured
-checkpoint, are unresolved. It is also unknown whether a different control,
-reward, schedule, or representation treatment can close the remaining gap, and
-whether the periodic representation could help when trained adequately. The
-transfer value of the learned outer-radius behavior remains unknown. These
-questions record uncertainty rather than prescribe an experiment order.
+**Open questions:** It remains uncertain whether explicit reward credit for
+maintaining target tolerance can reduce the residual truncated failures without
+disrupting the learned reach behavior. It is also unknown whether a different
+control, reward, schedule, curriculum, or representation treatment can close
+the remaining gap, whether the periodic representation could help when trained
+adequately, and how much fresh-seed variability reflects the learning process.
+The transfer value of learned outer-radius behavior and the official result of
+the best development policy remain unknown. These questions record uncertainty
+and do not prescribe an experiment order.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
