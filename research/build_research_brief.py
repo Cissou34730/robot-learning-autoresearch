@@ -1730,7 +1730,7 @@ def render_research_brief() -> str:
                 )
             ),
             (
-                f"- Accepted lineage training budget: "
+                f"- Accepted lineage training: "
                 f"{int(state.get('accepted_training_steps', 0)):,} steps"
             ),
             (f"- Last experiment: {displayed_last_experiment}"),
@@ -1741,7 +1741,7 @@ def render_research_brief() -> str:
             "",
             "## Recent experiment cards",
             "",
-            "| # | Family | Operation | Init / budget | Outcome | Verdict |",
+            "| # | Family | Operation | Init / steps | Outcome | Verdict |",
             "|---:|---|---|---|---|---|",
         ]
     )
@@ -1750,10 +1750,10 @@ def render_research_brief() -> str:
         family = str(result.get("family", "-")).replace("|", "/")
         details = _compact(_change_details(result), 220).replace("|", "/")
         initialization = result.get("initialization", "-")
-        budget = result.get("training_budget_steps")
+        requested_steps = result.get("training_budget_steps")
         setup = initialization
-        if budget is not None:
-            setup += f" / {int(budget):,} steps"
+        if requested_steps is not None:
+            setup += f" / {int(requested_steps):,} steps"
         outcome = _compact(_experiment_outcome(result), 220).replace("|", "/")
         verdict = _compact(result["verdict"], 100).replace("|", "/")
         lines.append(

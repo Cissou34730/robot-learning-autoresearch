@@ -5,7 +5,12 @@ candidates, evidence, lineages, or campaign activity can be reviewed and tested
 one section at a time instead of editing one large renderer.
 """
 
+import json
+
+import pytest
+
 from research import build_research_brief as brief
+from research.build_research_brief import render_research_brief
 
 
 def test_phase_section_tracks_the_lifecycle_state():
@@ -450,8 +455,24 @@ def test_activity_record_separates_execution_from_evidence_coverage():
     assert "research_evaluation intervals consumed:" in coverage
 
 
-def test_v4_brief_carries_no_budget_vocabulary():
-    text = brief._render_v4_research_brief({}, [], "", "cid", "base", "PPO", {})
-    lowered = text.lower()
+@pytest.mark.parametrize(
+    "state",
+    [
+        {"schema_version": 4, "campaign": {"id": "cid", "base_commit": "base"}},
+        {"schema_version": 3, "accepted_metrics": {"episodes": 400}},
+        {"accepted_metrics": {"episodes": 400}},
+    ],
+)
+def test_rendered_brief_carries_no_budget_vocabulary(monkeypatch, tmp_path, state):
+    """Issue #46: every schema branch renders without budget vocabulary."""
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    lowered = render_research_brief().lower()
     for wording in ("cost", "budget", "remaining", "allowance", "spent"):
         assert wording not in lowered
