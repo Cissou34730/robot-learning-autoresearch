@@ -1,67 +1,18 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/e2-cada55eb5-45653a1b42227142f0a58cfb97bf6cf8672ad93f3d5688e6094760fd2246f771",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-200ep-seed20000-543af51fd137.json",
-      "research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-400ep-seed21000-543af51fd137.json",
-      "research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/task-reference-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "45653a1b42227142f0a58cfb97bf6cf8672ad93f3d5688e6094760fd2246f771",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Best measured task behavior in the campaign: 577/600 = 96.2% pooled research success across two disjoint panels and 196/200 = 98.0% on the task-reference panel, with the residual failures localized to one angular sector reproducible by an independent evaluator.",
-    "scientific_commit": "31fe36756dc65ae2c1a607eb9f835764b3acef8a",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "bab4fc76e65d8f011dff489b8a7eeefbd43e5c87",
-    "id": "59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed",
+    "base_commit": "b8ec8acd10157b0448e95a308cfdc3571818453b",
+    "id": "0a384c0e-6049-41b0-b65f-51378059913c",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-19T11:38:20.057796+00:00"
+    "started_at": "2026-09-20T07:54:57.637794+00:00"
   },
   "campaign_experiment_counters": {
-    "59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed": 8
+    "0a384c0e-6049-41b0-b65f-51378059913c": 0
   },
-  "last_allocated_experiment": 8,
-  "last_experiment": 8,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "The experiment-8 observation redefinition (substituting the folded-branch configuration for the open-branch primary inputs when the open solution violates the joint limits) is contradicted and must not be carried forward; it collapsed folded-required success under fresh training. Reverting restores the working lineage's pre-experiment recipe, including the original primary-branch input semantics, and removes the temporary researcher diagnostic created for this experiment."
-    },
-    "code_parent_commit": "c8ce67eb13f60aaf04c0b8a746678f80d46f5302",
-    "continue_from": "working",
-    "experiment": 8,
-    "reason": "Experiment 8's fresh feasible-primary-input hypothesis is contradicted and its recipe is not competitive. On the fresh disjoint 2000-episode panel seed 27000 the retained working policy (experiment-2 checkpoint-100352) scored 1948/2000 = 97.40% (open-feasible 1888/1888 = 100%, folded-required 60/112 = 53.6%) while experiment-8 checkpoint-115712 scored 1898/2000 = 94.90% (folded 10/112 = 8.9%) and checkpoint-120832 scored 1892/2000 = 94.60% (folded 12/112 = 10.7%); working won both paired comparisons (54 vs 4 and 62 vs 6 discordant wins). The intervention is therefore actively harmful in the folded sector it targeted, including the shallow 170-174 degree band (100% -> 11-13%), and no experiment-8 checkpoint approaches the working lineage. Working remains the best measured policy at 6232/6400 = 97.375% pooled over eight distinct research panels, still below the 98% objective with all residual behavior in the folded-required sector, so terminal assessment is not justified. Development continues from working into a further ordinary experiment; the campaign proceeds rather than ending."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -70,51 +21,10 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "c8ce67eb13f60aaf04c0b8a746678f80d46f5302",
-    "experiment": 8,
-    "scientific_commit": "1df9cf9f27fbdea792c29e028e97b7c92a254435"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/e2-cada55eb5-45653a1b42227142f0a58cfb97bf6cf8672ad93f3d5688e6094760fd2246f771",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-200ep-seed20000-543af51fd137.json",
-      "research/evaluations/59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed/evaluation-59709a6b-6a0b-4fa1-95e7-9b9cba8cdeed-experiment-2-checkpoint-100352-400ep-seed21000-543af51fd137.json"
-    ],
-    "fingerprint": "45653a1b42227142f0a58cfb97bf6cf8672ad93f3d5688e6094760fd2246f771",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 8's fresh feasible-primary-input hypothesis is contradicted and its recipe is not competitive. On the fresh disjoint 2000-episode panel seed 27000 the retained working policy (experiment-2 checkpoint-100352) scored 1948/2000 = 97.40% (open-feasible 1888/1888 = 100%, folded-required 60/112 = 53.6%) while experiment-8 checkpoint-115712 scored 1898/2000 = 94.90% (folded 10/112 = 8.9%) and checkpoint-120832 scored 1892/2000 = 94.60% (folded 12/112 = 10.7%); working won both paired comparisons (54 vs 4 and 62 vs 6 discordant wins). The intervention is therefore actively harmful in the folded sector it targeted, including the shallow 170-174 degree band (100% -> 11-13%), and no experiment-8 checkpoint approaches the working lineage. Working remains the best measured policy at 6232/6400 = 97.375% pooled over eight distinct research panels, still below the 98% objective with all residual behavior in the folded-required sector, so terminal assessment is not justified. Development continues from working into a further ordinary experiment; the campaign proceeds rather than ending.",
-    "scientific_commit": "31fe36756dc65ae2c1a607eb9f835764b3acef8a",
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
