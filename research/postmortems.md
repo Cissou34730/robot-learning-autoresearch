@@ -4,34 +4,36 @@
 
 **Current synthesis:** The human objective is at least 98% success, or 196/200
 episodes, on the official 6-20 cm reach-and-hold distribution. The unchanged
-baseline is the strongest measured lineage: it achieved 150/160, 151/160,
-155/160, and 159/160 on four disjoint development panels (615/640, 96.09%
-pooled), with the latest 159/160 control remaining development evidence rather
-than an official assessment. Across those panels, 23 of 25 failures had target
-angles below -90 degrees, 13 had radii at or below 12 cm, and 11 had both
-properties. The invalid experiment-7 record supplied no training or task
-evidence; the official result remains unknown.
+transferred baseline remains the strongest measured lineage: it scored 150/160,
+151/160, 155/160, and 159/160 on four disjoint development panels (615/640,
+96.09% pooled), with a later same-panel control at 156/160. Its measured failures
+are concentrated at negative target angles: 23 of 25 failures across the four
+baseline panels were below -90 degrees, 13 were at radii at or below 12 cm, and
+11 had both properties. The official 200-episode result is unknown; experiment 7
+contributed no valid training or task evidence.
 
-**Lessons and limits:** Complete measured task success is more reliable for
-policy selection than training reward or proxy success. The hold-progress
-reward challenger reached a 0.99 training-success proxy but scored 118/160
-against 159/160 for the unchanged parent, losing all 41 discordant paired
-episodes and truncating 42 episodes versus 1 for the parent. This weakens that
-reward intervention and trajectory, while not disproving every hold-specific
-reward, control, schedule, curriculum, or representation change. Transferred
-full-radius and angle-balancing support did not improve the parent, and the
-fresh periodic-observation and baseline-replication runs supplied no measured
-challenger. Fresh learning is therefore variable, and unmeasured checkpoints
-remain unmeasured rather than failed policies. Research panels are development
-evidence and remain distinct from the official 200-episode assessment.
+**Lessons and limits:** Complete measured reach-and-hold success is more reliable
+for policy selection than training reward or proxy success. Transferred full-radius
+support, angle balancing, a 75/25 targeted sampler, and a hold-progress reward did
+not improve the unchanged parent; the reward challenger reached a 0.99 training
+proxy but scored 118/160 against the parent's 159/160. The experiment-8
+challengers scored 152/160 and 151/160 against 156/160 for the same-panel parent,
+so fixed hard-target exposure can trade away broad behavior under the tested
+recipe, although its geometry was not recorded in that panel. The fresh periodic
+representation and baseline replication had no measured challengers, while later
+baseline checkpoints regressed after the selected 100352-step checkpoint. These
+results weaken the tested interventions and trajectories without disproving every
+curriculum, reward, control, or representation design. Unmeasured checkpoints are
+not failed policies, and development panels remain distinct from the official
+assessment.
 
-**Open questions:** It remains unresolved whether targeted training support can
-correct the recurring inner-radius, negative-angle failures without trading
-away broad-angle behavior. The value of alternative reward, control,
-representation, curriculum, and other training-support designs remains
-uncertain, as do the official result and the generalization of the strongest
-development panel. These are recorded uncertainties, not a prescribed action
-list.
+**Open questions:** The campaign has not established whether the residual
+inner-radius failures can be reduced without worsening the dominant negative-angle
+failures, whether the strongest development panel generalizes to the official
+panel, or whether another reward, control, representation, or training schedule
+can close the remaining objective gap. The causal mechanism of the observed
+failure concentration and the official result remain uncertain. These are
+recorded uncertainties, not a prescribed action list.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
