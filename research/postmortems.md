@@ -10,7 +10,10 @@ transferred baseline remains the strongest measured lineage: it scored 150/160,
 measured failures are concentrated at negative target angles: 23 of 25 failures
 across the four baseline panels were below -90 degrees, 13 were at radii at or
 below 12 cm, and 11 had both properties. The official 200-episode result is
-unknown; experiment 7 contributed no valid training or task evidence.
+unknown; experiment 7 contributed no valid training or task evidence. The
+baseline trace after the selected 100352-step checkpoint has proxy success
+around 0.89-0.92 through 120832 steps, but the measured later checkpoints
+regressed, so this proxy recovery does not establish task progress.
 
 **Lessons and limits:** Complete measured reach-and-hold success is more reliable
 for policy selection than training reward or proxy success. Transferred full-radius
@@ -22,18 +25,21 @@ and experiment 9's proxy-selected challenger scored 144/160 against 154/160 on a
 fresh paired panel, winning none of 10 discordant episodes. In experiment 9 the
 challenger retained all six parent failures and added ten, including failures at
 positive and negative angles, so the measured curriculum trajectory did not
-correct the observed residuals. These results weaken the tested interventions and
-trajectories without disproving every curriculum, reward, control, or
-representation design. Unmeasured checkpoints are not failed policies, and
-development panels remain distinct from the official assessment.
+correct the observed residuals. The current observation already exposes joint
+state, end-effector error, and both inverse-kinematics branches, while policy I/O
+maps that representation directly to physical actions. These results weaken the
+tested interventions and trajectories without disproving every curriculum,
+reward, control, or representation design. Unmeasured checkpoints are not failed
+policies, and development panels remain distinct from the official assessment.
 
-**Open questions:** The campaign has not established whether the residual
-inner-radius failures can be reduced without worsening the dominant negative-angle
-failures, whether the strongest development panel generalizes to the official
-panel, or whether another reward, control, representation, or training schedule
-can close the remaining objective gap. The causal mechanism of the observed
-failure concentration and the official result remain uncertain. These are
-recorded uncertainties, not a prescribed action list.
+**Open questions:** The campaign has not established whether unchanged
+optimization beyond the selected checkpoint can produce a task-success
+improvement, whether the residual inner-radius failures can be reduced without
+worsening the dominant negative-angle failures, whether the strongest development
+panel generalizes to the official panel, or whether another reward, control,
+representation, or training schedule can close the remaining objective gap. The
+causal mechanism of the observed failure concentration and the official result
+remain uncertain. These are recorded uncertainties, not a prescribed action list.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
