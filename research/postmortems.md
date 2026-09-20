@@ -10,7 +10,12 @@ working parent reached 155/160 on the latest panel (96.88%). Experiment 2's
 full-radius training-support change and experiment 3's angle-balanced
 training-support change both failed to improve the transferred parent. Measured
 task outcome, rather than training proxy success, identifies the useful policy
-point.
+point. Experiment 4's fresh periodic-observation recipe completed 120,832
+steps, but none of its 24 checkpoints received a task measurement; its endpoint
+training proxy remained at 0.17 success and -26.97 reward, far behind the
+measured parent recipe at comparable training duration. The parent therefore
+remains the strongest measured development lineage, and the campaign objective
+is not demonstrated.
 
 **Lessons and limits:** Across the baseline panels, failures were concentrated in
 the target-angle bin from -180 to -90 degrees, and 11 of 19 were also below 14
@@ -22,14 +27,17 @@ for more than five steps, so the evidence is primarily about reaching and
 stabilizing at difficult targets rather than long partial holds. Training proxies
 peaked or recovered without identifying better saved policies. These observations
 weaken the tested support interventions without disproving other representation,
-control, or schedule treatments; the independent research panels remain
-development evidence, not an official verdict.
+control, or schedule treatments. The periodic-representation run provides a
+strong negative learning-dynamics signal for that fresh recipe, but its
+unmeasured checkpoints are not task failures and cannot establish whether the
+representation itself changes reach-and-hold behavior. The independent research
+panels remain development evidence, not an official verdict.
 
 **Open questions:** It remains unresolved whether an explicitly periodic angular
-representation can reduce the negative-sector residual without a complementary
-sector tradeoff. The usefulness of other control or schedule treatments, the
-variance of fresh learning, and the transfer value of the learned outer-radius
-representation are also unknown.
+representation can help under a recipe that learns the task adequately, as
+experiment 4 did not measure that outcome. The usefulness of other control or
+schedule treatments, the variance of fresh learning, and the transfer value of
+the learned outer-radius representation are also unknown.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
@@ -171,3 +179,45 @@ failures.
 artifacts under
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/` for checkpoint-5120,
 checkpoint-25600 and `working` on seed 4840.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 4
+
+**Result:** The fresh periodic target-angle representation did not produce a
+candidate supported for continued use. The experiment is closed by restoring
+the measured `working` lineage and reverting the 13-dimensional observation
+recipe. The campaign objective remains unproven.
+
+**Observed behavior:** The run completed 120,832 steps from fresh
+initialization and produced 24 checkpoints. Training success was 0.00 through
+90,112 steps, then 0.01 at 95,232 and 100,352, 0.02 at 105,472, 0.05 at
+110,592, 0.12 at 115,712, and 0.17 at 120,832. Training reward improved from
+-488.75 at 5,120 steps to -26.97 at the endpoint. All 24 checkpoints have zero
+recorded task measurements, so there are no experiment-4 success rates,
+failure-sector counts, or hold diagnostics to report. The unchanged parent has
+the latest measured result of 155/160 (96.875%) on the experiment-3 panel, while
+the baseline parent evidence pooled 301/320 (94.06%) across two disjoint
+panels; neither is an official 200-episode assessment.
+
+**Hypothesis assessment:** The exploratory question is inconclusive for task
+behavior because the sought reach-and-hold measurements were not collected.
+The observed training dynamics weaken the usefulness of this fresh
+periodic-observation recipe in the tested conditions: its endpoint proxy
+remained substantially below the parent-era proxy, and no checkpoint provides
+evidence to replace the current lineage. This does not contradict periodic
+representations in general or establish a causal failure of the two added
+features, because an unmeasured checkpoint is not a failed policy and the
+training proxy is not the task outcome.
+
+**Interpretation:** The strongest evidence for progress remains the measured
+working parent, not the current experiment's training proxies. Restoring that
+parent preserves the best available learned behavior and avoids selecting an
+unmeasured challenger. The experiment does not justify terminal assessment:
+the best-known development result remains below the objective and experiment 4
+adds no task evidence that would change that decision.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-4/inventory.json`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-4/checkpoint-120832/artifact.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-3-working-160ep-seed4840-543af51fd137.json`;
+and `robot_learning/scenario/observations.py`.
