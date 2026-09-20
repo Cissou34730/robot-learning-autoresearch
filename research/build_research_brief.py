@@ -543,10 +543,225 @@ def _candidate_steps(candidate: dict) -> str:
     return "-" if timesteps is None else f"{int(timesteps):,}"
 
 
+def _steps_value(candidate: dict) -> int | None:
+    value = candidate.get("timesteps")
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _numeric_metric(candidate: dict, key: str) -> float | None:
+    value = candidate.get(key)
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _median(values: list[float]) -> float:
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def _values_range(values: list[float]) -> str:
+    """The run's own spread for one proxy: range and interquartile bounds.
+
+    Issue #53: a proxy number in isolation reads as a score. Placing it inside
+    the run's own spread lets it read as a location instead.
+    """
+    if not values:
+        return "unavailable"
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return f"{ordered[0]:g}"
+    lower = _median(ordered[: len(ordered) // 2])
+    upper = _median(ordered[(len(ordered) + 1) // 2 :])
+    return f"{ordered[0]:g}-{ordered[-1]:g} (Q1-Q3 {lower:g}-{upper:g})"
+
+
+def _quartile_label(value: float, values: list[float]) -> str:
+    """Which quarter of the run's own spread a proxy value occupies."""
+    if not values:
+        return "unavailable"
+    fraction = sum(1 for other in values if other <= value) / len(values)
+    if fraction <= 0.25:
+        return "Q1"
+    if fraction <= 0.5:
+        return "Q2"
+    if fraction <= 0.75:
+        return "Q3"
+    return "Q4"
+
+
+def _proxy_shape(series: list[tuple[int, float]], position: int) -> str:
+    """Describe a checkpoint's position on the proxy trajectory by step order.
+
+    Issue #53: direction, turning point and local variability describe the run's
+    behaviour around a checkpoint instead of its endpoint score. None of these
+    values ranks one checkpoint above another.
+    """
+    value = series[position][1]
+    previous = series[position - 1][1] if position > 0 else None
+    following = series[position + 1][1] if position + 1 < len(series) else None
+    if previous is None and following is None:
+        return "single"
+    if previous is not None and following is not None:
+        if value > previous and value > following:
+            return "local max"
+        if value < previous and value < following:
+            return "local min"
+    if previous is not None:
+        delta = value - previous
+    else:
+        delta = following - value
+    if delta > 0:
+        return "rising"
+    if delta < 0:
+        return "falling"
+    return "flat"
+
+
+def _local_spread(
+    series: list[tuple[int, float]], position: int, window: int = 3
+) -> float | None:
+    """Variability of the proxy across the last few checkpoints by step."""
+    start = max(0, position - window + 1)
+    recent = [value for _, value in series[start : position + 1]]
+    if len(recent) < 2:
+        return None
+    return max(recent) - min(recent)
+
+
+def _trajectory_ordered(candidates: list[dict]) -> list[dict]:
+    """Candidates in training order, independent of the display permutation."""
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            _steps_value(candidate) is None,
+            _steps_value(candidate) or 0,
+            str(candidate.get("name", "")),
+        ),
+    )
+
+
+def _candidate_discriminator_cells(
+    candidates: list[dict],
+) -> dict[int, tuple[str, str, str]]:
+    """Per-candidate non-proxy descriptors keyed by object identity.
+
+    Issue #53: the inventory must offer more than the two training-time proxies,
+    so each row also carries the checkpoint's position in the run and the
+    location, direction and local variability of each proxy trajectory. The
+    display order is never derived from these values.
+    """
+    ordered = _trajectory_ordered(candidates)
+    steps = [value for value in (_steps_value(c) for c in ordered) if value is not None]
+    longest = max(steps) if steps else None
+    series: dict[str, list[tuple[int, float]]] = {}
+    populations: dict[str, list[float]] = {}
+    for key in ("training_success", "ep_rew_mean"):
+        points = [
+            (index, value)
+            for index, candidate in enumerate(ordered)
+            for value in [_numeric_metric(candidate, key)]
+            if value is not None
+        ]
+        series[key] = points
+        populations[key] = [value for _, value in points]
+    cells: dict[int, tuple[str, str, str]] = {}
+    for index, candidate in enumerate(ordered):
+        steps_value = _steps_value(candidate)
+        position = (
+            "-"
+            if steps_value is None or not longest
+            else f"{round(100 * steps_value / longest)}%"
+        )
+        contexts = []
+        for key in ("training_success", "ep_rew_mean"):
+            value = _numeric_metric(candidate, key)
+            if value is None:
+                contexts.append("unavailable")
+                continue
+            points = series[key]
+            point_index = next(
+                index_
+                for index_, (candidate_index, _) in enumerate(points)
+                if candidate_index == index
+            )
+            descriptors = [
+                _quartile_label(value, populations[key]),
+                _proxy_shape(points, point_index),
+            ]
+            spread = _local_spread(points, point_index)
+            if spread is not None:
+                descriptors.append(f"local spread {spread:g}")
+            contexts.append(", ".join(descriptors))
+        cells[id(candidate)] = (position, contexts[0], contexts[1])
+    return cells
+
+
+def _training_proxy_spread_lines(candidates: list[dict]) -> list[str]:
+    """Distributional context for each training proxy in the run's own spread."""
+    parts = []
+    for key, label in (("training_success", "success"), ("ep_rew_mean", "reward")):
+        values = [
+            value
+            for value in (_numeric_metric(candidate, key) for candidate in candidates)
+            if value is not None
+        ]
+        if values:
+            parts.append(f"{label} {_values_range(values)}")
+    if not parts:
+        return []
+    return [
+        "- Training-proxy spread across this run, so each value above reads as a "
+        "location rather than a score: " + "; ".join(parts) + "."
+    ]
+
+
+def _lineage_measurement_anchor_lines(state: dict) -> list[str]:
+    """Task-level measurements recorded for the current lineages.
+
+    Issue #53: an unmeasured checkpoint has no task measurement of its own, but
+    its lineage ancestors may. Surfacing those recorded measurements gives the
+    Researcher at least one task-level anchor when choosing what to measure.
+    """
+    lineages: list[tuple[str, dict]] = []
+    for label in ("working", "best_known"):
+        lineage = state.get(f"{label}_lineage")
+        if isinstance(lineage, dict):
+            lineages.append((label, lineage))
+    for lineage in state.get("retained_lineages") or []:
+        if isinstance(lineage, dict) and lineage.get("id"):
+            lineages.append((str(lineage["id"]), lineage))
+    anchors = []
+    for label, lineage in lineages:
+        artifacts = lineage.get("evaluation_artifacts")
+        if not isinstance(artifacts, list) or not artifacts:
+            continue
+        references = ", ".join(_recorded_path(path) for path in artifacts)
+        origin = lineage.get("origin_experiment")
+        suffix = f" (origin experiment {origin})" if origin is not None else ""
+        anchors.append(f"`{label}`{suffix}: {references}")
+    if not anchors:
+        return []
+    return [
+        "- Task-level measurement is recorded for these lineage ancestors, not "
+        "for the unmeasured checkpoints above: " + "; ".join(anchors) + "."
+    ]
+
+
 def _checkpoint_inventory_lines(
     candidates: list[dict],
     campaign_id: str | None = None,
     experiment: object = None,
+    state: dict | None = None,
 ) -> list[str]:
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
     parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
@@ -568,21 +783,38 @@ def _checkpoint_inventory_lines(
         ),
         "",
         (
-            "Training success and reward are training-time proxies recorded during "
-            "training; they are not task measurements."
+            "Training success and reward are training-time proxies, not task "
+            "measurements: they indicate where the run was, not how good a policy "
+            "is. The location and shape columns describe the trajectory around each "
+            "checkpoint and are descriptive context, not a ranking. Selecting the "
+            "highest proxy values is a weak strategy; prefer a set of candidates "
+            "that spans the question you are asking (for example plateau entry, a "
+            "local proxy peak, and the final checkpoint) so one measurement round "
+            "can distinguish outcomes."
         ),
         "",
-        "| Candidate | Steps | Training success | Training reward | Measurements |",
-        "|---|---:|---:|---:|---:|",
+        (
+            "| Candidate | Steps | Training success | Training reward | "
+            "Measurements | Run position | Success location and shape | "
+            "Reward location and shape |"
+        ),
+        "|---|---:|---:|---:|---:|---:|---|---|",
     ]
+    discriminators = _candidate_discriminator_cells(candidates)
     for candidate in candidate_display_order(candidates, campaign_id, experiment):
+        position, success_context, reward_context = discriminators.get(
+            id(candidate), ("-", "unavailable", "unavailable")
+        )
         lines.append(
             f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
             f"{_candidate_metric(candidate, 'training_success')} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
-            f"{len(candidate.get('evaluations') or [])} |"
+            f"{len(candidate.get('evaluations') or [])} | "
+            f"{position} | {success_context} | {reward_context} |"
         )
     lines.append("")
+    lines.extend(_training_proxy_spread_lines(candidates))
+    lines.extend(_lineage_measurement_anchor_lines(state or {}))
     if common_parent is not None:
         lines.append(
             "- Inspect candidate identifiers, training metrics, and "
@@ -785,6 +1017,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
                 candidates,
                 campaign_id=state.get("campaign", {}).get("id"),
                 experiment=pending_analysis.get("experiment"),
+                state=state,
             )
         )
     else:
