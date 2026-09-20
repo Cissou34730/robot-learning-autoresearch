@@ -24,11 +24,79 @@ RESEARCH_DIR = ROOT / "research"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
 
 
-def _compact(text: str, limit: int) -> str:
-    text = re.sub(r"\s+", " ", text).strip()
-    if len(text) <= limit:
-        return text
-    return text[: limit - 1].rstrip() + "…"
+RESULTS_REFERENCE = "research/results.jsonl"
+RESEARCH_STATE_REFERENCE = "research/research_state.json"
+POSTMORTEMS_REFERENCE = "research/postmortems.md"
+
+_SENTENCE_BOUNDARIES = ".;:"
+_TRUNCATION_MARKER = "[truncated,"
+
+
+def _sentence_boundary_within(text: str, limit: int) -> int:
+    """Return the offset just past the last sentence boundary at or before the limit."""
+    for index in range(min(limit, len(text)) - 1, -1, -1):
+        if text[index] in _SENTENCE_BOUNDARIES and (
+            index + 1 == len(text) or text[index + 1].isspace()
+        ):
+            return index + 1
+    return -1
+
+
+def _first_sentence_boundary(text: str) -> int:
+    """Return the offset just past the first sentence boundary in the whole text."""
+    for index, char in enumerate(text):
+        if char in _SENTENCE_BOUNDARIES and (
+            index + 1 == len(text) or text[index + 1].isspace()
+        ):
+            return index + 1
+    return -1
+
+
+def _truncation_marker(omitted: int, reference: str | None) -> str:
+    hint = f"; full text in {reference}" if reference else ""
+    return f"… [truncated, {omitted} more characters{hint}]"
+
+
+def _compact(
+    text: str,
+    limit: int,
+    *,
+    reference: str | None = None,
+    collapse_whitespace: bool = True,
+) -> str:
+    normalized = (
+        re.sub(r"\s+", " ", text).strip() if collapse_whitespace else text.strip()
+    )
+    if len(normalized) <= limit:
+        return normalized
+    # Never re-truncate text that already announces its own truncation.
+    if _TRUNCATION_MARKER in normalized:
+        return normalized
+    cut = _sentence_boundary_within(normalized, limit)
+    if cut == -1:
+        cut = _first_sentence_boundary(normalized)
+    if cut == -1:
+        # No sentence boundary exists, so any cut would leave a fragment.
+        # Keep the whole text rather than truncate mid-sentence or mid-word.
+        return normalized
+    omitted = len(normalized) - cut
+    return f"{normalized[:cut].rstrip()} {_truncation_marker(omitted, reference)}"
+
+
+def _table_cell(text: object) -> str:
+    """Render free text as one table cell without dropping any characters."""
+    return re.sub(r"\s+", " ", str(text)).strip().replace("|", "&#124;")
+
+
+def _indented_label_block(
+    label: str, text: str, limit: int, reference: str
+) -> list[str]:
+    """Render free text as an indented block, preserving its line structure."""
+    rendered = _compact(text, limit, reference=reference, collapse_whitespace=False)
+    block = rendered.splitlines() or [""]
+    lines = [f"- {label}: {block[0]}"]
+    lines.extend(f"  {line}" for line in block[1:])
+    return lines
 
 
 def _candidate_metric(candidate: dict, key: str) -> str:
@@ -87,7 +155,7 @@ def _postmortem_memory(
     narrative = {"Result", "Observed behavior", "Interpretation"}
     for section in sections[-count:]:
         title = section.splitlines()[0].removeprefix("## ").strip()
-        parts = [f"**{_compact(title, 180)}**"]
+        parts = [f"**{_compact(title, 180, reference=POSTMORTEMS_REFERENCE)}**"]
         recognized: set[str] = set()
         for display, headings in labels:
             for heading in headings:
@@ -100,7 +168,10 @@ def _postmortem_memory(
                     value = match.group(1)
                     if display == "Evidence inspected":
                         value = _artifact_reference_list(value)
-                    parts.append(f"{display}: {_compact(value, 420)}")
+                    parts.append(
+                        f"{display}: "
+                        f"{_compact(value, 420, reference=POSTMORTEMS_REFERENCE)}"
+                    )
                     recognized.add(display)
                     break
         if not recognized & narrative:
@@ -116,7 +187,7 @@ def _postmortem_memory(
                     )
             body = body.strip()
             if body:
-                parts.insert(1, _compact(body, 420))
+                parts.insert(1, _compact(body, 420, reference=POSTMORTEMS_REFERENCE))
         memories.append("\n".join(parts))
     return memories
 
@@ -218,7 +289,7 @@ def _experiment_outcome(result: dict) -> str:
     if success is not None:
         parts.append(f"success {float(success):.2f}%")
     if result.get("error"):
-        parts.append(_compact(str(result["error"]), 120))
+        parts.append(_compact(str(result["error"]), 120, reference=RESULTS_REFERENCE))
     return "; ".join(parts) or "no measured candidate result"
 
 
@@ -916,9 +987,9 @@ def _v4_experiment_index_section(results: list[dict]) -> list[str]:
         closure = result.get("closure_decision") or {}
         lines.append(
             f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
-            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
-            f"{_compact(checkpoints, 140).replace('|', '/')} | "
-            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
+            f"{result.get('training_parent', '-')} | {_table_cell(_compact(_change_details(result), 100, reference=RESULTS_REFERENCE))} | "
+            f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
+            f"{_table_cell(result.get('hypothesis_assessment', 'unavailable'))} | "
             f"working {closure.get('continue_from', 'unmeasured')}; "
             f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
             f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
@@ -1226,6 +1297,9 @@ def _v4_measurement_rounds_section(
     # a comparative-selection exemplar template for the next request. The
     # durable record keeps the full rationale.
     include_selections = isinstance(pending, dict)
+    source_reference = (
+        RESEARCH_STATE_REFERENCE if include_selections else RESULTS_REFERENCE
+    )
     lines = [
         "",
         "## Measurement rounds",
@@ -1247,12 +1321,20 @@ def _v4_measurement_rounds_section(
         status = str(record.get("status", "accepted"))
         lines.extend(["", f"### Round {record.get('round', '-')} ({status})"])
         if record.get("question"):
-            lines.append(f"- Question: {_compact(str(record['question']), 400)}")
+            lines.extend(
+                _indented_label_block(
+                    "Question", str(record["question"]), 400, source_reference
+                )
+            )
         # Issue #43: the round-level `reason` explains the selected candidates
         # relative to an alternative, so it is comparative selection prose too
         # and is suppressed during preparation for the same reason as `selection`.
         if include_selections and record.get("reason"):
-            lines.append(f"- Reason: {_compact(str(record['reason']), 400)}")
+            lines.extend(
+                _indented_label_block(
+                    "Reason", str(record["reason"]), 400, source_reference
+                )
+            )
         round_results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
@@ -1277,7 +1359,8 @@ def _v4_measurement_rounds_section(
             )
             if include_selections and item.get("selection"):
                 lines.append(
-                    f"  - Selection: {_compact(str(item['selection']), 300)}"
+                    f"  - Selection: "
+                    f"{_compact(str(item['selection']), 600, reference=source_reference)}"
                 )
             if item.get("reused_from_round") is not None:
                 lines.append(
@@ -1302,7 +1385,8 @@ def _v4_measurement_rounds_section(
             )
             if include_selections and item.get("selection"):
                 lines.append(
-                    f"  - Selection: {_compact(str(item['selection']), 300)}"
+                    f"  - Selection: "
+                    f"{_compact(str(item['selection']), 600, reference=source_reference)}"
                 )
             if item.get("reused_from_round") is not None:
                 lines.append(
@@ -1747,15 +1831,23 @@ def render_research_brief() -> str:
     )
 
     for result in results[-5:]:
-        family = str(result.get("family", "-")).replace("|", "/")
-        details = _compact(_change_details(result), 220).replace("|", "/")
+        family = _table_cell(result.get("family", "-"))
+        details = _table_cell(
+            _compact(_change_details(result), 220, reference=RESULTS_REFERENCE)
+        )
         initialization = result.get("initialization", "-")
         requested_steps = result.get("training_budget_steps")
         setup = initialization
         if requested_steps is not None:
             setup += f" / {int(requested_steps):,} steps"
-        outcome = _compact(_experiment_outcome(result), 220).replace("|", "/")
-        verdict = _compact(result["verdict"], 100).replace("|", "/")
+        outcome = _table_cell(
+            _compact(
+                _experiment_outcome(result), 220, reference=RESULTS_REFERENCE
+            )
+        )
+        verdict = _table_cell(
+            _compact(result["verdict"], 100, reference=RESULTS_REFERENCE)
+        )
         lines.append(
             f"| {result['index']} | {family} | {details} | {setup} | "
             f"{outcome} | {verdict} |"
