@@ -3,10 +3,12 @@
 The post-training brief forces a choice among many checkpoints, but the old
 inventory exposed only ``training_success`` and ``ep_rew_mean`` as per-candidate
 discriminators, so those proxies became the de facto selection criterion. These
-tests pin that the inventory also carries non-proxy descriptors (position in the
-run, trajectory location and shape), that the distributional context is present,
-that the display order is still a metric-independent permutation, and that
-recorded task-level measurements of lineage ancestors are surfaced.
+tests pin that the inventory also carries non-proxy descriptors derived from the
+preserved raw training records (position in the run, trajectory direction,
+variability and location), that missing raw context is labelled honestly, that
+location labels are tie-aware, that the display order is still a
+metric-independent permutation, and that only the current candidates' actual
+measured training parent is surfaced as an ancestor.
 """
 
 import json
@@ -29,20 +31,50 @@ def _candidate(name, *, success, reward, evaluations=None):
     }
 
 
-def _render_inventory(monkeypatch, tmp_path, candidates, *, state_extra=None):
+def _log_text(records):
+    lines = []
+    for record in records:
+        lines.append("| rollout/           |")
+        for key in ("ep_rew_mean", "success_rate"):
+            if key in record:
+                lines.append(f"|    {key}     | {record[key]} |")
+        lines.append("| time/              |")
+        lines.append(f"|    total_timesteps | {record['total_timesteps']} |")
+    return "\n".join(lines) + "\n"
+
+
+def _render_inventory(
+    monkeypatch,
+    tmp_path,
+    candidates,
+    *,
+    experiment=3,
+    records=None,
+    training_parent_lineage=None,
+    state_extra=None,
+):
     research_dir = tmp_path / "research"
     research_dir.mkdir(parents=True, exist_ok=True)
     (research_dir / "current_params.json").write_text("{}", encoding="utf-8")
     (research_dir / "postmortems.md").write_text("", encoding="utf-8")
     (research_dir / "results.jsonl").write_text("", encoding="utf-8")
+    if records is not None:
+        log_dir = research_dir / "training_logs" / "campaign"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        (log_dir / f"experiment-{experiment}-attempt-1.log").write_text(
+            _log_text(records), encoding="utf-8"
+        )
+    pending = {
+        "experiment": experiment,
+        "result": {"index": experiment},
+        "candidates": candidates,
+    }
+    if training_parent_lineage is not None:
+        pending["training_parent_lineage"] = training_parent_lineage
     state = {
         "schema_version": 4,
         "campaign": {"id": "campaign", "base_commit": "base"},
-        "pending_analysis": {
-            "experiment": 3,
-            "result": {"index": 3},
-            "candidates": candidates,
-        },
+        "pending_analysis": pending,
     }
     if state_extra:
         state.update(state_extra)
@@ -57,17 +89,39 @@ def _render_inventory(monkeypatch, tmp_path, candidates, *, state_extra=None):
     )[0]
 
 
-def test_inventory_exposes_non_proxy_discriminators_and_positive_guidance(
-    monkeypatch, tmp_path
-):
+def _lineage(label, artifact, *, origin=2, evidence=()):
+    return {
+        "candidate": label,
+        "origin_experiment": origin,
+        "training_steps": 2000,
+        "artifact": f"research/checkpoints/{label}",
+        "fingerprint": f"{label}-fingerprint",
+        "scientific_commit": f"{label}-commit",
+        "parameters": {},
+        "evaluation_artifacts": list(evidence),
+        "reason": f"Reason for {label}.",
+    }
+
+
+_VARYING_RAW_RECORDS = [
+    {"total_timesteps": 5120, "success_rate": 0.1, "ep_rew_mean": 1.0},
+    {"total_timesteps": 10240, "success_rate": 0.4, "ep_rew_mean": 2.0},
+    {"total_timesteps": 20480, "success_rate": 0.6, "ep_rew_mean": 3.0},
+    {"total_timesteps": 30720, "success_rate": 0.2, "ep_rew_mean": 1.5},
+    {"total_timesteps": 40960, "success_rate": 0.3, "ep_rew_mean": 2.5},
+]
+
+
+def test_inventory_exposes_raw_derived_non_proxy_discriminators(monkeypatch, tmp_path):
+    # Endpoint proxies rise monotonically, so any turning point must come from
+    # the raw training records rather than the checkpoint endpoint values.
     candidates = [
-        _candidate("checkpoint-5120", success=0.1, reward=1.0),
-        _candidate("checkpoint-10240", success=0.4, reward=2.0),
-        _candidate("checkpoint-20480", success=0.6, reward=3.0),
-        _candidate("checkpoint-30720", success=0.2, reward=1.5),
-        _candidate("checkpoint-40960", success=0.3, reward=2.5),
+        _candidate(f"checkpoint-{step}", success=0.1 * (index + 1), reward=float(index))
+        for index, step in enumerate((5120, 10240, 20480, 30720, 40960))
     ]
-    inventory = _render_inventory(monkeypatch, tmp_path, candidates)
+    inventory = _render_inventory(
+        monkeypatch, tmp_path, candidates, records=_VARYING_RAW_RECORDS
+    )
 
     header = next(
         line for line in inventory.splitlines() if line.startswith("| Candidate |")
@@ -75,18 +129,143 @@ def test_inventory_exposes_non_proxy_discriminators_and_positive_guidance(
     # At least one discriminator that is neither of the two training proxies.
     assert "Run position" in header
     assert "location and shape" in header
-    # The trajectory shape describes behaviour, not just the endpoint score.
-    assert "local max" in inventory  # success and reward both peak at 20480
-    assert "local min" in inventory  # success troughs at 30720
-    assert "rising" in inventory or "falling" in inventory
+    # The shape comes from the raw records, not the monotone endpoint proxies.
+    assert "local max" in inventory
+    assert "local min" in inventory
     assert "local spread" in inventory
     # Distributional context, not only bare endpoint values.
-    assert "spread across this run" in inventory
+    assert "Training-record spread across this run" in inventory
     assert "Q1-Q3" in inventory
     # The disclaimer is a positive instruction, not only a negation.
     assert "not task measurements" in inventory
     assert "weak strategy" in inventory
     assert "spans the question you are asking" in inventory
+
+
+def test_missing_raw_log_context_is_labelled_unavailable(monkeypatch, tmp_path):
+    candidates = [_candidate("checkpoint-5120", success=0.9, reward=9.0)]
+    inventory = _render_inventory(monkeypatch, tmp_path, candidates)
+
+    # The endpoint proxies are high, but no raw context exists to describe shape.
+    assert "raw log unavailable" in inventory
+    assert "Raw training records are unavailable" in inventory
+    assert "local max" not in inventory
+    assert "local spread" not in inventory
+
+
+def test_quartile_labels_are_tie_aware_for_constant_and_tied_values(
+    monkeypatch, tmp_path
+):
+    constant_records = [
+        {"total_timesteps": step, "success_rate": 0.5, "ep_rew_mean": 4.0}
+        for step in (5120, 10240, 20480, 30720, 40960)
+    ]
+    candidates = [
+        _candidate(f"checkpoint-{step}", success=0.5, reward=4.0)
+        for step in (5120, 10240, 20480, 30720, 40960)
+    ]
+    inventory = _render_inventory(
+        monkeypatch, tmp_path, candidates, records=constant_records
+    )
+
+    # A constant distribution centres at the median quarter, never Q4 for all.
+    assert "Q2" in inventory
+    assert "Q4" not in inventory
+    assert "flat" in inventory
+
+    tied_records = [
+        {"total_timesteps": 5120, "success_rate": 0.5, "ep_rew_mean": 4.0},
+        {"total_timesteps": 10240, "success_rate": 0.5, "ep_rew_mean": 4.0},
+        {"total_timesteps": 20480, "success_rate": 0.9, "ep_rew_mean": 9.0},
+    ]
+    tied_candidates = [
+        _candidate("checkpoint-5120", success=0.5, reward=4.0),
+        _candidate("checkpoint-10240", success=0.5, reward=4.0),
+        _candidate("checkpoint-20480", success=0.9, reward=9.0),
+    ]
+    tied = _render_inventory(
+        monkeypatch, tmp_path, tied_candidates, records=tied_records
+    )
+    # The two tied low values share one location; the single high value is Q4.
+    # Both the success and reward contexts carry the same tie.
+    assert tied.count("Q2") == 4
+    assert tied.count("Q4") == 2
+
+
+def test_fresh_initialization_has_no_ancestor_measurement_claim(monkeypatch, tmp_path):
+    candidates = [_candidate("checkpoint-5120", success=0.5, reward=5.0)]
+    inventory = _render_inventory(
+        monkeypatch,
+        tmp_path,
+        candidates,
+        state_extra={
+            "working_lineage": _lineage(
+                "working", "working", evidence=["research/evaluations/working.json"]
+            ),
+            "best_known_lineage": _lineage(
+                "best", "best", evidence=["research/evaluations/best.json"]
+            ),
+            "retained_lineages": [
+                {
+                    **_lineage(
+                        "alternate",
+                        "alternate",
+                        evidence=["research/evaluations/alternate.json"],
+                    ),
+                    "id": "alternate",
+                }
+            ],
+        },
+    )
+
+    # No training parent exists, so no ancestor measurement may be claimed.
+    assert "Task-level measurement recorded" not in inventory
+    assert "working.json" not in inventory
+    assert "best.json" not in inventory
+    assert "alternate.json" not in inventory
+
+
+def test_only_the_actual_training_parent_measurement_is_surfaced(monkeypatch, tmp_path):
+    candidates = [_candidate("checkpoint-5120", success=0.5, reward=5.0)]
+    parent = _lineage(
+        "checkpoint-parent",
+        "parent",
+        origin=7,
+        evidence=["research/evaluations/parent.json"],
+    )
+    inventory = _render_inventory(
+        monkeypatch,
+        tmp_path,
+        candidates,
+        training_parent_lineage=parent,
+        state_extra={
+            "working_lineage": _lineage(
+                "working", "working", evidence=["research/evaluations/working.json"]
+            ),
+            "best_known_lineage": _lineage(
+                "best", "best", evidence=["research/evaluations/best.json"]
+            ),
+            "retained_lineages": [
+                {
+                    **_lineage(
+                        "alternate",
+                        "alternate",
+                        evidence=["research/evaluations/alternate.json"],
+                    ),
+                    "id": "alternate",
+                }
+            ],
+        },
+    )
+
+    assert "Task-level measurement recorded for the frozen training parent" in inventory
+    assert "`checkpoint-parent`" in inventory
+    assert "origin experiment 7" in inventory
+    assert "`research/evaluations/parent.json`" in inventory
+    # Unrelated saved lineages are not ancestors and must be excluded.
+    assert "working.json" not in inventory
+    assert "best.json" not in inventory
+    assert "alternate.json" not in inventory
 
 
 def test_inventory_order_is_not_a_training_metric_sort(monkeypatch, tmp_path):
@@ -103,7 +282,12 @@ def test_inventory_order_is_not_a_training_metric_sort(monkeypatch, tmp_path):
             _candidate(name, success=values[name], reward=values[name] * 10)
             for name in names
         ]
-        inventory = _render_inventory(monkeypatch, tmp_path, candidates)
+        inventory = _render_inventory(
+            monkeypatch,
+            tmp_path,
+            candidates,
+            records=_VARYING_RAW_RECORDS,
+        )
         return [
             line.split("|")[1].strip()
             for line in inventory.splitlines()
@@ -120,31 +304,6 @@ def test_inventory_order_is_not_a_training_metric_sort(monkeypatch, tmp_path):
     # ... and the order is not the metric order or the step order either.
     assert ascending_order != [f"`{name}`" for name in names]
     assert len(ascending_order) == len(names)
-
-
-def test_inventory_surfaces_task_level_ancestor_measurements(monkeypatch, tmp_path):
-    candidates = [_candidate("checkpoint-5120", success=0.5, reward=5.0)]
-    working = {
-        "candidate": "checkpoint-working",
-        "origin_experiment": 2,
-        "training_steps": 2000,
-        "artifact": "research/checkpoints/working",
-        "fingerprint": "working-fingerprint",
-        "scientific_commit": "working-commit",
-        "parameters": {},
-        "evaluation_artifacts": ["research/evaluations/working.json"],
-        "reason": "Continue the current line of research.",
-    }
-    inventory = _render_inventory(
-        monkeypatch,
-        tmp_path,
-        candidates,
-        state_extra={"working_lineage": working},
-    )
-
-    assert "lineage ancestors" in inventory
-    assert "`working`" in inventory
-    assert "`research/evaluations/working.json`" in inventory
 
 
 def test_launcher_excludes_training_proxies_as_sufficient_reasons():
