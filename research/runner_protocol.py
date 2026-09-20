@@ -22,11 +22,6 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/policy_runtime.py",
     "research/run_experiment.py",
     "robot_learning/__init__.py",
-    "robot_learning/benchmark/__init__.py",
-    "robot_learning/benchmark/final_benchmark.py",
-    "robot_learning/benchmark/final_contract.py",
-    "robot_learning/benchmark/reference_contract.py",
-    "robot_learning/benchmark/reference_evaluation.py",
     "robot_learning/robots/__init__.py",
     "robot_learning/robots/two_joint_arm.py",
     "robot_learning/robots/two_joint_arm.xml",
@@ -34,6 +29,11 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/scenario/final_benchmark.py",
     "robot_learning/scenario/task_reference.py",
 }
+# The whole benchmark package is human-owned: the task contract, the immutable
+# constants that define the development evaluation and its frozen metrics.
+# Protected by prefix so that adding a file under it never silently hands part of
+# the task definition to the researcher.
+PROTECTED_BENCHMARK_PREFIXES = ("robot_learning/benchmark/",)
 # Additional Runner instruments are protected even when they do not belong to
 # the official-task trust path.
 PROTECTED_RUNNER_PATHS = {
@@ -135,11 +135,15 @@ MODEL_CONTAINED_RUNTIME_PATHS = {
     "robot_learning/training/algorithms.py",
     "robot_learning/training/normalization.py",
 }
-# The only files outside the scenario package that change how an already-trained
-# policy is replayed, observed and turned into a research measurement.
+# The files outside the scenario package that change how an already-trained
+# policy is replayed, observed and turned into a research measurement. The
+# benchmark constants and metrics are included because the development evaluation
+# environment and its success criterion are built from them (issue #58).
 EVALUATION_RUNTIME_PATHS = (
     "robot_learning/policy_runtime.py",
     "robot_learning/evaluate.py",
+    "robot_learning/benchmark/spec.py",
+    "robot_learning/benchmark/metrics.py",
 )
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
@@ -184,6 +188,7 @@ def is_protected_source(path: str) -> bool:
         or relative in PROTECTED_MEASUREMENT_PATHS
         or relative in PROTECTED_CONTEXT_PATHS
         or relative in DEPENDENCY_METADATA_PATHS
+        or relative.startswith(PROTECTED_BENCHMARK_PREFIXES)
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
         or relative.startswith(PROTECTED_RUNTIME_PREFIXES)
     )
@@ -228,9 +233,15 @@ def declared_paths_exist(root: Path | None = None) -> list[str]:
         *MODEL_CONTAINED_RUNTIME_PATHS,
         *EVALUATION_RUNTIME_PATHS,
     }
-    return sorted(
-        relative for relative in declared if not (base / relative).is_file()
+    missing = [relative for relative in declared if not (base / relative).is_file()]
+    # A prefix classification is a directory by construction; a missing package
+    # must not silently drop its whole protected surface.
+    missing.extend(
+        prefix
+        for prefix in PROTECTED_BENCHMARK_PREFIXES
+        if not (base / prefix).is_dir()
     )
+    return sorted(missing)
 
 
 def validation_test_paths(
@@ -1232,10 +1243,12 @@ def is_generated_path(relative_parts: tuple[str, ...]) -> bool:
 
 
 def evaluation_semantics_paths() -> list[str]:
-    """Every researcher-owned file that can change how a saved policy is measured.
+    """Every file that can change how a saved policy is measured.
 
-    Any file type counts, so researcher-authored instrumentation modules and
-    measurement data files are covered without a registry.
+    The scenario package is scanned in full, so researcher-authored
+    instrumentation modules and measurement data files are covered without a
+    registry; the protected benchmark constants and metrics are named explicitly
+    because they define the success criterion outside that package.
     """
     included = [
         relative

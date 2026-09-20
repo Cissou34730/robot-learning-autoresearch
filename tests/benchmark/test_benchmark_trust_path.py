@@ -12,7 +12,8 @@ import pytest
 
 from research.run_experiment import execute_pending_final_benchmark
 from research.runner_protocol import (
-    PROTECTED_BENCHMARK_PATHS,
+    is_protected_source,
+    is_researcher_owned,
     validate_experiment_semantics,
 )
 
@@ -48,8 +49,19 @@ RESEARCHER_OWNED_PATHS = (
 )
 
 
-def test_protected_surface_covers_the_whole_goal_reached_path():
-    assert PROTECTED_BENCHMARK_PATHS == set(OFFICIAL_TASK_PATHS)
+def test_protected_surface_covers_the_whole_benchmark_package():
+    root = Path(__file__).resolve().parents[2]
+    package = root / "robot_learning" / "benchmark"
+    package_files = sorted(
+        path.relative_to(root).as_posix()
+        for path in package.rglob("*")
+        if path.is_file()
+    )
+
+    assert package_files
+    for relative in package_files:
+        assert is_protected_source(relative), relative
+        assert not is_researcher_owned(relative), relative
 
 
 def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
@@ -71,7 +83,7 @@ def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
     }
     for package in packages:
         init_path = f"{package.replace('.', '/')}/__init__.py"
-        assert init_path in PROTECTED_BENCHMARK_PATHS, init_path
+        assert is_protected_source(init_path), init_path
 
 
 @pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
