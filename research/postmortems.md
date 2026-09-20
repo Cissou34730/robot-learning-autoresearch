@@ -7,36 +7,31 @@ official 6-20 cm reach-and-hold distribution. The fresh PPO baseline learned
 substantial task behavior, with checkpoint-100352 the strongest measured policy at
 150/160 and 151/160 successes on two disjoint panels (301/320 pooled, 94.06%).
 Experiment 2's full-radius training-support change did not improve the transferred
-policy: checkpoint-30720 reached 154/160 and 150/160 on two new disjoint panels,
-while the parent reached 155/160 and 150/160. Detailed episode diagnostics show
-that the baseline's 19 failures and nearly all subsequent parent/challenger
-failures are concentrated in target angles from -180 to -90 degrees. The measured
-task outcome, rather than training proxy success, identifies the useful policy
-point.
+policy, and experiment 3's angle-balanced training-support change also did not
+improve the parent on a fresh panel: the parent reached 155/160, versus 152/160
+and 149/160 for the measured challengers. Measured task outcome, rather than
+training proxy success, identifies the useful policy point.
 
 **Lessons and limits:** All 19 recorded baseline failures occurred in the
 target-angle bin from -180 to -90 degrees; 11/19 were also below 14 cm, a region
 absent from the baseline training radius range. Expanding the radius range in one
-transferred run did not remove the parent's residual pattern: on the first new
-panel the challenger added one failure, and on the second it exchanged two
-failure identities with the parent while retaining the same success rate. The
-training proxy was non-monotonic (0.99 success and -2.70 reward at 30,720 steps,
-degradation near 90,112-100,352, then 0.96 and -6.11 at 115,712), but the later
-recovery measured only 61.25% on its panel. These observations weaken the tested
-radius-support explanation without establishing that it is impossible or
-separating it from angular control asymmetry or late-training degradation. The
-research panels provide independent development coverage, not an official
-verdict. Their detailed artifacts do expose target geometry, but the panels are
-not large enough to establish the official result or isolate representation and
-control causes.
+transferred run did not remove the parent's residual pattern. The angle-balanced
+run likewise did not reduce negative-sector failures on its measured panel:
+checkpoint-5120 had 4 such failures and checkpoint-25600 had 4, versus 3 for the
+parent, while the challengers also had more complementary-sector failures. Its
+training proxy was high early (0.968 at 5,120 steps and 0.95 at 25,600) but the
+saved policies measured below the parent, and the proxy declined through most of
+the later run before a partial endpoint recovery. These observations weaken the
+tested radius-support and angle-exposure explanations without establishing that
+every curriculum or angular control intervention is ineffective, and they do not
+separate representation, control, or late-training causes. The research panels
+provide independent development coverage, not an official verdict.
 
-**Open questions:** It remains unresolved whether increased training exposure to
-the negative-angle sector can improve the residual failures without sacrificing
-the rest of the official angular range, whether the concentration instead
-reflects a representation or control issue, and why both recipes can regress
-after their strongest proxy period. The transfer value of the learned
-outer-radius representation and the variance of changed recipes are also
-unknown.
+**Open questions:** It remains unresolved whether a different representation,
+control treatment, or training schedule can address the residual failures without
+the proxy-to-task regressions seen in the changed recipes. The variance of changed
+recipes and the transfer value of the learned outer-radius representation are
+also unknown.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
@@ -130,3 +125,51 @@ verdict.
 and the five experiment-2 artifacts under
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/` for checkpoint-30720,
 checkpoint-115712 and `working` on seeds 4520 and 4680.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 3
+
+**Result:** Equalizing training exposure to the negative-angle sector did not
+improve the transferred parent on the fresh development panel. The changed
+recipe is reverted, and the existing `working` and `best_known` lineage is
+preserved. The campaign objective remains not demonstrated by development
+measurements.
+
+**Observed behavior:** The training proxy peaked early at 0.968 success and
+-3.74 reward at checkpoint-5120, was 0.95 and -4.63 at checkpoint-25600, then
+declined to 0.90 and -8.88 at checkpoint-90112 before a partial endpoint
+recovery to 0.92 and -8.51 at checkpoint-120832. On the disjoint research panel
+with seed 4840, checkpoint-5120 achieved 152/160 (95.00%), checkpoint-25600
+achieved 149/160 (93.125%), and the unchanged parent achieved 155/160
+(96.875%). Paired comparisons favored the parent by 3 and 6 discordant
+episodes, with neither challenger winning a discordant episode. The parent had
+3 failures in the -180 to -90 degree sector and 2 in the complementary sector;
+the challengers had 4/4 and 4/7 respectively. Failure diagnostics also showed
+inner-radius failures for the parent and both challengers, so the angle
+intervention did not isolate the residual to its intended sector.
+
+**Hypothesis assessment:** The diagnostic hypothesis is weakened under the tested
+transferred recipe. The measured challengers did not reduce negative-sector
+failures or improve pooled task success, and they introduced additional
+complementary-sector failures on the shared panel, matching the proposal's
+contradicting observation. The result is evidence against this equal-exposure
+intervention and trajectory, not a causal disproof of all angular curricula or
+of representation and control explanations.
+
+**Interpretation:** The fresh-panel comparison is directly relevant and
+comparable because all three policies used the same research-evaluation context
+and episode panel; the parent also has prior disjoint-panel evidence. The early
+training-proxy peaks did not translate into saved-policy task gains, reinforcing
+that measured reach-and-hold success should select the lineage. The parent is
+therefore the safer working policy, but its 96.875% result is still below the
+98% objective and is development evidence rather than an official verdict.
+Unmeasured experiment-3 checkpoints remain unmeasured and do not count as
+failures.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-3-attempt-1.log`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-3/inventory.json`;
+`robot_learning/scenario/training_environment.py`; and the three experiment-3
+artifacts under
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/` for checkpoint-5120,
+checkpoint-25600 and `working` on seed 4840.
