@@ -273,7 +273,8 @@ than invent content. The reason itself must be a non-empty string:
 
 The `reasoning` object may also carry an optional `confidence` that qualifies a
 prediction. It is one of `strong`, `moderate` or `weak`, and is omitted when no
-prediction is held:
+prediction is held; an exploratory investigation has no prediction and must not
+carry it:
 
 ```json
 {
@@ -331,8 +332,9 @@ schemas. `evidence` is a non-empty array of source/observation objects. Every
 listed type-specific string, `initialization_reason`, and `objective_link` is
 non-empty, except that `alternative` and `contradicting_observation` may be a
 `not_applicable` object carrying a non-empty reason. An optional
-`reasoning.confidence` of `strong`, `moderate` or `weak` qualifies a prediction.
-Their scientific use is defined in `research/program.md`.
+`reasoning.confidence` of `strong`, `moderate` or `weak` qualifies a
+confirmatory or diagnostic prediction only. Their scientific use is defined in
+`research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 

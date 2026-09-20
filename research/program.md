@@ -124,12 +124,15 @@ scientific question and the concrete downstream decision that its possible
 outcomes could change; only then choose the operation that answers it. State how
 the question serves the human objective. Declare the investigation type. A
 confirmatory or diagnostic investigation states a proposition, a plausible
-alternative, and the observations that would distinguish them. An exploratory
-investigation states the question, the uncertainty, the observations it seeks
-and what those observations could clarify. Do not invent a causal mechanism or a
-prediction merely to satisfy the proposal format. Where a required field has no
-honest content, record it as not applicable with the reason, and where a
-prediction is held weakly, say so through `reasoning.confidence`.
+alternative where one exists, and the observations that would distinguish them,
+recording an absent competing explanation or discriminating observation as not
+applicable rather than inventing it. An exploratory investigation states the
+question, the uncertainty, the observations it seeks and what those observations
+could clarify. Do not invent a causal mechanism or a prediction merely to
+satisfy the proposal format. A justified absence is limited to `alternative` and
+`contradicting_observation`; every other required field must carry its content,
+and a prediction held weakly is qualified through `reasoning.confidence`, which
+applies only to a confirmatory or diagnostic prediction.
 
 For a replication or other process-variance question, the reasoning must
 distinguish what decision follows from the expected result and what decision

@@ -617,11 +617,17 @@ def validate_scientific_reasoning(proposal: dict) -> None:
         )
     for field in fields:
         _validate_reasoning_statement(field, reasoning.get(field))
-    confidence = reasoning.get("confidence")
-    if confidence is not None and confidence not in REASONING_CONFIDENCE_LEVELS:
-        raise ValueError(
-            "reasoning.confidence must be strong, moderate or weak when present"
-        )
+    if "confidence" in reasoning:
+        if investigation_type == "exploratory":
+            raise ValueError(
+                "reasoning.confidence is only valid for a confirmatory or "
+                "diagnostic prediction"
+            )
+        confidence = reasoning["confidence"]
+        if confidence not in REASONING_CONFIDENCE_LEVELS:
+            raise ValueError(
+                "reasoning.confidence must be strong, moderate or weak when present"
+            )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
         raise ValueError("reasoning.evidence must be a non-empty list")

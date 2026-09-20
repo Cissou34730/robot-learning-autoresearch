@@ -97,7 +97,7 @@ def test_prediction_confidence_accepts_the_controlled_vocabulary(proposal, level
     protocol.validate_training_proposal(proposal, baseline=False)
 
 
-@pytest.mark.parametrize("value", ["", "high", "very strong", 1, [], {}])
+@pytest.mark.parametrize("value", [None, "", "high", "very strong", 1, [], {}])
 def test_prediction_confidence_rejects_unknown_levels(proposal, value):
     proposal["reasoning"]["confidence"] = value
     with pytest.raises(ValueError, match="reasoning.confidence"):
@@ -107,6 +107,22 @@ def test_prediction_confidence_rejects_unknown_levels(proposal, value):
 def test_prediction_confidence_is_optional(proposal):
     proposal["reasoning"].pop("confidence", None)
     protocol.validate_training_proposal(proposal, baseline=False)
+
+
+def test_confidence_and_justified_not_applicable_persist_in_the_record(proposal):
+    proposal["reasoning"]["confidence"] = "weak"
+    proposal["reasoning"]["contradicting_observation"] = {
+        "not_applicable": "No affordable observation discriminates the branches."
+    }
+    protocol.validate_training_proposal(proposal, baseline=False)
+
+    record = {"index": 7, "reasoning": proposal["reasoning"]}
+
+    assert compact_result_record(record) == record
+    assert record["reasoning"]["confidence"] == "weak"
+    assert record["reasoning"]["contradicting_observation"] == {
+        "not_applicable": "No affordable observation discriminates the branches."
+    }
 
 
 @pytest.mark.parametrize(
@@ -180,6 +196,27 @@ def test_preflight_reads_current_memory_without_mutation(proposal, scientific_me
         == "training"
     )
     assert scientific_memory.read_bytes() == before
+
+
+def test_prediction_confidence_is_rejected_for_exploratory_investigations(proposal):
+    proposal["investigation_type"] = "exploratory"
+    proposal["scientific_question"] = "What behavior does this intervention reveal?"
+    proposal.pop("hypothesis")
+    for field in (
+        "alternative",
+        "expected_observation",
+        "contradicting_observation",
+    ):
+        proposal["reasoning"].pop(field)
+    proposal["reasoning"].update(
+        uncertainty="The behavior is unknown.",
+        observations_sought="Structured behavior measurements.",
+        clarification="Which mechanism warrants a later test.",
+        confidence="strong",
+    )
+
+    with pytest.raises(ValueError, match="reasoning.confidence"):
+        protocol.validate_training_proposal(proposal, baseline=False)
 
 
 @pytest.mark.parametrize(
