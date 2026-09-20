@@ -2,17 +2,17 @@
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Scientific strategy
 
-**Current synthesis:** The human objective remains at least 98% success, or
-196/200 episodes, on the official 6-20 cm reach-and-hold distribution. The
-unchanged baseline lineage is still the strongest measured policy: it achieved
-150/160, 151/160, 155/160, and 159/160 on four disjoint development panels
-(615/640, 96.09% pooled), while the experiment-6 challenger achieved 118/160
-(73.75%) on the latest panel. The hold-progress reward therefore did not
-provide a replacement policy under the tested transferred recipe. The
-development evidence remains below a demonstrated official result despite the
-latest single-panel control result exceeding 98%.
+**Current synthesis:** The human objective is at least 98% success, or 196/200
+episodes, on the official 6-20 cm reach-and-hold distribution. The unchanged
+baseline remains the strongest measured lineage: it achieved 150/160, 151/160,
+155/160, and 159/160 on four disjoint development panels (615/640, 96.09%
+pooled), although the latest 159/160 control is not an official assessment.
+Its residual failures repeatedly cluster around negative target angles, often
+at inner radii, while the transferred radius-support, angle-balance,
+periodic-observation, and hold-progress-reward experiments did not produce a
+replacement policy. The official result remains unknown.
 
-**Lessons and limits:** Training proxies remain insufficient for checkpoint
+**Lessons and limits:** Measured task success is more reliable for checkpoint
 selection: experiment 6 reached a 0.99 training-success proxy and its measured
 checkpoint had the highest recorded training reward, but it lost every
 discordant paired episode to the unchanged parent (0 versus 41) and had 42
@@ -21,15 +21,18 @@ accumulated partial in-tolerance holds, but many never reached tolerance, so
 the measurement does not isolate hold stability as the only failure mechanism.
 The result weakens this reward intervention and trajectory, not all possible
 hold-specific rewards or other control, schedule, curriculum, or representation
-changes. The research panels are development evidence and remain distinct from
-the official 200-episode assessment.
+changes. The repeated negative-angle and inner-radius pattern motivates focused support,
+but broad radius and angle interventions did not improve it. The research
+panels are development evidence and remain distinct from the official
+200-episode assessment.
 
-**Open questions:** It remains unknown whether another reward or control
-formulation can reduce the residual failures without disrupting the learned
-reach behavior, whether a representation or training-support change can close
-the remaining gap, and how much fresh-seed variability affects learning.
-The official result of the current best-known policy remains unknown. These
-questions record uncertainty and do not prescribe an experiment order.
+**Open questions:** It remains unknown whether focused training support for
+the recurrent inner-radius, negative-angle failures can improve complete
+reach-and-hold success without damaging the parent's broad-angle behavior.
+The usefulness of other reward, control, representation, and curriculum
+changes remains unresolved, as does fresh-seed variability and the official
+result of the current best-known policy. These are recorded uncertainties,
+not a prescribed action list.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
