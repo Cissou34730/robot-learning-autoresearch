@@ -1112,9 +1112,12 @@ def _v4_experiment_index_section(
             if extends_lineage(result)
             else result.get("kind", "-")
         )
+        intervention = _change_details(result)
+        if result.get("recipe_basis"):
+            intervention = f"{_recipe_basis(result)}; {intervention}"
         lines.append(
             f"| {result.get('index', '-')} | {_table_cell(operation)} / {result.get('family', '-')} | "
-            f"{result.get('training_parent', '-')} | {_table_cell(_compact(_change_details(result), 100, reference=RESULTS_REFERENCE))} | "
+            f"{result.get('training_parent', '-')} | {_table_cell(_compact(intervention, 100, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(result.get('hypothesis_assessment', 'unavailable'))} | "
             f"{decisions} | "

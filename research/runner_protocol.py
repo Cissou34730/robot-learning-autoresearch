@@ -376,10 +376,35 @@ def extends_lineage(record: dict) -> bool:
     return str(record.get("kind", "")).strip().lower() == "continuation"
 
 
-def lineage_family(record: dict, parameter_paths: list[str]) -> str:
+def lineage_identity(lineage: dict | None, fallback: str = "") -> str:
+    """Return the immutable identity of a frozen lineage.
+
+    A lineage selected under a mutable role name such as ``working`` or
+    ``best_known`` must keep its own identity when that role is later reassigned
+    to a different lineage. The frozen ``candidate`` and ``origin_experiment``
+    survive a reassignment; the role name does not.
+    """
+    if isinstance(lineage, dict):
+        candidate = str(lineage.get("candidate") or "").strip()
+        if candidate:
+            origin = lineage.get("origin_experiment")
+            return f"{candidate}@{origin}" if origin is not None else candidate
+        identifier = str(lineage.get("identifier") or "").strip()
+        if identifier:
+            return identifier
+    return fallback.strip()
+
+
+def lineage_family(
+    record: dict,
+    parameter_paths: list[str],
+    *,
+    lineage: dict | None = None,
+) -> str:
     """Name the extended lineage together with any adjusted parameter paths."""
-    parent = str(record.get("training_parent", "")).strip()
-    base = f"lineage.{parent}" if parent else "lineage"
+    frozen = lineage if lineage is not None else record.get("training_parent_lineage")
+    label = lineage_identity(frozen, str(record.get("training_parent", "")))
+    base = f"lineage.{label}" if label else "lineage"
     if parameter_paths:
         return f"{base}+{'+'.join(parameter_paths)}"
     return base
@@ -390,11 +415,14 @@ def experiment_family(
     experiment_kind: str,
     parameter_changes: list[dict],
     code_changes: list[str],
+    *,
+    training_parent_lineage: dict | None = None,
 ) -> str:
     if extends_lineage(proposal):
         return lineage_family(
             proposal,
             sorted({item["path"] for item in parameter_changes}),
+            lineage=training_parent_lineage,
         )
     declared = str(proposal.get("family", "")).strip()
     if declared:
@@ -415,18 +443,32 @@ def experiment_family(
 
 
 def operation_description(record: dict) -> str:
-    """Return the stable human-readable operation description for a record."""
+    """Return the stable human-readable operation description for a record.
+
+    For a lineage extension the label comes from the frozen lineage identity,
+    and the Researcher's raw ``change`` is read from ``researcher_change`` when
+    the record stores the derived description in ``change``, so the lineage
+    wording is applied exactly once.
+    """
     kind = str(record.get("kind", "")).strip().lower()
     if kind == "replication":
         return "Replicate the current method from fresh initialization"
     if extends_lineage(record):
-        parent = str(record.get("training_parent", "")).strip() or "the selected parent"
+        label = (
+            lineage_identity(
+                record.get("training_parent_lineage"),
+                str(record.get("training_parent", "")),
+            )
+            or "the selected parent"
+        )
         if kind == "continuation":
-            return f"Continue training lineage {parent}"
-        base = f"Continue training lineage {parent} with a changed recipe"
-        change = record.get("change")
-        if isinstance(change, str) and change.strip():
-            return f"{base}: {change.strip()}"
+            return f"Continue training lineage {label}"
+        base = f"Continue training lineage {label} with a changed recipe"
+        raw_change = record.get("researcher_change")
+        if not (isinstance(raw_change, str) and raw_change.strip()):
+            raw_change = record.get("change")
+        if isinstance(raw_change, str) and raw_change.strip():
+            return f"{base}: {raw_change.strip()}"
         return base
     value = record.get("change")
     return value.strip() if isinstance(value, str) else ""
@@ -730,9 +772,14 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("training proposal is missing required fields: ['change']")
         require_nonempty_string("change", "training proposal change")
     elif "change" in proposal:
-        raise ValueError(
-            f"{kind} must omit change because it uses the unchanged learning method"
-        )
+        if kind == "continuation":
+            reason = (
+                "a continuation restores the frozen parent recipe and adjusts it "
+                "only through params"
+            )
+        else:
+            reason = "a replication starts from the unchanged method"
+        raise ValueError(f"{kind} must omit change: {reason}")
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
     if "training_seed" in proposal:

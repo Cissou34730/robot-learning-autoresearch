@@ -1844,7 +1844,36 @@ def transfer_preparation_measurements(
     state["preparation_measurement"] = None
 
 
+def apply_lineage_extension_fields(
+    result: dict,
+    proposal: dict,
+    experiment_kind: str,
+    parent: dict | None,
+    *,
+    recipe_restored: bool,
+) -> None:
+    """Freeze the lineage relation and the recipe actually in effect.
+
+    The extension label is derived from the frozen lineage identity rather than
+    the mutable ``working``/``best_known`` role name, so a later reassignment of
+    that role cannot pool two different lineages. The raw Researcher change is
+    kept in ``researcher_change`` and the derived description is recomputed here
+    from that raw text, so the lineage wording is applied exactly once.
+    """
+    if parent is None or str(result.get("initialization", "")).lower() != "transfer":
+        return
+    result["training_parent_lineage"] = copy.deepcopy(parent)
+    result["recipe_basis"] = "parent_recipe" if recipe_restored else "current_science"
+    if experiment_kind == "continuation" or proposal.get("extends_lineage"):
+        result["extends_lineage"] = True
+    result["change"] = protocol.operation_description(result)
+
+
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
+    researcher_change = proposal.get("change")
+    researcher_change = (
+        researcher_change.strip() if isinstance(researcher_change, str) else ""
+    )
     change = protocol.operation_description(proposal)
     investigation_type = proposal.get("investigation_type")
     investigation = str(
@@ -1916,6 +1945,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "status": "error",
         "verdict": "error",
     }
+    if researcher_change and researcher_change != change:
+        result["researcher_change"] = researcher_change
     if investigation_type == "exploratory":
         result["scientific_question"] = investigation
     else:
@@ -1973,15 +2004,17 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         parent_training_steps = (
             int(parent["training_steps"]) if parent is not None else 0
         )
-        if parent is not None and initialization == "transfer":
-            result["recipe_basis"] = (
-                "parent_recipe"
-                if isinstance(operation, dict)
-                and operation.get("recipe_restore") is not None
-                else "current_science"
-            )
-            if experiment_kind == "continuation" or proposal.get("extends_lineage"):
-                result["extends_lineage"] = True
+        recipe_restored = (
+            isinstance(operation, dict) and operation.get("recipe_restore") is not None
+        )
+        apply_lineage_extension_fields(
+            result,
+            proposal,
+            experiment_kind,
+            parent,
+            recipe_restored=recipe_restored,
+        )
+        change = result["change"]
         configuration_frozen = operation.get("progress") in {
             "configuration_frozen",
             "recipe_published",
@@ -2032,6 +2065,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             experiment_kind,
             result["parameter_changes"],
             code_changes,
+            training_parent_lineage=parent,
         )
         if validation_scope:
             console.announce("[checks] validating changed files")
@@ -2101,8 +2135,6 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         }
         repository.write_state(state)
         result["scientific_commit"] = scientific_commit
-        if parent is not None:
-            result["training_parent_lineage"] = copy.deepcopy(parent)
         effective_timesteps = execution.training_budget(
             args.timesteps,
             initialization,
