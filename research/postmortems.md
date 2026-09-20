@@ -12,7 +12,12 @@ features all failed to improve the unchanged recipe on fresh or matched panels.
 The unchanged working parent reached 195/200 (97.5%) on the experiment-5
 disjoint panel, while its observation challenger reached 103/200 (51.5%).
 The campaign therefore has substantial but uncertain progress toward the
-objective, and the official result remains unmeasured.
+objective, and the official result remains unmeasured. The plausible questions
+now have different decision value: mechanism diagnosis would explain residual
+failures but lacks the needed hold and geometry measurements; fresh replication
+would primarily change confidence in process variance; unchanged continuation
+could either produce a stronger policy or establish that this near-threshold
+recipe has plateaued.
 
 **Lessons and limits:** Complete reach-and-hold success, rather than training
 success or reward, governs progress. The reward-peak checkpoint-86016 measured
@@ -30,14 +35,20 @@ their aggregate regressions do not identify the failure mechanism. The
 experiment-5 fresh run also combines representation and learning-process
 effects, limiting causal attribution. The reused first panel is
 selection-contaminated; seeds 10200, 10400, 10600, 10800, 11000, and 11200
-provide disjoint development coverage.
+provide disjoint development coverage. The retained working artifact and the
+current unchanged recipe share the complete policy I/O, normalization,
+architecture, and PPO configuration, so it is semantically compatible for
+continuation; fresh initialization would answer a different process-variance
+question rather than continue the learned task representation.
 
-**Open questions:** Whether the remaining never-reach failures arise from
-angle-specific control or observation representation rather than reward shaping.
-Whether a different intervention can improve the current policy without losing
-its broad reach-and-hold behavior. How much learning-process variance affects
-conclusions drawn from a fresh recipe. Whether the current best-known policy
-satisfies the official 98% criterion on the frozen 200-episode assessment.
+**Open questions:** Whether unchanged training from checkpoint-100352 can
+improve complete reach-and-hold success before plateauing or degrading. Whether
+the remaining never-reach failures arise from angle-specific control or
+observation representation rather than reward shaping. Whether a different
+intervention can improve the current policy without losing its broad
+reach-and-hold behavior. How much learning-process variance affects conclusions
+drawn from a fresh recipe. Whether the current best-known policy satisfies the
+official 98% criterion on the frozen 200-episode assessment.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
 
