@@ -5,41 +5,37 @@
 **Current synthesis:** The human objective is at least 98% success, or 196/200
 episodes, on the official 6-20 cm reach-and-hold distribution. The unchanged
 transferred baseline remains the strongest measured lineage: it scored 150/160,
-151/160, 155/160, and 159/160 on four disjoint development panels (615/640,
-96.09% pooled), with later same-panel controls at 156/160 and 154/160. Its
-measured failures are concentrated at negative target angles: 23 of 25 failures
-across the four baseline panels were below -90 degrees, 13 were at radii at or
-below 12 cm, and 11 had both properties. The official 200-episode result is
-unknown; experiment 7 contributed no valid training or task evidence. The
-baseline trace after the selected 100352-step checkpoint has proxy success
-around 0.89-0.92 through 120832 steps, but the measured later checkpoints
-regressed, so this proxy recovery does not establish task progress.
+151/160, 155/160, and 159/160 on four earlier disjoint development panels
+(615/640, 96.09%), then scored 157/160 on each of two further disjoint panels
+in experiment 10 (314/320, 98.125%). This is promising development evidence
+for the saved policy, but the second panel was measured after the policy had
+already been selected on the first, and the official 200-episode result remains
+unknown. Its earlier measured failures were concentrated at negative target
+angles and smaller radii. Unchanged continuation beyond 100352 steps produced
+strong training proxies but much worse measured policies at the two sampled
+checkpoints, so the proxy trajectory does not establish further task progress.
 
 **Lessons and limits:** Complete measured reach-and-hold success is more reliable
 for policy selection than training reward or proxy success. Transferred full-radius
 support, angle balancing, a 75/25 targeted sampler, a staged hard-radius sampler,
-and a hold-progress reward did not improve the unchanged parent; the reward
-challenger reached a 0.99 training proxy but scored 118/160 against the parent's
-159/160. The experiment-8 challengers scored 152/160 and 151/160 against 156/160,
-and experiment 9's proxy-selected challenger scored 144/160 against 154/160 on a
-fresh paired panel, winning none of 10 discordant episodes. In experiment 9 the
-challenger retained all six parent failures and added ten, including failures at
-positive and negative angles, so the measured curriculum trajectory did not
-correct the observed residuals. The current observation already exposes joint
-state, end-effector error, and both inverse-kinematics branches, while policy I/O
-maps that representation directly to physical actions. These results weaken the
+a hold-progress reward, and the sampled unchanged continuation checkpoints did
+not improve the unchanged parent. The experiment-10 proxy peak at checkpoint
+70656 (0.99 training success, -0.141 reward) measured 119/160 versus the
+parent's 157/160, while the 120832-step endpoint measured 114/160; the parent
+won every discordant episode in both comparisons. These results weaken the
 tested interventions and trajectories without disproving every curriculum,
-reward, control, or representation design. Unmeasured checkpoints are not failed
-policies, and development panels remain distinct from the official assessment.
+reward, control, or representation design. The current observation already
+exposes joint state, end-effector error, and both inverse-kinematics branches,
+while policy I/O maps that representation directly to physical actions.
+Unmeasured checkpoints are not failed policies, development panels are not the
+official assessment, and the repeated 157/160 result does not guarantee the
+official outcome.
 
-**Open questions:** The campaign has not established whether unchanged
-optimization beyond the selected checkpoint can produce a task-success
-improvement, whether the residual inner-radius failures can be reduced without
-worsening the dominant negative-angle failures, whether the strongest development
-panel generalizes to the official panel, or whether another reward, control,
-representation, or training schedule can close the remaining objective gap. The
-causal mechanism of the observed failure concentration and the official result
-remain uncertain. These are recorded uncertainties, not a prescribed action list.
+**Open questions:** The official 200-episode result and the causal mechanism of
+the residual failures remain uncertain. The campaign has not established whether
+another reward, control, representation, or training schedule can close any
+remaining official gap. These are recorded uncertainties, not a prescribed
+action list.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
@@ -399,3 +395,48 @@ criterion and do not justify terminal assessment.
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-9-working-160ep-seed5320-543af51fd137.json`;
 `research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-9-attempt-1.log`;
 and `robot_learning/scenario/training_environment.py`.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 10
+
+**Result:** Continuing the unchanged method beyond the selected 100352-step
+policy did not improve measured task behavior. The unchanged working lineage
+repeated 157/160 success on a second disjoint development panel, supporting
+closure with that lineage and terminal assessment.
+
+**Observed behavior:** The run completed 120832 steps and produced 24
+checkpoints. Training proxies were strong but unstable: checkpoint-70656 had
+0.99 training success and -0.141 mean reward, while the endpoint had 0.90
+training success and -5.124 mean reward. Only checkpoint-70656 and
+checkpoint-120832 were measured from the continuation; the other 22 candidates
+remain unmeasured. On episodes 5480-5639, checkpoint-70656 achieved 119/160
+(74.375%) and checkpoint-120832 achieved 114/160 (71.25%), versus 157/160
+(98.125%) for the unchanged working policy. The working policy won all 38 and
+43 discordant episodes respectively. Its three failures on that panel and its
+three failures on the disjoint episodes 5640-5799 all truncated at 500 steps.
+The second working measurement also achieved 157/160 (98.125%), giving 314/320
+successes across the two new panels.
+
+**Hypothesis assessment:** The continuation hypothesis is contradicted for the
+measured proxy-peak and endpoint checkpoints: neither produced complete
+reach-and-hold progress, and both were substantially below the contemporaneous
+working control. This conclusion is limited to the sampled checkpoints and
+tested continuation trajectory; the 22 unmeasured checkpoints are not failed
+policies. The independent episode coverage for the unchanged working policy
+supports the interpretation that its 157/160 result is not specific to the
+first panel, although the policy had already been selected before the second
+panel was measured.
+
+**Interpretation:** Task-success measurements, rather than the high training
+proxies, identify the unchanged working lineage as the useful saved policy.
+Two disjoint panels at 98.125% provide sufficient development evidence to
+request the official assessment, while still leaving the official result
+unknown. The continuation recipe adds no measured benefit, so no challenger is
+retained and the unchanged recipe is kept.
+
+**Evidence inspected:** `research/brief.md`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-10/inventory.json`;
+`research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-10-attempt-1.log`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-10-working-160ep-seed5480-543af51fd137.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-10-working-160ep-seed5640-543af51fd137.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-10-checkpoint-70656-160ep-seed5480-543af51fd137.json`;
+and `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-10-checkpoint-120832-160ep-seed5480-543af51fd137.json`.
