@@ -2,28 +2,32 @@
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned a useful reach-and-hold
-policy. Task measurements support substantial progress, but the strongest
-candidate's performance is geometry-sensitive: checkpoint-100352 scored
-99.5% on the reused comparison panel and 97.0% on each of two disjoint
-research panels. The measured evidence supports selecting checkpoint-100352
-over the later endpoint, while not supporting terminal assessment yet.
+**Current synthesis:** The campaign objective is at least 98% success on the
+official 6-20 cm, full-angle reach-and-hold task. The unchanged PPO baseline
+learned a useful policy, and checkpoint-100352 is the best-supported current
+lineage: it reached 587/600 pooled success, including 97.0% on each of two
+disjoint research panels. The evidence therefore supports substantial progress
+but leaves the official objective unresolved.
 
-**Lessons and limits:** Training success and reward are useful for locating
-promising checkpoints but are not interchangeable with complete task success.
-The reward peak at checkpoint-86016 (163.854, training success 0.42) measured
-95.0%, whereas checkpoint-100352 reached 97.83% pooled success over 600
-distinct research episodes. The first panel was reused for the initial
-comparison and is selection-contaminated; the panels at seeds 10200 and 10400
-provide disjoint episode coverage under the same research-evaluation
-semantics. No task-reference or official benchmark measurement was made, so
-the official 98% result remains unknown.
+**Lessons and limits:** Training success and reward locate promising checkpoints
+but are not interchangeable with complete task success. Checkpoint-86016 had
+the observed reward peak and measured 95.0%, while checkpoint-100352 measured
+97.83% pooled; the later endpoint was also weaker than checkpoint-100352 on the
+available comparison. The current training distribution samples only 14-20 cm,
+whereas the official task samples 6-20 cm. In the inspected checkpoint-100352
+panels, all 13 failures were at negative angles; five never reached tolerance
+and eight reached it only briefly. The first panel was reused and
+selection-contaminated, while seeds 10200 and 10400 provide disjoint coverage.
+No task-reference or official benchmark measurement exists, so the official
+98% result remains unknown. These observations do not establish that radial
+coverage causes the geometry failures.
 
-**Open questions:** The remaining failures are concentrated mainly at
-negative target angles and include both failure to reach tolerance and
-interrupted holds after reaching it. It remains unresolved whether a changed
-training recipe can raise this geometry-sensitive behavior to the human
-objective.
+**Open questions:** It is unresolved whether exposure to the full official
+radial range improves the negative-angle reach-and-hold failures without
+reducing performance at already learned outer radii. It is also unresolved
+whether the interrupted holds reflect a training-distribution limitation,
+angle-dependent control, or a reward/holding limitation. The official result
+for the current best-known policy remains unmeasured.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
 
