@@ -4,51 +4,41 @@
 
 **Current synthesis:** The campaign objective is at least 98% success on the
 official 6-20 cm, full-angle reach-and-hold task. The unchanged PPO baseline
-learned a useful policy, and checkpoint-100352 remains the best-supported
-current lineage at 587/600 pooled success (97.83%), including 97.0% on each of
-two disjoint panels. Expanding the training radius range, oversampling negative
-angles, forfeiting accumulated hold progress, and adding explicit target-polar
-features all failed to improve the unchanged recipe on fresh or matched panels.
-The unchanged working parent reached 195/200 (97.5%) on the experiment-5
-disjoint panel, while its observation challenger reached 103/200 (51.5%).
-The campaign therefore has substantial but uncertain progress toward the
-objective, and the official result remains unmeasured. The plausible questions
-now have different decision value: mechanism diagnosis would explain residual
-failures but lacks the needed hold and geometry measurements; fresh replication
-would primarily change confidence in process variance; unchanged continuation
-could either produce a stronger policy or establish that this near-threshold
-recipe has plateaued.
+learned a useful policy, and the retained working policy has 1761/1800 pooled
+success across nine disjoint development panels (97.83%), with its two latest
+panels at 99.0% and 100.0%. Expanding the training radius range, oversampling
+negative angles, forfeiting accumulated hold progress, adding explicit
+target-polar features, and the tested unchanged continuation checkpoints did
+not improve the retained policy. The policy is substantial progress toward the
+objective and now has repeated recent independent evidence near or above the
+objective, while the official result remains unmeasured. The tested
+continuation route is not supported; residual failures remain concentrated
+around difficult negative-angle controls, with both never-reach and brief-hold
+cases.
 
 **Lessons and limits:** Complete reach-and-hold success, rather than training
 success or reward, governs progress. The reward-peak checkpoint-86016 measured
 95.0%, whereas checkpoint-100352 measured 97.83% pooled; the late endpoints
-were weaker on the available comparisons. The characterized checkpoint-100352
-failures across the two disjoint baseline panels were all at negative angles:
-five never reached tolerance and seven reached it only briefly. The experiment-3
-challengers showed the same negative-angle concentration, while the experiment-4
-challengers added failures outside that pattern. The radius, angle-distribution,
-full hold-forfeiture, and tested target-polar representation recipes provide
-evidence against those tested runs, not against all possible control,
-representation, or reward changes. Experiment 4 emitted no hold-specific
-diagnostics, and experiment 5 emitted no target-geometry or hold diagnostics, so
-their aggregate regressions do not identify the failure mechanism. The
-experiment-5 fresh run also combines representation and learning-process
-effects, limiting causal attribution. The reused first panel is
-selection-contaminated; seeds 10200, 10400, 10600, 10800, 11000, and 11200
-provide disjoint development coverage. The retained working artifact and the
-current unchanged recipe share the complete policy I/O, normalization,
-architecture, and PPO configuration, so it is semantically compatible for
-continuation; fresh initialization would answer a different process-variance
-question rather than continue the learned task representation.
+were weaker on the available comparisons. In experiment 6, checkpoints with
+0.99 training success measured 90.5% and 86.0% against 99.0% for the unchanged
+working policy on the same panel, with no challenger wins; the endpoint proxy
+then declined to 0.95. The independent working panel reached 100.0%. The
+latest 99.0% panel still had one brief negative-angle hold failure and one
+negative-angle never-reach failure; the 100.0% panel had none. The radius,
+angle-distribution, full hold-forfeiture, target-polar representation, and
+tested continuation recipes provide evidence against those tested runs, not
+against all possible changes. The continuation artifact diagnostics also
+included nonnegative-angle failures, so their regression cannot be attributed
+only to the previously observed negative-angle pattern. The reused first panel
+is selection-contaminated; later disjoint panels provide the independent
+development coverage. The official benchmark remains distinct and is the only
+terminal verdict.
 
-**Open questions:** Whether unchanged training from checkpoint-100352 can
-improve complete reach-and-hold success before plateauing or degrading. Whether
-the remaining never-reach failures arise from angle-specific control or
-observation representation rather than reward shaping. Whether a different
-intervention can improve the current policy without losing its broad
-reach-and-hold behavior. How much learning-process variance affects conclusions
-drawn from a fresh recipe. Whether the current best-known policy satisfies the
-official 98% criterion on the frozen 200-episode assessment.
+**Open questions:** Whether the retained policy satisfies the official 98%
+criterion on the frozen 200-episode assessment. Whether the remaining
+never-reach failures arise from angle-specific control or observation
+representation rather than reward shaping, and whether another intervention
+can improve the policy without losing its broad reach-and-hold behavior.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
 
@@ -293,3 +283,54 @@ Restoring the established recipe preserves the best-supported route toward the
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-5-checkpoint-120832-200ep-seed11200-543af51fd137.json`;
 `research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-5-working-200ep-seed11200-543af51fd137.json`;
 `robot_learning/scenario/observations.py`.
+
+## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 6
+
+**Result:** Unchanged continuation did not produce a stronger policy. The
+retained working and best-known lineage remains selected, the unchanged
+scientific recipe is kept, and the evidence now supports requesting the
+official benchmark.
+
+**Observed behavior:** Experiment 6 training proxies were 0.99 success at
+100352 and 110592 steps, with listed rewards of 108.674 and 107.533; by
+120832 steps they had declined to 0.95 success and 104.443 reward. These are
+training-time proxies, not task measurements. On the fresh disjoint panel
+11400-11599, checkpoint-100352 achieved 181/200 (90.5%) and checkpoint-110592
+achieved 172/200 (86.0%), while the unchanged working policy achieved 198/200
+(99.0%). Paired comparisons gave the working policy 17 and 26 discordant wins
+and no challenger wins. On the second independent panel 11600-11799, the
+working policy achieved 200/200 (100.0%). Its two failures on the preceding
+panel were both at negative angles: one reached tolerance only briefly and
+one never reached tolerance. The continuation checkpoints had additional
+nonnegative-angle failures, including never-reach cases. Across the comparable
+disjoint development measurements, the retained policy has 1761/1800
+successes (97.83%); the official panel has not been measured.
+
+**Hypothesis assessment:** Contradicted for the tested continuation
+checkpoints. The expected improvement over the current working policy was not
+observed; both measured continuation checkpoints regressed substantially on
+the same panel, while training proxies remained high before later degradation.
+This supports the stated plateau-or-degradation alternative under the tested
+continuation, checkpoints, and panel, but does not prove that all future
+continuation schedules cannot help. The working policy's 99.0% and 100.0%
+results provide measured progress toward the human objective, not an official
+verdict.
+
+**Interpretation:** The paired, same-panel comparison makes the retained
+working artifact more useful than either measured continuation checkpoint, and
+the independent 100.0% result reduces concern that the 99.0% result was only
+panel variation. The latest diagnostics still show a residual negative-angle
+control/hold failure pattern, but the aggregate continuation regression also
+included nonnegative failures, so this experiment does not identify a causal
+mechanism. The evidence is sufficient to freeze the unchanged working policy
+for terminal assessment; further training or mechanism work would be a new
+development experiment after closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/training_logs/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-6-attempt-1.log`;
+`research/checkpoints/challengers/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/experiment-6/inventory.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-6-checkpoint-100352-200ep-seed11400-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-6-checkpoint-110592-200ep-seed11400-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-6-working-200ep-seed11400-543af51fd137.json`;
+`research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-6-working-200ep-seed11600-543af51fd137.json`.
