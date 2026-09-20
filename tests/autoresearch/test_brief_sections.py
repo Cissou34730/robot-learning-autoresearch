@@ -1,7 +1,7 @@
 """Per-section seams for the research brief.
 
 Issue #41.2: the brief's sections are independent builders so that changes to
-candidates, evidence, lineages, or cost accounting can be reviewed and tested
+candidates, evidence, lineages, or campaign activity can be reviewed and tested
 one section at a time instead of editing one large renderer.
 """
 
@@ -105,7 +105,7 @@ def test_composed_brief_orders_each_section_once():
         "## Working lineage",
         "## Campaign experiment index",
         "## Development evidence index",
-        "## Campaign cost accounting",
+        "## Campaign activity record",
         "## Provisional scientific synthesis",
         "## Repeated operations",
         "## Intervention surfaces",
@@ -280,7 +280,7 @@ def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
     assert "Measurement rounds for the current experiment" in analysis
 
 
-def test_cost_accounting_lists_consumed_research_intervals_factually():
+def test_activity_record_lists_consumed_research_intervals_factually():
     results = [
         {
             "index": 1,
@@ -292,7 +292,7 @@ def test_cost_accounting_lists_consumed_research_intervals_factually():
             ],
         }
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "research_evaluation intervals consumed: 4200–4359, 4400–4559." in text
     assert "recommend" not in text.lower()
 
@@ -302,7 +302,7 @@ def test_measurement_rounds_section_is_absent_without_rounds():
     assert brief._v4_measurement_rounds_section({}, [], {}) == []
 
 
-def test_cost_accounting_counts_training_and_replication_factually():
+def test_activity_record_counts_training_and_replication_factually():
     results = [
         {
             "index": 1,
@@ -324,11 +324,12 @@ def test_cost_accounting_counts_training_and_replication_factually():
             "replication_of": 1,
         },
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "Training experiments: 3" in text
-    assert "completed steps: 320" in text
-    assert "requested steps: 300" in text
     assert "Replication experiments recorded: 3." in text
+    # Issue #46: no campaign-wide running total of consumed resources.
+    assert "completed steps" not in text
+    assert "requested steps" not in text
 
 
 def _measurement(
@@ -356,7 +357,7 @@ def _task_reference(candidate: str, *, seed: int = 7300, episodes: int = 200) ->
     }
 
 
-def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
+def test_activity_record_counts_cross_model_panel_reuse_at_campaign_level():
     results = [
         {
             "index": 1,
@@ -374,7 +375,7 @@ def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
             "task_reference_evaluations": [_task_reference("c3")],
         },
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "Instrument executions: 3 research_evaluation, 2 task_reference." in text
     assert "research_evaluation coverage: 160 distinct episodes; 480 episode" in text
     assert "320 repeated." in text
@@ -382,7 +383,7 @@ def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
     assert "200 repeated." in text
 
 
-def test_cost_accounting_distinguishes_overlapping_research_panels():
+def test_activity_record_distinguishes_overlapping_research_panels():
     results = [
         {
             "index": 1,
@@ -393,13 +394,13 @@ def test_cost_accounting_distinguishes_overlapping_research_panels():
             ],
         }
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     # Two disjoint 160-episode panels: 320 distinct identities, no repetition.
     assert "research_evaluation coverage: 320 distinct episodes; 320 episode" in text
     assert "0 repeated." in text
 
 
-def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
+def test_activity_record_counts_repeated_rounds_and_coverage_separately():
     results = [
         {
             "index": 1,
@@ -413,14 +414,44 @@ def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
             ],
         }
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "Evaluation rounds: 2." in text
     assert "Instrument executions: 2 research_evaluation, 0 task_reference." in text
     assert "research_evaluation coverage: 10 distinct episodes; 20 episode" in text
     assert "10 repeated." in text
 
 
-def test_cost_accounting_does_not_recommend_confirmation():
-    text = "\n".join(brief._v4_cost_accounting_section({}, [], None)).lower()
+def test_activity_record_does_not_recommend_confirmation():
+    text = "\n".join(brief._v4_activity_record_section({}, [], None)).lower()
     for wording in ("budget limit", "warning", "should", "enough", "stop"):
         assert wording not in text
+
+
+def test_activity_record_separates_execution_from_evidence_coverage():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "evaluation_rounds": [{"round": 1}],
+            "requested_evaluations": [_measurement("c1")],
+            "task_reference_evaluations": [_task_reference("c1")],
+        }
+    ]
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
+    assert "### Executed so far" in text
+    assert "### Evidence coverage" in text
+    executed = text.split("### Evidence coverage")[0]
+    coverage = text.split("### Evidence coverage")[1]
+    assert "Training experiments: 1." in executed
+    assert "Evaluation rounds: 1." in executed
+    assert "coverage:" not in executed
+    assert "coverage:" in coverage
+    # Issue #46: the coverage group keeps the panel-design facts.
+    assert "research_evaluation intervals consumed:" in coverage
+
+
+def test_v4_brief_carries_no_budget_vocabulary():
+    text = brief._render_v4_research_brief({}, [], "", "cid", "base", "PPO", {})
+    lowered = text.lower()
+    for wording in ("cost", "budget", "remaining", "allowance", "spent"):
+        assert wording not in lowered

@@ -1038,24 +1038,17 @@ def _cost_records(
     return records
 
 
-def _v4_cost_accounting_section(
+def _v4_activity_record_section(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[str]:
-    """Factual campaign accounting in non-overlapping units.
+    """Factual campaign activity in non-overlapping units.
 
-    Issue #34: surfaces training and evaluation work without implying a budget,
+    Issue #34: surfaces training and evaluation work without implying a target,
     a preferred allocation, or an automatic stopping decision.
+    Issue #46: describes what was executed separately from the evidence coverage
+    it produced, and carries no running total of consumed resources.
     """
     records = _cost_records(state, results, pending)
-    completed_steps = 0
-    requested_steps = 0
-    for record in records:
-        if record.get("completed_training_steps") is not None:
-            completed_steps += int(record["completed_training_steps"])
-        elif record.get("training_budget_steps") is not None:
-            completed_steps += int(record["training_budget_steps"])
-        if record.get("training_budget_steps") is not None:
-            requested_steps += int(record["training_budget_steps"])
     replications = sorted(
         int(record["index"])
         for record in records
@@ -1081,18 +1074,18 @@ def _v4_cost_accounting_section(
     intervals = _consumed_research_intervals(records)
     return [
         "",
-        "## Campaign cost accounting",
+        "## Campaign activity record",
         "",
         (
-            "Factual record of the work this campaign has performed and the "
-            "evidence coverage it has produced. It sets no budget, target, or "
-            "preferred allocation:"
+            "What this campaign has executed so far. These counts exist so "
+            "measurements can be located and compared. They are descriptive "
+            "records only: no value is a target or a limit, and no value is "
+            "preferred over another."
         ),
         "",
-        (
-            f"- Training experiments: {len(records)} "
-            f"(completed steps: {completed_steps:,}; requested steps: {requested_steps:,})."
-        ),
+        "### Executed so far",
+        "",
+        f"- Training experiments: {len(records)}.",
         (
             "- Replication experiments recorded: "
             + (", ".join(str(index) for index in replications) if replications else "none")
@@ -1104,6 +1097,9 @@ def _v4_cost_accounting_section(
             f"{instrument_executions['research_evaluation']} research_evaluation, "
             f"{instrument_executions['task_reference']} task_reference."
         ),
+        "",
+        "### Evidence coverage",
+        "",
         (
             f"- research_evaluation coverage: "
             f"{research_coverage['distinct_episodes']} distinct episodes; "
@@ -1448,7 +1444,7 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
-    lines.extend(_v4_cost_accounting_section(state, results, pending))
+    lines.extend(_v4_activity_record_section(state, results, pending))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 
