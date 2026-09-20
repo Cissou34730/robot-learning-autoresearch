@@ -80,6 +80,9 @@ def _compact(
         # Keep the whole text rather than truncate mid-sentence or mid-word.
         return normalized
     omitted = len(normalized) - cut
+    # The only boundary was the end of the text, so nothing was omitted.
+    if omitted == 0:
+        return normalized
     return f"{normalized[:cut].rstrip()} {_truncation_marker(omitted, reference)}"
 
 

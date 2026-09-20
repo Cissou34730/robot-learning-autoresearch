@@ -9,6 +9,8 @@ render the recorded characters instead of silently rewriting them.
 
 import json
 
+import pytest
+
 from research import build_research_brief as brief
 from research.build_research_brief import render_research_brief
 
@@ -34,6 +36,18 @@ def test_compact_keeps_a_first_sentence_that_exceeds_the_limit():
     text = "a long first clause with no early stop and then. trailing words here."
     rendered = brief._compact(text, 20, reference=REFERENCE)
     assert rendered.startswith("a long first clause with no early stop and then.")
+
+
+@pytest.mark.parametrize("boundary", [".", ";", ":"])
+def test_compact_preserves_a_single_over_limit_sentence(boundary):
+    text = (
+        "one single sentence with no earlier boundary that still runs past "
+        f"the limit{boundary}"
+    )
+    assert len(text) > 20
+    rendered = brief._compact(text, 20, reference=REFERENCE)
+    assert rendered == text
+    assert "[truncated," not in rendered
 
 
 def test_compact_preserves_over_limit_text_without_sentence_punctuation():
