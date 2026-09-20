@@ -1910,6 +1910,15 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         parent_training_steps = (
             int(parent["training_steps"]) if parent is not None else 0
         )
+        if parent is not None and initialization == "transfer":
+            result["recipe_basis"] = (
+                "parent_recipe"
+                if isinstance(operation, dict)
+                and operation.get("recipe_restore") is not None
+                else "current_science"
+            )
+            if experiment_kind == "continuation" or proposal.get("extends_lineage"):
+                result["extends_lineage"] = True
         configuration_frozen = operation.get("progress") in {
             "configuration_frozen",
             "recipe_published",

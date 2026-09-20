@@ -365,12 +365,37 @@ def parameter_change_records(
     return changes
 
 
+def extends_lineage(record: dict) -> bool:
+    """Whether the record deliberately continues an existing lineage's training.
+
+    ``continuation`` carries the relation implicitly. A changed recipe that
+    still continues a lineage marks it explicitly with ``extends_lineage``.
+    """
+    if bool(record.get("extends_lineage")):
+        return True
+    return str(record.get("kind", "")).strip().lower() == "continuation"
+
+
+def lineage_family(record: dict, parameter_paths: list[str]) -> str:
+    """Name the extended lineage together with any adjusted parameter paths."""
+    parent = str(record.get("training_parent", "")).strip()
+    base = f"lineage.{parent}" if parent else "lineage"
+    if parameter_paths:
+        return f"{base}+{'+'.join(parameter_paths)}"
+    return base
+
+
 def experiment_family(
     proposal: dict,
     experiment_kind: str,
     parameter_changes: list[dict],
     code_changes: list[str],
 ) -> str:
+    if extends_lineage(proposal):
+        return lineage_family(
+            proposal,
+            sorted({item["path"] for item in parameter_changes}),
+        )
     declared = str(proposal.get("family", "")).strip()
     if declared:
         return declared
@@ -392,10 +417,17 @@ def experiment_family(
 def operation_description(record: dict) -> str:
     """Return the stable human-readable operation description for a record."""
     kind = str(record.get("kind", "")).strip().lower()
-    if kind == "continuation":
-        return "Continue training the unchanged method"
     if kind == "replication":
         return "Replicate the current method from fresh initialization"
+    if extends_lineage(record):
+        parent = str(record.get("training_parent", "")).strip() or "the selected parent"
+        if kind == "continuation":
+            return f"Continue training lineage {parent}"
+        base = f"Continue training lineage {parent} with a changed recipe"
+        change = record.get("change")
+        if isinstance(change, str) and change.strip():
+            return f"{base}: {change.strip()}"
+        return base
     value = record.get("change")
     return value.strip() if isinstance(value, str) else ""
 
@@ -617,8 +649,8 @@ def validate_experiment_semantics(
     validate_research_delta_ownership(code_changes)
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
-    if experiment_kind == "continuation" and (parameter_overrides or code_changes):
-        raise ValueError("continuation requires an unchanged learning method")
+    if experiment_kind == "continuation" and code_changes:
+        raise ValueError("continuation cannot change the scientific code surface")
     if (
         not baseline
         and experiment_kind not in {"continuation", "replication"}
@@ -724,6 +756,14 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
         require_integer("replication_of", minimum=1)
+    relation = proposal.get("extends_lineage")
+    if relation is not None and type(relation) is not bool:
+        raise ValueError("extends_lineage must be a boolean")
+    if relation:
+        if kind != "training":
+            raise ValueError("extends_lineage is only valid for a training proposal")
+        if initialization != "transfer":
+            raise ValueError("extends_lineage requires transfer initialization")
     validate_scientific_reasoning(proposal)
 
 

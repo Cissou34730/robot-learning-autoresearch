@@ -9,6 +9,7 @@ from pathlib import Path, PureWindowsPath
 
 from research import runner_console as console
 from research.runner_protocol import (
+    extends_lineage,
     is_researcher_owned,
     operation_description,
     scientific_strategy_section,
@@ -231,18 +232,29 @@ def _task_reference_lines(evaluations: list[dict]) -> list[str]:
 
 
 def _change_details(result: dict) -> str:
+    description = operation_description(result)
     parameter_changes = result.get("parameter_changes") or []
     if parameter_changes:
-        return "; ".join(
+        delta = "; ".join(
             f"{item['path']}: {item.get('before')} → {item.get('after')}"
             for item in parameter_changes
         )
+        if extends_lineage(result) and description:
+            return f"{description}; {delta}"
+        return delta
     code_changes = result.get("code_changes") or []
     if code_changes:
-        return (
-            f"{operation_description(result) or '-'}; files: {', '.join(code_changes)}"
-        )
-    return operation_description(result) or "-"
+        return f"{description or '-'}; files: {', '.join(code_changes)}"
+    return description or "-"
+
+
+def _recipe_basis(result: dict) -> str:
+    """Name which recipe was in effect for a transfer run."""
+    basis = str(result.get("recipe_basis", "")).strip()
+    return {
+        "parent_recipe": "the parent's restored recipe",
+        "current_science": "the current worktree science",
+    }.get(basis, basis or "not recorded")
 
 
 def _existing_artifact_reference(value: str | None, *, kind: str = "artifact") -> str:
@@ -1085,8 +1097,13 @@ def _v4_experiment_index_section(
                 f"best known {(closure.get('best_known') or {}).get('candidate', 'not recorded')}; "
                 f"code {(closure.get('code') or {}).get('action', 'not recorded')}"
             )
+        operation = (
+            operation_description(result)
+            if extends_lineage(result)
+            else result.get("kind", "-")
+        )
         lines.append(
-            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
+            f"| {result.get('index', '-')} | {_table_cell(operation)} / {result.get('family', '-')} | "
             f"{result.get('training_parent', '-')} | {_table_cell(_compact(_change_details(result), 100, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(result.get('hypothesis_assessment', 'unavailable'))} | "
@@ -1678,6 +1695,8 @@ def _render_v4_research_brief(
                 else "- Raw training logs: unmeasured",
             ]
         )
+        if result.get("recipe_basis"):
+            lines.append(f"- Recipe basis: {_recipe_basis(result)}")
         if unmeasured:
             lines.append(
                 f"- Unmeasured candidates: {len(unmeasured)} of {len(candidates)}."
@@ -1708,6 +1727,8 @@ def _render_v4_research_brief(
                 f"- Working lineage selected: {selected_lineage}",
             ]
         )
+        if latest.get("recipe_basis"):
+            lines.append(f"- Recipe basis: {_recipe_basis(latest)}")
     else:
         lines.append("No experiment has completed in this campaign.")
 

@@ -261,12 +261,14 @@ The exploratory `reasoning` object also contains the common `evidence`,
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
 | `training` | Trains a changed scientific recipe for any investigation type. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
-| `continuation` | Trains the unchanged method further from an eligible lineage. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes, parameter overrides and `change` are forbidden. |
+| `training` with `extends_lineage: true` (adjusted continuation) | Continues an eligible lineage's training while changing the recipe. It starts from the parent's weights and trains the current worktree science plus `params`. The hypothesis is a prediction about how that adjustment changes continued training. | Requires `initialization: "transfer"`, `training_parent`, a non-empty `change`, and `extends_lineage: true`; a researcher-owned code change or non-empty `params` is still required. |
+| `continuation` | Continues an eligible lineage's training on the selected recipe. Without `params` it is the unchanged recipe; with `params` it is the parent's restored recipe plus those overrides. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes and `change` are forbidden. |
 | `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The hypothesis is a prediction about reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
 `training_seed` is optional for ordinary training and continuation, and must be
 a non-negative integer when present. `params` is optional for ordinary training
-and is omitted for unchanged operations.
+and for `continuation`, where it adjusts the restored parent recipe; `params` is
+not accepted for `replication`.
 
 Experiment records distinguish `training_budget_steps` (requested) from
 `completed_training_steps` (actually completed in that experiment). Rollout
@@ -289,9 +291,15 @@ the experiment record. Existing historical records without these fields remain
 readable.
 
 An eligible `training_parent` must be exposed by the brief as `working`,
-`best_known`, or a retained lineage ID. `continuation` continues the selected
-recipe without a learning-method change. A `training` proposal may deliberately
-apply a changed recipe to an existing parent with `initialization: "transfer"`.
+`best_known`, or a retained lineage ID. Continuing a lineage and changing the
+recipe are independent choices. A `training` proposal with
+`initialization: "transfer"` sets `extends_lineage: true` to continue that
+lineage while training the current worktree science and `params`; its record
+names the extended lineage and records that the current science, not the
+parent's recipe, was in effect. A `continuation` restores the parent's recipe
+before training: without `params` it is the unchanged recipe, and with `params`
+it applies those overrides on top of the restored recipe. Its record names the
+extended lineage and records that the parent's recipe was restored.
 The `reasoning` object contains the common and type-specific fields shown in the
 schemas. `evidence` is a non-empty array of source/observation objects. Every
 listed type-specific string, `initialization_reason`, and `objective_link` is
