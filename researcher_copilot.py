@@ -304,12 +304,49 @@ def denied_git_subcommand(tokens: list[str]) -> str | None:
     return "git"
 
 
+# Pytest options that consume the following token as their value. That value is
+# not a test selector, so an option-only invocation such as
+# `pytest --maxfail 1` still targets the whole repository. Selector options
+# (`-k`, `-m`, `--deselect`, `--ignore`) are deliberately absent: their value
+# narrows the test set, so it counts as a selector.
+PYTEST_VALUE_OPTIONS = frozenset(
+    {
+        "--basetemp",
+        "--capture",
+        "--confcutdir",
+        "--cov",
+        "--durations",
+        "--import-mode",
+        "--junitxml",
+        "--log-cli-level",
+        "--log-level",
+        "--maxfail",
+        "--numprocesses",
+        "--override-ini",
+        "--rootdir",
+        "--tb",
+        "--timeout",
+        "-n",
+        "-o",
+        "-p",
+    }
+)
+
+
 def is_repository_wide_pytest(tokens: list[str]) -> bool:
     if "pytest" not in tokens:
         return False
-    return not any(
-        not token.startswith("-") for token in tokens[tokens.index("pytest") + 1 :]
-    )
+    selector = False
+    consumes_value = False
+    for token in tokens[tokens.index("pytest") + 1 :]:
+        if consumes_value:
+            consumes_value = False
+            continue
+        if token.startswith("-"):
+            consumes_value = token in PYTEST_VALUE_OPTIONS
+            continue
+        selector = True
+    return not selector
 
 
 def is_dependency_management(tokens: list[str]) -> bool:
