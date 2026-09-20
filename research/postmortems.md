@@ -2,42 +2,36 @@
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Scientific strategy
 
-**Current synthesis:** The campaign objective remains at least 98% success on the
-official 6-20 cm reach-and-hold distribution. The fresh PPO baseline learned
-substantial task behavior, with checkpoint-100352 at 150/160 and 151/160
-successes on two disjoint panels (301/320 pooled, 94.06%), while the unchanged
-working parent reached 155/160 on the latest panel (96.88%). Experiment 2's
-full-radius training-support change and experiment 3's angle-balanced
-training-support change both failed to improve the transferred parent. Measured
-task outcome, rather than training proxy success, identifies the useful policy
-point. Experiment 4's fresh periodic-observation recipe completed 120,832
-steps, but none of its 24 checkpoints received a task measurement; its endpoint
-training proxy remained at 0.17 success and -26.97 reward, far behind the
-measured parent recipe at comparable training duration. The parent therefore
-remains the strongest measured development lineage, and the campaign objective
-is not demonstrated.
+**Current synthesis:** The campaign objective remains at least 98% success,
+or 196/200 episodes, on the official 6-20 cm reach-and-hold distribution. The
+fresh PPO baseline learned substantial task behavior: checkpoint-100352 achieved
+150/160 and 151/160 on two disjoint panels (301/320 pooled, 94.06%), and the
+unchanged working lineage achieved 155/160 (96.88%) on the latest panel. The
+full-radius and angle-balanced training-support changes did not improve the
+transferred parent. The fresh periodic-observation run learned very slowly and
+had no task measurements, so it supplies no replacement policy. Measured task
+outcome, rather than training proxy success or final checkpoint position, is
+the strongest evidence of policy usefulness. The best development evidence is
+therefore still below the objective and is not an official verdict.
 
-**Lessons and limits:** Across the baseline panels, failures were concentrated in
-the target-angle bin from -180 to -90 degrees, and 11 of 19 were also below 14
-cm, a region absent from baseline training. The radius-support change did not
-remove that residual pattern. The angle-balanced run likewise had 4 negative-sector
-failures at both measured challenger checkpoints versus 3 for the parent, and
-introduced more complementary-sector failures. Most parent failures never held
-for more than five steps, so the evidence is primarily about reaching and
-stabilizing at difficult targets rather than long partial holds. Training proxies
-peaked or recovered without identifying better saved policies. These observations
-weaken the tested support interventions without disproving other representation,
-control, or schedule treatments. The periodic-representation run provides a
-strong negative learning-dynamics signal for that fresh recipe, but its
-unmeasured checkpoints are not task failures and cannot establish whether the
-representation itself changes reach-and-hold behavior. The independent research
-panels remain development evidence, not an official verdict.
+**Lessons and limits:** Baseline failures were concentrated in the -180 to -90
+degree target sector, with many also inside 14 cm, but neither tested support
+intervention removed that pattern. The angle-balanced challengers added failures
+outside the intended sector. Later checkpoints on the baseline trajectory
+regressed from the selected 100352-step policy, so proxy peaks and recovery do
+not identify a useful saved policy. These results weaken the tested support
+recipes and the fresh periodic recipe under their tested conditions; they do
+not disprove other representation, control, reward, schedule, or curriculum
+treatments. Unmeasured checkpoints remain unmeasured, and independent
+development panels remain distinct from the official assessment.
 
-**Open questions:** It remains unresolved whether an explicitly periodic angular
-representation can help under a recipe that learns the task adequately, as
-experiment 4 did not measure that outcome. The usefulness of other control or
-schedule treatments, the variance of fresh learning, and the transfer value of
-the learned outer-radius representation are also unknown.
+**Open questions:** The variability of fresh learning under the unchanged
+baseline recipe, and whether another fresh run can produce a stronger measured
+checkpoint, are unresolved. It is also unknown whether a different control,
+reward, schedule, or representation treatment can close the remaining gap, and
+whether the periodic representation could help when trained adequately. The
+transfer value of the learned outer-radius behavior remains unknown. These
+questions record uncertainty rather than prescribe an experiment order.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
