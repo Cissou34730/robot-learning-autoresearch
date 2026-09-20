@@ -12,7 +12,9 @@ from research.runner_protocol import (
     extends_lineage,
     is_researcher_owned,
     operation_description,
+    preparation_ledger,
     scientific_strategy_section,
+    upcoming_experiment_index,
 )
 from research.runner_repository import (
     ARTIFACT_FILES,
@@ -949,6 +951,9 @@ def _v4_phase_section(
         phase = "official assessment"
     if terminal:
         phase = "terminal official assessment"
+    conclusion_only = bool(state.get("preparation_conclusion_only")) and not (
+        terminal or isinstance(pending, dict)
+    )
     lines = [
         "# Research Brief",
         "",
@@ -967,8 +972,13 @@ def _v4_phase_section(
             else "`research/evaluation_request.json` or closure `research/proposal.json`"
             if isinstance(pending, dict)
             else (
-                "`research/proposal.json` or a saved-lineage "
-                "`research/evaluation_request.json`"
+                "only a `campaign_conclusion` in `research/proposal.json`; the "
+                "experiment budget is exhausted"
+                if conclusion_only
+                else (
+                    "`research/proposal.json` or a saved-lineage "
+                    "`research/evaluation_request.json`"
+                )
             )
         ),
     ]
@@ -1422,28 +1432,33 @@ def _v4_measurement_rounds_section(
     share one panel within a round share the same marker; they are not treated as
     successive reuse.
     """
-    latest = (
-        pending.get("result")
-        if isinstance(pending, dict)
-        else (results[-1] if results else None)
-    )
-    source = pending if isinstance(pending, dict) else latest
-    if not isinstance(pending, dict):
-        # Preparation measurements are completed before the next experiment is
-        # proposed; show them after the most recent experiment's own rounds.
-        preparation_rounds = state.get("preparation_evaluation_rounds")
-        if isinstance(preparation_rounds, list) and preparation_rounds:
+    preparation_source = False
+    if isinstance(pending, dict):
+        # Analysis keeps the experiment's own rounds after the preparation
+        # rounds that informed its parent choice, all under one experiment.
+        source = {
+            **pending,
+            "evaluation_rounds": [
+                *(pending.get("preparation_evaluation_rounds") or []),
+                *(pending.get("evaluation_rounds") or []),
+            ],
+        }
+    else:
+        ledger = preparation_ledger(state)
+        if ledger is not None and int(ledger.get("experiment", -1)) != (
+            upcoming_experiment_index(state)
+        ):
+            ledger = None
+        if ledger is not None:
+            # The upcoming experiment's preparation rounds belong to it, never
+            # to the previous completed experiment.
             source = {
-                **(source if isinstance(source, dict) else {}),
-                "evaluation_rounds": [
-                    *(
-                        source.get("evaluation_rounds") or []
-                        if isinstance(source, dict)
-                        else []
-                    ),
-                    *preparation_rounds,
-                ],
+                "experiment": int(ledger.get("experiment", 0)),
+                "evaluation_rounds": list(ledger.get("rounds") or []),
             }
+            preparation_source = True
+        else:
+            source = results[-1] if results else None
     if not isinstance(source, dict):
         return []
     rounds = source.get("evaluation_rounds")
@@ -1464,22 +1479,29 @@ def _v4_measurement_rounds_section(
     source_reference = (
         RESEARCH_STATE_REFERENCE if inline_precedent else RESULTS_REFERENCE
     )
-    lines = [
-        "",
-        "## Measurement rounds",
-        "",
-        (
+    if preparation_source:
+        heading = (
+            "Preparation measurement rounds for the upcoming experiment, in the "
+            "order they were requested. Questions, results and artifact "
+            "references are retained; the recorded rationale for each past "
+            "decision is kept below as a de-templated retrospective note, not as "
+            "a template for the next request:"
+        )
+    elif inline_precedent:
+        heading = (
             "Measurement rounds for the current experiment in the order they were "
             "requested. Each round records its own question, selections and "
             "resulting artifacts:"
-            if inline_precedent
-            else "Completed measurement rounds from the most recent experiment, in "
+        )
+    else:
+        heading = (
+            "Completed measurement rounds from the most recent experiment, in "
             "the order they were requested. Questions, results and artifact "
             "references are retained; the recorded rationale for each past "
             "decision is kept below as a de-templated retrospective note, not as "
             "a template for the next request:"
-        ),
-    ]
+        )
+    lines = ["", "## Measurement rounds", "", heading]
     for record in rounds:
         if not isinstance(record, dict):
             continue

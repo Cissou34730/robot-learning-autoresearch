@@ -1065,14 +1065,12 @@ def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[in
     sources = list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
     if isinstance(pending, dict):
         sources.append(pending)
-    preparation_partial = state.get("preparation_partial_evaluations")
-    if preparation_partial:
-        sources.append({"partial_evaluations": preparation_partial})
     panels: list[tuple[int, int]] = []
     for source in sources:
         for entry in [
             *(source.get("requested_evaluations") or []),
             *(source.get("partial_evaluations") or []),
+            *(source.get("preparation_evaluations") or []),
         ]:
             if not isinstance(entry, dict):
                 continue
@@ -1170,6 +1168,52 @@ def upcoming_experiment_index(state: dict) -> int:
     )
 
 
+def preparation_ledger(state: dict) -> dict | None:
+    """The accumulated preparation ledger for the forecast experiment, if any.
+
+    The ledger is scoped to exactly one upcoming experiment. A ledger for any
+    other experiment is stale and never reused.
+    """
+    ledger = state.get("preparation_measurement")
+    if not isinstance(ledger, dict):
+        return None
+    experiment = ledger.get("experiment")
+    if not isinstance(experiment, int) or isinstance(experiment, bool):
+        return None
+    return ledger
+
+
+def _current_lineage_fingerprints(state: dict) -> dict[str, str]:
+    """The currently resolved fingerprint of every requestable saved lineage."""
+    fingerprints: dict[str, str] = {}
+    for identifier in ("working", "best_known"):
+        lineage = lineage_role(state, identifier)
+        if isinstance(lineage, dict):
+            fingerprints[identifier] = str(lineage.get("fingerprint") or "")
+    for lineage in state.get("retained_lineages", []):
+        if isinstance(lineage, dict) and str(lineage.get("id", "")).strip():
+            fingerprints[str(lineage["id"])] = str(lineage.get("fingerprint") or "")
+    return fingerprints
+
+
+def _preparation_entry_matches(entry: dict, fingerprints: dict[str, str]) -> bool:
+    """Whether a recorded preparation measurement still describes its lineage.
+
+    A saved-lineage alias can be repointed at a different artifact. Reusing an
+    old measurement then would silently misattribute it, so the recorded model
+    fingerprint must equal the currently resolved one.
+    """
+    name = str(entry.get("candidate", "")).strip()
+    recorded = entry.get("model_fingerprint")
+    if not isinstance(recorded, str) or not recorded:
+        metrics = entry.get("metrics")
+        recorded = (
+            metrics.get("model_fingerprint") if isinstance(metrics, dict) else None
+        )
+    current = fingerprints.get(name)
+    return bool(current) and recorded == current
+
+
 def preparation_measurement_context(state: dict) -> dict:
     """A lineage-only pending context for a preparation-phase measurement.
 
@@ -1177,11 +1221,30 @@ def preparation_measurement_context(state: dict) -> dict:
     the eligible saved lineages. The context carries the upcoming experiment
     identity so artifact names and recorded rounds stay under it, and an empty
     candidate list so a not-yet-run experiment's candidates cannot be named. The
-    accumulated preparation measurements seed the partial ledger so a repeated
-    panel is reused rather than re-executed.
+    accumulated ledger for the same upcoming experiment seeds the round numbers
+    and partial ledger so a repeated panel is reused rather than re-executed, but
+    only while every recorded model still matches its current lineage.
     """
+    experiment = upcoming_experiment_index(state)
+    ledger = preparation_ledger(state)
+    rounds: list[dict] = []
+    partials: list[dict] = []
+    references: list[dict] = []
+    if ledger is not None and int(ledger.get("experiment", -1)) == experiment:
+        fingerprints = _current_lineage_fingerprints(state)
+        recorded_partials = list(ledger.get("partial_evaluations") or [])
+        recorded_references = list(
+            ledger.get("partial_task_reference_evaluations") or []
+        )
+        if all(
+            _preparation_entry_matches(entry, fingerprints)
+            for entry in [*recorded_partials, *recorded_references]
+        ):
+            rounds = [dict(record) for record in ledger.get("rounds") or []]
+            partials = recorded_partials
+            references = recorded_references
     return {
-        "experiment": upcoming_experiment_index(state),
+        "experiment": experiment,
         "candidates": [],
         "champion_available": False,
         "parameters": {},
@@ -1189,10 +1252,9 @@ def preparation_measurement_context(state: dict) -> dict:
         "training_budget_steps": 0,
         "parent_training_steps": 0,
         "preparation": True,
-        "partial_evaluations": list(state.get("preparation_partial_evaluations") or []),
-        "partial_task_reference_evaluations": list(
-            state.get("preparation_partial_task_reference_evaluations") or []
-        ),
+        "evaluation_rounds": rounds,
+        "partial_evaluations": partials,
+        "partial_task_reference_evaluations": references,
         "result": {
             "status": "pending",
             "verdict": "preparation measurement",
@@ -1379,6 +1441,11 @@ def validate_preparation_evaluation_request(
         raise ValueError(
             "the experiment budget is exhausted; only a campaign conclusion may "
             "be prepared"
+        )
+    if "experiment" in request:
+        raise ValueError(
+            "a preparation measurement must omit experiment; it names saved "
+            "lineages, not a trained experiment"
         )
     validate_evaluation_request(request)
     pending = preparation_measurement_context(state)
@@ -2026,21 +2093,11 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
         *repository.result_records_for_campaign(campaign_id),
         pending,
     ]
-    preparation_partial = state.get("preparation_partial_evaluations")
-    preparation_reference = state.get(
-        "preparation_partial_task_reference_evaluations"
-    )
-    if preparation_partial or preparation_reference:
-        sources.append(
-            {
-                "partial_evaluations": preparation_partial or [],
-                "partial_task_reference_evaluations": preparation_reference or [],
-            }
-        )
     for source in sources:
         research_evaluations = [
             *(source.get("requested_evaluations") or []),
             *(source.get("partial_evaluations") or []),
+            *(source.get("preparation_evaluations") or []),
         ]
         for evaluation in research_evaluations:
             if not isinstance(evaluation, dict):
@@ -2077,6 +2134,7 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
         reference_evaluations = [
             *(source.get("task_reference_evaluations") or []),
             *(source.get("partial_task_reference_evaluations") or []),
+            *(source.get("preparation_task_reference_evaluations") or []),
         ]
         for evaluation in reference_evaluations:
             if not isinstance(evaluation, dict):

@@ -809,6 +809,11 @@ def execute_pending_evaluations() -> int:
         pending["evaluation_plan"]
     ):
         raise ValueError("accepted measurement plan changed")
+    if preparation and "experiment" in request:
+        raise ValueError(
+            "a preparation measurement must omit experiment; it names saved "
+            "lineages, not a trained experiment"
+        )
     experiment = int(pending["experiment"])
     if not preparation and int(request.get("experiment", -1)) != experiment:
         raise ValueError("evaluation request references the wrong experiment")
@@ -887,9 +892,18 @@ def execute_pending_evaluations() -> int:
             contender.setdefault("evaluations", []).append(item["metrics"])
 
     def request_key(
-        name: str, episodes: int, seed: int, fingerprint: str
-    ) -> tuple[str, int, int, str]:
-        return name, episodes, seed, fingerprint
+        name: str,
+        episodes: int,
+        seed: int,
+        fingerprint: str,
+        model_fingerprint: str = "",
+    ) -> tuple[str, int, int, str, str]:
+        return name, episodes, seed, fingerprint, model_fingerprint
+
+    def resolved_fingerprint(name: str) -> str:
+        """The currently resolved artifact fingerprint of a requested model."""
+        model = resolved_models.get(name) if is_v4 else None
+        return str(model.get("fingerprint", "")) if isinstance(model, dict) else ""
 
     completed_keys = {
         request_key(
@@ -897,13 +911,21 @@ def execute_pending_evaluations() -> int:
             int(item["episodes"]),
             int(item["seed"]),
             str(item.get("evaluation_semantics", "")),
+            str(item.get("model_fingerprint", "")),
         )
         for item in executed
     }
     # A task-reference measurement is identified by the human-owned panel it ran,
-    # never by researcher-owned evaluation semantics.
+    # never by researcher-owned evaluation semantics. A saved-lineage alias can
+    # be repointed, so the recorded model fingerprint must match the currently
+    # resolved lineage before either instrument is reused.
     completed_reference_keys = {
-        (item["candidate"], str(item.get("panel", ""))) for item in reference_executed
+        (
+            item["candidate"],
+            str(item.get("panel", "")),
+            str(item.get("model_fingerprint", "")),
+        )
+        for item in reference_executed
     }
     try:
         for spec in requested:
@@ -914,7 +936,9 @@ def execute_pending_evaluations() -> int:
             selection = spec["selection"]
             omitted_alternative = spec["omitted_alternative"]
             label = spec["label"]
-            key = request_key(name, episodes, seed, semantics)
+            key = request_key(
+                name, episodes, seed, semantics, resolved_fingerprint(name)
+            )
             if key in completed_keys:
                 console.announce(f"[evaluation] already complete; reusing {label}")
                 if active_round is not None and not _round_already_resolves(
@@ -932,6 +956,7 @@ def execute_pending_evaluations() -> int:
                                 int(item["episodes"]),
                                 int(item["seed"]),
                                 str(item.get("evaluation_semantics", "")),
+                                str(item.get("model_fingerprint", "")),
                             )
                             == key
                         ),
@@ -1036,7 +1061,11 @@ def execute_pending_evaluations() -> int:
             selection = spec["selection"]
             omitted_alternative = spec["omitted_alternative"]
             label = spec["label"]
-            reference_key = (name, panel["panel"])
+            reference_key = (
+                name,
+                panel["panel"],
+                resolved_fingerprint(name),
+            )
             if reference_key in completed_reference_keys:
                 console.announce(f"[task reference] already complete; reusing {label}")
                 if active_round is not None and not _round_already_resolves(
@@ -1051,6 +1080,8 @@ def execute_pending_evaluations() -> int:
                             for item in reference_executed
                             if item["candidate"] == name
                             and str(item.get("panel", "")) == panel["panel"]
+                            and str(item.get("model_fingerprint", ""))
+                            == resolved_fingerprint(name)
                         ),
                         None,
                     )
@@ -1228,19 +1259,22 @@ def execute_pending_evaluations() -> int:
         state["last_verdict"] = "measured as requested; awaiting researcher analysis"
     elif is_v4 and preparation:
         # A preparation measurement is evidence for the upcoming decision, not a
-        # trained experiment: accumulate the completed rounds and return to
-        # experiment preparation instead of analysis.
+        # trained experiment: accumulate the completed rounds under the forecast
+        # experiment and return to preparation instead of analysis.
         pending["evaluation_plan"] = None
         pending["evaluation_plan_models"] = None
         pending["evaluation_evidence_plan"] = None
         pending["partial_evaluations"] = executed
         pending["partial_task_reference_evaluations"] = reference_executed
-        state["preparation_evaluation_rounds"] = [
-            *(state.get("preparation_evaluation_rounds") or []),
-            *(pending.get("evaluation_rounds") or []),
-        ]
-        state["preparation_partial_evaluations"] = executed
-        state["preparation_partial_task_reference_evaluations"] = reference_executed
+        state["preparation_measurement"] = {
+            "experiment": experiment,
+            "rounds": [
+                dict(round_record)
+                for round_record in (pending.get("evaluation_rounds") or [])
+            ],
+            "partial_evaluations": executed,
+            "partial_task_reference_evaluations": reference_executed,
+        }
         state["pending_evaluation_request"] = None
         state["last_verdict"] = "preparation measurement complete"
     elif more_evidence:
@@ -1450,6 +1484,9 @@ def apply_pending_v4_closure(state: dict) -> bool:
         progress = "code_applied"
     if progress not in {"code_applied", "role_result_written"}:
         raise RuntimeError(f"cannot write v4 closure roles from progress {progress!r}")
+    # Closing the experiment retires any preparation ledger not already carried
+    # into its analysis record when training started.
+    state["preparation_measurement"] = None
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
     state["retained_lineages"] = plan["retained"]
@@ -1779,6 +1816,32 @@ def execute_pending_final_benchmark() -> int:
 
 
 # --- training phase --------------------------------------------------------
+
+
+def transfer_preparation_measurements(
+    state: dict, result: dict, pending: dict, index: int
+) -> None:
+    """Carry a matching preparation ledger into the experiment's analysis record.
+
+    The preparation measurements informed this experiment's parent choice. When
+    the forecast experiment starts, its scoped ledger moves onto the result and
+    is cleared from state, so it survives analysis and closure without being
+    mistaken for a measurement of any other experiment.
+    """
+    ledger = state.get("preparation_measurement")
+    if not isinstance(ledger, dict) or int(ledger.get("experiment", -1)) != index:
+        return
+    result["preparation_evaluation_rounds"] = [
+        dict(record) for record in (ledger.get("rounds") or [])
+    ]
+    result["preparation_evaluations"] = list(ledger.get("partial_evaluations") or [])
+    result["preparation_task_reference_evaluations"] = list(
+        ledger.get("partial_task_reference_evaluations") or []
+    )
+    pending["preparation_evaluation_rounds"] = list(
+        result["preparation_evaluation_rounds"]
+    )
+    state["preparation_measurement"] = None
 
 
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
@@ -2220,6 +2283,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         if parent is not None:
             pending["training_parent_lineage"] = copy.deepcopy(parent)
         result["candidates"] = archived_candidates
+        transfer_preparation_measurements(state, result, pending, index)
         state.update({"last_experiment": index, "last_verdict": verdict})
         if state.get("schema_version") == 4:
             state["pending_analysis"] = pending

@@ -65,9 +65,10 @@ eligible saved lineages, initially or in an optional refinement round while
 closing the current trained experiment. During experiment preparation, a request
 may measure only eligible saved lineages (`working`, `best_known`, or a retained
 ID); it may not name the candidates of an experiment that has not run, because
-those do not exist yet. A completed preparation round returns to preparation and
-is recorded under the upcoming experiment. Researcher-owned instrumentation may
-be changed before submitting the request.
+those do not exist yet, and it must omit the `experiment` field. A completed
+preparation round returns to preparation and is recorded under the upcoming
+experiment. Researcher-owned instrumentation may be changed before submitting
+the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
 The request-level `reason` should explain why the selected candidate or
@@ -80,7 +81,7 @@ Write `research/evaluation_request.json`:
 
 ```json
 {
-  "experiment": "<current experiment integer; omit during preparation>",
+  "experiment": "<current experiment integer; must be omitted during preparation>",
   "question": "<non-empty scientific question>",
   "reason": "<non-empty reason>",
   "measurements": [

@@ -1040,8 +1040,6 @@ if ($ResearcherBackend -eq "opencode") {
         Write-Status "Experiment budget reached: $allocatedExperiment of $MaxExperiments. Only a campaign conclusion may be prepared." Yellow
     }
 
-    Update-ResearchBrief
-
     # Anchor the rollback baseline before the researcher can change or commit
     # science. An unfinished experiment keeps the anchor it already established.
     if ($budgetReached) {
@@ -1056,6 +1054,10 @@ if ($ResearcherBackend -eq "opencode") {
     if ($runnerExitCode -ne 0) {
         throw "Could not establish the scientific parent of the next experiment."
     }
+
+    # Refreshed after the anchor so a budget-exhausted phase brief reflects the
+    # conclusion-only state it is actually in.
+    Update-ResearchBrief
 
     Write-Status "=== Researcher forming next hypothesis ==="
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
