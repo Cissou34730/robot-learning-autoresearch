@@ -2,42 +2,34 @@
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Scientific strategy
 
-**Current synthesis:** The campaign objective remains at least 98% success,
-or 196/200 episodes, on the official 6-20 cm reach-and-hold distribution. The
-fresh PPO baseline learned substantial task behavior: checkpoint-100352 achieved
-150/160 and 151/160 on two disjoint panels (301/320 pooled, 94.06%), and the
-unchanged working lineage achieved 155/160 (96.88%) on the latest panel. The
-full-radius and angle-balanced training-support changes did not improve the
-transferred parent. The fresh periodic-observation and fresh unchanged-baseline
-runs learned slowly enough to provide no measured replacement policy. The
-current reward combines distance and step costs with a one-time terminal bonus;
-the measured failures are truncated episodes, including failures with long
-partial holds. Measured task outcome, rather than training proxy success or
-checkpoint position, remains the strongest evidence of policy usefulness. The
-best development evidence is below the objective and is not an official verdict.
+**Current synthesis:** The human objective remains at least 98% success, or
+196/200 episodes, on the official 6-20 cm reach-and-hold distribution. The
+unchanged baseline lineage is still the strongest measured policy: it achieved
+150/160, 151/160, 155/160, and 159/160 on four disjoint development panels
+(615/640, 96.09% pooled), while the experiment-6 challenger achieved 118/160
+(73.75%) on the latest panel. The hold-progress reward therefore did not
+provide a replacement policy under the tested transferred recipe. The
+development evidence remains below a demonstrated official result despite the
+latest single-panel control result exceeding 98%.
 
-**Lessons and limits:** Available baseline failures are concentrated in the
--180 to -90 degree target sector, with many also inside 14 cm, but neither
-tested support intervention removed that pattern. The angle-balanced challengers
-added failures outside the intended sector. Later checkpoints on the baseline
-trajectory regressed from the selected 100352-step policy, so proxy peaks and
-recovery do not identify a useful saved policy. These results weaken the tested
-support recipes and fresh periodic recipe under their tested conditions; they
-do not disprove other reward, control, schedule, curriculum, or representation
-treatments. The measured parent uses the same 11-dimensional observation and
-physical action mapping throughout the current lineage. Unmeasured checkpoints
-remain unmeasured, and independent development panels remain distinct from the
-official assessment.
+**Lessons and limits:** Training proxies remain insufficient for checkpoint
+selection: experiment 6 reached a 0.99 training-success proxy and its measured
+checkpoint had the highest recorded training reward, but it lost every
+discordant paired episode to the unchanged parent (0 versus 41) and had 42
+truncated failures versus 1 for the parent. Several challenger failures still
+accumulated partial in-tolerance holds, but many never reached tolerance, so
+the measurement does not isolate hold stability as the only failure mechanism.
+The result weakens this reward intervention and trajectory, not all possible
+hold-specific rewards or other control, schedule, curriculum, or representation
+changes. The research panels are development evidence and remain distinct from
+the official 200-episode assessment.
 
-**Open questions:** It remains uncertain whether explicit reward credit for
-maintaining target tolerance can reduce the residual truncated failures without
-disrupting the learned reach behavior. It is also unknown whether a different
-control, reward, schedule, curriculum, or representation treatment can close
-the remaining gap, whether the periodic representation could help when trained
-adequately, and how much fresh-seed variability reflects the learning process.
-The transfer value of learned outer-radius behavior and the official result of
-the best development policy remain unknown. These questions record uncertainty
-and do not prescribe an experiment order.
+**Open questions:** It remains unknown whether another reward or control
+formulation can reduce the residual failures without disrupting the learned
+reach behavior, whether a representation or training-support change can close
+the remaining gap, and how much fresh-seed variability affects learning.
+The official result of the current best-known policy remains unknown. These
+questions record uncertainty and do not prescribe an experiment order.
 
 ## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 1
 
@@ -262,3 +254,45 @@ so terminal assessment is not requested.
 `research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-5-attempt-1.log`;
 `research/postmortems.md`; and the experiment-1 measurement artifacts referenced
 by the campaign brief.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 6
+
+**Result:** The hold-progress reward did not improve the transferred policy.
+The experiment is closed by restoring the unchanged working recipe and
+preserving the existing working and best-known lineage. The human objective is
+not demonstrated.
+
+**Observed behavior:** The run completed 120,832 steps and produced 24
+checkpoints. Training proxies were strong but variable: checkpoint-35840
+reached 0.99 training success, checkpoint-75776 had the highest recorded mean
+reward of 5.41199 with 0.98 training success, and the endpoint was 0.95
+training success with mean reward 2.06649. On the disjoint research panel
+5000-5159, the measured checkpoint-75776 achieved 118/160 (73.75%), while the
+unchanged working parent achieved 159/160 (99.375%) under the same evaluation
+context. The paired comparison had 0 challenger wins and 41 parent wins. The
+challenger had 42 truncated failures and the parent had 1; challenger failure
+diagnostics included maximum holds ranging from 0 to 96 steps, while the
+parent's sole failure reached no hold.
+
+**Hypothesis assessment:** The diagnostic hypothesis is contradicted under the
+tested transferred recipe and measured checkpoint: the expected gain in
+complete success and hold stability was absent, and task success declined
+substantially despite improved training proxies. This is evidence against the
+usefulness of this reward intervention and trajectory for the current decision,
+not a causal disproof of every hold-specific reward design or an explanation
+of all residual parent failures.
+
+**Interpretation:** The same-panel parent control and paired outcomes make the
+challenger's loss directly relevant to policy selection, while the disjoint
+panel makes the parent's 159/160 result comparable to its prior development
+measurements. The high proxy values are orthogonal process signals rather than
+evidence of task progress. The parent remains the safest working and
+best-known lineage, but development evidence is not the official verdict and
+does not by itself establish the 98% objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-6/inventory.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-6-checkpoint-75776-160ep-seed5000-543af51fd137.json`;
+`research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-6-working-160ep-seed5000-543af51fd137.json`;
+and `robot_learning/scenario/reward.py`.
