@@ -349,6 +349,20 @@ def validate_research_delta(raw_state: dict) -> list[str]:
     return code_changes
 
 
+def validate_campaign_conclusion_delta(raw_state: dict) -> None:
+    """A conclusion ends the campaign without resolving the current science.
+
+    A training proposal publishes its recipe and a lineage decision keeps,
+    reverts or restores it. A conclusion has no such operation, so it is legal
+    only while the scientific surface still matches the preparation anchor.
+    """
+    if anchored_scientific_delta(raw_state):
+        raise ValueError(
+            "a campaign conclusion cannot accept unresolved scientific changes; "
+            "revert or resolve them before concluding the campaign"
+        )
+
+
 def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
     """Validate the proposal against the parent already anchored for this phase."""
     experiment_kind, parameter_overrides, baseline, initialization = (
@@ -371,10 +385,15 @@ def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
 # --- hypothesis phase ------------------------------------------------------
 
 
-def begin_hypothesis_phase() -> int:
-    """Anchor the parent before the researcher may change or commit any science."""
+def begin_hypothesis_phase(conclusion_only: bool = False) -> int:
+    """Anchor the parent before the researcher may change or commit any science.
+
+    ``conclusion_only`` is set by the launcher when no training experiment may
+    be allocated; the phase then accepts only a campaign conclusion.
+    """
     state = repository.read_state()
     parent = repository.anchor_scientific_parent(state)
+    state["preparation_conclusion_only"] = True if conclusion_only else None
     repository.write_state(state)
     console.announce(
         f"[runner] scientific parent of the next experiment: {parent[:12]}"
@@ -409,6 +428,8 @@ def check_proposal() -> int:
             validate_training_proposal_delta(proposal, state)
         elif contract == "lineage":
             validate_research_delta(state)
+        elif contract == "conclusion":
+            validate_campaign_conclusion_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
         return 1
@@ -1486,19 +1507,27 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
 # --- campaign conclusion ---------------------------------------------------
 
 
-def apply_campaign_conclusion(plan: dict, state: dict) -> None:
-    """Record a preparation-phase conclusion in the persisted campaign state.
+def apply_campaign_conclusion(operation: dict, state: dict) -> None:
+    """Record the decision without yet publishing a terminal campaign status.
 
-    A final-benchmark request stages the existing terminal assessment path. A
-    no-further-experiment conclusion ends the campaign directly. Neither creates
-    an experiment record or touches the experiment history.
+    The decision is committed before any terminal status is written, so a
+    restart cannot observe terminal state before the decision is durable. A
+    final-benchmark request stages the existing terminal assessment path; a
+    no-further-experiment conclusion ends the campaign. Neither creates an
+    experiment record.
     """
+    action = operation["action"]
     state["campaign_conclusion"] = {
-        "action": plan["action"],
-        "reason": plan["reason"],
+        "action": action,
+        "reason": operation["reason"],
     }
-    if plan["action"] == "request_final_benchmark":
-        best_known = plan["best_known"]
+    # A clean conclusion releases the preparation anchor for both outcomes.
+    state["pending_scientific_parent"] = None
+    state["preparation_conclusion_only"] = None
+    if action == "request_final_benchmark":
+        best_known = state.get("best_known_lineage")
+        if not isinstance(best_known, dict):
+            raise ValueError("a final benchmark requires a designated best-known model")
         state["last_verdict"] = "researcher requested the official final benchmark"
         state["pending_final_benchmark"] = {
             "experiment": int(state.get("last_experiment", 0)),
@@ -1511,21 +1540,60 @@ def apply_campaign_conclusion(plan: dict, state: dict) -> None:
         state["last_verdict"] = (
             "researcher concluded that no further experiment is warranted"
         )
-        state["terminal_campaign_status"] = "no_further_experiment"
-        state["pending_scientific_parent"] = None
     repository.write_state(state)
+
+
+def _publish_runner_memory(message: str) -> None:
+    """Commit runner memory, publishing a local commit that a retry finds staged."""
+    if not repository.commit_runner_memory(message):
+        repository.push_head()
+
+
+def complete_campaign_conclusion(state: dict) -> None:
+    """Publish a planned conclusion, committing the decision before its terminal.
+
+    Progress is persisted so an interrupted publication resumes from the last
+    durable step: terminal state is never visible before the decision has been
+    committed and pushed.
+    """
+    operation = state.get("pending_campaign_conclusion")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending campaign conclusion")
+    progress = operation.get("progress")
+    if progress not in {"planned", "committed"}:
+        raise ValueError(f"unknown campaign conclusion progress: {progress!r}")
+    if progress == "planned":
+        apply_campaign_conclusion(operation, state)
+        _publish_runner_memory("record the campaign conclusion")
+        operation["progress"] = "committed"
+        repository.write_state(state)
+        progress = "committed"
+    if progress == "committed":
+        if operation["action"] == "no_further_experiment":
+            state["terminal_campaign_status"] = "no_further_experiment"
+        repository.write_state(state)
+        _publish_runner_memory("finish the campaign conclusion")
+        try:
+            state["pending_campaign_conclusion"] = None
+            repository.write_state(state)
+            _publish_runner_memory("clear the campaign conclusion")
+        except BaseException:
+            state["pending_campaign_conclusion"] = operation
+            repository.write_state(state)
+            raise
 
 
 def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
-    plan = protocol.plan_campaign_conclusion(proposal, state)
-    apply_campaign_conclusion(plan, state)
-    if plan["action"] == "request_final_benchmark":
-        repository.commit_runner_memory("request the official final benchmark")
-    else:
-        repository.commit_runner_memory(
-            "record that no further experiment is warranted"
-        )
+    if not isinstance(state.get("pending_campaign_conclusion"), dict):
+        plan = protocol.plan_campaign_conclusion(proposal, state)
+        state["pending_campaign_conclusion"] = {
+            "action": plan["action"],
+            "reason": plan["reason"],
+            "progress": "planned",
+        }
+        repository.write_state(state)
+    complete_campaign_conclusion(state)
     paths.PROPOSAL_PATH.unlink(missing_ok=True)
     return 0
 
@@ -2200,6 +2268,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
+    parser.add_argument("--conclusion-only", action="store_true")
     parser.add_argument("--migrate-research-state", action="store_true")
     return parser.parse_args()
 
@@ -2211,7 +2280,7 @@ def main() -> int:
         print("RESEARCH_STATE_MIGRATED" if migrated else "RESEARCH_STATE_ALREADY_V4")
         return 0
     if args.begin_hypothesis:
-        return begin_hypothesis_phase()
+        return begin_hypothesis_phase(conclusion_only=args.conclusion_only)
     if args.check_proposal:
         return check_proposal()
     if args.check_evaluation_request:
@@ -2233,6 +2302,12 @@ def main() -> int:
         return status
     if args.evaluate_pending:
         return execute_pending_evaluations()
+    if isinstance(repository.read_state().get("pending_campaign_conclusion"), dict):
+        state = repository.load_state(
+            allow_unmeasured=True, allow_missing_artifact=True
+        )
+        complete_campaign_conclusion(state)
+        return 0
     if repository.read_state().get("pending_closure_operation"):
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
@@ -2264,6 +2339,7 @@ def main() -> int:
         validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
     if proposal_contract == "conclusion":
+        validate_campaign_conclusion_delta(raw_state)
         return resolve_campaign_conclusion(proposal, raw_state)
     try:
         return run_training_experiment(proposal, args)

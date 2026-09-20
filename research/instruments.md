@@ -333,6 +333,15 @@ an experiment-index row or an intervention count. A `campaign_conclusion` is
 accepted only while no measurement, analysis, closure or official assessment is
 pending; each pending phase requires its own deliverable.
 
+A conclusion resolves no science, so it is accepted only while the researcher's
+scientific surface matches the preparation anchor. Revert or resolve any
+outstanding researcher-owned change first; unlike a training proposal or a lineage
+decision, a conclusion neither publishes nor restores a recipe. When the
+experiment budget is exhausted, no further training experiment may be prepared,
+but a campaign conclusion remains legal. The Runner commits the decision before
+it publishes any terminal status, so an interrupted conclusion is resumed rather
+than inherited as a published terminal state.
+
 ## Record the postmortem
 
 **Phase:** Experiment closure.

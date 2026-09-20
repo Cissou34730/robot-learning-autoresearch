@@ -155,6 +155,10 @@ experiment is warranted. Each is written as a `campaign_conclusion` in
 Requesting the assessment submits the designated best-known model for the
 terminal verdict; concluding that no further experiment is warranted ends the
 campaign without one. Neither has to be reached through an intermediate closure.
+A conclusion resolves no science, so it requires a clean scientific surface: any
+researcher-owned change must be reverted or resolved first. When the experiment
+budget is exhausted, only a conclusion may be prepared; a further training
+experiment is rejected.
 
 ## Post-training analysis
 

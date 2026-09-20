@@ -764,11 +764,21 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
             )
         return "lineage"
     if "campaign_conclusion" in proposal:
+        if state.get("pending_closure_operation") is not None:
+            raise ValueError(
+                "a campaign conclusion is not accepted while a closure operation "
+                "is pending"
+            )
         if set(proposal) != {"campaign_conclusion"}:
             raise ValueError(
                 "a campaign conclusion must contain only campaign_conclusion"
             )
         return "conclusion"
+    if state.get("preparation_conclusion_only"):
+        raise ValueError(
+            "the experiment budget is exhausted; only a campaign conclusion may be "
+            "prepared in this phase"
+        )
     if "previous_result_decision" in proposal:
         raise ValueError(
             "the previous experiment lineage is already resolved; the current "
@@ -815,6 +825,10 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     """
     if state.get("schema_version") != 4:
         raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
+    if state.get("pending_closure_operation") is not None:
+        raise ValueError(
+            "a campaign conclusion is not accepted while a closure operation is pending"
+        )
     if set(proposal) != {"campaign_conclusion"}:
         raise ValueError("a campaign conclusion must contain only campaign_conclusion")
     conclusion = proposal["campaign_conclusion"]
