@@ -407,7 +407,7 @@ def check_proposal() -> int:
         contract = protocol.validate_proposal_against_state(proposal, state)
         if contract == "training":
             validate_training_proposal_delta(proposal, state)
-        else:
+        elif contract == "lineage":
             validate_research_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
@@ -1483,6 +1483,53 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
     return 0
 
 
+# --- campaign conclusion ---------------------------------------------------
+
+
+def apply_campaign_conclusion(plan: dict, state: dict) -> None:
+    """Record a preparation-phase conclusion in the persisted campaign state.
+
+    A final-benchmark request stages the existing terminal assessment path. A
+    no-further-experiment conclusion ends the campaign directly. Neither creates
+    an experiment record or touches the experiment history.
+    """
+    state["campaign_conclusion"] = {
+        "action": plan["action"],
+        "reason": plan["reason"],
+    }
+    if plan["action"] == "request_final_benchmark":
+        best_known = plan["best_known"]
+        state["last_verdict"] = "researcher requested the official final benchmark"
+        state["pending_final_benchmark"] = {
+            "experiment": int(state.get("last_experiment", 0)),
+            "selected": "best_known",
+            "artifact": best_known["artifact"],
+            "fingerprint": best_known["fingerprint"],
+            "best_known": copy.deepcopy(best_known),
+        }
+    else:
+        state["last_verdict"] = (
+            "researcher concluded that no further experiment is warranted"
+        )
+        state["terminal_campaign_status"] = "no_further_experiment"
+        state["pending_scientific_parent"] = None
+    repository.write_state(state)
+
+
+def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
+    state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    plan = protocol.plan_campaign_conclusion(proposal, state)
+    apply_campaign_conclusion(plan, state)
+    if plan["action"] == "request_final_benchmark":
+        repository.commit_runner_memory("request the official final benchmark")
+    else:
+        repository.commit_runner_memory(
+            "record that no further experiment is warranted"
+        )
+    paths.PROPOSAL_PATH.unlink(missing_ok=True)
+    return 0
+
+
 # --- final benchmark phase -------------------------------------------------
 
 
@@ -2216,6 +2263,8 @@ def main() -> int:
     if proposal_contract == "lineage":
         validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
+    if proposal_contract == "conclusion":
+        return resolve_campaign_conclusion(proposal, raw_state)
     try:
         return run_training_experiment(proposal, args)
     except KeyboardInterrupt:

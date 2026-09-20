@@ -763,6 +763,12 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
                 "previous_result_decision"
             )
         return "lineage"
+    if "campaign_conclusion" in proposal:
+        if set(proposal) != {"campaign_conclusion"}:
+            raise ValueError(
+                "a campaign conclusion must contain only campaign_conclusion"
+            )
+        return "conclusion"
     if "previous_result_decision" in proposal:
         raise ValueError(
             "the previous experiment lineage is already resolved; the current "
@@ -776,7 +782,9 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
 def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     """Fully validate a proposal for its phase without mutating repository state."""
     contract = validate_proposal_phase(proposal, raw_state)
-    if contract == "lineage":
+    if contract == "conclusion":
+        plan_campaign_conclusion(proposal, raw_state)
+    elif contract == "lineage":
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
         )
@@ -795,6 +803,51 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     if contract == "training" and not proposal.get("baseline"):
         validate_research_memory(proposal, raw_state)
     return contract
+
+
+def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
+    """Validate a preparation-phase decision that ends without a new experiment.
+
+    Preparation historically required a training proposal. A campaign conclusion
+    is the second legal exit: it either submits the standing best-known lineage
+    for the official final assessment or records that no further experiment is
+    warranted. Neither outcome creates an experiment record.
+    """
+    if state.get("schema_version") != 4:
+        raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
+    if set(proposal) != {"campaign_conclusion"}:
+        raise ValueError("a campaign conclusion must contain only campaign_conclusion")
+    conclusion = proposal["campaign_conclusion"]
+    if not isinstance(conclusion, dict):
+        raise TypeError("campaign_conclusion must be an object")
+    extra = set(conclusion) - {"action", "reason"}
+    if extra:
+        raise ValueError(f"unsupported campaign_conclusion fields: {sorted(extra)}")
+    action = str(conclusion.get("action", "")).strip()
+    reason = str(conclusion.get("reason", "")).strip()
+    if action not in {"request_final_benchmark", "no_further_experiment"}:
+        raise ValueError(
+            "campaign_conclusion action must be request_final_benchmark or "
+            "no_further_experiment"
+        )
+    if not reason:
+        raise ValueError("campaign_conclusion requires a non-empty reason")
+    best_known = state.get("best_known_lineage")
+    if action == "request_final_benchmark":
+        if not isinstance(best_known, dict):
+            raise ValueError("a final benchmark requires a designated best-known model")
+        artifact = repository.resolve_repo_path(best_known["artifact"])
+        repository.require_complete_artifact(artifact, "best-known lineage")
+        if state.get("official_benchmark_artifact") == best_known.get("fingerprint"):
+            raise ValueError(
+                "the designated best-known model already received an official benchmark"
+            )
+    return {
+        "action": action,
+        "reason": reason,
+        "campaign_conclusion": conclusion,
+        "best_known": best_known if action == "request_final_benchmark" else None,
+    }
 
 
 # --- evaluation requests ---------------------------------------------------

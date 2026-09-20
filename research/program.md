@@ -108,8 +108,9 @@ The phase order is:
    rounds or close directly from logs and existing evidence;
 4. close the experiment and resolve its working lineage, scientific recipe
    decision, and optional best-known designation;
-5. either prepare the next experiment, or request Runner execution of the final
-   benchmark as a terminal campaign action through the closure decision.
+5. either prepare the next experiment, request Runner execution of the final
+   benchmark as a terminal campaign action, or record that no further experiment
+   is warranted.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -146,6 +147,14 @@ The phase is incomplete until that deliverable exists and satisfies the contract
 in `research/instruments.md`. Continuing an unchanged method requires no code or
 parameter modification. The automatic baseline requires no Researcher-authored
 rationale.
+
+Preparation need not propose an experiment. It may instead request the official
+final assessment of the standing best-known model, or record that no further
+experiment is warranted. Each is written as a `campaign_conclusion` in
+`research/proposal.json` and is recorded as a decision, never as an experiment.
+Requesting the assessment submits the designated best-known model for the
+terminal verdict; concluding that no further experiment is warranted ends the
+campaign without one. Neither has to be reached through an intermediate closure.
 
 ## Post-training analysis
 
@@ -263,8 +272,8 @@ Another useful investigation does not prohibit stopping, and reaching a
 development threshold does not require stopping. No residual-failure criterion or
 proof that no better research direction exists is required.
 
-Request the official benchmark only through closure, targeting the frozen
-best-known model. Requesting it ends the campaign after either verdict:
+Request the official benchmark from experiment preparation or closure, targeting
+the frozen best-known model. Requesting it ends the campaign after either verdict:
 `goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
 plan further work conditional on benchmark failure. Only this benchmark declares
 the official result; a failed official verdict is never development feedback for

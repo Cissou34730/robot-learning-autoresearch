@@ -307,6 +307,32 @@ transferred learning trajectory; it tests whether the current recipe can learn
 from fresh initialization. Scientific claims about replication must use that
 narrower interpretation.
 
+## Conclude the campaign
+
+**Phase:** Experiment preparation.
+
+Preparation may end without a new experiment. Write `research/proposal.json`
+containing only a `campaign_conclusion` object:
+
+```json
+{
+  "campaign_conclusion": {
+    "action": "<request_final_benchmark | no_further_experiment>",
+    "reason": "<non-empty reason for the decision>"
+  }
+}
+```
+
+`request_final_benchmark` submits the standing `best_known` lineage for the
+official final assessment. It requires a designated best-known model and reuses
+the closure decision of the same name: the official benchmark runs once and the
+campaign ends after its verdict. `no_further_experiment` records the Researcher's
+judgement that no further experiment is warranted without requesting that
+assessment; it ends the campaign. Neither outcome creates an experiment record,
+an experiment-index row or an intervention count. A `campaign_conclusion` is
+accepted only while no measurement, analysis, closure or official assessment is
+pending; each pending phase requires its own deliverable.
+
 ## Record the postmortem
 
 **Phase:** Experiment closure.

@@ -669,7 +669,12 @@ if ($ResearcherBackend -eq "opencode") {
 
     $terminalState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
     if ($null -ne $terminalState.terminal_campaign_status) {
-        Write-Status "Official assessment complete: $($terminalState.terminal_campaign_status). Research loop finished." Green
+        if ($terminalState.terminal_campaign_status -eq "no_further_experiment") {
+            Write-Status "Researcher concluded that no further experiment is warranted. Research loop finished." Green
+        }
+        else {
+            Write-Status "Official assessment complete: $($terminalState.terminal_campaign_status). Research loop finished." Green
+        }
         break
     }
 
@@ -991,13 +996,13 @@ if ($ResearcherBackend -eq "opencode") {
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
         "Start from the campaign objective and the whole campaign's evidence, then rewrite the Scientific strategy as provisional memory that prescribes no next action."
-        "Identify the scientific question, then identify the concrete campaign decision that its possible outcomes could change. Compare plausible scientific questions by those decisions and their expected contribution to the human objective; an unresolved question alone does not justify a full training run. Decide whether the investigation is confirmatory, diagnostic, or exploratory, and only then choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation operations: continuation, training with fresh or transfer initialization, and replication."
+        "Identify the scientific question, then identify the concrete campaign decision that its possible outcomes could change. Compare plausible scientific questions by those decisions and their expected contribution to the human objective; an unresolved question alone does not justify a full training run. Decide whether the investigation is confirmatory, diagnostic, or exploratory, and only then choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; or concluding that no further experiment is warranted."
         "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         "Code or configuration edits are required only when the selected operation calls for them."
-        "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the contract in research/instruments.md, plus any edits called for by the selected operation."
-        "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
+        "Expected deliverable: one research/proposal.json for experiment $nextExperiment that either proposes the selected operation or records a campaign conclusion, using the contract in research/instruments.md, plus any edits called for by the selected operation."
+        "Do not exit after analysis or diagnosis: this phase is incomplete until one of the legal preparation deliverables has been written. A campaign conclusion is written through research/proposal.json and is recorded as a decision, never as an experiment."
         "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
     Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment
