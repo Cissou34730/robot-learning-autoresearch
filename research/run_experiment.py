@@ -574,6 +574,46 @@ def check_analysis_deliverable() -> int:
         return 1
 
 
+def check_preparation_deliverable() -> int:
+    """Preflight the preparation phase's proposal or saved-lineage measurement.
+
+    Preparation can produce either a training/lineage/conclusion proposal or a
+    measurement request on saved lineages. A request is lineage-only: it may not
+    name the candidates of an experiment that has not run.
+    """
+    evaluation_present = paths.EVALUATION_REQUEST_PATH.exists()
+    proposal_present = paths.PROPOSAL_PATH.exists()
+    if evaluation_present and proposal_present:
+        print(
+            "PREPARATION_DELIVERABLE_INVALID: write either a measurement request "
+            "or a proposal, not both"
+        )
+        return 1
+    if not evaluation_present:
+        return check_proposal()
+    try:
+        state = repository.read_state()
+        request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        if not isinstance(request, dict):
+            raise TypeError("evaluation_request.json must contain a JSON object")
+        validate_research_delta(state)
+        protocol.validate_preparation_evaluation_request(
+            request, state, protected_overlap=_protected_panel_overlap()
+        )
+    except (
+        json.JSONDecodeError,
+        KeyError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as error:
+        print(f"PREPARATION_DELIVERABLE_INVALID: {error}")
+        return 1
+    print("PREPARATION_DELIVERABLE_VALID: measurement")
+    return 0
+
+
 def check_lineage_evidence(experiment: int) -> int:
     """Preflight for the loop: is the pending lineage decision attested yet?"""
     state = repository.read_state()
@@ -731,11 +771,19 @@ def execute_pending_evaluations() -> int:
     state = repository.read_state()
     campaign_id = repository.current_campaign_id(state)
     is_v4 = state.get("schema_version") == 4
-    pending = (
-        state.get("pending_analysis")
-        if is_v4
-        else state.get("pending_evaluation_request")
-    )
+    preparation = False
+    if is_v4:
+        pending = state.get("pending_analysis")
+        if pending is None:
+            pending = state.get("pending_evaluation_request")
+            if pending is None and paths.EVALUATION_REQUEST_PATH.exists():
+                pending = protocol.preparation_measurement_context(state)
+                state["pending_evaluation_request"] = pending
+                repository.write_state(state)
+            if isinstance(pending, dict) and pending.get("preparation"):
+                preparation = True
+    else:
+        pending = state.get("pending_evaluation_request")
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
     validate_research_delta(state)
@@ -762,7 +810,7 @@ def execute_pending_evaluations() -> int:
     ):
         raise ValueError("accepted measurement plan changed")
     experiment = int(pending["experiment"])
-    if int(request.get("experiment", -1)) != experiment:
+    if not preparation and int(request.get("experiment", -1)) != experiment:
         raise ValueError("evaluation request references the wrong experiment")
     candidates = pending["candidates"]
     available = protocol.available_evaluation_candidates(pending, state)
@@ -1170,7 +1218,7 @@ def execute_pending_evaluations() -> int:
         "research_change_paths": pending.get("research_change_paths", []),
     }
     more_evidence = bool(request.get("need_more_evidence", False)) and not is_v4
-    if is_v4:
+    if is_v4 and not preparation:
         pending["evaluation_plan"] = None
         pending["evaluation_plan_models"] = None
         pending["evaluation_evidence_plan"] = None
@@ -1178,6 +1226,23 @@ def execute_pending_evaluations() -> int:
         pending["partial_task_reference_evaluations"] = reference_executed
         state["pending_analysis"] = pending
         state["last_verdict"] = "measured as requested; awaiting researcher analysis"
+    elif is_v4 and preparation:
+        # A preparation measurement is evidence for the upcoming decision, not a
+        # trained experiment: accumulate the completed rounds and return to
+        # experiment preparation instead of analysis.
+        pending["evaluation_plan"] = None
+        pending["evaluation_plan_models"] = None
+        pending["evaluation_evidence_plan"] = None
+        pending["partial_evaluations"] = executed
+        pending["partial_task_reference_evaluations"] = reference_executed
+        state["preparation_evaluation_rounds"] = [
+            *(state.get("preparation_evaluation_rounds") or []),
+            *(pending.get("evaluation_rounds") or []),
+        ]
+        state["preparation_partial_evaluations"] = executed
+        state["preparation_partial_task_reference_evaluations"] = reference_executed
+        state["pending_evaluation_request"] = None
+        state["last_verdict"] = "preparation measurement complete"
     elif more_evidence:
         pending["evaluation_plan"] = None
         pending["partial_evaluations"] = executed
@@ -1191,20 +1256,22 @@ def execute_pending_evaluations() -> int:
         state["pending_researcher_decision"] = researcher_context
         state["pending_evaluation_request"] = None
         state["last_verdict"] = result["verdict"]
-    state["last_experiment"] = experiment
+    if not preparation:
+        state["last_experiment"] = experiment
     if pending.get("baseline"):
         paths.BASELINE_PENDING_PATH.unlink(missing_ok=True)
     repository.write_state(state)
     paths.EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
-    if is_v4:
+    if is_v4 and not preparation:
         repository.upsert_result(result)
-    elif not more_evidence:
+    elif not is_v4 and not more_evidence:
         repository.append_result(result)
-    next_phase = (
-        "Researcher post-training analysis"
-        if is_v4 or more_evidence
-        else "Researcher lineage decision"
-    )
+    if preparation:
+        next_phase = "Researcher experiment preparation"
+    elif is_v4 or more_evidence:
+        next_phase = "Researcher post-training analysis"
+    else:
+        next_phase = "Researcher lineage decision"
     console.announce(
         "\n"
         + console.render_evidence_card(
@@ -2265,6 +2332,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--evaluate-pending-final", action="store_true")
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
+    parser.add_argument("--check-preparation-deliverable", action="store_true")
     parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
@@ -2283,6 +2351,8 @@ def main() -> int:
         return begin_hypothesis_phase(conclusion_only=args.conclusion_only)
     if args.check_proposal:
         return check_proposal()
+    if getattr(args, "check_preparation_deliverable", False):
+        return check_preparation_deliverable()
     if args.check_evaluation_request:
         return check_evaluation_request()
     if args.check_analysis_deliverable:

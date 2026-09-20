@@ -58,11 +58,16 @@ next experiment.
 
 ## Request measurements
 
-**Phase:** Post-training analysis.
+**Phase:** Post-training analysis or experiment preparation.
 
-Use this request during initial analysis or an optional refinement round while
-closing the current trained experiment. Researcher-owned instrumentation may be
-changed before submitting the request.
+During analysis, use this request for the current experiment's candidates or
+eligible saved lineages, initially or in an optional refinement round while
+closing the current trained experiment. During experiment preparation, a request
+may measure only eligible saved lineages (`working`, `best_known`, or a retained
+ID); it may not name the candidates of an experiment that has not run, because
+those do not exist yet. A completed preparation round returns to preparation and
+is recorded under the upcoming experiment. Researcher-owned instrumentation may
+be changed before submitting the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
 The request-level `reason` should explain why the selected candidate or
@@ -75,7 +80,7 @@ Write `research/evaluation_request.json`:
 
 ```json
 {
-  "experiment": "<current experiment integer>",
+  "experiment": "<current experiment integer; omit during preparation>",
   "question": "<non-empty scientific question>",
   "reason": "<non-empty reason>",
   "measurements": [
@@ -199,9 +204,11 @@ the reward, is excluded because it changes neither replay nor success. Pooled
 comparison uses success only; per-episode `reward_total` in the detailed
 artifacts is not comparable across a reward change.
 
-Each completed measurement round returns to post-training analysis. New requests
-do not use `need_more_evidence`; closing is a separate closure proposal in the
-same phase. Legacy accepted requests that contain it remain recoverable.
+Each completed measurement round returns to the phase that requested it: post-
+training analysis for an analysis request, experiment preparation for a saved-
+lineage preparation request. New requests do not use `need_more_evidence`;
+closing is a separate closure proposal in the same phase. Legacy accepted
+requests that contain it remain recoverable.
 
 ## Request training
 

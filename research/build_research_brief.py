@@ -954,7 +954,10 @@ def _v4_phase_section(
             if terminal
             else "`research/evaluation_request.json` or closure `research/proposal.json`"
             if isinstance(pending, dict)
-            else "`research/proposal.json`"
+            else (
+                "`research/proposal.json` or a saved-lineage "
+                "`research/evaluation_request.json`"
+            )
         ),
     ]
     if terminal:
@@ -1408,6 +1411,22 @@ def _v4_measurement_rounds_section(
         else (results[-1] if results else None)
     )
     source = pending if isinstance(pending, dict) else latest
+    if not isinstance(pending, dict):
+        # Preparation measurements are completed before the next experiment is
+        # proposed; show them after the most recent experiment's own rounds.
+        preparation_rounds = state.get("preparation_evaluation_rounds")
+        if isinstance(preparation_rounds, list) and preparation_rounds:
+            source = {
+                **(source if isinstance(source, dict) else {}),
+                "evaluation_rounds": [
+                    *(
+                        source.get("evaluation_rounds") or []
+                        if isinstance(source, dict)
+                        else []
+                    ),
+                    *preparation_rounds,
+                ],
+            }
     if not isinstance(source, dict):
         return []
     rounds = source.get("evaluation_rounds")

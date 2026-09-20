@@ -568,6 +568,21 @@ function Test-EvaluationRequest {
     return $true
 }
 
+function Test-PreparationDeliverable {
+    $validationOutput = @(
+        uv run python research/run_experiment.py --check-preparation-deliverable 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $script:PreparationValidationFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0) {
+        Write-Host $script:PreparationValidationFeedback
+        return $false
+    }
+    return $true
+}
+
 function Test-AnalysisDeliverable {
     $validationOutput = @(
         uv run python research/run_experiment.py --check-analysis-deliverable 2>&1
@@ -586,16 +601,25 @@ function Test-AnalysisDeliverable {
 # The phases below observe the same facts: what the process did,
 # whether the deliverable exists, and whether the protected validator accepts it.
 function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
-    $present = Test-Path "research\proposal.json"
+    # Preparation accepts either a proposal or a saved-lineage measurement
+    # request, so both files are observed before the deliverable is judged.
+    $measurementPresent = Test-Path "research\evaluation_request.json"
+    $present = $measurementPresent -or (Test-Path "research\proposal.json")
     $valid = $false
-    $reason = "research/proposal.json was not created"
+    $reason = "research/proposal.json or research/evaluation_request.json was not created"
     if ($present) {
-        $valid = Test-ResearchProposal
-        $reason = if ($valid) { "" } else { $script:ProposalValidationFeedback }
+        $valid = Test-PreparationDeliverable
+        $reason = if ($valid) { "" } else { $script:PreparationValidationFeedback }
+    }
+    $deliverable = if ($measurementPresent) {
+        "research/evaluation_request.json"
+    }
+    else {
+        "research/proposal.json"
     }
     New-ResearcherSessionStatus -Phase $phase -Attempt $attempt `
         -ExitCode $script:ResearcherExitCode `
-        -Deliverable "research/proposal.json" `
+        -Deliverable $deliverable `
         -Present $present -Valid $valid -Reason $reason
 }
 
@@ -776,7 +800,10 @@ if ($ResearcherBackend -eq "opencode") {
             Update-ResearchBrief
             continue
         }
-        Remove-Item "research\evaluation_request.json", "research\proposal.json" -ErrorAction SilentlyContinue
+        # Only a stale closure proposal is cleared here. The runner removes a
+        # consumed evaluation request itself, so a legitimate preparation
+        # measurement request is never silently discarded at this boundary.
+        Remove-Item "research\proposal.json" -ErrorAction SilentlyContinue
         $completedMeasurementCount = @($researchState.pending_analysis.requested_evaluations).Count +
             @($researchState.pending_analysis.partial_evaluations).Count +
             @($researchState.pending_analysis.task_reference_evaluations).Count +
@@ -846,6 +873,26 @@ if ($ResearcherBackend -eq "opencode") {
 
     if ($null -ne $researchState.pending_evaluation_request) {
         Update-ResearchBrief
+        if ($researchState.schema_version -eq 4) {
+            # A version-4 preparation measurement returns to experiment
+            # preparation after execution; it never enters the legacy
+            # evaluation-design phase.
+            Write-Status "=== Resuming the researcher's preparation measurement ==="
+            $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
+            if (Test-StopAfterOperation $runnerExitCode "research runner") {
+                break
+            }
+            if ($runnerExitCode -eq 130) {
+                Write-Status "=== Preparation measurement paused; completed measurements were saved ===" Yellow
+                break
+            }
+            if ($runnerExitCode -ne 0) {
+                throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
+            }
+            Update-ResearchBrief
+            Write-Status "=== Preparation measurement complete; returning to preparation ===" Green
+            continue
+        }
         $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
         if (-not $evaluationPlanExists) {
             Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
@@ -1026,13 +1073,13 @@ if ($ResearcherBackend -eq "opencode") {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
             else {
-                "Identify the scientific question, then identify the concrete campaign decision that its possible outcomes could change. Compare plausible scientific questions by those decisions and their expected contribution to the human objective; an unresolved question alone does not justify a full training run. Decide whether the investigation is confirmatory, diagnostic, or exploratory, and only then choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; or concluding that no further experiment is warranted."
+                "Identify the scientific question, then identify the concrete campaign decision that its possible outcomes could change. Compare plausible scientific questions by those decisions and their expected contribution to the human objective; an unresolved question alone does not justify a full training run. Decide whether the investigation is confirmatory, diagnostic, or exploratory, and only then choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or, before any of these, a measurement round on saved lineages."
             })
         $(if ($budgetReached) {
                 ""
             }
             else {
-                "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
+                "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility. You may request a measurement round on saved lineages before proposing; candidates of a not-yet-run experiment are not available."
             })
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
@@ -1046,7 +1093,7 @@ if ($ResearcherBackend -eq "opencode") {
                 "Expected deliverable: research/proposal.json containing only a campaign_conclusion, using the contract in research/instruments.md."
             }
             else {
-                "Expected deliverable: one research/proposal.json for experiment $nextExperiment that either proposes the selected operation or records a campaign conclusion, using the contract in research/instruments.md, plus any edits called for by the selected operation."
+                "Expected deliverable: one research/proposal.json for experiment $nextExperiment that either proposes the selected operation or records a campaign conclusion, using the contract in research/instruments.md, plus any edits called for by the selected operation. Alternatively, write research/evaluation_request.json to measure saved lineages before deciding; the completed round returns to this phase with its results available. The request may name only saved lineages (working, best_known, or a retained ID); candidates of a not-yet-run experiment are not available."
             })
         $(if ($budgetReached) {
                 "The phase is incomplete until the campaign conclusion has been written. A campaign conclusion is recorded as a decision, never as an experiment."
@@ -1058,7 +1105,7 @@ if ($ResearcherBackend -eq "opencode") {
                 "Do not start training or evaluation, or write a lineage decision; the launcher validates and executes the proposal."
             }
             else {
-                "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
+                "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal or accepted measurement request."
             })
     ) -join " "
     Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment
@@ -1082,10 +1129,10 @@ if ($ResearcherBackend -eq "opencode") {
         Write-Status "=== Research proposal missing or invalid; retrying the same phase once ===" Yellow
         $retryPrompt = @(
             "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
-            "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, preserving valid researcher-owned edits that belong to this unfinished experiment."
+            "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, or the invalid or missing saved-lineage research/evaluation_request.json, preserving valid researcher-owned edits that belong to this unfinished experiment."
             "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment."
-            "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py."
+            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment, or a corrected saved-lineage research/evaluation_request.json."
+            "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Experiment $nextExperiment -Continue
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
@@ -1105,6 +1152,25 @@ if ($ResearcherBackend -eq "opencode") {
         if (-not $proposalStatus.Complete) {
             throw "Researcher ended twice without a proposal valid for the current phase. The loop stopped safely: $($proposalStatus.Reason)"
         }
+    }
+    if (Test-Path "research\evaluation_request.json") {
+        # A saved-lineage measurement is executed before any proposal, then the
+        # phase reopens with its results available for the parent decision.
+        Write-Status "=== Executing the researcher's saved-lineage measurement request ==="
+        $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
+            Write-Status "=== Preparation measurement paused; completed measurements were saved ===" Yellow
+            break
+        }
+        if ($runnerExitCode -ne 0) {
+            throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
+        }
+        Update-ResearchBrief
+        Write-Status "=== Preparation measurement complete; the next hypothesis returns with new evidence ===" Green
+        continue
     }
     $runnerExitCode = Invoke-Runner
     if (Test-StopAfterOperation $runnerExitCode "research runner") {

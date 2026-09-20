@@ -1025,6 +1025,9 @@ def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[in
     sources = list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
     if isinstance(pending, dict):
         sources.append(pending)
+    preparation_partial = state.get("preparation_partial_evaluations")
+    if preparation_partial:
+        sources.append({"partial_evaluations": preparation_partial})
     panels: list[tuple[int, int]] = []
     for source in sources:
         for entry in [
@@ -1107,6 +1110,55 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
             "evaluations": list(lineage.get("evaluations", [])),
         }
     return available
+
+
+def upcoming_experiment_index(state: dict) -> int:
+    """The identity the launcher's next preparation phase will allocate.
+
+    This is a read-only forecast. Unlike ``next_experiment_index`` it never
+    mutates the campaign counter, so forecasting a preparation measurement does
+    not consume or skip the experiment a later training proposal allocates.
+    """
+    campaign_id = repository.current_campaign_id(state)
+    return (
+        max(
+            allocated_experiment_index(state, campaign_id),
+            int(state.get("last_allocated_experiment") or 0),
+            int(state.get("last_experiment") or 0),
+        )
+        + 1
+    )
+
+
+def preparation_measurement_context(state: dict) -> dict:
+    """A lineage-only pending context for a preparation-phase measurement.
+
+    Preparation has no trained experiment, so the requestable models are exactly
+    the eligible saved lineages. The context carries the upcoming experiment
+    identity so artifact names and recorded rounds stay under it, and an empty
+    candidate list so a not-yet-run experiment's candidates cannot be named. The
+    accumulated preparation measurements seed the partial ledger so a repeated
+    panel is reused rather than re-executed.
+    """
+    return {
+        "experiment": upcoming_experiment_index(state),
+        "candidates": [],
+        "champion_available": False,
+        "parameters": {},
+        "initialization": "fresh",
+        "training_budget_steps": 0,
+        "parent_training_steps": 0,
+        "preparation": True,
+        "partial_evaluations": list(state.get("preparation_partial_evaluations") or []),
+        "partial_task_reference_evaluations": list(
+            state.get("preparation_partial_task_reference_evaluations") or []
+        ),
+        "result": {
+            "status": "pending",
+            "verdict": "preparation measurement",
+            "decision_pending": True,
+        },
+    }
 
 
 def planned_measurements(
@@ -1252,6 +1304,63 @@ def validate_paired_comparison_plan(
                 "identical (seed, episodes) panels"
             )
     return []
+
+
+def validate_preparation_evaluation_request(
+    request: dict,
+    state: dict,
+    *,
+    protected_overlap=None,
+) -> dict:
+    """Validate a preparation request that may name saved lineages only.
+
+    Preparation has no pending experiment, so the requestable models are the
+    eligible saved lineages (``working``, ``best_known`` or a retained ID).
+    Naming an experiment's candidate fails as an unknown candidate. The returned
+    synthetic context is what execution resolves the request against.
+    """
+    if state.get("schema_version") != 4:
+        raise ValueError(
+            "preparation measurements are only valid in a version-4 campaign"
+        )
+    if state.get("pending_analysis") is not None:
+        raise ValueError(
+            "post-training analysis is pending; submit its deliverable instead"
+        )
+    if state.get("pending_evaluation_request") is not None:
+        raise ValueError("a measurement request is already pending")
+    if state.get("pending_researcher_decision") is not None:
+        raise ValueError("a lineage decision is pending; no measurement is accepted")
+    if state.get("pending_closure_operation") is not None:
+        raise ValueError("a closure operation is pending; no measurement is accepted")
+    if state.get("pending_final_benchmark") is not None:
+        raise ValueError("the final benchmark is pending; no measurement is accepted")
+    if state.get("preparation_conclusion_only"):
+        raise ValueError(
+            "the experiment budget is exhausted; only a campaign conclusion may "
+            "be prepared"
+        )
+    validate_evaluation_request(request)
+    pending = preparation_measurement_context(state)
+    available = available_evaluation_candidates(pending, state)
+    if not available:
+        raise ValueError("there are no saved lineages available to measure")
+    requested, _ = planned_measurements(request, available)
+    resolved_models = resolved_measurement_models(request, available)
+    validate_panel_independence(
+        request,
+        recorded_research_panels(state, pending),
+        protected_overlap=protected_overlap,
+    )
+    validate_paired_comparison_plan(
+        request,
+        pending,
+        available,
+        requested,
+        state=state,
+        resolved_models=resolved_models,
+    )
+    return pending
 
 
 # --- measurement identity --------------------------------------------------
@@ -1877,6 +1986,17 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
         *repository.result_records_for_campaign(campaign_id),
         pending,
     ]
+    preparation_partial = state.get("preparation_partial_evaluations")
+    preparation_reference = state.get(
+        "preparation_partial_task_reference_evaluations"
+    )
+    if preparation_partial or preparation_reference:
+        sources.append(
+            {
+                "partial_evaluations": preparation_partial or [],
+                "partial_task_reference_evaluations": preparation_reference or [],
+            }
+        )
     for source in sources:
         research_evaluations = [
             *(source.get("requested_evaluations") or []),

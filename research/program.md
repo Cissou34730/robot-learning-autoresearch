@@ -194,10 +194,17 @@ instrumentation may be changed when needed. Each completed round returns to
 analysis with prior measurements available; reconsider the decision in light of
 the new evidence rather than assuming closure is next.
 
-Runner measurement requests are available only in post-training analysis. If a
-new uncertainty arises during preparation, use available evidence or lightweight
-analysis and state any remaining assumption in the hypothesis; do not present it
-as an observed fact.
+A measurement request is also available during experiment preparation, but its
+scope is narrower: it may measure only saved lineages (`working`, `best_known`,
+or a retained ID) through `research/evaluation_request.json`. It may not name the
+candidates of an experiment that has not run, because those do not exist yet.
+Use this when an unresolved question about a parent's or a lineage's behavior
+would change the next decision; do not state an assumption in place of evidence
+that a preparation measurement can obtain. A completed preparation round returns
+to preparation, is recorded under the upcoming experiment, and is then available
+alongside the previous experiments' evidence. A new uncertainty that the
+available evidence cannot resolve is a legitimate reason to choose a diagnostic
+experiment or request such a measurement rather than to rationalise a guess.
 
 Research and task-reference panels are development measurements distinguished by
 their properties, not by authority. A task-reference measurement is a fixed panel
