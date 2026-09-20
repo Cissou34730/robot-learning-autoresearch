@@ -1274,12 +1274,15 @@ def evaluation_semantics_paths() -> list[str]:
 
 
 def evaluation_semantics_fingerprint() -> str:
-    """Identify every file that defines what a research measurement means.
+    """Identify the files that define what a research measurement means.
 
-    The hashed set is the researcher-owned scenario surface plus the protected
-    human-owned inputs named in ``EVALUATION_RUNTIME_PATHS`` - including the
-    benchmark constants and metrics that fix the development success criterion
-    and episode geometry. Paths are hashed with their contents so an added,
+    The hashed set is two unions. The non-scenario paths in
+    ``EVALUATION_RUNTIME_PATHS`` are mixed-ownership: the researcher-owned
+    evaluator alongside protected human-owned inputs such as the policy runtime
+    and the benchmark constants and metrics that fix the development success
+    criterion and episode geometry. The scenario package is scanned except for
+    the files filtered out there - protected, presentation-only, training-only
+    and model-contained paths. Paths are hashed with their contents so an added,
     renamed or deleted file changes measurement identity just like an edited
     one.
     """

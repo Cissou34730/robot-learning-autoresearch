@@ -735,6 +735,27 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
     assert len(sorted(evaluations_dir.glob("*.json"))) == 2
 
 
+# Issue #58: files outside the scenario package that define the development
+# success criterion. They are asserted against the registry independently so
+# that dropping one from EVALUATION_RUNTIME_PATHS fails a test instead of
+# silently shrinking the fixture and the coverage below.
+REQUIRED_EXTERNAL_SEMANTIC_PATHS = (
+    "robot_learning/benchmark/spec.py",
+    "robot_learning/benchmark/metrics.py",
+)
+# The non-scenario measurement-semantic surface a test must account for: every
+# declared runtime path plus the required dependencies, so registry edits cannot
+# narrow what is verified.
+NON_SCENARIO_SEMANTIC_PATHS = tuple(
+    sorted({*EVALUATION_RUNTIME_PATHS, *REQUIRED_EXTERNAL_SEMANTIC_PATHS})
+)
+
+
+def test_required_external_semantic_paths_remain_declared():
+    for relative in REQUIRED_EXTERNAL_SEMANTIC_PATHS:
+        assert relative in EVALUATION_RUNTIME_PATHS, relative
+
+
 def _semantics_tree(tmp_path):
     """A miniature repository holding the measurement-relevant surface."""
     scenario = tmp_path / "robot_learning" / "scenario"
@@ -757,7 +778,7 @@ def _semantics_tree(tmp_path):
     training.mkdir(parents=True)
     for name in ("algorithms.py", "normalization.py"):
         (training / name).write_text("original\n", encoding="utf-8")
-    for relative in EVALUATION_RUNTIME_PATHS:
+    for relative in NON_SCENARIO_SEMANTIC_PATHS:
         non_scenario = tmp_path / relative
         non_scenario.parent.mkdir(parents=True, exist_ok=True)
         non_scenario.write_text("original\n", encoding="utf-8")
@@ -776,7 +797,7 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
 
     assert evaluation_semantics_paths() == sorted(
         [
-            *EVALUATION_RUNTIME_PATHS,
+            *NON_SCENARIO_SEMANTIC_PATHS,
             "robot_learning/scenario/environment.py",
             "robot_learning/scenario/evaluation.py",
         ]
@@ -900,7 +921,7 @@ def test_evaluation_semantics_are_the_compatibility_identity(
     assert _evidence_records_compatible(candidate, reference) is compatible
 
 
-@pytest.mark.parametrize("relative", EVALUATION_RUNTIME_PATHS)
+@pytest.mark.parametrize("relative", NON_SCENARIO_SEMANTIC_PATHS)
 def test_non_scenario_evaluation_dependencies_change_measurement_identity(
     monkeypatch, tmp_path, relative
 ):
