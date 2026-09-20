@@ -177,12 +177,16 @@ INTERPRETERS = frozenset({"python", "python.exe", "python3", "py", "py.exe"})
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
 # Oversized tool results are written here instead of occupying the context for
-# the rest of the session. The researcher still opens them on demand.
+# the rest of the session. The researcher still opens them on demand. The
+# threshold is held above the campaign artifacts (the brief, postmortems and
+# evaluation panels), so primary scientific evidence is never offloaded out of
+# the session by default.
 LARGE_OUTPUT_DIR = ROOT / ".copilot" / "large-output"
-LARGE_OUTPUT_MAX_BYTES = 32_768
+LARGE_OUTPUT_MAX_BYTES = 262_144
 
 POLICY = f"""
 <harness_policy>
+<harness_boundary>
 This session runs inside the repository worktree {ROOT}. The harness enforces
 the rules below at the tool boundary, so a rejected call fails rather than
 succeeding silently. A rejection names the sanctioned alternative; follow it
@@ -197,24 +201,25 @@ instead of retrying the same command.
     Read-only Git is available only when the current task specifically requires
     inspecting the experiment's current code state or delta. To revert this
     experiment's code, use the lineage proposal's "code" decision.
-- Pytest execution belongs to the runner. Researcher-authored tests are not part
-    of the scientific recipe, are not required for phase completion, and remain
-    available only as an optional instrument when they resolve a specific
-    uncertainty.
-- Every tool call resends the whole conversation, so prefer one aggregation over
-  the same command repeated per file, and read what you need rather than whole
-  artifacts.
-  When the same extraction or analysis is needed across several artifacts, prefer
-  one aggregated tool call when practical and when the combined result remains
-  compact. Separate calls remain appropriate when the scientific question differs
-  between artifacts or aggregation would make the analysis less clear.
-  Context efficiency does not determine which scientific evidence is worth
-  examining.
-- Use targeted linting, parsing or lightweight analysis while developing the
-    phase deliverable when they resolve uncertainty introduced by the work. Once the
-  deliverable is complete, do not perform a separate final validation pass solely
-  to reconfirm the deliverable or repository state; the Runner owns final contract
-  and execution validation. The phase ends when its deliverable has been written.
+- Pytest execution belongs to the runner.
+</harness_boundary>
+
+<researcher_guidance>
+This note is advice, not a harness rule: no call is rejected for departing from
+it. Read whatever evidence the scientific question requires; context size is
+never a reason to leave evidence unread.
+
+Researcher-authored tests are not part of the scientific recipe, are not
+required for phase completion, and remain available only as an optional
+instrument when they resolve a specific uncertainty.
+
+Use targeted linting, parsing or lightweight analysis while developing the
+phase deliverable when they resolve uncertainty introduced by the work. The
+Runner owns final contract and execution validation, so do not re-run lint,
+parsing or schema checks purely to reconfirm what the Runner will check.
+Reviewing your own scientific reasoning against the evidence before submitting
+is part of the phase, not a redundant pass.
+</researcher_guidance>
 </harness_policy>
 """.strip()
 

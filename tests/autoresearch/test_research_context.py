@@ -996,7 +996,7 @@ def test_researcher_prompts_are_objective_first_and_direction_neutral():
     assert "Conditional next steps" not in script
     assert "most informative to measure rather than the alternatives" not in script
     assert "chosen over the other available checkpoints" not in script
-    assert "Context efficiency does not determine which" in policy
+    assert "Read whatever evidence the scientific question requires" in policy
 
 
 def test_researcher_contract_preserves_investigative_freedom_across_layers():

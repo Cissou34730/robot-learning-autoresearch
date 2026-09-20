@@ -833,24 +833,44 @@ def test_oversized_tool_output_is_offloaded_instead_of_held_in_context():
     assert ".copilot/" in (ROOT / ".gitignore").read_text(encoding="utf-8")
 
 
-def test_the_researcher_is_told_that_round_trips_resend_the_conversation():
-    pytest.importorskip("copilot")
-    args = adapter.parse_args(["p", "--session-id", "s"])
+def test_campaign_artifacts_are_not_offloaded_out_of_the_session():
+    # Evaluation panels run about 120 KiB; the threshold sits well above them so
+    # the primary scientific evidence stays in the session by default.
+    assert adapter.LARGE_OUTPUT_MAX_BYTES >= 256 * 1024
 
-    content = adapter.session_options(args, adapter.Console(), asyncio.Event())[
-        "system_message"
-    ]["content"]
 
-    assert "resends the whole conversation" in content
-    normalized = " ".join(content.split())
-    assert "one aggregated tool call when practical" in normalized
-    assert "when the combined result remains compact" in normalized
-    assert "Separate calls remain appropriate" in normalized
-    assert "Researcher-authored tests are not part" in normalized
-    assert "Use targeted linting, parsing or lightweight analysis" in normalized
-    assert "when they resolve uncertainty introduced by the work" in normalized
-    assert "do not perform a separate final validation pass solely" in normalized
-    assert "the Runner owns final contract and execution validation" in normalized
+def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
+    # The injected text is the contract, so it is asserted without the SDK.
+    content = " ".join(adapter.POLICY.split())
+
+    assert "<harness_boundary>" in content
+    assert "<researcher_guidance>" in content
+    # The note is explicitly advice the tool layer does not enforce.
+    assert "This note is advice, not a harness rule" in content
+    assert "no call is rejected for departing from it" in content
+    assert "Researcher-authored tests are not part" in content
+    assert "Use targeted linting, parsing or lightweight analysis" in content
+    assert "when they resolve uncertainty introduced by the work" in content
+    assert "Runner owns final contract and execution validation" in content
+    assert "Reviewing your own scientific reasoning against the evidence" in content
+
+
+def test_the_policy_does_not_steer_the_researcher_to_read_less_or_stop_early():
+    # Context economy is never a reason to inspect less evidence, and a written
+    # deliverable is never a reason to stop reviewing the science.
+    content = " ".join(adapter.POLICY.split())
+
+    for discouraged in (
+        "read what you need rather than whole artifacts",
+        "resends the whole conversation",
+        "prefer one aggregation over",
+        "do not perform a separate final validation pass solely",
+        "The phase ends when its deliverable has been written",
+    ):
+        assert discouraged not in content
+
+    assert "Read whatever evidence the scientific question requires" in content
+    assert "context size is never a reason to leave evidence unread" in content
 
 
 def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():
