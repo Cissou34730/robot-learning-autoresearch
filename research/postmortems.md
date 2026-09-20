@@ -215,3 +215,44 @@ adds no task evidence that would change that decision.
 `research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-4/checkpoint-120832/artifact.json`;
 `research/evaluations/2c25415c-e39b-4e30-8d28-bec3b3598906/evaluation-2c25415c-e39b-4e30-8d28-bec3b3598906-experiment-3-working-160ep-seed4840-543af51fd137.json`;
 and `robot_learning/scenario/observations.py`.
+
+## 2c25415c-e39b-4e30-8d28-bec3b3598906 / Experiment 5
+
+**Result:** The fresh unchanged-baseline replication supplied no measured
+challenger and did not demonstrate the human objective. The experiment is
+closed with the measured `working` and `best_known` lineage preserved.
+
+**Observed behavior:** The seed-2 run completed 120,832 steps and produced 24
+checkpoints, all with zero task measurements. Training success was 0.00 through
+80,896 steps, then reached 0.01 at 86,016 and 90,112, 0.06 at 95,232, 0.08 at
+100,352, 0.16 at 105,472, 0.30 at 110,592, 0.43 at 115,712, and 0.57 at
+120,832. Training reward improved from -494.12 at 5,120 steps to -15.19 at
+120,832, while mean episode length decreased from 500 to 349 steps. The
+selected baseline checkpoint from experiment 1 remains the strongest measured
+development policy at 155/160 on its latest disjoint panel; experiment 5 has no
+episode success, failure geometry, or hold diagnostic to compare with it.
+
+**Hypothesis assessment:** The diagnostic replication hypothesis is weakened
+under this fresh seed. The run shows partial learning in its training proxies,
+but it does not reproduce the selected baseline's useful training trajectory or
+provide a comparable measured peak, matching the proposal's contradicting
+branch more closely than its expected observation. The task-performance part is
+inconclusive rather than contradicted because all checkpoints are unmeasured:
+training proxies are not task success, and an unmeasured checkpoint is not a
+failed policy. This is evidence about the tested fresh restart, not a causal
+disproof of the unchanged baseline recipe or of all fresh initializations.
+
+**Interpretation:** Fresh baseline learning is variable under the two observed
+runs, and this seed-2 trajectory does not justify spending another measurement
+round on its unmeasured checkpoints or promoting it over the measured parent.
+The improving proxy is an orthogonal process signal, not evidence of progress
+toward the 98% task objective. The existing measured lineage remains the best
+available policy at 155/160 (96.875%), below the official 196/200 requirement,
+so terminal assessment is not requested.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-5/inventory.json`;
+`research/training_logs/2c25415c-e39b-4e30-8d28-bec3b3598906/experiment-5-attempt-1.log`;
+`research/postmortems.md`; and the experiment-1 measurement artifacts referenced
+by the campaign brief.
