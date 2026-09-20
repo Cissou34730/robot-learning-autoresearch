@@ -6,28 +6,32 @@
 official 6-20 cm, full-angle reach-and-hold task. The unchanged PPO baseline
 learned a useful policy, and checkpoint-100352 is the best-supported current
 lineage: it reached 587/600 pooled success, including 97.0% on each of two
-disjoint research panels. The evidence therefore supports substantial progress
-but leaves the official objective unresolved.
+disjoint research panels. The evidence supports substantial progress, but the
+official objective remains unresolved because no official benchmark has been
+run.
 
-**Lessons and limits:** Training success and reward locate promising checkpoints
-but are not interchangeable with complete task success. Checkpoint-86016 had
-the observed reward peak and measured 95.0%, while checkpoint-100352 measured
-97.83% pooled; the later endpoint was also weaker than checkpoint-100352 on the
-available comparison. The current training distribution samples only 14-20 cm,
-whereas the official task samples 6-20 cm. In the inspected checkpoint-100352
-panels, all 13 failures were at negative angles; five never reached tolerance
-and eight reached it only briefly. The first panel was reused and
-selection-contaminated, while seeds 10200 and 10400 provide disjoint coverage.
-No task-reference or official benchmark measurement exists, so the official
-98% result remains unknown. These observations do not establish that radial
-coverage causes the geometry failures.
+**Lessons and limits:** Training success and reward are useful for locating
+checkpoints but are not interchangeable with complete task success. The
+reward-peak checkpoint-86016 measured 95.0%, while checkpoint-100352 measured
+97.83% pooled; later endpoint behavior was weaker on the available comparison.
+The retained recipe samples radii 14-20 cm while the official task samples
+6-20 cm. Across the two disjoint baseline panels, all 12 checkpoint-100352
+failures were at negative angles: five never reached tolerance and seven
+reached it only briefly. The experiment-2 working policy also failed only at
+negative angles on its matched panel, and expanding the radius range to
+6-20 cm did not improve its 96.0% result over the 96.5% baseline. These
+observations identify a robust failure pattern under the measured panels, but
+do not by themselves distinguish angle-specific control from generalization
+or hold-reward limitations. The reused first panel is selection-contaminated;
+seeds 10200, 10400, and 10600 provide the relevant disjoint development
+coverage.
 
-**Open questions:** It is unresolved whether exposure to the full official
-radial range improves the negative-angle reach-and-hold failures without
-reducing performance at already learned outer radii. It is also unresolved
-whether the interrupted holds reflect a training-distribution limitation,
-angle-dependent control, or a reward/holding limitation. The official result
-for the current best-known policy remains unmeasured.
+**Open questions:** It remains unresolved whether changing the training
+angle distribution can reduce the negative-angle failures without degrading
+the nonnegative half of the official uniform distribution. It is also
+unresolved whether the remaining failures are primarily angle-dependent
+control/generalization failures or incomplete hold shaping. The official
+result for the current best-known policy remains unmeasured.
 
 ## 77bb76da-d4f2-4e42-8202-0a8fb412f5ee / Experiment 1
 
