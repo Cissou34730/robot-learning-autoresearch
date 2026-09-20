@@ -46,6 +46,13 @@ def test_experiment_index_section_renders_one_row_per_experiment():
         "",
         "## Campaign experiment index",
         "",
+        (
+            "Each row records what one experiment did and concluded. Past closure "
+            "choices answered the question that experiment asked; they are not a "
+            "default for the next one. The recorded rationale for the most recent "
+            "experiment is kept, de-templated, under Measurement rounds."
+        ),
+        "",
         "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
         "|---:|---|---|---|---|---|---|---|",
         "| - | - | - | - | - | - | - | - |",
@@ -290,7 +297,7 @@ def test_measurement_round_panel_novelty_recognises_prior_experiments():
     assert "(reused panel)" in text
 
 
-def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
+def test_measurement_rounds_retain_de_templated_rationale_during_preparation():
     record = {
         "index": 1,
         "evaluation_rounds": [
@@ -322,15 +329,62 @@ def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
     # Follow-up analysis keeps the evidence needed to adapt the next round.
     assert "Selection: proxy peak template" in analysis
     assert "Reason: round reason" in analysis
-    # Preparation retains outcomes and references without replaying exemplars.
+    # Issue #54: preparation keeps the rationale as well, but de-templated. The
+    # content stays auditable while the inline field names that read as a form
+    # to copy are not reproduced.
     assert "does it reproduce" in preparation
     assert "success 90.00%" in preparation
+    assert "proxy peak template" in preparation
+    assert "round reason" in preparation
     assert "Selection: proxy peak template" not in preparation
-    # Issue #43: the round-level `reason` is comparative selection prose too,
-    # so it is suppressed during preparation just like per-candidate `selection`.
     assert "Reason: round reason" not in preparation
+    assert "Recorded rationale for a past decision" in preparation
     assert "Completed measurement rounds" in preparation
     assert "Measurement rounds for the current experiment" in analysis
+
+
+def test_preparation_treats_rationale_and_outcomes_symmetrically():
+    record = {
+        "index": 1,
+        "closure_decision": {
+            "continue_from": "checkpoint-100",
+            "best_known": {"candidate": "checkpoint-100"},
+            "code": {"action": "keep"},
+        },
+        "evaluation_rounds": [
+            {
+                "round": 1,
+                "question": "does it reproduce",
+                "reason": "round reason",
+                "status": "completed",
+                "results": {
+                    "research_evaluations": [
+                        {
+                            "candidate": "checkpoint-100",
+                            "seed": 100,
+                            "episodes": 200,
+                            "success_percent": 90.0,
+                            "selection": "proxy peak template",
+                        }
+                    ]
+                },
+            }
+        ],
+    }
+    rounds = "\n".join(brief._v4_measurement_rounds_section({}, [record], None))
+    index = "\n".join(brief._v4_experiment_index_section([record], None))
+
+    # One documented predicate governs both sections during preparation.
+    assert brief._precedent_prose_inline(None) is False
+    assert brief._precedent_prose_inline({"experiment": 2}) is True
+    # The rationale is present but not as an inline form, and the outcome is
+    # present but explicitly not a default for the next request.
+    assert "round reason" in rounds and "proxy peak template" in rounds
+    assert "Reason: round reason" not in rounds
+    assert "Selection: proxy peak template" not in rounds
+    assert "working checkpoint-100; best known checkpoint-100; code keep" in index
+    assert "not a default for the next one" in index
+    assert "de-templated" in index
 
 
 def test_activity_record_lists_consumed_research_intervals_factually():

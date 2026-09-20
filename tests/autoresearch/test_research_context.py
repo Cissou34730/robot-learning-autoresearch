@@ -346,7 +346,7 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     assert "## Campaign experiment index" in rendered
     assert "| 6 |" in rendered and "| 1 |" in rendered
     assert rendered.index("| 6 |") < rendered.index("| 1 |")
-    assert rendered.count("unmeasured") >= 6
+    assert rendered.count("not recorded") >= 6
     assert "candidate_metrics" not in rendered
     assert "- Hypothesis assessment: Assessment 6" in rendered
     assert "[postmortem](research/postmortems.md)" in rendered

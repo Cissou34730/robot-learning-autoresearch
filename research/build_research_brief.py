@@ -974,11 +974,49 @@ def _v4_lineage_section(state: dict, current_params: dict) -> list[str]:
     return lines
 
 
-def _v4_experiment_index_section(results: list[dict]) -> list[str]:
-    """One row per completed experiment, newest first."""
+def _precedent_prose_inline(pending: dict | None) -> bool:
+    """Whether a past decision's rationale is rendered inline or retrospectively.
+
+    Issue #54 (correcting #43): the brief must treat a past decision's rationale
+    and its outcome symmetrically. #43 hid the round-level `reason` and the
+    per-candidate `selection` prose while preparing a request, because the inline
+    `Reason:` and `Selection:` field names read as a form to copy, but it left the
+    campaign experiment index's closure pattern unconditional. The Researcher was
+    then shown the outcome many times over with no reasoning to weigh against it.
+
+    The policy is to retain the rationale and present it deliberately
+    de-templated during preparation - a labelled retrospective note, never the
+    inline field names - while the experiment index states that past closure
+    choices are not defaults. Both renderers consult this one predicate so the
+    two policies cannot drift apart again.
+    """
+    return isinstance(pending, dict)
+
+
+def _v4_experiment_index_section(
+    results: list[dict], pending: dict | None = None
+) -> list[str]:
+    """One row per completed experiment, newest first.
+
+    Issue #54: the section states that a recorded closure answered that
+    experiment's question, so it is not a default for the next one. During
+    preparation it also points at where the de-templated rationale lives.
+    """
+    preamble = (
+        "Each row records what one experiment did and concluded. Past closure "
+        "choices answered the question that experiment asked; they are not a "
+        "default for the next one."
+    )
+    if not _precedent_prose_inline(pending):
+        preamble += (
+            " The recorded rationale for the most recent experiment is kept, "
+            "de-templated, under Measurement rounds."
+        )
     lines = [
         "",
         "## Campaign experiment index",
+        "",
+        preamble,
         "",
         "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
         "|---:|---|---|---|---|---|---|---|",
@@ -993,9 +1031,9 @@ def _v4_experiment_index_section(results: list[dict]) -> list[str]:
             f"{result.get('training_parent', '-')} | {_table_cell(_compact(_change_details(result), 100, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
             f"{_table_cell(result.get('hypothesis_assessment', 'unavailable'))} | "
-            f"working {closure.get('continue_from', 'unmeasured')}; "
-            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
-            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
+            f"working {closure.get('continue_from', 'not recorded')}; "
+            f"best known {(closure.get('best_known') or {}).get('candidate', 'not recorded')}; "
+            f"code {(closure.get('code') or {}).get('action', 'not recorded')} | "
             f"{_postmortem_reference(result.get('postmortem'))} |"
         )
     if not results:
@@ -1313,14 +1351,12 @@ def _v4_measurement_rounds_section(
         if int(record.get("index", -1)) == current_index:
             continue
         prior_panels.update(_record_research_panels(record))
-    # Issue #43: during preparation the brief summarizes the prior experiment's
-    # outcomes and artifact references without replaying the round-level `reason`
-    # or per-candidate `selection` prose, either of which would otherwise act as
-    # a comparative-selection exemplar template for the next request. The
-    # durable record keeps the full rationale.
-    include_selections = isinstance(pending, dict)
+    # Issue #54 (correcting #43): the rationale is retained in both phases. While
+    # preparing a request it is rendered de-templated at the foot of the round
+    # instead of inline, so it stays auditable without reading as a form to copy.
+    inline_precedent = _precedent_prose_inline(pending)
     source_reference = (
-        RESEARCH_STATE_REFERENCE if include_selections else RESULTS_REFERENCE
+        RESEARCH_STATE_REFERENCE if inline_precedent else RESULTS_REFERENCE
     )
     lines = [
         "",
@@ -1330,11 +1366,12 @@ def _v4_measurement_rounds_section(
             "Measurement rounds for the current experiment in the order they were "
             "requested. Each round records its own question, selections and "
             "resulting artifacts:"
-            if include_selections
+            if inline_precedent
             else "Completed measurement rounds from the most recent experiment, in "
             "the order they were requested. Questions, results and artifact "
-            "references are retained; comparative selection rationale stays in "
-            "the durable record:"
+            "references are retained; the recorded rationale for each past "
+            "decision is kept below as a de-templated retrospective note, not as "
+            "a template for the next request:"
         ),
     ]
     for record in rounds:
@@ -1348,15 +1385,26 @@ def _v4_measurement_rounds_section(
                     "Question", str(record["question"]), 400, source_reference
                 )
             )
-        # Issue #43: the round-level `reason` explains the selected candidates
-        # relative to an alternative, so it is comparative selection prose too
-        # and is suppressed during preparation for the same reason as `selection`.
-        if include_selections and record.get("reason"):
-            lines.extend(
-                _indented_label_block(
-                    "Reason", str(record["reason"]), 400, source_reference
+        # Issue #54: the round-level rationale is retained in both phases. It is
+        # inline during analysis and collected for the de-templated note during
+        # preparation.
+        precedent: list[str] = []
+        if record.get("reason"):
+            if inline_precedent:
+                lines.extend(
+                    _indented_label_block(
+                        "Reason", str(record["reason"]), 400, source_reference
+                    )
                 )
-            )
+            else:
+                precedent.extend(
+                    _indented_label_block(
+                        "Round rationale",
+                        str(record["reason"]),
+                        400,
+                        source_reference,
+                    )
+                )
         round_results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
@@ -1379,11 +1427,21 @@ def _v4_measurement_rounds_section(
                 f"`research_evaluation`{_round_entry_status(item)}"
                 f"{panel_note}: {detail}."
             )
-            if include_selections and item.get("selection"):
-                lines.append(
-                    f"  - Selection: "
-                    f"{_compact(str(item['selection']), 600, reference=source_reference)}"
-                )
+            if item.get("selection"):
+                if inline_precedent:
+                    lines.append(
+                        f"  - Selection: "
+                        f"{_compact(str(item['selection']), 600, reference=source_reference)}"
+                    )
+                else:
+                    precedent.extend(
+                        _indented_label_block(
+                            f"Choice rationale for `{item.get('candidate', '-')}`",
+                            str(item["selection"]),
+                            600,
+                            source_reference,
+                        )
+                    )
             if item.get("reused_from_round") is not None:
                 lines.append(
                     f"  - Reused from round {item['reused_from_round']}"
@@ -1405,11 +1463,21 @@ def _v4_measurement_rounds_section(
                 f"- `{item.get('candidate', '-')}` "
                 f"`task_reference`{_round_entry_status(item)}: {detail}."
             )
-            if include_selections and item.get("selection"):
-                lines.append(
-                    f"  - Selection: "
-                    f"{_compact(str(item['selection']), 600, reference=source_reference)}"
-                )
+            if item.get("selection"):
+                if inline_precedent:
+                    lines.append(
+                        f"  - Selection: "
+                        f"{_compact(str(item['selection']), 600, reference=source_reference)}"
+                    )
+                else:
+                    precedent.extend(
+                        _indented_label_block(
+                            f"Choice rationale for `{item.get('candidate', '-')}`",
+                            str(item["selection"]),
+                            600,
+                            source_reference,
+                        )
+                    )
             if item.get("reused_from_round") is not None:
                 lines.append(
                     f"  - Reused from round {item['reused_from_round']}"
@@ -1429,6 +1497,18 @@ def _v4_measurement_rounds_section(
                 f"`{item.get('reference', '-')}`: {item.get('candidate_wins', '-')} "
                 f"vs {item.get('reference_wins', '-')} discordant wins over "
                 f"{item.get('episodes', '-')} episodes."
+            )
+        if precedent:
+            lines.extend(
+                [
+                    "",
+                    (
+                        "Recorded rationale for a past decision; it answered a "
+                        "question that is not yours. It is retained for audit, not "
+                        "as a template to copy:"
+                    ),
+                    *precedent,
+                ]
             )
         prior_panels.update(round_panels)
     return lines
@@ -1544,7 +1624,7 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_lineage_section(state, current_params))
 
-    lines.extend(_v4_experiment_index_section(results))
+    lines.extend(_v4_experiment_index_section(results, pending))
 
     lines.extend(_v4_evidence_section(pending, results))
 
