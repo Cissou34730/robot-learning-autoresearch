@@ -85,7 +85,7 @@
   "pending_analysis": null,
   "pending_campaign_conclusion": {
     "action": "request_final_benchmark",
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known lineage, checkpoint-100352, remains the strongest scientifically comparable policy after the saved-lineage preparation round: it achieved 97% on the fresh seed-8300 panel, while the retained experiment-3 reward-proxy checkpoint-110592 achieved 96.5% with one paired incumbent win and no challenger wins. Across disjoint development panels the incumbent reaches 96%, 96%, 97.5%, 97%, and 97%, while the task-reference 98% result is selection-contaminated. Another unchanged continuation has not shown a reliable late-training gain; fresh or transfer training would require a new intervention despite weakened radial and angular explanations; and replication would measure process variance without identifying a better saved policy. Those alternatives have lower expected contribution to the objective than an official assessment now that the only retained model-selection uncertainty was resolved. No remaining plausible full training outcome is expected to change which policy should be submitted enough to justify another run. The official benchmark is therefore the appropriate next decision for the human objective; its result will be the terminal verdict."
   },
   "pending_closure_operation": null,
