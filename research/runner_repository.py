@@ -420,6 +420,65 @@ LINEAGE_RECORD_FIELDS = {
 LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
 
 
+def _canonicalize_selected_panel(panel: object) -> dict:
+    """Validate one recorded selection-panel identity, preserving the instrument.
+
+    Issue #57: selection exposure covers every panel type in the contract, so the
+    record keeps the instrument plus the research interval or the fixed
+    task-reference panel identity. A legacy ``[seed, episodes]`` pair is read as a
+    research-evaluation panel.
+    """
+    if isinstance(panel, (list, tuple)) and len(panel) == 2:
+        seed, episodes = panel
+        if all(isinstance(value, int) and not isinstance(value, bool) for value in panel):
+            return {
+                "instrument": "research_evaluation",
+                "seed": int(seed),
+                "episodes": int(episodes),
+            }
+        raise TypeError(
+            "lineage record selected_panels entries must be panel identity objects"
+        )
+    if not isinstance(panel, dict):
+        raise TypeError(
+            "lineage record selected_panels entries must be panel identity objects"
+        )
+    instrument = panel.get("instrument")
+    if instrument == "task_reference":
+        name = panel.get("panel")
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(
+                "lineage record task_reference selected panel requires a panel name"
+            )
+        identity: dict = {"instrument": "task_reference", "panel": name}
+        for field in ("panel_version", "seed", "episodes"):
+            value = panel.get(field)
+            if value is None:
+                continue
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise TypeError(
+                    f"lineage record selected panel {field} must be an integer"
+                )
+            identity[field] = value
+        return identity
+    if instrument == "research_evaluation":
+        seed = panel.get("seed")
+        episodes = panel.get("episodes")
+        if isinstance(seed, bool) or not isinstance(seed, int):
+            raise TypeError("lineage record selected panel seed must be an integer")
+        if isinstance(episodes, bool) or not isinstance(episodes, int):
+            raise TypeError("lineage record selected panel episodes must be an integer")
+        return {
+            "instrument": "research_evaluation",
+            "seed": seed,
+            "episodes": episodes,
+        }
+    raise ValueError(
+        "lineage record selected panel instrument must be research_evaluation or "
+        "task_reference"
+    )
+
+
 def canonicalize_lineage_record(lineage: dict) -> None:
     """Validate and canonicalize one schema-v4 reusable policy record."""
     if not isinstance(lineage, dict):
@@ -464,18 +523,7 @@ def canonicalize_lineage_record(lineage: dict) -> None:
             raise TypeError("lineage record selected_panels must be a list")
         normalized_panels = []
         for panel in panels:
-            if (
-                not isinstance(panel, (list, tuple))
-                or len(panel) != 2
-                or any(
-                    not isinstance(value, int) or isinstance(value, bool)
-                    for value in panel
-                )
-            ):
-                raise ValueError(
-                    "lineage record selected_panels must be [seed, episodes] pairs"
-                )
-            normalized_panels.append([int(panel[0]), int(panel[1])])
+            normalized_panels.append(_canonicalize_selected_panel(panel))
         lineage["selected_panels"] = normalized_panels
     if not isinstance(lineage["parameters"], dict):
         raise TypeError("lineage record parameters must be an object")

@@ -962,20 +962,17 @@ def _selected_panels_lines(lineage: dict) -> list[str]:
 
     Issue #57: a model chosen on a panel's episodes and later re-measured on the
     same episodes has an inflated score for that panel. Surfacing the selection
-    exposure lets the Researcher see when a fresh disjoint panel is required.
+    exposure lets the Researcher see when a fresh disjoint panel is required. The
+    recorded identity preserves both the instrument and the panel.
     """
     panels = lineage.get("selected_panels")
     if not isinstance(panels, list):
         return []
     rendered = []
     for panel in panels:
-        if (
-            isinstance(panel, (list, tuple))
-            and len(panel) == 2
-            and all(isinstance(value, int) and not isinstance(value, bool) for value in panel)
-        ):
-            seed, episodes = int(panel[0]), int(panel[1])
-            rendered.append(_episode_interval({"seed": seed, "episodes": episodes}))
+        identity = _selected_panel_identity(panel)
+        if identity is not None:
+            rendered.append(_panel_identity_label(identity))
     if not rendered:
         return []
     return [
@@ -983,6 +980,38 @@ def _selected_panels_lines(lineage: dict) -> list[str]:
         + ", ".join(rendered)
         + "; re-measuring on these episodes is not independent confirmation."
     ]
+
+
+def _selected_panel_identity(panel: object) -> tuple | None:
+    """Normalize a persisted selection-panel record to a panel identity."""
+    if isinstance(panel, (list, tuple)) and len(panel) == 2:
+        seed, episodes = panel
+        if all(isinstance(value, int) and not isinstance(value, bool) for value in panel):
+            return ("research_evaluation", int(seed), int(episodes))
+        return None
+    if not isinstance(panel, dict):
+        return None
+    instrument = panel.get("instrument")
+    if instrument == "task_reference":
+        name = panel.get("panel")
+        if not isinstance(name, str) or not name.strip():
+            return None
+        return (
+            "task_reference",
+            name,
+            panel.get("panel_version"),
+            panel.get("seed"),
+            panel.get("episodes"),
+        )
+    if instrument == "research_evaluation":
+        seed = panel.get("seed")
+        episodes = panel.get("episodes")
+        if isinstance(seed, bool) or not isinstance(seed, int):
+            return None
+        if isinstance(episodes, bool) or not isinstance(episodes, int):
+            return None
+        return ("research_evaluation", seed, episodes)
+    return None
 
 
 def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
@@ -1825,30 +1854,124 @@ def _record_research_panels(record: dict) -> list[tuple[int, int]]:
     return panels
 
 
-def _record_research_panel_uses(record: dict) -> list[tuple[tuple[int, int], str]]:
-    """``(panel, candidate)`` for every research measurement in a record.
+def _entry_fingerprint(entry: dict) -> str:
+    """The immutable model fingerprint of a recorded measurement, if present."""
+    metrics = entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+    value = entry.get("model_fingerprint") or metrics.get("model_fingerprint")
+    return "" if value is None else str(value)
 
-    Issue #57: reuse depth needs both the interval and which lineage was measured
-    on it, so a reused panel can be reported with how often, and for whom, it was
-    already consumed.
+
+def _measurement_entries(record: dict, instrument: str):
+    """Every persisted measurement entry of one instrument in a record.
+
+    Issue #57: the durable record separates the executed request from the
+    partial and preparation ledgers; all of them are prior panel uses.
     """
-    uses: list[tuple[tuple[int, int], str]] = []
-    for entry in record.get("requested_evaluations") or []:
-        if not isinstance(entry, dict):
-            continue
-        if entry.get("instrument", "research_evaluation") != "research_evaluation":
-            continue
-        metrics = entry.get("metrics") or {}
-        panel = _research_panel_of({**metrics, **entry})
-        if panel is None:
-            continue
-        candidate = entry.get("candidate", metrics.get("candidate"))
-        uses.append((panel, "" if candidate is None else str(candidate)))
+    if instrument == "task_reference":
+        keys = (
+            "task_reference_evaluations",
+            "partial_task_reference_evaluations",
+            "preparation_task_reference_evaluations",
+        )
+    else:
+        keys = (
+            "requested_evaluations",
+            "partial_evaluations",
+            "preparation_evaluations",
+        )
+    for key in keys:
+        for entry in record.get(key) or []:
+            if isinstance(entry, dict):
+                yield entry
+
+
+def _panel_identity(entry: dict, instrument: str) -> tuple | None:
+    """The immutable identity of the panel a measurement ran on.
+
+    Issue #57: reuse must be recognized by panel identity, never by a mutable
+    candidate or role label, and both instruments are covered by the same rule.
+    """
+    if instrument == "task_reference":
+        panel = entry.get("panel")
+        if not isinstance(panel, str) or not panel.strip():
+            return None
+        return (
+            "task_reference",
+            panel,
+            entry.get("panel_version"),
+            entry.get("seed"),
+            entry.get("episodes"),
+        )
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return ("research_evaluation", seed, episodes)
+
+
+def _panel_identity_label(identity: tuple) -> str:
+    if identity[0] == "task_reference":
+        return f"panel `{identity[1]}`"
+    _, seed, episodes = identity
+    if episodes > 0:
+        return f"episodes {seed}–{seed + episodes - 1}"
+    return f"episode {seed}"
+
+
+def _record_panel_uses(record: dict) -> list[tuple[tuple, str]]:
+    """``(panel identity, model fingerprint)`` for every prior measurement."""
+    uses: list[tuple[tuple, str]] = []
+    for instrument in ("research_evaluation", "task_reference"):
+        for entry in _measurement_entries(record, instrument):
+            if entry.get("instrument", instrument) != instrument:
+                continue
+            metrics = (
+                entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+            )
+            merged = {**metrics, **entry}
+            identity = _panel_identity(merged, instrument)
+            if identity is None:
+                continue
+            uses.append((identity, _entry_fingerprint(merged)))
     return uses
 
 
-def _closure_selected_candidates(record: dict) -> set[str]:
-    """The candidate identifiers a recorded closure chose for a lineage role."""
+def _record_label_fingerprints(record: dict) -> dict[str, str]:
+    """Map each candidate or role label in a record to its model fingerprint.
+
+    Issue #57: a closure names the selected model by a mutable label, so the
+    label must be resolved to the immutable fingerprint recorded with the
+    measurements of that same experiment before it can be associated with a
+    prior panel use.
+    """
+    mapping: dict[str, str] = {}
+    for instrument in ("research_evaluation", "task_reference"):
+        for entry in _measurement_entries(record, instrument):
+            metrics = (
+                entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+            )
+            merged = {**metrics, **entry}
+            label = merged.get("candidate")
+            fingerprint = _entry_fingerprint(merged)
+            if label is not None and fingerprint:
+                mapping.setdefault(str(label), fingerprint)
+    for candidate in record.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        name = candidate.get("name")
+        for evaluation in candidate.get("evaluations") or []:
+            if not isinstance(evaluation, dict):
+                continue
+            fingerprint = _entry_fingerprint(evaluation)
+            if name is not None and fingerprint:
+                mapping.setdefault(str(name), fingerprint)
+    return mapping
+
+
+def _closure_selected_labels(record: dict) -> set[str]:
+    """The candidate or role labels a recorded closure chose for a lineage role."""
     closure = record.get("closure_decision") or {}
     selected: set[str] = set()
     working = closure.get("continue_from")
@@ -1861,6 +1984,41 @@ def _closure_selected_candidates(record: dict) -> set[str]:
         if isinstance(retained, dict) and retained.get("candidate") is not None:
             selected.add(str(retained["candidate"]))
     return selected
+
+
+def _closure_selected_fingerprints(record: dict) -> set[str]:
+    """The immutable fingerprints a recorded closure selected for a lineage role."""
+    mapping = _record_label_fingerprints(record)
+    return {
+        mapping[label]
+        for label in _closure_selected_labels(record)
+        if label in mapping
+    }
+
+
+def _reuse_context(
+    prior_uses: dict[tuple, int],
+    prior_selected: dict[tuple, dict[str, int]],
+    identity: tuple | None,
+    fingerprint: str,
+) -> tuple[str, str]:
+    """A panel marker and non-independence qualifier for one rendered result."""
+    if identity is None:
+        return "", ""
+    uses = prior_uses.get(identity, 0)
+    if not uses:
+        return " (new panel)", ""
+    location = "this panel" if identity[0] == "task_reference" else "these episodes"
+    suffix = "" if uses == 1 else "s"
+    history = [f"{uses} prior measurement{suffix} on {location}"]
+    selected = prior_selected.get(identity, {}).get(fingerprint, 0) if fingerprint else 0
+    if selected:
+        history.append(f"{selected} preceded a closure that selected this lineage")
+    qualifier = (
+        " Reused panel: comparable to earlier results on the same episodes, "
+        "not independent confirmation."
+    )
+    return " (reused panel: " + "; ".join(history) + ")", qualifier
 
 
 def _consumed_research_intervals(records: list[dict]) -> list[str]:
@@ -1930,19 +2088,19 @@ def _v4_measurement_rounds_section(
     if not isinstance(rounds, list) or not rounds:
         return []
     current_index = int(source.get("experiment") or source.get("index") or 0)
-    prior_uses: dict[tuple[int, int], int] = {}
-    prior_selected: dict[tuple[int, int], dict[str, int]] = {}
+    prior_uses: dict[tuple, int] = {}
+    prior_selected: dict[tuple, dict[str, int]] = {}
     for record in results:
         if not isinstance(record, dict):
             continue
         if int(record.get("index", -1)) == current_index:
             continue
-        selected_candidates = _closure_selected_candidates(record)
-        for panel, candidate in _record_research_panel_uses(record):
-            prior_uses[panel] = prior_uses.get(panel, 0) + 1
-            if candidate and candidate in selected_candidates:
-                by_candidate = prior_selected.setdefault(panel, {})
-                by_candidate[candidate] = by_candidate.get(candidate, 0) + 1
+        selected_fingerprints = _closure_selected_fingerprints(record)
+        for identity, fingerprint in _record_panel_uses(record):
+            prior_uses[identity] = prior_uses.get(identity, 0) + 1
+            if fingerprint and fingerprint in selected_fingerprints:
+                by_model = prior_selected.setdefault(identity, {})
+                by_model[fingerprint] = by_model.get(fingerprint, 0) + 1
     # Issue #54 (correcting #43): the rationale is retained in both phases. While
     # preparing a request it is rendered de-templated at the foot of the round
     # instead of inline, so it stays auditable without reading as a form to copy.
@@ -2007,34 +2165,19 @@ def _v4_measurement_rounds_section(
         round_results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
-        round_panels: list[tuple[tuple[int, int], str]] = []
+        round_panels: list[tuple] = []
         for item in round_results.get("research_evaluations") or []:
             if not isinstance(item, dict):
                 continue
-            panel = _research_panel_of(item)
-            candidate_key = (
-                "" if item.get("candidate") is None else str(item.get("candidate"))
+            metrics = (
+                item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
             )
-            panel_note = ""
-            qualifier = ""
-            if panel is not None:
-                uses = prior_uses.get(panel, 0)
-                selected = prior_selected.get(panel, {}).get(candidate_key, 0)
-                if uses:
-                    suffix = "" if uses == 1 else "s"
-                    history = [f"{uses} prior measurement{suffix} on these episodes"]
-                    if selected:
-                        history.append(
-                            f"{selected} preceded a closure that selected this lineage"
-                        )
-                    panel_note = " (reused panel: " + "; ".join(history) + ")"
-                    qualifier = (
-                        " Reused panel: comparable to earlier results on the same "
-                        "episodes, not independent confirmation."
-                    )
-                else:
-                    panel_note = " (new panel)"
-                round_panels.append((panel, candidate_key))
+            identity = _panel_identity({**metrics, **item}, "research_evaluation")
+            panel_note, qualifier = _reuse_context(
+                prior_uses, prior_selected, identity, _entry_fingerprint(item)
+            )
+            if identity is not None:
+                round_panels.append(identity)
             detail = _episode_interval(item)
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
@@ -2072,12 +2215,22 @@ def _v4_measurement_rounds_section(
         for item in round_results.get("task_reference_evaluations") or []:
             if not isinstance(item, dict):
                 continue
+            metrics = (
+                item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
+            )
+            identity = _panel_identity({**metrics, **item}, "task_reference")
+            panel_note, qualifier = _reuse_context(
+                prior_uses, prior_selected, identity, _entry_fingerprint(item)
+            )
+            if identity is not None:
+                round_panels.append(identity)
             detail = f"panel `{item.get('panel', '-')}`"
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
                 f"- `{item.get('candidate', '-')}` "
-                f"`task_reference`{_round_entry_status(item)}: {detail}."
+                f"`task_reference`{_round_entry_status(item)}"
+                f"{panel_note}: {detail}.{qualifier}"
             )
             if item.get("selection"):
                 if inline_precedent:
@@ -2108,11 +2261,31 @@ def _v4_measurement_rounds_section(
         for item in round_results.get("paired_comparisons") or []:
             if not isinstance(item, dict):
                 continue
+            reused = []
+            for panel in item.get("panels") or []:
+                if not isinstance(panel, dict):
+                    continue
+                identity = _panel_identity(panel, "research_evaluation")
+                if identity is None:
+                    continue
+                uses = prior_uses.get(identity, 0)
+                if uses:
+                    reused.append((identity, uses))
+            qualifier = ""
+            if reused:
+                context = ", ".join(
+                    f"{_panel_identity_label(identity)} ({uses} prior)"
+                    for identity, uses in reused
+                )
+                qualifier = (
+                    f" Reused panel context: {context}; comparable to earlier "
+                    "results on the same episodes, not independent confirmation."
+                )
             lines.append(
                 f"- Paired comparison `{item.get('candidate', '-')}` vs "
                 f"`{item.get('reference', '-')}`: {item.get('candidate_wins', '-')} "
                 f"vs {item.get('reference_wins', '-')} discordant wins over "
-                f"{item.get('episodes', '-')} episodes."
+                f"{item.get('episodes', '-')} episodes.{qualifier}"
             )
         if precedent:
             lines.extend(
@@ -2126,8 +2299,8 @@ def _v4_measurement_rounds_section(
                     *precedent,
                 ]
             )
-        for panel, _candidate in round_panels:
-            prior_uses[panel] = prior_uses.get(panel, 0) + 1
+        for identity in round_panels:
+            prior_uses[identity] = prior_uses.get(identity, 0) + 1
     return lines
 
 

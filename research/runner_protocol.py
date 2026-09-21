@@ -2072,49 +2072,133 @@ def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
     return sources
 
 
+def _selection_panel_identity(entry: dict, instrument: str) -> dict | None:
+    """The instrument-preserving identity of a panel a model was measured on."""
+    if instrument == "task_reference":
+        panel = entry.get("panel")
+        if not isinstance(panel, str) or not panel.strip():
+            return None
+        identity: dict = {"instrument": "task_reference", "panel": panel}
+        for field in ("panel_version", "seed", "episodes"):
+            value = entry.get(field)
+            if isinstance(value, int) and not isinstance(value, bool):
+                identity[field] = value
+        return identity
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return {"instrument": "research_evaluation", "seed": seed, "episodes": episodes}
+
+
+def _selection_panel_key(identity: dict) -> tuple:
+    return tuple(sorted(identity.items()))
+
+
+def _normalized_selection_panel(item: object) -> dict | None:
+    """Accept the instrument-preserving record or a legacy ``[seed, episodes]``."""
+    if isinstance(item, (list, tuple)) and len(item) == 2:
+        seed, episodes = item
+        if all(isinstance(value, int) and not isinstance(value, bool) for value in item):
+            return {
+                "instrument": "research_evaluation",
+                "seed": int(seed),
+                "episodes": int(episodes),
+            }
+        return None
+    if isinstance(item, dict):
+        instrument = item.get("instrument")
+        if instrument == "task_reference":
+            panel = item.get("panel")
+            if not isinstance(panel, str) or not panel.strip():
+                return None
+            identity: dict = {"instrument": "task_reference", "panel": panel}
+            for field in ("panel_version", "seed", "episodes"):
+                value = item.get(field)
+                if isinstance(value, int) and not isinstance(value, bool):
+                    identity[field] = value
+            return identity
+        if instrument == "research_evaluation":
+            seed = item.get("seed")
+            episodes = item.get("episodes")
+            if isinstance(seed, bool) or not isinstance(seed, int):
+                return None
+            if isinstance(episodes, bool) or not isinstance(episodes, int):
+                return None
+            return {"instrument": "research_evaluation", "seed": seed, "episodes": episodes}
+    return None
+
+
 def _selection_panels_for(
     source: dict, pending: dict, fingerprint: str
-) -> list[list[int]]:
-    """The research panels a newly selected lineage was measured on.
+) -> list[dict]:
+    """The panels a newly selected lineage was measured on.
 
     Issue #57: a lineage selected on a panel's episodes is not independently
-    confirmed by re-measuring those same episodes. The panels of the model's
-    measurements in this experiment are recorded on the lineage so the brief can
-    surface its selection exposure. Panels already recorded on a carried-over
-    lineage are preserved.
+    confirmed by re-measuring those same episodes. The identity of every panel the
+    model was measured on in this experiment is recorded on the lineage so the
+    brief can surface its selection exposure. Both instruments covered by the
+    contract are recorded, and the representation preserves the instrument and the
+    panel identity. Panels already recorded on a carried-over lineage are
+    preserved.
     """
-    panels: list[list[int]] = []
-    seen: set[tuple[int, int]] = set()
+    panels: list[dict] = []
+    seen: set[tuple] = set()
     for item in source.get("selected_panels") or []:
-        if (
-            isinstance(item, (list, tuple))
-            and len(item) == 2
-            and all(isinstance(value, int) and not isinstance(value, bool) for value in item)
-        ):
-            panel = (int(item[0]), int(item[1]))
-            if panel not in seen:
-                seen.add(panel)
-                panels.append([panel[0], panel[1]])
-    for entry in [
-        *(pending.get("requested_evaluations") or []),
-        *(pending.get("partial_evaluations") or []),
-        *(pending.get("preparation_evaluations") or []),
-    ]:
-        if not isinstance(entry, dict):
+        normalized = _normalized_selection_panel(item)
+        if normalized is None:
             continue
-        if entry.get("instrument", "research_evaluation") != "research_evaluation":
-            continue
-        metrics = entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
-        entry_fingerprint = entry.get("model_fingerprint") or metrics.get(
-            "model_fingerprint"
-        )
-        if fingerprint and entry_fingerprint and str(entry_fingerprint) != str(fingerprint):
-            continue
-        panel = _research_panel({**metrics, **entry})
-        if panel is None or panel in seen:
-            continue
-        seen.add(panel)
-        panels.append([panel[0], panel[1]])
+        key = _selection_panel_key(normalized)
+        if key not in seen:
+            seen.add(key)
+            panels.append(normalized)
+    for instrument, keys in (
+        (
+            "research_evaluation",
+            (
+                "requested_evaluations",
+                "partial_evaluations",
+                "preparation_evaluations",
+            ),
+        ),
+        (
+            "task_reference",
+            (
+                "task_reference_evaluations",
+                "partial_task_reference_evaluations",
+                "preparation_task_reference_evaluations",
+            ),
+        ),
+    ):
+        for key in keys:
+            for entry in pending.get(key) or []:
+                if not isinstance(entry, dict):
+                    continue
+                if entry.get("instrument", instrument) != instrument:
+                    continue
+                metrics = (
+                    entry.get("metrics")
+                    if isinstance(entry.get("metrics"), dict)
+                    else {}
+                )
+                merged = {**metrics, **entry}
+                entry_fingerprint = merged.get("model_fingerprint")
+                if (
+                    fingerprint
+                    and entry_fingerprint
+                    and str(entry_fingerprint) != str(fingerprint)
+                ):
+                    continue
+                identity = _selection_panel_identity(merged, instrument)
+                if identity is None:
+                    continue
+                identity_key = _selection_panel_key(identity)
+                if identity_key in seen:
+                    continue
+                seen.add(identity_key)
+                panels.append(identity)
     return panels
 
 
@@ -2835,7 +2919,13 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 "Record a measurement for this model before designating it."
             )
         if same_model:
+            # Issue #57: an explicit re-designation may re-measure the incumbent
+            # on a new panel; the selection exposure must include that panel
+            # instead of copying the stale record unchanged.
             best_record = dict(existing_best)
+            best_record["selected_panels"] = _selection_panels_for(
+                existing_best, pending, best_fingerprint
+            )
         else:
             selected_records = _validated_designation_evidence(
                 selected_evidence,
