@@ -1394,7 +1394,7 @@ def publish_artifact(publication: dict) -> None:
         if destination.exists():
             validate_artifact_publication(publication)
             return
-        temporary.replace(destination)
+        _atomic_replace(temporary, destination)
     finally:
         if temporary.exists():
             shutil.rmtree(temporary)
