@@ -1397,6 +1397,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
                 artifact=str(state["accepted_artifact"]),
                 fingerprint=str(plan["selected_fingerprint"]),
                 terminal_reason=plan.get("terminal_reason"),
+                request=True,
             )
             + "\n"
         )
@@ -1532,6 +1533,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
                 fingerprint=str(best_known["fingerprint"]),
                 lineage=best_known,
                 terminal_reason=plan.get("terminal_reason"),
+                request=True,
             )
             + "\n"
         )
@@ -1673,6 +1675,7 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
                 fingerprint=str(best_known["fingerprint"]),
                 lineage=best_known,
                 terminal_reason=operation["reason"],
+                request=True,
             )
             + "\n"
         )

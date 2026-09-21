@@ -464,8 +464,9 @@ def render_final_benchmark_card(
     fingerprint: str,
     lineage: dict | None = None,
     terminal_reason: str | None = None,
+    request: bool = False,
 ) -> str:
-    """What the terminal assessment is, before it runs it.
+    """The final-benchmark request, or the assessment that produces the verdict.
 
     The runner reports the lineage it is about to measure, the contract that owns
     the measurement, and where the verdict lands. The benchmark's own numbers
@@ -476,9 +477,25 @@ def render_final_benchmark_card(
     frozen model and the Researcher's own terminal reason instead of leaving the
     Researcher to recall which artifact a bare `request_final_benchmark` will
     submit.
+
+    Issue #101: the request is announced while the campaign is still inside an
+    experiment, before any measurement exists, so its title says it is a request
+    and it never asserts a verdict it has not produced. The terminal verdict
+    belongs to the card printed by the run that measures the lineage.
     """
+    title = (
+        "=== Official benchmark requested ==="
+        if request
+        else "=== Official benchmark ==="
+    )
+    next_line = (
+        "  This request is irreversible; no later experiment can select"
+        " another hypothesis."
+        if request
+        else "  This verdict is terminal and cannot select a later hypothesis."
+    )
     lines = [
-        "=== Official benchmark ===",
+        title,
         "",
         f"Selected   : {selected}",
         f"Artifact   : {artifact}",
@@ -516,7 +533,7 @@ def render_final_benchmark_card(
             "  research/GOAL_REACHED is written only if the objective is met.",
             "",
             "Next",
-            "  This verdict is terminal and cannot select a later hypothesis.",
+            next_line,
         ]
     )
     return "\n".join(lines)
