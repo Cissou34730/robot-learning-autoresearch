@@ -4,10 +4,13 @@
 
 **Current synthesis:** The campaign objective is a policy with at least 196/200
 successes on the official 200-episode reach-and-hold assessment. The unchanged
-PPO baseline learned the task and checkpoint-100352 is the strongest current
-development lineage: it scored 199/200 (99.5%) on the disjoint
-research-evaluation panel and 196/200 on the reused task-reference panel. The
-campaign therefore has strong evidence of progress, but no official verdict.
+PPO baseline learned the task, and checkpoint-100352 remains the strongest
+supported development lineage: it scored 199/200 (99.5%) on the first disjoint
+research-evaluation panel, 196/200 on the reused task-reference panel, and
+196/200 on the fresh late-lineage comparison panel. The retained alternatives
+tested on that comparison scored 195/200 and 193/200. The campaign therefore
+has strong evidence of progress and a stable model choice, but no official
+verdict.
 
 **Lessons and limits:** Training proxies identify a sharp learning transition
 and later fluctuation, but they are not task measurements. The task-reference
@@ -15,17 +18,20 @@ scores (192/200 for checkpoint-95232, 196/200 for checkpoint-100352, and
 194/200 for checkpoint-120832) are comparable but selection-contaminated
 because the panel was reused. The disjoint result is independent confirmation
 for checkpoint-100352 under the research evaluator, not a replacement for the
-protected final assessment. Its one failure reached tolerance but held for only
-one step before interruption and truncation; this establishes a residual
-failure mode, not its frequency or cause. Later retained checkpoints
-105472-115712 have no task measurement, so their training proxies cannot rank
-them against the selected policy.
+protected final assessment. On the fresh comparison panel, checkpoint-100352
+had four failures, including one brief two-step hold and three episodes that
+never reached tolerance; this expands the observed residual failure pattern
+without establishing its frequency or cause. The paired comparisons gave the
+working lineage one discordant win over alternative-115712 and three over
+alternative-120832, with no wins for either alternative. Other retained
+lineages remain unmeasured on task behavior, so their training proxies cannot
+rank them against the selected policy.
 
-**Open questions:** Whether any retained late-training checkpoint has better
-reach-and-hold behavior than checkpoint-100352 on independent episodes remains
-unresolved, as does the official benchmark outcome for the standing best-known
-lineage. The evidence does not establish a causal explanation for the residual
-hold failures or that further training improves them.
+**Open questions:** The official benchmark outcome for the standing best-known
+lineage remains unknown. The frequency and cause of the observed reach and hold
+failures are also unresolved, and some retained late-training lineages have not
+been measured on task behavior. The evidence does not establish that further
+training or replication would improve the submitted policy.
 
 ## 7624cdd2-25fb-489d-ab70-a31be819d2a1 / Experiment 1
 
