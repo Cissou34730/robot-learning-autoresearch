@@ -1631,6 +1631,55 @@ def _v4_best_known_section(state: dict) -> list[str]:
     return lines
 
 
+def _v4_terminal_assessment_section(state: dict) -> list[str]:
+    """The irreversible request, stated with the model it will freeze.
+
+    Issue #59: the protocol frames the terminal assessment only as a risk, so a
+    pending final-benchmark request must name the frozen best-known lineage and
+    the Researcher's terminal reason. The decision becomes a confirmed object
+    instead of a recall; the mechanism itself is unchanged.
+    """
+    pending = state.get("pending_final_benchmark")
+    if not isinstance(pending, dict):
+        return []
+    lineage = pending.get("best_known")
+    if not isinstance(lineage, dict):
+        lineage = state.get("best_known_lineage")
+    if not isinstance(lineage, dict):
+        return []
+    reason = pending.get("terminal_reason")
+    if not reason:
+        conclusion = state.get("campaign_conclusion")
+        if isinstance(conclusion, dict):
+            reason = conclusion.get("reason")
+    lines = [
+        "",
+        "## Pending terminal assessment",
+        "",
+        (
+            "A request for the official assessment is pending. The campaign ends "
+            "after either verdict, `goal_reached` or `goal_not_reached`, and the "
+            "decision is irreversible. This is the frozen model the verdict will "
+            "describe:"
+        ),
+    ]
+    lines.extend(_authoritative_lineage_lines("best_known", lineage))
+    lines.append(f"  - Terminal reason: {_recorded_value(reason)}")
+    lines.extend(
+        [
+            "",
+            (
+                "Both verdicts are legitimate campaign outcomes; "
+                "`goal_not_reached` on a well-evidenced submission is not a "
+                "failure of the research process, and the campaign's scientific "
+                "record survives the verdict intact. There is no reversal and no "
+                "second verdict."
+            ),
+        ]
+    )
+    return lines
+
+
 def _cost_records(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[dict]:
@@ -2212,6 +2261,8 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_reusable_lineages_section(state))
     lines.extend(_v4_best_known_section(state))
+
+    lines.extend(_v4_terminal_assessment_section(state))
 
     lines.extend(_v4_official_section(state, terminal))
     return "\n".join(lines).rstrip() + "\n"

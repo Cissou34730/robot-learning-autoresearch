@@ -1387,8 +1387,19 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
             "selected": selected_name,
             "artifact": state["accepted_artifact"],
             "fingerprint": plan["selected_fingerprint"],
+            "terminal_reason": plan.get("terminal_reason"),
         }
         repository.write_state(state)
+        console.announce(
+            "\n"
+            + console.render_final_benchmark_card(
+                selected=selected_name,
+                artifact=str(state["accepted_artifact"]),
+                fingerprint=str(plan["selected_fingerprint"]),
+                terminal_reason=plan.get("terminal_reason"),
+            )
+            + "\n"
+        )
     console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
@@ -1437,6 +1448,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "removed_retained": plan["removed_retained"],
         "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
+        "terminal_reason": plan.get("terminal_reason"),
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
         "designation_counter": plan.get("designation_counter", 0),
     }
@@ -1510,7 +1522,19 @@ def apply_pending_v4_closure(state: dict) -> bool:
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
             "best_known": best_known,
+            "terminal_reason": plan.get("terminal_reason"),
         }
+        console.announce(
+            "\n"
+            + console.render_final_benchmark_card(
+                selected="best_known",
+                artifact=str(best_known["artifact"]),
+                fingerprint=str(best_known["fingerprint"]),
+                lineage=best_known,
+                terminal_reason=plan.get("terminal_reason"),
+            )
+            + "\n"
+        )
     if pending_field == "pending_analysis":
         result = pending["result"]
         result.update(
@@ -1639,7 +1663,19 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
             "best_known": copy.deepcopy(best_known),
+            "terminal_reason": operation["reason"],
         }
+        console.announce(
+            "\n"
+            + console.render_final_benchmark_card(
+                selected="best_known",
+                artifact=str(best_known["artifact"]),
+                fingerprint=str(best_known["fingerprint"]),
+                lineage=best_known,
+                terminal_reason=operation["reason"],
+            )
+            + "\n"
+        )
     else:
         state["last_verdict"] = (
             "researcher concluded that no further experiment is warranted"
@@ -1771,6 +1807,10 @@ def execute_pending_final_benchmark() -> int:
             selected=str(pending.get("selected") or "accepted lineage"),
             artifact=artifact,
             fingerprint=fingerprint,
+            lineage=pending.get("best_known")
+            if isinstance(pending.get("best_known"), dict)
+            else None,
+            terminal_reason=pending.get("terminal_reason"),
         )
         + "\n"
     )

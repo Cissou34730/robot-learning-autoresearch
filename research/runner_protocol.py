@@ -1863,6 +1863,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retain",
         "remove_retained",
         "request_final_benchmark",
+        "terminal_reason",
     }
     extra = set(decision) - allowed
     if extra:
@@ -1990,6 +1991,11 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     request_final = decision.get("request_final_benchmark", False)
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
+    terminal_reason = str(decision.get("terminal_reason", "")).strip()
+    if request_final and not terminal_reason:
+        raise ValueError(
+            "request_final_benchmark requires a non-empty terminal_reason"
+        )
     selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
     if (
         request_final
@@ -2014,6 +2020,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": retention_plans,
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
         "request_final_benchmark": request_final,
+        "terminal_reason": terminal_reason if request_final else None,
     }
 
 
@@ -2713,6 +2720,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retain",
         "remove_retained",
         "request_final_benchmark",
+        "terminal_reason",
     }
     extra = set(decision) - allowed
     if extra:
@@ -2900,6 +2908,11 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     request_final = decision.get("request_final_benchmark", False)
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
+    terminal_reason = str(decision.get("terminal_reason", "")).strip()
+    if request_final and not terminal_reason:
+        raise ValueError(
+            "request_final_benchmark requires a non-empty terminal_reason"
+        )
     if request_final and best_record is None:
         raise ValueError("a final benchmark requires a designated best-known model")
     retained_records = [
@@ -2929,6 +2942,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": [],
         "removed_retained": removed,
         "request_final_benchmark": request_final,
+        "terminal_reason": terminal_reason if request_final else None,
         "hypothesis_assessment": hypothesis_assessment,
         "designation_counter": designation_counter,
     }

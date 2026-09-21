@@ -36,6 +36,7 @@ _SECTION_HEADINGS = frozenset(
         "Best-known model",
         "Final benchmark",
         "Hypothesis assessment",
+        "Frozen model",
     }
 )
 
@@ -461,6 +462,8 @@ def render_final_benchmark_card(
     selected: str,
     artifact: str,
     fingerprint: str,
+    lineage: dict | None = None,
+    terminal_reason: str | None = None,
 ) -> str:
     """What the terminal assessment is, before it runs it.
 
@@ -468,14 +471,41 @@ def render_final_benchmark_card(
     the measurement, and where the verdict lands. The benchmark's own numbers
     belong to the human-owned contract in `research/scenario.md`, and the
     measured ones arrive with the evaluator's own reports.
+
+    Issue #59: a terminal request is irreversible, so the card also confirms the
+    frozen model and the Researcher's own terminal reason instead of leaving the
+    Researcher to recall which artifact a bare `request_final_benchmark` will
+    submit.
     """
-    return "\n".join(
+    lines = [
+        "=== Official benchmark ===",
+        "",
+        f"Selected   : {selected}",
+        f"Artifact   : {artifact}",
+        f"Fingerprint: {fingerprint[:16]}",
+    ]
+    if isinstance(lineage, dict):
+        evidence = lineage.get("evaluation_artifacts")
+        measurements = (
+            ", ".join(str(path) for path in evidence)
+            if isinstance(evidence, list) and evidence
+            else "not recorded"
+        )
+        lines.extend(
+            [
+                "",
+                "Frozen model",
+                f"  Candidate   : {lineage.get('candidate', 'not recorded')}",
+                f"  Origin exp  : {lineage.get('origin_experiment', 'not recorded')}",
+                f"  Train steps : {lineage.get('training_steps', 'not recorded')}",
+                f"  Commit      : {lineage.get('scientific_commit') or 'not recorded'}",
+                f"  Measurements: {measurements}",
+            ]
+        )
+    if terminal_reason:
+        lines.extend(["", "Reason", f"  {terminal_reason}"])
+    lines.extend(
         [
-            "=== Official benchmark ===",
-            "",
-            f"Selected   : {selected}",
-            f"Artifact   : {artifact}",
-            f"Fingerprint: {fingerprint[:16]}",
             "",
             "Contract",
             "  The protected human-defined task and its fixed panel, as defined in",
@@ -488,3 +518,4 @@ def render_final_benchmark_card(
             "  This verdict is terminal and cannot select a later hypothesis.",
         ]
     )
+    return "\n".join(lines)

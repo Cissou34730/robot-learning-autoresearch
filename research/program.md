@@ -301,11 +301,23 @@ evidence label, or predefined number of panels is mandatory.
 
 Another useful investigation does not prohibit stopping, and reaching a
 development threshold does not require stopping. No residual-failure criterion or
-proof that no better research direction exists is required.
+proof that no better research direction exists is required. Deferring the request
+is also a decision with a cost: development evidence is never a substitute for the
+official verdict, and a campaign that never requests it produces no official
+result at all. There is no advantage to waiting beyond the point where further
+investigation no longer changes which model you would submit.
+
+The decision rule is procedural rather than a performance threshold: request the
+assessment when you can no longer describe an experiment whose outcome would
+change which model you submit. The rule asks nothing about how good the result is.
 
 Request the official benchmark from experiment preparation or closure, targeting
 the frozen best-known model. Requesting it ends the campaign after either verdict:
 `goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
 plan further work conditional on benchmark failure. Only this benchmark declares
-the official result; a failed official verdict is never development feedback for
-another hypothesis.
+the official result. The verdict reports the result; it is not designed to
+diagnose a policy and carries no diagnostic detail, so plan your development
+evidence so that it, and not the verdict, tells you what you need to know. Both
+verdicts are legitimate campaign outcomes: `goal_not_reached` on a well-evidenced
+submission is not a failure of the Researcher's process, and the campaign's
+scientific record survives the verdict intact.

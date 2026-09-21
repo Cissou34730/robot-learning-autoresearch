@@ -1336,6 +1336,7 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
+    request["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
     calls = []
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
@@ -1397,6 +1398,7 @@ def test_legacy_champion_path_is_canonicalized_before_final_benchmark(
             "reason": "Keep the accepted lineage.",
             "code": {"action": "keep", "reason": "Keep the accepted code."},
             "request_final_benchmark": True,
+            "terminal_reason": "Submit the accepted lineage.",
         }
     }
     monkeypatch.setattr(
@@ -1427,6 +1429,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
+    request["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
     assert not apply_previous_result_decision(request, state)
 
     def failed_benchmark(model, progress_callback=None):
@@ -1563,6 +1566,7 @@ def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path)
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     decision = _lineage_decision()
     decision["previous_result_decision"]["request_final_benchmark"] = True
+    decision["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
     fingerprint = plan_previous_result_decision(decision, state)["selected_fingerprint"]
     state["official_benchmark_artifact"] = fingerprint
 
