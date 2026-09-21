@@ -85,7 +85,7 @@
   "pending_analysis": null,
   "pending_campaign_conclusion": {
     "action": "request_final_benchmark",
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The decision-relevant scientific question was whether any available saved lineage could change which policy should be submitted for the official reach-and-hold assessment. The fresh preparation comparison measured the standing working lineage at 196/200 (98.0%), alternative-115712 at 195/200 (97.5%), and alternative-120832 at 193/200 (96.5%); paired comparisons gave the working lineage one and three discordant wins respectively, with no alternative wins. Together with its earlier 199/200 result on a disjoint panel, this supports retaining checkpoint-100352 as best-known. Further plausible questions concern the cause of residual failures, unmeasured retained checkpoints, or learning-process reproducibility, but their possible outcomes are not presently expected to change the submission choice and an unresolved question alone does not justify another full training run. The standing best-known model is therefore ready for the official terminal assessment, which is the only remaining measurement that can decide whether the human objective is met."
   },
   "pending_closure_operation": null,
