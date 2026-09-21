@@ -1130,11 +1130,21 @@ if ($ResearcherBackend -eq "opencode") {
         $proposalProblem = $proposalStatus.Reason
         Write-Status "=== Research proposal missing or invalid; retrying the same phase once ===" Yellow
         $retryPrompt = @(
-            "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
-            "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, or the invalid or missing saved-lineage research/evaluation_request.json, preserving valid researcher-owned edits that belong to this unfinished experiment."
-            "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-            "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment, or a corrected saved-lineage research/evaluation_request.json."
-            "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
+            $(if ($budgetReached) {
+                    "Current phase: conclude the campaign. The experiment budget is exhausted; no further experiment may be prepared. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
+                    "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json, which must contain a campaign_conclusion, preserving valid researcher-owned edits that belong to this unfinished experiment."
+                    "Only two outcomes are legal: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
+                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
+                    "Expected deliverable: a corrected research/proposal.json containing only a campaign_conclusion."
+                    "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
+                }
+                else {
+                    "Current phase: prepare experiment $nextExperiment. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
+                    "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, or the invalid or missing saved-lineage research/evaluation_request.json, preserving valid researcher-owned edits that belong to this unfinished experiment."
+                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
+                    "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment, or a corrected saved-lineage research/evaluation_request.json."
+                    "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
+                })
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "new hypothesis" -Experiment $nextExperiment -Continue
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {

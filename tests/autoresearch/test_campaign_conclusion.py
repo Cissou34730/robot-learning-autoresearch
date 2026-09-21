@@ -364,6 +364,21 @@ def test_launcher_restricts_a_budget_reached_phase_to_conclusions():
     ), "an interrupted conclusion must resume rather than exit on terminal state"
 
 
+def test_launcher_retry_after_budget_reached_offers_only_conclusions():
+    # The retry after a validation failure must branch on the reached budget;
+    # otherwise it offers an experiment or a saved-lineage measurement that the
+    # conclusion-only state rejects, and following it consumes the one retry.
+    retry = LOOP.split("retrying the same phase once", 1)[1].split(
+        "Invoke-ResearcherSession -Prompt $retryPrompt", 1
+    )[0]
+
+    assert "$budgetReached" in retry
+    assert "which must contain a campaign_conclusion" in retry
+    assert "containing only a campaign_conclusion" in retry
+    # The ordinary retry still offers the two preparation deliverables.
+    assert "saved-lineage research/evaluation_request.json" in retry
+
+
 def test_preparation_prompt_and_contract_document_the_two_exits():
     assert "requesting the official final assessment" in LOOP
     assert "concluding that no further experiment is warranted" in LOOP

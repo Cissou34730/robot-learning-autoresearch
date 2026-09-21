@@ -315,16 +315,78 @@ def names_targeted_test_file(token: str) -> bool:
     return resolved.is_file() and resolved.is_relative_to(ROOT)
 
 
+# Pytest options that consume no value. Every other option is treated as
+# value-taking, so an unknown option cannot expose its value as a selector.
+PYTEST_FLAG_OPTIONS = frozenset(
+    {
+        "-q",
+        "--quiet",
+        "-v",
+        "--verbose",
+        "-x",
+        "--exitfirst",
+        "-s",
+        "-l",
+        "--showlocals",
+        "--lf",
+        "--last-failed",
+        "--ff",
+        "--failed-first",
+        "--nf",
+        "--new-first",
+        "--sw",
+        "--stepwise",
+        "--stepwise-skip",
+        "--stepwise-ignore",
+        "--co",
+        "--collect-only",
+        "--pyargs",
+        "--noconftest",
+        "--keep-duplicates",
+        "--collect-in-virtualenv",
+        "--doctest-modules",
+        "--doctest-continue-on-failure",
+        "--fixtures",
+        "--fixtures-per-test",
+        "--pdb",
+        "--trace",
+        "--runxfail",
+        "--cache-clear",
+        "--no-header",
+        "--no-summary",
+        "--no-fold",
+        "--full-trace",
+        "--setup-only",
+        "--setup-plan",
+        "--setup-show",
+        "--disable-warnings",
+        "--strict-markers",
+        "--strict-config",
+        "--continue-on-collection-errors",
+        "--help",
+        "--version",
+    }
+)
+
+
 def is_repository_wide_pytest(tokens: list[str]) -> bool:
     if "pytest" not in tokens:
         return False
     rest = tokens[tokens.index("pytest") + 1 :]
-    for previous, token in zip(["pytest", *rest], rest):
-        # An option, and the value it consumes, is never a test selector.
-        if token.startswith("-") or previous.startswith("-"):
+    index = 0
+    while index < len(rest):
+        token = rest[index]
+        if token.startswith("-"):
+            # `--option=value` carries its value inline. A flag-only option
+            # consumes nothing, so a selector that follows it stays visible.
+            if "=" in token or token in PYTEST_FLAG_OPTIONS:
+                index += 1
+            else:
+                index += 2
             continue
         if names_targeted_test_file(token):
             return False
+        index += 1
     return True
 
 

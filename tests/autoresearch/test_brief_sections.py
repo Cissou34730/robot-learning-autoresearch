@@ -516,10 +516,18 @@ def test_activity_record_counts_training_and_replication_factually():
             "completed_training_steps": 100,
             "replication_of": 1,
         },
+        {
+            "index": 7,
+            "kind": "replication",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+            "replication_of": 1,
+        },
     ]
     text = "\n".join(brief._v4_activity_record_section({}, results, None))
-    assert "Training experiments: 3" in text
-    assert "Replication experiments recorded: 3." in text
+    assert "Training experiments: 4" in text
+    # Issue #46: the line lists the recorded replication ids, not a count.
+    assert "Replication experiments recorded: 3, 7." in text
     # Issue #46: no campaign-wide running total of consumed resources.
     assert "completed steps" not in text
     assert "requested steps" not in text
@@ -647,12 +655,31 @@ def test_activity_record_separates_execution_from_evidence_coverage():
     "state",
     [
         {"schema_version": 4, "campaign": {"id": "cid", "base_commit": "base"}},
-        {"schema_version": 3, "accepted_metrics": {"episodes": 400}},
-        {"accepted_metrics": {"episodes": 400}},
+        {
+            "schema_version": 4,
+            "campaign": {"id": "cid", "base_commit": "base"},
+            "pending_analysis": {
+                "experiment": 1,
+                "candidates": [{"name": "checkpoint-10240", "timesteps": 10240}],
+                "result": {
+                    "index": 1,
+                    "kind": "training",
+                    "training_budget_steps": 100,
+                    "completed_training_steps": 100,
+                },
+            },
+        },
+        {
+            "schema_version": 4,
+            "campaign": {"id": "cid", "base_commit": "base"},
+            "preparation_conclusion_only": True,
+        },
     ],
 )
-def test_rendered_brief_carries_no_budget_vocabulary(monkeypatch, tmp_path, state):
-    """Issue #46: every schema branch renders without budget vocabulary."""
+def test_rendered_activity_record_carries_no_budget_vocabulary(
+    monkeypatch, tmp_path, state
+):
+    """Issue #46: the activity record's resource accounting stays neutral."""
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
@@ -661,6 +688,7 @@ def test_rendered_brief_carries_no_budget_vocabulary(monkeypatch, tmp_path, stat
     )
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
 
-    lowered = render_research_brief().lower()
+    rendered = render_research_brief()
+    record = rendered.split("## Campaign activity record", 1)[1].split("\n## ", 1)[0]
     for wording in ("cost", "budget", "remaining", "allowance", "spent"):
-        assert wording not in lowered
+        assert wording not in record.lower()

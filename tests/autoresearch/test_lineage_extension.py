@@ -7,13 +7,16 @@ operation description, the experiment family and the brief keep it visible
 whether or not the run carried a parameter delta.
 """
 
+import copy
+from argparse import Namespace
+
 import pytest
 
+from research import run_experiment
 from research.build_research_brief import (
     _change_details,
     _v4_experiment_index_section,
 )
-from research.run_experiment import apply_lineage_extension_fields
 from research.runner_protocol import (
     experiment_family,
     operation_description,
@@ -33,36 +36,112 @@ def _frozen_lineage(
     }
 
 
-def _experiment_record(
-    *,
-    index: int,
-    kind: str,
+def _production_record(
+    monkeypatch,
+    root,
     proposal: dict,
-    parent: dict | None,
-    recipe_restored: bool = False,
+    *,
+    index: int = 1,
 ) -> dict:
-    """Build a result record through the runner's own field construction."""
-    raw_change = proposal.get("change")
-    raw_change = raw_change.strip() if isinstance(raw_change, str) else ""
-    change = operation_description(proposal)
-    result = {
-        "index": index,
-        "kind": kind,
-        "change": change,
-        "initialization": "transfer" if parent is not None else "fresh",
-        "parameter_changes": [],
-        "code_changes": [],
+    """Drive the runner's production training path and return its persisted record."""
+    campaign_id = "campaign"
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": campaign_id, "base_commit": "base"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_analysis": None,
+        "last_allocated_experiment": 0,
+        "accepted_training_steps": 0,
     }
-    if raw_change and raw_change != change:
-        result["researcher_change"] = raw_change
-    apply_lineage_extension_fields(
-        result,
-        proposal,
-        kind,
-        parent,
-        recipe_restored=recipe_restored,
+    parent = {
+        **_frozen_lineage(),
+        "artifact": "archive/working",
+        "parameters": {"algorithm": {"name": "ppo"}},
+        "training_steps": 120_000,
+    }
+    persisted: list[dict] = []
+
+    paths = run_experiment.paths
+    repository = run_experiment.repository
+    protocol = run_experiment.protocol
+    execution = run_experiment.execution
+    research_config = run_experiment.research_config
+
+    monkeypatch.setattr(paths, "ROOT", root)
+    monkeypatch.setattr(paths, "CANDIDATE_ROOT", root / "candidates")
+    monkeypatch.setattr(paths, "TRAINING_LOG_DIR", root / "logs")
+    monkeypatch.setattr(paths, "STATE_PATH", root / "research_state.json")
+    monkeypatch.setattr(paths, "RESULTS_PATH", root / "results.jsonl")
+    monkeypatch.setattr(paths, "PROPOSAL_PATH", root / "proposal.json")
+    monkeypatch.setattr(paths, "RESTART_PENDING_PATH", root / "RESTART_PENDING")
+    monkeypatch.setattr(paths, "RECOVERY_PENDING_PATH", root / "RECOVERY_PENDING")
+    monkeypatch.setattr(repository, "load_state", lambda **kwargs: state)
+    monkeypatch.setattr(repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(repository, "anchor_scientific_parent", lambda _state: "base")
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(
+        repository, "publish_scientific_recipe", lambda _experiment, _scope: "recipe"
     )
-    return result
+    monkeypatch.setattr(repository, "resolve_repo_path", lambda _path: root)
+    monkeypatch.setattr(
+        repository, "require_complete_artifact", lambda *_args: None
+    )
+    monkeypatch.setattr(
+        repository, "require_complete_inference_artifact", lambda *_args: None
+    )
+    monkeypatch.setattr(
+        repository, "apply_code_lineage_decision", lambda _plan: None
+    )
+    monkeypatch.setattr(
+        repository,
+        "archive_candidates",
+        lambda *_args, **_kwargs: [{"name": "checkpoint-120832", "timesteps": 120_832}],
+    )
+    monkeypatch.setattr(
+        repository, "upsert_result", lambda result: persisted.append(copy.deepcopy(result))
+    )
+    monkeypatch.setattr(protocol, "resolved_training_parent", lambda *_args: parent)
+    monkeypatch.setattr(
+        protocol,
+        "plan_lineage_restore",
+        lambda _lineage: {"parent": "base", "restore": [], "remove_created": []},
+    )
+    monkeypatch.setattr(protocol, "next_experiment_index", lambda *_args, **_kwargs: index)
+    monkeypatch.setattr(protocol, "validate_experiment_semantics", lambda *_args: None)
+    monkeypatch.setattr(
+        protocol, "validation_test_paths", lambda *_args, **_kwargs: ()
+    )
+    monkeypatch.setattr(execution, "validate_active_configuration", lambda: None)
+    monkeypatch.setattr(execution, "training_budget", lambda *_args: 120_000)
+    monkeypatch.setattr(execution, "candidate_directories", lambda _path: [])
+    monkeypatch.setattr(execution, "remove_candidate_dir", lambda _path: None)
+    monkeypatch.setattr(execution, "train_candidate", lambda *_args, **_kwargs: 0.0)
+    monkeypatch.setattr(
+        execution, "training_attempt", lambda *_args, **_kwargs: 1
+    )
+    monkeypatch.setattr(
+        research_config, "load_experiment_config", lambda: parent["parameters"]
+    )
+    monkeypatch.setattr(research_config, "write_experiment_config", lambda _config: None)
+    monkeypatch.setattr(run_experiment.console, "announce", lambda _message: None)
+    monkeypatch.setattr(
+        run_experiment.console, "render_experiment_card", lambda _result: ""
+    )
+    monkeypatch.setattr(
+        run_experiment.console, "render_training_summary_card", lambda *_a, **_k: ""
+    )
+
+    assert (
+        run_experiment.run_training_experiment(
+            proposal, Namespace(timesteps=120_000, reuse_candidate=None)
+        )
+        == 0
+    )
+    record = state["pending_analysis"]["result"]
+    assert persisted == [record]
+    return record
 
 
 def _proposal(reasoning, **overrides):
@@ -228,20 +307,17 @@ def test_brief_index_renders_extensions_as_one_operation():
     assert all("Continue training lineage working" in row for row in rows)
 
 
-def test_extension_record_keeps_raw_change_apart_from_the_derived_description():
+def test_extension_record_keeps_raw_change_apart_from_the_derived_description(
+    monkeypatch, tmp_path
+):
     proposal = {
         "kind": "training",
+        "hypothesis": "a smaller learning rate refines the parent",
         "change": "lower the learning rate",
         "extends_lineage": True,
         "training_parent": "working",
     }
-    result = _experiment_record(
-        index=3,
-        kind="training",
-        proposal=proposal,
-        parent=_frozen_lineage(),
-        recipe_restored=False,
-    )
+    result = _production_record(monkeypatch, tmp_path, proposal)
 
     assert result["researcher_change"] == "lower the learning rate"
     description = operation_description(result)
@@ -251,6 +327,10 @@ def test_extension_record_keeps_raw_change_apart_from_the_derived_description():
     )
     assert description.count("lower the learning rate") == 1
     assert result["change"] == description
+    # The production path froze the lineage relation and its family.
+    assert result["extends_lineage"] is True
+    assert result["training_parent_lineage"]["candidate"] == "checkpoint-100352"
+    assert result["family"] == "lineage.checkpoint-100352@1"
 
 
 def test_role_reassignment_does_not_pool_two_different_lineages():
@@ -308,52 +388,54 @@ def test_same_lineage_keeps_identity_after_a_role_reassignment():
     assert as_working == reassigned == "lineage.checkpoint-100352@1"
 
 
-def test_transfer_record_persists_the_recipe_basis():
-    parent = _frozen_lineage()
-    restored = _experiment_record(
-        index=1,
-        kind="continuation",
-        proposal={"kind": "continuation", "training_parent": "working"},
-        parent=parent,
-        recipe_restored=True,
+def test_transfer_record_persists_the_recipe_basis(monkeypatch, tmp_path):
+    restored = _production_record(
+        monkeypatch,
+        tmp_path / "continuation",
+        {
+            "kind": "continuation",
+            "hypothesis": "continuing the lineage is sufficient",
+            "training_parent": "working",
+        },
     )
-    current = _experiment_record(
-        index=2,
-        kind="training",
-        proposal={
+    current = _production_record(
+        monkeypatch,
+        tmp_path / "extension",
+        {
             "kind": "training",
+            "hypothesis": "a smaller learning rate refines the parent",
             "change": "lower the learning rate",
             "extends_lineage": True,
             "training_parent": "working",
         },
-        parent=parent,
-        recipe_restored=False,
     )
 
     assert restored["recipe_basis"] == "parent_recipe"
     assert current["recipe_basis"] == "current_science"
 
 
-def test_historical_index_renders_each_transfer_recipe_basis():
-    parent = _frozen_lineage()
-    restored = _experiment_record(
+def test_historical_index_renders_each_transfer_recipe_basis(monkeypatch, tmp_path):
+    restored = _production_record(
+        monkeypatch,
+        tmp_path / "continuation",
+        {
+            "kind": "continuation",
+            "hypothesis": "continuing the lineage is sufficient",
+            "training_parent": "working",
+        },
         index=1,
-        kind="continuation",
-        proposal={"kind": "continuation", "training_parent": "working"},
-        parent=parent,
-        recipe_restored=True,
     )
-    current = _experiment_record(
-        index=2,
-        kind="training",
-        proposal={
+    current = _production_record(
+        monkeypatch,
+        tmp_path / "extension",
+        {
             "kind": "training",
+            "hypothesis": "a smaller learning rate refines the parent",
             "change": "lower the learning rate",
             "extends_lineage": True,
             "training_parent": "working",
         },
-        parent=parent,
-        recipe_restored=False,
+        index=2,
     )
 
     text = "\n".join(_v4_experiment_index_section([restored, current]))

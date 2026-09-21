@@ -977,7 +977,9 @@ def test_researcher_prompts_leave_execution_to_the_launcher():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
-    assert script.count("invoke research/run_experiment.py") == 6
+    # The budget-aware retry adds one launcher-only instruction, so both the
+    # preparation and the conclusion-only retries refuse run_experiment.py.
+    assert script.count("invoke research/run_experiment.py") == 7
     assert "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py" in script
     assert "Experiment was already executed during the research session" not in script
     assert "The researcher executed an experiment during the new-hypothesis" in script

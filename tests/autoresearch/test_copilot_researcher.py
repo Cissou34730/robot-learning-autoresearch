@@ -131,6 +131,10 @@ def test_a_repository_wide_test_run_is_refused():
         )
         == adapter.SUITE_DENIAL
     )
+    # An inline option value is not a selector, so the run stays repository-wide.
+    assert (
+        adapter.command_denial("uv run pytest --rootdir=tests") == adapter.SUITE_DENIAL
+    )
 
 
 def test_a_targeted_test_run_remains_permitted():
@@ -140,6 +144,10 @@ def test_a_targeted_test_run_remains_permitted():
     assert adapter.command_denial(f"uv run pytest {existing}") is None
     assert adapter.command_denial(f"uv run pytest {existing}::test_x") is None
     assert adapter.command_denial(f"uv run pytest --maxfail 1 {existing}") is None
+    # A flag-only option consumes nothing and must not hide the selector.
+    assert adapter.command_denial(f"uv run pytest -q {existing}") is None
+    # An inline option value likewise leaves the selector visible.
+    assert adapter.command_denial(f"uv run pytest --maxfail=1 {existing}") is None
 
 
 @pytest.mark.parametrize(
