@@ -1,137 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/e1-cada55eb5-60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-100352-200ep-seed10000-543af51fd137.json",
-      "research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-100352-200ep-seed10200-543af51fd137.json",
-      "research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-100352-200ep-seed10400-543af51fd137.json"
-    ],
-    "fingerprint": "60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest pooled task success among measured candidates, remains competitive with the endpoint on directly paired disjoint episodes, and outperformed both the endpoint and the reward-peak checkpoint in the available evidence.",
-    "scientific_commit": "b35bd4b5b69a75f1056cc86be975495d1c7bec4a",
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "046b034264ac802249f00967f83889737c32adb9",
-    "id": "77bb76da-d4f2-4e42-8202-0a8fb412f5ee",
+    "base_commit": "ef54fb62167c457719122f1e960154cc80e64f5a",
+    "id": "7624cdd2-25fb-489d-ab70-a31be819d2a1",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-20T09:40:09.127645+00:00"
+    "started_at": "2026-09-21T10:26:51.779670+00:00"
   },
+  "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "77bb76da-d4f2-4e42-8202-0a8fb412f5ee": 6
+    "7624cdd2-25fb-489d-ab70-a31be819d2a1": 0
   },
-  "last_allocated_experiment": 6,
-  "last_experiment": 6,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 6 continued the unchanged scientific recipe, and the retained working artifact remains the strongest measured policy. Keeping the recipe preserves the policy I/O, normalization, architecture and PPO configuration associated with the selected lineage."
-    },
-    "code_parent_commit": "8bdb70e4e614a09313b3d2fb7282f6fe6207040f",
-    "continue_from": "working",
-    "experiment": 6,
-    "reason": "The unchanged continuation hypothesis is contradicted for the tested checkpoints: checkpoint-100352 reached 90.5% and checkpoint-110592 reached 86.0% on the fresh episodes 11400-11599, versus 99.0% for the working policy, with zero challenger wins and 17 and 26 working-policy wins. The working policy then reached 100.0% on the independent episodes 11600-11799. These measured task results outweigh the high but declining training proxies and support freezing the retained working policy for the official assessment. Requesting the benchmark is appropriate because the policy has repeated recent independent results at or above 98%, while development measurements remain non-terminal."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/e1-cada55eb5-60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-    "fingerprint": "60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "8bdb70e4e614a09313b3d2fb7282f6fe6207040f",
-    "experiment": 6,
-    "scientific_commit": "ceb9ae97960568aa822f5ba3aa700d3501572dd2"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
+  "preparation_conclusion_only": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/e1-cada55eb5-60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-100352-200ep-seed10000-543af51fd137.json",
-      "research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-100352-200ep-seed10200-543af51fd137.json",
-      "research/evaluations/77bb76da-d4f2-4e42-8202-0a8fb412f5ee/evaluation-77bb76da-d4f2-4e42-8202-0a8fb412f5ee-experiment-1-checkpoint-100352-200ep-seed10400-543af51fd137.json"
-    ],
-    "fingerprint": "60906c8362d1bb6e0d3ab29d558dac571991c4de1139de94f7d025732d0552b3",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The unchanged continuation hypothesis is contradicted for the tested checkpoints: checkpoint-100352 reached 90.5% and checkpoint-110592 reached 86.0% on the fresh episodes 11400-11599, versus 99.0% for the working policy, with zero challenger wins and 17 and 26 working-policy wins. The working policy then reached 100.0% on the independent episodes 11600-11799. These measured task results outweigh the high but declining training proxies and support freezing the retained working policy for the official assessment. Requesting the benchmark is appropriate because the policy has repeated recent independent results at or above 98%, while development measurements remain non-terminal.",
-    "scientific_commit": "b35bd4b5b69a75f1056cc86be975495d1c7bec4a",
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
