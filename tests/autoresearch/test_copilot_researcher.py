@@ -108,8 +108,11 @@ def test_execution_belongs_to_the_launcher(command):
 
 
 def test_a_repository_wide_test_run_is_refused():
+    existing = "tests/autoresearch/test_copilot_researcher.py"
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
+    # A flag-only option alone still selects nothing.
+    assert adapter.command_denial("uv run pytest --strict") == adapter.SUITE_DENIAL
     # A directory runs the whole tree, not a targeted selection.
     assert adapter.command_denial("uv run pytest tests") == adapter.SUITE_DENIAL
     # A value-taking option is not a test selector, whatever its name, so an
@@ -123,8 +126,13 @@ def test_a_repository_wide_test_run_is_refused():
         adapter.command_denial("uv run pytest --code-highlight yes")
         == adapter.SUITE_DENIAL
     )
-    # A path used only as an option value is not a selector either.
+    # A path used only as an option value is not a selector either, even when a
+    # value-less option precedes the value-taking one.
     assert adapter.command_denial("uv run pytest --rootdir tests") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial(f"uv run pytest --strict --rootdir {existing}")
+        == adapter.SUITE_DENIAL
+    )
     assert (
         adapter.command_denial(
             "uv run pytest --rootdir tests/autoresearch/test_copilot_researcher.py"
@@ -146,6 +154,14 @@ def test_a_targeted_test_run_remains_permitted():
     assert adapter.command_denial(f"uv run pytest --maxfail 1 {existing}") is None
     # A flag-only option consumes nothing and must not hide the selector.
     assert adapter.command_denial(f"uv run pytest -q {existing}") is None
+    # The value-less options pytest itself declares are recognised, including
+    # ones a hand-maintained list omitted.
+    for flag in ("--strict", "--disable-plugin-autoload", "--trace-config"):
+        assert adapter.command_denial(f"uv run pytest {flag} {existing}") is None
+    # Repeated and combined short flags consume nothing either.
+    assert adapter.command_denial(f"uv run pytest -q -q {existing}") is None
+    assert adapter.command_denial(f"uv run pytest -qq {existing}") is None
+    assert adapter.command_denial(f"uv run pytest -qx {existing}") is None
     # An inline option value likewise leaves the selector visible.
     assert adapter.command_denial(f"uv run pytest --maxfail=1 {existing}") is None
 

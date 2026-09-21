@@ -315,9 +315,12 @@ def names_targeted_test_file(token: str) -> bool:
     return resolved.is_file() and resolved.is_relative_to(ROOT)
 
 
-# Pytest options that consume no value. Every other option is treated as
-# value-taking, so an unknown option cannot expose its value as a selector.
-PYTEST_FLAG_OPTIONS = frozenset(
+# Pytest options that consume no value. The live set is derived from pytest's
+# own parser declarations; this frozen set is only the conservative fallback
+# for a worktree where pytest cannot be introspected. An option absent from
+# whichever set is active is treated as value-taking, so an unknown option
+# cannot expose its value as a selector and a repository-wide run stays denied.
+PYTEST_FALLBACK_FLAG_OPTIONS = frozenset(
     {
         "-q",
         "--quiet",
@@ -368,21 +371,96 @@ PYTEST_FLAG_OPTIONS = frozenset(
     }
 )
 
+_PYTEST_FLAG_OPTIONS: frozenset[str] | None = None
+
+
+def _declared_pytest_flag_options() -> frozenset[str]:
+    """The value-less options the installed pytest itself declares.
+
+    Pytest registers its options when its plugins run `pytest_addoption` on a
+    parser; calling those declarations on a fresh parser reproduces the option
+    knowledge without configuring or parsing a session. An empty result lets
+    the caller fall back conservatively.
+    """
+    try:
+        import importlib
+        import pkgutil
+
+        import _pytest
+        from _pytest.config.argparsing import Parser
+
+        parser = Parser(_ispytest=True)
+    except Exception:  # noqa: BLE001 - pytest is best-effort optional here
+        return frozenset()
+    for info in pkgutil.walk_packages(_pytest.__path__, prefix="_pytest."):
+        try:
+            module = importlib.import_module(info.name)
+            addoption = getattr(module, "pytest_addoption", None)
+            if addoption is not None:
+                addoption(parser)
+        except Exception:  # noqa: BLE001, S112 - one broken module must not stop the rest
+            continue
+    options: set[str] = set()
+    for group in parser._groups:
+        for action in group._arggroup._actions:
+            if action.nargs == 0:
+                options.update(action.option_strings)
+    return frozenset(options)
+
+
+def pytest_flag_options() -> frozenset[str]:
+    """Value-less pytest options, derived from pytest's own declarations."""
+    global _PYTEST_FLAG_OPTIONS
+    if _PYTEST_FLAG_OPTIONS is None:
+        declared = _declared_pytest_flag_options()
+        _PYTEST_FLAG_OPTIONS = declared or PYTEST_FALLBACK_FLAG_OPTIONS
+    return _PYTEST_FLAG_OPTIONS
+
+
+def _short_option_span(token: str, flag_options: frozenset[str]) -> int:
+    """How many tokens a short-option token consumes, its value included.
+
+    A combined or repeated short flag such as `-qx` carries only value-less
+    options, so it consumes nothing beyond itself. The first unknown or
+    value-taking short option consumes the rest of the token as its inline
+    value, or the following token when the token ends there.
+    """
+    for position, character in enumerate(token[1:], start=1):
+        if f"-{character}" in flag_options:
+            continue
+        return 1 if position + 1 < len(token) else 2
+    return 1
+
 
 def is_repository_wide_pytest(tokens: list[str]) -> bool:
     if "pytest" not in tokens:
         return False
+    flag_options = pytest_flag_options()
     rest = tokens[tokens.index("pytest") + 1 :]
     index = 0
+    positional_only = False
     while index < len(rest):
         token = rest[index]
-        if token.startswith("-"):
+        if positional_only:
+            if names_targeted_test_file(token):
+                return False
+            index += 1
+            continue
+        if token == "--":
+            positional_only = True
+            index += 1
+            continue
+        if token.startswith("--"):
             # `--option=value` carries its value inline. A flag-only option
-            # consumes nothing, so a selector that follows it stays visible.
-            if "=" in token or token in PYTEST_FLAG_OPTIONS:
+            # consumes nothing, so a selector that follows it stays visible;
+            # an option pytest does not declare is assumed to take a value.
+            if "=" in token or token in flag_options:
                 index += 1
             else:
                 index += 2
+            continue
+        if token.startswith("-") and len(token) > 1:
+            index += _short_option_span(token, flag_options)
             continue
         if names_targeted_test_file(token):
             return False

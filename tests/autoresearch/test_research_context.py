@@ -977,9 +977,15 @@ def test_researcher_prompts_leave_execution_to_the_launcher():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
-    # The budget-aware retry adds one launcher-only instruction, so both the
-    # preparation and the conclusion-only retries refuse run_experiment.py.
-    assert script.count("invoke research/run_experiment.py") == 7
+    # Both preparation retry variants must refuse run_experiment.py. A global
+    # count could still pass if one branch lost the prohibition while another
+    # duplicated it, so assert the prohibition inside each branch.
+    retry = script.split("$retryPrompt = @(", 1)[1].split(
+        "Invoke-ResearcherSession -Prompt $retryPrompt", 1
+    )[0]
+    budget_branch, _, ordinary_branch = retry.partition("else {")
+    assert "invoke research/run_experiment.py" in budget_branch
+    assert "invoke research/run_experiment.py" in ordinary_branch
     assert "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py" in script
     assert "Experiment was already executed during the research session" not in script
     assert "The researcher executed an experiment during the new-hypothesis" in script

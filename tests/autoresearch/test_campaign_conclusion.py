@@ -368,15 +368,22 @@ def test_launcher_retry_after_budget_reached_offers_only_conclusions():
     # The retry after a validation failure must branch on the reached budget;
     # otherwise it offers an experiment or a saved-lineage measurement that the
     # conclusion-only state rejects, and following it consumes the one retry.
-    retry = LOOP.split("retrying the same phase once", 1)[1].split(
+    retry = LOOP.split("$retryPrompt = @(", 1)[1].split(
         "Invoke-ResearcherSession -Prompt $retryPrompt", 1
     )[0]
+    budget_branch, _, ordinary_branch = retry.partition("else {")
 
-    assert "$budgetReached" in retry
-    assert "which must contain a campaign_conclusion" in retry
-    assert "containing only a campaign_conclusion" in retry
+    assert "$budgetReached" in budget_branch
+    assert "which must contain a campaign_conclusion" in budget_branch
+    assert "containing only a campaign_conclusion" in budget_branch
+    # The exhausted-budget branch must not offer an experiment or a
+    # saved-lineage measurement; the conclusion-only anchor rejects both.
+    assert "for experiment $nextExperiment" not in budget_branch
+    assert "saved-lineage research/evaluation_request.json" not in budget_branch
     # The ordinary retry still offers the two preparation deliverables.
-    assert "saved-lineage research/evaluation_request.json" in retry
+    assert "for experiment $nextExperiment" in ordinary_branch
+    assert "saved-lineage research/evaluation_request.json" in ordinary_branch
+    assert "which must contain a campaign_conclusion" not in ordinary_branch
 
 
 def test_preparation_prompt_and_contract_document_the_two_exits():
