@@ -6,6 +6,7 @@ read from whatever the Researcher printed.
 """
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -193,17 +194,45 @@ def test_the_first_attempt_stays_visible_after_the_retry(tmp_path):
 
 
 def test_every_researcher_invocation_goes_through_the_one_process_boundary():
-    invocations = [
-        line.strip() for line in LOOP.splitlines() if "researcher_copilot.py" in line
+    lines = LOOP.splitlines()
+    entry_indices = [
+        index for index, line in enumerate(lines) if "researcher_copilot.py" in line
     ]
 
     # One command builds every session; continuation is an argument, not a branch.
-    assert invocations == [
-        "uv run --group researcher python researcher_copilot.py @sessionArgs $Prompt",
-    ]
+    # Exactly one place in the launcher loop names the runtime entry point.
+    assert len(entry_indices) == 1
+    entry_index = entry_indices[0]
+
+    # The invocation is assembled from an argument array, not a frozen command
+    # string: the entry point is one quoted token among the uv arguments, so
+    # rewording those arguments cannot break this test.
+    tokens = [token.strip().strip('",') for token in lines[entry_index].split()]
+    assert "researcher_copilot.py" in tokens
+    assert "run" in tokens
+    assert "python" in tokens
+
+    # That array is the one handed to the single process boundary, and the
+    # observed exit code is whatever that boundary returned.
+    array_name = ""
+    for line in reversed(lines[:entry_index]):
+        opener = re.search(r"\$(\w+)\s*=\s*@\($", line.strip())
+        if opener:
+            array_name = opener.group(1)
+            break
+    assert array_name, "the runtime entry point is not built as an argument array"
+    boundary = re.search(
+        r"\$script:ResearcherExitCode\s*=\s*Invoke-CooperativeProcess"
+        r"(?:(?!\$script:ResearcherExitCode).)*"
+        rf"-ArgumentList \${re.escape(array_name)}\b",
+        LOOP,
+        re.DOTALL,
+    )
+    assert boundary is not None
+
+    # Continuation is an argument to the one invocation path, never a second branch.
     assert LOOP.count("Invoke-ResearcherSession -Prompt") == 8
     assert LOOP.count("-Continue") == 4
-    assert "$script:ResearcherExitCode = if ($null -eq $LASTEXITCODE)" in LOOP
 
 
 def test_the_launcher_offers_both_runtimes_and_still_defaults_to_copilot():

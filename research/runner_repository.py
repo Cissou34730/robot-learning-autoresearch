@@ -414,7 +414,69 @@ LINEAGE_RECORD_FIELDS = {
 }
 # Optional lineage fields. `designation_ordinal` records the best-known tenure;
 # it is present on a designated best-known record and absent elsewhere.
-LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal"}
+# `selected_panels` records the research-evaluation panels a lineage was selected
+# on, so repeated measurement on those episodes can be recognized as
+# selection-contaminated rather than independent confirmation (issue #57).
+LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
+
+
+def _canonicalize_selected_panel(panel: object) -> dict:
+    """Validate one recorded selection-panel identity, preserving the instrument.
+
+    Issue #57: selection exposure covers every panel type in the contract, so the
+    record keeps the instrument plus the research interval or the fixed
+    task-reference panel identity. A legacy ``[seed, episodes]`` pair is read as a
+    research-evaluation panel.
+    """
+    if isinstance(panel, (list, tuple)) and len(panel) == 2:
+        seed, episodes = panel
+        if all(isinstance(value, int) and not isinstance(value, bool) for value in panel):
+            return {
+                "instrument": "research_evaluation",
+                "seed": int(seed),
+                "episodes": int(episodes),
+            }
+        raise TypeError(
+            "lineage record selected_panels entries must be panel identity objects"
+        )
+    if not isinstance(panel, dict):
+        raise TypeError(
+            "lineage record selected_panels entries must be panel identity objects"
+        )
+    instrument = panel.get("instrument")
+    if instrument == "task_reference":
+        name = panel.get("panel")
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(
+                "lineage record task_reference selected panel requires a panel name"
+            )
+        identity: dict = {"instrument": "task_reference", "panel": name}
+        for field in ("panel_version", "seed", "episodes"):
+            value = panel.get(field)
+            if value is None:
+                continue
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise TypeError(
+                    f"lineage record selected panel {field} must be an integer"
+                )
+            identity[field] = value
+        return identity
+    if instrument == "research_evaluation":
+        seed = panel.get("seed")
+        episodes = panel.get("episodes")
+        if isinstance(seed, bool) or not isinstance(seed, int):
+            raise TypeError("lineage record selected panel seed must be an integer")
+        if isinstance(episodes, bool) or not isinstance(episodes, int):
+            raise TypeError("lineage record selected panel episodes must be an integer")
+        return {
+            "instrument": "research_evaluation",
+            "seed": seed,
+            "episodes": episodes,
+        }
+    raise ValueError(
+        "lineage record selected panel instrument must be research_evaluation or "
+        "task_reference"
+    )
 
 
 def canonicalize_lineage_record(lineage: dict) -> None:
@@ -455,6 +517,14 @@ def canonicalize_lineage_record(lineage: dict) -> None:
             raise TypeError("lineage record designation_ordinal must be an integer")
         if ordinal < 1:
             raise ValueError("lineage record designation_ordinal must be positive")
+    if "selected_panels" in lineage:
+        panels = lineage["selected_panels"]
+        if not isinstance(panels, list):
+            raise TypeError("lineage record selected_panels must be a list")
+        normalized_panels = []
+        for panel in panels:
+            normalized_panels.append(_canonicalize_selected_panel(panel))
+        lineage["selected_panels"] = normalized_panels
     if not isinstance(lineage["parameters"], dict):
         raise TypeError("lineage record parameters must be an object")
     evaluations = lineage["evaluation_artifacts"]
@@ -615,6 +685,9 @@ def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
         "pending_researcher_decision": None,
         "pending_closure_operation": None,
         "pending_final_benchmark": None,
+        "pending_campaign_conclusion": None,
+        "campaign_conclusion": None,
+        "preparation_conclusion_only": None,
         "terminal_campaign_status": None,
         "last_lineage_decision": None,
         "last_verdict": last_verdict,
@@ -1346,7 +1419,7 @@ def publish_artifact(publication: dict) -> None:
         if destination.exists():
             validate_artifact_publication(publication)
             return
-        temporary.replace(destination)
+        _atomic_replace(temporary, destination)
     finally:
         if temporary.exists():
             shutil.rmtree(temporary)

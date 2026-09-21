@@ -22,11 +22,6 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/policy_runtime.py",
     "research/run_experiment.py",
     "robot_learning/__init__.py",
-    "robot_learning/benchmark/__init__.py",
-    "robot_learning/benchmark/final_benchmark.py",
-    "robot_learning/benchmark/final_contract.py",
-    "robot_learning/benchmark/reference_contract.py",
-    "robot_learning/benchmark/reference_evaluation.py",
     "robot_learning/robots/__init__.py",
     "robot_learning/robots/two_joint_arm.py",
     "robot_learning/robots/two_joint_arm.xml",
@@ -34,6 +29,11 @@ PROTECTED_BENCHMARK_PATHS = {
     "robot_learning/scenario/final_benchmark.py",
     "robot_learning/scenario/task_reference.py",
 }
+# The whole benchmark package is human-owned: the task contract, the immutable
+# constants that define the development evaluation and its frozen metrics.
+# Protected by prefix so that adding a file under it never silently hands part of
+# the task definition to the researcher.
+PROTECTED_BENCHMARK_PREFIXES = ("robot_learning/benchmark/",)
 # Additional Runner instruments are protected even when they do not belong to
 # the official-task trust path.
 PROTECTED_RUNNER_PATHS = {
@@ -130,11 +130,15 @@ MODEL_CONTAINED_RUNTIME_PATHS = {
     "robot_learning/training/algorithms.py",
     "robot_learning/training/normalization.py",
 }
-# The only files outside the scenario package that change how an already-trained
-# policy is replayed, observed and turned into a research measurement.
+# The files outside the scenario package that change how an already-trained
+# policy is replayed, observed and turned into a research measurement. The
+# benchmark constants and metrics are included because the development evaluation
+# environment and its success criterion are built from them (issue #58).
 EVALUATION_RUNTIME_PATHS = (
     "robot_learning/policy_runtime.py",
     "robot_learning/evaluate.py",
+    "robot_learning/benchmark/spec.py",
+    "robot_learning/benchmark/metrics.py",
 )
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
@@ -165,6 +169,16 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
+# Reasoning fields whose honest answer may be its absence (issue #56). The
+# researcher still records an explicit, non-empty reason, so the validator keeps
+# checking explicitness and never scientific merit.
+NOT_APPLICABLE_REASONING_FIELDS = frozenset(
+    {"alternative", "contradicting_observation"}
+)
+# An optional qualifier for a prediction the researcher holds with less than
+# full force, so a contradicted weak prediction is not read as a refuted strong
+# one.
+REASONING_CONFIDENCE_LEVELS = ("strong", "moderate", "weak")
 
 
 # --- ownership -------------------------------------------------------------
@@ -179,6 +193,7 @@ def is_protected_source(path: str) -> bool:
         or relative in PROTECTED_MEASUREMENT_PATHS
         or relative in PROTECTED_CONTEXT_PATHS
         or relative in DEPENDENCY_METADATA_PATHS
+        or relative.startswith(PROTECTED_BENCHMARK_PREFIXES)
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
         or relative.startswith(PROTECTED_RUNTIME_PREFIXES)
     )
@@ -223,9 +238,15 @@ def declared_paths_exist(root: Path | None = None) -> list[str]:
         *MODEL_CONTAINED_RUNTIME_PATHS,
         *EVALUATION_RUNTIME_PATHS,
     }
-    return sorted(
-        relative for relative in declared if not (base / relative).is_file()
+    missing = [relative for relative in declared if not (base / relative).is_file()]
+    # A prefix classification is a directory by construction; a missing package
+    # must not silently drop its whole protected surface.
+    missing.extend(
+        prefix
+        for prefix in PROTECTED_BENCHMARK_PREFIXES
+        if not (base / prefix).is_dir()
     )
+    return sorted(missing)
 
 
 def validation_test_paths(
@@ -349,12 +370,65 @@ def parameter_change_records(
     return changes
 
 
+def extends_lineage(record: dict) -> bool:
+    """Whether the record deliberately continues an existing lineage's training.
+
+    ``continuation`` carries the relation implicitly. A changed recipe that
+    still continues a lineage marks it explicitly with ``extends_lineage``.
+    """
+    if bool(record.get("extends_lineage")):
+        return True
+    return str(record.get("kind", "")).strip().lower() == "continuation"
+
+
+def lineage_identity(lineage: dict | None, fallback: str = "") -> str:
+    """Return the immutable identity of a frozen lineage.
+
+    A lineage selected under a mutable role name such as ``working`` or
+    ``best_known`` must keep its own identity when that role is later reassigned
+    to a different lineage. The frozen ``candidate`` and ``origin_experiment``
+    survive a reassignment; the role name does not.
+    """
+    if isinstance(lineage, dict):
+        candidate = str(lineage.get("candidate") or "").strip()
+        if candidate:
+            origin = lineage.get("origin_experiment")
+            return f"{candidate}@{origin}" if origin is not None else candidate
+        identifier = str(lineage.get("identifier") or "").strip()
+        if identifier:
+            return identifier
+    return fallback.strip()
+
+
+def lineage_family(
+    record: dict,
+    parameter_paths: list[str],
+    *,
+    lineage: dict | None = None,
+) -> str:
+    """Name the extended lineage together with any adjusted parameter paths."""
+    frozen = lineage if lineage is not None else record.get("training_parent_lineage")
+    label = lineage_identity(frozen, str(record.get("training_parent", "")))
+    base = f"lineage.{label}" if label else "lineage"
+    if parameter_paths:
+        return f"{base}+{'+'.join(parameter_paths)}"
+    return base
+
+
 def experiment_family(
     proposal: dict,
     experiment_kind: str,
     parameter_changes: list[dict],
     code_changes: list[str],
+    *,
+    training_parent_lineage: dict | None = None,
 ) -> str:
+    if extends_lineage(proposal):
+        return lineage_family(
+            proposal,
+            sorted({item["path"] for item in parameter_changes}),
+            lineage=training_parent_lineage,
+        )
     declared = str(proposal.get("family", "")).strip()
     if declared:
         return declared
@@ -374,12 +448,33 @@ def experiment_family(
 
 
 def operation_description(record: dict) -> str:
-    """Return the stable human-readable operation description for a record."""
+    """Return the stable human-readable operation description for a record.
+
+    For a lineage extension the label comes from the frozen lineage identity,
+    and the Researcher's raw ``change`` is read from ``researcher_change`` when
+    the record stores the derived description in ``change``, so the lineage
+    wording is applied exactly once.
+    """
     kind = str(record.get("kind", "")).strip().lower()
-    if kind == "continuation":
-        return "Continue training the unchanged method"
     if kind == "replication":
         return "Replicate the current method from fresh initialization"
+    if extends_lineage(record):
+        label = (
+            lineage_identity(
+                record.get("training_parent_lineage"),
+                str(record.get("training_parent", "")),
+            )
+            or "the selected parent"
+        )
+        if kind == "continuation":
+            return f"Continue training lineage {label}"
+        base = f"Continue training lineage {label} with a changed recipe"
+        raw_change = record.get("researcher_change")
+        if not (isinstance(raw_change, str) and raw_change.strip()):
+            raw_change = record.get("change")
+        if isinstance(raw_change, str) and raw_change.strip():
+            return f"{base}: {raw_change.strip()}"
+        return base
     value = record.get("change")
     return value.strip() if isinstance(value, str) else ""
 
@@ -475,6 +570,28 @@ def resolved_training_parent(
 # --- proposal validation ---------------------------------------------------
 
 
+def _validate_reasoning_statement(field: str, value: object) -> None:
+    """Require an explicit statement, or its justified absence (issue #56).
+
+    The check is still explicitness, not merit. ``alternative`` and
+    ``contradicting_observation`` may be recorded as an object naming why no
+    honest content exists, provided the reason itself is a non-empty string.
+    Every other field must be a non-empty string.
+    """
+    if isinstance(value, str) and value.strip():
+        return
+    if field in NOT_APPLICABLE_REASONING_FIELDS:
+        if isinstance(value, dict) and set(value) == {"not_applicable"}:
+            reason = value["not_applicable"]
+            if isinstance(reason, str) and reason.strip():
+                return
+        raise ValueError(
+            f"reasoning.{field} must be a non-empty string or a "
+            "not-applicable object with a non-empty reason"
+        )
+    raise ValueError(f"reasoning.{field} must be a non-empty string")
+
+
 def validate_scientific_reasoning(proposal: dict) -> None:
     """Check explicit reasoning, not its scientific merit or truthfulness."""
     reasoning = proposal.get("reasoning")
@@ -494,9 +611,18 @@ def validate_scientific_reasoning(proposal: dict) -> None:
             ("alternative", "expected_observation", "contradicting_observation")
         )
     for field in fields:
-        value = reasoning.get(field)
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"reasoning.{field} must be a non-empty string")
+        _validate_reasoning_statement(field, reasoning.get(field))
+    if "confidence" in reasoning:
+        if investigation_type == "exploratory":
+            raise ValueError(
+                "reasoning.confidence is only valid for a confirmatory or "
+                "diagnostic prediction"
+            )
+        confidence = reasoning["confidence"]
+        if confidence not in REASONING_CONFIDENCE_LEVELS:
+            raise ValueError(
+                "reasoning.confidence must be strong, moderate or weak when present"
+            )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
         raise ValueError("reasoning.evidence must be a non-empty list")
@@ -616,8 +742,8 @@ def validate_experiment_semantics(
     validate_research_delta_ownership(code_changes)
     if baseline and (parameter_overrides or code_changes):
         raise ValueError("baseline requires an unchanged research method")
-    if experiment_kind == "continuation" and (parameter_overrides or code_changes):
-        raise ValueError("continuation requires an unchanged learning method")
+    if experiment_kind == "continuation" and code_changes:
+        raise ValueError("continuation cannot change the scientific code surface")
     if (
         not baseline
         and experiment_kind not in {"continuation", "replication"}
@@ -697,9 +823,14 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("training proposal is missing required fields: ['change']")
         require_nonempty_string("change", "training proposal change")
     elif "change" in proposal:
-        raise ValueError(
-            f"{kind} must omit change because it uses the unchanged learning method"
-        )
+        if kind == "continuation":
+            reason = (
+                "a continuation restores the frozen parent recipe and adjusts it "
+                "only through params"
+            )
+        else:
+            reason = "a replication starts from the unchanged method"
+        raise ValueError(f"{kind} must omit change: {reason}")
     if proposal.get("params") is not None and not isinstance(proposal["params"], dict):
         raise TypeError("proposal params must be an object")
     if "training_seed" in proposal:
@@ -723,6 +854,14 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         if "training_seed" not in proposal:
             raise ValueError("replication requires an explicit training_seed")
         require_integer("replication_of", minimum=1)
+    relation = proposal.get("extends_lineage")
+    if relation is not None and type(relation) is not bool:
+        raise ValueError("extends_lineage must be a boolean")
+    if relation:
+        if kind != "training":
+            raise ValueError("extends_lineage is only valid for a training proposal")
+        if initialization != "transfer":
+            raise ValueError("extends_lineage requires transfer initialization")
     validate_scientific_reasoning(proposal)
 
 
@@ -762,6 +901,22 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
                 "previous_result_decision"
             )
         return "lineage"
+    if "campaign_conclusion" in proposal:
+        if state.get("pending_closure_operation") is not None:
+            raise ValueError(
+                "a campaign conclusion is not accepted while a closure operation "
+                "is pending"
+            )
+        if set(proposal) != {"campaign_conclusion"}:
+            raise ValueError(
+                "a campaign conclusion must contain only campaign_conclusion"
+            )
+        return "conclusion"
+    if state.get("preparation_conclusion_only"):
+        raise ValueError(
+            "the experiment budget is exhausted; only a campaign conclusion may be "
+            "prepared in this phase"
+        )
     if "previous_result_decision" in proposal:
         raise ValueError(
             "the previous experiment lineage is already resolved; the current "
@@ -775,7 +930,9 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
 def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     """Fully validate a proposal for its phase without mutating repository state."""
     contract = validate_proposal_phase(proposal, raw_state)
-    if contract == "lineage":
+    if contract == "conclusion":
+        plan_campaign_conclusion(proposal, raw_state)
+    elif contract == "lineage":
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
         )
@@ -794,6 +951,55 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     if contract == "training" and not proposal.get("baseline"):
         validate_research_memory(proposal, raw_state)
     return contract
+
+
+def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
+    """Validate a preparation-phase decision that ends without a new experiment.
+
+    Preparation historically required a training proposal. A campaign conclusion
+    is the second legal exit: it either submits the standing best-known lineage
+    for the official final assessment or records that no further experiment is
+    warranted. Neither outcome creates an experiment record.
+    """
+    if state.get("schema_version") != 4:
+        raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
+    if state.get("pending_closure_operation") is not None:
+        raise ValueError(
+            "a campaign conclusion is not accepted while a closure operation is pending"
+        )
+    if set(proposal) != {"campaign_conclusion"}:
+        raise ValueError("a campaign conclusion must contain only campaign_conclusion")
+    conclusion = proposal["campaign_conclusion"]
+    if not isinstance(conclusion, dict):
+        raise TypeError("campaign_conclusion must be an object")
+    extra = set(conclusion) - {"action", "reason"}
+    if extra:
+        raise ValueError(f"unsupported campaign_conclusion fields: {sorted(extra)}")
+    action = str(conclusion.get("action", "")).strip()
+    reason = str(conclusion.get("reason", "")).strip()
+    if action not in {"request_final_benchmark", "no_further_experiment"}:
+        raise ValueError(
+            "campaign_conclusion action must be request_final_benchmark or "
+            "no_further_experiment"
+        )
+    if not reason:
+        raise ValueError("campaign_conclusion requires a non-empty reason")
+    best_known = state.get("best_known_lineage")
+    if action == "request_final_benchmark":
+        if not isinstance(best_known, dict):
+            raise ValueError("a final benchmark requires a designated best-known model")
+        artifact = repository.resolve_repo_path(best_known["artifact"])
+        repository.require_complete_artifact(artifact, "best-known lineage")
+        if state.get("official_benchmark_artifact") == best_known.get("fingerprint"):
+            raise ValueError(
+                "the designated best-known model already received an official benchmark"
+            )
+    return {
+        "action": action,
+        "reason": reason,
+        "campaign_conclusion": conclusion,
+        "best_known": best_known if action == "request_final_benchmark" else None,
+    }
 
 
 # --- evaluation requests ---------------------------------------------------
@@ -962,6 +1168,7 @@ def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[in
         for entry in [
             *(source.get("requested_evaluations") or []),
             *(source.get("partial_evaluations") or []),
+            *(source.get("preparation_evaluations") or []),
         ]:
             if not isinstance(entry, dict):
                 continue
@@ -1039,6 +1246,119 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
             "evaluations": list(lineage.get("evaluations", [])),
         }
     return available
+
+
+def upcoming_experiment_index(state: dict) -> int:
+    """The identity the launcher's next preparation phase will allocate.
+
+    This is a read-only forecast. Unlike ``next_experiment_index`` it never
+    mutates the campaign counter, so forecasting a preparation measurement does
+    not consume or skip the experiment a later training proposal allocates.
+    """
+    campaign_id = repository.current_campaign_id(state)
+    return (
+        max(
+            allocated_experiment_index(state, campaign_id),
+            int(state.get("last_allocated_experiment") or 0),
+            int(state.get("last_experiment") or 0),
+        )
+        + 1
+    )
+
+
+def preparation_ledger(state: dict) -> dict | None:
+    """The accumulated preparation ledger for the forecast experiment, if any.
+
+    The ledger is scoped to exactly one upcoming experiment. A ledger for any
+    other experiment is stale and never reused.
+    """
+    ledger = state.get("preparation_measurement")
+    if not isinstance(ledger, dict):
+        return None
+    experiment = ledger.get("experiment")
+    if not isinstance(experiment, int) or isinstance(experiment, bool):
+        return None
+    return ledger
+
+
+def _current_lineage_fingerprints(state: dict) -> dict[str, str]:
+    """The currently resolved fingerprint of every requestable saved lineage."""
+    fingerprints: dict[str, str] = {}
+    for identifier in ("working", "best_known"):
+        lineage = lineage_role(state, identifier)
+        if isinstance(lineage, dict):
+            fingerprints[identifier] = str(lineage.get("fingerprint") or "")
+    for lineage in state.get("retained_lineages", []):
+        if isinstance(lineage, dict) and str(lineage.get("id", "")).strip():
+            fingerprints[str(lineage["id"])] = str(lineage.get("fingerprint") or "")
+    return fingerprints
+
+
+def _preparation_entry_matches(entry: dict, fingerprints: dict[str, str]) -> bool:
+    """Whether a recorded preparation measurement still describes its lineage.
+
+    A saved-lineage alias can be repointed at a different artifact. Reusing an
+    old measurement then would silently misattribute it, so the recorded model
+    fingerprint must equal the currently resolved one.
+    """
+    name = str(entry.get("candidate", "")).strip()
+    recorded = entry.get("model_fingerprint")
+    if not isinstance(recorded, str) or not recorded:
+        metrics = entry.get("metrics")
+        recorded = (
+            metrics.get("model_fingerprint") if isinstance(metrics, dict) else None
+        )
+    current = fingerprints.get(name)
+    return bool(current) and recorded == current
+
+
+def preparation_measurement_context(state: dict) -> dict:
+    """A lineage-only pending context for a preparation-phase measurement.
+
+    Preparation has no trained experiment, so the requestable models are exactly
+    the eligible saved lineages. The context carries the upcoming experiment
+    identity so artifact names and recorded rounds stay under it, and an empty
+    candidate list so a not-yet-run experiment's candidates cannot be named. The
+    accumulated ledger for the same upcoming experiment seeds the round numbers
+    and partial ledger so a repeated panel is reused rather than re-executed, but
+    only while every recorded model still matches its current lineage.
+    """
+    experiment = upcoming_experiment_index(state)
+    ledger = preparation_ledger(state)
+    rounds: list[dict] = []
+    partials: list[dict] = []
+    references: list[dict] = []
+    if ledger is not None and int(ledger.get("experiment", -1)) == experiment:
+        fingerprints = _current_lineage_fingerprints(state)
+        recorded_partials = list(ledger.get("partial_evaluations") or [])
+        recorded_references = list(
+            ledger.get("partial_task_reference_evaluations") or []
+        )
+        if all(
+            _preparation_entry_matches(entry, fingerprints)
+            for entry in [*recorded_partials, *recorded_references]
+        ):
+            rounds = [dict(record) for record in ledger.get("rounds") or []]
+            partials = recorded_partials
+            references = recorded_references
+    return {
+        "experiment": experiment,
+        "candidates": [],
+        "champion_available": False,
+        "parameters": {},
+        "initialization": "fresh",
+        "training_budget_steps": 0,
+        "parent_training_steps": 0,
+        "preparation": True,
+        "evaluation_rounds": rounds,
+        "partial_evaluations": partials,
+        "partial_task_reference_evaluations": references,
+        "result": {
+            "status": "pending",
+            "verdict": "preparation measurement",
+            "decision_pending": True,
+        },
+    }
 
 
 def planned_measurements(
@@ -1186,6 +1506,68 @@ def validate_paired_comparison_plan(
     return []
 
 
+def validate_preparation_evaluation_request(
+    request: dict,
+    state: dict,
+    *,
+    protected_overlap=None,
+) -> dict:
+    """Validate a preparation request that may name saved lineages only.
+
+    Preparation has no pending experiment, so the requestable models are the
+    eligible saved lineages (``working``, ``best_known`` or a retained ID).
+    Naming an experiment's candidate fails as an unknown candidate. The returned
+    synthetic context is what execution resolves the request against.
+    """
+    if state.get("schema_version") != 4:
+        raise ValueError(
+            "preparation measurements are only valid in a version-4 campaign"
+        )
+    if state.get("pending_analysis") is not None:
+        raise ValueError(
+            "post-training analysis is pending; submit its deliverable instead"
+        )
+    if state.get("pending_evaluation_request") is not None:
+        raise ValueError("a measurement request is already pending")
+    if state.get("pending_researcher_decision") is not None:
+        raise ValueError("a lineage decision is pending; no measurement is accepted")
+    if state.get("pending_closure_operation") is not None:
+        raise ValueError("a closure operation is pending; no measurement is accepted")
+    if state.get("pending_final_benchmark") is not None:
+        raise ValueError("the final benchmark is pending; no measurement is accepted")
+    if state.get("preparation_conclusion_only"):
+        raise ValueError(
+            "the experiment budget is exhausted; only a campaign conclusion may "
+            "be prepared"
+        )
+    if "experiment" in request:
+        raise ValueError(
+            "a preparation measurement must omit experiment; it names saved "
+            "lineages, not a trained experiment"
+        )
+    validate_evaluation_request(request)
+    pending = preparation_measurement_context(state)
+    available = available_evaluation_candidates(pending, state)
+    if not available:
+        raise ValueError("there are no saved lineages available to measure")
+    requested, _ = planned_measurements(request, available)
+    resolved_models = resolved_measurement_models(request, available)
+    validate_panel_independence(
+        request,
+        recorded_research_panels(state, pending),
+        protected_overlap=protected_overlap,
+    )
+    validate_paired_comparison_plan(
+        request,
+        pending,
+        available,
+        requested,
+        state=state,
+        resolved_models=resolved_models,
+    )
+    return pending
+
+
 # --- measurement identity --------------------------------------------------
 
 
@@ -1242,10 +1624,12 @@ def is_generated_path(relative_parts: tuple[str, ...]) -> bool:
 
 
 def evaluation_semantics_paths() -> list[str]:
-    """Every researcher-owned file that can change how a saved policy is measured.
+    """Every file that can change how a saved policy is measured.
 
-    Any file type counts, so researcher-authored instrumentation modules and
-    measurement data files are covered without a registry.
+    The scenario package is scanned in full, so researcher-authored
+    instrumentation modules and measurement data files are covered without a
+    registry; the protected benchmark constants and metrics are named explicitly
+    because they define the success criterion outside that package.
     """
     included = [
         relative
@@ -1271,10 +1655,17 @@ def evaluation_semantics_paths() -> list[str]:
 
 
 def evaluation_semantics_fingerprint() -> str:
-    """Identify the researcher-owned state that defines what a measurement means.
+    """Identify the files that define what a research measurement means.
 
-    Paths are hashed with their contents so an added, renamed or deleted file
-    changes measurement identity just like an edited one.
+    The hashed set is two unions. The non-scenario paths in
+    ``EVALUATION_RUNTIME_PATHS`` are mixed-ownership: the researcher-owned
+    evaluator alongside protected human-owned inputs such as the policy runtime
+    and the benchmark constants and metrics that fix the development success
+    criterion and episode geometry. The scenario package is scanned except for
+    the files filtered out there - protected, presentation-only, training-only
+    and model-contained paths. Paths are hashed with their contents so an added,
+    renamed or deleted file changes measurement identity just like an edited
+    one.
     """
     digest = hashlib.sha256()
     for relative in evaluation_semantics_paths():
@@ -1482,6 +1873,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retain",
         "remove_retained",
         "request_final_benchmark",
+        "terminal_reason",
     }
     extra = set(decision) - allowed
     if extra:
@@ -1609,6 +2001,11 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     request_final = decision.get("request_final_benchmark", False)
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
+    terminal_reason = str(decision.get("terminal_reason", "")).strip()
+    if request_final and not terminal_reason:
+        raise ValueError(
+            "request_final_benchmark requires a non-empty terminal_reason"
+        )
     selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
     if (
         request_final
@@ -1633,6 +2030,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": retention_plans,
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
         "request_final_benchmark": request_final,
+        "terminal_reason": terminal_reason if request_final else None,
     }
 
 
@@ -1684,6 +2082,136 @@ def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
     return sources
 
 
+def _selection_panel_identity(entry: dict, instrument: str) -> dict | None:
+    """The instrument-preserving identity of a panel a model was measured on."""
+    if instrument == "task_reference":
+        panel = entry.get("panel")
+        if not isinstance(panel, str) or not panel.strip():
+            return None
+        identity: dict = {"instrument": "task_reference", "panel": panel}
+        for field in ("panel_version", "seed", "episodes"):
+            value = entry.get(field)
+            if isinstance(value, int) and not isinstance(value, bool):
+                identity[field] = value
+        return identity
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return {"instrument": "research_evaluation", "seed": seed, "episodes": episodes}
+
+
+def _selection_panel_key(identity: dict) -> tuple:
+    return tuple(sorted(identity.items()))
+
+
+def _normalized_selection_panel(item: object) -> dict | None:
+    """Accept the instrument-preserving record or a legacy ``[seed, episodes]``."""
+    if isinstance(item, (list, tuple)) and len(item) == 2:
+        seed, episodes = item
+        if all(isinstance(value, int) and not isinstance(value, bool) for value in item):
+            return {
+                "instrument": "research_evaluation",
+                "seed": int(seed),
+                "episodes": int(episodes),
+            }
+        return None
+    if isinstance(item, dict):
+        instrument = item.get("instrument")
+        if instrument == "task_reference":
+            panel = item.get("panel")
+            if not isinstance(panel, str) or not panel.strip():
+                return None
+            identity: dict = {"instrument": "task_reference", "panel": panel}
+            for field in ("panel_version", "seed", "episodes"):
+                value = item.get(field)
+                if isinstance(value, int) and not isinstance(value, bool):
+                    identity[field] = value
+            return identity
+        if instrument == "research_evaluation":
+            seed = item.get("seed")
+            episodes = item.get("episodes")
+            if isinstance(seed, bool) or not isinstance(seed, int):
+                return None
+            if isinstance(episodes, bool) or not isinstance(episodes, int):
+                return None
+            return {"instrument": "research_evaluation", "seed": seed, "episodes": episodes}
+    return None
+
+
+def _selection_panels_for(
+    source: dict, pending: dict, fingerprint: str
+) -> list[dict]:
+    """The panels a newly selected lineage was measured on.
+
+    Issue #57: a lineage selected on a panel's episodes is not independently
+    confirmed by re-measuring those same episodes. The identity of every panel the
+    model was measured on in this experiment is recorded on the lineage so the
+    brief can surface its selection exposure. Both instruments covered by the
+    contract are recorded, and the representation preserves the instrument and the
+    panel identity. Panels already recorded on a carried-over lineage are
+    preserved.
+    """
+    panels: list[dict] = []
+    seen: set[tuple] = set()
+    for item in source.get("selected_panels") or []:
+        normalized = _normalized_selection_panel(item)
+        if normalized is None:
+            continue
+        key = _selection_panel_key(normalized)
+        if key not in seen:
+            seen.add(key)
+            panels.append(normalized)
+    for instrument, keys in (
+        (
+            "research_evaluation",
+            (
+                "requested_evaluations",
+                "partial_evaluations",
+                "preparation_evaluations",
+            ),
+        ),
+        (
+            "task_reference",
+            (
+                "task_reference_evaluations",
+                "partial_task_reference_evaluations",
+                "preparation_task_reference_evaluations",
+            ),
+        ),
+    ):
+        for key in keys:
+            for entry in pending.get(key) or []:
+                if not isinstance(entry, dict):
+                    continue
+                if entry.get("instrument", instrument) != instrument:
+                    continue
+                metrics = (
+                    entry.get("metrics")
+                    if isinstance(entry.get("metrics"), dict)
+                    else {}
+                )
+                merged = {**metrics, **entry}
+                entry_fingerprint = merged.get("model_fingerprint")
+                if (
+                    fingerprint
+                    and entry_fingerprint
+                    and str(entry_fingerprint) != str(fingerprint)
+                ):
+                    continue
+                identity = _selection_panel_identity(merged, instrument)
+                if identity is None:
+                    continue
+                identity_key = _selection_panel_key(identity)
+                if identity_key in seen:
+                    continue
+                seen.add(identity_key)
+                panels.append(identity)
+    return panels
+
+
 def _v4_lineage_record(
     source: dict, pending: dict, artifact: Path, reason: str
 ) -> dict:
@@ -1694,9 +2222,10 @@ def _v4_lineage_record(
         if current and pending.get("initialization") == "transfer"
         else checkpoint_steps
     )
+    fingerprint = repository.artifact_fingerprint(artifact)
     return {
         "artifact": repository.repo_relative_path(artifact),
-        "fingerprint": repository.artifact_fingerprint(artifact),
+        "fingerprint": fingerprint,
         "origin_experiment": int(pending["experiment"])
         if current
         else int(source["origin_experiment"]),
@@ -1714,6 +2243,7 @@ def _v4_lineage_record(
         )
         if current
         else list(source.get("evaluation_artifacts", [])),
+        "selected_panels": _selection_panels_for(source, pending, fingerprint),
         "reason": reason,
     }
 
@@ -1804,6 +2334,7 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
         research_evaluations = [
             *(source.get("requested_evaluations") or []),
             *(source.get("partial_evaluations") or []),
+            *(source.get("preparation_evaluations") or []),
         ]
         for evaluation in research_evaluations:
             if not isinstance(evaluation, dict):
@@ -1840,6 +2371,7 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
         reference_evaluations = [
             *(source.get("task_reference_evaluations") or []),
             *(source.get("partial_task_reference_evaluations") or []),
+            *(source.get("preparation_task_reference_evaluations") or []),
         ]
         for evaluation in reference_evaluations:
             if not isinstance(evaluation, dict):
@@ -2282,6 +2814,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retain",
         "remove_retained",
         "request_final_benchmark",
+        "terminal_reason",
     }
     extra = set(decision) - allowed
     if extra:
@@ -2396,7 +2929,13 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 "Record a measurement for this model before designating it."
             )
         if same_model:
+            # Issue #57: an explicit re-designation may re-measure the incumbent
+            # on a new panel; the selection exposure must include that panel
+            # instead of copying the stale record unchanged.
             best_record = dict(existing_best)
+            best_record["selected_panels"] = _selection_panels_for(
+                existing_best, pending, best_fingerprint
+            )
         else:
             selected_records = _validated_designation_evidence(
                 selected_evidence,
@@ -2469,6 +3008,11 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     request_final = decision.get("request_final_benchmark", False)
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
+    terminal_reason = str(decision.get("terminal_reason", "")).strip()
+    if request_final and not terminal_reason:
+        raise ValueError(
+            "request_final_benchmark requires a non-empty terminal_reason"
+        )
     if request_final and best_record is None:
         raise ValueError("a final benchmark requires a designated best-known model")
     retained_records = [
@@ -2498,6 +3042,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": [],
         "removed_retained": removed,
         "request_final_benchmark": request_final,
+        "terminal_reason": terminal_reason if request_final else None,
         "hypothesis_assessment": hypothesis_assessment,
         "designation_counter": designation_counter,
     }

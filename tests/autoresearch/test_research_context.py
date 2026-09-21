@@ -346,7 +346,7 @@ def test_v4_brief_indexes_all_experiments_newest_first_without_candidate_metrics
     assert "## Campaign experiment index" in rendered
     assert "| 6 |" in rendered and "| 1 |" in rendered
     assert rendered.index("| 6 |") < rendered.index("| 1 |")
-    assert rendered.count("unmeasured") >= 6
+    assert rendered.count("not recorded") >= 6
     assert "candidate_metrics" not in rendered
     assert "- Hypothesis assessment: Assessment 6" in rendered
     assert "[postmortem](research/postmortems.md)" in rendered
@@ -977,7 +977,15 @@ def test_researcher_prompts_leave_execution_to_the_launcher():
     root = Path(__file__).resolve().parents[2]
     script = (root / "run_research.ps1").read_text(encoding="utf-8")
 
-    assert script.count("invoke research/run_experiment.py") == 6
+    # Both preparation retry variants must refuse run_experiment.py. A global
+    # count could still pass if one branch lost the prohibition while another
+    # duplicated it, so assert the prohibition inside each branch.
+    retry = script.split("$retryPrompt = @(", 1)[1].split(
+        "Invoke-ResearcherSession -Prompt $retryPrompt", 1
+    )[0]
+    budget_branch, _, ordinary_branch = retry.partition("else {")
+    assert "invoke research/run_experiment.py" in budget_branch
+    assert "invoke research/run_experiment.py" in ordinary_branch
     assert "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py" in script
     assert "Experiment was already executed during the research session" not in script
     assert "The researcher executed an experiment during the new-hypothesis" in script
@@ -996,7 +1004,7 @@ def test_researcher_prompts_are_objective_first_and_direction_neutral():
     assert "Conditional next steps" not in script
     assert "most informative to measure rather than the alternatives" not in script
     assert "chosen over the other available checkpoints" not in script
-    assert "Context efficiency does not determine which" in policy
+    assert "Read whatever evidence the scientific question requires" in policy
 
 
 def test_researcher_contract_preserves_investigative_freedom_across_layers():

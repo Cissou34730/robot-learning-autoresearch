@@ -36,6 +36,7 @@ _SECTION_HEADINGS = frozenset(
         "Best-known model",
         "Final benchmark",
         "Hypothesis assessment",
+        "Frozen model",
     }
 )
 
@@ -461,30 +462,78 @@ def render_final_benchmark_card(
     selected: str,
     artifact: str,
     fingerprint: str,
+    lineage: dict | None = None,
+    terminal_reason: str | None = None,
+    request: bool = False,
 ) -> str:
-    """What the terminal assessment is, before it runs it.
+    """The final-benchmark request, or the assessment that produces the verdict.
 
     The runner reports the lineage it is about to measure, the contract that owns
     the measurement, and where the verdict lands. The benchmark's own numbers
     belong to the human-owned contract in `research/scenario.md`, and the
     measured ones arrive with the evaluator's own reports.
+
+    Issue #59: a terminal request is irreversible, so the card also confirms the
+    frozen model and the Researcher's own terminal reason instead of leaving the
+    Researcher to recall which artifact a bare `request_final_benchmark` will
+    submit.
+
+    Issue #101: the request is announced while the campaign is still inside an
+    experiment, before any measurement exists, so its title says it is a request
+    and it never asserts a verdict it has not produced. The terminal verdict
+    belongs to the card printed by the run that measures the lineage.
     """
-    return "\n".join(
+    title = (
+        "=== Official benchmark requested ==="
+        if request
+        else "=== Official benchmark ==="
+    )
+    next_line = (
+        "  This request is irreversible; no later experiment can select"
+        " another hypothesis."
+        if request
+        else "  This verdict is terminal and cannot select a later hypothesis."
+    )
+    lines = [
+        title,
+        "",
+        f"Selected   : {selected}",
+        f"Artifact   : {artifact}",
+        f"Fingerprint: {fingerprint[:16]}",
+    ]
+    if isinstance(lineage, dict):
+        evidence = lineage.get("evaluation_artifacts")
+        measurements = (
+            ", ".join(str(path) for path in evidence)
+            if isinstance(evidence, list) and evidence
+            else "not recorded"
+        )
+        lines.extend(
+            [
+                "",
+                "Frozen model",
+                f"  Candidate   : {lineage.get('candidate', 'not recorded')}",
+                f"  Origin exp  : {lineage.get('origin_experiment', 'not recorded')}",
+                f"  Train steps : {lineage.get('training_steps', 'not recorded')}",
+                f"  Commit      : {lineage.get('scientific_commit') or 'not recorded'}",
+                f"  Measurements: {measurements}",
+            ]
+        )
+    if terminal_reason:
+        lines.extend(["", "Reason", f"  {terminal_reason}"])
+    lines.extend(
         [
-            "=== Official benchmark ===",
-            "",
-            f"Selected   : {selected}",
-            f"Artifact   : {artifact}",
-            f"Fingerprint: {fingerprint[:16]}",
             "",
             "Contract",
             "  The protected human-defined task and its fixed panel, as defined in",
             "  research/scenario.md. No research setting can redefine them.",
             "",
             "Recorded",
-            "  research/research_state.json (official_metrics) and research/GOAL_REACHED",
+            "  research/research_state.json (official_metrics)",
+            "  research/GOAL_REACHED is written only if the objective is met.",
             "",
             "Next",
-            "  This verdict is terminal and cannot select a later hypothesis.",
+            next_line,
         ]
     )
+    return "\n".join(lines)

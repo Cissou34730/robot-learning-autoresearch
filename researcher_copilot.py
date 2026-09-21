@@ -177,12 +177,16 @@ INTERPRETERS = frozenset({"python", "python.exe", "python3", "py", "py.exe"})
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
 # Oversized tool results are written here instead of occupying the context for
-# the rest of the session. The researcher still opens them on demand.
+# the rest of the session. The researcher still opens them on demand. The
+# threshold is held above the campaign artifacts (the brief, postmortems and
+# evaluation panels), so primary scientific evidence is never offloaded out of
+# the session by default.
 LARGE_OUTPUT_DIR = ROOT / ".copilot" / "large-output"
-LARGE_OUTPUT_MAX_BYTES = 32_768
+LARGE_OUTPUT_MAX_BYTES = 262_144
 
 POLICY = f"""
 <harness_policy>
+<harness_boundary>
 This session runs inside the repository worktree {ROOT}. The harness enforces
 the rules below at the tool boundary, so a rejected call fails rather than
 succeeding silently. A rejection names the sanctioned alternative; follow it
@@ -197,24 +201,26 @@ instead of retrying the same command.
     Read-only Git is available only when the current task specifically requires
     inspecting the experiment's current code state or delta. To revert this
     experiment's code, use the lineage proposal's "code" decision.
-- Pytest execution belongs to the runner. Researcher-authored tests are not part
-    of the scientific recipe, are not required for phase completion, and remain
-    available only as an optional instrument when they resolve a specific
-    uncertainty.
-- Every tool call resends the whole conversation, so prefer one aggregation over
-  the same command repeated per file, and read what you need rather than whole
-  artifacts.
-  When the same extraction or analysis is needed across several artifacts, prefer
-  one aggregated tool call when practical and when the combined result remains
-  compact. Separate calls remain appropriate when the scientific question differs
-  between artifacts or aggregation would make the analysis less clear.
-  Context efficiency does not determine which scientific evidence is worth
-  examining.
-- Use targeted linting, parsing or lightweight analysis while developing the
-    phase deliverable when they resolve uncertainty introduced by the work. Once the
-  deliverable is complete, do not perform a separate final validation pass solely
-  to reconfirm the deliverable or repository state; the Runner owns final contract
-  and execution validation. The phase ends when its deliverable has been written.
+- Repository-wide pytest execution belongs to the runner. Targeted tests and
+  focused checks on researcher-owned code remain permitted instruments.
+</harness_boundary>
+
+<researcher_guidance>
+This note is advice, not a harness rule: no call is rejected for departing from
+it. Read whatever evidence the scientific question requires; context size is
+never a reason to leave evidence unread.
+
+Researcher-authored tests are not part of the scientific recipe, are not
+required for phase completion, and remain available only as an optional
+instrument when they resolve a specific uncertainty.
+
+Use targeted linting, parsing or lightweight analysis while developing the
+phase deliverable when they resolve uncertainty introduced by the work. The
+Runner owns final contract and execution validation, so do not re-run lint,
+parsing or schema checks purely to reconfirm what the Runner will check.
+Reviewing your own scientific reasoning against the evidence before submitting
+is part of the phase, not a redundant pass.
+</researcher_guidance>
 </harness_policy>
 """.strip()
 
@@ -298,12 +304,168 @@ def denied_git_subcommand(tokens: list[str]) -> str | None:
     return "git"
 
 
+def names_targeted_test_file(token: str) -> bool:
+    """Whether a pytest argument selects a specific test file in the worktree.
+
+    A selector is an existing file, or a node id inside one, never a directory:
+    `pytest tests` runs the whole tree, so it stays repository-wide.
+    """
+    path = Path(token.split("::", 1)[0])
+    resolved = (ROOT / path).resolve() if not path.is_absolute() else path.resolve()
+    return resolved.is_file() and resolved.is_relative_to(ROOT)
+
+
+# Pytest options that consume no value. The live set is derived from pytest's
+# own parser declarations; this frozen set is only the conservative fallback
+# for a worktree where pytest cannot be introspected. An option absent from
+# whichever set is active is treated as value-taking, so an unknown option
+# cannot expose its value as a selector and a repository-wide run stays denied.
+PYTEST_FALLBACK_FLAG_OPTIONS = frozenset(
+    {
+        "-q",
+        "--quiet",
+        "-v",
+        "--verbose",
+        "-x",
+        "--exitfirst",
+        "-s",
+        "-l",
+        "--showlocals",
+        "--lf",
+        "--last-failed",
+        "--ff",
+        "--failed-first",
+        "--nf",
+        "--new-first",
+        "--sw",
+        "--stepwise",
+        "--stepwise-skip",
+        "--stepwise-ignore",
+        "--co",
+        "--collect-only",
+        "--pyargs",
+        "--noconftest",
+        "--keep-duplicates",
+        "--collect-in-virtualenv",
+        "--doctest-modules",
+        "--doctest-continue-on-failure",
+        "--fixtures",
+        "--fixtures-per-test",
+        "--pdb",
+        "--trace",
+        "--runxfail",
+        "--cache-clear",
+        "--no-header",
+        "--no-summary",
+        "--no-fold",
+        "--full-trace",
+        "--setup-only",
+        "--setup-plan",
+        "--setup-show",
+        "--disable-warnings",
+        "--strict-markers",
+        "--strict-config",
+        "--continue-on-collection-errors",
+        "--help",
+        "--version",
+    }
+)
+
+_PYTEST_FLAG_OPTIONS: frozenset[str] | None = None
+
+
+def _declared_pytest_flag_options() -> frozenset[str]:
+    """The value-less options the installed pytest itself declares.
+
+    Pytest registers its options when its plugins run `pytest_addoption` on a
+    parser; calling those declarations on a fresh parser reproduces the option
+    knowledge without configuring or parsing a session. An empty result lets
+    the caller fall back conservatively.
+    """
+    try:
+        import importlib
+        import pkgutil
+
+        import _pytest
+        from _pytest.config.argparsing import Parser
+
+        parser = Parser(_ispytest=True)
+    except Exception:  # noqa: BLE001 - pytest is best-effort optional here
+        return frozenset()
+    for info in pkgutil.walk_packages(_pytest.__path__, prefix="_pytest."):
+        try:
+            module = importlib.import_module(info.name)
+            addoption = getattr(module, "pytest_addoption", None)
+            if addoption is not None:
+                addoption(parser)
+        except Exception:  # noqa: BLE001, S112 - one broken module must not stop the rest
+            continue
+    options: set[str] = set()
+    for group in parser._groups:
+        for action in group._arggroup._actions:
+            if action.nargs == 0:
+                options.update(action.option_strings)
+    return frozenset(options)
+
+
+def pytest_flag_options() -> frozenset[str]:
+    """Value-less pytest options, derived from pytest's own declarations."""
+    global _PYTEST_FLAG_OPTIONS
+    if _PYTEST_FLAG_OPTIONS is None:
+        declared = _declared_pytest_flag_options()
+        _PYTEST_FLAG_OPTIONS = declared or PYTEST_FALLBACK_FLAG_OPTIONS
+    return _PYTEST_FLAG_OPTIONS
+
+
+def _short_option_span(token: str, flag_options: frozenset[str]) -> int:
+    """How many tokens a short-option token consumes, its value included.
+
+    A combined or repeated short flag such as `-qx` carries only value-less
+    options, so it consumes nothing beyond itself. The first unknown or
+    value-taking short option consumes the rest of the token as its inline
+    value, or the following token when the token ends there.
+    """
+    for position, character in enumerate(token[1:], start=1):
+        if f"-{character}" in flag_options:
+            continue
+        return 1 if position + 1 < len(token) else 2
+    return 1
+
+
 def is_repository_wide_pytest(tokens: list[str]) -> bool:
     if "pytest" not in tokens:
         return False
-    return not any(
-        not token.startswith("-") for token in tokens[tokens.index("pytest") + 1 :]
-    )
+    flag_options = pytest_flag_options()
+    rest = tokens[tokens.index("pytest") + 1 :]
+    index = 0
+    positional_only = False
+    while index < len(rest):
+        token = rest[index]
+        if positional_only:
+            if names_targeted_test_file(token):
+                return False
+            index += 1
+            continue
+        if token == "--":
+            positional_only = True
+            index += 1
+            continue
+        if token.startswith("--"):
+            # `--option=value` carries its value inline. A flag-only option
+            # consumes nothing, so a selector that follows it stays visible;
+            # an option pytest does not declare is assumed to take a value.
+            if "=" in token or token in flag_options:
+                index += 1
+            else:
+                index += 2
+            continue
+        if token.startswith("-") and len(token) > 1:
+            index += _short_option_span(token, flag_options)
+            continue
+        if names_targeted_test_file(token):
+            return False
+        index += 1
+    return True
 
 
 def is_dependency_management(tokens: list[str]) -> bool:

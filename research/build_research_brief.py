@@ -9,26 +9,101 @@ from pathlib import Path, PureWindowsPath
 
 from research import runner_console as console
 from research.runner_protocol import (
+    extends_lineage,
     is_researcher_owned,
     operation_description,
+    preparation_ledger,
     scientific_strategy_section,
+    upcoming_experiment_index,
 )
 from research.runner_repository import (
     ARTIFACT_FILES,
     campaign_coverage,
     compact_measurement_summary,
 )
+from robot_learning.training.progress import parse_training_records
 
 ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = ROOT / "research"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
 
 
-def _compact(text: str, limit: int) -> str:
-    text = re.sub(r"\s+", " ", text).strip()
-    if len(text) <= limit:
-        return text
-    return text[: limit - 1].rstrip() + "…"
+RESULTS_REFERENCE = "research/results.jsonl"
+RESEARCH_STATE_REFERENCE = "research/research_state.json"
+POSTMORTEMS_REFERENCE = "research/postmortems.md"
+
+_SENTENCE_BOUNDARIES = ".;:"
+_TRUNCATION_MARKER = "[truncated,"
+
+
+def _sentence_boundary_within(text: str, limit: int) -> int:
+    """Return the offset just past the last sentence boundary at or before the limit."""
+    for index in range(min(limit, len(text)) - 1, -1, -1):
+        if text[index] in _SENTENCE_BOUNDARIES and (
+            index + 1 == len(text) or text[index + 1].isspace()
+        ):
+            return index + 1
+    return -1
+
+
+def _first_sentence_boundary(text: str) -> int:
+    """Return the offset just past the first sentence boundary in the whole text."""
+    for index, char in enumerate(text):
+        if char in _SENTENCE_BOUNDARIES and (
+            index + 1 == len(text) or text[index + 1].isspace()
+        ):
+            return index + 1
+    return -1
+
+
+def _truncation_marker(omitted: int, reference: str | None) -> str:
+    hint = f"; full text in {reference}" if reference else ""
+    return f"… [truncated, {omitted} more characters{hint}]"
+
+
+def _compact(
+    text: str,
+    limit: int,
+    *,
+    reference: str | None = None,
+    collapse_whitespace: bool = True,
+) -> str:
+    normalized = (
+        re.sub(r"\s+", " ", text).strip() if collapse_whitespace else text.strip()
+    )
+    if len(normalized) <= limit:
+        return normalized
+    # Never re-truncate text that already announces its own truncation.
+    if _TRUNCATION_MARKER in normalized:
+        return normalized
+    cut = _sentence_boundary_within(normalized, limit)
+    if cut == -1:
+        cut = _first_sentence_boundary(normalized)
+    if cut == -1:
+        # No sentence boundary exists, so any cut would leave a fragment.
+        # Keep the whole text rather than truncate mid-sentence or mid-word.
+        return normalized
+    omitted = len(normalized) - cut
+    # The only boundary was the end of the text, so nothing was omitted.
+    if omitted == 0:
+        return normalized
+    return f"{normalized[:cut].rstrip()} {_truncation_marker(omitted, reference)}"
+
+
+def _table_cell(text: object) -> str:
+    """Render free text as one table cell without dropping any characters."""
+    return re.sub(r"\s+", " ", str(text)).strip().replace("|", "&#124;")
+
+
+def _indented_label_block(
+    label: str, text: str, limit: int, reference: str
+) -> list[str]:
+    """Render free text as an indented block, preserving its line structure."""
+    rendered = _compact(text, limit, reference=reference, collapse_whitespace=False)
+    block = rendered.splitlines() or [""]
+    lines = [f"- {label}: {block[0]}"]
+    lines.extend(f"  {line}" for line in block[1:])
+    return lines
 
 
 def _candidate_metric(candidate: dict, key: str) -> str:
@@ -87,7 +162,7 @@ def _postmortem_memory(
     narrative = {"Result", "Observed behavior", "Interpretation"}
     for section in sections[-count:]:
         title = section.splitlines()[0].removeprefix("## ").strip()
-        parts = [f"**{_compact(title, 180)}**"]
+        parts = [f"**{_compact(title, 180, reference=POSTMORTEMS_REFERENCE)}**"]
         recognized: set[str] = set()
         for display, headings in labels:
             for heading in headings:
@@ -100,7 +175,10 @@ def _postmortem_memory(
                     value = match.group(1)
                     if display == "Evidence inspected":
                         value = _artifact_reference_list(value)
-                    parts.append(f"{display}: {_compact(value, 420)}")
+                    parts.append(
+                        f"{display}: "
+                        f"{_compact(value, 420, reference=POSTMORTEMS_REFERENCE)}"
+                    )
                     recognized.add(display)
                     break
         if not recognized & narrative:
@@ -116,7 +194,7 @@ def _postmortem_memory(
                     )
             body = body.strip()
             if body:
-                parts.insert(1, _compact(body, 420))
+                parts.insert(1, _compact(body, 420, reference=POSTMORTEMS_REFERENCE))
         memories.append("\n".join(parts))
     return memories
 
@@ -157,18 +235,29 @@ def _task_reference_lines(evaluations: list[dict]) -> list[str]:
 
 
 def _change_details(result: dict) -> str:
+    description = operation_description(result)
     parameter_changes = result.get("parameter_changes") or []
     if parameter_changes:
-        return "; ".join(
+        delta = "; ".join(
             f"{item['path']}: {item.get('before')} → {item.get('after')}"
             for item in parameter_changes
         )
+        if extends_lineage(result) and description:
+            return f"{description}; {delta}"
+        return delta
     code_changes = result.get("code_changes") or []
     if code_changes:
-        return (
-            f"{operation_description(result) or '-'}; files: {', '.join(code_changes)}"
-        )
-    return operation_description(result) or "-"
+        return f"{description or '-'}; files: {', '.join(code_changes)}"
+    return description or "-"
+
+
+def _recipe_basis(result: dict) -> str:
+    """Name which recipe was in effect for a transfer run."""
+    basis = str(result.get("recipe_basis", "")).strip()
+    return {
+        "parent_recipe": "the parent's restored recipe",
+        "current_science": "the current worktree science",
+    }.get(basis, basis or "not recorded")
 
 
 def _existing_artifact_reference(value: str | None, *, kind: str = "artifact") -> str:
@@ -218,7 +307,7 @@ def _experiment_outcome(result: dict) -> str:
     if success is not None:
         parts.append(f"success {float(success):.2f}%")
     if result.get("error"):
-        parts.append(_compact(str(result["error"]), 120))
+        parts.append(_compact(str(result["error"]), 120, reference=RESULTS_REFERENCE))
     return "; ".join(parts) or "no measured candidate result"
 
 
@@ -300,7 +389,7 @@ def _intervention_surfaces(
             parameter_only += 1
         else:
             unchanged += 1
-    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    ordered = sorted(counts.items(), key=lambda item: item[0])
     return ordered, parameter_only, unchanged
 
 
@@ -455,10 +544,291 @@ def _candidate_steps(candidate: dict) -> str:
     return "-" if timesteps is None else f"{int(timesteps):,}"
 
 
+def _steps_value(candidate: dict) -> int | None:
+    value = candidate.get("timesteps")
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _median(values: list[float]) -> float:
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def _values_range(values: list[float]) -> str:
+    """The run's own spread for one proxy: range and interquartile bounds.
+
+    Issue #53: a proxy number in isolation reads as a score. Placing it inside
+    the run's own spread lets it read as a location instead.
+    """
+    if not values:
+        return "unavailable"
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return f"{ordered[0]:g}"
+    lower = _median(ordered[: len(ordered) // 2])
+    upper = _median(ordered[(len(ordered) + 1) // 2 :])
+    return f"{ordered[0]:g}-{ordered[-1]:g} (Q1-Q3 {lower:g}-{upper:g})"
+
+
+def _quartile_label(value: float, values: list[float]) -> str:
+    """Which quarter of the run's own spread a value occupies.
+
+    Issue #53: the label is a location, so ties must share a position. A
+    mid-rank fraction keeps a constant or tied distribution centred instead of
+    pushing every member into the top quarter.
+    """
+    if not values:
+        return "unavailable"
+    less = sum(1 for other in values if other < value)
+    equal = sum(1 for other in values if other == value)
+    fraction = (less + 0.5 * equal) / len(values)
+    if fraction <= 0.25:
+        return "Q1"
+    if fraction <= 0.5:
+        return "Q2"
+    if fraction <= 0.75:
+        return "Q3"
+    return "Q4"
+
+
+def _proxy_shape(series: list[tuple[int, float]], position: int) -> str:
+    """Describe a checkpoint's position on the proxy trajectory by step order.
+
+    Issue #53: direction, turning point and local variability describe the run's
+    behaviour around a checkpoint instead of its endpoint score. None of these
+    values ranks one checkpoint above another.
+    """
+    value = series[position][1]
+    previous = series[position - 1][1] if position > 0 else None
+    following = series[position + 1][1] if position + 1 < len(series) else None
+    if previous is None and following is None:
+        return "single"
+    if previous is not None and following is not None:
+        if value > previous and value > following:
+            return "local max"
+        if value < previous and value < following:
+            return "local min"
+    if previous is not None:
+        delta = value - previous
+    else:
+        delta = following - value
+    if delta > 0:
+        return "rising"
+    if delta < 0:
+        return "falling"
+    return "flat"
+
+
+def _local_spread(
+    series: list[tuple[int, float]], position: int, window: int = 5
+) -> float | None:
+    """Variability of the signal across the last few raw records."""
+    start = max(0, position - window + 1)
+    recent = [value for _, value in series[start : position + 1]]
+    if len(recent) < 2:
+        return None
+    return max(recent) - min(recent)
+
+
+def _trajectory_ordered(candidates: list[dict]) -> list[dict]:
+    """Candidates in training order, independent of the display permutation."""
+    return sorted(
+        candidates,
+        key=lambda candidate: (
+            _steps_value(candidate) is None,
+            _steps_value(candidate) or 0,
+            str(candidate.get("name", "")),
+        ),
+    )
+
+
+_RAW_PROXY_KEYS = {
+    "training_success": ("success_rate", "training_success"),
+    "ep_rew_mean": ("ep_rew_mean",),
+}
+
+
+def _training_log_records(
+    campaign_id: str | None, experiment: object
+) -> list[dict[str, float]]:
+    """Every preserved raw training snapshot for one experiment.
+
+    The records are read from the campaign's training-log directory, which is
+    the same preserved evidence the raw-log query exposes. Multiple attempts are
+    read in attempt order.
+    """
+    if experiment is None:
+        return []
+    try:
+        experiment_number = int(experiment)
+    except (TypeError, ValueError):
+        return []
+    directory = RESEARCH_DIR / "training_logs"
+    if campaign_id:
+        directory = directory / campaign_id
+    if not directory.is_dir():
+        return []
+    pattern = re.compile(rf"^experiment-{experiment_number}-attempt-(\d+)\.log$")
+    logs: list[tuple[int, Path]] = []
+    for log_path in directory.glob(f"experiment-{experiment_number}-attempt-*.log"):
+        match = pattern.match(log_path.name)
+        if match is not None:
+            logs.append((int(match.group(1)), log_path))
+    records: list[dict[str, float]] = []
+    for _, log_path in sorted(logs):
+        text = log_path.read_text(encoding="utf-8", errors="replace")
+        records.extend(
+            record
+            for record in parse_training_records(text)
+            if record.get("total_timesteps") is not None
+        )
+    return records
+
+
+def _raw_training_series(
+    campaign_id: str | None, experiment: object
+) -> dict[str, list[tuple[float, float]]]:
+    """Per-signal ``(timestep, value)`` series from the preserved raw records."""
+    series: dict[str, list[tuple[float, float]]] = {
+        key: [] for key in _RAW_PROXY_KEYS
+    }
+    for record in _training_log_records(campaign_id, experiment):
+        timestep = record.get("total_timesteps")
+        if timestep is None:
+            continue
+        for key, raw_keys in _RAW_PROXY_KEYS.items():
+            for raw_key in raw_keys:
+                if raw_key in record:
+                    series[key].append((float(timestep), float(record[raw_key])))
+                    break
+    for points in series.values():
+        points.sort(key=lambda item: item[0])
+    return series
+
+
+def _raw_context(
+    series_points: list[tuple[float, float]], step: int | None, window: int = 5
+) -> str | None:
+    """Direction, variability and location at a checkpoint from raw records.
+
+    Issue #53: these are derived from the preserved raw training records around
+    the checkpoint, not from the checkpoint's endpoint proxies. ``None`` means
+    the raw context does not exist, so the caller labels it honestly instead of
+    implying it was consulted.
+    """
+    if not series_points or step is None:
+        return None
+    index: int | None = None
+    for position, (timestep, _) in enumerate(series_points):
+        if timestep <= step:
+            index = position
+        else:
+            break
+    if index is None:
+        return None
+    descriptors = [
+        _quartile_label(series_points[index][1], [value for _, value in series_points]),
+        _proxy_shape(series_points, index),
+    ]
+    spread = _local_spread(series_points, index, window)
+    if spread is not None:
+        descriptors.append(f"local spread {spread:g}")
+    return ", ".join(descriptors)
+
+
+def _candidate_discriminator_cells(
+    candidates: list[dict], series: dict[str, list[tuple[float, float]]]
+) -> dict[int, tuple[str, str, str]]:
+    """Per-candidate non-proxy descriptors keyed by object identity.
+
+    Issue #53: each row carries the checkpoint's position in the run and the
+    location, direction and local variability of each training signal as
+    recorded in the raw training log around that checkpoint. A signal whose raw
+    context is missing is labelled unavailable rather than back-filled from the
+    checkpoint endpoint proxies. The display order is never derived from these
+    values.
+    """
+    ordered = _trajectory_ordered(candidates)
+    steps = [value for value in (_steps_value(c) for c in ordered) if value is not None]
+    longest = max(steps) if steps else None
+    cells: dict[int, tuple[str, str, str]] = {}
+    for candidate in ordered:
+        steps_value = _steps_value(candidate)
+        position = (
+            "-"
+            if steps_value is None or not longest
+            else f"{round(100 * steps_value / longest)}%"
+        )
+        success_context = _raw_context(series.get("training_success", []), steps_value)
+        reward_context = _raw_context(series.get("ep_rew_mean", []), steps_value)
+        cells[id(candidate)] = (
+            position,
+            success_context or "raw log unavailable",
+            reward_context or "raw log unavailable",
+        )
+    return cells
+
+
+def _training_proxy_spread_lines(
+    series: dict[str, list[tuple[float, float]]]
+) -> list[str]:
+    """Distributional context for each training signal in the run's own spread."""
+    parts = []
+    for key, label in (("training_success", "success"), ("ep_rew_mean", "reward")):
+        values = [value for _, value in series.get(key, [])]
+        if values:
+            parts.append(f"{label} {_values_range(values)}")
+    if not parts:
+        return [
+            (
+                "- Raw training records are unavailable for this experiment, so "
+                "recent direction, variability and trajectory location could not "
+                "be derived."
+            )
+        ]
+    return [
+        "- Training-record spread across this run, so each checkpoint reads as a "
+        "location rather than a score: " + "; ".join(parts) + "."
+    ]
+
+
+def _lineage_measurement_anchor_lines(
+    training_parent_lineage: dict | None,
+) -> list[str]:
+    """Task-level measurements recorded for the frozen training parent.
+
+    Issue #53: only the current candidates' actual frozen training parent is an
+    ancestor. A fresh-initialization experiment has none, and unrelated working,
+    best-known or retained roles must not be presented as ancestors.
+    """
+    if not isinstance(training_parent_lineage, dict):
+        return []
+    artifacts = training_parent_lineage.get("evaluation_artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        return []
+    references = ", ".join(_recorded_path(path) for path in artifacts)
+    candidate = training_parent_lineage.get("candidate", "-")
+    origin = training_parent_lineage.get("origin_experiment")
+    origin_text = f" (origin experiment {origin})" if origin is not None else ""
+    return [
+        (
+            "- Task-level measurement recorded for the frozen training parent "
+            f"`{candidate}`{origin_text}: {references}."
+        )
+    ]
+
+
 def _checkpoint_inventory_lines(
     candidates: list[dict],
     campaign_id: str | None = None,
     experiment: object = None,
+    training_parent_lineage: dict | None = None,
 ) -> list[str]:
     artifacts = [str(candidate.get("artifact", "")) for candidate in candidates]
     parents = [Path(artifact.replace("\\", "/")).parent for artifact in artifacts]
@@ -480,21 +850,49 @@ def _checkpoint_inventory_lines(
         ),
         "",
         (
-            "Training success and reward are training-time proxies recorded during "
-            "training; they are not task measurements."
+            "Training success and reward are training-time proxies, not task "
+            "measurements: they indicate where the run was, not how good a policy "
+            "is. The location and shape columns describe the trajectory around each "
+            "checkpoint and are descriptive context, not a ranking. Selecting the "
+            "highest proxy values is a weak strategy; prefer a set of candidates "
+            "that spans the question you are asking (for example plateau entry, a "
+            "local proxy peak, and the final checkpoint) so one measurement round "
+            "can distinguish outcomes."
         ),
         "",
-        "| Candidate | Steps | Training success | Training reward | Measurements |",
-        "|---|---:|---:|---:|---:|",
+        (
+            "Every candidate listed below loses its weights at closure unless the "
+            "closure names it `working`, `best_known`, or retains it with an ID. A "
+            "candidate without a role cannot later be extended, re-measured, or "
+            "compared against, and cannot become a future `training_parent`. "
+            "Retention has no budget and no preferred count. The `Weights if no "
+            "role` column marks the candidates this applies to."
+        ),
+        "",
+        (
+            "| Candidate | Steps | Training success | Training reward | "
+            "Measurements | Run position | Success location and shape | "
+            "Reward location and shape | Weights if no role |"
+        ),
+        "|---|---:|---:|---:|---:|---:|---|---|---|",
     ]
+    series = _raw_training_series(campaign_id, experiment)
+    discriminators = _candidate_discriminator_cells(candidates, series)
     for candidate in candidate_display_order(candidates, campaign_id, experiment):
+        position, success_context, reward_context = discriminators.get(
+            id(candidate), ("-", "raw log unavailable", "raw log unavailable")
+        )
         lines.append(
             f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
             f"{_candidate_metric(candidate, 'training_success')} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
-            f"{len(candidate.get('evaluations') or [])} |"
+            f"{len(candidate.get('evaluations') or [])} | "
+            f"{position} | {success_context} | {reward_context} | "
+            "removed unless named |"
         )
     lines.append("")
+    lines.extend(_training_proxy_spread_lines(series))
+    lines.extend(_lineage_measurement_anchor_lines(training_parent_lineage))
     if common_parent is not None:
         lines.append(
             "- Inspect candidate identifiers, training metrics, and "
@@ -559,6 +957,63 @@ def _parameter_differences(current: dict, lineage: dict | None) -> str:
     return "; ".join(differences) or "none"
 
 
+def _selected_panels_lines(lineage: dict) -> list[str]:
+    """The panels a lineage was selected on, with the non-independence caveat.
+
+    Issue #57: a model chosen on a panel's episodes and later re-measured on the
+    same episodes has an inflated score for that panel. Surfacing the selection
+    exposure lets the Researcher see when a fresh disjoint panel is required. The
+    recorded identity preserves both the instrument and the panel.
+    """
+    panels = lineage.get("selected_panels")
+    if not isinstance(panels, list):
+        return []
+    rendered = []
+    for panel in panels:
+        identity = _selected_panel_identity(panel)
+        if identity is not None:
+            rendered.append(_panel_identity_label(identity))
+    if not rendered:
+        return []
+    return [
+        "  - Panels this lineage was selected on: "
+        + ", ".join(rendered)
+        + "; re-measuring on these episodes is not independent confirmation."
+    ]
+
+
+def _selected_panel_identity(panel: object) -> tuple | None:
+    """Normalize a persisted selection-panel record to a panel identity."""
+    if isinstance(panel, (list, tuple)) and len(panel) == 2:
+        seed, episodes = panel
+        if all(isinstance(value, int) and not isinstance(value, bool) for value in panel):
+            return ("research_evaluation", int(seed), int(episodes))
+        return None
+    if not isinstance(panel, dict):
+        return None
+    instrument = panel.get("instrument")
+    if instrument == "task_reference":
+        name = panel.get("panel")
+        if not isinstance(name, str) or not name.strip():
+            return None
+        return (
+            "task_reference",
+            name,
+            panel.get("panel_version"),
+            panel.get("seed"),
+            panel.get("episodes"),
+        )
+    if instrument == "research_evaluation":
+        seed = panel.get("seed")
+        episodes = panel.get("episodes")
+        if isinstance(seed, bool) or not isinstance(seed, int):
+            return None
+        if isinstance(episodes, bool) or not isinstance(episodes, int):
+            return None
+        return ("research_evaluation", seed, episodes)
+    return None
+
+
 def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
     evaluation_artifacts = lineage.get("evaluation_artifacts")
     evidence = (
@@ -581,6 +1036,7 @@ def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
         ),
         f"  - Recorded evaluation artifacts: {evidence}",
         f"  - Researcher reason: {_recorded_value(lineage.get('reason'))}",
+        *_selected_panels_lines(lineage),
     ]
 
 
@@ -648,6 +1104,15 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         "## Current lineages and scientific recipes",
         "",
         f"- Valid `training_parent` identifiers: {identifiers or 'not recorded'}",
+        (
+            "These are the only models the Runner can verify and restore as a "
+            "parent. A new identifier is created only by a closure that names a "
+            "candidate `working` or `best_known`, or retains it with an ID; the "
+            "complete inference artifact, matching fingerprint, scientific commit "
+            "and effective parameters are recorded at that moment. Candidates "
+            "without such a role have their weights removed at closure and cannot "
+            "become training parents later."
+        ),
         "",
         "### Lineages",
         "",
@@ -692,11 +1157,16 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
     )
     if candidates:
         pending_analysis = state.get("pending_analysis") or {}
+        result = pending_analysis.get("result")
+        training_parent_lineage = pending_analysis.get("training_parent_lineage") or (
+            result.get("training_parent_lineage") if isinstance(result, dict) else None
+        )
         lines.extend(
             _checkpoint_inventory_lines(
                 candidates,
                 campaign_id=state.get("campaign", {}).get("id"),
                 experiment=pending_analysis.get("experiment"),
+                training_parent_lineage=training_parent_lineage,
             )
         )
     else:
@@ -863,6 +1333,9 @@ def _v4_phase_section(
         phase = "official assessment"
     if terminal:
         phase = "terminal official assessment"
+    conclusion_only = bool(state.get("preparation_conclusion_only")) and not (
+        terminal or isinstance(pending, dict)
+    )
     lines = [
         "# Research Brief",
         "",
@@ -880,7 +1353,15 @@ def _v4_phase_section(
             if terminal
             else "`research/evaluation_request.json` or closure `research/proposal.json`"
             if isinstance(pending, dict)
-            else "`research/proposal.json`"
+            else (
+                "only a `campaign_conclusion` in `research/proposal.json`; the "
+                "experiment budget is exhausted"
+                if conclusion_only
+                else (
+                    "`research/proposal.json` or a saved-lineage "
+                    "`research/evaluation_request.json`"
+                )
+            )
         ),
     ]
     if terminal:
@@ -900,32 +1381,167 @@ def _v4_lineage_section(state: dict, current_params: dict) -> list[str]:
     return lines
 
 
-def _v4_experiment_index_section(results: list[dict]) -> list[str]:
-    """One row per completed experiment, newest first."""
+def _precedent_prose_inline(pending: dict | None) -> bool:
+    """Whether a past decision's rationale is rendered inline or retrospectively.
+
+    Issue #54 (correcting #43): the brief must treat a past decision's rationale
+    and its outcome symmetrically. #43 hid the round-level `reason` and the
+    per-candidate `selection` prose while preparing a request, because the inline
+    `Reason:` and `Selection:` field names read as a form to copy, but it left the
+    campaign experiment index's closure pattern unconditional. The Researcher was
+    then shown the outcome many times over with no reasoning to weigh against it.
+
+    The policy is to retain the rationale and present it deliberately
+    de-templated during preparation - a labelled retrospective note, never the
+    inline field names - while the experiment index states that past closure
+    choices are not defaults. Both renderers consult this one predicate so the
+    two policies cannot drift apart again.
+    """
+    return isinstance(pending, dict)
+
+
+def _experiment_rationale(result: dict) -> list[str]:
+    """De-templated rationale recorded by one experiment's measurement rounds.
+
+    Issue #54: an indexed closure outcome must be shown together with the
+    rationale that answered its question. This renders the same content as the
+    measurement-rounds section without the inline ``Reason:`` / ``Selection:``
+    field names, so it cannot be read as a form the next request should fill in.
+    """
+    items: list[str] = []
+    rounds = result.get("evaluation_rounds")
+    if not isinstance(rounds, list):
+        return items
+    for record in rounds:
+        if not isinstance(record, dict):
+            continue
+        if record.get("reason"):
+            items.extend(
+                _indented_label_block(
+                    "Round rationale", str(record["reason"]), 400, RESULTS_REFERENCE
+                )
+            )
+        round_results = record.get("results")
+        if not isinstance(round_results, dict):
+            continue
+        for key in ("research_evaluations", "task_reference_evaluations"):
+            for item in round_results.get(key) or []:
+                if not isinstance(item, dict) or not item.get("selection"):
+                    continue
+                items.extend(
+                    _indented_label_block(
+                        f"Choice rationale for `{item.get('candidate', '-')}`",
+                        str(item["selection"]),
+                        600,
+                        RESULTS_REFERENCE,
+                    )
+                )
+    return items
+
+
+def _assessment_with_confidence(result: dict) -> str:
+    """Render the recorded hypothesis assessment beside its prediction confidence.
+
+    Issue #56: a prediction may be recorded as weakly held, so a contradicted
+    weak prediction is not read as a refuted strong one.
+    """
+    assessment = result.get("hypothesis_assessment")
+    rendered = (
+        assessment.strip()
+        if isinstance(assessment, str) and assessment.strip()
+        else "unavailable"
+    )
+    reasoning = result.get("reasoning")
+    confidence = reasoning.get("confidence") if isinstance(reasoning, dict) else None
+    if isinstance(confidence, str) and confidence.strip():
+        return f"{rendered} (prediction confidence: {confidence.strip()})"
+    return rendered
+
+
+def _v4_experiment_index_section(
+    results: list[dict], pending: dict | None = None
+) -> list[str]:
+    """One row per completed experiment, newest first.
+
+    Issue #54: the section states that a recorded closure answered that
+    experiment's question, so it is not a default for the next one. During
+    preparation every recorded closure is shown with its de-templated rationale,
+    and a closure whose rationale is not reproduced here is withheld, so outcome
+    and rationale stay symmetric across the whole index.
+    """
+    preparing = not _precedent_prose_inline(pending)
+    preamble = (
+        "Each row records what one experiment did and concluded. Past closure "
+        "choices answered the question that experiment asked; they are not a "
+        "default for the next one."
+    )
+    if preparing:
+        preamble += (
+            " Each recorded closure is shown with the de-templated rationale "
+            "that answered its question; a closure whose rationale is not "
+            "reproduced here is withheld."
+        )
     lines = [
         "",
         "## Campaign experiment index",
         "",
+        preamble,
+        "",
         "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
         "|---:|---|---|---|---|---|---|---|",
     ]
+    rationale_notes: list[str] = []
     for result in sorted(
         results, key=lambda item: int(item.get("index", 0)), reverse=True
     ):
         checkpoints = compact_measurement_summary(result)
         closure = result.get("closure_decision") or {}
+        rationale = _experiment_rationale(result) if preparing else []
+        if preparing and closure and not rationale:
+            decisions = (
+                "closure withheld during preparation; its rationale is not "
+                "reproduced here"
+            )
+        else:
+            decisions = (
+                f"working {closure.get('continue_from', 'not recorded')}; "
+                f"best known {(closure.get('best_known') or {}).get('candidate', 'not recorded')}; "
+                f"code {(closure.get('code') or {}).get('action', 'not recorded')}"
+            )
+        operation = (
+            operation_description(result)
+            if extends_lineage(result)
+            else result.get("kind", "-")
+        )
+        intervention = _change_details(result)
+        if result.get("recipe_basis"):
+            intervention = f"{_recipe_basis(result)}; {intervention}"
         lines.append(
-            f"| {result.get('index', '-')} | {result.get('kind', '-')} / {result.get('family', '-')} | "
-            f"{result.get('training_parent', '-')} | {_compact(_change_details(result), 100).replace('|', '/')} | "
-            f"{_compact(checkpoints, 140).replace('|', '/')} | "
-            f"{_compact(str(result.get('hypothesis_assessment', 'unavailable')), 140).replace('|', '/')} | "
-            f"working {closure.get('continue_from', 'unmeasured')}; "
-            f"best known {(closure.get('best_known') or {}).get('candidate', 'unchanged')}; "
-            f"code {(closure.get('code') or {}).get('action', 'unrecorded')} | "
+            f"| {result.get('index', '-')} | {_table_cell(operation)} / {result.get('family', '-')} | "
+            f"{result.get('training_parent', '-')} | {_table_cell(_compact(intervention, 100, reference=RESULTS_REFERENCE))} | "
+            f"{_table_cell(_compact(checkpoints, 140, reference=RESULTS_REFERENCE))} | "
+            f"{_table_cell(_assessment_with_confidence(result))} | "
+            f"{decisions} | "
             f"{_postmortem_reference(result.get('postmortem'))} |"
         )
+        if rationale:
+            rationale_notes.extend(
+                ["", f"**Experiment {result.get('index', '-')}**", *rationale]
+            )
     if not results:
         lines.append("| - | - | - | - | - | - | - | - |")
+    if rationale_notes:
+        lines.extend(
+            [
+                "",
+                (
+                    "Recorded rationale for past decisions; each answered a "
+                    "question that is not yours. It is retained for audit, not as "
+                    "a template to copy:"
+                ),
+                *rationale_notes,
+            ]
+        )
     return lines
 
 
@@ -977,18 +1593,37 @@ def _v4_repeated_operations_section(results: list[dict]) -> list[str]:
 
 
 def _v4_intervention_surfaces_section(results: list[dict]) -> list[str]:
-    """Where the campaign has intervened, without suggesting where to next."""
+    """Where the campaign has intervened, in path order, without ranking."""
     lines = ["", "## Intervention surfaces", ""]
     surfaces, parameter_only, unchanged = _intervention_surfaces(results)
     if surfaces:
         lines.append(
             "Experiments that changed each researcher-owned source, including "
-            "sources never changed. This is a record of where the campaign has "
-            "intervened, not a suggestion about where to intervene next:"
+            "sources never changed. Listed in path order; frequency of past "
+            "change carries no information about where the next intervention "
+            "should be. This is a record of where the campaign has intervened, "
+            "not a suggestion about where to intervene next:"
         )
         lines.append("")
-        for source, count in surfaces:
-            lines.append(f"- `{source}`: {count}")
+        changed = [(source, count) for source, count in surfaces if count]
+        never_changed = [source for source, count in surfaces if not count]
+        lines.append("### Changed in this campaign")
+        lines.append("")
+        if changed:
+            for source, count in changed:
+                noun = "experiment" if count == 1 else "experiments"
+                lines.append(f"- `{source}` — changed in {count} {noun}")
+        else:
+            lines.append("- None.")
+        lines.append("")
+        lines.append("### Not yet changed")
+        lines.append("")
+        if never_changed:
+            for source in never_changed:
+                lines.append(f"- `{source}`")
+        else:
+            lines.append("- None.")
+        lines.append("")
         lines.append(
             f"- Experiments with no researcher-owned source change: "
             f"{parameter_only} parameter-only, {unchanged} unchanged."
@@ -1025,6 +1660,55 @@ def _v4_best_known_section(state: dict) -> list[str]:
     return lines
 
 
+def _v4_terminal_assessment_section(state: dict) -> list[str]:
+    """The irreversible request, stated with the model it will freeze.
+
+    Issue #59: the protocol frames the terminal assessment only as a risk, so a
+    pending final-benchmark request must name the frozen best-known lineage and
+    the Researcher's terminal reason. The decision becomes a confirmed object
+    instead of a recall; the mechanism itself is unchanged.
+    """
+    pending = state.get("pending_final_benchmark")
+    if not isinstance(pending, dict):
+        return []
+    lineage = pending.get("best_known")
+    if not isinstance(lineage, dict):
+        lineage = state.get("best_known_lineage")
+    if not isinstance(lineage, dict):
+        return []
+    reason = pending.get("terminal_reason")
+    if not reason:
+        conclusion = state.get("campaign_conclusion")
+        if isinstance(conclusion, dict):
+            reason = conclusion.get("reason")
+    lines = [
+        "",
+        "## Pending terminal assessment",
+        "",
+        (
+            "A request for the official assessment is pending. The campaign ends "
+            "after either verdict, `goal_reached` or `goal_not_reached`, and the "
+            "decision is irreversible. This is the frozen model the verdict will "
+            "describe:"
+        ),
+    ]
+    lines.extend(_authoritative_lineage_lines("best_known", lineage))
+    lines.append(f"  - Terminal reason: {_recorded_value(reason)}")
+    lines.extend(
+        [
+            "",
+            (
+                "Both verdicts are legitimate campaign outcomes; "
+                "`goal_not_reached` on a well-evidenced submission is not a "
+                "failure of the research process, and the campaign's scientific "
+                "record survives the verdict intact. There is no reversal and no "
+                "second verdict."
+            ),
+        ]
+    )
+    return lines
+
+
 def _cost_records(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[dict]:
@@ -1038,24 +1722,17 @@ def _cost_records(
     return records
 
 
-def _v4_cost_accounting_section(
+def _v4_activity_record_section(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[str]:
-    """Factual campaign accounting in non-overlapping units.
+    """Factual campaign activity in non-overlapping units.
 
-    Issue #34: surfaces training and evaluation work without implying a budget,
+    Issue #34: surfaces training and evaluation work without implying a target,
     a preferred allocation, or an automatic stopping decision.
+    Issue #46: describes what was executed separately from the evidence coverage
+    it produced, and carries no running total of consumed resources.
     """
     records = _cost_records(state, results, pending)
-    completed_steps = 0
-    requested_steps = 0
-    for record in records:
-        if record.get("completed_training_steps") is not None:
-            completed_steps += int(record["completed_training_steps"])
-        elif record.get("training_budget_steps") is not None:
-            completed_steps += int(record["training_budget_steps"])
-        if record.get("training_budget_steps") is not None:
-            requested_steps += int(record["training_budget_steps"])
     replications = sorted(
         int(record["index"])
         for record in records
@@ -1081,18 +1758,18 @@ def _v4_cost_accounting_section(
     intervals = _consumed_research_intervals(records)
     return [
         "",
-        "## Campaign cost accounting",
+        "## Campaign activity record",
         "",
         (
-            "Factual record of the work this campaign has performed and the "
-            "evidence coverage it has produced. It sets no budget, target, or "
-            "preferred allocation:"
+            "What this campaign has executed so far. These counts exist so "
+            "measurements can be located and compared. They are descriptive "
+            "records only: no value is a target or a limit, and no value is "
+            "preferred over another."
         ),
         "",
-        (
-            f"- Training experiments: {len(records)} "
-            f"(completed steps: {completed_steps:,}; requested steps: {requested_steps:,})."
-        ),
+        "### Executed so far",
+        "",
+        f"- Training experiments: {len(records)}.",
         (
             "- Replication experiments recorded: "
             + (", ".join(str(index) for index in replications) if replications else "none")
@@ -1104,6 +1781,9 @@ def _v4_cost_accounting_section(
             f"{instrument_executions['research_evaluation']} research_evaluation, "
             f"{instrument_executions['task_reference']} task_reference."
         ),
+        "",
+        "### Evidence coverage",
+        "",
         (
             f"- research_evaluation coverage: "
             f"{research_coverage['distinct_episodes']} distinct episodes; "
@@ -1174,6 +1854,173 @@ def _record_research_panels(record: dict) -> list[tuple[int, int]]:
     return panels
 
 
+def _entry_fingerprint(entry: dict) -> str:
+    """The immutable model fingerprint of a recorded measurement, if present."""
+    metrics = entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+    value = entry.get("model_fingerprint") or metrics.get("model_fingerprint")
+    return "" if value is None else str(value)
+
+
+def _measurement_entries(record: dict, instrument: str):
+    """Every persisted measurement entry of one instrument in a record.
+
+    Issue #57: the durable record separates the executed request from the
+    partial and preparation ledgers; all of them are prior panel uses.
+    """
+    if instrument == "task_reference":
+        keys = (
+            "task_reference_evaluations",
+            "partial_task_reference_evaluations",
+            "preparation_task_reference_evaluations",
+        )
+    else:
+        keys = (
+            "requested_evaluations",
+            "partial_evaluations",
+            "preparation_evaluations",
+        )
+    for key in keys:
+        for entry in record.get(key) or []:
+            if isinstance(entry, dict):
+                yield entry
+
+
+def _panel_identity(entry: dict, instrument: str) -> tuple | None:
+    """The immutable identity of the panel a measurement ran on.
+
+    Issue #57: reuse must be recognized by panel identity, never by a mutable
+    candidate or role label, and both instruments are covered by the same rule.
+    """
+    if instrument == "task_reference":
+        panel = entry.get("panel")
+        if not isinstance(panel, str) or not panel.strip():
+            return None
+        return (
+            "task_reference",
+            panel,
+            entry.get("panel_version"),
+            entry.get("seed"),
+            entry.get("episodes"),
+        )
+    seed = entry.get("seed")
+    episodes = entry.get("episodes")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        return None
+    if isinstance(episodes, bool) or not isinstance(episodes, int):
+        return None
+    return ("research_evaluation", seed, episodes)
+
+
+def _panel_identity_label(identity: tuple) -> str:
+    if identity[0] == "task_reference":
+        return f"panel `{identity[1]}`"
+    _, seed, episodes = identity
+    if episodes > 0:
+        return f"episodes {seed}–{seed + episodes - 1}"
+    return f"episode {seed}"
+
+
+def _record_panel_uses(record: dict) -> list[tuple[tuple, str]]:
+    """``(panel identity, model fingerprint)`` for every prior measurement."""
+    uses: list[tuple[tuple, str]] = []
+    for instrument in ("research_evaluation", "task_reference"):
+        for entry in _measurement_entries(record, instrument):
+            if entry.get("instrument", instrument) != instrument:
+                continue
+            metrics = (
+                entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+            )
+            merged = {**metrics, **entry}
+            identity = _panel_identity(merged, instrument)
+            if identity is None:
+                continue
+            uses.append((identity, _entry_fingerprint(merged)))
+    return uses
+
+
+def _record_label_fingerprints(record: dict) -> dict[str, str]:
+    """Map each candidate or role label in a record to its model fingerprint.
+
+    Issue #57: a closure names the selected model by a mutable label, so the
+    label must be resolved to the immutable fingerprint recorded with the
+    measurements of that same experiment before it can be associated with a
+    prior panel use.
+    """
+    mapping: dict[str, str] = {}
+    for instrument in ("research_evaluation", "task_reference"):
+        for entry in _measurement_entries(record, instrument):
+            metrics = (
+                entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
+            )
+            merged = {**metrics, **entry}
+            label = merged.get("candidate")
+            fingerprint = _entry_fingerprint(merged)
+            if label is not None and fingerprint:
+                mapping.setdefault(str(label), fingerprint)
+    for candidate in record.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        name = candidate.get("name")
+        for evaluation in candidate.get("evaluations") or []:
+            if not isinstance(evaluation, dict):
+                continue
+            fingerprint = _entry_fingerprint(evaluation)
+            if name is not None and fingerprint:
+                mapping.setdefault(str(name), fingerprint)
+    return mapping
+
+
+def _closure_selected_labels(record: dict) -> set[str]:
+    """The candidate or role labels a recorded closure chose for a lineage role."""
+    closure = record.get("closure_decision") or {}
+    selected: set[str] = set()
+    working = closure.get("continue_from")
+    if working is not None:
+        selected.add(str(working))
+    best = closure.get("best_known")
+    if isinstance(best, dict) and best.get("candidate") is not None:
+        selected.add(str(best["candidate"]))
+    for retained in closure.get("retain") or []:
+        if isinstance(retained, dict) and retained.get("candidate") is not None:
+            selected.add(str(retained["candidate"]))
+    return selected
+
+
+def _closure_selected_fingerprints(record: dict) -> set[str]:
+    """The immutable fingerprints a recorded closure selected for a lineage role."""
+    mapping = _record_label_fingerprints(record)
+    return {
+        mapping[label]
+        for label in _closure_selected_labels(record)
+        if label in mapping
+    }
+
+
+def _reuse_context(
+    prior_uses: dict[tuple, int],
+    prior_selected: dict[tuple, dict[str, int]],
+    identity: tuple | None,
+    fingerprint: str,
+) -> tuple[str, str]:
+    """A panel marker and non-independence qualifier for one rendered result."""
+    if identity is None:
+        return "", ""
+    uses = prior_uses.get(identity, 0)
+    if not uses:
+        return " (new panel)", ""
+    location = "this panel" if identity[0] == "task_reference" else "these episodes"
+    suffix = "" if uses == 1 else "s"
+    history = [f"{uses} prior measurement{suffix} on {location}"]
+    selected = prior_selected.get(identity, {}).get(fingerprint, 0) if fingerprint else 0
+    if selected:
+        history.append(f"{selected} preceded a closure that selected this lineage")
+    qualifier = (
+        " Reused panel: comparable to earlier results on the same episodes, "
+        "not independent confirmation."
+    )
+    return " (reused panel: " + "; ".join(history) + ")", qualifier
+
+
 def _consumed_research_intervals(records: list[dict]) -> list[str]:
     """Every distinct research-evaluation interval already consumed, in first-use order."""
     ordered: list[tuple[int, int]] = []
@@ -1200,89 +2047,160 @@ def _v4_measurement_rounds_section(
     artifact references so the progression of scientific questions stays
     auditable after closure instead of being reconstructed from timestamps.
 
-    A panel is marked ``(reused panel)`` only when it was consumed before the
-    current round (by an earlier experiment or an earlier round). Candidates that
-    share one panel within a round share the same marker; they are not treated as
-    successive reuse.
+    Issue #57: a reused panel is reported with its reuse history - how many prior
+    measurements consumed this exact interval and how many of them preceded a
+    closure that selected the measured lineage - and carries an explicit
+    non-independence qualifier. A panel is counted as reused only when it was
+    consumed before the current round (by an earlier experiment or an earlier
+    round). Candidates that share one panel within a round share the same history;
+    they are not treated as successive reuse.
     """
-    latest = (
-        pending.get("result")
-        if isinstance(pending, dict)
-        else (results[-1] if results else None)
-    )
-    source = pending if isinstance(pending, dict) else latest
+    preparation_source = False
+    if isinstance(pending, dict):
+        # Analysis keeps the experiment's own rounds after the preparation
+        # rounds that informed its parent choice, all under one experiment.
+        source = {
+            **pending,
+            "evaluation_rounds": [
+                *(pending.get("preparation_evaluation_rounds") or []),
+                *(pending.get("evaluation_rounds") or []),
+            ],
+        }
+    else:
+        ledger = preparation_ledger(state)
+        if ledger is not None and int(ledger.get("experiment", -1)) != (
+            upcoming_experiment_index(state)
+        ):
+            ledger = None
+        if ledger is not None:
+            # The upcoming experiment's preparation rounds belong to it, never
+            # to the previous completed experiment.
+            source = {
+                "experiment": int(ledger.get("experiment", 0)),
+                "evaluation_rounds": list(ledger.get("rounds") or []),
+            }
+            preparation_source = True
+        else:
+            source = results[-1] if results else None
     if not isinstance(source, dict):
         return []
     rounds = source.get("evaluation_rounds")
     if not isinstance(rounds, list) or not rounds:
         return []
     current_index = int(source.get("experiment") or source.get("index") or 0)
-    prior_panels: set[tuple[int, int]] = set()
+    prior_uses: dict[tuple, int] = {}
+    prior_selected: dict[tuple, dict[str, int]] = {}
     for record in results:
         if not isinstance(record, dict):
             continue
         if int(record.get("index", -1)) == current_index:
             continue
-        prior_panels.update(_record_research_panels(record))
-    # Issue #43: during preparation the brief summarizes the prior experiment's
-    # outcomes and artifact references without replaying the round-level `reason`
-    # or per-candidate `selection` prose, either of which would otherwise act as
-    # a comparative-selection exemplar template for the next request. The
-    # durable record keeps the full rationale.
-    include_selections = isinstance(pending, dict)
-    lines = [
-        "",
-        "## Measurement rounds",
-        "",
-        (
+        selected_fingerprints = _closure_selected_fingerprints(record)
+        for identity, fingerprint in _record_panel_uses(record):
+            prior_uses[identity] = prior_uses.get(identity, 0) + 1
+            if fingerprint and fingerprint in selected_fingerprints:
+                by_model = prior_selected.setdefault(identity, {})
+                by_model[fingerprint] = by_model.get(fingerprint, 0) + 1
+    # Issue #54 (correcting #43): the rationale is retained in both phases. While
+    # preparing a request it is rendered de-templated at the foot of the round
+    # instead of inline, so it stays auditable without reading as a form to copy.
+    inline_precedent = _precedent_prose_inline(pending)
+    source_reference = (
+        RESEARCH_STATE_REFERENCE if inline_precedent else RESULTS_REFERENCE
+    )
+    if preparation_source:
+        heading = (
+            "Preparation measurement rounds for the upcoming experiment, in the "
+            "order they were requested. Questions, results and artifact "
+            "references are retained; the recorded rationale for each past "
+            "decision is kept below as a de-templated retrospective note, not as "
+            "a template for the next request:"
+        )
+    elif inline_precedent:
+        heading = (
             "Measurement rounds for the current experiment in the order they were "
             "requested. Each round records its own question, selections and "
             "resulting artifacts:"
-            if include_selections
-            else "Completed measurement rounds from the most recent experiment, in "
+        )
+    else:
+        heading = (
+            "Completed measurement rounds from the most recent experiment, in "
             "the order they were requested. Questions, results and artifact "
-            "references are retained; comparative selection rationale stays in "
-            "the durable record:"
-        ),
-    ]
+            "references are retained; the recorded rationale for each past "
+            "decision is kept below as a de-templated retrospective note, not as "
+            "a template for the next request:"
+        )
+    lines = ["", "## Measurement rounds", "", heading]
     for record in rounds:
         if not isinstance(record, dict):
             continue
         status = str(record.get("status", "accepted"))
         lines.extend(["", f"### Round {record.get('round', '-')} ({status})"])
         if record.get("question"):
-            lines.append(f"- Question: {_compact(str(record['question']), 400)}")
-        # Issue #43: the round-level `reason` explains the selected candidates
-        # relative to an alternative, so it is comparative selection prose too
-        # and is suppressed during preparation for the same reason as `selection`.
-        if include_selections and record.get("reason"):
-            lines.append(f"- Reason: {_compact(str(record['reason']), 400)}")
+            lines.extend(
+                _indented_label_block(
+                    "Question", str(record["question"]), 400, source_reference
+                )
+            )
+        # Issue #54: the round-level rationale is retained in both phases. It is
+        # inline during analysis and collected for the de-templated note during
+        # preparation.
+        precedent: list[str] = []
+        if record.get("reason"):
+            if inline_precedent:
+                lines.extend(
+                    _indented_label_block(
+                        "Reason", str(record["reason"]), 400, source_reference
+                    )
+                )
+            else:
+                precedent.extend(
+                    _indented_label_block(
+                        "Round rationale",
+                        str(record["reason"]),
+                        400,
+                        source_reference,
+                    )
+                )
         round_results = (
             record.get("results") if isinstance(record.get("results"), dict) else {}
         )
-        round_panels: set[tuple[int, int]] = set()
+        round_panels: list[tuple] = []
         for item in round_results.get("research_evaluations") or []:
             if not isinstance(item, dict):
                 continue
-            panel = _research_panel_of(item)
-            panel_note = ""
-            if panel is not None:
-                panel_note = (
-                    " (reused panel)" if panel in prior_panels else " (new panel)"
-                )
-                round_panels.add(panel)
+            metrics = (
+                item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
+            )
+            identity = _panel_identity({**metrics, **item}, "research_evaluation")
+            panel_note, qualifier = _reuse_context(
+                prior_uses, prior_selected, identity, _entry_fingerprint(item)
+            )
+            if identity is not None:
+                round_panels.append(identity)
             detail = _episode_interval(item)
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
                 f"- `{item.get('candidate', '-')}` "
                 f"`research_evaluation`{_round_entry_status(item)}"
-                f"{panel_note}: {detail}."
+                f"{panel_note}: {detail}.{qualifier}"
             )
-            if include_selections and item.get("selection"):
-                lines.append(
-                    f"  - Selection: {_compact(str(item['selection']), 300)}"
-                )
+            if item.get("selection"):
+                if inline_precedent:
+                    lines.append(
+                        f"  - Selection: "
+                        f"{_compact(str(item['selection']), 600, reference=source_reference)}"
+                    )
+                else:
+                    precedent.extend(
+                        _indented_label_block(
+                            f"Choice rationale for `{item.get('candidate', '-')}`",
+                            str(item["selection"]),
+                            600,
+                            source_reference,
+                        )
+                    )
             if item.get("reused_from_round") is not None:
                 lines.append(
                     f"  - Reused from round {item['reused_from_round']}"
@@ -1297,17 +2215,38 @@ def _v4_measurement_rounds_section(
         for item in round_results.get("task_reference_evaluations") or []:
             if not isinstance(item, dict):
                 continue
+            metrics = (
+                item.get("metrics") if isinstance(item.get("metrics"), dict) else {}
+            )
+            identity = _panel_identity({**metrics, **item}, "task_reference")
+            panel_note, qualifier = _reuse_context(
+                prior_uses, prior_selected, identity, _entry_fingerprint(item)
+            )
+            if identity is not None:
+                round_panels.append(identity)
             detail = f"panel `{item.get('panel', '-')}`"
             if item.get("success_percent") is not None:
                 detail += f", success {float(item['success_percent']):.2f}%"
             lines.append(
                 f"- `{item.get('candidate', '-')}` "
-                f"`task_reference`{_round_entry_status(item)}: {detail}."
+                f"`task_reference`{_round_entry_status(item)}"
+                f"{panel_note}: {detail}.{qualifier}"
             )
-            if include_selections and item.get("selection"):
-                lines.append(
-                    f"  - Selection: {_compact(str(item['selection']), 300)}"
-                )
+            if item.get("selection"):
+                if inline_precedent:
+                    lines.append(
+                        f"  - Selection: "
+                        f"{_compact(str(item['selection']), 600, reference=source_reference)}"
+                    )
+                else:
+                    precedent.extend(
+                        _indented_label_block(
+                            f"Choice rationale for `{item.get('candidate', '-')}`",
+                            str(item["selection"]),
+                            600,
+                            source_reference,
+                        )
+                    )
             if item.get("reused_from_round") is not None:
                 lines.append(
                     f"  - Reused from round {item['reused_from_round']}"
@@ -1322,13 +2261,46 @@ def _v4_measurement_rounds_section(
         for item in round_results.get("paired_comparisons") or []:
             if not isinstance(item, dict):
                 continue
+            reused = []
+            for panel in item.get("panels") or []:
+                if not isinstance(panel, dict):
+                    continue
+                identity = _panel_identity(panel, "research_evaluation")
+                if identity is None:
+                    continue
+                uses = prior_uses.get(identity, 0)
+                if uses:
+                    reused.append((identity, uses))
+            qualifier = ""
+            if reused:
+                context = ", ".join(
+                    f"{_panel_identity_label(identity)} ({uses} prior)"
+                    for identity, uses in reused
+                )
+                qualifier = (
+                    f" Reused panel context: {context}; comparable to earlier "
+                    "results on the same episodes, not independent confirmation."
+                )
             lines.append(
                 f"- Paired comparison `{item.get('candidate', '-')}` vs "
                 f"`{item.get('reference', '-')}`: {item.get('candidate_wins', '-')} "
                 f"vs {item.get('reference_wins', '-')} discordant wins over "
-                f"{item.get('episodes', '-')} episodes."
+                f"{item.get('episodes', '-')} episodes.{qualifier}"
             )
-        prior_panels.update(round_panels)
+        if precedent:
+            lines.extend(
+                [
+                    "",
+                    (
+                        "Recorded rationale for a past decision; it answered a "
+                        "question that is not yours. It is retained for audit, not "
+                        "as a template to copy:"
+                    ),
+                    *precedent,
+                ]
+            )
+        for identity in round_panels:
+            prior_uses[identity] = prior_uses.get(identity, 0) + 1
     return lines
 
 
@@ -1407,6 +2379,8 @@ def _render_v4_research_brief(
                 else "- Raw training logs: unmeasured",
             ]
         )
+        if result.get("recipe_basis"):
+            lines.append(f"- Recipe basis: {_recipe_basis(result)}")
         if unmeasured:
             lines.append(
                 f"- Unmeasured candidates: {len(unmeasured)} of {len(candidates)}."
@@ -1433,22 +2407,24 @@ def _render_v4_research_brief(
                 f"- Parent: {latest.get('training_parent', '-')}",
                 f"- Intervention: {_change_details(latest)}",
                 f"- Measurements: {_v4_result_measurements(latest)}",
-                f"- Hypothesis assessment: {latest.get('hypothesis_assessment', 'unavailable')}",
+                f"- Hypothesis assessment: {_assessment_with_confidence(latest)}",
                 f"- Working lineage selected: {selected_lineage}",
             ]
         )
+        if latest.get("recipe_basis"):
+            lines.append(f"- Recipe basis: {_recipe_basis(latest)}")
     else:
         lines.append("No experiment has completed in this campaign.")
 
     lines.extend(_v4_lineage_section(state, current_params))
 
-    lines.extend(_v4_experiment_index_section(results))
+    lines.extend(_v4_experiment_index_section(results, pending))
 
     lines.extend(_v4_evidence_section(pending, results))
 
     lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
-    lines.extend(_v4_cost_accounting_section(state, results, pending))
+    lines.extend(_v4_activity_record_section(state, results, pending))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 
@@ -1458,6 +2434,8 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_reusable_lineages_section(state))
     lines.extend(_v4_best_known_section(state))
+
+    lines.extend(_v4_terminal_assessment_section(state))
 
     lines.extend(_v4_official_section(state, terminal))
     return "\n".join(lines).rstrip() + "\n"
@@ -1734,7 +2712,7 @@ def render_research_brief() -> str:
                 )
             ),
             (
-                f"- Accepted lineage training budget: "
+                f"- Accepted lineage training: "
                 f"{int(state.get('accepted_training_steps', 0)):,} steps"
             ),
             (f"- Last experiment: {displayed_last_experiment}"),
@@ -1745,21 +2723,29 @@ def render_research_brief() -> str:
             "",
             "## Recent experiment cards",
             "",
-            "| # | Family | Operation | Init / budget | Outcome | Verdict |",
+            "| # | Family | Operation | Init / steps | Outcome | Verdict |",
             "|---:|---|---|---|---|---|",
         ]
     )
 
     for result in results[-5:]:
-        family = str(result.get("family", "-")).replace("|", "/")
-        details = _compact(_change_details(result), 220).replace("|", "/")
+        family = _table_cell(result.get("family", "-"))
+        details = _table_cell(
+            _compact(_change_details(result), 220, reference=RESULTS_REFERENCE)
+        )
         initialization = result.get("initialization", "-")
-        budget = result.get("training_budget_steps")
+        requested_steps = result.get("training_budget_steps")
         setup = initialization
-        if budget is not None:
-            setup += f" / {int(budget):,} steps"
-        outcome = _compact(_experiment_outcome(result), 220).replace("|", "/")
-        verdict = _compact(result["verdict"], 100).replace("|", "/")
+        if requested_steps is not None:
+            setup += f" / {int(requested_steps):,} steps"
+        outcome = _table_cell(
+            _compact(
+                _experiment_outcome(result), 220, reference=RESULTS_REFERENCE
+            )
+        )
+        verdict = _table_cell(
+            _compact(result["verdict"], 100, reference=RESULTS_REFERENCE)
+        )
         lines.append(
             f"| {result['index']} | {family} | {details} | {setup} | "
             f"{outcome} | {verdict} |"

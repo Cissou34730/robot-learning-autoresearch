@@ -56,6 +56,75 @@ def test_reasoning_requires_explanations_not_flags(proposal, field, value):
         protocol.validate_training_proposal(proposal, baseline=False)
 
 
+@pytest.mark.parametrize("field", ["alternative", "contradicting_observation"])
+def test_absent_prediction_field_accepts_a_justified_not_applicable(proposal, field):
+    proposal["reasoning"][field] = {
+        "not_applicable": "No such observation could distinguish the branches."
+    }
+    protocol.validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {},
+        {"not_applicable": ""},
+        {"not_applicable": "   "},
+        {"not_applicable": 7},
+        {"reason": "No competing explanation."},
+        {"not_applicable": "reason", "extra": "field"},
+    ],
+)
+def test_not_applicable_requires_an_explicit_non_empty_reason(proposal, value):
+    proposal["reasoning"]["alternative"] = value
+    with pytest.raises(ValueError, match=r"reasoning\.alternative"):
+        protocol.validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["expected_observation", "initialization_reason", "objective_link"],
+)
+def test_not_applicable_is_rejected_where_content_is_required(proposal, field):
+    proposal["reasoning"][field] = {"not_applicable": "Not relevant."}
+    with pytest.raises(ValueError, match=rf"reasoning\.{field}"):
+        protocol.validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize("level", ["strong", "moderate", "weak"])
+def test_prediction_confidence_accepts_the_controlled_vocabulary(proposal, level):
+    proposal["reasoning"]["confidence"] = level
+    protocol.validate_training_proposal(proposal, baseline=False)
+
+
+@pytest.mark.parametrize("value", [None, "", "high", "very strong", 1, [], {}])
+def test_prediction_confidence_rejects_unknown_levels(proposal, value):
+    proposal["reasoning"]["confidence"] = value
+    with pytest.raises(ValueError, match="reasoning.confidence"):
+        protocol.validate_training_proposal(proposal, baseline=False)
+
+
+def test_prediction_confidence_is_optional(proposal):
+    proposal["reasoning"].pop("confidence", None)
+    protocol.validate_training_proposal(proposal, baseline=False)
+
+
+def test_confidence_and_justified_not_applicable_persist_in_the_record(proposal):
+    proposal["reasoning"]["confidence"] = "weak"
+    proposal["reasoning"]["contradicting_observation"] = {
+        "not_applicable": "No affordable observation discriminates the branches."
+    }
+    protocol.validate_training_proposal(proposal, baseline=False)
+
+    record = {"index": 7, "reasoning": proposal["reasoning"]}
+
+    assert compact_result_record(record) == record
+    assert record["reasoning"]["confidence"] == "weak"
+    assert record["reasoning"]["contradicting_observation"] == {
+        "not_applicable": "No affordable observation discriminates the branches."
+    }
+
+
 @pytest.mark.parametrize(
     "evidence",
     [
@@ -127,6 +196,27 @@ def test_preflight_reads_current_memory_without_mutation(proposal, scientific_me
         == "training"
     )
     assert scientific_memory.read_bytes() == before
+
+
+def test_prediction_confidence_is_rejected_for_exploratory_investigations(proposal):
+    proposal["investigation_type"] = "exploratory"
+    proposal["scientific_question"] = "What behavior does this intervention reveal?"
+    proposal.pop("hypothesis")
+    for field in (
+        "alternative",
+        "expected_observation",
+        "contradicting_observation",
+    ):
+        proposal["reasoning"].pop(field)
+    proposal["reasoning"].update(
+        uncertainty="The behavior is unknown.",
+        observations_sought="Structured behavior measurements.",
+        clarification="Which mechanism warrants a later test.",
+        confidence="strong",
+    )
+
+    with pytest.raises(ValueError, match="reasoning.confidence"):
+        protocol.validate_training_proposal(proposal, baseline=False)
 
 
 @pytest.mark.parametrize(
@@ -355,6 +445,33 @@ def test_brief_exposes_current_strategy_without_old_campaign_or_truncation(
     # Legacy histories remain readable without fabricated scientific conclusions.
     scientific_memory.write_text("# Research postmortems\n", encoding="utf-8")
     assert "No scientific strategy recorded" in brief.render_research_brief()
+
+
+def test_brief_renders_prediction_confidence_beside_the_hypothesis_assessment():
+    result = {
+        "index": 4,
+        "kind": "training",
+        "hypothesis_assessment": "The prediction was contradicted.",
+        "reasoning": {"confidence": "weak"},
+    }
+
+    rendered = "\n".join(brief._v4_experiment_index_section([result]))
+
+    assert "The prediction was contradicted. (prediction confidence: weak)" in rendered
+
+
+def test_brief_leaves_unqualified_assessments_unchanged():
+    result = {
+        "index": 4,
+        "kind": "training",
+        "hypothesis_assessment": "The prediction was supported.",
+        "reasoning": {"confidence": None},
+    }
+
+    rendered = "\n".join(brief._v4_experiment_index_section([result]))
+
+    assert "The prediction was supported." in rendered
+    assert "prediction confidence" not in rendered
 
 
 def test_history_preserves_reasoning_and_strategy_without_requiring_legacy_rewrite(

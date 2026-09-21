@@ -1,11 +1,16 @@
 """Per-section seams for the research brief.
 
 Issue #41.2: the brief's sections are independent builders so that changes to
-candidates, evidence, lineages, or cost accounting can be reviewed and tested
+candidates, evidence, lineages, or campaign activity can be reviewed and tested
 one section at a time instead of editing one large renderer.
 """
 
+import json
+
+import pytest
+
 from research import build_research_brief as brief
+from research.build_research_brief import render_research_brief
 
 
 def test_phase_section_tracks_the_lifecycle_state():
@@ -41,6 +46,14 @@ def test_experiment_index_section_renders_one_row_per_experiment():
         "",
         "## Campaign experiment index",
         "",
+        (
+            "Each row records what one experiment did and concluded. Past closure "
+            "choices answered the question that experiment asked; they are not a "
+            "default for the next one. Each recorded closure is shown with the "
+            "de-templated rationale that answered its question; a closure whose "
+            "rationale is not reproduced here is withheld."
+        ),
+        "",
         "| # | Operation / family | Parent | Intervention | Measurements | Hypothesis assessment | Final decisions | Detail |",
         "|---:|---|---|---|---|---|---|---|",
         "| - | - | - | - | - | - | - | - |",
@@ -75,6 +88,54 @@ def test_intervention_surfaces_section_is_factual_when_empty():
     assert any("unchanged" in line for line in lines)
 
 
+def test_intervention_surfaces_are_ordered_by_path_not_count(monkeypatch):
+    sources = [
+        "robot_learning/scenario/alpha.py",
+        "robot_learning/scenario/beta.py",
+        "robot_learning/training/zeta.py",
+    ]
+    monkeypatch.setattr(brief, "_researcher_owned_sources", lambda: list(sources))
+    results = [
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/scenario/beta.py"]},
+    ]
+    surfaces, _, _ = brief._intervention_surfaces(results)
+    # Issue #55: path order, never count order.
+    assert surfaces == [
+        ("robot_learning/scenario/alpha.py", 0),
+        ("robot_learning/scenario/beta.py", 1),
+        ("robot_learning/training/zeta.py", 2),
+    ]
+
+
+def test_intervention_surface_section_is_not_count_ranked(monkeypatch):
+    sources = [
+        "robot_learning/scenario/alpha.py",
+        "robot_learning/scenario/beta.py",
+        "robot_learning/training/zeta.py",
+    ]
+    monkeypatch.setattr(brief, "_researcher_owned_sources", lambda: list(sources))
+    results = [
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/training/zeta.py"]},
+        {"code_changes": ["robot_learning/scenario/beta.py"]},
+    ]
+    text = "\n".join(brief._v4_intervention_surfaces_section(results))
+    changed = text.split("### Not yet changed")[0]
+    never_changed = text.split("### Not yet changed")[1]
+    # Path order holds inside the changed group; the count leader is not first.
+    assert changed.index("robot_learning/scenario/beta.py") < changed.index(
+        "robot_learning/training/zeta.py"
+    )
+    assert "changed in 1 experiment" in changed
+    assert "changed in 2 experiments" in changed
+    # Never-changed sources get their own group rather than trailing zeros.
+    assert "robot_learning/scenario/alpha.py" in never_changed
+    assert "path order" in text
+
+
+
 def test_reusable_lineages_and_best_known_default_to_unset():
     reusable = brief._v4_reusable_lineages_section({})
     assert reusable[-1] == "No retained alternatives."
@@ -105,7 +166,7 @@ def test_composed_brief_orders_each_section_once():
         "## Working lineage",
         "## Campaign experiment index",
         "## Development evidence index",
-        "## Campaign cost accounting",
+        "## Campaign activity record",
         "## Provisional scientific synthesis",
         "## Repeated operations",
         "## Intervention surfaces",
@@ -206,7 +267,7 @@ def test_measurement_round_panel_novelty_is_round_scoped():
     assert round_one.count("(new panel)") == 2
     assert "(reused panel)" not in round_one
     # The identical panel in a later round is cross-round reuse.
-    assert "(reused panel)" in round_two
+    assert "(reused panel: 2 prior measurements on these episodes)" in round_two
 
 
 def test_measurement_round_panel_novelty_recognises_prior_experiments():
@@ -234,10 +295,10 @@ def test_measurement_round_panel_novelty_recognises_prior_experiments():
     text = "\n".join(
         brief._v4_measurement_rounds_section({}, prior_results, pending)
     )
-    assert "(reused panel)" in text
+    assert "(reused panel: 1 prior measurement on these episodes)" in text
 
 
-def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
+def test_measurement_rounds_retain_de_templated_rationale_during_preparation():
     record = {
         "index": 1,
         "evaluation_rounds": [
@@ -269,18 +330,150 @@ def test_measurement_rounds_hide_prior_selection_prose_during_preparation():
     # Follow-up analysis keeps the evidence needed to adapt the next round.
     assert "Selection: proxy peak template" in analysis
     assert "Reason: round reason" in analysis
-    # Preparation retains outcomes and references without replaying exemplars.
+    # Issue #54: preparation keeps the rationale as well, but de-templated. The
+    # content stays auditable while the inline field names that read as a form
+    # to copy are not reproduced.
     assert "does it reproduce" in preparation
     assert "success 90.00%" in preparation
+    assert "proxy peak template" in preparation
+    assert "round reason" in preparation
     assert "Selection: proxy peak template" not in preparation
-    # Issue #43: the round-level `reason` is comparative selection prose too,
-    # so it is suppressed during preparation just like per-candidate `selection`.
     assert "Reason: round reason" not in preparation
+    assert "Recorded rationale for a past decision" in preparation
     assert "Completed measurement rounds" in preparation
     assert "Measurement rounds for the current experiment" in analysis
 
 
-def test_cost_accounting_lists_consumed_research_intervals_factually():
+def _closed_experiment(
+    index: int,
+    family: str,
+    *,
+    continue_from: str,
+    best_known: str,
+    code: str,
+    reason: str | None,
+    selection: str | None,
+) -> dict:
+    record = {
+        "index": index,
+        "kind": "training",
+        "family": family,
+        "closure_decision": {
+            "continue_from": continue_from,
+            "best_known": {"candidate": best_known},
+            "code": {"action": code},
+        },
+        "evaluation_rounds": [],
+    }
+    if reason is not None or selection is not None:
+        round_record = {
+            "round": 1,
+            "question": f"question-{index}",
+            "status": "completed",
+            "results": {},
+        }
+        if reason is not None:
+            round_record["reason"] = reason
+        if selection is not None:
+            round_record["results"] = {
+                "research_evaluations": [
+                    {
+                        "candidate": best_known,
+                        "seed": index,
+                        "episodes": 10,
+                        "selection": selection,
+                    }
+                ]
+            }
+        record["evaluation_rounds"] = [round_record]
+    return record
+
+
+def test_composed_preparation_brief_pairs_every_closure_with_its_rationale():
+    results = [
+        _closed_experiment(
+            1,
+            "alpha",
+            continue_from="checkpoint-10",
+            best_known="checkpoint-10",
+            code="keep",
+            reason="reason-alpha",
+            selection="selection-alpha",
+        ),
+        _closed_experiment(
+            2,
+            "beta",
+            continue_from="checkpoint-20",
+            best_known="checkpoint-20",
+            code="revert",
+            reason="reason-beta",
+            selection="selection-beta",
+        ),
+        # A recorded closure whose rationale is not reproduced must be withheld.
+        _closed_experiment(
+            3,
+            "gamma",
+            continue_from="checkpoint-30",
+            best_known="checkpoint-30",
+            code="keep",
+            reason=None,
+            selection=None,
+        ),
+        # The most recent experiment also carries its rationale in the rounds.
+        _closed_experiment(
+            4,
+            "delta",
+            continue_from="checkpoint-40",
+            best_known="checkpoint-40",
+            code="keep",
+            reason="reason-delta",
+            selection="selection-delta",
+        ),
+    ]
+    text = brief._render_v4_research_brief(
+        {"schema_version": 4, "campaign": {"id": "cid", "base_commit": "base"}},
+        results,
+        "",
+        "cid",
+        "base",
+        "PPO",
+        {},
+    )
+
+    # One documented predicate governs the whole preparation brief.
+    assert brief._precedent_prose_inline(None) is False
+    assert brief._precedent_prose_inline({"experiment": 5}) is True
+    # Every visible closure is paired with the rationale that answered it.
+    paired = [
+        (
+            "working checkpoint-10; best known checkpoint-10; code keep",
+            "reason-alpha",
+            "selection-alpha",
+        ),
+        (
+            "working checkpoint-20; best known checkpoint-20; code revert",
+            "reason-beta",
+            "selection-beta",
+        ),
+        (
+            "working checkpoint-40; best known checkpoint-40; code keep",
+            "reason-delta",
+            "selection-delta",
+        ),
+    ]
+    for outcome, reason, selection in paired:
+        assert outcome in text
+        assert reason in text
+        assert selection in text
+    # A closure with no reproduced rationale is withheld rather than shown bare.
+    assert "working checkpoint-30; best known checkpoint-30; code keep" not in text
+    assert "closure withheld during preparation" in text
+    # The rationale is de-templated, never the inline answer-form field names.
+    assert "Reason:" not in text
+    assert "Selection:" not in text
+
+
+def test_activity_record_lists_consumed_research_intervals_factually():
     results = [
         {
             "index": 1,
@@ -292,7 +485,7 @@ def test_cost_accounting_lists_consumed_research_intervals_factually():
             ],
         }
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "research_evaluation intervals consumed: 4200–4359, 4400–4559." in text
     assert "recommend" not in text.lower()
 
@@ -302,7 +495,7 @@ def test_measurement_rounds_section_is_absent_without_rounds():
     assert brief._v4_measurement_rounds_section({}, [], {}) == []
 
 
-def test_cost_accounting_counts_training_and_replication_factually():
+def test_activity_record_counts_training_and_replication_factually():
     results = [
         {
             "index": 1,
@@ -323,12 +516,21 @@ def test_cost_accounting_counts_training_and_replication_factually():
             "completed_training_steps": 100,
             "replication_of": 1,
         },
+        {
+            "index": 7,
+            "kind": "replication",
+            "training_budget_steps": 100,
+            "completed_training_steps": 100,
+            "replication_of": 1,
+        },
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
-    assert "Training experiments: 3" in text
-    assert "completed steps: 320" in text
-    assert "requested steps: 300" in text
-    assert "Replication experiments recorded: 3." in text
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
+    assert "Training experiments: 4" in text
+    # Issue #46: the line lists the recorded replication ids, not a count.
+    assert "Replication experiments recorded: 3, 7." in text
+    # Issue #46: no campaign-wide running total of consumed resources.
+    assert "completed steps" not in text
+    assert "requested steps" not in text
 
 
 def _measurement(
@@ -356,7 +558,7 @@ def _task_reference(candidate: str, *, seed: int = 7300, episodes: int = 200) ->
     }
 
 
-def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
+def test_activity_record_counts_cross_model_panel_reuse_at_campaign_level():
     results = [
         {
             "index": 1,
@@ -374,7 +576,7 @@ def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
             "task_reference_evaluations": [_task_reference("c3")],
         },
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "Instrument executions: 3 research_evaluation, 2 task_reference." in text
     assert "research_evaluation coverage: 160 distinct episodes; 480 episode" in text
     assert "320 repeated." in text
@@ -382,7 +584,7 @@ def test_cost_accounting_counts_cross_model_panel_reuse_at_campaign_level():
     assert "200 repeated." in text
 
 
-def test_cost_accounting_distinguishes_overlapping_research_panels():
+def test_activity_record_distinguishes_overlapping_research_panels():
     results = [
         {
             "index": 1,
@@ -393,13 +595,13 @@ def test_cost_accounting_distinguishes_overlapping_research_panels():
             ],
         }
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     # Two disjoint 160-episode panels: 320 distinct identities, no repetition.
     assert "research_evaluation coverage: 320 distinct episodes; 320 episode" in text
     assert "0 repeated." in text
 
 
-def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
+def test_activity_record_counts_repeated_rounds_and_coverage_separately():
     results = [
         {
             "index": 1,
@@ -413,14 +615,80 @@ def test_cost_accounting_counts_repeated_rounds_and_coverage_separately():
             ],
         }
     ]
-    text = "\n".join(brief._v4_cost_accounting_section({}, results, None))
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
     assert "Evaluation rounds: 2." in text
     assert "Instrument executions: 2 research_evaluation, 0 task_reference." in text
     assert "research_evaluation coverage: 10 distinct episodes; 20 episode" in text
     assert "10 repeated." in text
 
 
-def test_cost_accounting_does_not_recommend_confirmation():
-    text = "\n".join(brief._v4_cost_accounting_section({}, [], None)).lower()
+def test_activity_record_does_not_recommend_confirmation():
+    text = "\n".join(brief._v4_activity_record_section({}, [], None)).lower()
     for wording in ("budget limit", "warning", "should", "enough", "stop"):
         assert wording not in text
+
+
+def test_activity_record_separates_execution_from_evidence_coverage():
+    results = [
+        {
+            "index": 1,
+            "kind": "training",
+            "evaluation_rounds": [{"round": 1}],
+            "requested_evaluations": [_measurement("c1")],
+            "task_reference_evaluations": [_task_reference("c1")],
+        }
+    ]
+    text = "\n".join(brief._v4_activity_record_section({}, results, None))
+    assert "### Executed so far" in text
+    assert "### Evidence coverage" in text
+    executed = text.split("### Evidence coverage")[0]
+    coverage = text.split("### Evidence coverage")[1]
+    assert "Training experiments: 1." in executed
+    assert "Evaluation rounds: 1." in executed
+    assert "coverage:" not in executed
+    assert "coverage:" in coverage
+    # Issue #46: the coverage group keeps the panel-design facts.
+    assert "research_evaluation intervals consumed:" in coverage
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        {"schema_version": 4, "campaign": {"id": "cid", "base_commit": "base"}},
+        {
+            "schema_version": 4,
+            "campaign": {"id": "cid", "base_commit": "base"},
+            "pending_analysis": {
+                "experiment": 1,
+                "candidates": [{"name": "checkpoint-10240", "timesteps": 10240}],
+                "result": {
+                    "index": 1,
+                    "kind": "training",
+                    "training_budget_steps": 100,
+                    "completed_training_steps": 100,
+                },
+            },
+        },
+        {
+            "schema_version": 4,
+            "campaign": {"id": "cid", "base_commit": "base"},
+            "preparation_conclusion_only": True,
+        },
+    ],
+)
+def test_rendered_activity_record_carries_no_budget_vocabulary(
+    monkeypatch, tmp_path, state
+):
+    """Issue #46: the activity record's resource accounting stays neutral."""
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)
+
+    rendered = render_research_brief()
+    record = rendered.split("## Campaign activity record", 1)[1].split("\n## ", 1)[0]
+    for wording in ("cost", "budget", "remaining", "allowance", "spent"):
+        assert wording not in record.lower()

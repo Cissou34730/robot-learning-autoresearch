@@ -64,11 +64,17 @@ next experiment.
 
 ## Request measurements
 
-**Phase:** Post-training analysis.
+**Phase:** Post-training analysis or experiment preparation.
 
-Use this request during initial analysis or an optional refinement round while
-closing the current trained experiment. Researcher-owned instrumentation may be
-changed before submitting the request.
+During analysis, use this request for the current experiment's candidates or
+eligible saved lineages, initially or in an optional refinement round while
+closing the current trained experiment. During experiment preparation, a request
+may measure only eligible saved lineages (`working`, `best_known`, or a retained
+ID); it may not name the candidates of an experiment that has not run, because
+those do not exist yet, and it must omit the `experiment` field. A completed
+preparation round returns to preparation and is recorded under the upcoming
+experiment. Researcher-owned instrumentation may be changed before submitting
+the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
 The request-level `reason` should explain why the selected candidate or
@@ -81,7 +87,7 @@ Write `research/evaluation_request.json`:
 
 ```json
 {
-  "experiment": "<current experiment integer>",
+  "experiment": "<current experiment integer; must be omitted during preparation>",
   "question": "<non-empty scientific question>",
   "reason": "<non-empty reason>",
   "measurements": [
@@ -132,6 +138,15 @@ disjoint from every recorded research panel; partial overlap is rejected.
 Several measurements may share one identical panel. A panel overlapping the
 protected benchmark episodes is rejected, and historical records remain readable.
 
+Identical reuse is permitted, but it is selection-contaminating and it is
+accounted for. Any panel reused during model selection - a `research_evaluation`
+panel measured across rounds or experiments as much as the fixed `task_reference`
+panel - yields selection-contaminated evidence for the models selected on it.
+Choosing a model on a panel's episodes and later measuring those same episodes
+again is repeated evidence from that panel, not independent held-out
+confirmation. A reused panel is not a default lineage criterion; every reuse is
+reported with its history so it cannot read as fresh evidence.
+
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
@@ -141,10 +156,11 @@ authority:
 
 - `research_evaluation` is a configurable development measurement. It supports
   fresh panels, paired comparisons, and researcher-defined diagnostics.
-- `task_reference` is a fixed development panel. It measures the protected task
-  consistently across research recipes. Because it is repeatedly reused during
-  model selection, its results are selection-contaminated and must not receive
-  automatic priority in lineage decisions.
+- `task_reference` is a fixed development panel. It is the permanently reused
+  case of the rule above: it measures the protected task consistently across
+  research recipes, and because it is repeatedly reused during model selection
+  its results are selection-contaminated and must not receive automatic priority
+  in lineage decisions.
 - Neither instrument is generally authoritative over the other. Evidential
   weight depends on the scientific question, panel independence, comparability,
   and the observed results.
@@ -205,9 +221,11 @@ the reward, is excluded because it changes neither replay nor success. Pooled
 comparison uses success only; per-episode `reward_total` in the detailed
 artifacts is not comparable across a reward change.
 
-Each completed measurement round returns to post-training analysis. New requests
-do not use `need_more_evidence`; closing is a separate closure proposal in the
-same phase. Legacy accepted requests that contain it remain recoverable.
+Each completed measurement round returns to the phase that requested it: post-
+training analysis for an analysis request, experiment preparation for a saved-
+lineage preparation request. New requests do not use `need_more_evidence`;
+closing is a separate closure proposal in the same phase. Legacy accepted
+requests that contain it remain recoverable.
 
 ## Request training
 
@@ -257,15 +275,42 @@ For `exploratory`, replace `hypothesis`, `alternative`,
 The exploratory `reasoning` object also contains the common `evidence`,
 `initialization_reason`, and `objective_link` fields from the first schema.
 
+Where a confirmatory or diagnostic investigation has no honest competing
+explanation, `alternative` or `contradicting_observation` may record why rather
+than invent content. The reason itself must be a non-empty string:
+
+```json
+{
+  "reasoning": {
+    "alternative": {"not_applicable": "<why no competing explanation applies>"}
+  }
+}
+```
+
+The `reasoning` object may also carry an optional `confidence` that qualifies a
+prediction. It is one of `strong`, `moderate` or `weak`, and is omitted when no
+prediction is held; an exploratory investigation has no prediction and must not
+carry it:
+
+```json
+{
+  "reasoning": {
+    "confidence": "<strong | moderate | weak>"
+  }
+}
+```
+
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
 | `training` | Trains a changed scientific recipe for any investigation type. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
-| `continuation` | Trains the unchanged method further from an eligible lineage. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes, parameter overrides and `change` are forbidden. |
+| `training` with `extends_lineage: true` (adjusted continuation) | Continues an eligible lineage's training while changing the recipe. It starts from the parent's weights and trains the current worktree science plus `params`. The hypothesis is a prediction about how that adjustment changes continued training. | Requires `initialization: "transfer"`, `training_parent`, a non-empty `change`, and `extends_lineage: true`; a researcher-owned code change or non-empty `params` is still required. |
+| `continuation` | Continues an eligible lineage's training on the selected recipe. Without `params` it is the unchanged recipe; with `params` it is the parent's restored recipe plus those overrides. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes and `change` are forbidden. |
 | `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The hypothesis is a prediction about reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
 `training_seed` is optional for ordinary training and continuation, and must be
 a non-negative integer when present. `params` is optional for ordinary training
-and is omitted for unchanged operations.
+and for `continuation`, where it adjusts the restored parent recipe; `params` is
+not accepted for `replication`.
 
 Experiment records distinguish `training_budget_steps` (requested) from
 `completed_training_steps` (actually completed in that experiment). Rollout
@@ -273,7 +318,8 @@ boundaries may make the completed count exceed the request. A selected lineage's
 `training_steps` instead records its accumulated training through the selected
 checkpoint.
 
-All `reasoning` strings must be non-empty; `evidence` contains at least one
+Every `reasoning` field must be non-empty content or, where the schema allows
+it, a justified `not_applicable` record; `evidence` contains at least one
 source/observation pair. Cite inspected campaign artifacts, logs, postmortems or
 code with precise observations; these are not restricted to evaluation results.
 `source` is a file path without a line-number suffix or fragment; put the relevant
@@ -288,13 +334,46 @@ the experiment record. Existing historical records without these fields remain
 readable.
 
 An eligible `training_parent` must be exposed by the brief as `working`,
-`best_known`, or a retained lineage ID. `continuation` continues the selected
-recipe without a learning-method change. A `training` proposal may deliberately
-apply a changed recipe to an existing parent with `initialization: "transfer"`.
+`best_known`, or a retained lineage ID. Continuing a lineage and changing the
+recipe are independent choices. A `training` proposal with
+`initialization: "transfer"` sets `extends_lineage: true` to continue that
+lineage while training the current worktree science and `params`; its record
+names the extended lineage and records that the current science, not the
+parent's recipe, was in effect. A `continuation` restores the parent's recipe
+before training: without `params` it is the unchanged recipe, and with `params`
+it applies those overrides on top of the restored recipe. Its record names the
+extended lineage and records that the parent's recipe was restored.
+
+### Training-parent eligibility and retention
+
+Eligibility is a provenance invariant, not a preference about a form field. A
+`training_parent` resolves only through `working`, `best_known`, or a retained
+lineage ID because only those names carry a closure-produced record with all the
+facts training and recovery require: the complete inference artifact (`model.zip`
+and its preprocessing runtime), a `fingerprint` that still matches the bytes on
+disk, a `scientific_commit` for restoring the recipe that produced the parent,
+and the effective `parameters` in force when it was trained. A raw candidate
+checkpoint has none of those records, so the Runner cannot name its recipe or
+verify its identity and it cannot serve as a parent.
+
+The usable-parent set is also the surviving-weights set. At closure,
+`finalize_pending_v4_closure` removes `model.zip`, `vecnormalize.pkl`,
+`replay_buffer.pkl` and `policy_runtime.pkl` from every candidate that is not
+named `working` or `best_known` and is not explicitly retained. Retention is
+therefore the only mechanism that turns a candidate into a future
+`training_parent`; a candidate that receives no role can never be extended,
+re-measured, or compared against later, and its removal is irreversible.
+Retention has no budget and no preferred count: retain any checkpoint whose
+future value is uncertain.
+
 The `reasoning` object contains the common and type-specific fields shown in the
 schemas. `evidence` is a non-empty array of source/observation objects. Every
 listed type-specific string, `initialization_reason`, and `objective_link` is
-non-empty. Their scientific use is defined in `research/program.md`.
+non-empty, except that `alternative` and `contradicting_observation` may be a
+`not_applicable` object carrying a non-empty reason. An optional
+`reasoning.confidence` of `strong`, `moderate` or `weak` qualifies a
+confirmatory or diagnostic prediction only. Their scientific use is defined in
+`research/program.md`.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -312,6 +391,42 @@ of a recipe previously exercised through transfer does not reproduce the
 transferred learning trajectory; it tests whether the current recipe can learn
 from fresh initialization. Scientific claims about replication must use that
 narrower interpretation.
+
+## Conclude the campaign
+
+**Phase:** Experiment preparation.
+
+Preparation may end without a new experiment. Write `research/proposal.json`
+containing only a `campaign_conclusion` object:
+
+```json
+{
+  "campaign_conclusion": {
+    "action": "<request_final_benchmark | no_further_experiment>",
+    "reason": "<non-empty reason for the decision>"
+  }
+}
+```
+
+`request_final_benchmark` submits the standing `best_known` lineage for the
+official final assessment. It requires a designated best-known model and reuses
+the closure decision of the same name: the official benchmark runs once and the
+campaign ends after its verdict. Its `reason` is the terminal rationale for the
+request. `no_further_experiment` records the Researcher's judgement that no
+further experiment is warranted without requesting that assessment; it ends the
+campaign. Neither outcome creates an experiment record,
+an experiment-index row or an intervention count. A `campaign_conclusion` is
+accepted only while no measurement, analysis, closure or official assessment is
+pending; each pending phase requires its own deliverable.
+
+A conclusion resolves no science, so it is accepted only while the researcher's
+scientific surface matches the preparation anchor. Revert or resolve any
+outstanding researcher-owned change first; unlike a training proposal or a lineage
+decision, a conclusion neither publishes nor restores a recipe. When the
+experiment budget is exhausted, no further training experiment may be prepared,
+but a campaign conclusion remains legal. The Runner commits the decision before
+it publishes any terminal status, so an interrupted conclusion is resumed rather
+than inherited as a published terminal state.
 
 ## Record the postmortem
 
@@ -396,7 +511,8 @@ Write a lineage-only `research/proposal.json`:
     "remove_retained": [
       "<retained-lineage identifier>"
     ],
-    "request_final_benchmark": "<boolean>"
+    "request_final_benchmark": "<boolean>",
+    "terminal_reason": "<non-empty reason; required when request_final_benchmark is true>"
   }
 }
 ```
@@ -421,8 +537,12 @@ to proceed after closure. Setting it to `true` requests terminal assessment of
 scientific decision rule for requesting assessment is defined in
 `research/program.md`.
 
-When `request_final_benchmark` is `true`, include the terminal rationale in the
-existing `previous_result_decision.reason` field.
+When `request_final_benchmark` is `true`, `terminal_reason` is required and must
+be non-empty. It is the terminal rationale for the irreversible request, distinct
+from the working-lineage `reason`. The Runner validates only that it is present
+and non-empty; it renders it back with the frozen model so the decision is
+explicit rather than a bare flag. Omit `terminal_reason` when a final benchmark is
+not requested.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
@@ -437,11 +557,21 @@ candidate string and reason string. The candidate must be an available model
 identifier. When a new model is selected, the Runner resolves its recorded
 measurements and stores those paths in the lineage. `retain` is an array of
 candidate/id/reason objects, `remove_retained` is an array of unique retained IDs,
-and `request_final_benchmark` is a boolean.
+and `request_final_benchmark` is a boolean. `terminal_reason` is a non-empty
+string required with a `true` request.
 
 ## Request the official benchmark
 
-Set `request_final_benchmark` to `true` in `previous_result_decision`.
+Set `request_final_benchmark` to `true` and give `terminal_reason` in
+`previous_result_decision`.
+
+When the request is accepted, the Runner emits a confirmation card and the brief
+records a **Pending terminal assessment** section naming the frozen `best_known`
+lineage — its candidate, artifact, origin experiment, accumulated training steps,
+scientific commit and recorded measurements — together with the terminal reason.
+The decision is irreversible, but the Runner does not add a reversal or a second
+verdict: both `goal_reached` and `goal_not_reached` are legitimate campaign
+outcomes.
 
 After applying the lineage decision, the Runner assesses the frozen best-known
 model and writes the terminal verdict to `research/brief.md`. The campaign ends

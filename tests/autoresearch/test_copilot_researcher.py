@@ -108,8 +108,62 @@ def test_execution_belongs_to_the_launcher(command):
 
 
 def test_a_repository_wide_test_run_is_refused():
+    existing = "tests/autoresearch/test_copilot_researcher.py"
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
+    # A flag-only option alone still selects nothing.
+    assert adapter.command_denial("uv run pytest --strict") == adapter.SUITE_DENIAL
+    # A directory runs the whole tree, not a targeted selection.
+    assert adapter.command_denial("uv run pytest tests") == adapter.SUITE_DENIAL
+    # A value-taking option is not a test selector, whatever its name, so an
+    # option-only invocation still runs everything.
+    assert adapter.command_denial("uv run pytest --color no") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial("uv run pytest --durations-min 1")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial("uv run pytest --code-highlight yes")
+        == adapter.SUITE_DENIAL
+    )
+    # A path used only as an option value is not a selector either, even when a
+    # value-less option precedes the value-taking one.
+    assert adapter.command_denial("uv run pytest --rootdir tests") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial(f"uv run pytest --strict --rootdir {existing}")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial(
+            "uv run pytest --rootdir tests/autoresearch/test_copilot_researcher.py"
+        )
+        == adapter.SUITE_DENIAL
+    )
+    # An inline option value is not a selector, so the run stays repository-wide.
+    assert (
+        adapter.command_denial("uv run pytest --rootdir=tests") == adapter.SUITE_DENIAL
+    )
+
+
+def test_a_targeted_test_run_remains_permitted():
+    # AGENTS.md and research/instruments.md allow targeted tests and focused
+    # checks, so the command layer refuses only repository-wide runs.
+    existing = "tests/autoresearch/test_copilot_researcher.py"
+    assert adapter.command_denial(f"uv run pytest {existing}") is None
+    assert adapter.command_denial(f"uv run pytest {existing}::test_x") is None
+    assert adapter.command_denial(f"uv run pytest --maxfail 1 {existing}") is None
+    # A flag-only option consumes nothing and must not hide the selector.
+    assert adapter.command_denial(f"uv run pytest -q {existing}") is None
+    # The value-less options pytest itself declares are recognised, including
+    # ones a hand-maintained list omitted.
+    for flag in ("--strict", "--disable-plugin-autoload", "--trace-config"):
+        assert adapter.command_denial(f"uv run pytest {flag} {existing}") is None
+    # Repeated and combined short flags consume nothing either.
+    assert adapter.command_denial(f"uv run pytest -q -q {existing}") is None
+    assert adapter.command_denial(f"uv run pytest -qq {existing}") is None
+    assert adapter.command_denial(f"uv run pytest -qx {existing}") is None
+    # An inline option value likewise leaves the selector visible.
+    assert adapter.command_denial(f"uv run pytest --maxfail=1 {existing}") is None
 
 
 @pytest.mark.parametrize(
@@ -833,24 +887,69 @@ def test_oversized_tool_output_is_offloaded_instead_of_held_in_context():
     assert ".copilot/" in (ROOT / ".gitignore").read_text(encoding="utf-8")
 
 
-def test_the_researcher_is_told_that_round_trips_resend_the_conversation():
-    pytest.importorskip("copilot")
-    args = adapter.parse_args(["p", "--session-id", "s"])
+def test_campaign_artifacts_are_not_offloaded_out_of_the_session():
+    # Evaluation panels run about 120 KiB; the threshold sits well above them so
+    # the primary scientific evidence stays in the session by default.
+    assert adapter.LARGE_OUTPUT_MAX_BYTES >= 256 * 1024
 
-    content = adapter.session_options(args, adapter.Console(), asyncio.Event())[
-        "system_message"
-    ]["content"]
 
-    assert "resends the whole conversation" in content
-    normalized = " ".join(content.split())
-    assert "one aggregated tool call when practical" in normalized
-    assert "when the combined result remains compact" in normalized
-    assert "Separate calls remain appropriate" in normalized
-    assert "Researcher-authored tests are not part" in normalized
-    assert "Use targeted linting, parsing or lightweight analysis" in normalized
-    assert "when they resolve uncertainty introduced by the work" in normalized
-    assert "do not perform a separate final validation pass solely" in normalized
-    assert "the Runner owns final contract and execution validation" in normalized
+def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
+    # The injected text is the contract, so it is asserted without the SDK.
+    content = " ".join(adapter.POLICY.split())
+
+    assert "<harness_boundary>" in content
+    assert "<researcher_guidance>" in content
+    # The note is explicitly advice the tool layer does not enforce.
+    assert "This note is advice, not a harness rule" in content
+    assert "no call is rejected for departing from it" in content
+    assert "Researcher-authored tests are not part" in content
+    assert "Use targeted linting, parsing or lightweight analysis" in content
+    assert "when they resolve uncertainty introduced by the work" in content
+    assert "Runner owns final contract and execution validation" in content
+    assert "Reviewing your own scientific reasoning against the evidence" in content
+    # The pytest clause claims exactly what the command layer enforces: only
+    # repository-wide runs are refused, targeted runs stay permitted.
+    assert "Repository-wide pytest execution belongs to the runner" in content
+    assert "Targeted tests and focused checks on researcher-owned code" in content
+    assert "Pytest execution belongs to the runner." not in content
+    assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("uv run pytest tests") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("uv run pytest --color no") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial("uv run pytest --durations-min 1")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial("uv run pytest --code-highlight yes")
+        == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial("uv run pytest --rootdir tests") == adapter.SUITE_DENIAL
+    )
+    assert (
+        adapter.command_denial(
+            "uv run pytest tests/autoresearch/test_copilot_researcher.py"
+        )
+        is None
+    )
+
+
+def test_the_policy_does_not_steer_the_researcher_to_read_less_or_stop_early():
+    # Context economy is never a reason to inspect less evidence, and a written
+    # deliverable is never a reason to stop reviewing the science.
+    content = " ".join(adapter.POLICY.split())
+
+    for discouraged in (
+        "read what you need rather than whole artifacts",
+        "resends the whole conversation",
+        "prefer one aggregation over",
+        "do not perform a separate final validation pass solely",
+        "The phase ends when its deliverable has been written",
+    ):
+        assert discouraged not in content
+
+    assert "Read whatever evidence the scientific question requires" in content
+    assert "context size is never a reason to leave evidence unread" in content
 
 
 def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():

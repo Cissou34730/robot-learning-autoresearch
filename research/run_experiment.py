@@ -364,6 +364,20 @@ def validate_research_delta(raw_state: dict) -> list[str]:
     return code_changes
 
 
+def validate_campaign_conclusion_delta(raw_state: dict) -> None:
+    """A conclusion ends the campaign without resolving the current science.
+
+    A training proposal publishes its recipe and a lineage decision keeps,
+    reverts or restores it. A conclusion has no such operation, so it is legal
+    only while the scientific surface still matches the preparation anchor.
+    """
+    if anchored_scientific_delta(raw_state):
+        raise ValueError(
+            "a campaign conclusion cannot accept unresolved scientific changes; "
+            "revert or resolve them before concluding the campaign"
+        )
+
+
 def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
     """Validate the proposal against the parent already anchored for this phase."""
     experiment_kind, parameter_overrides, baseline, initialization = (
@@ -386,14 +400,17 @@ def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
 # --- hypothesis phase ------------------------------------------------------
 
 
-def begin_hypothesis_phase() -> int:
+def begin_hypothesis_phase(conclusion_only: bool = False) -> int:
     """Anchor the parent at HEAD before the researcher may change any science.
 
-    Commits made since the previous anchor are adopted here rather than
-    attributed to the proposal the researcher is about to write.
+    ``conclusion_only`` is set by the launcher when no training experiment may
+    be allocated; the phase then accepts only a campaign conclusion. Commits
+    made since the previous anchor are adopted here rather than attributed to
+    the proposal the researcher is about to write.
     """
     state = repository.read_state()
     parent = repository.reanchor_scientific_parent(state)
+    state["preparation_conclusion_only"] = True if conclusion_only else None
     repository.write_state(state)
     console.announce(
         f"[runner] scientific parent of the next experiment: {parent[:12]}"
@@ -427,8 +444,10 @@ def check_proposal() -> int:
         contract = protocol.validate_proposal_against_state(proposal, state)
         if contract == "training":
             validate_training_proposal_delta(proposal, state)
-        else:
+        elif contract == "lineage":
             validate_research_delta(state)
+        elif contract == "conclusion":
+            validate_campaign_conclusion_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
         return 1
@@ -573,6 +592,46 @@ def check_analysis_deliverable() -> int:
     ) as error:
         print(f"ANALYSIS_DELIVERABLE_INVALID: {error}")
         return 1
+
+
+def check_preparation_deliverable() -> int:
+    """Preflight the preparation phase's proposal or saved-lineage measurement.
+
+    Preparation can produce either a training/lineage/conclusion proposal or a
+    measurement request on saved lineages. A request is lineage-only: it may not
+    name the candidates of an experiment that has not run.
+    """
+    evaluation_present = paths.EVALUATION_REQUEST_PATH.exists()
+    proposal_present = paths.PROPOSAL_PATH.exists()
+    if evaluation_present and proposal_present:
+        print(
+            "PREPARATION_DELIVERABLE_INVALID: write either a measurement request "
+            "or a proposal, not both"
+        )
+        return 1
+    if not evaluation_present:
+        return check_proposal()
+    try:
+        state = repository.read_state()
+        request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        if not isinstance(request, dict):
+            raise TypeError("evaluation_request.json must contain a JSON object")
+        validate_research_delta(state)
+        protocol.validate_preparation_evaluation_request(
+            request, state, protected_overlap=_protected_panel_overlap()
+        )
+    except (
+        json.JSONDecodeError,
+        KeyError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as error:
+        print(f"PREPARATION_DELIVERABLE_INVALID: {error}")
+        return 1
+    print("PREPARATION_DELIVERABLE_VALID: measurement")
+    return 0
 
 
 def check_lineage_evidence(experiment: int) -> int:
@@ -734,11 +793,19 @@ def execute_pending_evaluations() -> int:
     reanchor_phase_parent(state)
     campaign_id = repository.current_campaign_id(state)
     is_v4 = state.get("schema_version") == 4
-    pending = (
-        state.get("pending_analysis")
-        if is_v4
-        else state.get("pending_evaluation_request")
-    )
+    preparation = False
+    if is_v4:
+        pending = state.get("pending_analysis")
+        if pending is None:
+            pending = state.get("pending_evaluation_request")
+            if pending is None and paths.EVALUATION_REQUEST_PATH.exists():
+                pending = protocol.preparation_measurement_context(state)
+                state["pending_evaluation_request"] = pending
+                repository.write_state(state)
+            if isinstance(pending, dict) and pending.get("preparation"):
+                preparation = True
+    else:
+        pending = state.get("pending_evaluation_request")
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
     validate_research_delta(state)
@@ -764,8 +831,13 @@ def execute_pending_evaluations() -> int:
         pending["evaluation_plan"]
     ):
         raise ValueError("accepted measurement plan changed")
+    if preparation and "experiment" in request:
+        raise ValueError(
+            "a preparation measurement must omit experiment; it names saved "
+            "lineages, not a trained experiment"
+        )
     experiment = int(pending["experiment"])
-    if int(request.get("experiment", -1)) != experiment:
+    if not preparation and int(request.get("experiment", -1)) != experiment:
         raise ValueError("evaluation request references the wrong experiment")
     candidates = pending["candidates"]
     available = protocol.available_evaluation_candidates(pending, state)
@@ -842,9 +914,18 @@ def execute_pending_evaluations() -> int:
             contender.setdefault("evaluations", []).append(item["metrics"])
 
     def request_key(
-        name: str, episodes: int, seed: int, fingerprint: str
-    ) -> tuple[str, int, int, str]:
-        return name, episodes, seed, fingerprint
+        name: str,
+        episodes: int,
+        seed: int,
+        fingerprint: str,
+        model_fingerprint: str = "",
+    ) -> tuple[str, int, int, str, str]:
+        return name, episodes, seed, fingerprint, model_fingerprint
+
+    def resolved_fingerprint(name: str) -> str:
+        """The currently resolved artifact fingerprint of a requested model."""
+        model = resolved_models.get(name) if is_v4 else None
+        return str(model.get("fingerprint", "")) if isinstance(model, dict) else ""
 
     completed_keys = {
         request_key(
@@ -852,13 +933,21 @@ def execute_pending_evaluations() -> int:
             int(item["episodes"]),
             int(item["seed"]),
             str(item.get("evaluation_semantics", "")),
+            str(item.get("model_fingerprint", "")),
         )
         for item in executed
     }
     # A task-reference measurement is identified by the human-owned panel it ran,
-    # never by researcher-owned evaluation semantics.
+    # never by researcher-owned evaluation semantics. A saved-lineage alias can
+    # be repointed, so the recorded model fingerprint must match the currently
+    # resolved lineage before either instrument is reused.
     completed_reference_keys = {
-        (item["candidate"], str(item.get("panel", ""))) for item in reference_executed
+        (
+            item["candidate"],
+            str(item.get("panel", "")),
+            str(item.get("model_fingerprint", "")),
+        )
+        for item in reference_executed
     }
     try:
         for spec in requested:
@@ -869,7 +958,9 @@ def execute_pending_evaluations() -> int:
             selection = spec["selection"]
             omitted_alternative = spec["omitted_alternative"]
             label = spec["label"]
-            key = request_key(name, episodes, seed, semantics)
+            key = request_key(
+                name, episodes, seed, semantics, resolved_fingerprint(name)
+            )
             if key in completed_keys:
                 console.announce(f"[evaluation] already complete; reusing {label}")
                 if active_round is not None and not _round_already_resolves(
@@ -887,6 +978,7 @@ def execute_pending_evaluations() -> int:
                                 int(item["episodes"]),
                                 int(item["seed"]),
                                 str(item.get("evaluation_semantics", "")),
+                                str(item.get("model_fingerprint", "")),
                             )
                             == key
                         ),
@@ -991,7 +1083,11 @@ def execute_pending_evaluations() -> int:
             selection = spec["selection"]
             omitted_alternative = spec["omitted_alternative"]
             label = spec["label"]
-            reference_key = (name, panel["panel"])
+            reference_key = (
+                name,
+                panel["panel"],
+                resolved_fingerprint(name),
+            )
             if reference_key in completed_reference_keys:
                 console.announce(f"[task reference] already complete; reusing {label}")
                 if active_round is not None and not _round_already_resolves(
@@ -1006,6 +1102,8 @@ def execute_pending_evaluations() -> int:
                             for item in reference_executed
                             if item["candidate"] == name
                             and str(item.get("panel", "")) == panel["panel"]
+                            and str(item.get("model_fingerprint", ""))
+                            == resolved_fingerprint(name)
                         ),
                         None,
                     )
@@ -1173,7 +1271,7 @@ def execute_pending_evaluations() -> int:
         "research_change_paths": pending.get("research_change_paths", []),
     }
     more_evidence = bool(request.get("need_more_evidence", False)) and not is_v4
-    if is_v4:
+    if is_v4 and not preparation:
         pending["evaluation_plan"] = None
         pending["evaluation_plan_models"] = None
         pending["evaluation_evidence_plan"] = None
@@ -1181,6 +1279,26 @@ def execute_pending_evaluations() -> int:
         pending["partial_task_reference_evaluations"] = reference_executed
         state["pending_analysis"] = pending
         state["last_verdict"] = "measured as requested; awaiting researcher analysis"
+    elif is_v4 and preparation:
+        # A preparation measurement is evidence for the upcoming decision, not a
+        # trained experiment: accumulate the completed rounds under the forecast
+        # experiment and return to preparation instead of analysis.
+        pending["evaluation_plan"] = None
+        pending["evaluation_plan_models"] = None
+        pending["evaluation_evidence_plan"] = None
+        pending["partial_evaluations"] = executed
+        pending["partial_task_reference_evaluations"] = reference_executed
+        state["preparation_measurement"] = {
+            "experiment": experiment,
+            "rounds": [
+                dict(round_record)
+                for round_record in (pending.get("evaluation_rounds") or [])
+            ],
+            "partial_evaluations": executed,
+            "partial_task_reference_evaluations": reference_executed,
+        }
+        state["pending_evaluation_request"] = None
+        state["last_verdict"] = "preparation measurement complete"
     elif more_evidence:
         pending["evaluation_plan"] = None
         pending["partial_evaluations"] = executed
@@ -1194,20 +1312,22 @@ def execute_pending_evaluations() -> int:
         state["pending_researcher_decision"] = researcher_context
         state["pending_evaluation_request"] = None
         state["last_verdict"] = result["verdict"]
-    state["last_experiment"] = experiment
+    if not preparation:
+        state["last_experiment"] = experiment
     if pending.get("baseline"):
         paths.BASELINE_PENDING_PATH.unlink(missing_ok=True)
     repository.write_state(state)
     paths.EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
-    if is_v4:
+    if is_v4 and not preparation:
         repository.upsert_result(result)
-    elif not more_evidence:
+    elif not is_v4 and not more_evidence:
         repository.append_result(result)
-    next_phase = (
-        "Researcher post-training analysis"
-        if is_v4 or more_evidence
-        else "Researcher lineage decision"
-    )
+    if preparation:
+        next_phase = "Researcher experiment preparation"
+    elif is_v4 or more_evidence:
+        next_phase = "Researcher post-training analysis"
+    else:
+        next_phase = "Researcher lineage decision"
     console.announce(
         "\n"
         + console.render_evidence_card(
@@ -1289,8 +1409,20 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
             "selected": selected_name,
             "artifact": state["accepted_artifact"],
             "fingerprint": plan["selected_fingerprint"],
+            "terminal_reason": plan.get("terminal_reason"),
         }
         repository.write_state(state)
+        console.announce(
+            "\n"
+            + console.render_final_benchmark_card(
+                selected=selected_name,
+                artifact=str(state["accepted_artifact"]),
+                fingerprint=str(plan["selected_fingerprint"]),
+                terminal_reason=plan.get("terminal_reason"),
+                request=True,
+            )
+            + "\n"
+        )
     console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
@@ -1339,6 +1471,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "removed_retained": plan["removed_retained"],
         "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
+        "terminal_reason": plan.get("terminal_reason"),
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
         "designation_counter": plan.get("designation_counter", 0),
     }
@@ -1386,6 +1519,9 @@ def apply_pending_v4_closure(state: dict) -> bool:
         progress = "code_applied"
     if progress not in {"code_applied", "role_result_written"}:
         raise RuntimeError(f"cannot write v4 closure roles from progress {progress!r}")
+    # Closing the experiment retires any preparation ledger not already carried
+    # into its analysis record when training started.
+    state["preparation_measurement"] = None
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
     state["retained_lineages"] = plan["retained"]
@@ -1409,7 +1545,20 @@ def apply_pending_v4_closure(state: dict) -> bool:
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
             "best_known": best_known,
+            "terminal_reason": plan.get("terminal_reason"),
         }
+        console.announce(
+            "\n"
+            + console.render_final_benchmark_card(
+                selected="best_known",
+                artifact=str(best_known["artifact"]),
+                fingerprint=str(best_known["fingerprint"]),
+                lineage=best_known,
+                terminal_reason=plan.get("terminal_reason"),
+                request=True,
+            )
+            + "\n"
+        )
     if pending_field == "pending_analysis":
         result = pending["result"]
         result.update(
@@ -1507,6 +1656,113 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
     return 0
 
 
+# --- campaign conclusion ---------------------------------------------------
+
+
+def apply_campaign_conclusion(operation: dict, state: dict) -> None:
+    """Record the decision without yet publishing a terminal campaign status.
+
+    The decision is committed before any terminal status is written, so a
+    restart cannot observe terminal state before the decision is durable. A
+    final-benchmark request stages the existing terminal assessment path; a
+    no-further-experiment conclusion ends the campaign. Neither creates an
+    experiment record.
+    """
+    action = operation["action"]
+    state["campaign_conclusion"] = {
+        "action": action,
+        "reason": operation["reason"],
+    }
+    # A clean conclusion releases the preparation anchor for both outcomes.
+    state["pending_scientific_parent"] = None
+    state["preparation_conclusion_only"] = None
+    if action == "request_final_benchmark":
+        best_known = state.get("best_known_lineage")
+        if not isinstance(best_known, dict):
+            raise ValueError("a final benchmark requires a designated best-known model")
+        state["last_verdict"] = "researcher requested the official final benchmark"
+        state["pending_final_benchmark"] = {
+            "experiment": int(state.get("last_experiment", 0)),
+            "selected": "best_known",
+            "artifact": best_known["artifact"],
+            "fingerprint": best_known["fingerprint"],
+            "best_known": copy.deepcopy(best_known),
+            "terminal_reason": operation["reason"],
+        }
+        console.announce(
+            "\n"
+            + console.render_final_benchmark_card(
+                selected="best_known",
+                artifact=str(best_known["artifact"]),
+                fingerprint=str(best_known["fingerprint"]),
+                lineage=best_known,
+                terminal_reason=operation["reason"],
+                request=True,
+            )
+            + "\n"
+        )
+    else:
+        state["last_verdict"] = (
+            "researcher concluded that no further experiment is warranted"
+        )
+    repository.write_state(state)
+
+
+def _publish_runner_memory(message: str) -> None:
+    """Commit runner memory, publishing a local commit that a retry finds staged."""
+    if not repository.commit_runner_memory(message):
+        repository.push_head()
+
+
+def complete_campaign_conclusion(state: dict) -> None:
+    """Publish a planned conclusion, committing the decision before its terminal.
+
+    Progress is persisted so an interrupted publication resumes from the last
+    durable step: terminal state is never visible before the decision has been
+    committed and pushed.
+    """
+    operation = state.get("pending_campaign_conclusion")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending campaign conclusion")
+    progress = operation.get("progress")
+    if progress not in {"planned", "committed"}:
+        raise ValueError(f"unknown campaign conclusion progress: {progress!r}")
+    if progress == "planned":
+        apply_campaign_conclusion(operation, state)
+        _publish_runner_memory("record the campaign conclusion")
+        operation["progress"] = "committed"
+        repository.write_state(state)
+        progress = "committed"
+    if progress == "committed":
+        if operation["action"] == "no_further_experiment":
+            state["terminal_campaign_status"] = "no_further_experiment"
+        repository.write_state(state)
+        _publish_runner_memory("finish the campaign conclusion")
+        try:
+            state["pending_campaign_conclusion"] = None
+            repository.write_state(state)
+            _publish_runner_memory("clear the campaign conclusion")
+        except BaseException:
+            state["pending_campaign_conclusion"] = operation
+            repository.write_state(state)
+            raise
+
+
+def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
+    state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    if not isinstance(state.get("pending_campaign_conclusion"), dict):
+        plan = protocol.plan_campaign_conclusion(proposal, state)
+        state["pending_campaign_conclusion"] = {
+            "action": plan["action"],
+            "reason": plan["reason"],
+            "progress": "planned",
+        }
+        repository.write_state(state)
+    complete_campaign_conclusion(state)
+    paths.PROPOSAL_PATH.unlink(missing_ok=True)
+    return 0
+
+
 # --- final benchmark phase -------------------------------------------------
 
 
@@ -1576,6 +1832,10 @@ def execute_pending_final_benchmark() -> int:
             selected=str(pending.get("selected") or "accepted lineage"),
             artifact=artifact,
             fingerprint=fingerprint,
+            lineage=pending.get("best_known")
+            if isinstance(pending.get("best_known"), dict)
+            else None,
+            terminal_reason=pending.get("terminal_reason"),
         )
         + "\n"
     )
@@ -1623,7 +1883,62 @@ def execute_pending_final_benchmark() -> int:
 # --- training phase --------------------------------------------------------
 
 
+def transfer_preparation_measurements(
+    state: dict, result: dict, pending: dict, index: int
+) -> None:
+    """Carry a matching preparation ledger into the experiment's analysis record.
+
+    The preparation measurements informed this experiment's parent choice. When
+    the forecast experiment starts, its scoped ledger moves onto the result and
+    is cleared from state, so it survives analysis and closure without being
+    mistaken for a measurement of any other experiment.
+    """
+    ledger = state.get("preparation_measurement")
+    if not isinstance(ledger, dict) or int(ledger.get("experiment", -1)) != index:
+        return
+    result["preparation_evaluation_rounds"] = [
+        dict(record) for record in (ledger.get("rounds") or [])
+    ]
+    result["preparation_evaluations"] = list(ledger.get("partial_evaluations") or [])
+    result["preparation_task_reference_evaluations"] = list(
+        ledger.get("partial_task_reference_evaluations") or []
+    )
+    pending["preparation_evaluation_rounds"] = list(
+        result["preparation_evaluation_rounds"]
+    )
+    state["preparation_measurement"] = None
+
+
+def apply_lineage_extension_fields(
+    result: dict,
+    proposal: dict,
+    experiment_kind: str,
+    parent: dict | None,
+    *,
+    recipe_restored: bool,
+) -> None:
+    """Freeze the lineage relation and the recipe actually in effect.
+
+    The extension label is derived from the frozen lineage identity rather than
+    the mutable ``working``/``best_known`` role name, so a later reassignment of
+    that role cannot pool two different lineages. The raw Researcher change is
+    kept in ``researcher_change`` and the derived description is recomputed here
+    from that raw text, so the lineage wording is applied exactly once.
+    """
+    if parent is None or str(result.get("initialization", "")).lower() != "transfer":
+        return
+    result["training_parent_lineage"] = copy.deepcopy(parent)
+    result["recipe_basis"] = "parent_recipe" if recipe_restored else "current_science"
+    if experiment_kind == "continuation" or proposal.get("extends_lineage"):
+        result["extends_lineage"] = True
+    result["change"] = protocol.operation_description(result)
+
+
 def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
+    researcher_change = proposal.get("change")
+    researcher_change = (
+        researcher_change.strip() if isinstance(researcher_change, str) else ""
+    )
     change = protocol.operation_description(proposal)
     investigation_type = proposal.get("investigation_type")
     investigation = str(
@@ -1695,6 +2010,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "status": "error",
         "verdict": "error",
     }
+    if researcher_change and researcher_change != change:
+        result["researcher_change"] = researcher_change
     if investigation_type == "exploratory":
         result["scientific_question"] = investigation
     else:
@@ -1752,6 +2069,17 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         parent_training_steps = (
             int(parent["training_steps"]) if parent is not None else 0
         )
+        recipe_restored = (
+            isinstance(operation, dict) and operation.get("recipe_restore") is not None
+        )
+        apply_lineage_extension_fields(
+            result,
+            proposal,
+            experiment_kind,
+            parent,
+            recipe_restored=recipe_restored,
+        )
+        change = result["change"]
         configuration_frozen = operation.get("progress") in {
             "configuration_frozen",
             "recipe_published",
@@ -1802,6 +2130,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             experiment_kind,
             result["parameter_changes"],
             code_changes,
+            training_parent_lineage=parent,
         )
         if validation_scope:
             console.announce("[checks] validating changed files")
@@ -1871,8 +2200,6 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         }
         repository.write_state(state)
         result["scientific_commit"] = scientific_commit
-        if parent is not None:
-            result["training_parent_lineage"] = copy.deepcopy(parent)
         effective_timesteps = execution.training_budget(
             args.timesteps,
             initialization,
@@ -2053,6 +2380,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         if parent is not None:
             pending["training_parent_lineage"] = copy.deepcopy(parent)
         result["candidates"] = archived_candidates
+        transfer_preparation_measurements(state, result, pending, index)
         state.update({"last_experiment": index, "last_verdict": verdict})
         if state.get("schema_version") == 4:
             state["pending_analysis"] = pending
@@ -2174,9 +2502,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--evaluate-pending-final", action="store_true")
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
+    parser.add_argument("--check-preparation-deliverable", action="store_true")
     parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
+    parser.add_argument("--conclusion-only", action="store_true")
     parser.add_argument("--migrate-research-state", action="store_true")
     return parser.parse_args()
 
@@ -2188,9 +2518,11 @@ def main() -> int:
         print("RESEARCH_STATE_MIGRATED" if migrated else "RESEARCH_STATE_ALREADY_V4")
         return 0
     if args.begin_hypothesis:
-        return begin_hypothesis_phase()
+        return begin_hypothesis_phase(conclusion_only=args.conclusion_only)
     if args.check_proposal:
         return check_proposal()
+    if getattr(args, "check_preparation_deliverable", False):
+        return check_preparation_deliverable()
     if args.check_evaluation_request:
         return check_evaluation_request()
     if args.check_analysis_deliverable:
@@ -2210,6 +2542,12 @@ def main() -> int:
         return status
     if args.evaluate_pending:
         return execute_pending_evaluations()
+    if isinstance(repository.read_state().get("pending_campaign_conclusion"), dict):
+        state = repository.load_state(
+            allow_unmeasured=True, allow_missing_artifact=True
+        )
+        complete_campaign_conclusion(state)
+        return 0
     if repository.read_state().get("pending_closure_operation"):
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
@@ -2241,6 +2579,9 @@ def main() -> int:
         reanchor_phase_parent(raw_state)
         validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
+    if proposal_contract == "conclusion":
+        validate_campaign_conclusion_delta(raw_state)
+        return resolve_campaign_conclusion(proposal, raw_state)
     try:
         return run_training_experiment(proposal, args)
     except KeyboardInterrupt:

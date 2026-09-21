@@ -19,6 +19,7 @@ from research.run_experiment import (
 )
 from research.runner_execution import training_budget
 from research.runner_protocol import (
+    EVALUATION_RUNTIME_PATHS,
     _evidence_records_compatible,
     evaluation_artifact_name,
     evaluation_semantics_fingerprint,
@@ -734,6 +735,27 @@ def test_changed_evaluation_semantics_force_a_new_measurement(monkeypatch, tmp_p
     assert len(sorted(evaluations_dir.glob("*.json"))) == 2
 
 
+# Issue #58: files outside the scenario package that define the development
+# success criterion. They are asserted against the registry independently so
+# that dropping one from EVALUATION_RUNTIME_PATHS fails a test instead of
+# silently shrinking the fixture and the coverage below.
+REQUIRED_EXTERNAL_SEMANTIC_PATHS = (
+    "robot_learning/benchmark/spec.py",
+    "robot_learning/benchmark/metrics.py",
+)
+# The non-scenario measurement-semantic surface a test must account for: every
+# declared runtime path plus the required dependencies, so registry edits cannot
+# narrow what is verified.
+NON_SCENARIO_SEMANTIC_PATHS = tuple(
+    sorted({*EVALUATION_RUNTIME_PATHS, *REQUIRED_EXTERNAL_SEMANTIC_PATHS})
+)
+
+
+def test_required_external_semantic_paths_remain_declared():
+    for relative in REQUIRED_EXTERNAL_SEMANTIC_PATHS:
+        assert relative in EVALUATION_RUNTIME_PATHS, relative
+
+
 def _semantics_tree(tmp_path):
     """A miniature repository holding the measurement-relevant surface."""
     scenario = tmp_path / "robot_learning" / "scenario"
@@ -756,12 +778,10 @@ def _semantics_tree(tmp_path):
     training.mkdir(parents=True)
     for name in ("algorithms.py", "normalization.py"):
         (training / name).write_text("original\n", encoding="utf-8")
-    (tmp_path / "robot_learning" / "evaluate.py").write_text(
-        "original\n", encoding="utf-8"
-    )
-    (tmp_path / "robot_learning" / "policy_runtime.py").write_text(
-        "original\n", encoding="utf-8"
-    )
+    for relative in NON_SCENARIO_SEMANTIC_PATHS:
+        non_scenario = tmp_path / relative
+        non_scenario.parent.mkdir(parents=True, exist_ok=True)
+        non_scenario.write_text("original\n", encoding="utf-8")
     research = tmp_path / "research"
     research.mkdir(parents=True)
     (research / "build_research_brief.py").write_text("original\n", encoding="utf-8")
@@ -775,12 +795,13 @@ def test_evaluation_semantics_fingerprint_covers_researcher_measurement_state(
     scenario = _semantics_tree(tmp_path)
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
 
-    assert evaluation_semantics_paths() == [
-        "robot_learning/evaluate.py",
-        "robot_learning/policy_runtime.py",
-        "robot_learning/scenario/environment.py",
-        "robot_learning/scenario/evaluation.py",
-    ]
+    assert evaluation_semantics_paths() == sorted(
+        [
+            *NON_SCENARIO_SEMANTIC_PATHS,
+            "robot_learning/scenario/environment.py",
+            "robot_learning/scenario/evaluation.py",
+        ]
+    )
 
     original = evaluation_semantics_fingerprint()
     assert original == evaluation_semantics_fingerprint()
@@ -900,13 +921,7 @@ def test_evaluation_semantics_are_the_compatibility_identity(
     assert _evidence_records_compatible(candidate, reference) is compatible
 
 
-@pytest.mark.parametrize(
-    "relative",
-    [
-        "robot_learning/evaluate.py",
-        "robot_learning/policy_runtime.py",
-    ],
-)
+@pytest.mark.parametrize("relative", NON_SCENARIO_SEMANTIC_PATHS)
 def test_non_scenario_evaluation_dependencies_change_measurement_identity(
     monkeypatch, tmp_path, relative
 ):
@@ -1321,6 +1336,7 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
+    request["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
     calls = []
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
@@ -1382,6 +1398,7 @@ def test_legacy_champion_path_is_canonicalized_before_final_benchmark(
             "reason": "Keep the accepted lineage.",
             "code": {"action": "keep", "reason": "Keep the accepted code."},
             "request_final_benchmark": True,
+            "terminal_reason": "Submit the accepted lineage.",
         }
     }
     monkeypatch.setattr(
@@ -1412,6 +1429,7 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
+    request["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
     assert not apply_previous_result_decision(request, state)
 
     def failed_benchmark(model, progress_callback=None):
@@ -1548,6 +1566,7 @@ def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path)
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     decision = _lineage_decision()
     decision["previous_result_decision"]["request_final_benchmark"] = True
+    decision["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
     fingerprint = plan_previous_result_decision(decision, state)["selected_fingerprint"]
     state["official_benchmark_artifact"] = fingerprint
 
