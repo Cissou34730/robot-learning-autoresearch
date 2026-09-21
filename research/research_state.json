@@ -78,73 +78,31 @@
     "experiment": 3,
     "reason": "The working lineage achieved 97% on the fresh 8100-8299 panel and has stronger accumulated comparable task evidence than the angular-oversampling candidates. Checkpoint-115712 was 95% with a negative paired comparison, while checkpoint-120832 tied working at 97% but did not improve aggregate success. The measured policies show meaningful reach-and-hold progress toward the 98% objective, but no candidate provides sufficient evidence for replacement or terminal assessment."
   },
-  "last_verdict": "researcher requested the official final benchmark",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b/e1-cada55eb5-1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
+    "fingerprint": "1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b/e1-cada55eb5-1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b/e1-cada55eb5-1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b/evaluation-e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b-experiment-1-checkpoint-100352-200ep-seed7500-f48545f83637.json",
-        "research/evaluations/e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b/task-reference-e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the best measured aggregate task success among the compared candidates, with consistent advantage over checkpoint-120832 on the reused panel and a one-point advantage on the disjoint panel.",
-      "scientific_commit": "284f541151ac5c82ee1d26e8c0138085ab70b772",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 7500
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 3,
-    "fingerprint": "1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
-    "selected": "best_known",
-    "terminal_reason": "The standing best-known lineage, checkpoint-100352, remains the strongest scientifically comparable policy after the saved-lineage preparation round: it achieved 97% on the fresh seed-8300 panel, while the retained experiment-3 reward-proxy checkpoint-110592 achieved 96.5% with one paired incumbent win and no challenger wins. Across disjoint development panels the incumbent reaches 96%, 96%, 97.5%, 97%, and 97%, while the task-reference 98% result is selection-contaminated. Another unchanged continuation has not shown a reliable late-training gain; fresh or transfer training would require a new intervention despite weakened radial and angular explanations; and replication would measure process variance without identifying a better saved policy. Those alternatives have lower expected contribution to the objective than an official assessment now that the only retained model-selection uncertainty was resolved. No remaining plausible full training outcome is expected to change which policy should be submitted enough to justify another run. The official benchmark is therefore the appropriate next decision for the human objective; its result will be the terminal verdict."
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "ffc1df46c568c509a1e2dceaf93afe9dfc5330da",
@@ -4364,7 +4322,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/e88f7b9e-b5cb-4f9b-86c6-4115ca3a0f2b/e1-cada55eb5-1d0228ece663ffe2718005f07dfac1c057831247679fd249c08ddf869146d249",
     "candidate": "checkpoint-100352",
