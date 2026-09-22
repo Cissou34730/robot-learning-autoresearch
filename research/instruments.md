@@ -77,11 +77,8 @@ experiment. Researcher-owned instrumentation may be changed before submitting
 the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
-The request-level `reason` should explain why the selected candidate or
-instrument set is useful relative to at least one available alternative for the
-stated uncertainty. `measurements` selects the instruments and models to run.
-`paired_comparisons` selects comparisons to compute from compatible measurements
-and is optional.
+`measurements` selects the instruments and models to run. `paired_comparisons`
+selects comparisons to compute from compatible measurements and is optional.
 
 Write `research/evaluation_request.json`:
 
@@ -94,8 +91,8 @@ Write `research/evaluation_request.json`:
     {
       "instrument": "<research_evaluation | task_reference>",
       "candidate": "<model exposed by the brief or listed in the candidate inventory>",
-      "selection": "<observed signal or explicit uncertainty, why this measurement is informative, and which next decision it could change>",
-      "omitted_alternative": "<an available model left outside this request, or null only when every available model is requested>",
+      "selection": "<why measuring this model is useful>",
+      "omitted_alternative": "<optional: an available model left outside this request, or null>",
       "<instrument-specific fields>": "<documented values>"
     }
   ],
@@ -109,28 +106,18 @@ Write `research/evaluation_request.json`:
 ```
 
 If the Researcher submits a measurement request, `measurements` must contain at
-least one entry. A request may name at most three distinct models.
-The three-model limit is an execution ceiling, not a target. A request using one
-or two models is complete when those models are sufficient for its stated
-scientific question.
+least one entry, and it may name at most three distinct models.
 `paired_comparisons` is optional. These are request validation constraints; they
 do not require a measurement request or limit an experiment or campaign.
 
-Every measurement requires its own non-empty `selection`. The request-level
-`reason` explains the round; `selection` cites an observed signal or explicit
-uncertainty, explains why measuring that model is useful for the scientific
-question, and states which next decision the result could change. A model's
-position in the run, its order in a listing, and its labels are descriptive
-context and not sufficient reasons on their own; any of these may support a
-selection when tied to observed evidence or a specific uncertainty.
-Measurements of the same model may have different selections. The Runner checks
-that `selection` is present, not whether its reasoning is sound.
+Every measurement requires its own non-empty `selection` stating why measuring
+that model is useful. Measurements of the same model may have different
+selections. The Runner checks that `selection` is present, not whether its
+reasoning is sound.
 
-Every measurement also requires `omitted_alternative`. It names an available
-model left outside the entire request. The Runner checks only that the
-identifier is available and is not measured in the same request. Use `null` only
-when the request measures every available model; the Runner verifies that
-condition.
+`omitted_alternative` is optional. When present it names an available model left
+outside the entire request; the Runner checks only that the identifier is
+available and is not measured in the same request.
 
 A `research_evaluation` panel is the half-open episode interval
 `[seed, seed + episodes)`. A request may reuse an identical panel or use a panel
@@ -138,37 +125,13 @@ disjoint from every recorded research panel; partial overlap is rejected.
 Several measurements may share one identical panel. A panel overlapping the
 protected benchmark episodes is rejected, and historical records remain readable.
 
-Identical reuse is permitted, but it is selection-contaminating and it is
-accounted for. Any panel reused during model selection - a `research_evaluation`
-panel measured across rounds or experiments as much as the fixed `task_reference`
-panel - yields selection-contaminated evidence for the models selected on it.
-Choosing a model on a panel's episodes and later measuring those same episodes
-again is repeated evidence from that panel, not independent held-out
-confirmation. A reused panel is not a default lineage criterion; every reuse is
-reported with its history so it cannot read as fresh evidence.
+Identical reuse is permitted and is accounted for: every reuse is reported with
+its history so it cannot read as fresh evidence. The scientific consequence of
+reuse is stated in `research/program.md`.
 
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
-
-The requestable measurements are distinguished by measurement properties, not by
-authority:
-
-- `research_evaluation` is a configurable development measurement. It supports
-  fresh panels, paired comparisons, and researcher-defined diagnostics.
-- `task_reference` is a fixed development panel. It is the permanently reused
-  case of the rule above: it measures the protected task consistently across
-  research recipes, and because it is repeatedly reused during model selection
-  its results are selection-contaminated and must not receive automatic priority
-  in lineage decisions.
-- Neither instrument is generally authoritative over the other. Evidential
-  weight depends on the scientific question, panel independence, comparability,
-  and the observed results.
-
-The protected task defines the objective, and the official benchmark remains the
-only terminal verdict. That does not make either development instrument
-authoritative: instruments are not ranked, and a reused panel is not a default
-lineage criterion.
 
 ### `research_evaluation`
 
@@ -200,26 +163,12 @@ Add one entry per model and instrument.
 
 A paired comparison uses the accumulated `research_evaluation` outcomes for the
 two named models. It compares their shared recorded episode identities within
-matching evaluation semantics. Source panels may use different episode counts
-or seeds when they have nonempty shared coverage. Compatible historical
-measurements may supply either or both sides when their model fingerprints and
-artifact identities are valid. Detailed diagnostic artifacts retain the same
-evaluation identity. Legacy compatibility fields are ignored when records are
-read.
-Overlapping or repeated episodes count once in pooled summaries and paired
-comparisons. Summary `episodes` reports distinct coverage; `episode_executions`
-and `repeated_episodes` report execution count and repeated coverage separately.
-Conflicting outcomes for the same deterministic episode are rejected.
-
-The model fingerprint covers the complete saved artifact, including its policy
-I/O, loader, and normalization state. Research-evaluation context identity covers
-the current evaluator, environment/task mechanics, and measurement
-instrumentation outside that artifact. Editing model-contained
-policy I/O does not retroactively change the context of an existing measurement;
-editing evaluator or environment semantics does. Training-only code, including
-the reward, is excluded because it changes neither replay nor success. Pooled
-comparison uses success only; per-episode `reward_total` in the detailed
-artifacts is not comparable across a reward change.
+matching evaluation semantics; incompatible sides are rejected. Overlapping or
+repeated episodes count once in pooled summaries. Summary `episodes` reports
+distinct coverage; `episode_executions` and `repeated_episodes` report execution
+count and repeated coverage separately. Conflicting outcomes for the same
+deterministic episode are rejected. Pooled comparison uses success only;
+per-episode `reward_total` is not comparable across a reward change.
 
 Each completed measurement round returns to the phase that requested it: post-
 training analysis for an analysis request, experiment preparation for a saved-
@@ -231,22 +180,23 @@ requests that contain it remain recoverable.
 
 **Phase:** Experiment preparation.
 
-Configure researcher-owned code and `research/current_params.json` as needed, then write one `research/proposal.json`. The common required fields are `kind`, `family`, `investigation_type`, `initialization` and `reasoning`:
+Configure researcher-owned code and `research/current_params.json` as needed,
+then write one `research/proposal.json`. The common required fields are `kind`,
+`family`, `initialization`, `reasoning`, and one of `hypothesis` or
+`scientific_question`:
 
 ```json
 {
   "kind": "<training | continuation | replication>",
   "family": "<non-empty hypothesis-family identifier>",
-  "investigation_type": "<confirmatory | diagnostic | exploratory>",
-  "hypothesis": "<non-empty proposition; confirmatory and diagnostic only>",
+  "hypothesis": "<non-empty proposition the experiment tests>",
+  "scientific_question": "<non-empty open question; use instead of hypothesis>",
   "initialization": "<fresh | transfer>",
   "reasoning": {
     "evidence": [
       {"source": "<existing repository-relative file>", "observation": "<what was observed there>"}
     ],
-    "alternative": "<plausible competing explanation or outcome>",
-    "expected_observation": "<observation supporting the proposition or one diagnostic branch, and what would be learned>",
-    "contradicting_observation": "<observation weakening the proposition, supporting an alternative, or revealing incomplete framing>",
+    "expected_observation": "<the observation that would change the next decision, and what it would change>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
     "objective_link": "<why this investigation is useful for the campaign objective given current evidence>"
   },
@@ -258,47 +208,9 @@ Configure researcher-owned code and `research/current_params.json` as needed, th
 }
 ```
 
-For `exploratory`, replace `hypothesis`, `alternative`,
-`expected_observation`, and `contradicting_observation` with:
-
-```json
-{
-  "scientific_question": "<question the investigation examines>",
-  "reasoning": {
-    "uncertainty": "<what is not known>",
-    "observations_sought": "<observations or evidence sought>",
-    "clarification": "<what the observations could clarify>"
-  }
-}
-```
-
-The exploratory `reasoning` object also contains the common `evidence`,
-`initialization_reason`, and `objective_link` fields from the first schema.
-
-Where a confirmatory or diagnostic investigation has no honest competing
-explanation, `alternative` or `contradicting_observation` may record why rather
-than invent content. The reason itself must be a non-empty string:
-
-```json
-{
-  "reasoning": {
-    "alternative": {"not_applicable": "<why no competing explanation applies>"}
-  }
-}
-```
-
-The `reasoning` object may also carry an optional `confidence` that qualifies a
-prediction. It is one of `strong`, `moderate` or `weak`, and is omitted when no
-prediction is held; an exploratory investigation has no prediction and must not
-carry it:
-
-```json
-{
-  "reasoning": {
-    "confidence": "<strong | moderate | weak>"
-  }
-}
-```
+Exactly one of `hypothesis` or `scientific_question` is required; both are
+accepted and neither changes how the experiment is run or validated. Additional
+`reasoning` keys are accepted and recorded without validation.
 
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
@@ -318,15 +230,15 @@ boundaries may make the completed count exceed the request. A selected lineage's
 `training_steps` instead records its accumulated training through the selected
 checkpoint.
 
-Every `reasoning` field must be non-empty content or, where the schema allows
-it, a justified `not_applicable` record; `evidence` contains at least one
-source/observation pair. Cite inspected campaign artifacts, logs, postmortems or
-code with precise observations; these are not restricted to evaluation results.
-`source` is a file path without a line-number suffix or fragment; put the relevant
-experiment, checkpoint, step range or code location in `observation` as needed.
-The Runner checks file existence and confinement to this repository, not the
-scientific conclusion or proof of inspection. This contract applies equally to
-training, continuation and replication, not to the automatic baseline.
+Every `reasoning` field required above must be non-empty content, and `evidence`
+contains at least one source/observation pair. Cite inspected campaign artifacts,
+logs, postmortems or code with precise observations; these are not restricted to
+evaluation results. `source` is a file path without a line-number suffix or
+fragment; put the relevant experiment, checkpoint, step range or code location in
+`observation` as needed. The Runner checks file existence and confinement to this
+repository, not the scientific conclusion or proof of inspection. This contract
+applies equally to training, continuation and replication, not to the automatic
+baseline.
 
 The campaign's Scientific strategy section must exist before submission. The
 Runner validates its three labels and snapshots the section with `reasoning` in
@@ -363,8 +275,7 @@ named `working` or `best_known` and is not explicitly retained. Retention is
 therefore the only mechanism that turns a candidate into a future
 `training_parent`; a candidate that receives no role can never be extended,
 re-measured, or compared against later, and its removal is irreversible.
-Retention has no budget and no preferred count: retain any checkpoint whose
-future value is uncertain.
+Retention has no budget.
 
 The `reasoning` object contains the common and type-specific fields shown in the
 schemas. `evidence` is a non-empty array of source/observation objects. Every
@@ -422,9 +333,19 @@ pending; each pending phase requires its own deliverable.
 A conclusion resolves no science, so it is accepted only while the researcher's
 scientific surface matches the preparation anchor. Revert or resolve any
 outstanding researcher-owned change first; unlike a training proposal or a lineage
-decision, a conclusion neither publishes nor restores a recipe. When the
-experiment budget is exhausted, no further training experiment may be prepared,
-but a campaign conclusion remains legal. The Runner commits the decision before
+decision, a conclusion neither publishes nor restores a recipe.
+
+A preparation phase that has already executed a measurement round on saved
+lineages may not conclude: it owes an experiment proposal. The round was
+requested because its result would change the next decision, and in this phase
+that decision is which experiment to prepare. Concluding is available from a
+preparation phase that spends no measurement round, from experiment closure
+through `request_final_benchmark`, and whenever no further experiment may be
+prepared.
+
+When the experiment budget is exhausted, no further training experiment may be
+prepared, but a campaign conclusion remains legal regardless of any measurement
+round already spent. The Runner commits the decision before
 it publishes any terminal status, so an interrupted conclusion is resumed rather
 than inherited as a published terminal state.
 

@@ -54,11 +54,21 @@ def link(repo: Path, relative: str) -> str:
 
 
 def measurements(row: dict) -> list[dict]:
-    """Normalize existing record shapes and count an artifact only once."""
+    """Normalize existing record shapes and count an artifact only once.
+
+    Every ledger a record can carry is read, not only the requested ones. A
+    preparation or partial round executes the same episodes on the same
+    instrument, so reading the requested ledgers alone understated the work a
+    campaign performed and the panels it consumed.
+    """
     found = {}
     for source in (
         *row.get("requested_evaluations", []),
+        *row.get("partial_evaluations", []),
+        *row.get("preparation_evaluations", []),
         *row.get("task_reference_evaluations", []),
+        *row.get("partial_task_reference_evaluations", []),
+        *row.get("preparation_task_reference_evaluations", []),
     ):
         metrics = source.get("metrics") or source
         item = {**source, **metrics}
@@ -309,8 +319,33 @@ def higher_proxy_summary(
     )
 
 
+def preparation_row(state: dict, rows: list[dict]) -> dict | None:
+    """The live preparation ledger as a row, when no record carries it yet.
+
+    A preparation round measures saved lineages before its experiment exists.
+    When the campaign concludes from preparation, that experiment never runs and
+    the ledger is never persisted into a record, so reading only the recorded
+    rows hid the very measurements the conclusion was taken on.
+    """
+    ledger = state.get("preparation_measurement")
+    if not isinstance(ledger, dict):
+        return None
+    index = ledger.get("experiment")
+    if index in {row.get("index") for row in rows}:
+        return None
+    row = {
+        "index": index,
+        "partial_evaluations": ledger.get("partial_evaluations") or [],
+        "partial_task_reference_evaluations": (
+            ledger.get("partial_task_reference_evaluations") or []
+        ),
+    }
+    return row if measurements(row) else None
+
+
 def comparison_metrics(campaign: dict) -> dict:
     rows, usage = campaign["rows"], campaign["usage"]
+    state = campaign.get("state") or {}
     initializations = Counter(
         f"{r.get('kind', NA)}/{r.get('initialization', NA)}" for r in rows
     )
@@ -321,10 +356,26 @@ def comparison_metrics(campaign: dict) -> dict:
         if candidate.startswith(("checkpoint-", "candidate-"))
     )
     evidence = [m for r in rows for m in measurements(r)]
+    preparation = preparation_row(state, rows)
+    if preparation is not None:
+        evidence += measurements(preparation)
     final = [
-        str(r["index"])
+        f"closure of experiment {r['index']}"
         for r in rows
         if (r.get("closure_decision") or {}).get("request_final_benchmark")
+    ]
+    conclusion = state.get("campaign_conclusion")
+    if isinstance(conclusion, dict) and (
+        conclusion.get("action") == "request_final_benchmark"
+    ):
+        final.append(
+            f"preparation after experiment {rows[-1]['index'] if rows else NA} "
+            "(no experiment recorded for the request)"
+        )
+    fresh_restarts = [
+        r["index"]
+        for r in rows
+        if r.get("initialization") == "fresh" and int(r.get("index", 0)) > 1
     ]
     derived_usage = []
     for u in usage:
@@ -345,6 +396,13 @@ def comparison_metrics(campaign: dict) -> dict:
         derived_usage.append(values)
     return {
         "Recorded experiments": str(len(rows)),
+        # The baseline is automatic and always fresh, so it is excluded. This
+        # counts the discretionary restarts from zero, which is the quantity
+        # that separated the converging campaigns from the stalled ones.
+        "Fresh restarts after the baseline": (
+            "; ".join(f"experiment {index}" for index in fresh_restarts) or "none"
+        )
+        + f" ({len(fresh_restarts)} of {len(rows)})",
         "Operations / initialization": "; ".join(
             f"{k}: {v}" for k, v in sorted(initializations.items())
         )
@@ -362,8 +420,7 @@ def comparison_metrics(campaign: dict) -> dict:
             f"{k}: {v}" for k, v in Counter(m["instrument"] for m in evidence).items()
         )
         or NA,
-        "Final benchmark requested after experiments": ", ".join(final)
-        or "none recorded",
+        "Final benchmark requested from": "; ".join(final) or "none recorded",
         "Recorded Researcher invocations": str(len(usage)),
         "Researcher runtime": "; ".join(
             f"{k}: {v}" for k, v in Counter(runtime_label(u) for u in usage).items()
@@ -858,6 +915,17 @@ def campaign_sections(campaign: dict) -> list[str]:
             lines += [
                 f"- Final requested after experiment {row['index']}: {cell(decision.get('reason'))}"
             ]
+    conclusion = state.get("campaign_conclusion")
+    if isinstance(conclusion, dict) and (
+        conclusion.get("action") == "request_final_benchmark"
+    ):
+        lines += [
+            (
+                "- Final requested from preparation after experiment "
+                f"{rows[-1]['index'] if rows else NA}, with no experiment "
+                f"recorded for the request: {cell(conclusion.get('reason'))}"
+            ),
+        ]
     lines += [
         f"- Official verdict: {cell(state.get('official_benchmark_verdict'))}",
         "",

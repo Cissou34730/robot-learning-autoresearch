@@ -59,11 +59,11 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, Path, dict]:
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", research)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", research / "results.jsonl")
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", research / "EXPERIMENTS.md")
     monkeypatch.setattr(
-        "research.runner_paths.EVALUATION_REQUEST_PATH", request_path
+        "research.runner_paths.RESULTS_PATH", research / "results.jsonl"
     )
+    monkeypatch.setattr("research.runner_paths.LOG_PATH", research / "EXPERIMENTS.md")
+    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
     monkeypatch.setattr(
         "research.runner_paths.EVALUATION_DIR", research / "evaluations"
@@ -213,7 +213,9 @@ def test_preparation_measurement_context_is_non_mutating(monkeypatch, tmp_path):
 def test_preparation_measurement_returns_to_preparation(monkeypatch, tmp_path):
     state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
     calls: list[int] = []
-    monkeypatch.setattr("research.runner_execution.evaluate_artifact", _evaluator(calls))
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact", _evaluator(calls)
+    )
     request_path.write_text(json.dumps(_request()), encoding="utf-8")
     results_path = tmp_path / "research" / "results.jsonl"
 
@@ -233,9 +235,10 @@ def test_preparation_measurement_returns_to_preparation(monkeypatch, tmp_path):
         item["seed"] for item in ledger["rounds"][0]["results"]["research_evaluations"]
     ] == [10]
     assert [item["seed"] for item in ledger["partial_evaluations"]] == [10]
-    assert ledger["partial_evaluations"][0]["model_fingerprint"] == persisted[
-        "working_lineage"
-    ]["fingerprint"]
+    assert (
+        ledger["partial_evaluations"][0]["model_fingerprint"]
+        == persisted["working_lineage"]["fingerprint"]
+    )
     assert calls == [10]
     assert not results_path.exists() or results_path.read_text(encoding="utf-8") == ""
     assert not request_path.exists()
@@ -244,7 +247,9 @@ def test_preparation_measurement_returns_to_preparation(monkeypatch, tmp_path):
 def test_preparation_rounds_accumulate_with_provenance(monkeypatch, tmp_path):
     state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
     calls: list[int] = []
-    monkeypatch.setattr("research.runner_execution.evaluate_artifact", _evaluator(calls))
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact", _evaluator(calls)
+    )
 
     request_path.write_text(json.dumps(_request()), encoding="utf-8")
     assert run_experiment.execute_pending_evaluations() == 0
@@ -268,7 +273,9 @@ def test_preparation_rounds_accumulate_with_provenance(monkeypatch, tmp_path):
 def test_preparation_measurement_retires_a_stale_alias(monkeypatch, tmp_path):
     state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
     calls: list[int] = []
-    monkeypatch.setattr("research.runner_execution.evaluate_artifact", _evaluator(calls))
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact", _evaluator(calls)
+    )
     request_path.write_text(json.dumps(_request()), encoding="utf-8")
     assert run_experiment.execute_pending_evaluations() == 0
 
@@ -425,7 +432,85 @@ def test_preparation_rounds_render_for_the_upcoming_experiment():
     assert "success 90.00%" in rendered
     # The upcoming experiment's round is never shown as the previous one's.
     assert "checkpoint-3" not in rendered
-    assert "Completed measurement rounds from the most recent experiment" not in rendered
+    assert (
+        "Completed measurement rounds from the most recent experiment" not in rendered
+    )
+
+
+def test_activity_record_counts_the_live_preparation_ledger():
+    """A campaign concluded from preparation still performed those measurements.
+
+    The ledger of an experiment that never ran has no durable record, so an
+    activity tally read from the records alone hid the very rounds the
+    conclusion was taken on, understated the executed episodes, and presented an
+    already-consumed panel as still available.
+    """
+    state = _brief_state()
+    state["preparation_measurement"]["partial_evaluations"] = [
+        {
+            "candidate": "working",
+            "instrument": "research_evaluation",
+            "seed": 10,
+            "episodes": 2,
+            "model_fingerprint": "abc",
+            "metrics": {
+                "successes": 1,
+                "episodes": 2,
+                "seed": 10,
+                "evaluation_artifact": "research/evaluations/e.json",
+            },
+        }
+    ]
+
+    rendered = "\n".join(
+        brief._v4_activity_record_section(state, [_completed_experiment_3()], None)
+    )
+    without_ledger = dict(state, preparation_measurement=None)
+    baseline = "\n".join(
+        brief._v4_activity_record_section(
+            without_ledger, [_completed_experiment_3()], None
+        )
+    )
+
+    # The unran preparation experiment is work, not an experiment.
+    assert "Training experiments: 1." in rendered
+    assert "Training experiments: 1." in baseline
+    assert "Evaluation rounds: 2." in rendered
+    assert "Instrument executions: 1 research_evaluation" in rendered
+    assert "2 episode executions" in rendered
+    assert "intervals consumed: 10\u201311." in rendered
+    # Without the ledger the same campaign looks like it measured nothing.
+    assert "Instrument executions: 0 research_evaluation" in baseline
+    assert "intervals consumed: none." in baseline
+
+
+def test_fresh_restart_line_counts_discretionary_restarts_only():
+    """The brief reports how much of a campaign left the baseline recipe.
+
+    Across this repository's campaign history, the only campaign-level quantity
+    that separated the converging campaigns from the stalled ones was how many
+    experiments trained from zero on a changed recipe instead of continuing the
+    baseline lineage. It was absent from the brief. The automatic experiment-1
+    baseline is always fresh and is excluded, because it is not a choice.
+    """
+    stalled = [
+        {"index": 1, "initialization": "fresh"},
+        {"index": 2, "initialization": "transfer"},
+        {"index": 3, "initialization": "transfer"},
+    ]
+    converging = stalled + [
+        {"index": 4, "initialization": "fresh"},
+        {"index": 5, "initialization": "fresh"},
+    ]
+
+    assert (
+        brief._fresh_restart_line(stalled)
+        == "- Fresh restarts after the baseline: none (0 of 3 experiments)."
+    )
+    assert brief._fresh_restart_line(converging) == (
+        "- Fresh restarts after the baseline: experiment 4, experiment 5 "
+        "(2 of 5 experiments)."
+    )
 
 
 def test_preparation_rounds_fall_back_to_the_last_experiment_without_a_ledger():
@@ -433,9 +518,7 @@ def test_preparation_rounds_fall_back_to_the_last_experiment_without_a_ledger():
     state["preparation_measurement"] = None
 
     rendered = "\n".join(
-        brief._v4_measurement_rounds_section(
-            state, [_completed_experiment_3()], None
-        )
+        brief._v4_measurement_rounds_section(state, [_completed_experiment_3()], None)
     )
 
     assert "Completed measurement rounds from the most recent experiment" in rendered
@@ -481,9 +564,7 @@ def test_preparation_rounds_are_kept_when_the_experiment_enters_analysis():
         ],
     }
 
-    rendered = "\n".join(
-        brief._v4_measurement_rounds_section({}, [], pending)
-    )
+    rendered = "\n".join(brief._v4_measurement_rounds_section({}, [], pending))
 
     assert "Measurement rounds for the current experiment" in rendered
     assert "working" in rendered

@@ -817,11 +817,8 @@ if ($ResearcherBackend -eq "opencode") {
         $analysisPrompt = @(
             $analysisPhasePrompt
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "Assess progress toward a learned policy satisfying the human objective. Begin with the observed training and measurement evidence, including partial, unexpected, or orthogonal signals. Relate findings to the proposal's type-specific question and reasoning without treating prior expectations as policy-acceptance thresholds. Separate observations from interpretations and scope causal claims to the evidence."
-            "Measured policy performance supports claims of progress. Interpret each measurement according to its scope, independence, comparability, and relevance to the current scientific question. After observing a promising result, you may request another measurement round on a disjoint panel to obtain independent evidence before closing the experiment. If the lineage you are about to select was already selected on a panel, its score on that panel is not independent evidence; a disjoint panel is required to confirm it. The fixed task-reference panel is a reused development panel and is not a privileged lineage criterion. Logs, code, and training/evaluation discrepancies guide the investigation."
-            "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison. Evidence gathering may discover or refine the scientific question. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it. Additional measurement rounds are optional and available only in this phase."
-            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid. Omit best_known when it is unchanged. Retention is the only way a candidate can be used as a future training parent. Candidates that receive no role have their weights deleted at closure and can never be extended, re-measured, or compared against later. Retain any checkpoint whose future value is uncertain. Retention has no budget and no preferred count."
-            'If you request measurements, each `selection` cites an observed signal or explicit uncertainty, states why measuring that model is useful, and names the next decision the result could change. Checkpoint position, order in a listing, and labels are descriptive context and not sufficient reasons on their own. Training-time proxy values such as training success and training reward are not task measurements and are not sufficient reasons on their own either. Each `omitted_alternative` names an available model left outside the request, or is null only when every available model is requested.'
+            "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
+            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
@@ -900,10 +897,6 @@ if ($ResearcherBackend -eq "opencode") {
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-                "Use the brief and campaign artifacts as the scientific evidence; evaluation design normally requires no Git inspection."
-                "Start from the campaign objective and available evidence. Inspection may formulate, refine, or answer the scientific question; targeted extraction and full-artifact inspection are both available."
-                'State the scientific question and use the request-level `reason` to explain why the measurement round is useful.'
-                'Every measurement requires a `selection` that cites an observed signal or explicit uncertainty, states why measuring that model is useful, and names the next decision the result could change. Checkpoint position, order in a listing, and labels are descriptive context and not sufficient reasons on their own. Each `omitted_alternative` names an available model left outside the request, or is null only when every available model is requested.'
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -985,9 +978,7 @@ if ($ResearcherBackend -eq "opencode") {
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "Assess progress toward a learned policy satisfying the human objective. Begin with observed behavior, then relate findings to the proposal's type-specific question and reasoning. Record partial and unexpected findings, separate observations from interpretations, and scope claims to the evidence."
-            "Resolve investigation assessment, saved-policy usefulness, recipe action, working lineage, retention, optional best-known designation, and whether to request the official benchmark, as distinct scientific decisions. A weakened prediction does not by itself reject a useful policy."
-            "Record supported, weakened, and unresolved findings in the experiment entry without prescribing a continuation path. The campaign's Scientific strategy is rewritten in the next experiment-design phase, not here."
+            "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -1070,20 +1061,19 @@ if ($ResearcherBackend -eq "opencode") {
                 "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
             })
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-        "Start from the campaign objective and the whole campaign's evidence, then rewrite the Scientific strategy as provisional memory that prescribes no next action."
+        "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
             else {
-                "Identify the scientific question, then identify the concrete campaign decision that its possible outcomes could change. Compare plausible scientific questions by those decisions and their expected contribution to the human objective; an unresolved question alone does not justify a full training run. Decide whether the investigation is confirmatory, diagnostic, or exploratory, and only then choose the operation that best answers it. Define an intervention only when the selected investigation requires one. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or, before any of these, a measurement round on saved lineages."
+                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or, before any of these, a measurement round on saved lineages. A measurement round on saved lineages commits this phase to proposing an experiment: after it, concluding is no longer accepted here."
             })
         $(if ($budgetReached) {
                 ""
             }
             else {
-                "Justify the parent and fresh-or-transfer initialization by their expected benefit for the question as well as semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility. You may request a measurement round on saved lineages before proposing; candidates of a not-yet-run experiment are not available."
+                "If you propose training, state the question or hypothesis, the evidence motivating it, the observation that would change the next decision, and the parent and initialization the question calls for."
             })
-        "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         $(if ($budgetReached) {
                 ""
