@@ -2,11 +2,11 @@
 
 ## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline remains the strongest measured policy, achieving 591/600 successes across three distinct research panels, including 197/200 on the experiment-2 disjoint panel. The expanded 6-20 cm training-radius intervention produced 196/200 at both measured checkpoints, so the 98% objective remains unestablished and the intervention did not improve the selected working policy.
+**Current synthesis:** The unchanged PPO baseline remains the strongest measured policy, with 591/600 successes across three distinct research panels and 197/200 on the latest disjoint panel. Expanding training coverage to 6-20 cm produced 196/200 at both measured checkpoints and did not improve the selected working policy.
 
-**Lessons and limits:** Training reward and training success did not reliably rank task behavior, and the first research and fixed reference panels are not independent confirmation. On the new disjoint panel, each expanded-coverage challenger lost one episode to the unchanged working policy and won none; both had the working policy's failures plus episode 184. This weakens the tested coverage intervention but is evidence about these continued-training checkpoints, not a complete characterization of the official distribution.
+**Lessons and limits:** Training reward and training success did not reliably rank task behavior. On the new disjoint panel, each expanded-coverage challenger lost one episode to the unchanged working policy and won none; both added episode 184 to the working policy's failures. These results weaken the tested coverage intervention but do not characterize the official distribution, which development panels cannot certify.
 
-**Open questions:** Whether the residual failure rate, including failures on inner targets and interrupted holds, can be reduced without sacrificing outer-range behavior remains unresolved. Performance variability across the official target distribution is also not fully characterized, and the development panels cannot establish the official 98% objective.
+**Open questions:** The residual failure mechanisms include inner-target reach failures and interrupted holds, and their behavior across the official target distribution remains unresolved. The official 200-episode outcome is also not established by the development panels.
 
 ## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Experiment 1
 
