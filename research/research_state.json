@@ -91,7 +91,7 @@
   "pending_analysis": null,
   "pending_campaign_conclusion": {
     "action": "request_final_benchmark",
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known lineage has 591/600 successes across three distinct development panels, including 197/200 on the newest disjoint panel, while both experiment-2 challengers regressed to 196/200 and had no paired wins over it. This sustained result is above the 98% target and makes goal_reached the expected official verdict; the final assessment is requested to establish that verdict on the human-owned benchmark, not to resolve an open development uncertainty."
   },
   "pending_closure_operation": null,
