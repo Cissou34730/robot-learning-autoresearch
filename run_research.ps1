@@ -819,6 +819,7 @@ if ($ResearcherBackend -eq "opencode") {
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
+            "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
@@ -979,6 +980,7 @@ if ($ResearcherBackend -eq "opencode") {
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
             "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
+            "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -1073,6 +1075,12 @@ if ($ResearcherBackend -eq "opencode") {
             }
             else {
                 "If you propose training, state the question or hypothesis, the evidence motivating it, the observation that would change the next decision, and the parent and initialization the question calls for."
+            })
+        $(if ($budgetReached) {
+                ""
+            }
+            else {
+                "Request the official final assessment only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
             })
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         $(if ($budgetReached) {

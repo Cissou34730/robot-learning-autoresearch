@@ -7,6 +7,46 @@ superseded. It does not instruct the autonomous researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
 
+## 2026-09-22 - The terminal assessment is a verdict, not an instrument
+
+- **Supersedes:** the 2026-09-17 "Stopping decision" entry, which recorded that
+  no label, confidence threshold, evidence type or panel count is required before
+  requesting the official benchmark. That entry is retained as history.
+- **Evidence:** Campaigns `7624cdd2`, `e88f7b9e` and `0895e3ad` all submitted the
+  incumbent baseline and returned `goal_not_reached`. The reference campaign on
+  `ref/reference-campaing-1` faced identical evidence at the closure of its own
+  first experiment - the same checkpoint at 97.0% research and 98.0%
+  task-reference - declined the terminal request, and reached `goal_reached` at
+  experiment 7. The decision surface, not the science, is the variable.
+- **Diagnosis:** The v4 `Stopping` section had been rewritten incrementally
+  against an endless-deferral bias until every criterion-bearing sentence in it
+  negated a criterion, leaving no statement of when not to stop. In parallel the
+  categorical rule that development panels "never declare the objective reached"
+  had been replaced by the weaker statistical caveat that a selection measurement
+  is not independent confirmation. A caveat is weighable; campaign `0895e3ad`
+  recorded the caveat faithfully and then wrote that its checkpoint "achieved the
+  98% development objective".
+- **Stopping condition restored:** Continue while a scientifically useful path
+  remains. Request the terminal assessment when the Researcher expects it to
+  return `goal_reached`; not expecting that verdict means either a path remains or
+  there is nothing further to report. The benchmark is a verdict claimed, not an
+  instrument consulted to settle an uncertainty development measurements left
+  open. Campaign `0895e3ad` submitted explicitly to resolve such an uncertainty.
+- **Categorical panel bar restored:** Research and task-reference panels are
+  development measurements and never declare the objective reached, whatever
+  number they return. The independence caveat is kept alongside it, not instead
+  of it.
+- **No harness gate:** The threshold stays out of the harness. Nothing validates
+  a number, and no code refuses a terminal request. The Researcher states an
+  expectation that the verdict then falsifies, which keeps the objective from
+  becoming a development optimisation target and leaves the boundary asserted by
+  `tests/autoresearch/test_scenario_boundary.py` untouched.
+- **Prompt placement:** The rule is repeated once in the closure and preparation
+  prompts, where the terminal request is actually issued, and the disjoint-panel
+  trigger once in the analysis prompt, where the lineage is selected. Campaign
+  `0895e3ad` proves the Researcher knew the rule and still needed a trigger to act
+  on it; campaign `e88f7b9e` proves the trigger alone is not sufficient.
+
 ## 2026-09-21 - Tests are never part of the researcher's surface
 
 - **Supersedes:** the 2026-08-29 "Tests organized by repository domain" decision

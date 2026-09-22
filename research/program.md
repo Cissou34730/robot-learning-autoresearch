@@ -198,8 +198,10 @@ for the experiment that would.
 Reusing the same evaluation episodes supports comparison but provides no
 independent confirmation: a model chosen on a panel's episodes is not confirmed
 by measuring those same episodes again. The fixed task-reference panel is the
-permanently reused case of this rule. Do not change a protected panel or present
-development evidence as final validation.
+permanently reused case of this rule. Research and task-reference panels are
+development measurements and never declare the objective reached, whatever number
+they return. Do not change a protected panel or present development evidence as
+final validation.
 
 ## Experiment closure
 
@@ -251,29 +253,31 @@ in the synthesis rather than rewriting what was believed at the time.
 
 ## Stopping
 
-Continue development while the Researcher judges that further investigation
-best serves the human objective. Request terminal assessment when the Researcher
-judges that the selected best-known model is ready for the official verdict,
-stating the evidence and uncertainty behind that decision.
+Continue development while a scientifically useful path toward the human
+objective remains. Request the terminal assessment when you expect it to return
+`goal_reached` for the selected best-known model, stating the evidence and the
+uncertainty behind that expectation. If you do not expect that verdict, then
+either a path remains to pursue or there is nothing further to report: say which,
+and act accordingly.
 
-Development measurements support model selection and scientific judgment. A
-measurement used to select a model is not automatically independent
-confirmation. After observing a promising result, the Researcher may request
-another measurement round on a disjoint panel before closing the experiment. The
-Researcher decides whether the available evidence justifies requesting the
-official benchmark: no task-reference measurement, confidence threshold, special
-evidence label, or predefined number of panels is mandatory.
+The official benchmark is a verdict you claim, not an instrument you consult. Do
+not request it in order to find out how the model performs, to settle an
+uncertainty that development measurements did not settle, or because no further
+measurement looks informative. Anything you need to know in order to decide must
+be measured while you can still act on the answer.
 
-Another useful investigation does not prohibit stopping, and reaching a
-development threshold does not require stopping. No residual-failure criterion or
-proof that no better research direction exists is required.
+Development measurements support model selection and scientific judgment, and
+never declare the objective reached. A measurement used to select a model is not
+automatically independent confirmation. After observing a promising result, the
+Researcher may request another measurement round on a disjoint panel before
+closing the experiment.
 
-Development evidence is never a substitute for the official verdict, and a
-campaign that never requests it produces no official result at all. Equally, a
-campaign that submits a model no better than the one it started with has
-converted its whole allocation into a single measurement. Neither the number of
-experiments already run nor the cost of running another is itself a reason to
-stop.
+Another useful investigation does not prohibit stopping. Development evidence is
+never a substitute for the official verdict, and a campaign that never requests it
+produces no official result at all. Equally, a campaign that submits a model no
+better than the one it started with has converted its whole allocation into a
+single measurement. Neither the number of experiments already run nor the cost of
+running another is itself a reason to stop.
 
 Request the official benchmark from experiment preparation or closure, targeting
 the frozen best-known model. Requesting it ends the campaign after either verdict:
