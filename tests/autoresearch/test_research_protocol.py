@@ -1336,7 +1336,9 @@ def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
-    request["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
+    request["previous_result_decision"]["terminal_reason"] = (
+        "Submit the measured policy."
+    )
     calls = []
     monkeypatch.setattr(
         "robot_learning.scenario.final_benchmark.evaluate_final_model",
@@ -1429,7 +1431,9 @@ def test_pending_final_benchmark_survives_failure_and_failed_result(
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
     request = _lineage_decision()
     request["previous_result_decision"]["request_final_benchmark"] = True
-    request["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
+    request["previous_result_decision"]["terminal_reason"] = (
+        "Submit the measured policy."
+    )
     assert not apply_previous_result_decision(request, state)
 
     def failed_benchmark(model, progress_callback=None):
@@ -1566,7 +1570,9 @@ def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path)
     state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
     decision = _lineage_decision()
     decision["previous_result_decision"]["request_final_benchmark"] = True
-    decision["previous_result_decision"]["terminal_reason"] = "Submit the measured policy."
+    decision["previous_result_decision"]["terminal_reason"] = (
+        "Submit the measured policy."
+    )
     fingerprint = plan_previous_result_decision(decision, state)["selected_fingerprint"]
     state["official_benchmark_artifact"] = fingerprint
 
@@ -2059,21 +2065,27 @@ def _research_measurement(candidate: str, omitted_alternative) -> dict:
     }
 
 
-def test_each_measurement_requires_an_omitted_alternative_field():
+def test_omitted_alternative_is_optional():
+    """Issue: the field records a tradeoff, it no longer gates a request.
+
+    Naming a model left outside a request produced an administrative
+    counterfactual on every measurement without adding information, so the
+    field became optional. A value that is supplied is still checked.
+    """
     measurement = _research_measurement("model-a", "model-b")
     del measurement["omitted_alternative"]
+    validate_evaluation_request(_selection_request(measurement))
 
-    with pytest.raises(ValueError, match="requires omitted_alternative"):
-        validate_evaluation_request(_selection_request(measurement))
+    available = {"model-a": {}, "model-b": {}}
+    requested, _ = planned_measurements(_selection_request(measurement), available)
+    assert requested[0]["omitted_alternative"] is None
 
 
 @pytest.mark.parametrize("omitted_alternative", ["", "   ", 7, []])
 def test_omitted_alternative_has_a_structured_value(omitted_alternative):
     with pytest.raises(ValueError, match="non-empty string or null"):
         validate_evaluation_request(
-            _selection_request(
-                _research_measurement("model-a", omitted_alternative)
-            )
+            _selection_request(_research_measurement("model-a", omitted_alternative))
         )
 
 
@@ -2100,12 +2112,12 @@ def test_omitted_alternative_must_be_available_and_outside_request():
         )
 
 
-def test_null_omitted_alternative_is_only_valid_for_an_exhaustive_request():
+def test_null_omitted_alternative_is_accepted_for_any_request():
     available = {"model-a": {}, "model-b": {}}
-    with pytest.raises(ValueError, match="measures every available model"):
-        planned_measurements(
-            _selection_request(_research_measurement("model-a", None)), available
-        )
+    requested, _ = planned_measurements(
+        _selection_request(_research_measurement("model-a", None)), available
+    )
+    assert requested[0]["omitted_alternative"] is None
 
     requested, _ = planned_measurements(
         _selection_request(
@@ -2936,16 +2948,26 @@ def test_protocol_defines_a_method_neutral_researcher_within_the_fixed_stack():
 
 
 def test_post_training_guidance_is_evidence_first_without_positional_labels():
+    """The selection rule is stated once; the prohibitions bind every surface.
+
+    The rule used to be repeated verbatim in `program.md`, `instruments.md` and
+    the launcher prompts. That triplication is what made the prompt a second
+    protocol, so the positive statement of the rule is now asserted only where
+    it belongs - the scientific protocol. The prohibitions it exists to enforce
+    are unchanged and are still asserted on all three surfaces, because a
+    positional label suggested anywhere would bias the selection.
+    """
     normalized_program = " ".join(PROGRAM.split())
     normalized_launcher = " ".join(LOOP.split())
     normalized_instruments = " ".join(
         (ROOT / "research" / "instruments.md").read_text(encoding="utf-8").split()
     )
 
+    assert "observed signal or explicit uncertainty" in normalized_program
+    assert "next decision" in normalized_program
+    assert "not sufficient reasons on their own" in normalized_program
+
     for text in (normalized_program, normalized_launcher, normalized_instruments):
-        assert "observed signal or explicit uncertainty" in text
-        assert "next decision" in text
-        assert "not sufficient reasons on their own" in text
         assert "first, latest, final" not in text
         assert "horizon-matched" not in text
         assert "strongest" not in text

@@ -61,7 +61,9 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, dict]:
     monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", research)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", research / "results.jsonl")
+    monkeypatch.setattr(
+        "research.runner_paths.RESULTS_PATH", research / "results.jsonl"
+    )
     monkeypatch.setattr("research.runner_paths.LOG_PATH", research / "EXPERIMENTS.md")
     # The preparation anchor is present but its commit is not resolvable outside a
     # real repository; the delta itself is covered by dedicated tests below.
@@ -103,9 +105,7 @@ def _stub_publication(monkeypatch) -> list[str]:
         published.append(message)
         return True
 
-    monkeypatch.setattr(
-        "research.runner_repository.commit_runner_memory", fake_commit
-    )
+    monkeypatch.setattr("research.runner_repository.commit_runner_memory", fake_commit)
     monkeypatch.setattr("research.runner_repository.push_head", lambda: None)
     return published
 
@@ -119,9 +119,10 @@ def test_preparation_accepts_a_final_benchmark_conclusion(monkeypatch, tmp_path)
 
     assert contract == "conclusion"
     # Validation is non-mutating.
-    assert json.loads(state_path.read_text(encoding="utf-8"))[
-        "pending_final_benchmark"
-    ] is None
+    assert (
+        json.loads(state_path.read_text(encoding="utf-8"))["pending_final_benchmark"]
+        is None
+    )
 
 
 def test_requesting_the_final_benchmark_stages_the_best_known_model(
@@ -133,7 +134,9 @@ def test_requesting_the_final_benchmark_stages_the_best_known_model(
         json.dumps(_conclusion("request_final_benchmark")), encoding="utf-8"
     )
 
-    assert resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state) == 0
+    assert (
+        resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state) == 0
+    )
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     pending = persisted["pending_final_benchmark"]
@@ -174,9 +177,7 @@ def test_no_further_experiment_ends_the_campaign_without_an_experiment_row(
     assert results_path.read_text(encoding="utf-8") == ""
     # The phase is over: no new proposal is accepted.
     with pytest.raises(ValueError, match="terminal"):
-        validate_proposal_against_state(
-            _conclusion("no_further_experiment"), persisted
-        )
+        validate_proposal_against_state(_conclusion("no_further_experiment"), persisted)
 
 
 def test_no_further_conclusion_publication_is_retry_safe(monkeypatch, tmp_path):
@@ -192,9 +193,7 @@ def test_no_further_conclusion_publication_is_retry_safe(monkeypatch, tmp_path):
             raise RuntimeError("push failed")
         return True
 
-    monkeypatch.setattr(
-        "research.runner_repository.commit_runner_memory", flaky_commit
-    )
+    monkeypatch.setattr("research.runner_repository.commit_runner_memory", flaky_commit)
     monkeypatch.setattr("research.runner_repository.push_head", lambda: None)
 
     with pytest.raises(RuntimeError, match="push failed"):
@@ -223,9 +222,7 @@ def test_final_benchmark_conclusion_requires_a_designated_best_known(
         plan_campaign_conclusion(_conclusion("request_final_benchmark"), state)
 
 
-def test_campaign_conclusion_requires_a_known_action_and_reason(
-    monkeypatch, tmp_path
-):
+def test_campaign_conclusion_requires_a_known_action_and_reason(monkeypatch, tmp_path):
     _, _, state = _configure(monkeypatch, tmp_path)
 
     with pytest.raises(ValueError, match="action must be"):
@@ -295,14 +292,13 @@ def test_proposal_preflight_accepts_a_clean_campaign_conclusion(
     assert check_proposal() == 0
     assert "PROPOSAL_VALID: conclusion" in capsys.readouterr().out
     # The preflight does not mutate the campaign.
-    assert json.loads(state_path.read_text(encoding="utf-8"))[
-        "terminal_campaign_status"
-    ] is None
+    assert (
+        json.loads(state_path.read_text(encoding="utf-8"))["terminal_campaign_status"]
+        is None
+    )
 
 
-def test_proposal_preflight_reports_unresolved_science(
-    monkeypatch, tmp_path, capsys
-):
+def test_proposal_preflight_reports_unresolved_science(monkeypatch, tmp_path, capsys):
     _, proposal_path, _ = _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(
         "research.run_experiment.anchored_scientific_delta",
@@ -331,9 +327,39 @@ def test_main_rejects_a_conclusion_with_unresolved_science(monkeypatch, tmp_path
         run_experiment.main()
 
 
-def test_budget_reached_allows_a_conclusion_and_rejects_training(
+def test_a_spent_preparation_measurement_round_owes_an_experiment_proposal(
     monkeypatch, tmp_path
 ):
+    """Issue: measuring in preparation must not buy a free terminal decision.
+
+    Campaigns e88f7b9e and 7624cdd2 both ended by measuring already-saved
+    lineages during preparation - which consumes no experiment - and then
+    concluding from that round. The round is requested because its result would
+    change the next decision, and in this phase that decision is which
+    experiment to prepare, so the phase still owes a proposal.
+    """
+    _, _, state = _configure(monkeypatch, tmp_path)
+    state["preparation_measurement"] = {
+        "experiment": 4,
+        "rounds": [{"round": 1, "evaluations": []}],
+    }
+
+    for action in ("request_final_benchmark", "no_further_experiment"):
+        with pytest.raises(ValueError, match="owes an experiment proposal"):
+            validate_proposal_against_state(_conclusion(action), state)
+
+
+def test_an_unspent_preparation_phase_may_still_conclude(monkeypatch, tmp_path):
+    _, _, state = _configure(monkeypatch, tmp_path)
+    state["preparation_measurement"] = {"experiment": 4, "rounds": []}
+
+    assert (
+        validate_proposal_against_state(_conclusion("request_final_benchmark"), state)
+        == "conclusion"
+    )
+
+
+def test_budget_reached_allows_a_conclusion_and_rejects_training(monkeypatch, tmp_path):
     """The launcher's --conclusion-only preparation path, exercised directly."""
     state_path, _, _ = _configure(monkeypatch, tmp_path)
 
@@ -341,6 +367,12 @@ def test_budget_reached_allows_a_conclusion_and_rejects_training(
 
     anchored = json.loads(state_path.read_text(encoding="utf-8"))
     assert anchored["preparation_conclusion_only"] is True
+    # A phase that may not prepare an experiment at all still concludes, even
+    # after spending a measurement round.
+    anchored["preparation_measurement"] = {
+        "experiment": 4,
+        "rounds": [{"round": 1, "evaluations": []}],
+    }
 
     with pytest.raises(ValueError, match="budget is exhausted"):
         validate_proposal_against_state({"hypothesis": "another run"}, anchored)
@@ -359,9 +391,9 @@ def test_launcher_restricts_a_budget_reached_phase_to_conclusions():
     assert "Experiment budget reached" in LOOP
     assert "Only a campaign conclusion may be prepared" in LOOP
     assert "Current phase: conclude the campaign." in LOOP
-    assert (
-        "pending_campaign_conclusion" in LOOP
-    ), "an interrupted conclusion must resume rather than exit on terminal state"
+    assert "pending_campaign_conclusion" in LOOP, (
+        "an interrupted conclusion must resume rather than exit on terminal state"
+    )
 
 
 def test_launcher_retry_after_budget_reached_offers_only_conclusions():

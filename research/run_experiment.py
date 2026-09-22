@@ -1249,7 +1249,9 @@ def execute_pending_evaluations() -> int:
     if is_v4:
         rounds = pending.get("evaluation_rounds")
         if isinstance(rounds, list):
-            result["evaluation_rounds"] = [dict(round_record) for round_record in rounds]
+            result["evaluation_rounds"] = [
+                dict(round_record) for round_record in rounds
+            ]
     measured = [item for item in candidates if item.get("summary") is not None]
     if measured and not is_v4:
         primary = measured[0]["summary"]
@@ -1940,13 +1942,12 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         researcher_change.strip() if isinstance(researcher_change, str) else ""
     )
     change = protocol.operation_description(proposal)
-    investigation_type = proposal.get("investigation_type")
+    stated_question = proposal.get("scientific_question")
+    investigation_is_question = (
+        isinstance(stated_question, str) and stated_question.strip()
+    )
     investigation = str(
-        proposal[
-            "scientific_question"
-            if investigation_type == "exploratory"
-            else "hypothesis"
-        ]
+        stated_question if investigation_is_question else proposal["hypothesis"]
     ).strip()
     experiment_kind, parameter_overrides, baseline, initialization = (
         proposal_training_settings(proposal)
@@ -2012,12 +2013,10 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     }
     if researcher_change and researcher_change != change:
         result["researcher_change"] = researcher_change
-    if investigation_type == "exploratory":
+    if investigation_is_question:
         result["scientific_question"] = investigation
     else:
         result["hypothesis"] = investigation
-    if investigation_type is not None:
-        result["investigation_type"] = investigation_type
     # Freeze the pre-training rationale: later revisions of scientific memory
     # must not retroactively change what this experiment was intended to test.
     if "reasoning" in proposal:

@@ -59,9 +59,7 @@ def test_reused_panel_is_reported_with_reuse_depth_and_qualifier():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "(reused panel: 2 prior measurements on these episodes)" in text
     assert "not independent confirmation" in text
 
@@ -85,9 +83,7 @@ def test_reused_panel_reports_when_a_prior_use_preceded_its_selection():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "1 prior measurement on these episodes" in text
     assert "1 preceded a closure that selected this lineage" in text
 
@@ -162,9 +158,7 @@ def test_reused_panel_selection_is_associated_by_fingerprint_not_label():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "1 prior measurement on these episodes" in text
     assert "1 preceded a closure that selected this lineage" in text
 
@@ -202,9 +196,7 @@ def test_reused_panel_selection_is_not_attributed_to_a_different_fingerprint():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "1 prior measurement on these episodes" in text
     assert "preceded a closure" not in text
 
@@ -242,9 +234,7 @@ def test_preparation_evaluations_count_as_prior_panel_uses():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "(reused panel: 1 prior measurement on these episodes)" in text
 
 
@@ -284,9 +274,7 @@ def test_reused_task_reference_result_carries_the_non_independence_context():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "(reused panel: 1 prior measurement on this panel)" in text
     assert "not independent confirmation" in text
 
@@ -318,9 +306,7 @@ def test_reused_paired_comparison_carries_the_non_independence_context():
             }
         ],
     }
-    text = "\n".join(
-        brief._v4_measurement_rounds_section({}, prior_results, pending)
-    )
+    text = "\n".join(brief._v4_measurement_rounds_section({}, prior_results, pending))
     assert "Reused panel context:" in text
     assert "not independent confirmation" in text
 
@@ -368,7 +354,10 @@ def test_selection_panels_preserve_prior_exposure_when_a_lineage_is_reused():
     pending = {
         "experiment": 3,
         "requested_evaluations": [
-            {**_measurement("c1", seed=500, episodes=200), "instrument": "research_evaluation"}
+            {
+                **_measurement("c1", seed=500, episodes=200),
+                "instrument": "research_evaluation",
+            }
         ],
     }
     panels = protocol._selection_panels_for(source, pending, "fp")
@@ -457,6 +446,16 @@ def test_explicit_best_known_reselection_refreshes_selection_exposure(
 
 
 def test_instrument_documentation_states_the_rule_in_neutral_terms():
+    """The reuse rule is scientific doctrine, so it is stated once.
+
+    The guarantee this test protects is unchanged: reuse, not one instrument,
+    is what contaminates, and `task_reference` is named as the permanently
+    reused case rather than as the cause. What changed is where the rule lives.
+    It used to be repeated verbatim in `program.md` and `instruments.md`; the
+    duplication is now removed, so the doctrine is asserted in `program.md` and
+    `instruments.md` is checked for the operational contract plus a deferral,
+    and for the absence of any instrument ranking.
+    """
     instruments = " ".join(
         (ROOT / "research" / "instruments.md").read_text(encoding="utf-8").split()
     )
@@ -465,10 +464,13 @@ def test_instrument_documentation_states_the_rule_in_neutral_terms():
     )
 
     # The rule is about reuse, not about one instrument.
-    assert "Any panel reused during model selection" in instruments
-    assert "identically reused research panel" in program
-    assert "not independent held-out confirmation" in instruments
-    assert "not independent held-out confirmation" in program
+    assert "Reusing the same evaluation episodes" in program
+    assert "no independent confirmation" in program
     # `task_reference` is named as the permanently reused case, not the cause.
-    assert "permanently reused case" in instruments
     assert "permanently reused case" in program
+    assert "permanently reused case" not in instruments
+    # The operational contract records reuse and defers the meaning of it.
+    assert "every reuse is reported with its history" in instruments
+    assert "stated in `research/program.md`" in instruments
+    # No instrument is ranked above the other in the operational contract.
+    assert "authoritative" not in instruments

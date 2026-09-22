@@ -18,6 +18,7 @@ from research.runner_protocol import (
 )
 from research.runner_repository import (
     ARTIFACT_FILES,
+    MEASUREMENT_LEDGER_KEYS,
     campaign_coverage,
     compact_measurement_summary,
 )
@@ -536,7 +537,9 @@ def candidate_display_order(
 ) -> list[dict]:
     """Candidates in their deterministic, metric-independent display order."""
     scope = f"{campaign_id or ''}|{experiment if experiment is not None else ''}"
-    return sorted(candidates, key=lambda candidate: _candidate_order_key(candidate, scope))
+    return sorted(
+        candidates, key=lambda candidate: _candidate_order_key(candidate, scope)
+    )
 
 
 def _candidate_steps(candidate: dict) -> str:
@@ -695,9 +698,7 @@ def _raw_training_series(
     campaign_id: str | None, experiment: object
 ) -> dict[str, list[tuple[float, float]]]:
     """Per-signal ``(timestep, value)`` series from the preserved raw records."""
-    series: dict[str, list[tuple[float, float]]] = {
-        key: [] for key in _RAW_PROXY_KEYS
-    }
+    series: dict[str, list[tuple[float, float]]] = {key: [] for key in _RAW_PROXY_KEYS}
     for record in _training_log_records(campaign_id, experiment):
         timestep = record.get("total_timesteps")
         if timestep is None:
@@ -776,7 +777,7 @@ def _candidate_discriminator_cells(
 
 
 def _training_proxy_spread_lines(
-    series: dict[str, list[tuple[float, float]]]
+    series: dict[str, list[tuple[float, float]]],
 ) -> list[str]:
     """Distributional context for each training signal in the run's own spread."""
     parts = []
@@ -986,7 +987,9 @@ def _selected_panel_identity(panel: object) -> tuple | None:
     """Normalize a persisted selection-panel record to a panel identity."""
     if isinstance(panel, (list, tuple)) and len(panel) == 2:
         seed, episodes = panel
-        if all(isinstance(value, int) and not isinstance(value, bool) for value in panel):
+        if all(
+            isinstance(value, int) and not isinstance(value, bool) for value in panel
+        ):
             return ("research_evaluation", int(seed), int(episodes))
         return None
     if not isinstance(panel, dict):
@@ -1174,19 +1177,24 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
     return lines
 
 
-def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
+def _v4_evidence_lines(
+    state: dict, pending: dict | None, results: list[dict]
+) -> list[str]:
     research_evaluations: list[dict] = []
     task_reference_evaluations: list[dict] = []
     fingerprints: set[str] = set()
     artifacts: set[str] = set()
     seen_research: set[str] = set()
     seen_task_reference: set[str] = set()
-    sources = [*results, *(([pending]) if isinstance(pending, dict) else [])]
+    sources = _evidence_records(state, results, pending)
     for source in sources:
-        direct = [
-            *(source.get("requested_evaluations") or []),
-            *(source.get("partial_evaluations") or []),
-        ]
+        direct = _measurement_entries(source, "research_evaluation")
+        if not direct:
+            direct = [
+                {"candidate": candidate.get("name"), **evaluation}
+                for candidate in source.get("candidates") or []
+                for evaluation in candidate.get("evaluations") or []
+            ]
         if not direct:
             direct = [
                 {"candidate": candidate.get("name"), **evaluation}
@@ -1223,10 +1231,7 @@ def _v4_evidence_lines(pending: dict | None, results: list[dict]) -> list[str]:
                 fingerprints.add(str(fingerprint))
             if metrics.get("evaluation_artifact"):
                 artifacts.add(str(metrics["evaluation_artifact"]))
-        for evaluation in [
-            *(source.get("task_reference_evaluations") or []),
-            *(source.get("partial_task_reference_evaluations") or []),
-        ]:
+        for evaluation in _measurement_entries(source, "task_reference"):
             identity = str(
                 evaluation.get("evaluation_artifact")
                 or _stable_json(
@@ -1545,13 +1550,123 @@ def _v4_experiment_index_section(
     return lines
 
 
-def _v4_evidence_section(pending: dict | None, results: list[dict]) -> list[str]:
+def _lineage_names_by_fingerprint(state: dict) -> dict[str, list[str]]:
+    """Every saved-lineage identifier that currently resolves to each artifact."""
+    names: dict[str, list[str]] = {}
+    for identifier in ("working", "best_known"):
+        lineage = state.get(f"{identifier}_lineage")
+        if isinstance(lineage, dict) and lineage.get("fingerprint"):
+            names.setdefault(str(lineage["fingerprint"]), []).append(identifier)
+    for lineage in state.get("retained_lineages") or []:
+        if isinstance(lineage, dict) and lineage.get("fingerprint"):
+            names.setdefault(str(lineage["fingerprint"]), []).append(
+                str(lineage.get("id", "retained"))
+            )
+    return names
+
+
+def _aggregate_task_evidence(records: list[dict]) -> list[dict]:
+    """Each measured model's research-panel results summed over distinct panels.
+
+    Every panel result is already shown individually, one measurement at a time.
+    A model measured across several disjoint panels therefore had no campaign-
+    level total anywhere in the brief, and assembling one by hand was left to the
+    Researcher at the moment it decided whether to stop.
+
+    Only distinct panel identities are summed, so a reused panel contributes its
+    episodes once and cannot inflate a model's aggregate. The aggregate is a
+    count of measured episodes and successes: it carries no threshold, no
+    comparison and no readiness verdict, because the objective belongs to
+    ``research/scenario.md`` and the verdict to the official benchmark alone.
+    """
+    models: dict[str, dict] = {}
+    for record in records:
+        for entry in _measurement_entries(record, "research_evaluation"):
+            metrics = entry.get("metrics") or {}
+            merged = {**metrics, **entry}
+            fingerprint = _entry_fingerprint(entry)
+            successes = merged.get("successes", metrics.get("successes"))
+            episodes = merged.get("episodes")
+            seed = merged.get("seed")
+            if not fingerprint or not isinstance(successes, int):
+                continue
+            if not isinstance(episodes, int) or not isinstance(seed, int):
+                continue
+            panel = (str(merged.get("evaluation_semantics", "")), seed, episodes)
+            model = models.setdefault(
+                fingerprint,
+                {"fingerprint": fingerprint, "panels": {}, "labels": []},
+            )
+            model["panels"].setdefault(panel, successes)
+            label = str(merged.get("candidate", "")).strip()
+            if label and label not in model["labels"]:
+                model["labels"].append(label)
+    summaries = []
+    for model in models.values():
+        episodes = sum(panel[2] for panel in model["panels"])
+        successes = sum(model["panels"].values())
+        if episodes <= 0:
+            continue
+        summaries.append(
+            {
+                "fingerprint": model["fingerprint"],
+                "labels": model["labels"],
+                "panels": len(model["panels"]),
+                "episodes": episodes,
+                "successes": successes,
+                "seeds": sorted(panel[1] for panel in model["panels"]),
+            }
+        )
+    return sorted(summaries, key=lambda item: -item["episodes"])
+
+
+def _aggregate_task_evidence_lines(state: dict, records: list[dict]) -> list[str]:
+    """The per-model aggregate, stated as measured counts without a verdict."""
+    summaries = _aggregate_task_evidence(records)
+    if not summaries:
+        return []
+    names = _lineage_names_by_fingerprint(state)
+    lines = [
+        "",
+        (
+            "Aggregate research-panel evidence per measured model, summed over "
+            "the distinct panels that measured it. A reused panel counts once. "
+            "These are measured development counts, not an official result and "
+            "not a readiness indicator; the objective they must be judged "
+            "against is defined in `research/scenario.md` and only the official "
+            "benchmark reports the official result:"
+        ),
+        "",
+    ]
+    for summary in summaries:
+        fingerprint = summary["fingerprint"]
+        identifiers = names.get(fingerprint) or []
+        labels = identifiers or summary["labels"] or ["unnamed model"]
+        percent = 100.0 * summary["successes"] / summary["episodes"]
+        seeds = ", ".join(str(seed) for seed in summary["seeds"])
+        panels = summary["panels"]
+        lines.append(
+            f"- {', '.join(labels)} (model {fingerprint[:12]}): "
+            f"{summary['successes']}/{summary['episodes']} successes "
+            f"({percent:.1f}%) over {panels} distinct "
+            f"{'panel' if panels == 1 else 'panels'} "
+            f"(seed{'' if panels == 1 else 's'} {seeds})."
+        )
+    return lines
+
+
+def _v4_evidence_section(
+    state: dict, pending: dict | None, results: list[dict]
+) -> list[str]:
     """Aggregate fingerprint-bound development evidence."""
     return [
         "",
         "## Development evidence index",
         "",
-        *_v4_evidence_lines(pending, results),
+        *_v4_evidence_lines(state, pending, results),
+        *_aggregate_task_evidence_lines(
+            state, _evidence_records(state, results, pending)
+        ),
     ]
 
 
@@ -1709,9 +1824,7 @@ def _v4_terminal_assessment_section(state: dict) -> list[str]:
     return lines
 
 
-def _cost_records(
-    state: dict, results: list[dict], pending: dict | None
-) -> list[dict]:
+def _cost_records(state: dict, results: list[dict], pending: dict | None) -> list[dict]:
     """Experiment records once each, preferring the full pending result."""
     records = [record for record in results if isinstance(record, dict)]
     indices = {int(record.get("index", -1)) for record in records}
@@ -1720,6 +1833,88 @@ def _cost_records(
         if isinstance(result, dict) and int(result.get("index", -1)) not in indices:
             records.append(result)
     return records
+
+
+def _preparation_ledger_record(
+    state: dict, experiment_records: list[dict]
+) -> dict | None:
+    """The live preparation ledger as an evidence record, when it has no row yet.
+
+    A preparation round measures saved lineages before the upcoming experiment
+    exists, so its episodes live in ``preparation_measurement`` until that
+    experiment closes and persists them. Reading only the durable rows therefore
+    hid every preparation measurement of an experiment that never ran - the case
+    of a campaign concluded from preparation - and understated both the executed
+    work and the panels already consumed.
+    """
+    ledger = preparation_ledger(state)
+    if ledger is None:
+        return None
+    experiment = int(ledger.get("experiment", -1))
+    if experiment in {
+        int(record.get("index", -1))
+        for record in experiment_records
+        if isinstance(record, dict)
+    }:
+        return None
+    entries = [
+        entry
+        for entry in ledger.get("partial_evaluations") or []
+        if isinstance(entry, dict)
+    ]
+    reference = [
+        entry
+        for entry in ledger.get("partial_task_reference_evaluations") or []
+        if isinstance(entry, dict)
+    ]
+    rounds = [item for item in ledger.get("rounds") or [] if isinstance(item, dict)]
+    if not entries and not reference and not rounds:
+        return None
+    return {
+        "index": experiment,
+        "preparation_evaluations": entries,
+        "preparation_task_reference_evaluations": reference,
+        "preparation_evaluation_rounds": rounds,
+    }
+
+
+def _evidence_records(
+    state: dict, results: list[dict], pending: dict | None
+) -> list[dict]:
+    """Every record that carries measurements, experiments and preparation alike."""
+    records = _cost_records(state, results, pending)
+    ledger_record = _preparation_ledger_record(state, records)
+    return [*records, ledger_record] if ledger_record else list(records)
+
+
+def _fresh_restart_line(records: list[dict]) -> str:
+    """One factual count of how much of the campaign left the baseline recipe.
+
+    Every campaign opens with an automatic fresh baseline, so that experiment is
+    excluded: what this counts is the discretionary fresh restarts, the
+    experiments that trained a recipe from zero instead of continuing an
+    existing lineage.
+
+    It is reported because it is the only campaign-level quantity that separated
+    the campaigns in this repository's history from each other, and it was
+    invisible in the brief. It is a count of what happened, not a target: no
+    value is preferred, fresh initialization is not better than transfer, and
+    nothing in the protocol reads this line.
+
+    This function and its single call site are the whole mechanism; deleting
+    both removes it without affecting anything else.
+    """
+    fresh = sorted(
+        int(record["index"])
+        for record in records
+        if str(record.get("initialization")) == "fresh"
+        and int(record.get("index", 0)) > 1
+    )
+    return (
+        "- Fresh restarts after the baseline: "
+        + (", ".join(f"experiment {index}" for index in fresh) if fresh else "none")
+        + f" ({len(fresh)} of {len(records)} experiments)."
+    )
 
 
 def _v4_activity_record_section(
@@ -1731,31 +1926,34 @@ def _v4_activity_record_section(
     a preferred allocation, or an automatic stopping decision.
     Issue #46: describes what was executed separately from the evidence coverage
     it produced, and carries no running total of consumed resources.
+
+    Preparation rounds are executed work: they are counted with the experiments'
+    own rounds so the record describes every measurement the campaign ran, not
+    only the ones a training experiment persisted.
     """
     records = _cost_records(state, results, pending)
+    evidence_records = _evidence_records(state, results, pending)
     replications = sorted(
         int(record["index"])
         for record in records
         if str(record.get("kind")) == "replication"
     )
     rounds: list[dict] = []
-    for record in records:
-        rounds.extend(
-            item for item in record.get("evaluation_rounds") or [] if isinstance(item, dict)
-        )
+    for record in evidence_records:
+        for key in ("preparation_evaluation_rounds", "evaluation_rounds"):
+            rounds.extend(
+                item for item in record.get(key) or [] if isinstance(item, dict)
+            )
     instrument_executions = {"research_evaluation": 0, "task_reference": 0}
-    for record in records:
-        instrument_executions["research_evaluation"] += sum(
-            isinstance(item, dict) for item in record.get("requested_evaluations") or []
-        )
-        instrument_executions["task_reference"] += sum(
-            isinstance(item, dict)
-            for item in record.get("task_reference_evaluations") or []
-        )
-    coverage = campaign_coverage(records)
+    for record in evidence_records:
+        for instrument, keys in MEASUREMENT_LEDGER_KEYS.items():
+            instrument_executions[instrument] += sum(
+                isinstance(item, dict) for key in keys for item in record.get(key) or []
+            )
+    coverage = campaign_coverage(evidence_records)
     research_coverage = coverage["research_evaluation"]
     reference_coverage = coverage["task_reference"]
-    intervals = _consumed_research_intervals(records)
+    intervals = _consumed_research_intervals(evidence_records)
     return [
         "",
         "## Campaign activity record",
@@ -1772,10 +1970,15 @@ def _v4_activity_record_section(
         f"- Training experiments: {len(records)}.",
         (
             "- Replication experiments recorded: "
-            + (", ".join(str(index) for index in replications) if replications else "none")
+            + (
+                ", ".join(str(index) for index in replications)
+                if replications
+                else "none"
+            )
             + "."
         ),
         f"- Evaluation rounds: {len(rounds)}.",
+        _fresh_restart_line(records),
         (
             f"- Instrument executions: "
             f"{instrument_executions['research_evaluation']} research_evaluation, "
@@ -1798,11 +2001,7 @@ def _v4_activity_record_section(
         ),
         (
             "- research_evaluation intervals consumed: "
-            + (
-                ", ".join(_consumed_research_intervals(records))
-                if intervals
-                else "none"
-            )
+            + (", ".join(intervals) if intervals else "none")
             + "."
         ),
     ]
@@ -1840,17 +2039,28 @@ def _research_panel_of(entry: dict) -> tuple[int, int] | None:
 
 
 def _record_research_panels(record: dict) -> list[tuple[int, int]]:
-    """The research-evaluation panels a durable or pending record consumed."""
+    """The research-evaluation panels a durable or pending record consumed.
+
+    Every persisted ledger counts: a preparation round consumes its interval as
+    definitively as an executed request, so omitting it let the brief present an
+    already-measured interval as still available.
+    """
     panels: list[tuple[int, int]] = []
-    for entry in record.get("requested_evaluations") or []:
-        if not isinstance(entry, dict):
-            continue
-        if entry.get("instrument", "research_evaluation") != "research_evaluation":
-            continue
-        metrics = entry.get("metrics") or {}
-        panel = _research_panel_of({**metrics, **entry})
-        if panel is not None:
-            panels.append(panel)
+    ordered_keys = (
+        "preparation_evaluations",
+        "requested_evaluations",
+        "partial_evaluations",
+    )
+    for key in ordered_keys:
+        for entry in record.get(key) or []:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("instrument", "research_evaluation") != "research_evaluation":
+                continue
+            metrics = entry.get("metrics") or {}
+            panel = _research_panel_of({**metrics, **entry})
+            if panel is not None:
+                panels.append(panel)
     return panels
 
 
@@ -1990,9 +2200,7 @@ def _closure_selected_fingerprints(record: dict) -> set[str]:
     """The immutable fingerprints a recorded closure selected for a lineage role."""
     mapping = _record_label_fingerprints(record)
     return {
-        mapping[label]
-        for label in _closure_selected_labels(record)
-        if label in mapping
+        mapping[label] for label in _closure_selected_labels(record) if label in mapping
     }
 
 
@@ -2011,7 +2219,9 @@ def _reuse_context(
     location = "this panel" if identity[0] == "task_reference" else "these episodes"
     suffix = "" if uses == 1 else "s"
     history = [f"{uses} prior measurement{suffix} on {location}"]
-    selected = prior_selected.get(identity, {}).get(fingerprint, 0) if fingerprint else 0
+    selected = (
+        prior_selected.get(identity, {}).get(fingerprint, 0) if fingerprint else 0
+    )
     if selected:
         history.append(f"{selected} preceded a closure that selected this lineage")
     qualifier = (
@@ -2202,9 +2412,7 @@ def _v4_measurement_rounds_section(
                         )
                     )
             if item.get("reused_from_round") is not None:
-                lines.append(
-                    f"  - Reused from round {item['reused_from_round']}"
-                )
+                lines.append(f"  - Reused from round {item['reused_from_round']}")
             if item.get("evaluation_artifact"):
                 lines.append(
                     "  - Artifact: "
@@ -2248,9 +2456,7 @@ def _v4_measurement_rounds_section(
                         )
                     )
             if item.get("reused_from_round") is not None:
-                lines.append(
-                    f"  - Reused from round {item['reused_from_round']}"
-                )
+                lines.append(f"  - Reused from round {item['reused_from_round']}")
             if item.get("evaluation_artifact"):
                 lines.append(
                     "  - Artifact: "
@@ -2420,7 +2626,7 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_experiment_index_section(results, pending))
 
-    lines.extend(_v4_evidence_section(pending, results))
+    lines.extend(_v4_evidence_section(state, pending, results))
 
     lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
@@ -2739,9 +2945,7 @@ def render_research_brief() -> str:
         if requested_steps is not None:
             setup += f" / {int(requested_steps):,} steps"
         outcome = _table_cell(
-            _compact(
-                _experiment_outcome(result), 220, reference=RESULTS_REFERENCE
-            )
+            _compact(_experiment_outcome(result), 220, reference=RESULTS_REFERENCE)
         )
         verdict = _table_cell(
             _compact(result["verdict"], 100, reference=RESULTS_REFERENCE)

@@ -83,9 +83,7 @@ AUTORESEARCH_BOUNDARY_TEST_PATHS = (
     "tests/autoresearch/test_campaign_boundary.py",
 )
 # Researcher code changes retain only the human-owned architecture guards.
-RESEARCHER_VALIDATED_TEST_PATHS = (
-    *AUTORESEARCH_BOUNDARY_TEST_PATHS,
-)
+RESEARCHER_VALIDATED_TEST_PATHS = (*AUTORESEARCH_BOUNDARY_TEST_PATHS,)
 FRESH_BASELINE_VALIDATED_TEST_PATHS = (
     "tests/benchmark",
     *RESEARCHER_VALIDATED_TEST_PATHS,
@@ -169,16 +167,15 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
-# Reasoning fields whose honest answer may be its absence (issue #56). The
-# researcher still records an explicit, non-empty reason, so the validator keeps
-# checking explicitness and never scientific merit.
-NOT_APPLICABLE_REASONING_FIELDS = frozenset(
-    {"alternative", "contradicting_observation"}
+# The reasoning a proposal must make explicit, reduced to three questions: what
+# the campaign objective gains, why this initialization, and which observation
+# would change the next decision. Every other reasoning field is optional
+# commentary the Runner records without validating.
+REQUIRED_REASONING_FIELDS = (
+    "objective_link",
+    "initialization_reason",
+    "expected_observation",
 )
-# An optional qualifier for a prediction the researcher holds with less than
-# full force, so a contradicted weak prediction is not read as a refuted strong
-# one.
-REASONING_CONFIDENCE_LEVELS = ("strong", "moderate", "weak")
 
 
 # --- ownership -------------------------------------------------------------
@@ -571,58 +568,29 @@ def resolved_training_parent(
 
 
 def _validate_reasoning_statement(field: str, value: object) -> None:
-    """Require an explicit statement, or its justified absence (issue #56).
-
-    The check is still explicitness, not merit. ``alternative`` and
-    ``contradicting_observation`` may be recorded as an object naming why no
-    honest content exists, provided the reason itself is a non-empty string.
-    Every other field must be a non-empty string.
-    """
+    """Require an explicit statement. The check is explicitness, not merit."""
     if isinstance(value, str) and value.strip():
         return
-    if field in NOT_APPLICABLE_REASONING_FIELDS:
-        if isinstance(value, dict) and set(value) == {"not_applicable"}:
-            reason = value["not_applicable"]
-            if isinstance(reason, str) and reason.strip():
-                return
-        raise ValueError(
-            f"reasoning.{field} must be a non-empty string or a "
-            "not-applicable object with a non-empty reason"
-        )
     raise ValueError(f"reasoning.{field} must be a non-empty string")
 
 
 def validate_scientific_reasoning(proposal: dict) -> None:
-    """Check explicit reasoning, not its scientific merit or truthfulness."""
+    """Check explicit reasoning, not its scientific merit or truthfulness.
+
+    Three statements are required, because three are what a next decision needs:
+    the link to the objective, the initialization choice, and the observation
+    that would change what is decided next. The taxonomy of investigation types
+    and its branch-specific fields were removed: classifying an investigation
+    before running it produced format compliance, not scientific content, and
+    no category described the most productive move observed across campaigns -
+    trying a materially different recipe.
+    """
     reasoning = proposal.get("reasoning")
     if not isinstance(reasoning, dict):
         raise TypeError("proposal reasoning must be an object")
 
-    investigation_type = proposal.get("investigation_type")
-    if investigation_type not in {"confirmatory", "diagnostic", "exploratory"}:
-        raise ValueError(
-            "investigation_type must be confirmatory, diagnostic or exploratory"
-        )
-    fields = ["initialization_reason", "objective_link"]
-    if investigation_type == "exploratory":
-        fields.extend(("uncertainty", "observations_sought", "clarification"))
-    else:
-        fields.extend(
-            ("alternative", "expected_observation", "contradicting_observation")
-        )
-    for field in fields:
+    for field in REQUIRED_REASONING_FIELDS:
         _validate_reasoning_statement(field, reasoning.get(field))
-    if "confidence" in reasoning:
-        if investigation_type == "exploratory":
-            raise ValueError(
-                "reasoning.confidence is only valid for a confirmatory or "
-                "diagnostic prediction"
-            )
-        confidence = reasoning["confidence"]
-        if confidence not in REASONING_CONFIDENCE_LEVELS:
-            raise ValueError(
-                "reasoning.confidence must be strong, moderate or weak when present"
-            )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
         raise ValueError("reasoning.evidence must be a non-empty list")
@@ -795,24 +763,20 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
     required = {
         "kind",
         "family",
-        "investigation_type",
         "initialization",
     }
     missing = sorted(field for field in required if field not in proposal)
     if missing:
         raise ValueError(f"training proposal is missing required fields: {missing}")
     require_nonempty_string("family", "training proposal family")
-    investigation_type = proposal["investigation_type"]
-    if investigation_type not in {"confirmatory", "diagnostic", "exploratory"}:
+    # One statement of what the experiment asks, phrased as a hypothesis or as
+    # an open question. Which of the two it is carries no protocol consequence.
+    question = proposal.get("hypothesis") or proposal.get("scientific_question")
+    if not isinstance(question, str) or not question.strip():
         raise ValueError(
-            "investigation_type must be confirmatory, diagnostic or exploratory"
+            "hypothesis must be a non-empty string, "
+            "unless the proposal states a scientific_question instead"
         )
-    if investigation_type == "exploratory":
-        require_nonempty_string(
-            "scientific_question", "exploratory proposal scientific_question"
-        )
-    else:
-        require_nonempty_string("hypothesis", "training proposal hypothesis")
     kind = proposal["kind"]
     if kind not in {"training", "continuation", "replication"}:
         raise ValueError(
@@ -960,6 +924,16 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     is the second legal exit: it either submits the standing best-known lineage
     for the official final assessment or records that no further experiment is
     warranted. Neither outcome creates an experiment record.
+
+    A preparation measurement round may not be spent and then converted into a
+    conclusion. Measuring a saved lineage during preparation consumes no
+    experiment, so a phase that measures and then concludes obtains its terminal
+    decision for free, which is how two campaigns ended on their own first
+    model. The request is justified by the next decision it would change, and in
+    this phase that decision is which experiment to prepare; the phase therefore
+    still owes a proposal. Concluding remains available without spending the
+    round, after an experiment, and whenever no further experiment may be
+    prepared at all.
     """
     if state.get("schema_version") != 4:
         raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
@@ -967,6 +941,15 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
         raise ValueError(
             "a campaign conclusion is not accepted while a closure operation is pending"
         )
+    if not state.get("preparation_conclusion_only"):
+        ledger = preparation_ledger(state)
+        if ledger is not None and list(ledger.get("rounds") or []):
+            raise ValueError(
+                "this preparation phase already executed a measurement round on "
+                "saved lineages, so it owes an experiment proposal; a campaign "
+                "conclusion is accepted from a preparation phase that spends no "
+                "measurement round"
+            )
     if set(proposal) != {"campaign_conclusion"}:
         raise ValueError("a campaign conclusion must contain only campaign_conclusion")
     conclusion = proposal["campaign_conclusion"]
@@ -1104,15 +1087,12 @@ def validate_evaluation_request(
                 f"{instrument} requires a non-empty selection stating why this "
                 "model is useful for the current scientific question"
             )
-        if "omitted_alternative" not in entry:
-            raise ValueError(
-                f"{instrument} requires omitted_alternative to identify an "
-                "available model left outside the request"
-            )
-        omitted_alternative = entry["omitted_alternative"]
+        # ``omitted_alternative`` stays accepted for historical records but is no
+        # longer required: naming a model left out of a request produced
+        # administrative counterfactuals, not new scientific information.
+        omitted_alternative = entry.get("omitted_alternative")
         if omitted_alternative is not None and (
-            not isinstance(omitted_alternative, str)
-            or not omitted_alternative.strip()
+            not isinstance(omitted_alternative, str) or not omitted_alternative.strip()
         ):
             raise ValueError("omitted_alternative must be a non-empty string or null")
         if instrument == "research_evaluation":
@@ -1157,10 +1137,14 @@ def _panels_overlap(left: tuple[int, int], right: tuple[int, int]) -> bool:
     )
 
 
-def recorded_research_panels(state: dict, pending: dict | None) -> list[tuple[int, int]]:
+def recorded_research_panels(
+    state: dict, pending: dict | None
+) -> list[tuple[int, int]]:
     """Panels already recorded for this campaign's research evaluations."""
     campaign_id = repository.current_campaign_id(state)
-    sources = list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
+    sources = (
+        list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
+    )
     if isinstance(pending, dict):
         sources.append(pending)
     panels: list[tuple[int, int]] = []
@@ -1380,14 +1364,8 @@ def planned_measurements(
             raise ValueError(
                 f"unknown measurement candidate {name!r}; choose from {sorted(available)}"
             )
-        omitted_alternative = spec["omitted_alternative"]
-        if omitted_alternative is None:
-            if omitted_names:
-                raise ValueError(
-                    "omitted_alternative may be null only when the request measures "
-                    "every available model"
-                )
-        else:
+        omitted_alternative = spec.get("omitted_alternative")
+        if omitted_alternative is not None:
             omitted_alternative = omitted_alternative.strip()
             if omitted_alternative not in available:
                 raise ValueError(
@@ -2003,9 +1981,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         raise TypeError("request_final_benchmark must be true or false")
     terminal_reason = str(decision.get("terminal_reason", "")).strip()
     if request_final and not terminal_reason:
-        raise ValueError(
-            "request_final_benchmark requires a non-empty terminal_reason"
-        )
+        raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
     selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
     if (
         request_final
@@ -2111,7 +2087,9 @@ def _normalized_selection_panel(item: object) -> dict | None:
     """Accept the instrument-preserving record or a legacy ``[seed, episodes]``."""
     if isinstance(item, (list, tuple)) and len(item) == 2:
         seed, episodes = item
-        if all(isinstance(value, int) and not isinstance(value, bool) for value in item):
+        if all(
+            isinstance(value, int) and not isinstance(value, bool) for value in item
+        ):
             return {
                 "instrument": "research_evaluation",
                 "seed": int(seed),
@@ -2137,13 +2115,15 @@ def _normalized_selection_panel(item: object) -> dict | None:
                 return None
             if isinstance(episodes, bool) or not isinstance(episodes, int):
                 return None
-            return {"instrument": "research_evaluation", "seed": seed, "episodes": episodes}
+            return {
+                "instrument": "research_evaluation",
+                "seed": seed,
+                "episodes": episodes,
+            }
     return None
 
 
-def _selection_panels_for(
-    source: dict, pending: dict, fingerprint: str
-) -> list[dict]:
+def _selection_panels_for(source: dict, pending: dict, fingerprint: str) -> list[dict]:
     """The panels a newly selected lineage was measured on.
 
     Issue #57: a lineage selected on a panel's episodes is not independently
@@ -2496,9 +2476,7 @@ def _compatible_primary_panels(
     panels = []
     for candidate_settings, candidate_panel in candidate_groups.items():
         for reference_settings, reference_panel in reference_groups.items():
-            if not _evidence_records_compatible(
-                candidate_panel[0], reference_panel[0]
-            ):
+            if not _evidence_records_compatible(candidate_panel[0], reference_panel[0]):
                 continue
             panels.append(
                 (
@@ -3010,9 +2988,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         raise TypeError("request_final_benchmark must be true or false")
     terminal_reason = str(decision.get("terminal_reason", "")).strip()
     if request_final and not terminal_reason:
-        raise ValueError(
-            "request_final_benchmark requires a non-empty terminal_reason"
-        )
+        raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
     if request_final and best_record is None:
         raise ValueError("a final benchmark requires a designated best-known model")
     retained_records = [

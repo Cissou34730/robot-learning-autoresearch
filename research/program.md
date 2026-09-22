@@ -124,29 +124,20 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 Inspect relevant repository state and completed evidence, then identify the
 scientific question and the concrete downstream decision that its possible
 outcomes could change; only then choose the operation that answers it. State how
-the question serves the human objective. Declare the investigation type. A
-confirmatory or diagnostic investigation states a proposition, a plausible
-alternative where one exists, and the observations that would distinguish them,
-recording an absent competing explanation or discriminating observation as not
-applicable rather than inventing it. An exploratory investigation states the
-question, the uncertainty, the observations it seeks and what those observations
-could clarify. Do not invent a causal mechanism or a prediction merely to
-satisfy the proposal format. A justified absence is limited to `alternative` and
-`contradicting_observation`; every other required field must carry its content,
-and a prediction held weakly is qualified through `reasoning.confidence`, which
-applies only to a confirmatory or diagnostic prediction.
+the question serves the human objective, and state the observation that would
+change that downstream decision. A question may be phrased as a hypothesis or
+left open; the protocol treats the two alike. Do not invent a causal mechanism
+or a prediction merely to satisfy the proposal format.
 
-For a replication or other process-variance question, the reasoning must
-distinguish what decision follows from the expected result and what decision
-follows from the contradicting result, using the existing `expected_observation`,
-`contradicting_observation`, and `objective_link` fields. If both outcomes would
-leave the relevant development decision unchanged, unresolved reproducibility
-alone does not justify a full training run.
+For a replication or other process-variance question, state what decision
+follows from each possible result. If every outcome would leave the relevant
+development decision unchanged, unresolved reproducibility alone does not
+justify a full training run.
 
-Justify the training parent and fresh-or-transfer initialization by their
-expected value for the question and semantic compatibility with the policy and
-learned representation. Unchanged tensor dimensions alone do not establish
-semantic compatibility. Neither fresh initialization nor transfer is preferred.
+Choose fresh or transfer initialization and the training parent according to the
+scientific question and the compatibility of the learned representation.
+Neither fresh initialization nor transfer is preferred, and a recipe that has
+already been measured repeatedly is not a safer choice than one that has not.
 
 Establish or update the Scientific strategy, make only the code or parameter
 changes the selected operation calls for, and write `research/proposal.json`.
@@ -171,16 +162,12 @@ experiment is rejected.
 
 Assess progress toward a learned policy satisfying the human objective. Inspect
 the training outcome and available measurements, then relate relevant findings
-to the proposal's own reasoning: its expected and contradicting observations, or
-the uncertainty and sought observations of an exploratory investigation. That
-reasoning frames informative possibilities; it is not an acceptance threshold
-for a saved policy or a binary limit on interpretation. Use `supported`, `partially
-supported`, `weakened`, `contradicted`, or `inconclusive`, and record partial,
-unexpected, or orthogonal signals as well as limitations. When the proposal
-recorded a prediction as weakly held or a field as not applicable, say so in the
-assessment: a contradicted weak prediction is not a refuted strong one, and a
-field recorded as not applicable was never a commitment. An unmeasured
-checkpoint remains unmeasured, not a failed policy.
+to the proposal's own reasoning. That reasoning frames informative
+possibilities; it is not an acceptance threshold for a saved policy or a binary
+limit on interpretation. Use `supported`, `partially supported`, `weakened`,
+`contradicted`, or `inconclusive`, and record partial, unexpected, or orthogonal
+signals as well as limitations. An unmeasured checkpoint remains unmeasured, not
+a failed policy.
 
 Decide whether to request measurements before resolving lineage. A measurement
 may discover or refine a question, characterize unfamiliar behavior, compare
@@ -193,10 +180,7 @@ Ground each model selection in an observed signal or explicit uncertainty and
 state which next decision the measurement could change. Checkpoint position,
 order in a listing, and labels are descriptive context and not sufficient
 reasons on their own; any model remains a valid measurement target when
-evidence or a specific unresolved question makes it informative. Identify an
-available model omitted from the request as required by the measurement
-contract; this records the Researcher's tradeoff and does not ask the Runner to
-rank models.
+evidence or a specific unresolved question makes it informative.
 
 During this phase, request measurements of current candidates or eligible saved
 lineages through `research/evaluation_request.json`. Researcher-owned measurement
@@ -206,25 +190,17 @@ the new evidence rather than assuming closure is next.
 
 A measurement request is also available during experiment preparation, but its
 scope is narrower: it may measure only saved lineages (`working`, `best_known`,
-or a retained ID) through `research/evaluation_request.json`. It may not name the
-candidates of an experiment that has not run, because those do not exist yet.
-Use this when an unresolved question about a parent's or a lineage's behavior
-would change the next decision; do not state an assumption in place of evidence
-that a preparation measurement can obtain. A completed preparation round returns
-to preparation, is recorded under the upcoming experiment, and is then available
-alongside the previous experiments' evidence. A new uncertainty that the
-available evidence cannot resolve is a legitimate reason to choose a diagnostic
-experiment or request such a measurement rather than to rationalise a guess.
+or a retained ID), because the candidates of an experiment that has not run do
+not exist yet. Measuring a model that has already been measured describes the
+campaign's existing position; it does not advance it, and it is not a substitute
+for the experiment that would.
 
-Research and task-reference panels are development measurements distinguished by
-their properties, not by authority. Any panel reused during model selection - the
-fixed task-reference panel as much as an identically reused research panel -
-yields selection-contaminated evidence for the models selected on it: a model
-chosen on a panel's episodes is not independently confirmed by measuring those
-same episodes again. Repeated use of the same panel remains repeated evidence from
-that panel, not independent held-out confirmation, and it is not a privileged
-lineage criterion. The fixed task-reference panel is the permanently reused case
-of this rule. Do not change a protected panel or present development evidence as
+Reusing the same evaluation episodes supports comparison but provides no
+independent confirmation: a model chosen on a panel's episodes is not confirmed
+by measuring those same episodes again. The fixed task-reference panel is the
+permanently reused case of this rule. Research and task-reference panels are
+development measurements and never declare the objective reached, whatever number
+they return. Do not change a protected panel or present development evidence as
 final validation.
 
 ## Experiment closure
@@ -243,13 +219,10 @@ the selected policy, not a required training parent. Selecting it does not decid
 whether to end development or request final assessment.
 
 An eligible `training_parent` can only be `working`, `best_known`, or an
-explicitly retained lineage ID, because only a closure-produced record carries
-the complete inference artifact, a matching fingerprint, a `scientific_commit`
-and effective parameters. Retention is therefore the only way to create a future
-training parent from a candidate: a candidate that receives no role has its
-weights removed at closure and can never be extended, re-measured, or compared
-against later. There is no budget or preferred count for retention, so retain any
-checkpoint whose future value is uncertain.
+explicitly retained lineage ID. Retention is therefore the only way to create a
+future training parent from a candidate: a candidate that receives no role has
+its weights removed at closure. Retention has no budget; retain the candidates
+whose future use you can describe.
 
 Assess the investigation's outcome, saved-policy usefulness, scientific recipe,
 training parent, artifact retention, and readiness for terminal assessment as
@@ -269,49 +242,42 @@ closure.
 ## Scientific memory
 
 Maintain the active campaign's **Scientific strategy** in
-`research/postmortems.md` using the format in `research/instruments.md`. Keep it a
-compact decision aid, not a second experiment history:
-
-- `Current synthesis`: the present interpretation of relevant campaign evidence.
-- `Lessons and limits`: reusable findings, their sources, and uncertainty.
-- `Open questions`: recorded uncertainties and useful unresolved questions, not
-  priorities and not a mandatory experiment queue. Their presence does not
-  justify selecting them for the next experiment; selection still depends on
-  their current decision value relative to other plausible questions.
+`research/postmortems.md` using the format in `research/instruments.md`. It is a
+short current synthesis: what the campaign's evidence currently suggests, the
+limitations that matter, and the questions that remain unresolved. It is
+revisable evidence, not an action list, and no open question is owed an
+experiment.
 
 Preserve historical observations and decisions; revise current interpretations
-in the synthesis rather than rewriting what was believed at the time. Write the
-synthesis at the start of a new hypothesis phase, from the campaign objective and
-the whole campaign's evidence, rather than at the close of the experiment that
-preceded it. The synthesis records no required next action, and changing
-investigations does not require resolving every open question.
+in the synthesis rather than rewriting what was believed at the time.
 
 ## Stopping
 
-Continue development while the Researcher judges that further investigation
-best serves the human objective. Request terminal assessment when the Researcher
-judges that the selected best-known model is ready for the official verdict,
-stating the evidence and uncertainty behind that decision.
+Continue development while a scientifically useful path toward the human
+objective remains. Request the terminal assessment when you expect it to return
+`goal_reached` for the selected best-known model, stating the evidence and the
+uncertainty behind that expectation. If you do not expect that verdict, then
+either a path remains to pursue or there is nothing further to report: say which,
+and act accordingly.
 
-Development measurements support model selection and scientific judgment. A
-measurement used to select a model is not automatically independent
-confirmation. After observing a promising result, the Researcher may request
-another measurement round on a disjoint panel before closing the experiment. The
-Researcher decides whether the available evidence justifies requesting the
-official benchmark: no task-reference measurement, confidence threshold, special
-evidence label, or predefined number of panels is mandatory.
+The official benchmark is a verdict you claim, not an instrument you consult. Do
+not request it in order to find out how the model performs, to settle an
+uncertainty that development measurements did not settle, or because no further
+measurement looks informative. Anything you need to know in order to decide must
+be measured while you can still act on the answer.
 
-Another useful investigation does not prohibit stopping, and reaching a
-development threshold does not require stopping. No residual-failure criterion or
-proof that no better research direction exists is required. Deferring the request
-is also a decision with a cost: development evidence is never a substitute for the
-official verdict, and a campaign that never requests it produces no official
-result at all. There is no advantage to waiting beyond the point where further
-investigation no longer changes which model you would submit.
+Development measurements support model selection and scientific judgment, and
+never declare the objective reached. A measurement used to select a model is not
+automatically independent confirmation. After observing a promising result, the
+Researcher may request another measurement round on a disjoint panel before
+closing the experiment.
 
-The decision rule is procedural rather than a performance threshold: request the
-assessment when you can no longer describe an experiment whose outcome would
-change which model you submit. The rule asks nothing about how good the result is.
+Another useful investigation does not prohibit stopping. Development evidence is
+never a substitute for the official verdict, and a campaign that never requests it
+produces no official result at all. Equally, a campaign that submits a model no
+better than the one it started with has converted its whole allocation into a
+single measurement. Neither the number of experiments already run nor the cost of
+running another is itself a reason to stop.
 
 Request the official benchmark from experiment preparation or closure, targeting
 the frozen best-known model. Requesting it ends the campaign after either verdict:

@@ -430,7 +430,9 @@ def _canonicalize_selected_panel(panel: object) -> dict:
     """
     if isinstance(panel, (list, tuple)) and len(panel) == 2:
         seed, episodes = panel
-        if all(isinstance(value, int) and not isinstance(value, bool) for value in panel):
+        if all(
+            isinstance(value, int) and not isinstance(value, bool) for value in panel
+        ):
             return {
                 "instrument": "research_evaluation",
                 "seed": int(seed),
@@ -1021,6 +1023,20 @@ def measurement_record(metrics: dict) -> dict:
     return record
 
 
+MEASUREMENT_LEDGER_KEYS = {
+    "research_evaluation": (
+        "requested_evaluations",
+        "partial_evaluations",
+        "preparation_evaluations",
+    ),
+    "task_reference": (
+        "task_reference_evaluations",
+        "partial_task_reference_evaluations",
+        "preparation_task_reference_evaluations",
+    ),
+}
+
+
 def campaign_coverage(records: list[dict]) -> dict:
     """Campaign-level episode identity coverage, per instrument.
 
@@ -1030,6 +1046,11 @@ def campaign_coverage(records: list[dict]) -> dict:
     counts each identity once across every model and round; executions count
     every episode run. Repeated coverage is the difference, so the same panel
     reused across models is reported as repetition rather than as new coverage.
+
+    Every persisted ledger of an instrument is counted, not only the executed
+    request. A preparation round consumes real episodes, so omitting it made the
+    brief understate both the coverage already spent and the intervals a new
+    panel must avoid.
     """
     buckets: dict[str, dict] = {
         "research_evaluation": {"identities": set(), "executions": 0},
@@ -1038,33 +1059,36 @@ def campaign_coverage(records: list[dict]) -> dict:
     for record in records:
         if not isinstance(record, dict):
             continue
-        for item in record.get("requested_evaluations") or []:
-            if not isinstance(item, dict):
-                continue
-            metrics = item.get("metrics") or {}
-            bucket = buckets["research_evaluation"]
-            _add_episode_identities(
-                bucket,
-                instrument="research_evaluation",
-                marker=str(
-                    item.get(
-                        "evaluation_semantics",
-                        metrics.get("evaluation_semantics", ""),
-                    )
-                ),
-                seed=int(item.get("seed", metrics.get("seed", 0)) or 0),
-                episodes=int(item.get("episodes", metrics.get("episodes", 0)) or 0),
-            )
-        for item in record.get("task_reference_evaluations") or []:
-            if not isinstance(item, dict):
-                continue
-            _add_episode_identities(
-                buckets["task_reference"],
-                instrument="task_reference",
-                marker=str(item.get("panel", "")),
-                seed=int(item.get("seed", 0) or 0),
-                episodes=int(item.get("episodes", 0) or 0),
-            )
+        for key in MEASUREMENT_LEDGER_KEYS["research_evaluation"]:
+            for item in record.get(key) or []:
+                if not isinstance(item, dict):
+                    continue
+                metrics = item.get("metrics") or {}
+                bucket = buckets["research_evaluation"]
+                _add_episode_identities(
+                    bucket,
+                    instrument="research_evaluation",
+                    marker=str(
+                        item.get(
+                            "evaluation_semantics",
+                            metrics.get("evaluation_semantics", ""),
+                        )
+                    ),
+                    seed=int(item.get("seed", metrics.get("seed", 0)) or 0),
+                    episodes=int(item.get("episodes", metrics.get("episodes", 0)) or 0),
+                )
+        for key in MEASUREMENT_LEDGER_KEYS["task_reference"]:
+            for item in record.get(key) or []:
+                if not isinstance(item, dict):
+                    continue
+                metrics = item.get("metrics") or {}
+                _add_episode_identities(
+                    buckets["task_reference"],
+                    instrument="task_reference",
+                    marker=str(item.get("panel", metrics.get("panel", ""))),
+                    seed=int(item.get("seed", metrics.get("seed", 0)) or 0),
+                    episodes=int(item.get("episodes", metrics.get("episodes", 0)) or 0),
+                )
     return {
         name: {
             "distinct_episodes": len(bucket["identities"]),
