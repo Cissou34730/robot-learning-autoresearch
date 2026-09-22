@@ -2,11 +2,11 @@
 
 ## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior after roughly 86,000 steps. Checkpoint-100352 is the best-supported policy: it achieved 394/400 successes across two distinct research panels and 196/200 on the fixed task-reference panel. However, its disjoint-panel result was 195/200 (97.5%), so the campaign has not independently established the 98% objective. Continued training to checkpoint-120832 did not improve the disjoint result and was slightly weaker on the task-reference panel.
+**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior, with checkpoint-100352 achieving 394/400 successes across two research panels and 196/200 on the fixed task-reference panel. Its disjoint result was 195/200 (97.5%), so the 98% objective remains unestablished; checkpoint-120832 tied it on that panel and was slightly weaker in pooled evidence.
 
-**Lessons and limits:** Training reward and training success were useful for locating candidate checkpoints but did not rank task behavior reliably: the reward peak at checkpoint-86016 measured 95.0% on research evaluation and 94.0% on task reference, while the later checkpoint-100352 was stronger. The first research panel and the fixed task-reference panel selected or informed checkpoint-100352, so they are not independent confirmation; the disjoint panel is the relevant generalization check. The current evidence supports a useful policy lineage, not a claim that the official 200-episode benchmark will reach 196 successes.
+**Lessons and limits:** Training reward and training success did not reliably rank task behavior, and the first research and fixed reference panels are not independent confirmation. The working policy's six observed disjoint-panel failures include both failures to reach and brief holds that were interrupted; most occurred below 14 cm, while training sampled only 14–20 cm. This is limited failure evidence, not a complete characterization of the official distribution.
 
-**Open questions:** Whether further training or a changed learning recipe can reduce the remaining failure rate on the official distribution remains unresolved. The residual difference between the 99.5% first research panel and the 97.5% disjoint panel also leaves performance variability to characterize in future development.
+**Open questions:** Whether the residual failure rate, including failures on inner targets and interrupted holds, can be reduced without sacrificing outer-range behavior remains unresolved. Performance variability across the official target distribution is also not fully characterized.
 
 ## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Experiment 1
 
