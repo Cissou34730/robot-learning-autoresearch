@@ -18,7 +18,7 @@
 
 **Lessons and limits:** Training success and reward identify useful checkpoints but do not replace task-success measurement. Full and partial hold-exit forfeiture, convex hold-progress shaping, and full-radius training did not improve the measured incumbent under their tested trajectories, although these findings are limited to those recipes and panels. Incumbent failures include both episodes that never reach tolerance and episodes that interrupt a hold; the research panels and reused task-reference panel remain development evidence rather than official confirmation.
 
-**Open questions:** The official result for the selected policy remains unresolved; development panels do not declare the objective reached. Further training is an ordinary subsequent experiment after this closure, not part of the experiment-5 decision.
+**Open questions:** The official result for the selected policy remains unresolved; development panels do not declare the objective reached. The remaining uncertainty is the frozen policy's performance on the official panel, not the comparative outcome of the tested development interventions.
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Experiment 2
 
