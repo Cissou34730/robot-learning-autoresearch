@@ -88,7 +88,7 @@
   "pending_analysis": null,
   "pending_campaign_conclusion": {
     "action": "request_final_benchmark",
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The unchanged best-known lineage achieved 976/1000 successes across five distinct research panels, including 198/200 on the latest disjoint panel, and tied both measured full-radius challengers with zero discordant wins. Its fixed task-reference measurement was also 98.0%. These development results do not establish the objective, but together they make a goal_reached verdict on the frozen official panel the expected outcome; residual uncertainty is panel-to-panel variation rather than an unresolved development intervention.",
     "terminal_expectation": {
       "expected_verdict": "goal_reached",
