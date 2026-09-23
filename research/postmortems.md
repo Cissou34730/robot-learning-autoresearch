@@ -3,25 +3,24 @@
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior, but the standing checkpoint-100352 lineage achieved 155/160 successes
-on the independent experiment-3 development panel (96.875%), below the 98%
-objective. The hold-forfeiture reward change produced 143/160 at its intermediate
-checkpoint and 135/160 at its final checkpoint, so the standing lineage remains
-both working and best-known.
+behavior, while the standing checkpoint-100352 lineage reached 155/160 on the
+latest independent development panel and 457/480 across three panels. Both
+figures remain below the 98% objective. The full-radius target intervention tied
+or underperformed the parent, and the 1.0 hold-exit forfeiture intervention
+fell to 143/160 and 135/160, so the standing lineage remains working and
+best-known.
 
 **Lessons and limits:** Training proxies identified useful behavior but did not
-predict task improvement: the experiment-2 final proxy was 0.91 while its task
-result was below the parent, and the experiment-3 reward intervention also
-failed to improve the task panel. The remaining failures include no-reach cases
-and interrupted holds. The evidence covers development panels, not the official
-200-episode assessment.
+predict task improvement. Residual measured failures include both no-reach
+episodes and interrupted holds, and a single extreme hold-forfeiture setting is
+evidence against that setting rather than against reward shaping generally.
+All measurements are development evidence; the official 200-episode assessment
+has not been run.
 
-**Open questions:** The tested hold-forfeiture intervention is weakened under
-these conditions; whether another reward or representation intervention can
-resolve the remaining no-reach and interrupted-hold failures remains unknown.
-The standing lineage's performance on the full official panel remains
-unmeasured, and further training should be treated as an ordinary experiment
-after this closure.
+**Open questions:** It remains unknown whether a smaller persistence incentive
+can reduce interrupted holds without sacrificing broad reach behavior, and
+whether the no-reach failures require a representation change. Performance of
+the standing lineage on the official panel is also unknown.
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 1
 
