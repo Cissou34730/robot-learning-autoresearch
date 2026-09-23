@@ -65,10 +65,16 @@ def test_preliminary_reading_material_excludes_campaign_context():
 
 
 def test_subsequent_phase_prompts_read_the_frozen_model():
+    guidance = SCRIPT.split('$scientificModelUseGuidance = "', 1)[1].split('"', 1)[0]
+    assert "use it when relevant" in guidance
+    assert "training, parameter choices, and policy performance" in guidance
+    assert "current campaign configuration, logs, and measurements" in guidance
+    assert "do not infer training outcomes from the scientific model" in guidance
     for prompt in ("analysisPrompt", "evaluationPrompt", "decisionPrompt", "researchPrompt"):
         corpus = SCRIPT.split(f"${prompt} = @(", 1)[1].split(") -join", 1)[0]
         assert "research/scientific_model.md" in corpus
         assert "research/brief.md" in corpus
+        assert "$scientificModelUseGuidance" in corpus
 
 
 def test_scientific_model_is_campaign_memory_and_protected_context():
