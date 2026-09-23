@@ -2,24 +2,25 @@
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Scientific strategy
 
-**Current synthesis:** The fresh baseline learned substantial reach-and-hold
-behavior, but the best tested checkpoint reached only 95.0% on a disjoint
-research panel. `checkpoint-100352` is the strongest measured lineage candidate
-because it led the disjoint panel and reached 98.0% on the fixed task-reference
-panel, while `checkpoint-95232` is a stable earlier alternative. The
-task-reference result is development evidence on a permanently reused panel and
-does not independently establish the 98% human objective.
+**Current synthesis:** The baseline learned substantial reach-and-hold behavior,
+but its best measured lineage, `checkpoint-100352`, reached 95.0% on a disjoint
+research panel. Its 98.0% fixed task-reference result is promising development
+evidence, not an official result. The remaining observed fixed-panel failures
+were concentrated at inner targets, while the baseline training distribution
+covered only 14-20 cm.
 
-**Lessons and limits:** Training proxies identified a useful late-training
-region but did not reach the objective reliably: the disjoint results were
-94.5% for `checkpoint-95232`, 95.0% for `checkpoint-100352`, and 93.5% for
-`checkpoint-120832`. Continued training past the proxy peak degraded measured
-success. These conclusions describe this baseline recipe and the measured
-panels; unmeasured checkpoints remain unmeasured.
+**Lessons and limits:** The late proxy peak was more reliable than the final
+checkpoint: disjoint results were 94.5% for `checkpoint-95232`, 95.0% for
+`checkpoint-100352`, and 93.5% for `checkpoint-120832`. The measured task-
+reference failures for `checkpoint-100352` were four targets from 6.73-9.91 cm,
+each ending after the 500-step limit. These observations are limited to the
+baseline recipe and completed development panels; they do not establish that
+full-radius training will improve behavior or that the objective is met.
 
-**Open questions:** Further training may reduce the remaining failure rate,
-but the current evidence does not establish which scientific intervention will
-do so or whether the selected policy can meet 98% on the official panel.
+**Open questions:** It remains unresolved whether exposing the full official
+6-20 cm radius range during training improves the inner-target failures without
+reducing performance on the outer range, and whether the resulting policy can
+reach the human objective on held-out official assessment.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
