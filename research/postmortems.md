@@ -2,11 +2,11 @@
 
 ## 021d2780-9c61-4eb5-88a8-68644fdf7d39 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior late in training. `checkpoint-100352` is the best-supported policy: it achieved 195/200 successes on research episodes 2000-2199 and 196/200 on the disjoint episodes 2200-2399, for 391/400 pooled research successes (97.75%). It also achieved 196/200 on the fixed task-reference panel, but that panel was part of the first-round candidate selection and is not independent confirmation. The final checkpoint `checkpoint-120832` achieved 194/200 on both research panels and 194/200 on the task-reference panel, so additional training to that point did not improve measured task performance.
+**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior late in training, with `checkpoint-100352` the best-supported policy at 391/400 successes (97.75%) across two disjoint research panels. It also achieved 196/200 on the reused task-reference panel. The later `checkpoint-120832` scored 194/200 on each research panel, so the additional unchanged training did not improve the measured policy.
 
-**Lessons and limits:** Training-time reward and success rose sharply late in the run and identified the useful performance region, but they were only proxies. The disjoint research result supports selecting `checkpoint-100352` over the final checkpoint, and the paired comparison favors it by 3 to 0 discordant wins across 400 shared research episodes; neither development evidence establishes the official 200-episode result. The pooled estimate is one success short of 98%, so the policy is close to the objective but not sufficiently certain for a terminal claim.
+**Lessons and limits:** Training-time reward and success identified a useful late-training region but remain proxies. The selected checkpoint is one pooled success below the 98% target, and its paired comparison with the final checkpoint favors it by 3 to 0 discordant wins. All measurements are development evidence; none establishes the official 200-episode result or explains the residual failures.
 
-**Open questions:** Whether the selected policy reaches at least 196/200 on the official final panel remains unresolved. Residual failure structure and whether further training or a changed recipe can improve the near-objective plateau are also unresolved.
+**Open questions:** Whether the near-objective plateau is improved or preserved by a changed training recipe, and whether the resulting policy merits the official assessment, remain unresolved.
 
 ## 021d2780-9c61-4eb5-88a8-68644fdf7d39 / Experiment 1
 
