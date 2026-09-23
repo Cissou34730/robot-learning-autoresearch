@@ -3,24 +3,23 @@
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Scientific strategy
 
 **Current synthesis:** The baseline learned substantial reach-and-hold behavior,
-but its best measured lineage, `checkpoint-100352`, reached 95.0% on a disjoint
-research panel. Its 98.0% fixed task-reference result is promising development
-evidence, not an official result. The remaining observed fixed-panel failures
-were concentrated at inner targets, while the baseline training distribution
-covered only 14-20 cm.
+but its best measured lineage, `checkpoint-100352`, remains below the objective:
+it scored 95.0% on the earlier disjoint research panel and 94.5% on the new
+seed-4560 panel. Full-radius training did not improve this position: both
+measured experiment-2 challengers scored 94.0%.
 
-**Lessons and limits:** The late proxy peak was more reliable than the final
-checkpoint: disjoint results were 94.5% for `checkpoint-95232`, 95.0% for
-`checkpoint-100352`, and 93.5% for `checkpoint-120832`. The measured task-
-reference failures for `checkpoint-100352` were four targets from 6.73-9.91 cm,
-each ending after the 500-step limit. These observations are limited to the
-baseline recipe and completed development panels; they do not establish that
-full-radius training will improve behavior or that the objective is met.
+**Lessons and limits:** The full 6-20 cm training intervention did not transfer
+the proxy peak into higher task success; the proxy-peak and final challengers
+both lost one episode to the contemporaneous control on their paired panel.
+The existing baseline lineage is therefore the most useful saved policy and its
+parent 14-20 cm recipe should be restored. These development measurements do
+not establish that the 98% objective is met or predict the official result.
 
-**Open questions:** It remains unresolved whether exposing the full official
-6-20 cm radius range during training improves the inner-target failures without
-reducing performance on the outer range, and whether the resulting policy can
-reach the human objective on held-out official assessment.
+**Open questions:** The residual reach-and-hold failures remain unresolved,
+including failures in the inner-radius regime and episodes that end at the
+500-step limit. Further progress would require an ordinary later experiment
+with a different intervention; the current evidence does not identify which
+intervention will reach the human objective.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
@@ -57,3 +56,39 @@ experiment.
 `research/checkpoints/challengers/ee116313-a145-46aa-9c85-e6e591e18f5a/experiment-1/inventory.json`;
 the six research-evaluation artifacts and three task-reference artifacts under
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/`.
+
+## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 2
+
+**Result:** Expanding training coverage from 14-20 cm to the full official
+6-20 cm range did not improve the learned policy. The proxy-peak
+`checkpoint-105472` and final `checkpoint-120832` each scored 188/200 (94.0%)
+on the new research panel, below the contemporaneous best-known control at
+189/200 (94.5%). Neither challenger is retained.
+
+**Observed behavior:** The proxy peak reached 1.00 training success, but its
+task measurement was 94.0%; the final challenger also measured 94.0% after
+120,832 steps. Paired comparisons gave each challenger zero wins and one
+control win over 200 shared episodes. Failures included lost or unmaintained
+holds and episodes ending at the 500-step truncation limit.
+
+**Hypothesis assessment:** The hypothesis that full-radius training would
+reduce inner-target failures without sacrificing outer-target performance is
+weakened for this recipe and these checkpoints. The intervention did not exceed
+the baseline on the disjoint panel, and the measurements provide no evidence
+that its apparent training-proxy advantage transfers to task success. This
+does not establish whether another training or learning intervention can reach
+the 98% objective.
+
+**Interpretation:** The existing `checkpoint-100352` lineage remains the most
+useful working and best-known policy. The full-radius code change should be
+reverted, no experiment-2 challenger should survive closure, and the campaign
+should remain open for a later ordinary experiment rather than request the
+official benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/ee116313-a145-46aa-9c85-e6e591e18f5a/experiment-2/inventory.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-2-best_known-200ep-seed4560-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-2-checkpoint-105472-200ep-seed4560-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-2-checkpoint-120832-200ep-seed4560-f48545f83637.json`;
+`robot_learning/scenario/training_environment.py`.
