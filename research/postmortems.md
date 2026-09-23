@@ -4,19 +4,23 @@
 
 **Current synthesis:** The learned policy solves most reach-and-hold episodes,
 but the standing `best_known` lineage remains below the 98% objective at
-925/960 successes (96.4%) across five distinct research panels. Expanded target
-coverage, hold-exit forfeiture, and a lower learning rate have not produced a
-robust improvement; apparent early gains degraded or only matched the control.
+1122/1160 successes (96.7%) across six distinct research panels. Expanded target
+coverage, hold-exit forfeiture, a lower learning rate, and inner-focused target
+sampling have not produced a robust improvement; apparent early gains degraded
+or only matched the control.
 
 **Lessons and limits:** Task success is not reliably predicted by training
 reward or proxy success. Failures cluster around difficult inner-radius reaches,
 interrupted holds, and 500-step truncation. The standing lineage has the
 strongest broad evidence; retained alternatives have only one-panel evidence,
-and development measurements cannot establish the official objective.
+and development measurements cannot establish the official objective. The
+experiment-5 challenger scores came from the panel used to compare them, while
+the contemporaneous control's score on that disjoint panel independently extends
+the standing lineage's evidence.
 
-**Open questions:** It remains unresolved whether changing training exposure can
-improve inner-radius reliability while preserving outer-target performance and
-avoiding the late-checkpoint degradation seen in tested continuations.
+**Open questions:** It remains unresolved whether another training intervention
+can improve inner-radius reliability while preserving outer-target performance
+and avoiding the late-checkpoint degradation seen in tested continuations.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
@@ -174,3 +178,45 @@ closure.
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-4-best_known-200ep-seed4960-f48545f83637.json`;
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-4-checkpoint-35840-200ep-seed4960-f48545f83637.json`;
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-4-checkpoint-120832-200ep-seed4960-f48545f83637.json`.
+
+## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 5
+
+**Result:** Inner-focused target sampling did not establish an improvement.
+The standing `best_known`, experiment-5 `checkpoint-35840`, and final
+`checkpoint-120832` each scored 197/200 (98.5%) on the new research panel.
+Keep `checkpoint-100352` as working and best-known, revert the sampler change,
+and retain the early experiment-5 checkpoint as a distinct fallback. No final
+assessment is requested.
+
+**Observed behavior:** The shared panel covered episodes 5160-5359. The
+contemporaneous control and both challengers had identical success counts and
+no discordant outcomes in either pairwise comparison. The standing lineage now
+has 1122/1160 successes (96.7%) across six distinct research panels. The
+experiment-5 challengers were selected and compared on this panel, so their
+197/200 scores are not independent confirmation of those lineages; the control's
+score extends the standing lineage's disjoint-panel evidence.
+
+**Hypothesis assessment:** The hypothesis that oversampling 6-12 cm targets
+would improve inner-radius reach-and-hold reliability without sacrificing outer
+performance is weakened for this recipe and these checkpoints. Neither the
+highest-reward early checkpoint nor the final checkpoint exceeded the control,
+and the tied results provide no evidence that the altered training distribution
+transfers to a durable task-success gain. The measurements do not establish
+whether another intervention can reach the 98% objective.
+
+**Interpretation:** The broad evidence still favors `checkpoint-100352`; its
+standing lineage is the only selected policy with six disjoint research panels,
+while the experiment-5 challengers have one selection-panel measurement each.
+Restoring the parent's training sampler preserves the strongest scientific
+recipe. The early `checkpoint-35840` is worth retaining as a reusable
+inner-focused alternative because it tied the control at a high success rate,
+but it is not promoted to working or best-known. Further training remains an
+ordinary next experiment after closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ee116313-a145-46aa-9c85-e6e591e18f5a/experiment-5/inventory.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-5-best_known-200ep-seed5160-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-5-checkpoint-35840-200ep-seed5160-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-5-checkpoint-120832-200ep-seed5160-f48545f83637.json`.
