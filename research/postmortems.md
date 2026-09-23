@@ -1,33 +1,3 @@
 # Research postmortems
 
-## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Scientific strategy
-
-**Current synthesis:** The unchanged PPO baseline remains the strongest measured policy, with 591/600 successes across three distinct research panels and 197/200 on the latest disjoint panel. Expanding training coverage to 6-20 cm produced 196/200 at both measured checkpoints and did not improve the selected working policy.
-
-**Lessons and limits:** Training reward and training success did not reliably rank task behavior. On the new disjoint panel, each expanded-coverage challenger lost one episode to the unchanged working policy and won none; both added episode 184 to the working policy's failures. These results weaken the tested coverage intervention but do not characterize the official distribution, which development panels cannot certify.
-
-**Open questions:** The residual failure mechanisms include inner-target reach failures and interrupted holds, and their behavior across the official target distribution remains unresolved. The official 200-episode outcome is also not established by the development panels.
-
-## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Experiment 1
-
-**Result:** The baseline produced a useful policy, with checkpoint-100352 selected as the strongest current lineage candidate, but the independent disjoint panel did not confirm the 98% objective.
-
-**Observed behavior:** Checkpoint-100352 achieved 199/200 (99.5%) on research panel seed 10000, 195/200 (97.5%) on the disjoint research panel seed 20000, and 196/200 (98.0%) on the permanently reused task-reference panel. Its pooled research result was 394/400 (98.5%). Checkpoint-120832 achieved 197/200, 195/200, and 194/200 on those corresponding panels, for 392/400 (98.0%) pooled research success. Checkpoint-86016 achieved 190/200 research successes and 188/200 task-reference successes. The second-round paired comparison did not show a meaningful independent advantage for checkpoint-100352 over checkpoint-120832: both obtained 195/200 on the disjoint panel.
-
-**Hypothesis assessment:** Partially supported. The baseline established substantial learned task performance, and the proxy-success checkpoint was better than the reward-peak checkpoint. The apparent advantage of checkpoint-100352 over the final checkpoint was not reproduced as a success-rate advantage on the disjoint panel, although checkpoint-100352 remains marginally stronger in pooled evidence. This conclusion is limited to the fixed baseline recipe and the measured panels; unmeasured checkpoints remain unmeasured.
-
-**Interpretation:** Checkpoint-100352 is the most defensible working and best-known policy because it leads on pooled research coverage and on the task-reference panel, while checkpoint-120832 is a close alternative with the same disjoint-panel result. The observed 97.5% disjoint result is below the human objective and does not justify requesting the irreversible final assessment. The baseline recipe should remain available for the next experiment, with further training or a targeted intervention addressing residual failures.
-
-**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-86016-200ep-seed10000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-100352-200ep-seed20000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-120832-200ep-seed10000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-120832-200ep-seed20000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/task-reference-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-86016-task-reference-v1.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/task-reference-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-100352-task-reference-v1.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/task-reference-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-1-checkpoint-120832-task-reference-v1.json`.
-
-## 1e4d86e4-3101-4136-99ac-47423eecc9d5 / Experiment 2
-
-**Result:** Expanding the training target-radius range from 14-20 cm to 6-20 cm did not improve the transferred policy on the new disjoint 200-episode panel.
-
-**Observed behavior:** The unchanged working policy achieved 197/200 (98.5%). Checkpoints 105472 and 120832 from the expanded-coverage run each achieved 196/200 (98.0%). Each challenger had zero paired wins and one paired loss against the working policy; both reproduced the working policy's failures and additionally failed episode 184. These measurements are development evidence and do not constitute the official final assessment.
-
-**Hypothesis assessment:** Weakened. The intervention was intended to address residual failures on inner targets while preserving outer-range behavior, but neither measured checkpoint improved the control on the disjoint panel, and both were one success worse. The conclusion is limited to the tested continued-training run, checkpoints, and panel; the 22 unmeasured checkpoints remain unmeasured.
-
-**Interpretation:** Retain the unchanged working policy and restore the experiment-1 scientific recipe. The expanded target-radius training intervention is not justified as an improvement by the available independent comparison. No challenger has a measured advantage warranting retention, and the observed 98.5% development result still does not justify the irreversible official assessment.
-
-**Evidence inspected:** `research/brief.md`; `robot_learning/scenario/training_environment.py`; `research/research_state.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-2-working-200ep-seed30000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-2-checkpoint-105472-200ep-seed30000-f48545f83637.json`; `research/evaluations/1e4d86e4-3101-4136-99ac-47423eecc9d5/evaluation-1e4d86e4-3101-4136-99ac-47423eecc9d5-experiment-2-checkpoint-120832-200ep-seed30000-f48545f83637.json`.
+No experiments recorded.
