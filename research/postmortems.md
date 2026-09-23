@@ -3,24 +3,25 @@
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior, while the standing checkpoint-100352 lineage reached 155/160 on the
-latest independent development panel and 457/480 across three panels. Both
-figures remain below the 98% objective. The full-radius target intervention tied
-or underperformed the parent, and the 1.0 hold-exit forfeiture intervention
-fell to 143/160 and 135/160, so the standing lineage remains working and
-best-known.
+behavior, while the standing checkpoint-100352 lineage reached 152/160 on the
+latest independent development panel and 609/640 pooled across four distinct
+panels. Both figures remain below the 98% objective. The full-radius target
+intervention, the 1.0 hold-exit forfeiture intervention, and the 0.1
+hold-exit forfeiture intervention all underperformed or failed to improve the
+standing lineage, so it remains working and best-known.
 
 **Lessons and limits:** Training proxies identified useful behavior but did not
-predict task improvement. Residual measured failures include both no-reach
-episodes and interrupted holds, and a single extreme hold-forfeiture setting is
-evidence against that setting rather than against reward shaping generally.
-All measurements are development evidence; the official 200-episode assessment
-has not been run.
+predict task improvement. The mild forfeiture challengers achieved only 131/160
+and 130/160 while the control achieved 152/160 on the same new panel; paired
+comparisons gave the control 21 and 22 discordant wins with no challenger wins.
+This is evidence against the tested reward dose and run, not against reward
+shaping generally. All measurements are development evidence; the official
+200-episode assessment has not been run.
 
-**Open questions:** It remains unknown whether a smaller persistence incentive
-can reduce interrupted holds without sacrificing broad reach behavior, and
-whether the no-reach failures require a representation change. Performance of
-the standing lineage on the official panel is also unknown.
+**Open questions:** It remains unknown whether another reward formulation or a
+representation change can reduce both interrupted holds and no-reach failures
+without sacrificing broad reach behavior. Performance of the standing lineage
+on the official panel is also unknown.
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 1
 
@@ -125,3 +126,40 @@ not justify treating the objective as reached.
 `research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-3-working-160ep-seed4520-f48545f83637.json`;
 `research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-3-checkpoint-105472-160ep-seed4520-f48545f83637.json`;
 `research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-3-checkpoint-120832-160ep-seed4520-f48545f83637.json`.
+
+## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 4
+
+**Result:** Changing `HOLD_EXIT_FORFEIT_FRACTION` from `0.0` to `0.1` did
+not improve the learned policy. On the disjoint 160-episode panel, the
+standing `working` lineage achieved 152/160 successes (95.0%), while the
+86,016-step and 120,832-step challengers achieved 131/160 (81.875%) and
+130/160 (81.25%). All results remain below the 98% objective.
+
+**Observed behavior:** The control was independently measured on episodes
+4680-4839 and remained ahead of both challengers. Paired comparisons gave the
+control 21 discordant wins against the 86,016-step challenger and 22 against
+the 120,832-step challenger, with no challenger wins. The proxy-high
+86,016-step checkpoint therefore did not translate its 0.99 training success
+into task success, and continued training to the final checkpoint did not
+recover performance.
+
+**Hypothesis assessment:** The hypothesis was contradicted under the tested
+conditions: mild hold-exit forfeiture did not produce the expected improvement
+on a disjoint panel and substantially degraded both measured challengers.
+This conclusion is specific to this reward dose and transferred run; it does
+not establish that every persistence reward or other intervention is
+ineffective.
+
+**Interpretation:** The standing `working` and `best_known` lineage remains
+the strongest available policy, but its 152/160 result is development evidence
+below the human objective and does not justify terminal assessment. The
+experiment-4 recipe should be reverted, and neither challenger has evidence
+that justifies retention. Further training, if pursued, is a subsequent
+experiment after closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`; `research/results.jsonl`;
+`research/checkpoints/challengers/5521c88b-2345-470f-a9dd-547cf3b569b7/experiment-4/inventory.json`;
+`research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-4-working-160ep-seed4680-f48545f83637.json`;
+`research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-4-checkpoint-86016-160ep-seed4680-f48545f83637.json`;
+`research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-4-checkpoint-120832-160ep-seed4680-f48545f83637.json`.
