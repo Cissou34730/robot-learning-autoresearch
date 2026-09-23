@@ -1,33 +1,3 @@
 # Research postmortems
 
-## 021d2780-9c61-4eb5-88a8-68644fdf7d39 / Scientific strategy
-
-**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior late in training, with `checkpoint-100352` remaining the best-supported policy. Across three disjoint development panels it achieved 582/600 successes (97.0%), while the reduced-learning-rate continuation achieved only 180/200 and 179/200 on its measured checkpoints and lost every discordant paired comparison to the parent. The current evidence therefore supports the learned reaching behavior but identifies incomplete or unstable holding as the remaining performance gap.
-
-**Lessons and limits:** Training-time reward and success remain proxies: both measured experiment-2 checkpoints had high training-time success, but substantially worse task measurements. The task requires 100 uninterrupted in-tolerance control steps, so a policy can reach the target yet fail through an interruption; the evaluator records this separately from first reach. The learning-rate result is a clear regression for this transferred run, but does not identify a universal cause or establish that any other intervention will improve stability. All measurements remain development evidence below the official assessment.
-
-**Open questions:** It remains unresolved whether stronger negative credit for leaving the tolerance band after partial hold progress can improve complete reach-and-hold success without damaging the already strong reaching behavior. The official result of the standing best-known policy is also unknown.
-
-## 021d2780-9c61-4eb5-88a8-68644fdf7d39 / Experiment 1
-
-**Result:** The baseline produced a near-objective policy, with `checkpoint-100352` selected as the strongest measured candidate at 97.75% over two disjoint 200-episode research panels.
-
-**Observed behavior:** Training proxies were near zero through 70,656 steps, then increased rapidly: `checkpoint-90112` had 0.71 training success, `checkpoint-100352` 0.97, and `checkpoint-120832` 0.95. On research episodes 2000-2199, the three measured checkpoints scored 96.5%, 97.5%, and 97.0%, respectively. On the disjoint episodes 2200-2399, `checkpoint-100352` scored 98.0% and `checkpoint-120832` 97.0%. The pooled result for `checkpoint-100352` was 391/400 (97.75%). On the fixed task-reference panel, `checkpoint-100352` scored 98.0%, but this panel was reused after candidate selection and is not independent evidence.
-
-**Hypothesis assessment:** Partially supported. The fresh baseline established substantial learned reach-and-hold competence and approached the human objective, but the available development evidence does not establish at least 98% reliably. The conclusion is limited to this PPO recipe, training run, saved checkpoints, and measured panels; the official result remains unknown.
-
-**Interpretation:** Performance improved into a late-training plateau, with `checkpoint-100352` outperforming both the earlier local proxy peak and the final checkpoint on the measured task. The disjoint panel confirms that selecting `checkpoint-100352` was not based solely on the panel used for selection. The final checkpoint's lower result suggests that continuing this unchanged run past the selected checkpoint was not beneficial, but it does not identify the cause or rule out a different training intervention.
-
-**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/checkpoints/challengers/021d2780-9c61-4eb5-88a8-68644fdf7d39/experiment-1/inventory.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-1-checkpoint-100352-200ep-seed2000-f48545f83637.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-1-checkpoint-100352-200ep-seed2200-f48545f83637.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-1-checkpoint-120832-200ep-seed2000-f48545f83637.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-1-checkpoint-120832-200ep-seed2200-f48545f83637.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/task-reference-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-1-checkpoint-100352-task-reference-v1.json`.
-
-## 021d2780-9c61-4eb5-88a8-68644fdf7d39 / Experiment 2
-
-**Result:** Reducing PPO learning rate from `0.0003` to `0.0001` during transferred training did not improve or preserve the working policy. Both measured experiment-2 candidates were materially worse on the disjoint research panel.
-
-**Observed behavior:** The working parent scored 191/200 successes (95.5%) on episodes 2400-2599. Checkpoint `110592` scored 180/200 (90.0%) and checkpoint `120832` scored 179/200 (89.5%). Paired comparisons favored the parent on every discordant episode: 11-0 against `110592` and 12-0 against `120832`, with success deltas of -5.5 and -6.0 percentage points. The intervention's training proxies therefore did not transfer to the measured reach-and-hold objective.
-
-**Hypothesis assessment:** Contradicted for this continuation. The prediction that smaller PPO updates could improve the near-objective plateau without degradation was not observed: both measured checkpoints regressed substantially relative to the parent on a fresh disjoint panel. The conclusion is limited to this learning-rate change, this transferred run, the measured checkpoints, and this panel; it does not establish the cause of the regression or rule out every future training intervention.
-
-**Interpretation:** The strongest supported policy remains the experiment-1 working lineage at `checkpoint-100352`, whose original recipe uses learning rate `0.0003`. The experiment-2 candidates do not provide a defensible alternative, so the current recipe should be restored to the working lineage and no challenger should be retained. The development evidence remains below the human objective and does not justify requesting the official assessment.
-
-**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/checkpoints/challengers/021d2780-9c61-4eb5-88a8-68644fdf7d39/experiment-2/inventory.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-2-working-200ep-seed2400-f48545f83637.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-2-checkpoint-110592-200ep-seed2400-f48545f83637.json`; `research/evaluations/021d2780-9c61-4eb5-88a8-68644fdf7d39/evaluation-021d2780-9c61-4eb5-88a8-68644fdf7d39-experiment-2-checkpoint-120832-200ep-seed2400-f48545f83637.json`.
+No experiments recorded.
