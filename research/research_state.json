@@ -81,79 +81,31 @@
     "experiment": 1,
     "reason": "Checkpoint-100352 is the strongest measured candidate: it reached 199/200 successes on a disjoint research panel, compared with 198/200 for checkpoint-120832 and 149/160 for the earlier reward-peak checkpoint-86016. This selects the policy on task behavior rather than training proxies."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
+    "fingerprint": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-        "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-200ep-seed5000-f48545f83637.json",
-        "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/task-reference-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the highest independent research-panel result at 199/200 (99.5%), also led checkpoint-120832 in the paired disjoint comparison, and scored 98% on the reused task-reference panel.",
-      "scientific_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 4200
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 5000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 1,
-    "fingerprint": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "selected": "best_known",
-    "terminal_reason": "The selected checkpoint achieved 199/200 successes on an independent disjoint development panel, exceeding the 98% objective-level rate, while the task-reference result was selection-dependent and is not used as independent confirmation. The evidence is strong enough to expect the official benchmark to determine whether the objective is reached."
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
@@ -224,7 +176,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
     "candidate": "checkpoint-100352",
