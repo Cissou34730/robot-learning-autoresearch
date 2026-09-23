@@ -4,10 +4,11 @@
 
 **Current synthesis:** The learned policy solves most reach-and-hold episodes,
 but the standing `best_known` lineage remains below the 98% objective at
-1122/1160 successes (96.7%) across six distinct research panels. Expanded target
-coverage, hold-exit forfeiture, a lower learning rate, and inner-focused target
-sampling have not produced a robust improvement; apparent early gains degraded
-or only matched the control.
+1122/1160 successes (96.7%) across six distinct research panels. Experiment 5
+challengers reached 197/200 on their selection panel but only matched the
+contemporaneous control, while expanded target coverage, hold-exit forfeiture,
+a lower learning rate, and inner-focused target sampling likewise produced no
+durable improvement.
 
 **Lessons and limits:** Task success is not reliably predicted by training
 reward or proxy success. Failures cluster around difficult inner-radius reaches,
@@ -16,11 +17,14 @@ strongest broad evidence; retained alternatives have only one-panel evidence,
 and development measurements cannot establish the official objective. The
 experiment-5 challenger scores came from the panel used to compare them, while
 the contemporaneous control's score on that disjoint panel independently extends
-the standing lineage's evidence.
+the standing lineage's evidence. The task requires 100 consecutive in-tolerance
+steps, but the current PPO discount factor is 0.99, so temporal credit for a
+completed hold is attenuated relative to immediate reach rewards.
 
-**Open questions:** It remains unresolved whether another training intervention
-can improve inner-radius reliability while preserving outer-target performance
-and avoiding the late-checkpoint degradation seen in tested continuations.
+**Open questions:** It remains unresolved whether stronger long-horizon credit
+assignment can improve uninterrupted-hold reliability while preserving
+inner/outer reach performance and avoiding the late-checkpoint degradation seen
+in tested continuations.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
