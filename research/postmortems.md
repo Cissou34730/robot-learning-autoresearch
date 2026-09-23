@@ -4,24 +4,19 @@
 
 **Current synthesis:** The learned policy solves most reach-and-hold episodes,
 but the standing `best_known` lineage remains below the 98% objective at
-925/960 successes (96.4%) across five distinct research panels. The three
-scientific interventions tested so far did not produce a robust improvement:
-expanded target coverage underperformed the control, hold-exit forfeiture
-matched it at an intermediate checkpoint but degraded later, and the lower
-learning rate matched the control early but also degraded by the final
-checkpoint.
+925/960 successes (96.4%) across five distinct research panels. Expanded target
+coverage, hold-exit forfeiture, and a lower learning rate have not produced a
+robust improvement; apparent early gains degraded or only matched the control.
 
 **Lessons and limits:** Task success is not reliably predicted by training
-reward or proxy success. The standing lineage is the strongest broad-evidence
-policy, while `hold-forfeit-35840` and the experiment-4
-`checkpoint-35840` are distinct fallbacks with only one-panel evidence.
-Development measurements do not establish the official objective or predict
-its held-out result.
+reward or proxy success. Failures cluster around difficult inner-radius reaches,
+interrupted holds, and 500-step truncation. The standing lineage has the
+strongest broad evidence; retained alternatives have only one-panel evidence,
+and development measurements cannot establish the official objective.
 
-**Open questions:** The remaining failures involve difficult inner-radius
-reaches, interrupted holds, and 500-step truncation. It remains unresolved
-whether a different intervention can improve the standing lineage without
-repeating the late-checkpoint degradation seen across the tested continuations.
+**Open questions:** It remains unresolved whether changing training exposure can
+improve inner-radius reliability while preserving outer-target performance and
+avoiding the late-checkpoint degradation seen in tested continuations.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
