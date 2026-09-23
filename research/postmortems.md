@@ -14,11 +14,11 @@
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline remains the strongest saved policy. On the disjoint experiment-2 research panel it achieved 196/200 successes (98.0%), independently confirming the parent selected on the earlier panel, while the full hold-exit forfeiture intervention produced substantially weaker checkpoints. This is strong development progress toward the objective, but it does not establish the official result.
+**Current synthesis:** The unchanged PPO baseline remains the strongest saved policy, with 391/400 successes across two distinct research panels and 196/200 on the latest panel. The full hold-exit forfeiture continuation was substantially worse, so current evidence is strong development progress but not an official result.
 
-**Lessons and limits:** Training success and reward identify useful late checkpoints but do not replace task-success measurement; experiment 2's proxy peak and final checkpoint both underperformed the saved parent on the new panel. Full hold-exit forfeiture is contradicted as a useful continuation intervention under the tested recipe: checkpoint-105472 reached 177/200 (88.5%) and checkpoint-120832 reached 167/200 (83.5%), with paired comparisons favoring the parent by 19 and 29 episodes. Research and fixed reference panels are development evidence, and the latter is reused, so neither establishes the official result or broader generalization.
+**Lessons and limits:** Training success and reward identify useful checkpoints but do not replace task-success measurement. The best-policy failures include both failure to reach tolerance and interrupted holds, while full forfeiture reached only 177/200 and 167/200 at its measured checkpoints, with paired comparisons favoring the parent by 19 and 29 episodes. Research and fixed reference panels are development evidence, and the latter is reused, so neither establishes the official result or broader generalization.
 
-**Open questions:** The official result for the selected policy is unresolved, and the residual failures on the new panel do not identify whether further training or a different hold-robustness intervention will improve the policy without harming reach reliability.
+**Open questions:** It remains unresolved whether a partial hold-exit penalty can reduce interrupted holds without sacrificing reach reliability. The official result for the selected policy is also unresolved; development panels do not declare the objective reached.
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Experiment 2
 
