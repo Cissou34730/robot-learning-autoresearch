@@ -4,11 +4,11 @@ No experiments recorded.
 
 ## 229ee49c-81d2-4d70-b9d1-83d2c786555a / Scientific strategy
 
-**Current synthesis:** The unchanged baseline learned a strong reach-and-hold policy, but its measured performance is not uniformly above the 98% campaign objective. `checkpoint-100352` is the preferred lineage: it achieved 159/160 successes on the disjoint research panel, compared with 158/160 for the final `checkpoint-120832`, and is also the stronger training-success-proxy checkpoint. Late training therefore did not improve the measured policy.
+**Current synthesis:** The unchanged PPO baseline learned a strong but uneven reach-and-hold policy. The selected `checkpoint-100352` lineage achieved 310/320 successes (96.875%) across two distinct research panels and 159/160 on the disjoint panel, versus 158/160 for the final `checkpoint-120832`; late training did not improve measured behavior. The baseline trained on 14–20 cm targets, narrower than the official 6–20 cm radial distribution.
 
-**Lessons and limits:** Training reward and training success are useful for locating candidates but are not reliable task scores. The two candidates were tied at 151/160 on the original research panel, so that reused panel does not distinguish them; the fixed task-reference panel is also permanently reused and is not independent confirmation. Across the two distinct research panels, `checkpoint-100352` achieved 310/320 successes (96.875%), below the objective. Detailed diagnostics show residual behavior failures involving both failure to reach tolerance and interrupted holds. These results support selecting a useful working lineage, not declaring the human objective reached.
+**Lessons and limits:** Training reward and training success locate candidates but are not task scores. The original research panel tied the two candidates at 151/160, and the task-reference panel is permanently reused rather than independent confirmation. Detailed diagnostics for the selected lineage show both missed tolerance and interrupted holds: 6 failures never reached tolerance and 3 reached it but failed the hold on seed 4200, while the seed-5000 panel had one missed-tolerance failure. These results support a useful working lineage, not attainment of the objective.
 
-**Open questions:** It remains unknown whether a changed training intervention can reduce the residual reach and hold failures, and whether the selected policy will meet the objective on the separate official 200-episode assessment.
+**Open questions:** It remains unknown whether full-range radial training improves performance on inner targets without degrading the established outer-target behavior, and whether the selected policy meets the objective on the separate official 200-episode assessment.
 
 ## 229ee49c-81d2-4d70-b9d1-83d2c786555a / Experiment 1
 
