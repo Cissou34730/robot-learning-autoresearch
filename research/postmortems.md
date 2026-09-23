@@ -3,23 +3,22 @@
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Scientific strategy
 
 **Current synthesis:** The baseline learned substantial reach-and-hold behavior,
-but its best measured lineage, `checkpoint-100352`, remains below the objective:
-it scored 95.0% on the earlier disjoint research panel and 94.5% on the new
-seed-4560 panel. Full-radius training did not improve this position: both
-measured experiment-2 challengers scored 94.0%.
+but its best-known lineage remains below the 98% objective: it scored 95.0% on
+the earlier disjoint research panel and 94.5% on the experiment-2 panel.
+Expanding training to the full 6-20 cm radius range did not improve task
+success; both measured experiment-2 challengers scored 94.0%.
 
 **Lessons and limits:** The full 6-20 cm training intervention did not transfer
-the proxy peak into higher task success; the proxy-peak and final challengers
-both lost one episode to the contemporaneous control on their paired panel.
-The existing baseline lineage is therefore the most useful saved policy and its
-parent 14-20 cm recipe should be restored. These development measurements do
+the proxy peak into higher task success. The standing lineage is therefore the
+most useful saved policy, while its remaining failures include both difficult
+inner-radius reaches and incomplete holds. These development measurements do
 not establish that the 98% objective is met or predict the official result.
 
 **Open questions:** The residual reach-and-hold failures remain unresolved,
-including failures in the inner-radius regime and episodes that end at the
-500-step limit. Further progress would require an ordinary later experiment
-with a different intervention; the current evidence does not identify which
-intervention will reach the human objective.
+including episodes that enter tolerance but do not complete the uninterrupted
+hold and episodes that end at the 500-step limit. It remains unresolved whether
+a reward signal that makes hold interruptions costly can improve complete
+hold reliability without sacrificing reachability or outer-target performance.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
