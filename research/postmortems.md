@@ -4,21 +4,24 @@
 
 **Current synthesis:** The learned policy solves most reach-and-hold episodes,
 but the standing `best_known` lineage remains below the 98% objective at
-727/760 successes (95.7%) across four distinct research panels. The two
+925/960 successes (96.4%) across five distinct research panels. The three
 scientific interventions tested so far did not produce a robust improvement:
-expanded target coverage underperformed the control, and hold-exit forfeiture
-matched it at an intermediate checkpoint but degraded later.
+expanded target coverage underperformed the control, hold-exit forfeiture
+matched it at an intermediate checkpoint but degraded later, and the lower
+learning rate matched the control early but also degraded by the final
+checkpoint.
 
 **Lessons and limits:** Task success is not reliably predicted by training
 reward or proxy success. The standing lineage is the strongest broad-evidence
-policy, while `hold-forfeit-35840` is a distinct fallback with only one-panel
-evidence. Development measurements do not establish the official objective or
-predict its held-out result.
+policy, while `hold-forfeit-35840` and the experiment-4
+`checkpoint-35840` are distinct fallbacks with only one-panel evidence.
+Development measurements do not establish the official objective or predict
+its held-out result.
 
 **Open questions:** The remaining failures involve difficult inner-radius
-reaches, interrupted holds, and 500-step truncation. It is unresolved whether
-continued optimization can improve the standing lineage without repeating the
-late-checkpoint degradation seen in earlier training.
+reaches, interrupted holds, and 500-step truncation. It remains unresolved
+whether a different intervention can improve the standing lineage without
+repeating the late-checkpoint degradation seen across the tested continuations.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
@@ -133,3 +136,46 @@ post-closure decision.
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-3-checkpoint-35840-200ep-seed4760-f48545f83637.json`;
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-3-checkpoint-105472-200ep-seed4760-f48545f83637.json`;
 `robot_learning/scenario/reward.py`.
+
+## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 4
+
+**Result:** Lowering the PPO learning rate to 0.0001 did not improve the
+standing lineage. The early `checkpoint-35840` scored 198/200 (99.0%) on the
+new disjoint panel, exactly matching the contemporaneous `best_known` control,
+while the final `checkpoint-120832` scored 189/200 (94.5%). Keep
+`checkpoint-100352` as working and best-known, restore the parent recipe, and
+retain the early low-rate checkpoint as an unproven fallback. No terminal
+assessment is requested.
+
+**Observed behavior:** The experiment-4 training proxy reached 1.00 success at
+step 35,840 but was 0.97 at the final 120,832-step checkpoint. On the shared
+episodes 4960-5159, `checkpoint-35840` and `best_known` had no discordant
+outcomes and both achieved 198/200; the final checkpoint lost nine outcomes
+relative to the control and achieved 189/200. The control's new-panel result
+is independent of the panels used to establish the standing lineage, while
+the fixed task-reference panel was not used for this conclusion.
+
+**Hypothesis assessment:** The hypothesis that continuing with learning rate
+0.0001 would preserve or improve task success while reducing late degradation
+is weakened. The early checkpoint preserved the control's performance but did
+not improve it, and the final checkpoint still degraded materially. This
+single disjoint panel does not establish the 98% human objective or a durable
+benefit from the lower learning rate.
+
+**Interpretation:** The broad evidence still favors the existing
+`checkpoint-100352` lineage: it has 925/960 successes (96.4%) over five
+distinct research panels, whereas the experiment-4 challenger has only one
+panel. The lower-rate early checkpoint is worth retaining because it matched
+the control on a fresh panel and may support a future comparison, but its
+selection-panel score is not independent evidence for treating it as a new
+best-known lineage. The lower-rate continuation should not become the
+standing recipe; further training remains an ordinary next experiment after
+closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/ee116313-a145-46aa-9c85-e6e591e18f5a/experiment-4/inventory.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-4-best_known-200ep-seed4960-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-4-checkpoint-35840-200ep-seed4960-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-4-checkpoint-120832-200ep-seed4960-f48545f83637.json`.
