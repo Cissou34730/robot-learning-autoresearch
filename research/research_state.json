@@ -67,68 +67,35 @@
     "experiment": 5,
     "reason": "Keep the established working lineage: it achieved 157/160 (98.125%) on the disjoint panel 4840-4999, while both experiment-5 target-geometry challengers regressed substantially."
   },
-  "last_verdict": "researcher selected working as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
+  "official_benchmark_expectation": {
+    "expected_verdict": "goal_reached",
+    "reason": "The selected working lineage reached 157/160 (98.125%) on a panel disjoint from all panels used to select it, with only three no-reach failures and no interrupted holds. This is strong independent development evidence for expecting at least 196/200 on the official panel, while recognizing that the official benchmark alone determines the verdict."
+  },
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/5521c88b-2345-470f-a9dd-547cf3b569b7/e1-cada55eb5-37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
+    "fingerprint": "37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/5521c88b-2345-470f-a9dd-547cf3b569b7/e1-cada55eb5-37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/5521c88b-2345-470f-a9dd-547cf3b569b7/e1-cada55eb5-37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json"
-      ],
-      "fingerprint": "37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the best measured result observed in this experiment by a tie at 94.375% and the strongest training success proxy among the measured checkpoints; this remains below the 98% human objective.",
-      "scientific_commit": "fd83fc3180c780a099a9d64b5af306c8e4fa3a8a",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 4200
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 5,
-    "fingerprint": "37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
-    "selected": "best_known",
-    "terminal_expectation": {
-      "expected_verdict": "goal_reached",
-      "reason": "The selected working lineage reached 157/160 (98.125%) on a panel disjoint from all panels used to select it, with only three no-reach failures and no interrupted holds. This is strong independent development evidence for expecting at least 196/200 on the official panel, while recognizing that the official benchmark alone determines the verdict."
-    }
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "61d9327553c3db7d40ebd2049fa30598ce2a8c29",
@@ -141,7 +108,7 @@
   "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/5521c88b-2345-470f-a9dd-547cf3b569b7/e1-cada55eb5-37a3eb1c5682a20236ee42ebfd93eaf01034cbd8d9f859254876fa179adb7341",
     "candidate": "checkpoint-100352",
