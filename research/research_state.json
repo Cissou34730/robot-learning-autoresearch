@@ -1,236 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-200ep-seed5000-f48545f83637.json",
-      "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/task-reference-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest independent research-panel result at 199/200 (99.5%), also led checkpoint-120832 in the paired disjoint comparison, and scored 98% on the reused task-reference panel.",
-    "scientific_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "1d00bf836038c01a9644a7c385e6db0bc28719db",
-    "id": "9280ffcf-9e77-494f-9cff-e2a75c9e97ea",
+    "base_commit": "9cd432f12c0b1b4de194362918279aa394207497",
+    "id": "ee116313-a145-46aa-9c85-e6e591e18f5a",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-23T05:02:16.118444+00:00"
+    "started_at": "2026-09-23T10:14:11.768887+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "9280ffcf-9e77-494f-9cff-e2a75c9e97ea": 1
+    "ee116313-a145-46aa-9c85-e6e591e18f5a": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "The baseline recipe produced the strongest observed policy and no scientific intervention was tested, so the current researcher-owned source and parameters should remain associated with the selected lineage."
-    },
-    "code_parent_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Checkpoint-100352 is the strongest measured candidate: it reached 199/200 successes on a disjoint research panel, compared with 198/200 for checkpoint-120832 and 149/160 for the earlier reward-peak checkpoint-86016. This selects the policy on task behavior rather than training proxies."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "fingerprint": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
-    "experiment": 1,
-    "scientific_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-c8cf701d5-0b6463786c92b8d9b13cd5e994c1864e95efb898b9682825fdb5ed8596a8c237",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-120832-160ep-seed4200-f48545f83637.json",
-        "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-120832-200ep-seed5000-f48545f83637.json"
-      ],
-      "fingerprint": "0b6463786c92b8d9b13cd5e994c1864e95efb898b9682825fdb5ed8596a8c237",
-      "id": "baseline-final-120832",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "This later checkpoint is a measured near-tie at 198/200 (99.0%) on the disjoint panel and 97% on the task-reference panel; retaining it preserves a credible alternative for future comparison or continuation.",
-      "scientific_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 4200
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 5000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 120832
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/e1-cada55eb5-c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/9280ffcf-9e77-494f-9cff-e2a75c9e97ea/evaluation-9280ffcf-9e77-494f-9cff-e2a75c9e97ea-experiment-1-checkpoint-100352-200ep-seed5000-f48545f83637.json"
-    ],
-    "fingerprint": "c333915bcf2d82fc057663242857962ea1c6de5b026afbba4a9cbace52f6b130",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Checkpoint-100352 is the strongest measured candidate: it reached 199/200 successes on a disjoint research panel, compared with 198/200 for checkpoint-120832 and 149/160 for the earlier reward-peak checkpoint-86016. This selects the policy on task behavior rather than training proxies.",
-    "scientific_commit": "9bf15fe2cf67e751bf5cbb4726df971132d66acb",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
