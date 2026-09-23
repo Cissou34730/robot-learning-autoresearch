@@ -384,37 +384,6 @@ def reset(root, *arguments):
     )
 
 
-def test_campaign_start_refuses_placeholder_before_baseline(tmp_path):
-    pwsh = shutil.which("pwsh")
-    if not pwsh:
-        pytest.skip("PowerShell is unavailable")
-    root = tmp_path / "campaign"
-    root.mkdir()
-    shutil.copy2(ROOT / "run_research.ps1", root / "run_research.ps1")
-    shutil.copy2(ROOT / "researcher_session.ps1", root / "researcher_session.ps1")
-    shutil.copy2(MUTEX_HELPER, root / "researcher_mutex.ps1")
-    write(root, "research/research_state.json", '{"schema_version": 4}')
-    write(root, "research/BASELINE_PENDING", "pending\n")
-    uv = root / "uv.cmd"
-    uv.write_text("@echo off\r\nexit /b 0\r\n", encoding="utf-8")
-
-    result = subprocess.run(
-        [pwsh, "-NoProfile", "-NonInteractive", "-File", str(root / "run_research.ps1")],
-        cwd=root,
-        env={**os.environ, "PATH": str(root) + os.pathsep + os.environ["PATH"]},
-        capture_output=True,
-        text=True,
-        timeout=60,
-        check=False,
-    )
-
-    assert result.returncode != 0
-    assert "scientific-model phase prompt is still a placeholder" in result.stderr
-    assert (root / "research/BASELINE_PENDING").exists()
-    assert not (root / "research/proposal.json").exists()
-    assert not (root / "research/scientific_model.md").exists()
-
-
 def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repository):
     root, baseline = baseline_repository
     branch = git(root, "branch", "--show-current")

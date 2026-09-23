@@ -48,6 +48,12 @@ def test_scientific_model_phase_precedes_baseline_and_does_not_repeat():
     assert "elseif (-not (Test-ScientificModelDeliverable))" in baseline[:baseline_runner]
 
 
+def test_scientific_model_phase_prompt_is_configured():
+    prompt = SCRIPT.split("$scientificModelPhasePrompt = @'", 1)[1].split("\n'@", 1)[0]
+    assert prompt.strip()
+    assert "PLACEHOLDER" not in prompt
+
+
 def test_subsequent_phase_prompts_read_the_frozen_model():
     for prompt in ("analysisPrompt", "evaluationPrompt", "decisionPrompt", "researchPrompt"):
         corpus = SCRIPT.split(f"${prompt} = @(", 1)[1].split(") -join", 1)[0]
