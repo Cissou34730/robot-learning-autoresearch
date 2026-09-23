@@ -75,6 +75,13 @@ const DISABLED_TOOLS: Record<string, boolean> = {
   todoread: false,
 };
 
+const CAMPAIGN_CONTEXT_GUIDANCE = `- Use research/brief.md and the campaign artifacts as the authoritative
+  scientific context. Do not use Git history as scientific evidence or as a
+  routine workspace-discovery step.`;
+const PRELIMINARY_CONTEXT_GUIDANCE = `- In the preliminary scientific-model phase, use only the human-authored
+  robot and task specification, not research/brief.md or campaign artifacts.
+  Do not use Git history as scientific evidence or routine workspace discovery.`;
+
 const POLICY = `<harness_policy>
 This session runs inside the repository worktree the launcher selected. The
 harness enforces the rules below at the tool boundary, so a rejected call fails
@@ -83,9 +90,7 @@ follow it instead of retrying the same command.
 
 - The launcher executes experiments. Never invoke research/run_experiment.py,
   training, the viewer, or the final benchmark.
-- Use research/brief.md and the campaign artifacts as the authoritative
-  scientific context. Do not use Git history as scientific evidence or as a
-  routine workspace-discovery step.
+${CAMPAIGN_CONTEXT_GUIDANCE}
 - The runner owns mutating Git operations, provenance and restoration.
   Read-only Git is available only when the current task specifically requires
   inspecting the experiment's current code state or delta. To revert this
@@ -105,6 +110,12 @@ follow it instead of retrying the same command.
   contract and execution validation. The phase ends when its deliverable has
   been written.
 </harness_policy>`;
+
+export function policyForContext(preliminary: boolean): string {
+  return preliminary
+    ? POLICY.replace(CAMPAIGN_CONTEXT_GUIDANCE, PRELIMINARY_CONTEXT_GUIDANCE)
+    : POLICY;
+}
 
 /** Paths whose changes are the runtime's own bookkeeping, not research work. */
 const IGNORED_CHANGE_PATTERNS = [
@@ -726,7 +737,7 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
         body: {
           model: { providerID, modelID },
           ...(agent ? { agent } : {}),
-          system: POLICY,
+          system: policyForContext(args.preliminary),
           tools: DISABLED_TOOLS,
           parts: [{ type: "text", text: args.prompt }],
         },

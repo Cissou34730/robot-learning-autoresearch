@@ -43,6 +43,8 @@ def test_scientific_model_phase_precedes_baseline_and_does_not_repeat():
     assert "if (-not (Test-Path \"research\\scientific_model.md\" -PathType Leaf))" in baseline[:model_phase]
     assert "Invoke-ResearcherSession -Prompt $scientificModelRetryPrompt" in baseline[:baseline_runner]
     assert "-Experiment 1 -Continue" in baseline[:baseline_runner]
+    assert "-Experiment 1 -Preliminary" in baseline[:baseline_runner]
+    assert "-Experiment 1 -Continue -Preliminary" in baseline[:baseline_runner]
     assert baseline.index("if (-not $scientificModelPhasePrompt.Trim()") < model_phase
     assert baseline.index("Baseline completed without research/scientific_model.md") > baseline_runner
     assert "elseif (-not (Test-ScientificModelDeliverable))" in baseline[:baseline_runner]
@@ -54,10 +56,19 @@ def test_scientific_model_phase_prompt_is_configured():
     assert "PLACEHOLDER" not in prompt
 
 
+def test_preliminary_reading_material_excludes_campaign_context():
+    corpus = SCRIPT.split("$scientificModelPrompt = @(", 1)[1].split(') -join "`n`n"', 1)[0]
+    assert "Read AGENTS.md and research/scenario.md" in corpus
+    assert "Do not read research/program.md or research/instruments.md" in corpus
+    assert "research/brief.md" not in corpus
+    assert "Write the final output to research/scientific_model.md." in corpus
+
+
 def test_subsequent_phase_prompts_read_the_frozen_model():
     for prompt in ("analysisPrompt", "evaluationPrompt", "decisionPrompt", "researchPrompt"):
         corpus = SCRIPT.split(f"${prompt} = @(", 1)[1].split(") -join", 1)[0]
         assert "research/scientific_model.md" in corpus
+        assert "research/brief.md" in corpus
 
 
 def test_scientific_model_is_campaign_memory_and_protected_context():

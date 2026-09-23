@@ -9,6 +9,7 @@ import {
   describeError,
   isIgnoredChange,
   lastMessageID,
+  policyForContext,
   relativeTo,
   serverConfig,
   sessionLiveness,
@@ -18,6 +19,14 @@ import {
 import type { OpencodeClient } from "@opencode-ai/sdk";
 import { parseArgs } from "../src/args.ts";
 import { Console } from "../src/console.ts";
+
+test("preliminary policy excludes campaign evidence without changing later phases", () => {
+  const preliminary = policyForContext(true);
+  const later = policyForContext(false);
+  assert.match(preliminary, /not research\/brief\.md or campaign artifacts/);
+  assert.doesNotMatch(preliminary, /Use research\/brief\.md and the campaign artifacts/);
+  assert.match(later, /Use research\/brief\.md and the campaign artifacts/);
+});
 
 /** A client that answers only the two reads liveness reconciliation performs. */
 function fakeClient(parts: {

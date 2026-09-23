@@ -21,7 +21,12 @@ reason to spend a full training run.
 Repository operation and ownership are defined in `AGENTS.md`, the current
 scientific problem in `research/scenario.md`, and every available instrument and
 request contract in `research/instruments.md`. `research/brief.md` supplies the
-current campaign state. Read all four at the start of every Researcher session.
+current campaign state. In the preliminary scientific-model phase, read only
+`AGENTS.md`, `research/scenario.md`, and the relevant human-authored system
+implementation; do not read the program, instruments, brief, or campaign
+artifacts. In subsequent Researcher phases, read `AGENTS.md`,
+`research/program.md`, `research/scenario.md`, `research/instruments.md`,
+`research/brief.md`, and `research/scientific_model.md`.
 
 ## Roles
 

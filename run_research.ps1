@@ -411,7 +411,8 @@ function Invoke-ResearcherSession {
         [Parameter(Mandatory)][string]$Prompt,
         [Parameter(Mandatory)][string]$Phase,
         [Parameter(Mandatory)][int]$Experiment,
-        [switch]$Continue
+        [switch]$Continue,
+        [switch]$Preliminary
     )
     if ($Continue) {
         if (-not $script:ResearcherSessionId) {
@@ -438,6 +439,9 @@ function Invoke-ResearcherSession {
     }
     if ($Continue) {
         $sessionArgs += "--resume"
+    }
+    if ($Preliminary) {
+        $sessionArgs += "--preliminary"
     }
     if ($ResearcherBackend -eq "opencode") {
         $entry = "researcher_opencode/src/main.ts"
@@ -1042,13 +1046,12 @@ The final output should be a compact but substantive **Scientific model of the r
             if (-not $scientificModelPhasePrompt.Trim() -or $scientificModelPhasePrompt -match "PLACEHOLDER") {
                 throw "The scientific-model phase prompt is still a placeholder. The maintainer must supply it before starting a campaign."
             }
-            # The evidence boundary above forbids campaign artifacts, so this
-            # phase is given no brief and no history: only its deliverable.
             $scientificModelPrompt = @(
                 $scientificModelPhasePrompt
-                "Expected deliverable: research/scientific_model.md, using the contract in research/instruments.md."
+                "Read AGENTS.md and research/scenario.md, then inspect only the relevant human-authored robot, simulator, environment, observation, control, task, and benchmark implementation. Do not read research/program.md or research/instruments.md in this phase."
+                "Write the final output to research/scientific_model.md."
             ) -join "`n`n"
-            Invoke-ResearcherSession -Prompt $scientificModelPrompt -Phase "scientific model" -Experiment 1
+            Invoke-ResearcherSession -Prompt $scientificModelPrompt -Phase "scientific model" -Experiment 1 -Preliminary
             if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
                 break CampaignLoop
             }
@@ -1059,10 +1062,10 @@ The final output should be a compact but substantive **Scientific model of the r
                 Write-Status "=== Scientific model missing or invalid; retrying the same phase once ===" Yellow
                 $scientificModelRetryPrompt = @(
                     "Current phase: scientific model. The previous deliverable failed validation: $scientificModelProblem."
-                    "The same Researcher session context remains available. Correct only research/scientific_model.md according to research/instruments.md."
+                    "The same Researcher session context remains available. Correct only research/scientific_model.md, separating established facts, physical or scientific consequences, and unknowns."
                     "Do not run training, measurements, Git mutations, or research/run_experiment.py; the launcher validates the deliverable."
                 ) -join " "
-                Invoke-ResearcherSession -Prompt $scientificModelRetryPrompt -Phase "scientific model" -Experiment 1 -Continue
+                Invoke-ResearcherSession -Prompt $scientificModelRetryPrompt -Phase "scientific model" -Experiment 1 -Continue -Preliminary
                 if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
                     break CampaignLoop
                 }

@@ -24,6 +24,7 @@ test("parses the launcher's argument list", () => {
     "--campaign-id",
     "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
     "--resume",
+    "--preliminary",
     "the prompt text",
   ]);
   assert.equal(args.sessionId, "11111111-2222-3333-4444-555555555555");
@@ -35,6 +36,7 @@ test("parses the launcher's argument list", () => {
   assert.equal(args.attempt, 2);
   assert.equal(args.campaignId, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
   assert.equal(args.resume, true);
+  assert.equal(args.preliminary, true);
   assert.equal(args.prompt, "the prompt text");
 });
 
@@ -46,6 +48,7 @@ test("the prompt is the only positional and may appear last", () => {
 test("defaults match the adapter contract", () => {
   const args = parseArgs(BASE);
   assert.equal(args.resume, false);
+  assert.equal(args.preliminary, false);
   assert.equal(args.attempt, 1);
   assert.equal(args.timeout, 1800);
   assert.equal(args.experiment, null);

@@ -18,6 +18,7 @@ export type AdapterArgs = {
   campaignId: string | null;
   experiment: number | null;
   phase: string | null;
+  preliminary: boolean;
   attempt: number;
 };
 
@@ -33,7 +34,7 @@ const VALUE_FLAGS = new Set([
   "--phase",
   "--attempt",
 ]);
-const SWITCH_FLAGS = new Set(["--resume"]);
+const SWITCH_FLAGS = new Set(["--resume", "--preliminary"]);
 
 function integer(flag: string, value: string): number {
   const parsed = Number(value);
@@ -53,11 +54,13 @@ export function parseArgs(
   const flags = new Map<string, string>();
   const positionals: string[] = [];
   let resume = false;
+  let preliminary = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]!;
     if (SWITCH_FLAGS.has(token)) {
-      resume = true;
+      if (token === "--resume") resume = true;
+      else preliminary = true;
       continue;
     }
     if (token.startsWith("--")) {
@@ -116,6 +119,7 @@ export function parseArgs(
     campaignId: flags.get("--campaign-id") ?? null,
     experiment: experimentValue === undefined ? null : integer("--experiment", experimentValue),
     phase: flags.get("--phase") ?? null,
+    preliminary,
     attempt: attemptValue === undefined ? 1 : integer("--attempt", attemptValue),
   };
 }

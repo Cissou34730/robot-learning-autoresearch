@@ -45,6 +45,19 @@ def test_the_provider_prefix_is_stripped_from_the_model():
 # --- the command policy -----------------------------------------------------
 
 
+def test_preliminary_policy_excludes_campaign_evidence_without_changing_later_phases():
+    args = adapter.parse_args(
+        ["p", "--session-id", "s", "--phase", "any label", "--preliminary"]
+    )
+    preliminary = adapter.policy_for_context(args.preliminary)
+    assert "not research/brief.md or campaign artifacts" in preliminary
+    assert adapter.CAMPAIGN_CONTEXT_GUIDANCE not in preliminary
+    regular = adapter.parse_args(
+        ["p", "--session-id", "s", "--phase", "scientific model"]
+    )
+    assert adapter.policy_for_context(regular.preliminary) == adapter.POLICY
+
+
 @pytest.mark.parametrize(
     "command",
     [

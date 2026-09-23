@@ -184,6 +184,13 @@ SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 LARGE_OUTPUT_DIR = ROOT / ".copilot" / "large-output"
 LARGE_OUTPUT_MAX_BYTES = 262_144
 
+CAMPAIGN_CONTEXT_GUIDANCE = """- Use research/brief.md and the campaign artifacts as the authoritative
+    scientific context. Do not use Git history as scientific evidence or as a
+    routine workspace-discovery step."""
+PRELIMINARY_CONTEXT_GUIDANCE = """- In the preliminary scientific-model phase, use only the human-authored
+    robot and task specification, not research/brief.md or campaign artifacts.
+    Do not use Git history as scientific evidence or routine workspace discovery."""
+
 POLICY = f"""
 <harness_policy>
 <harness_boundary>
@@ -194,9 +201,7 @@ instead of retrying the same command.
 
 - The launcher executes experiments. Never invoke research/run_experiment.py,
   training, the viewer, or the final benchmark.
-- Use research/brief.md and the campaign artifacts as the authoritative
-    scientific context. Do not use Git history as scientific evidence or as a
-    routine workspace-discovery step.
+{CAMPAIGN_CONTEXT_GUIDANCE}
 - The runner owns mutating Git operations, provenance and restoration.
     Read-only Git is available only when the current task specifically requires
     inspecting the experiment's current code state or delta. To revert this
@@ -223,6 +228,12 @@ is part of the phase, not a redundant pass.
 </researcher_guidance>
 </harness_policy>
 """.strip()
+
+
+def policy_for_context(preliminary: bool) -> str:
+    if preliminary:
+        return POLICY.replace(CAMPAIGN_CONTEXT_GUIDANCE, PRELIMINARY_CONTEXT_GUIDANCE)
+    return POLICY
 
 
 def normalize_model(model: str) -> str:
@@ -954,7 +965,10 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
             "max_size_bytes": LARGE_OUTPUT_MAX_BYTES,
             "output_directory": str(LARGE_OUTPUT_DIR),
         },
-        "system_message": {"mode": "append", "content": POLICY},
+        "system_message": {
+            "mode": "append",
+            "content": policy_for_context(args.preliminary),
+        },
     }
 
 
@@ -1066,6 +1080,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--campaign-id")
     parser.add_argument("--experiment", type=int)
     parser.add_argument("--phase")
+    parser.add_argument("--preliminary", action="store_true")
     parser.add_argument("--attempt", type=int, default=1)
     return parser.parse_args(argv)
 
