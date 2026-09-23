@@ -105,7 +105,7 @@ history inspection are both available according to the investigation.
 The phase order is:
 
 1. [PLACEHOLDER: Maintainer to supply the preliminary scientific-model protocol text.]
-2. prepare a new hypothesis and experiment (the fresh baseline is automatic);
+2. prepare a new hypothesis and experiment;
 3. Runner training;
 4. post-training analysis, which may request and execute one or more measurement
    rounds or close directly from logs and existing evidence;

@@ -313,6 +313,7 @@ def reset_template(tmp_path_factory):
         f"# Research postmortems\n\n## {CAMPAIGN} / Experiment 1\n\n"
         f"**Evidence inspected:** `{EVALUATION}`\n",
     )
+    write(root, "research/scientific_model.md", "baseline campaign model\n")
     git(root, "add", ".")
     git(root, "commit", "-m", "prepared v4 baseline")
     baseline = git(root, "rev-parse", "HEAD")
@@ -337,6 +338,7 @@ def reset_template(tmp_path_factory):
         "research/BASELINE_PENDING",
     ):
         write(root, name, "later science\n")
+    write(root, "research/scientific_model.md", "later campaign model\n")
     state.update(last_experiment=5, last_allocated_experiment=5)
     write(root, "research/research_state.json", json.dumps(state))
     git(root, "add", ".")
@@ -380,6 +382,37 @@ def reset(root, *arguments):
         timeout=120,
         check=False,
     )
+
+
+def test_campaign_start_refuses_placeholder_before_baseline(tmp_path):
+    pwsh = shutil.which("pwsh")
+    if not pwsh:
+        pytest.skip("PowerShell is unavailable")
+    root = tmp_path / "campaign"
+    root.mkdir()
+    shutil.copy2(ROOT / "run_research.ps1", root / "run_research.ps1")
+    shutil.copy2(ROOT / "researcher_session.ps1", root / "researcher_session.ps1")
+    shutil.copy2(MUTEX_HELPER, root / "researcher_mutex.ps1")
+    write(root, "research/research_state.json", '{"schema_version": 4}')
+    write(root, "research/BASELINE_PENDING", "pending\n")
+    uv = root / "uv.cmd"
+    uv.write_text("@echo off\r\nexit /b 0\r\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [pwsh, "-NoProfile", "-NonInteractive", "-File", str(root / "run_research.ps1")],
+        cwd=root,
+        env={**os.environ, "PATH": str(root) + os.pathsep + os.environ["PATH"]},
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+
+    assert result.returncode != 0
+    assert "scientific-model phase prompt is still a placeholder" in result.stderr
+    assert (root / "research/BASELINE_PENDING").exists()
+    assert not (root / "research/proposal.json").exists()
+    assert not (root / "research/scientific_model.md").exists()
 
 
 def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repository):
@@ -465,6 +498,7 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
     )
     assert git(root, "ls-files", "--", LOG) == LOG
     assert (root / LOG).read_text() == "baseline raw training log\n"
+    assert (root / "research/scientific_model.md").read_text() == "baseline campaign model\n"
     # Replay from the new commit needs no external source for ignored logs.
     prepared = git(root, "rev-parse", "HEAD")
     result = reset(
@@ -484,6 +518,16 @@ def test_baseline_restores_science_and_evidence_in_current_branch(baseline_repos
     assert replayed["best_known_lineage"]["scientific_commit"] == recipe
 
 
+def test_baseline_reset_restores_its_campaign_model(baseline_repository):
+    root, baseline = baseline_repository
+
+    result = reset(root, "-Mode", "Baseline", "-BaselineRef", baseline, "-Force")
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert (root / "research/scientific_model.md").read_text() == "baseline campaign model\n"
+    assert not (root / "research/BASELINE_PENDING").exists()
+
+
 def test_fresh_clears_campaign_but_keeps_current_science(baseline_repository):
     root, _ = baseline_repository
     result = reset(root, "-Mode", "Fresh", "-Force")
@@ -491,6 +535,7 @@ def test_fresh_clears_campaign_but_keeps_current_science(baseline_repository):
     assert (root / "robot_learning/scenario/reward.py").read_text() == "later science\n"
     assert (root / "tests/scenario/test_reward.py").read_text() == "later science\n"
     assert (root / "research/BASELINE_PENDING").exists()
+    assert not (root / "research/scientific_model.md").exists()
     assert not (root / "research/checkpoints").exists()
     assert not (root / "research/evaluations").exists()
     assert not (root / "research/training_logs").exists()
@@ -547,6 +592,7 @@ def test_fresh_recipe_restores_science_without_importing_baseline_evidence(
     assert state["best_known_lineage"] is None
     assert state["retained_lineages"] == []
     assert (root / "research/BASELINE_PENDING").exists()
+    assert not (root / "research/scientific_model.md").exists()
     assert (root / "research/results.jsonl").read_text() == ""
     assert git(root, "rev-list", "--count", f"{old_head}..HEAD") == "2"
     assert git(root, "status", "--porcelain") == ""
@@ -699,6 +745,7 @@ def redirect_reset_paths(monkeypatch, root):
         "STATE_PATH": research / "research_state.json",
         "TRAINING_LOG_DIR": research / "training_logs",
         "BASELINE_PENDING_PATH": research / "BASELINE_PENDING",
+        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
         "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
         "RESTART_PENDING_PATH": research / "RESTART_PENDING",
         "GOAL_PATH": research / "GOAL_REACHED",

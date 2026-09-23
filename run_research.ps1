@@ -583,6 +583,21 @@ function Test-PreparationDeliverable {
     return $true
 }
 
+function Test-ScientificModelDeliverable {
+    $validationOutput = @(
+        uv run python research/run_experiment.py --check-scientific-model-deliverable 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $script:ScientificModelValidationFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0) {
+        Write-Host $script:ScientificModelValidationFeedback
+        return $false
+    }
+    return $true
+}
+
 function Test-AnalysisDeliverable {
     $validationOutput = @(
         uv run python research/run_experiment.py --check-analysis-deliverable 2>&1
@@ -669,6 +684,20 @@ function Get-AnalysisSessionStatus([int]$attempt) {
     New-ResearcherSessionStatus -Phase "post-training analysis" -Attempt $attempt `
         -ExitCode $script:ResearcherExitCode `
         -Deliverable "research/evaluation_request.json or research/proposal.json" `
+        -Present $present -Valid $valid -Reason $reason
+}
+
+function Get-ScientificModelSessionStatus([int]$attempt) {
+    $present = Test-Path "research\scientific_model.md" -PathType Leaf
+    $valid = $false
+    $reason = "research/scientific_model.md was not created"
+    if ($present) {
+        $valid = Test-ScientificModelDeliverable
+        $reason = if ($valid) { "" } else { $script:ScientificModelValidationFeedback }
+    }
+    New-ResearcherSessionStatus -Phase "scientific model" -Attempt $attempt `
+        -ExitCode $script:ResearcherExitCode `
+        -Deliverable "research/scientific_model.md" `
         -Present $present -Valid $valid -Reason $reason
 }
 
@@ -816,7 +845,7 @@ if ($ResearcherBackend -eq "opencode") {
         }
         $analysisPrompt = @(
             $analysisPhasePrompt
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
             "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
             "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
@@ -897,7 +926,7 @@ if ($ResearcherBackend -eq "opencode") {
             Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
-                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -947,6 +976,44 @@ if ($ResearcherBackend -eq "opencode") {
     }
 
     if (Test-Path "research\BASELINE_PENDING") {
+        if (-not (Test-Path "research\scientific_model.md" -PathType Leaf)) {
+            $scientificModelPhasePrompt = "[PLACEHOLDER: Maintainer to supply the scientific-model phase persona prompt.]"
+            if (-not $scientificModelPhasePrompt.Trim() -or $scientificModelPhasePrompt -match "PLACEHOLDER") {
+                throw "The scientific-model phase prompt is still a placeholder. The maintainer must supply it before starting a campaign."
+            }
+            Update-ResearchBrief
+            $scientificModelPrompt = @(
+                $scientificModelPhasePrompt
+                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            ) -join " "
+            Invoke-ResearcherSession -Prompt $scientificModelPrompt -Phase "scientific model" -Experiment 1
+            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                break CampaignLoop
+            }
+            $scientificModelStatus = Get-ScientificModelSessionStatus 1
+            Write-ResearcherSessionStatus $scientificModelStatus
+            if (-not $scientificModelStatus.Complete) {
+                $scientificModelProblem = $scientificModelStatus.Reason
+                Write-Status "=== Scientific model missing or invalid; retrying the same phase once ===" Yellow
+                $scientificModelRetryPrompt = @(
+                    "Current phase: scientific model. The previous deliverable failed validation: $scientificModelProblem."
+                    "The same Researcher session context remains available. Correct only research/scientific_model.md according to research/instruments.md."
+                    "Do not run training, measurements, Git mutations, or research/run_experiment.py; the launcher validates the deliverable."
+                ) -join " "
+                Invoke-ResearcherSession -Prompt $scientificModelRetryPrompt -Phase "scientific model" -Experiment 1 -Continue
+                if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                    break CampaignLoop
+                }
+                $scientificModelStatus = Get-ScientificModelSessionStatus 2
+                Write-ResearcherSessionStatus $scientificModelStatus
+                if (-not $scientificModelStatus.Complete) {
+                    throw "Researcher ended twice without a valid research/scientific_model.md. Last validation error: $($scientificModelStatus.Reason)"
+                }
+            }
+        }
+        elseif (-not (Test-ScientificModelDeliverable)) {
+            throw "The existing campaign scientific model is invalid. The maintainer must reset the campaign: $script:ScientificModelValidationFeedback"
+        }
         Write-Status "=== Running fresh baseline training ==="
         @{
             baseline = $true
@@ -967,6 +1034,9 @@ if ($ResearcherBackend -eq "opencode") {
         if ($runnerExitCode -ne 0) {
             throw "Baseline failed. The research loop stopped instead of silently continuing."
         }
+        if (-not (Test-Path "research\scientific_model.md" -PathType Leaf)) {
+            throw "Baseline completed without research/scientific_model.md. The maintainer must reset the campaign."
+        }
         Update-ResearchBrief
         Write-Status "=== Baseline training complete; researcher evaluation comes next ===" Green
         continue
@@ -977,7 +1047,7 @@ if ($ResearcherBackend -eq "opencode") {
         Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $($researchState.pending_researcher_decision.experiment) ==="
         $decisionPrompt = @(
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
             "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
             "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
@@ -1062,7 +1132,7 @@ if ($ResearcherBackend -eq "opencode") {
             else {
                 "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
             })
-        "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+        "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."

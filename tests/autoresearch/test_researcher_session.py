@@ -231,8 +231,17 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     assert boundary is not None
 
     # Continuation is an argument to the one invocation path, never a second branch.
-    assert LOOP.count("Invoke-ResearcherSession -Prompt") == 8
-    assert LOOP.count("-Continue") == 4
+    for prompt in (
+        "$scientificModelRetryPrompt",
+        "$analysisRetryPrompt",
+        "$evaluationRetryPrompt",
+        "$decisionRetryPrompt",
+        "$retryPrompt",
+    ):
+        assert re.search(
+            rf"Invoke-ResearcherSession -Prompt {re.escape(prompt)}[^\n]*-Continue",
+            LOOP,
+        )
 
 
 def test_the_launcher_offers_both_runtimes_and_still_defaults_to_copilot():
@@ -268,6 +277,7 @@ def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
         "evaluationStatus",
         "lineageStatus",
         "analysisStatus",
+        "scientificModelStatus",
     ):
         assert LOOP.count(f"if (-not ${phase}.Complete)") == 2
 
@@ -278,11 +288,14 @@ def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
 
 
 def test_each_phase_reports_its_session_before_deciding_to_retry():
-    assert LOOP.count("Write-ResearcherSessionStatus") == 8
+    assert LOOP.count("Write-ResearcherSessionStatus") == LOOP.count(
+        "Invoke-ResearcherSession -Prompt"
+    )
     for status, retry in (
         ("$proposalStatus", "=== Research proposal missing or invalid"),
         ("$evaluationStatus", "=== Evaluation request missing or invalid"),
         ("$lineageStatus", "=== Lineage deliverable invalid"),
+        ("$scientificModelStatus", "=== Scientific model missing or invalid"),
     ):
         assert LOOP.index(f"Write-ResearcherSessionStatus {status}") < LOOP.index(retry)
 
@@ -293,6 +306,7 @@ def test_every_phase_validates_its_deliverable_with_the_protected_validator():
         "--check-evaluation-request",
         "--check-lineage-evidence",
         "--check-analysis-deliverable",
+        "--check-scientific-model-deliverable",
     ):
         assert validator in LOOP
 
