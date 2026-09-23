@@ -14,11 +14,11 @@
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline remains the strongest saved policy, with 778/800 successes across four distinct research panels and 196/200 on the latest disjoint panel. Both measured experiment-4 convex hold-progress candidates regressed to 185/200 and 184/200, so the unchanged recipe remains the best development lineage, but the campaign has no official result.
+**Current synthesis:** The unchanged PPO baseline remains the strongest saved policy, with 778/800 successes across four distinct research panels and 196/200 on the latest disjoint panel. The three measured reward-shaping continuations all regressed, while the current training distribution covers only 14–20 cm of the official 6–20 cm range; development evidence therefore shows a strong but non-terminal policy.
 
-**Lessons and limits:** Training success and reward identify useful checkpoints but do not replace task-success measurement. Full and partial hold-exit forfeiture and the tested convex hold-progress shaping all regressed in measured continued-training checkpoints, although these results are limited to their tested recipes and trajectories. Incumbent failures include both episodes that never reach tolerance and episodes that interrupt a hold, and the research panels plus reused task-reference panel remain development evidence rather than official confirmation.
+**Lessons and limits:** Training success and reward identify useful checkpoints but do not replace task-success measurement. Full and partial hold-exit forfeiture and convex hold-progress shaping regressed in the measured continued-training checkpoints, although those findings are limited to their tested recipes and trajectories. Incumbent failures include both episodes that never reach tolerance and episodes that interrupt a hold; the research panels and reused task-reference panel remain development evidence rather than official confirmation.
 
-**Open questions:** It remains unresolved whether another approach can improve hold stability without sacrificing reach reliability. The official result for the selected policy is also unresolved; development panels do not declare the objective reached.
+**Open questions:** It remains unresolved whether training on the full target-radius range can improve performance on the official distribution without disrupting the learned outer-range behavior. The official result for the selected policy is also unresolved; development panels do not declare the objective reached.
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Experiment 2
 
