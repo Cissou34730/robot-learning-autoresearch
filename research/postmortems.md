@@ -4,11 +4,11 @@
 
 **Current synthesis:** The learned policy solves most reach-and-hold episodes,
 but the standing `best_known` lineage remains below the 98% objective at
-1122/1160 successes (96.7%) across six distinct research panels. Experiment 5
-challengers reached 197/200 on their selection panel but only matched the
-contemporaneous control, while expanded target coverage, hold-exit forfeiture,
-a lower learning rate, and inner-focused target sampling likewise produced no
-durable improvement.
+1314/1360 successes (96.6%) across seven distinct research panels. Experiment 6
+also failed to improve it: the higher-gamma challengers scored 69.0% and 91.5%
+against the control's 96.0% on the fresh panel. Expanded target coverage,
+hold-exit forfeiture, a lower learning rate, inner-focused target sampling, and
+the higher discount factor have produced no durable improvement.
 
 **Lessons and limits:** Task success is not reliably predicted by training
 reward or proxy success. Failures cluster around difficult inner-radius reaches,
@@ -18,13 +18,15 @@ and development measurements cannot establish the official objective. The
 experiment-5 challenger scores came from the panel used to compare them, while
 the contemporaneous control's score on that disjoint panel independently extends
 the standing lineage's evidence. The task requires 100 consecutive in-tolerance
-steps, but the current PPO discount factor is 0.99, so temporal credit for a
-completed hold is attenuated relative to immediate reach rewards.
+steps. The experiment-6 change to PPO gamma 0.995 did not improve complete-hold
+success and its proxy peak did not transfer to task performance. Development
+measurements still cannot establish the official objective.
 
 **Open questions:** It remains unresolved whether stronger long-horizon credit
 assignment can improve uninterrupted-hold reliability while preserving
 inner/outer reach performance and avoiding the late-checkpoint degradation seen
-in tested continuations.
+in tested continuations; the tested gamma change weakens that specific route but
+does not rule out other approaches.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
@@ -224,3 +226,45 @@ ordinary next experiment after closure.
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-5-best_known-200ep-seed5160-f48545f83637.json`;
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-5-checkpoint-35840-200ep-seed5160-f48545f83637.json`;
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-5-checkpoint-120832-200ep-seed5160-f48545f83637.json`.
+
+## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 6
+
+**Result:** Continuing the standing lineage with PPO gamma increased from 0.99
+to 0.995 did not improve complete reach-and-hold success. On the fresh
+5360-5559 panel, the standing control scored 192/200 (96.0%), while the
+proxy-peak `checkpoint-70656` scored 138/200 (69.0%) and the final
+`checkpoint-120832` scored 183/200 (91.5%). Keep `checkpoint-100352` as
+working and best-known, restore the parent recipe, and retain no experiment-6
+challenger. No final assessment is requested.
+
+**Observed behavior:** The proxy-peak challenger had one win against 55 control
+wins in discordant paired outcomes, and the final challenger had one win against
+10 control wins. The proxy peak reached 0.94 training success, but the final
+checkpoint proxy fell to 0.85; neither proxy signal transferred to task
+success. Failures continued to include unreached targets, interrupted holds,
+and 500-step truncations. The control's 192/200 result is new disjoint-panel
+evidence extending the standing lineage; the challenger scores are selection-
+panel evidence and do not independently confirm those challengers.
+
+**Hypothesis assessment:** The hypothesis that increasing PPO gamma would
+improve long-horizon credit for the required uninterrupted hold is weakened for
+this recipe and these checkpoints. Both measured challengers underperformed the
+contemporaneous control, including the checkpoint selected at the strongest
+training proxy, and paired comparisons favored the control. This evidence does
+not establish that every long-horizon credit intervention will fail, nor does
+it establish the official objective.
+
+**Interpretation:** The experiment-6 continuation provides no basis to change
+the selected policy or scientific recipe. Restoring gamma 0.99 preserves the
+recipe associated with the standing lineage's broadest evidence, while removing
+the unpromising gamma challengers avoids carrying forward artifacts without a
+demonstrated use. The 98% objective remains unmet in development evidence, so
+further training remains an ordinary post-closure decision rather than a final
+assessment request.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`; `research/results.jsonl`;
+`research/checkpoints/challengers/ee116313-a145-46aa-9c85-e6e591e18f5a/experiment-6/inventory.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-6-best_known-200ep-seed5360-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-6-checkpoint-70656-200ep-seed5360-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-6-checkpoint-120832-200ep-seed5360-f48545f83637.json`.

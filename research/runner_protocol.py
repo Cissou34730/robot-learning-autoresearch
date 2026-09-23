@@ -2167,7 +2167,47 @@ def _normalized_selection_panel(item: object) -> dict | None:
     return None
 
 
-def _selection_panels_for(source: dict, pending: dict, fingerprint: str) -> list[dict]:
+def _fingerprint_exposure_sources(state: dict, fingerprint: str) -> list[dict]:
+    """Every lineage record that carries selection exposure for a fingerprint.
+
+    Issue #57: selection exposure belongs to the immutable model, not to the role
+    alias the Researcher selected it through. A fingerprint retained as `working`
+    while it was preserved as `best_known`, or re-selected under another alias,
+    must not drop the panels it was selected on. Every current lineage role and
+    every prior closed experiment record in the campaign that shares the
+    fingerprint contributes its already-recorded selection panels.
+    """
+    wanted = str(fingerprint)
+    sources: list[dict] = []
+    for identifier in ("working", "best_known"):
+        lineage = lineage_role(state, identifier)
+        if isinstance(lineage, dict) and str(lineage.get("fingerprint")) == wanted:
+            sources.append(lineage)
+    for lineage in state.get("retained_lineages") or []:
+        if isinstance(lineage, dict) and str(lineage.get("fingerprint")) == wanted:
+            sources.append(lineage)
+    campaign_id = repository.current_campaign_id(state)
+    if campaign_id is None:
+        return sources
+    for record in repository.result_records_for_campaign(campaign_id):
+        if not isinstance(record, dict):
+            continue
+        for role in ("working_lineage", "best_known_lineage"):
+            lineage = record.get(role)
+            if isinstance(lineage, dict) and str(lineage.get("fingerprint")) == wanted:
+                sources.append(lineage)
+        for lineage in record.get("retained_lineages") or []:
+            if isinstance(lineage, dict) and str(lineage.get("fingerprint")) == wanted:
+                sources.append(lineage)
+    return sources
+
+
+def _selection_panels_for(
+    source: dict,
+    pending: dict,
+    fingerprint: str,
+    exposure_sources: list[dict] | None = None,
+) -> list[dict]:
     """The panels a newly selected lineage was measured on.
 
     Issue #57: a lineage selected on a panel's episodes is not independently
@@ -2176,18 +2216,21 @@ def _selection_panels_for(source: dict, pending: dict, fingerprint: str) -> list
     brief can surface its selection exposure. Both instruments covered by the
     contract are recorded, and the representation preserves the instrument and the
     panel identity. Panels already recorded on a carried-over lineage are
-    preserved.
+    preserved. Panels recorded for the same model fingerprint on other lineage
+    roles and in prior closed experiment records are accumulated as well, so
+    exposure is never dropped when a fingerprint moves between role aliases.
     """
     panels: list[dict] = []
     seen: set[tuple] = set()
-    for item in source.get("selected_panels") or []:
-        normalized = _normalized_selection_panel(item)
-        if normalized is None:
-            continue
-        key = _selection_panel_key(normalized)
-        if key not in seen:
-            seen.add(key)
-            panels.append(normalized)
+    for recorded in (source, *(exposure_sources or [])):
+        for item in recorded.get("selected_panels") or []:
+            normalized = _normalized_selection_panel(item)
+            if normalized is None:
+                continue
+            key = _selection_panel_key(normalized)
+            if key not in seen:
+                seen.add(key)
+                panels.append(normalized)
     for instrument, keys in (
         (
             "research_evaluation",
@@ -2237,7 +2280,11 @@ def _selection_panels_for(source: dict, pending: dict, fingerprint: str) -> list
 
 
 def _v4_lineage_record(
-    source: dict, pending: dict, artifact: Path, reason: str
+    source: dict,
+    pending: dict,
+    artifact: Path,
+    reason: str,
+    state: dict | None = None,
 ) -> dict:
     current = bool(source.get("_current_candidate"))
     checkpoint_steps = int(source.get("timesteps", source.get("training_steps", 0)))
@@ -2267,7 +2314,14 @@ def _v4_lineage_record(
         )
         if current
         else list(source.get("evaluation_artifacts", [])),
-        "selected_panels": _selection_panels_for(source, pending, fingerprint),
+        "selected_panels": _selection_panels_for(
+            source,
+            pending,
+            fingerprint,
+            _fingerprint_exposure_sources(state, fingerprint)
+            if state is not None
+            else None,
+        ),
         "reason": reason,
     }
 
@@ -2956,7 +3010,10 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             # instead of copying the stale record unchanged.
             best_record = dict(existing_best)
             best_record["selected_panels"] = _selection_panels_for(
-                existing_best, pending, best_fingerprint
+                existing_best,
+                pending,
+                best_fingerprint,
+                _fingerprint_exposure_sources(state, best_fingerprint),
             )
         else:
             selected_records = _validated_designation_evidence(
@@ -2970,6 +3027,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 pending,
                 best_artifact,
                 str(best_decision["reason"]).strip(),
+                state,
             )
             best_record["evaluation_artifacts"] = sorted(
                 set(best_record["evaluation_artifacts"])
@@ -3024,7 +3082,10 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             artifact, f"retained lineage {identifier!r}"
         )
         new_retained.append(
-            {"id": identifier, **_v4_lineage_record(source, pending, artifact, reason)}
+            {
+                "id": identifier,
+                **_v4_lineage_record(source, pending, artifact, reason, state),
+            }
         )
         known_ids.add(identifier)
     request_final = decision.get("request_final_benchmark", False)
@@ -3041,7 +3102,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         lineage for lineage in retained if lineage["id"] not in removal_ids
     ] + new_retained
     working_record = _v4_lineage_record(
-        working_source, pending, working_artifact, working_reason
+        working_source, pending, working_artifact, working_reason, state
     )
     publications = _v4_artifact_publications(
         state,
