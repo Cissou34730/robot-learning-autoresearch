@@ -3,23 +3,24 @@
 ## f332c079-6021-457e-be60-1f0804528d76 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO baseline learned a useful reach-and-hold
-policy, but its measured success plateaued below the human objective. The
-proxy-peak checkpoint-100352 achieved 94.5% on each of two disjoint
-200-episode research panels (378/400 pooled), and checkpoint-110592 tied it on
-the later panel. The final checkpoint-120832 was lower at 93.75% pooled.
+policy, but its measured success plateaued at 94.5% (378/400) on two disjoint
+research panels. The working lineage's 22 failures split evenly between never
+entering tolerance and entering tolerance but holding for fewer than 25 steps;
+failure rates were not confined to the shortest target-radius bin.
 
-**Lessons and limits:** Training proxies identified the late learned regime but
-did not establish the 98% task objective. The independent panel confirmed that
-checkpoint-100352 was not merely selected by its first-panel score, while the
-near-tie with checkpoint-110592 leaves no meaningful behavioral advantage for
-the reward peak. Continued training past the proxy peak was not beneficial in
-this run. These are development measurements under
-`research_evaluation`, not the official benchmark; residual failure geometry
-and the generalization of the 94.5% estimate remain open.
+**Lessons and limits:** The late proxy peak was independently reproduced, while
+the reward-peak alternative tied it and the final checkpoint declined to 93.75%
+pooled. The baseline reward therefore supports useful reach behavior but does
+not establish reliable uninterrupted holding or the 98% objective. These are
+development measurements under `research_evaluation`; the failure split, target
+geometry summaries, and 94.5% estimate remain limited evidence rather than an
+official result or a causal explanation.
 
-**Open questions:** Which learning-condition change can convert the remaining
-roughly 5.5% failures into uninterrupted 2-second holds without sacrificing
-coverage across the official target distribution?
+**Open questions:** Whether explicitly penalizing exits from tolerance reduces
+brief hold failures without increasing reach failures or reducing coverage
+across the official target distribution remains unresolved. The contribution
+of the never-reached failures to the remaining performance gap is also
+uncertain.
 
 ## f332c079-6021-457e-be60-1f0804528d76 / Experiment 1
 
