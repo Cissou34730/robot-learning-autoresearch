@@ -1,222 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/f332c079-6021-457e-be60-1f0804528d76/e1-cada55eb5-2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-1-checkpoint-100352-200ep-seed4200-f48545f83637.json",
-      "research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-1-checkpoint-100352-200ep-seed4400-f48545f83637.json"
-    ],
-    "fingerprint": "2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the strongest independent evidence in the experiment: 189/200 successes on both research panels, whereas checkpoint-110592 has only one panel and checkpoint-120832 is lower at 93.75% pooled.",
-    "scientific_commit": "fdae3cf4c6bdf6c57b991d560a1d05776ee6f023",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4400
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "1ee27b00e70d188decf7565ec54a8515711c0c61",
-    "id": "f332c079-6021-457e-be60-1f0804528d76",
+    "base_commit": "8fde0ed3cd06d1bcf0ba3814699bbffbdb45394d",
+    "id": "7a8a9e3a-e0cc-4940-a747-cb7529b2da8c",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-23T13:21:32.546119+00:00"
+    "started_at": "2026-09-23T15:51:00.915050+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "f332c079-6021-457e-be60-1f0804528d76": 3
+    "7a8a9e3a-e0cc-4940-a747-cb7529b2da8c": 0
   },
-  "last_allocated_experiment": 3,
-  "last_experiment": 3,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Experiment 3's training-only angular target reweighting was contradicted by both measured checkpoints. Restore the complete scientific recipe associated with the unchanged working parent."
-    },
-    "code_parent_commit": "ff90d1cc3b3d5244166f43329c0c46577fb634e0",
-    "continue_from": "working",
-    "experiment": 3,
-    "reason": "The unchanged working lineage succeeded on 197/200 episodes on the disjoint 4800-4999 research panel, while experiment-3 checkpoints 115712 and 120832 succeeded on only 123/200 and 129/200 episodes. The paired comparisons favored working by 74-0 and 68-0 discordant wins. Keep the established working policy because the angular target-reweighting intervention reduced, rather than improved, task success."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-  "official_benchmark_expectation": {
-    "expected_verdict": "goal_reached",
-    "reason": "The working lineage reached 197/200 (98.5%) on a panel disjoint from all panels used to select it, exceeding the 196/200 development threshold. The result is not an official benchmark result, and the 766/800 aggregate across four panels remains below 98%, so the expected verdict is supported but uncertain until the fixed official assessment is run."
-  },
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/f332c079-6021-457e-be60-1f0804528d76/e1-cada55eb5-2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-    "fingerprint": "2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "ff90d1cc3b3d5244166f43329c0c46577fb634e0",
-    "experiment": 3,
-    "scientific_commit": "addc48b366f5f49155e7d830a763ef831bb03287"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/f332c079-6021-457e-be60-1f0804528d76/e1-c720dc389-ab4c81f6fb3e89ca916c90c6ecd7b89aeffaf2f6e613b618580e5fffa7a2ed39",
-      "candidate": "checkpoint-110592",
-      "evaluation_artifacts": [
-        "research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-1-checkpoint-110592-200ep-seed4400-f48545f83637.json"
-      ],
-      "fingerprint": "ab4c81f6fb3e89ca916c90c6ecd7b89aeffaf2f6e613b618580e5fffa7a2ed39",
-      "id": "reward-peak-110592",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the local training-reward peak as a reusable alternative because it tied checkpoint-100352 at 189/200 on the disjoint panel and represents a distinct late-run policy state.",
-      "scientific_commit": "fdae3cf4c6bdf6c57b991d560a1d05776ee6f023",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 4400
-        }
-      ],
-      "training_steps": 110592
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/f332c079-6021-457e-be60-1f0804528d76/e1-cada55eb5-2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-1-checkpoint-100352-200ep-seed4200-f48545f83637.json",
-      "research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-1-checkpoint-100352-200ep-seed4400-f48545f83637.json"
-    ],
-    "fingerprint": "2a7347c1df1600e96a6b741323b192ae20baf5c758f91f94af81425e23f921c3",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The unchanged working lineage succeeded on 197/200 episodes on the disjoint 4800-4999 research panel, while experiment-3 checkpoints 115712 and 120832 succeeded on only 123/200 and 129/200 episodes. The paired comparisons favored working by 74-0 and 68-0 discordant wins. Keep the established working policy because the angular target-reweighting intervention reduced, rather than improved, task success.",
-    "scientific_commit": "fdae3cf4c6bdf6c57b991d560a1d05776ee6f023",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4400
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4600
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4800
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
