@@ -3,20 +3,24 @@
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior, but the standing checkpoint-100352 lineage remains below the objective
-at 152/160 on the latest disjoint panel and 609/640 pooled across four panels.
-Target-distribution changes and both tested hold-exit forfeiture doses failed to
-improve it, leaving the unchanged lineage as working and best-known.
+behavior, and the standing checkpoint-100352 lineage achieved 157/160 (98.125%)
+on the new panel 4840-4999, disjoint from the panels used to select it. The
+experiment-5 target-geometry challengers achieved only 38/160 and 84/160, so the
+unchanged lineage remains working and best-known and is ready for the official
+assessment.
 
 **Lessons and limits:** Training proxies did not predict task success: the
-proxy-high challengers ranged from tied to substantially worse than the control.
-Residual failures include both no-reach episodes and interrupted holds, but the
-development panels do not establish their full-distribution frequency. No
-official 200-episode result exists.
+experiment-5 challenger with the highest observed reward was substantially worse
+than the control, and the direct target-geometry representation contradicted its
+hypothesis under the tested fresh run. The control's three failures on panel
+4840-4999 were no-reach episodes with no interrupted holds. The 157/160 result is
+independent of the lineage-selection panels but is still development evidence;
+only the official 200-episode assessment can establish the objective.
 
-**Open questions:** The evidence does not resolve whether direct target-geometry
-features, another reward formulation, or a different mechanism can close the
-remaining gap without sacrificing broad reach behavior.
+**Open questions:** Whether the frozen working lineage reaches at least 196/200
+on the official panel remains unresolved. If it does not, the remaining
+full-distribution no-reach failures and a different mechanism remain open
+investigations.
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 1
 
@@ -158,3 +162,41 @@ experiment after closure.
 `research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-4-working-160ep-seed4680-f48545f83637.json`;
 `research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-4-checkpoint-86016-160ep-seed4680-f48545f83637.json`;
 `research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-4-checkpoint-120832-160ep-seed4680-f48545f83637.json`.
+
+## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 5
+
+**Result:** Adding target radius and sine/cosine target-angle features did not
+improve the learned policy. The standing working lineage achieved 157/160
+(98.125%) on the disjoint panel 4840-4999, while the 100352-step and final
+120832-step challengers achieved 38/160 (23.75%) and 84/160 (52.5%).
+
+**Observed behavior:** The working lineage was measured on a panel disjoint from
+all panels used to select it, so its 157/160 result is independent development
+evidence rather than a reuse of its selection score. Its three failures were
+no-reach episodes, with no interrupted holds. Both geometry challengers were
+dominated by the working policy in paired comparisons: the working policy won
+119 and 73 discordant episodes respectively, while each challenger had zero
+wins. The final challenger also remained far below the earlier challenger
+despite having the highest observed training reward.
+
+**Hypothesis assessment:** The hypothesis was contradicted under the tested
+conditions. The fresh 14-value observation did not reduce no-reach or
+interrupted-hold failures and substantially degraded task success at both
+measured checkpoints. This conclusion is specific to this representation and
+fresh run; it does not establish that every observation or learning-method
+change is ineffective.
+
+**Interpretation:** The established working and best-known lineage is the only
+useful policy from this experiment. The experiment-5 observation change should
+be reverted, and neither challenger has evidence that justifies retention.
+Because the standing lineage now meets the 157/160 development threshold on a
+disjoint panel, but development evidence cannot establish the official
+objective, submit it for the official 200-episode assessment with an expected
+goal-reached verdict.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`; `research/results.jsonl`;
+`research/checkpoints/challengers/5521c88b-2345-470f-a9dd-547cf3b569b7/experiment-5/inventory.json`;
+`research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-5-working-160ep-seed4840-f48545f83637.json`;
+`research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-5-checkpoint-100352-160ep-seed4840-f48545f83637.json`;
+`research/evaluations/5521c88b-2345-470f-a9dd-547cf3b569b7/evaluation-5521c88b-2345-470f-a9dd-547cf3b569b7-experiment-5-checkpoint-120832-160ep-seed4840-f48545f83637.json`.
