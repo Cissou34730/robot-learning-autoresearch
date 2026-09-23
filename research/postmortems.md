@@ -3,24 +3,24 @@
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior, but the standing parent achieved only 151/160 successes (94.375%) on
-the disjoint experiment-2 panel, below the human objective of at least 98%.
-The changed target-distribution recipe tied the parent at its measured
-intermediate checkpoint and fell to 149/160 at the final checkpoint, so
-checkpoint-100352 remains the practical working and best-known lineage.
+behavior, but the standing checkpoint-100352 lineage achieved 151/160 successes
+on each of two disjoint development panels (302/320 pooled), below the 98%
+objective. The transferred target-distribution change tied the parent at its
+intermediate checkpoint and fell to 149/160 at its final checkpoint, so the
+standing lineage remains both working and best-known.
 
 **Lessons and limits:** Training proxies identified useful behavior but did not
-establish the task objective or predict improvement from the distribution
-change: the experiment-2 final proxy was 0.91 while its task result was below
-the parent. The intermediate challenger and parent had zero discordant paired
-wins; the final challenger lost two discordant episodes and won none. These
-results are one 160-episode development panel and are not an official
-benchmark result.
+predict task improvement: the experiment-2 final proxy was 0.91 while its task
+result was below the parent. The remaining failures include no-reach cases in
+the negative-angle sector and interrupted holds, while the current reward gives
+no forfeiture for leaving an accumulated hold. The evidence covers two
+development panels, not the official 200-episode assessment.
 
-**Open questions:** Which representation or reward intervention can address the
-remaining failures without sacrificing the broad reach-and-hold behavior
-remains unresolved. Performance on the full official distribution remains
-unknown until the separate final assessment.
+**Open questions:** Whether stronger reward pressure against breaking an
+accumulated hold improves the complete uninterrupted 100-step success criterion
+without sacrificing broad reach behavior remains unresolved. It is also unknown
+whether the remaining no-reach cases require a representation change, and the
+standing lineage's performance on the full official panel remains unmeasured.
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 1
 
