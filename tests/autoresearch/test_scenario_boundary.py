@@ -232,26 +232,37 @@ def test_generic_core_may_only_use_the_scenario_package():
 
 def test_every_new_researcher_session_loads_the_authoritative_context():
     script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-    session_invocations = [
-        line
-        for line in script.splitlines()
-        if "Invoke-ResearcherSession -Prompt" in line
+    invocations = re.findall(r"Invoke-ResearcherSession -Prompt \$(\w+)([^\n]*)", script)
+    new_sessions = [
+        (prompt, options) for prompt, options in invocations if "-Continue" not in options
     ]
-    new_sessions = [line for line in session_invocations if "-Continue" not in line]
-    continued_sessions = [line for line in session_invocations if "-Continue" in line]
-    program_lines = [
-        line for line in script.splitlines() if "research/program.md" in line
+    preliminary = [
+        (prompt, options) for prompt, options in new_sessions if "-Preliminary" in options
     ]
-    assert len(new_sessions) == len(program_lines) == 4
-    assert len(continued_sessions) == 4
-    for line in program_lines:
-        for context in (
-            "AGENTS.md",
-            "research/scenario.md",
-            "research/instruments.md",
-            "research/brief.md",
-        ):
-            assert context in line, line
+    subsequent = [
+        (prompt, options) for prompt, options in new_sessions if "-Preliminary" not in options
+    ]
+    assert preliminary
+    assert subsequent
+    for prompt, options in new_sessions:
+        match = re.search(
+            rf"\${re.escape(prompt)}\s*=\s*@\((.*?)\)\s*-join", script, re.DOTALL
+        )
+        assert match is not None, prompt
+        corpus = match.group(1)
+        if "-Preliminary" in options:
+            assert "Read AGENTS.md and research/scenario.md" in corpus
+            assert "research/brief.md" not in corpus
+        else:
+            for context in (
+                "AGENTS.md",
+                "research/program.md",
+                "research/scenario.md",
+                "research/instruments.md",
+                "research/brief.md",
+                "research/scientific_model.md",
+            ):
+                assert context in corpus, prompt
 
 
 def test_scenario_document_defines_the_current_problem():
