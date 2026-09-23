@@ -38,6 +38,7 @@ RUNNER_MEMORY_PATHS = {
     "research/EXPERIMENTS.md",
     "research/postmortems.md",
     "research/BASELINE_PENDING",
+    "research/scientific_model.md",
 }
 RUNNER_MEMORY_PREFIXES = (
     "research/evaluations/",

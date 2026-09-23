@@ -79,6 +79,8 @@ human-only maintenance operation, never a Researcher experiment command.
 - `research/results.jsonl` - authoritative experiment history.
 - `research/EXPERIMENTS.md` - generated human-readable history.
 - `research/brief.md` - generated current Researcher context.
+- `research/scientific_model.md` - campaign-start Researcher model of the robot
+  and task, frozen after the preliminary phase and regenerated on fresh reset.
 - `research/evaluations/` - durable detailed development measurements.
 - `research/checkpoints/accepted/` and `research/checkpoints/retained/` - readable
   legacy archive locations and durable reusable policy lineages. Version-4
@@ -101,7 +103,8 @@ human-only maintenance operation, never a Researcher experiment command.
 The Researcher may read but not modify these paths through an experiment:
 
 - `AGENTS.md`, `research/program.md`, `research/scenario.md`,
-  `research/instruments.md`;
+  `research/instruments.md`, `research/scientific_model.md` (after its
+  campaign-start Researcher session);
 - `run_research.ps1`, `researcher_mutex.ps1`, `researcher_session.ps1`,
   `researcher_copilot.py`;
 - `tools/campaign_report.py`;
@@ -129,7 +132,8 @@ path takes precedence over any researcher-owned prefix.
 - `robot_learning/train.py`, `robot_learning/evaluate.py`,
   `robot_learning/play.py`;
 - `research/current_params.json`;
-- the phase deliverables `research/proposal.json`,
+- the preliminary phase deliverable `research/scientific_model.md` (only before
+  baseline training); the later phase deliverables `research/proposal.json`,
   `research/evaluation_request.json` and `research/postmortems.md`. During v4
   post-training analysis, exactly one actionable request is submitted: a
   measurement request or a closure proposal with its postmortem.

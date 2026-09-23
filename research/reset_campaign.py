@@ -46,6 +46,7 @@ CAMPAIGN_PATHS = (
     "research/archive.md",
     "research/research_state.json",
     "research/BASELINE_PENDING",
+    "research/scientific_model.md",
     "research/checkpoints",
     *EPHEMERAL_PATHS,
 )
@@ -330,6 +331,7 @@ def baseline_restore_paths(commit: str, state: dict) -> list[str]:
         "research/results.jsonl",
         "research/postmortems.md",
         "research/archive.md",
+        "research/scientific_model.md",
     }
     return sorted(
         path for path in source | current if path in fixed or path.startswith(prefixes)

@@ -66,6 +66,7 @@ PROTECTED_CONTEXT_PATHS = {
     "research/instruments.md",
     "research/program.md",
     "research/scenario.md",
+    "research/scientific_model.md",
 }
 # The rest of the enforcement mechanism, protected by prefix so that adding a
 # Runner module never silently hands part of the protocol to the researcher.
@@ -235,6 +236,9 @@ def declared_paths_exist(root: Path | None = None) -> list[str]:
         *MODEL_CONTAINED_RUNTIME_PATHS,
         *EVALUATION_RUNTIME_PATHS,
     }
+    # The campaign model is protected once produced, but absent before the
+    # preliminary Researcher phase of a fresh campaign.
+    declared.discard("research/scientific_model.md")
     missing = [relative for relative in declared if not (base / relative).is_file()]
     # A prefix classification is a directory by construction; a missing package
     # must not silently drop its whole protected surface.

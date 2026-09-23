@@ -104,13 +104,14 @@ history inspection are both available according to the investigation.
 
 The phase order is:
 
-1. prepare a new hypothesis and experiment;
-2. Runner training;
-3. post-training analysis, which may request and execute one or more measurement
+1. [PLACEHOLDER: Maintainer to supply the preliminary scientific-model protocol text.]
+2. prepare a new hypothesis and experiment (the fresh baseline is automatic);
+3. Runner training;
+4. post-training analysis, which may request and execute one or more measurement
    rounds or close directly from logs and existing evidence;
-4. close the experiment and resolve its working lineage, scientific recipe
+5. close the experiment and resolve its working lineage, scientific recipe
    decision, and optional best-known designation;
-5. either prepare the next experiment, request Runner execution of the final
+6. either prepare the next experiment, request Runner execution of the final
    benchmark as a terminal campaign action, or record that no further experiment
    is warranted.
 

@@ -634,6 +634,18 @@ def check_preparation_deliverable() -> int:
     return 0
 
 
+def check_scientific_model_deliverable() -> int:
+    """Preflight the campaign's preliminary Researcher deliverable."""
+    try:
+        if not paths.SCIENTIFIC_MODEL_PATH.read_text(encoding="utf-8").strip():
+            raise ValueError("research/scientific_model.md is empty")
+    except (OSError, UnicodeError, ValueError) as error:
+        print(f"SCIENTIFIC_MODEL_DELIVERABLE_INVALID: {error}")
+        return 1
+    print("SCIENTIFIC_MODEL_DELIVERABLE_VALID")
+    return 0
+
+
 def check_lineage_evidence(experiment: int) -> int:
     """Preflight for the loop: is the pending lineage decision attested yet?"""
     state = repository.read_state()
@@ -2502,6 +2514,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
     parser.add_argument("--check-preparation-deliverable", action="store_true")
+    parser.add_argument("--check-scientific-model-deliverable", action="store_true")
     parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
@@ -2522,6 +2535,8 @@ def main() -> int:
         return check_proposal()
     if getattr(args, "check_preparation_deliverable", False):
         return check_preparation_deliverable()
+    if args.check_scientific_model_deliverable:
+        return check_scientific_model_deliverable()
     if args.check_evaluation_request:
         return check_evaluation_request()
     if args.check_analysis_deliverable:

@@ -19,6 +19,25 @@ artifacts. Its expressions use Python syntax, not `jq` syntax. Researcher-owned
 analysis tools and read-only implementation inspection are also available.
 Inspection does not change the ownership permissions in `AGENTS.md`.
 
+## Model the robot and task
+
+**Phase:** Preliminary campaign start, before baseline training or campaign
+evidence. Write `research/scientific_model.md` once per campaign. Separate these
+three registers explicitly in the document:
+
+- **Established facts:** What the robot, task, and implementation actually
+  specify, with the relevant source or constraint identified. Do not treat
+  anticipated training outcomes as observations.
+- **Physical consequences:** Implications derived from those facts, with the
+  reasoning and assumptions stated separately from the facts.
+- **Unknowns:** Quantities, dynamics, limitations, or outcomes not established
+  by the available facts; do not fill these gaps with invented measurements.
+
+The deliverable must exist and contain non-whitespace content. The launcher
+validates that requirement; it does not judge the scientific substance. The
+model is read-only after this phase for the rest of the campaign, and a fresh
+campaign reset removes it so the next Researcher writes a new one.
+
 For the official benchmark result, use `research/brief.md` under **Current
 status -> Reported result**. Its durable metrics and artifact reference remain
 in `research/research_state.json`.

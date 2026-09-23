@@ -18,6 +18,7 @@ EVALUATION_REQUEST_PATH = RESEARCH_DIR / "evaluation_request.json"
 STATE_PATH = RESEARCH_DIR / "research_state.json"
 TRAINING_LOG_DIR = RESEARCH_DIR / "training_logs"
 BASELINE_PENDING_PATH = RESEARCH_DIR / "BASELINE_PENDING"
+SCIENTIFIC_MODEL_PATH = RESEARCH_DIR / "scientific_model.md"
 RECOVERY_PENDING_PATH = RESEARCH_DIR / "RECOVERY_PENDING"
 RESTART_PENDING_PATH = RESEARCH_DIR / "RESTART_PENDING"
 GOAL_PATH = RESEARCH_DIR / "GOAL_REACHED"
@@ -60,4 +61,3 @@ def campaign_retained_root(campaign_id: str | None) -> Path:
 	if campaign_id is None:
 		return RESEARCH_DIR / "checkpoints" / "retained"
 	return RESEARCH_DIR / "checkpoints" / "retained" / campaign_id
-
