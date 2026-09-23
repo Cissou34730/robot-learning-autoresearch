@@ -5,7 +5,9 @@
 **Current synthesis:** The unchanged PPO baseline learned a useful reach-and-hold
 policy, with the working lineage reaching 191/200 (95.5%) on the new disjoint
 panel and 569/600 (94.8%) across three research panels. It remains below the
-98% human objective, but the reward intervention did not improve it.
+98% human objective. The measured residual failures are concentrated in a
+specific angular sector on the newest panel, while the tested reward
+intervention did not improve overall success.
 
 **Lessons and limits:** Experiment 1 identified checkpoint-100352 as the
 best-supported development lineage at 94.5% on two disjoint panels, while the
@@ -17,12 +19,15 @@ reached 191/200. Paired comparisons favored the working policy by 16 and 29
 discordant episodes respectively. These are development measurements under
 `research_evaluation`, not an official result or a causal explanation of every
 failure mode; the negative result is scoped to this intervention, continuation,
-and measured checkpoints.
+and measured checkpoints. The angular concentration is observed on one panel
+and does not establish that reweighting training targets will improve the full
+official distribution.
 
-**Open questions:** The remaining never-reached and short-hold failures, and
-whether another intervention can close the gap without sacrificing reach
-coverage, remain unresolved. The fixed task-reference panel and official
-benchmark have not been run.
+**Open questions:** It remains unresolved whether the localized never-reached
+failures can be reduced without trading away success in the other angular
+sectors, and whether the residual short-hold failures require a separate
+intervention. The fixed task-reference panel and official benchmark have not
+been run.
 
 ## f332c079-6021-457e-be60-1f0804528d76 / Experiment 1
 
