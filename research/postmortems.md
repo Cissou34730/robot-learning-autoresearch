@@ -3,25 +3,20 @@
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
-behavior, while the standing checkpoint-100352 lineage reached 152/160 on the
-latest independent development panel and 609/640 pooled across four distinct
-panels. Both figures remain below the 98% objective. The full-radius target
-intervention, the 1.0 hold-exit forfeiture intervention, and the 0.1
-hold-exit forfeiture intervention all underperformed or failed to improve the
-standing lineage, so it remains working and best-known.
+behavior, but the standing checkpoint-100352 lineage remains below the objective
+at 152/160 on the latest disjoint panel and 609/640 pooled across four panels.
+Target-distribution changes and both tested hold-exit forfeiture doses failed to
+improve it, leaving the unchanged lineage as working and best-known.
 
-**Lessons and limits:** Training proxies identified useful behavior but did not
-predict task improvement. The mild forfeiture challengers achieved only 131/160
-and 130/160 while the control achieved 152/160 on the same new panel; paired
-comparisons gave the control 21 and 22 discordant wins with no challenger wins.
-This is evidence against the tested reward dose and run, not against reward
-shaping generally. All measurements are development evidence; the official
-200-episode assessment has not been run.
+**Lessons and limits:** Training proxies did not predict task success: the
+proxy-high challengers ranged from tied to substantially worse than the control.
+Residual failures include both no-reach episodes and interrupted holds, but the
+development panels do not establish their full-distribution frequency. No
+official 200-episode result exists.
 
-**Open questions:** It remains unknown whether another reward formulation or a
-representation change can reduce both interrupted holds and no-reach failures
-without sacrificing broad reach behavior. Performance of the standing lineage
-on the official panel is also unknown.
+**Open questions:** The evidence does not resolve whether direct target-geometry
+features, another reward formulation, or a different mechanism can close the
+remaining gap without sacrificing broad reach behavior.
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 1
 
