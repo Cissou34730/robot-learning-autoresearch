@@ -2,25 +2,23 @@
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Scientific strategy
 
-**Current synthesis:** The learned policy reliably solves most reach-and-hold
-episodes, but the best-supported lineage remains below the 98% objective at
-727/760 successes (95.7%) across four distinct research panels. Experiment 3's
-hold-exit forfeiture did not improve on that lineage: `checkpoint-35840` tied
-the control at 197/200 on the new panel, while the later `checkpoint-105472`
-fell to 180/200.
+**Current synthesis:** The learned policy solves most reach-and-hold episodes,
+but the standing `best_known` lineage remains below the 98% objective at
+727/760 successes (95.7%) across four distinct research panels. The two
+scientific interventions tested so far did not produce a robust improvement:
+expanded target coverage underperformed the control, and hold-exit forfeiture
+matched it at an intermediate checkpoint but degraded later.
 
-**Lessons and limits:** Training and reward proxies do not reliably transfer
-to task success. The forfeiture intervention produced a strong intermediate
-checkpoint but no independent improvement over the standing lineage and poor
-late-checkpoint robustness. The best-known lineage remains the most useful
-working policy; `checkpoint-35840` is retained as a distinct fallback. These
-development measurements do not establish that the 98% objective is met or
-predict the official result.
+**Lessons and limits:** Task success is not reliably predicted by training
+reward or proxy success. The standing lineage is the strongest broad-evidence
+policy, while `hold-forfeit-35840` is a distinct fallback with only one-panel
+evidence. Development measurements do not establish the official objective or
+predict its held-out result.
 
-**Open questions:** Residual failures remain unresolved across reachability,
-hold interruptions, and 500-step truncation. It remains unknown whether a
-different intervention or training trajectory can improve on the 95.7%
-best-known aggregate without sacrificing reliability elsewhere.
+**Open questions:** The remaining failures involve difficult inner-radius
+reaches, interrupted holds, and 500-step truncation. It is unresolved whether
+continued optimization can improve the standing lineage without repeating the
+late-checkpoint degradation seen in earlier training.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
