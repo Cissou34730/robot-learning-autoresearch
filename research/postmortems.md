@@ -2,23 +2,25 @@
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Scientific strategy
 
-**Current synthesis:** The baseline learned substantial reach-and-hold behavior,
-but its best-known lineage remains below the 98% objective: it scored 95.0% on
-the earlier disjoint research panel and 94.5% on the experiment-2 panel.
-Expanding training to the full 6-20 cm radius range did not improve task
-success; both measured experiment-2 challengers scored 94.0%.
+**Current synthesis:** The learned policy reliably solves most reach-and-hold
+episodes, but the best-supported lineage remains below the 98% objective at
+727/760 successes (95.7%) across four distinct research panels. Experiment 3's
+hold-exit forfeiture did not improve on that lineage: `checkpoint-35840` tied
+the control at 197/200 on the new panel, while the later `checkpoint-105472`
+fell to 180/200.
 
-**Lessons and limits:** The full 6-20 cm training intervention did not transfer
-the proxy peak into higher task success. The standing lineage is therefore the
-most useful saved policy, while its remaining failures include both difficult
-inner-radius reaches and incomplete holds. These development measurements do
-not establish that the 98% objective is met or predict the official result.
+**Lessons and limits:** Training and reward proxies do not reliably transfer
+to task success. The forfeiture intervention produced a strong intermediate
+checkpoint but no independent improvement over the standing lineage and poor
+late-checkpoint robustness. The best-known lineage remains the most useful
+working policy; `checkpoint-35840` is retained as a distinct fallback. These
+development measurements do not establish that the 98% objective is met or
+predict the official result.
 
-**Open questions:** The residual reach-and-hold failures remain unresolved,
-including episodes that enter tolerance but do not complete the uninterrupted
-hold and episodes that end at the 500-step limit. It remains unresolved whether
-a reward signal that makes hold interruptions costly can improve complete
-hold reliability without sacrificing reachability or outer-target performance.
+**Open questions:** Residual failures remain unresolved across reachability,
+hold interruptions, and 500-step truncation. It remains unknown whether a
+different intervention or training trajectory can improve on the 95.7%
+best-known aggregate without sacrificing reliability elsewhere.
 
 ## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 1
 
@@ -91,3 +93,45 @@ official benchmark.
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-2-checkpoint-105472-200ep-seed4560-f48545f83637.json`;
 `research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-2-checkpoint-120832-200ep-seed4560-f48545f83637.json`;
 `robot_learning/scenario/training_environment.py`.
+
+## ee116313-a145-46aa-9c85-e6e591e18f5a / Experiment 3
+
+**Result:** The hold-exit forfeiture intervention did not establish an
+improvement. On the new disjoint panel, `checkpoint-35840` achieved 197/200
+(98.5%), tying the contemporaneous best-known control; the later
+`checkpoint-105472` achieved only 180/200 (90.0%). Keep the existing
+best-known lineage as working, revert the intervention, and retain
+`checkpoint-35840` as a reusable alternative.
+
+**Observed behavior:** The measured panel covered episodes 4760-4959. The
+early challenger had a perfect training proxy and matched the control's
+197/200 task result, but its failures still included both a lost hold and
+episodes that never reached tolerance. The late challenger had a higher
+training proxy than the control but degraded substantially on the task panel.
+The standing best-known lineage remains 727/760 (95.7%) across four distinct
+research panels; the fixed task-reference panel is reused development
+evidence, not independent confirmation.
+
+**Hypothesis assessment:** The hypothesis that making hold interruptions
+costly would improve complete-hold reliability without sacrificing reachability
+is weakened. The intermediate checkpoint is compatible with a potentially
+useful trajectory, but it tied rather than exceeded the control on the
+independent panel, and the late checkpoint was materially worse. The single
+new panel does not establish the human objective or a robust intervention
+benefit.
+
+**Interpretation:** `checkpoint-100352` remains the best-supported working and
+best-known policy because its evidence spans more disjoint panels and is
+consistent across the campaign. The experiment-3 recipe should not become the
+standing science, while `checkpoint-35840` is worth preserving as a distinct
+future parent because it matched the control at a useful intermediate point.
+No final assessment is requested; further development remains an ordinary
+post-closure decision.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/ee116313-a145-46aa-9c85-e6e591e18f5a/experiment-3/inventory.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-3-best_known-200ep-seed4760-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-3-checkpoint-35840-200ep-seed4760-f48545f83637.json`;
+`research/evaluations/ee116313-a145-46aa-9c85-e6e591e18f5a/evaluation-ee116313-a145-46aa-9c85-e6e591e18f5a-experiment-3-checkpoint-105472-200ep-seed4760-f48545f83637.json`;
+`robot_learning/scenario/reward.py`.
