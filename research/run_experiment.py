@@ -2535,7 +2535,7 @@ def main() -> int:
         return check_proposal()
     if getattr(args, "check_preparation_deliverable", False):
         return check_preparation_deliverable()
-    if args.check_scientific_model_deliverable:
+    if getattr(args, "check_scientific_model_deliverable", False):
         return check_scientific_model_deliverable()
     if args.check_evaluation_request:
         return check_evaluation_request()

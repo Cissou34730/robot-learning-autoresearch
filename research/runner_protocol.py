@@ -66,6 +66,9 @@ PROTECTED_CONTEXT_PATHS = {
     "research/instruments.md",
     "research/program.md",
     "research/scenario.md",
+}
+# Produced at campaign start, so absent from the repository before the first campaign.
+CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS = {
     "research/scientific_model.md",
 }
 # The rest of the enforcement mechanism, protected by prefix so that adding a
@@ -190,6 +193,7 @@ def is_protected_source(path: str) -> bool:
         or relative in PROTECTED_RUNTIME_PATHS
         or relative in PROTECTED_MEASUREMENT_PATHS
         or relative in PROTECTED_CONTEXT_PATHS
+        or relative in CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS
         or relative in DEPENDENCY_METADATA_PATHS
         or relative.startswith(PROTECTED_BENCHMARK_PREFIXES)
         or relative.startswith(PROTECTED_RUNNER_PREFIXES)
@@ -236,9 +240,6 @@ def declared_paths_exist(root: Path | None = None) -> list[str]:
         *MODEL_CONTAINED_RUNTIME_PATHS,
         *EVALUATION_RUNTIME_PATHS,
     }
-    # The campaign model is protected once produced, but absent before the
-    # preliminary Researcher phase of a fresh campaign.
-    declared.discard("research/scientific_model.md")
     missing = [relative for relative in declared if not (base / relative).is_file()]
     # A prefix classification is a directory by construction; a missing package
     # must not silently drop its whole protected surface.

@@ -70,10 +70,10 @@ def test_every_documented_human_owned_path_is_enforced():
                 if path.is_file()
             )
         else:
-            assert (ROOT / entry).is_file(), f"documented path is missing: {entry}"
+            if entry not in protocol.CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS:
+                assert (ROOT / entry).is_file(), f"documented path is missing: {entry}"
             resolved.append(entry)
 
     assert resolved
     for relative in resolved:
         assert protocol.is_human_owned(relative), relative
-
