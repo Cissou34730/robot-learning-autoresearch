@@ -109,7 +109,13 @@ history inspection are both available according to the investigation.
 
 The phase order is:
 
-1. [PLACEHOLDER: Maintainer to supply the preliminary scientific-model protocol text.]
+1. Before baseline training, the Researcher builds
+   `research/scientific_model.md` from the human-authored task and
+   physical-system implementation, without reading campaign evidence or
+   proposing experiments. It distinguishes established facts, physical
+   consequences, and unknowns. The model is frozen for the campaign,
+   regenerated on a fresh reset, and read alongside the brief in subsequent
+   Researcher phases;
 2. prepare a new hypothesis and experiment;
 3. Runner training;
 4. post-training analysis, which may request and execute one or more measurement
