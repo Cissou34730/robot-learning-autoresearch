@@ -2693,7 +2693,10 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
                     "reason": "Selected measured lineage.",
                     "code": {"action": "keep", "reason": "Keep this parent."},
                     "request_final_benchmark": True,
-                    "terminal_reason": "Submit the selected measured lineage.",
+                    "terminal_expectation": {
+                        "expected_verdict": "goal_reached",
+                        "reason": "Submit the selected measured lineage.",
+                    },
                 }
             }
         ),

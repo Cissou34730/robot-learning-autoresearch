@@ -1411,7 +1411,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
             "selected": selected_name,
             "artifact": state["accepted_artifact"],
             "fingerprint": plan["selected_fingerprint"],
-            "terminal_reason": plan.get("terminal_reason"),
+            "terminal_expectation": plan.get("terminal_expectation"),
         }
         repository.write_state(state)
         console.announce(
@@ -1420,7 +1420,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
                 selected=selected_name,
                 artifact=str(state["accepted_artifact"]),
                 fingerprint=str(plan["selected_fingerprint"]),
-                terminal_reason=plan.get("terminal_reason"),
+                terminal_expectation=plan.get("terminal_expectation"),
                 request=True,
             )
             + "\n"
@@ -1473,7 +1473,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "removed_retained": plan["removed_retained"],
         "artifact_publications": plan["artifact_publications"],
         "request_final_benchmark": plan["request_final_benchmark"],
-        "terminal_reason": plan.get("terminal_reason"),
+        "terminal_expectation": plan.get("terminal_expectation"),
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
         "designation_counter": plan.get("designation_counter", 0),
     }
@@ -1547,7 +1547,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
             "best_known": best_known,
-            "terminal_reason": plan.get("terminal_reason"),
+            "terminal_expectation": plan.get("terminal_expectation"),
         }
         console.announce(
             "\n"
@@ -1556,7 +1556,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
                 artifact=str(best_known["artifact"]),
                 fingerprint=str(best_known["fingerprint"]),
                 lineage=best_known,
-                terminal_reason=plan.get("terminal_reason"),
+                terminal_expectation=plan.get("terminal_expectation"),
                 request=True,
             )
             + "\n"
@@ -1671,10 +1671,17 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
     experiment record.
     """
     action = operation["action"]
-    state["campaign_conclusion"] = {
-        "action": action,
-        "reason": operation["reason"],
-    }
+    terminal_expectation = operation.get("terminal_expectation")
+    if action == "request_final_benchmark":
+        state["campaign_conclusion"] = {
+            "action": action,
+            "terminal_expectation": terminal_expectation,
+        }
+    else:
+        state["campaign_conclusion"] = {
+            "action": action,
+            "reason": operation["reason"],
+        }
     # A clean conclusion releases the preparation anchor for both outcomes.
     state["pending_scientific_parent"] = None
     state["preparation_conclusion_only"] = None
@@ -1689,7 +1696,7 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
             "artifact": best_known["artifact"],
             "fingerprint": best_known["fingerprint"],
             "best_known": copy.deepcopy(best_known),
-            "terminal_reason": operation["reason"],
+            "terminal_expectation": terminal_expectation,
         }
         console.announce(
             "\n"
@@ -1698,7 +1705,7 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
                 artifact=str(best_known["artifact"]),
                 fingerprint=str(best_known["fingerprint"]),
                 lineage=best_known,
-                terminal_reason=operation["reason"],
+                terminal_expectation=terminal_expectation,
                 request=True,
             )
             + "\n"
@@ -1757,6 +1764,7 @@ def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
         state["pending_campaign_conclusion"] = {
             "action": plan["action"],
             "reason": plan["reason"],
+            "terminal_expectation": plan.get("terminal_expectation"),
             "progress": "planned",
         }
         repository.write_state(state)
@@ -1837,7 +1845,7 @@ def execute_pending_final_benchmark() -> int:
             lineage=pending.get("best_known")
             if isinstance(pending.get("best_known"), dict)
             else None,
-            terminal_reason=pending.get("terminal_reason"),
+            terminal_expectation=pending.get("terminal_expectation"),
         )
         + "\n"
     )
@@ -1866,6 +1874,7 @@ def execute_pending_final_benchmark() -> int:
         "fingerprint": fingerprint,
     }
     state["official_benchmark_verdict"] = verdict
+    state["official_benchmark_expectation"] = pending.get("terminal_expectation")
     state["pending_final_benchmark"] = None
     state["terminal_campaign_status"] = verdict
     state["last_verdict"] = (

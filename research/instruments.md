@@ -313,7 +313,19 @@ containing only a `campaign_conclusion` object:
 ```json
 {
   "campaign_conclusion": {
-    "action": "<request_final_benchmark | no_further_experiment>",
+    "action": "request_final_benchmark",
+    "terminal_expectation": {
+      "expected_verdict": "<goal_reached | goal_not_reached | uncertain>",
+      "reason": "<non-empty evidence-and-uncertainty rationale>"
+    }
+  }
+}
+```
+
+```json
+{
+  "campaign_conclusion": {
+    "action": "no_further_experiment",
     "reason": "<non-empty reason for the decision>"
   }
 }
@@ -322,10 +334,12 @@ containing only a `campaign_conclusion` object:
 `request_final_benchmark` submits the standing `best_known` lineage for the
 official final assessment. It requires a designated best-known model and reuses
 the closure decision of the same name: the official benchmark runs once and the
-campaign ends after its verdict. Its `reason` is the terminal rationale for the
-request. `no_further_experiment` records the Researcher's judgement that no
-further experiment is warranted without requesting that assessment; it ends the
-campaign. Neither outcome creates an experiment record,
+campaign ends after its verdict. Its required `terminal_expectation` object
+carries the verdict the Researcher expects and the evidence-and-uncertainty
+rationale behind it; it replaces the free-form-only rationale for the request.
+All three `expected_verdict` values are accepted. `no_further_experiment` records
+the Researcher's judgement that no further experiment is warranted without
+requesting that assessment; it ends the campaign. Neither outcome creates an experiment record,
 an experiment-index row or an intervention count. A `campaign_conclusion` is
 accepted only while no measurement, analysis, closure or official assessment is
 pending; each pending phase requires its own deliverable.
@@ -433,7 +447,10 @@ Write a lineage-only `research/proposal.json`:
       "<retained-lineage identifier>"
     ],
     "request_final_benchmark": "<boolean>",
-    "terminal_reason": "<non-empty reason; required when request_final_benchmark is true>"
+    "terminal_expectation": {
+      "expected_verdict": "<goal_reached | goal_not_reached | uncertain>",
+      "reason": "<non-empty evidence-and-uncertainty rationale; required when request_final_benchmark is true>"
+    }
   }
 }
 ```
@@ -458,12 +475,14 @@ to proceed after closure. Setting it to `true` requests terminal assessment of
 scientific decision rule for requesting assessment is defined in
 `research/program.md`.
 
-When `request_final_benchmark` is `true`, `terminal_reason` is required and must
-be non-empty. It is the terminal rationale for the irreversible request, distinct
-from the working-lineage `reason`. The Runner validates only that it is present
-and non-empty; it renders it back with the frozen model so the decision is
-explicit rather than a bare flag. Omit `terminal_reason` when a final benchmark is
-not requested.
+When `request_final_benchmark` is `true`, `terminal_expectation` is required. It
+is an object carrying `expected_verdict` (`goal_reached`, `goal_not_reached`, or
+`uncertain`) and a non-empty `reason`, the evidence-and-uncertainty rationale for
+the irreversible request, distinct from the working-lineage `reason`. All three
+verdicts are accepted; the Runner validates only that the field is present and
+well-formed, and renders it back with the frozen model so the expectation is
+explicit rather than a bare flag. Omit `terminal_expectation` when a final
+benchmark is not requested.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
@@ -478,18 +497,21 @@ candidate string and reason string. The candidate must be an available model
 identifier. When a new model is selected, the Runner resolves its recorded
 measurements and stores those paths in the lineage. `retain` is an array of
 candidate/id/reason objects, `remove_retained` is an array of unique retained IDs,
-and `request_final_benchmark` is a boolean. `terminal_reason` is a non-empty
-string required with a `true` request.
+and `request_final_benchmark` is a boolean. `terminal_expectation` is an object
+with an `expected_verdict` and a non-empty `reason`, required with a `true`
+request.
 
 ## Request the official benchmark
 
-Set `request_final_benchmark` to `true` and give `terminal_reason` in
+Set `request_final_benchmark` to `true` and give `terminal_expectation` in
 `previous_result_decision`.
 
 When the request is accepted, the Runner emits a confirmation card and the brief
 records a **Pending terminal assessment** section naming the frozen `best_known`
 lineage — its candidate, artifact, origin experiment, accumulated training steps,
-scientific commit and recorded measurements — together with the terminal reason.
+scientific commit and recorded measurements — together with the expected verdict
+and the terminal reason. The expected verdict is also shown with the completed
+official report, so the claimed verdict can be read against the measured one.
 The decision is irreversible, but the Runner does not add a reversal or a second
 verdict: both `goal_reached` and `goal_not_reached` are legitimate campaign
 outcomes.

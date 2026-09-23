@@ -1791,11 +1791,13 @@ def _v4_terminal_assessment_section(state: dict) -> list[str]:
         lineage = state.get("best_known_lineage")
     if not isinstance(lineage, dict):
         return []
-    reason = pending.get("terminal_reason")
-    if not reason:
+    expectation = pending.get("terminal_expectation")
+    if not isinstance(expectation, dict):
         conclusion = state.get("campaign_conclusion")
         if isinstance(conclusion, dict):
-            reason = conclusion.get("reason")
+            expectation = conclusion.get("terminal_expectation")
+    if not isinstance(expectation, dict):
+        expectation = {}
     lines = [
         "",
         "## Pending terminal assessment",
@@ -1808,7 +1810,11 @@ def _v4_terminal_assessment_section(state: dict) -> list[str]:
         ),
     ]
     lines.extend(_authoritative_lineage_lines("best_known", lineage))
-    lines.append(f"  - Terminal reason: {_recorded_value(reason)}")
+    lines.append(
+        "  - Expected verdict: "
+        f"{_recorded_value(expectation.get('expected_verdict'))}"
+    )
+    lines.append(f"  - Terminal reason: {_recorded_value(expectation.get('reason'))}")
     lines.extend(
         [
             "",
@@ -2516,6 +2522,9 @@ def _v4_official_section(state: dict, terminal) -> list[str]:
     if official is None:
         return []
     official_model = state.get("official_benchmark_model") or {}
+    expectation = state.get("official_benchmark_expectation")
+    if not isinstance(expectation, dict):
+        expectation = {}
     return [
         "",
         "## Official report",
@@ -2524,6 +2533,11 @@ def _v4_official_section(state: dict, terminal) -> list[str]:
         f"- Verdict: {state.get('official_benchmark_verdict', terminal or 'not recorded')}",
         f"- Result: {official}",
         f"- Terminal assessment: {terminal or 'not recorded'}",
+        (
+            "  - Expected verdict: "
+            f"{_recorded_value(expectation.get('expected_verdict'))}"
+        ),
+        f"  - Terminal reason: {_recorded_value(expectation.get('reason'))}",
     ]
 
 

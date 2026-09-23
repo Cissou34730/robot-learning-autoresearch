@@ -95,6 +95,16 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, dict]:
 
 
 def _conclusion(action: str, reason: str = "The evidence supports this decision."):
+    if action == "request_final_benchmark":
+        return {
+            "campaign_conclusion": {
+                "action": action,
+                "terminal_expectation": {
+                    "expected_verdict": "goal_reached",
+                    "reason": reason,
+                },
+            }
+        }
     return {"campaign_conclusion": {"action": action, "reason": reason}}
 
 

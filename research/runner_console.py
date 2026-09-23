@@ -463,7 +463,7 @@ def render_final_benchmark_card(
     artifact: str,
     fingerprint: str,
     lineage: dict | None = None,
-    terminal_reason: str | None = None,
+    terminal_expectation: dict | None = None,
     request: bool = False,
 ) -> str:
     """The final-benchmark request, or the assessment that produces the verdict.
@@ -474,8 +474,8 @@ def render_final_benchmark_card(
     measured ones arrive with the evaluator's own reports.
 
     Issue #59: a terminal request is irreversible, so the card also confirms the
-    frozen model and the Researcher's own terminal reason instead of leaving the
-    Researcher to recall which artifact a bare `request_final_benchmark` will
+    frozen model and the Researcher's own terminal expectation instead of leaving
+    the Researcher to recall which artifact a bare `request_final_benchmark` will
     submit.
 
     Issue #101: the request is announced while the campaign is still inside an
@@ -519,8 +519,18 @@ def render_final_benchmark_card(
                 f"  Measurements: {measurements}",
             ]
         )
-    if terminal_reason:
-        lines.extend(["", "Reason", f"  {terminal_reason}"])
+    if isinstance(terminal_expectation, dict):
+        lines.extend(
+            [
+                "",
+                "Terminal expectation",
+                (
+                    "  Expected verdict: "
+                    f"{terminal_expectation.get('expected_verdict', 'not recorded')}"
+                ),
+                f"  Reason          : {terminal_expectation.get('reason', 'not recorded')}",
+            ]
+        )
     lines.extend(
         [
             "",

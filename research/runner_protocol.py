@@ -917,6 +917,33 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     return contract
 
 
+TERMINAL_EXPECTED_VERDICTS = ("goal_reached", "goal_not_reached", "uncertain")
+
+
+def validate_terminal_expectation(value: object) -> dict:
+    """The structured expectation carried by an official-benchmark request.
+
+    A terminal request states the verdict the Researcher expects and the
+    evidence-and-uncertainty rationale behind it. All three verdicts are
+    accepted: the field records the claim, it does not gate the request.
+    """
+    if not isinstance(value, dict):
+        raise TypeError("terminal_expectation must be an object")
+    extra = set(value) - {"expected_verdict", "reason"}
+    if extra:
+        raise ValueError(f"unsupported terminal_expectation fields: {sorted(extra)}")
+    expected = str(value.get("expected_verdict", "")).strip()
+    if expected not in TERMINAL_EXPECTED_VERDICTS:
+        raise ValueError(
+            "terminal_expectation expected_verdict must be goal_reached, "
+            "goal_not_reached, or uncertain"
+        )
+    reason = str(value.get("reason", "")).strip()
+    if not reason:
+        raise ValueError("terminal_expectation requires a non-empty reason")
+    return {"expected_verdict": expected, "reason": reason}
+
+
 def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     """Validate a preparation-phase decision that ends without a new experiment.
 
@@ -955,18 +982,32 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     conclusion = proposal["campaign_conclusion"]
     if not isinstance(conclusion, dict):
         raise TypeError("campaign_conclusion must be an object")
-    extra = set(conclusion) - {"action", "reason"}
-    if extra:
-        raise ValueError(f"unsupported campaign_conclusion fields: {sorted(extra)}")
     action = str(conclusion.get("action", "")).strip()
-    reason = str(conclusion.get("reason", "")).strip()
     if action not in {"request_final_benchmark", "no_further_experiment"}:
         raise ValueError(
             "campaign_conclusion action must be request_final_benchmark or "
             "no_further_experiment"
         )
-    if not reason:
-        raise ValueError("campaign_conclusion requires a non-empty reason")
+    terminal_expectation = None
+    if action == "request_final_benchmark":
+        extra = set(conclusion) - {"action", "terminal_expectation"}
+        if extra:
+            raise ValueError(
+                f"unsupported campaign_conclusion fields: {sorted(extra)}"
+            )
+        terminal_expectation = validate_terminal_expectation(
+            conclusion.get("terminal_expectation")
+        )
+        reason = terminal_expectation["reason"]
+    else:
+        extra = set(conclusion) - {"action", "reason"}
+        if extra:
+            raise ValueError(
+                f"unsupported campaign_conclusion fields: {sorted(extra)}"
+            )
+        reason = str(conclusion.get("reason", "")).strip()
+        if not reason:
+            raise ValueError("campaign_conclusion requires a non-empty reason")
     best_known = state.get("best_known_lineage")
     if action == "request_final_benchmark":
         if not isinstance(best_known, dict):
@@ -980,6 +1021,7 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     return {
         "action": action,
         "reason": reason,
+        "terminal_expectation": terminal_expectation,
         "campaign_conclusion": conclusion,
         "best_known": best_known if action == "request_final_benchmark" else None,
     }
@@ -1851,7 +1893,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retain",
         "remove_retained",
         "request_final_benchmark",
-        "terminal_reason",
+        "terminal_expectation",
     }
     extra = set(decision) - allowed
     if extra:
@@ -1979,9 +2021,11 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     request_final = decision.get("request_final_benchmark", False)
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
-    terminal_reason = str(decision.get("terminal_reason", "")).strip()
-    if request_final and not terminal_reason:
-        raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
+    terminal_expectation = None
+    if request_final:
+        terminal_expectation = validate_terminal_expectation(
+            decision.get("terminal_expectation")
+        )
     selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
     if (
         request_final
@@ -2006,7 +2050,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": retention_plans,
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
         "request_final_benchmark": request_final,
-        "terminal_reason": terminal_reason if request_final else None,
+        "terminal_expectation": terminal_expectation,
     }
 
 
@@ -2792,7 +2836,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retain",
         "remove_retained",
         "request_final_benchmark",
-        "terminal_reason",
+        "terminal_expectation",
     }
     extra = set(decision) - allowed
     if extra:
@@ -2986,9 +3030,11 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     request_final = decision.get("request_final_benchmark", False)
     if not isinstance(request_final, bool):
         raise TypeError("request_final_benchmark must be true or false")
-    terminal_reason = str(decision.get("terminal_reason", "")).strip()
-    if request_final and not terminal_reason:
-        raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
+    terminal_expectation = None
+    if request_final:
+        terminal_expectation = validate_terminal_expectation(
+            decision.get("terminal_expectation")
+        )
     if request_final and best_record is None:
         raise ValueError("a final benchmark requires a designated best-known model")
     retained_records = [
@@ -3018,7 +3064,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "retentions": [],
         "removed_retained": removed,
         "request_final_benchmark": request_final,
-        "terminal_reason": terminal_reason if request_final else None,
+        "terminal_expectation": terminal_expectation,
         "hypothesis_assessment": hypothesis_assessment,
         "designation_counter": designation_counter,
     }
