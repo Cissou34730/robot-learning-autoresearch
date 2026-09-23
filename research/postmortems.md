@@ -2,27 +2,29 @@
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned substantial reach-and-hold
-behavior late in training, but the three measured late checkpoints each achieved
-151/160 successes (94.375%), below the human objective of at least 98%. The
-measured checkpoints were indistinguishable on their shared panel, so
-checkpoint-100352 is selected as the practical working and best-known choice
-because it had the strongest training success proxy, not because its measurement
-was independently superior.
+**Current synthesis:** The fresh PPO baseline learned substantial reach-and-hold
+behavior, but all three measured late checkpoints achieved 151/160 successes
+(94.375%) on the shared panel, below the human objective of at least 98%. The
+recorded failures for the selected checkpoint are concentrated in a negative
+target-angle sector of roughly -151 to -119 degrees; four of nine failures also
+have target radii below 11 cm, outside the baseline's 14-20 cm training range.
+The late checkpoints were behaviorally tied, so checkpoint-100352 remains the
+practical working and best-known lineage based on its stronger training proxy,
+not independently superior measurement.
 
 **Lessons and limits:** Training proxies identified the transition to useful
 behavior, rising from 0.06 at checkpoint-75776 to 0.97 at checkpoint-100352,
 but did not establish the task objective. Checkpoints 95232, 100352, and 120832
-all scored 151/160, with zero discordant paired wins in both comparisons. This
-is one research-evaluation panel only; it is not independent confirmation and
-is not an official benchmark result. The baseline establishes a useful starting
-point, while the remaining failures and generalization beyond this panel are
-unresolved.
+all scored 151/160 with zero discordant paired wins in both comparisons. The
+failure geometry is from one 160-episode research panel, so it may reflect
+sampling rather than a complete map of the task distribution. Development
+measurements are not independent confirmation or an official benchmark result.
 
-**Open questions:** Which training or task-learning changes can close the
-remaining approximately 5.6 percentage-point gap to the objective, and whether
-the measured residual failures are concentrated in particular target geometries
-or episode conditions remain unknown.
+**Open questions:** Whether full-radius training and additional exposure to the
+observed difficult angular sector improve generalization without moving failures
+to other angles remains unresolved. Representation and reward changes have not
+yet been distinguished from training-distribution effects, and performance
+beyond the single development panel remains unknown.
 
 ## 5521c88b-2345-470f-a9dd-547cf3b569b7 / Experiment 1
 
