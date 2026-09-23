@@ -16,9 +16,9 @@
 
 **Current synthesis:** The unchanged PPO baseline remains the strongest saved policy, with 582/600 successes across three distinct research panels. It reached 196/200 on the experiment-2 panel but 191/200 on the latest experiment-3 panel, while the partial hold-exit forfeiture continuation fell to 170/200 and 165/200 at its measured checkpoints. The campaign has strong development progress but no official result.
 
-**Lessons and limits:** Training success and reward identify useful checkpoints but do not replace task-success measurement. Both full and partial hold-exit forfeiture interventions regressed substantially in the measured continued-training checkpoints; the partial intervention lost to the incumbent by 21 and 26 discordant episodes on the latest disjoint panel. The research panels are development evidence, and the fixed task-reference panel is permanently reused, so neither establishes the official result or broader generalization. The latest incumbent score is also below the 196/200 objective threshold.
+**Lessons and limits:** Training success and reward identify useful checkpoints but do not replace task-success measurement. Both full and partial hold-exit forfeiture interventions regressed substantially in the measured continued-training checkpoints, showing that these exit penalties are disruptive but not ruling out gentler hold-credit shaping. Incumbent failures include both episodes that never reach tolerance and episodes that interrupt a hold, and the research panels plus reused task-reference panel remain development evidence rather than official confirmation.
 
-**Open questions:** It remains unresolved whether another hold-robustness intervention can close the remaining gap without sacrificing reach reliability. The official result for the selected policy is also unresolved; development panels do not declare the objective reached.
+**Open questions:** It remains unresolved whether emphasizing later hold steps can improve stability without sacrificing reach reliability. The official result for the selected policy is also unresolved; development panels do not declare the objective reached.
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Experiment 2
 
