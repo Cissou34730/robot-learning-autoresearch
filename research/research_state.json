@@ -81,76 +81,35 @@
     "experiment": 5,
     "reason": "The unchanged incumbent achieved 198/200 successes on the disjoint experiment-5 panel, tying both measured full-radius candidates with zero discordant wins. It remains the better-established working and best-known lineage across five research panels, while the changed recipe demonstrated no improvement."
   },
-  "last_verdict": "researcher requested the official final benchmark",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
+  "official_benchmark_expectation": {
+    "expected_verdict": "goal_reached",
+    "reason": "The unchanged best-known lineage achieved 976/1000 successes across five distinct research panels, including 198/200 on the latest disjoint panel, and tied both measured full-radius challengers with zero discordant wins. Its fixed task-reference measurement was also 98.0%. These development results do not establish the objective, but together they make a goal_reached verdict on the frozen official panel the expected outcome; residual uncertainty is panel-to-panel variation rather than an unresolved development intervention."
+  },
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/7a8a9e3a-e0cc-4940-a747-cb7529b2da8c/e1-cada55eb5-da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
+    "fingerprint": "da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/7a8a9e3a-e0cc-4940-a747-cb7529b2da8c/e1-cada55eb5-da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/7a8a9e3a-e0cc-4940-a747-cb7529b2da8c/e1-cada55eb5-da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/7a8a9e3a-e0cc-4940-a747-cb7529b2da8c/evaluation-7a8a9e3a-e0cc-4940-a747-cb7529b2da8c-experiment-1-checkpoint-100352-200ep-seed2000-f48545f83637.json",
-        "research/evaluations/7a8a9e3a-e0cc-4940-a747-cb7529b2da8c/task-reference-7a8a9e3a-e0cc-4940-a747-cb7529b2da8c-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the highest success rate on the disjoint research panel, 97.5% (195/200), and the strongest paired result among the three measured late-training checkpoints.",
-      "scientific_commit": "a8436ea7c01e5b41cf05aa117d2c9ebbb00b9f2e",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 2000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 5,
-    "fingerprint": "da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
-    "selected": "best_known",
-    "terminal_expectation": {
-      "expected_verdict": "goal_reached",
-      "reason": "The unchanged best-known lineage achieved 976/1000 successes across five distinct research panels, including 198/200 on the latest disjoint panel, and tied both measured full-radius challengers with zero discordant wins. Its fixed task-reference measurement was also 98.0%. These development results do not establish the objective, but together they make a goal_reached verdict on the frozen official panel the expected outcome; residual uncertainty is panel-to-panel variation rather than an unresolved development intervention."
-    }
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "f8f1ea37d419934e7289d77362765ac164064d9b",
@@ -163,7 +122,7 @@
   "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/7a8a9e3a-e0cc-4940-a747-cb7529b2da8c/e1-cada55eb5-da940198231d556fc2219d69c6bec9a29052db471a1b3227554925359a0e946d",
     "candidate": "checkpoint-100352",
