@@ -3,11 +3,11 @@
 ## f332c079-6021-457e-be60-1f0804528d76 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO baseline learned a useful reach-and-hold
-policy, with the working lineage reaching 191/200 (95.5%) on the new disjoint
-panel and 569/600 (94.8%) across three research panels. It remains below the
-98% human objective. The measured residual failures are concentrated in a
-specific angular sector on the newest panel, while the tested reward
-intervention did not improve overall success.
+policy, with the working lineage reaching 197/200 (98.5%) on the latest
+disjoint panel and 766/800 (95.8%) across four distinct research panels. The
+latest panel exceeds the 196/200 development threshold, but development
+measurements do not establish the official result. The tested reward and
+angular target-distribution interventions did not improve overall success.
 
 **Lessons and limits:** Experiment 1 identified checkpoint-100352 as the
 best-supported development lineage at 94.5% on two disjoint panels, while the
@@ -19,15 +19,16 @@ reached 191/200. Paired comparisons favored the working policy by 16 and 29
 discordant episodes respectively. These are development measurements under
 `research_evaluation`, not an official result or a causal explanation of every
 failure mode; the negative result is scoped to this intervention, continuation,
-and measured checkpoints. The angular concentration is observed on one panel
-and does not establish that reweighting training targets will improve the full
-official distribution.
+and measured checkpoints. Experiment 3's angular reweighting was also
+contradicted: both measured checkpoints were far below the unchanged policy on
+the same disjoint panel, despite one having the highest training-reward proxy.
+The independent 197/200 result supports terminal assessment of the unchanged
+working lineage, not a claim that the official objective has already been met.
 
-**Open questions:** It remains unresolved whether the localized never-reached
-failures can be reduced without trading away success in the other angular
-sectors, and whether the residual short-hold failures require a separate
-intervention. The fixed task-reference panel and official benchmark have not
-been run.
+**Open questions:** The fixed task-reference panel and official benchmark have
+not been run. If the official result is insufficient, any further training or
+intervention should be prepared as a new experiment rather than inferred from
+this closure.
 
 ## f332c079-6021-457e-be60-1f0804528d76 / Experiment 1
 
@@ -99,3 +100,41 @@ task and remains below the objective.
 `research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-2-working-200ep-seed4600-f48545f83637.json`;
 `research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-2-checkpoint-105472-200ep-seed4600-f48545f83637.json`;
 `research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-2-checkpoint-120832-200ep-seed4600-f48545f83637.json`.
+
+## f332c079-6021-457e-be60-1f0804528d76 / Experiment 3
+
+**Result:** The angular target-reweighting intervention did not improve the
+learned reach-and-hold policy. The unchanged `working` lineage remains the
+strongest policy, and the experiment recipe should be reverted.
+
+**Observed behavior:** On the new disjoint research panel (episodes 4800-4999),
+the unchanged `working` policy succeeded on 197/200 episodes (98.5%).
+Experiment-3 checkpoint-115712, selected at the run's highest training-reward
+proxy, succeeded on 123/200 (61.5%), while the final checkpoint-120832
+succeeded on 129/200 (64.5%). Paired comparisons recorded 74 working-policy
+wins over checkpoint-115712 and 68 over checkpoint-120832, with no wins in the
+reverse direction. The independent working result is above the 196/200
+development threshold, while the four-panel aggregate is 766/800 (95.8%).
+
+**Hypothesis assessment:** Contradicted under the tested transfer run and
+measured checkpoints. Oversampling the -180 to -120 degree sector during
+training was expected to improve uniform-distribution success without harming
+other sectors, but both measured intervention checkpoints were substantially
+worse than the unchanged working policy on the same disjoint panel. This does
+not establish that every target-distribution intervention fails, nor does it
+explain which training dynamics caused the degradation.
+
+**Interpretation:** Select `working` as the working lineage, restore its
+complete parent recipe, and retain no experiment-3 candidate because neither
+measured challenger is useful for future extension. The existing best-known
+designation remains the unchanged working policy. The latest disjoint result
+supports requesting the official benchmark with an expected `goal_reached`
+verdict, while acknowledging that only the official benchmark can establish
+the human objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`; `research/results.jsonl`;
+`research/checkpoints/challengers/f332c079-6021-457e-be60-1f0804528d76/experiment-3/inventory.json`;
+`research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-3-working-200ep-seed4800-f48545f83637.json`;
+`research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-3-checkpoint-115712-200ep-seed4800-f48545f83637.json`;
+`research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-3-checkpoint-120832-200ep-seed4800-f48545f83637.json`.
