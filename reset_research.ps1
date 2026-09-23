@@ -6,6 +6,8 @@ Reset the current campaign, optionally restoring a scientific recipe first.
 .EXAMPLE
 .\reset_research.ps1 -Mode Fresh -Force
 .EXAMPLE
+.\reset_research.ps1 -Mode Fresh -Clean -Force
+.EXAMPLE
 .\reset_research.ps1 -Mode Baseline -BaselineRef <git-ref> -Force
 .EXAMPLE
 .\reset_research.ps1 -Recover <operation.json> -Force
@@ -18,6 +20,7 @@ param(
     [string]$RecipeRef,
     [string]$BaselineRef,
     [string]$TrainingLogSource = $PSScriptRoot,
+    [switch]$Clean,
     [switch]$Force
 )
 
@@ -27,7 +30,7 @@ Set-Location $PSScriptRoot
 if (-not $Force) {
     throw "Stop the campaign first and pass -Force to confirm the reset or recovery."
 }
-if ($Recover -and ($RecipeRef -or $BaselineRef -or $PSBoundParameters.ContainsKey("TrainingLogSource"))) {
+if ($Recover -and ($RecipeRef -or $BaselineRef -or $Clean -or $PSBoundParameters.ContainsKey("TrainingLogSource"))) {
     throw "Recovery accepts -Recover and -Force only."
 }
 if (-not $Recover -and $Mode -eq "Fresh" -and ($BaselineRef -or $PSBoundParameters.ContainsKey("TrainingLogSource"))) {
@@ -63,6 +66,7 @@ try {
         if ($Mode -eq "Baseline" -and $TrainingLogSource) {
             $arguments += @("--training-log-source", $TrainingLogSource)
         }
+        if ($Clean) { $arguments += "--clean" }
     }
     uv run python research/reset_campaign.py @arguments
     if ($LASTEXITCODE -ne 0) {

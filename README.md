@@ -96,6 +96,7 @@ Stop the campaign, then choose a reset mode explicitly in the current branch:
 
 ```powershell
 .\reset_research.ps1 -Mode Fresh -Force
+.\reset_research.ps1 -Mode Fresh -Clean -Force
 .\reset_research.ps1 -Mode Fresh -RecipeRef <verified-recipe-commit> -Force
 .\reset_research.ps1 -Mode Baseline -BaselineRef <prepared-baseline-commit-or-tag> -Force
 ```
@@ -109,9 +110,15 @@ or experiment counter. `Baseline` restores the prepared baseline's scientific
 code, tests, configuration, saved policy and evidence, preserving the current
 harness; research resumes at experiment 2 without retraining the baseline.
 Neither mode creates a branch or worktree.
+With `-Clean`, reset first discards staged and unstaged changes to campaign
+paths and deletes all non-ignored untracked files in this worktree. This
+cleanup is irreversible and happens before the reset backup; unrelated
+tracked changes still stop the reset. Without `-Clean`, any dirty worktree
+stops the reset as before.
 
-Both require a clean Git working tree and hold the same mutex as the research
-launcher, scoped to the worktree so a second checkout never blocks. A recipe
+Both require a clean Git working tree after any requested cleanup and hold the
+same mutex as the research launcher, scoped to the worktree so a second
+checkout never blocks. A recipe
 reset commits restored science separately from
 the new empty campaign state; all reset commits are pushed without rewriting
 history. Recovery backups are stored through Git's resolved administrative path,

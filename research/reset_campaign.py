@@ -196,9 +196,32 @@ def git_bytes(commit: str, relative: str) -> bytes:
     return bytes(git("show", f"{commit}:{relative}", text=False))
 
 
-def ensure_clean_repository() -> None:
+def clean_campaign_changes() -> None:
+    changed = set()
+    for arguments in (
+        ("diff", "--name-only", "--no-renames", "-z"),
+        ("diff", "--cached", "--name-only", "--no-renames", "-z"),
+    ):
+        changed.update(path for path in str(git(*arguments)).split("\0") if path)
+    unrelated = sorted(
+        path for path in changed if not path_is_covered(path, list(CAMPAIGN_PATHS))
+    )
+    if unrelated:
+        raise RuntimeError(
+            "clean reset refuses tracked changes outside campaign paths: "
+            + ", ".join(unrelated)
+        )
+    if changed:
+        git("restore", "--source=HEAD", "--staged", "--worktree", "--", *sorted(changed))
+    if str(git("ls-files", "--others", "--exclude-standard", "-z")):
+        git("clean", "-fd", "--")
+
+
+def ensure_clean_repository(*, clean: bool = False) -> None:
     git("symbolic-ref", "--quiet", "--short", "HEAD")
     git("remote", "get-url", "origin")
+    if clean:
+        clean_campaign_changes()
     if str(git("status", "--porcelain", "--untracked-files=all")).strip():
         raise RuntimeError(
             "the working tree is not clean; commit or resolve its changes before resetting research"
@@ -932,6 +955,7 @@ def parse_args() -> argparse.Namespace:
     operation = parser.add_mutually_exclusive_group(required=True)
     operation.add_argument("--mode", choices=("fresh", "baseline"))
     operation.add_argument("--recover")
+    parser.add_argument("--clean", action="store_true")
     parser.add_argument("--recipe-ref")
     parser.add_argument("--baseline-ref")
     parser.add_argument("--training-log-source")
@@ -942,17 +966,22 @@ def main() -> int:
     args = parse_args()
     try:
         if args.recover:
-            if args.recipe_ref or args.baseline_ref or args.training_log_source:
-                raise ValueError("recovery accepts --recover only")
+            if args.recipe_ref or args.baseline_ref or args.training_log_source or args.clean:
+                raise ValueError("recovery accepts --recover only, without --clean")
             backup, commit, _ = recover_reset(args.recover)
             print("=== Research reset recovered ===")
             print(f"Operation: {backup / 'operation.json'}")
             print(f"Recovery commit: {commit or 'none required'}")
             return 0
-        ensure_clean_repository()
         if args.mode == "fresh":
             if args.baseline_ref or args.training_log_source:
                 raise ValueError("fresh accepts --recipe-ref only")
+        elif not args.baseline_ref or args.recipe_ref:
+            raise ValueError(
+                "baseline requires --baseline-ref and rejects --recipe-ref"
+            )
+        ensure_clean_repository(clean=args.clean)
+        if args.mode == "fresh":
             campaign_id, source, backup = reset_fresh(args.recipe_ref)
             print("=== Research state reset ===")
             print(
@@ -966,10 +995,6 @@ def main() -> int:
                 "No trained model, score, evidence, or prior designation was imported."
             )
         else:
-            if not args.baseline_ref or args.recipe_ref:
-                raise ValueError(
-                    "baseline requires --baseline-ref and rejects --recipe-ref"
-                )
             campaign_id, source, backup = reset_baseline(
                 args.baseline_ref, args.training_log_source
             )
