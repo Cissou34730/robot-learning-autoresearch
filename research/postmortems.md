@@ -14,8 +14,8 @@
 
 ## 7a8a9e3a-e0cc-4940-a747-cb7529b2da8c / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline can learn the task to approximately 97% to 98% development success, with `checkpoint-100352` currently the strongest measured policy. The human objective is not yet demonstrated: the best independent development measurement is 195/200, and the fixed reference panel cannot provide independent confirmation.
+**Current synthesis:** The unchanged PPO baseline reaches 97.5% on the strongest disjoint development measurement, with `checkpoint-100352` the strongest measured policy. Its failures are concentrated in completing the uninterrupted hold, while the human objective remains unestablished by development panels.
 
-**Lessons and limits:** Training success and reward identify useful late checkpoints but do not replace task-success measurement; the final checkpoint was slightly worse than the proxy peak. Most observed failures are prolonged episodes that lose the required uninterrupted hold, which is a concrete direction for later training. The three 200-episode measurements use one disjoint research panel, so they support model selection and a baseline conclusion but do not establish generalization beyond that panel or the official benchmark.
+**Lessons and limits:** Training success and reward identify useful late checkpoints but do not replace task-success measurement; the final checkpoint was slightly worse than the proxy peak. In the detailed research artifact, two failures entered tolerance and then interrupted the hold, while three never reached tolerance. The research and fixed reference panels are development evidence, and the latter is reused, so neither establishes the official result or broader generalization.
 
-**Open questions:** Whether a subsequent training intervention can eliminate the remaining hold failures without degrading reach performance is unresolved. The official 200-episode result for the selected policy is also unresolved and is not requested by this closure.
+**Open questions:** It remains unresolved whether the learned reach behavior can be made more stable during the required hold without trading away reach reliability. The official result for the selected policy is also unresolved.
