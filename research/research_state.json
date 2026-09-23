@@ -81,79 +81,31 @@
     "experiment": 2,
     "reason": "Checkpoint-100352 is the strongest measured candidate: it achieved 199/200 pooled successes across two disjoint research-evaluation panels, 98% on the fixed task-reference panel, and a 2-0 paired advantage over checkpoint-120832. The fixed-panel score is selection-dependent, while the disjoint research panel confirms persistence of the near-objective behavior."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/c17f2d19-015e-4182-96af-e2b91cb5e92e/e2-cada55eb5-0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
+    "fingerprint": "0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/c17f2d19-015e-4182-96af-e2b91cb5e92e/e2-cada55eb5-0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/c17f2d19-015e-4182-96af-e2b91cb5e92e/e2-cada55eb5-0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/c17f2d19-015e-4182-96af-e2b91cb5e92e/evaluation-c17f2d19-015e-4182-96af-e2b91cb5e92e-experiment-2-checkpoint-100352-100ep-seed10000-f48545f83637.json",
-        "research/evaluations/c17f2d19-015e-4182-96af-e2b91cb5e92e/evaluation-c17f2d19-015e-4182-96af-e2b91cb5e92e-experiment-2-checkpoint-100352-100ep-seed10100-f48545f83637.json",
-        "research/evaluations/c17f2d19-015e-4182-96af-e2b91cb5e92e/task-reference-c17f2d19-015e-4182-96af-e2b91cb5e92e-experiment-2-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
-      "origin_experiment": 2,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the highest pooled research-evaluation result (199/200), the stronger fixed task-reference result (98% versus 97%), and the latest disjoint panel was perfect.",
-      "scientific_commit": "420f8c79e72d017d7f0ec5fb5a170a1304047887",
-      "selected_panels": [
-        {
-          "episodes": 100,
-          "instrument": "research_evaluation",
-          "seed": 10000
-        },
-        {
-          "episodes": 100,
-          "instrument": "research_evaluation",
-          "seed": 10100
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 2,
-    "fingerprint": "0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
-    "selected": "best_known",
-    "terminal_reason": "Submit checkpoint-100352 for the official assessment because it is the best-known measured policy, meets the 98% development result on the fixed task-reference panel, and retains 100% success on the disjoint research panel. Development evidence does not claim the final result; the official 200-episode benchmark is the appropriate next decision."
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "420f8c79e72d017d7f0ec5fb5a170a1304047887",
@@ -224,7 +176,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/c17f2d19-015e-4182-96af-e2b91cb5e92e/e2-cada55eb5-0c4a6e82dfce871131234b0dd2839a7acf9bbc1a433b5a7c2868541c2fe0e906",
     "candidate": "checkpoint-100352",
