@@ -3,24 +3,26 @@
 ## f332c079-6021-457e-be60-1f0804528d76 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO baseline learned a useful reach-and-hold
-policy, but its measured success plateaued at 94.5% (378/400) on two disjoint
-research panels. The working lineage's 22 failures split evenly between never
-entering tolerance and entering tolerance but holding for fewer than 25 steps;
-failure rates were not confined to the shortest target-radius bin.
+policy, with the working lineage reaching 191/200 (95.5%) on the new disjoint
+panel and 569/600 (94.8%) across three research panels. It remains below the
+98% human objective, but the reward intervention did not improve it.
 
-**Lessons and limits:** The late proxy peak was independently reproduced, while
-the reward-peak alternative tied it and the final checkpoint declined to 93.75%
-pooled. The baseline reward therefore supports useful reach behavior but does
-not establish reliable uninterrupted holding or the 98% objective. These are
-development measurements under `research_evaluation`; the failure split, target
-geometry summaries, and 94.5% estimate remain limited evidence rather than an
-official result or a causal explanation.
+**Lessons and limits:** Experiment 1 identified checkpoint-100352 as the
+best-supported development lineage at 94.5% on two disjoint panels, while the
+late proxy peak tied it and the final checkpoint declined. Experiment 2's
+full hold-progress forfeiture was contradicted in the tested transfer run:
+checkpoint-105472 reached 175/200 (87.5%) and checkpoint-120832 reached
+162/200 (81.0%) on the same new panel where the unchanged working policy
+reached 191/200. Paired comparisons favored the working policy by 16 and 29
+discordant episodes respectively. These are development measurements under
+`research_evaluation`, not an official result or a causal explanation of every
+failure mode; the negative result is scoped to this intervention, continuation,
+and measured checkpoints.
 
-**Open questions:** Whether explicitly penalizing exits from tolerance reduces
-brief hold failures without increasing reach failures or reducing coverage
-across the official target distribution remains unresolved. The contribution
-of the never-reached failures to the remaining performance gap is also
-uncertain.
+**Open questions:** The remaining never-reached and short-hold failures, and
+whether another intervention can close the gap without sacrificing reach
+coverage, remain unresolved. The fixed task-reference panel and official
+benchmark have not been run.
 
 ## f332c079-6021-457e-be60-1f0804528d76 / Experiment 1
 
@@ -56,3 +58,39 @@ as a new experiment rather than inferred from this closure.
 `research/checkpoints/challengers/f332c079-6021-457e-be60-1f0804528d76/experiment-1/inventory.json`;
 the six evaluation artifacts under
 `research/evaluations/f332c079-6021-457e-be60-1f0804528d76/`.
+
+## f332c079-6021-457e-be60-1f0804528d76 / Experiment 2
+
+**Result:** The transferred reward intervention did not improve the learned
+reach-and-hold policy. The established working lineage remains the strongest
+available policy, and the intervention recipe should be reverted.
+
+**Observed behavior:** On the new disjoint research panel (episodes 4600-4799),
+the unchanged `working` policy succeeded on 191/200 episodes (95.5%).
+Experiment-2 checkpoint-105472 succeeded on 175/200 (87.5%), while the final
+checkpoint-120832 succeeded on 162/200 (81.0%). Paired comparisons recorded
+16 working-policy wins over checkpoint-105472 and 29 over checkpoint-120832,
+with no wins in the reverse direction. Neither measured experiment-2
+checkpoint approached the 196/200 success level corresponding to the human
+objective.
+
+**Hypothesis assessment:** Contradicted under the tested transfer run and
+measured checkpoints. Full forfeiture of accumulated hold-progress was expected
+to improve uninterrupted success without harming reach behavior, but both
+measured intervention checkpoints were substantially worse than the unchanged
+working policy on the same disjoint panel. This does not establish that every
+hold-related shaping method fails, nor does it isolate which failure mode caused
+the degradation.
+
+**Interpretation:** The intervention is not useful for the current lineage
+decision, so the parent working policy and its original scientific recipe
+should be restored. The existing best-known designation remains supported as a
+development choice, but it is not independently confirmed for the official
+task and remains below the objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`; `research/results.jsonl`;
+`research/checkpoints/challengers/f332c079-6021-457e-be60-1f0804528d76/experiment-2/inventory.json`;
+`research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-2-working-200ep-seed4600-f48545f83637.json`;
+`research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-2-checkpoint-105472-200ep-seed4600-f48545f83637.json`;
+`research/evaluations/f332c079-6021-457e-be60-1f0804528d76/evaluation-f332c079-6021-457e-be60-1f0804528d76-experiment-2-checkpoint-120832-200ep-seed4600-f48545f83637.json`.
