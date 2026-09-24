@@ -10,29 +10,30 @@ of two research panels covering 300 distinct episodes, whereas the later
 hold interruptions. The 98% result for checkpoint-100352 on the fixed
 task-reference panel is not independent confirmation because that panel was
 used in selecting the candidate. The remaining failures are concentrated in a
-negative-angle sector, with both no-reach and short-hold outcomes; this is
-consistent with an orientation-specific control problem, but the available
-measurements do not identify branch, joint-limit, saturation, or dynamic
-stabilization as its cause.
+negative-angle sector and include both no-reach and short-hold outcomes. The
+frozen model makes branch choice, joint-limit proximity, saturation, and
+low-velocity stabilization physically distinct possibilities, but existing
+outcomes do not identify which occurred in a failed episode.
 
 **Lessons and limits:** Training reward and proxy success were useful for
 locating candidates but did not rank final behavior reliably: the reward peak
 at checkpoint-86016 measured 96%, and the later proxy plateau did not improve
 the selected policy. The disjoint research panel reproduced the 100352-step
 policy's 97% result and its advantage over checkpoint-120832, supporting the
-working-lineage choice but not the official objective. In the frozen scientific
-model, full-angle sampling, inverse-kinematic branch ambiguity, and
-torque-driven 50 Hz control make orientation, posture, and stabilization
-plausible distinctions; the model alone cannot establish which occurred in a
-failed episode. The task-reference panel is fixed and permanently reused, so
-its 196/200 result is development evidence rather than independent confirmation.
+working-lineage choice but not the official objective. The frozen model
+establishes full-angle targets, two nominal inverse-kinematic branches,
+-170-to-170-degree joints, and 50 Hz torque control with a 100-sample hold; it
+does not establish which branch a policy selected or whether it saturated.
+The task-reference panel is fixed and permanently reused, so its 196/200 result
+is development evidence rather than independent confirmation.
 
 **Open questions:** Whether the negative-angle failures arise from an
 inadmissible or poorly selected inverse-kinematic branch, a joint-limit or
 actuation limitation, or learned feedback that fails to stabilize remains
-unresolved. It is also unresolved whether targeted training or a changed
-measurement instrumentation would improve this sector without repeating the
-late-checkpoint instability.
+unresolved. The realized branch, joint-limit margin, control saturation, and
+velocity around entry and exit are the observations needed to distinguish these
+causes and determine whether a targeted intervention should favor reach
+coverage, actuation, or hold stability.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
