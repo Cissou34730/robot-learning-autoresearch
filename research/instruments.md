@@ -133,6 +133,13 @@ Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
 or instruments applied to the same model.
 
+A measurement whose `candidate` is the current `working`, `best_known`, or a
+retained lineage ID and whose `research_evaluation` panel exactly matches
+another measurement's panel in the same request is the paired-comparison control
+for that round. It does not count toward the three-model limit, which continues
+to bound new-candidate exploration at three. A saved lineage measured on a panel
+no other measurement in the request uses still counts toward the limit.
+
 ### `research_evaluation`
 
 - Ownership: researcher-owned evaluation code and instrumentation, changed with

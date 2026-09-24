@@ -476,8 +476,11 @@ def check_evaluation_request() -> int:
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         if not isinstance(request, dict):
             raise TypeError("evaluation_request.json must contain a JSON object")
+        saved_lineage_ids = protocol.saved_lineage_identifiers(state)
         protocol.validate_evaluation_request(
-            request, allow_legacy_need_more_evidence=True
+            request,
+            allow_legacy_need_more_evidence=True,
+            saved_lineage_ids=saved_lineage_ids,
         )
         experiment = int(pending["experiment"])
         if int(request.get("experiment", -1)) != experiment:
@@ -488,7 +491,10 @@ def check_evaluation_request() -> int:
         validate_research_delta(state)
         available = protocol.available_evaluation_candidates(pending, state)
         requested, _ = protocol.planned_measurements(
-            request, available, allow_legacy_need_more_evidence=True
+            request,
+            available,
+            allow_legacy_need_more_evidence=True,
+            saved_lineage_ids=saved_lineage_ids,
         )
         resolved_models = (
             protocol.resolved_measurement_models(request, available)
@@ -547,14 +553,19 @@ def check_analysis_deliverable() -> int:
                 raise TypeError("evaluation_request.json must contain a JSON object")
             if int(request.get("experiment", -1)) != int(pending["experiment"]):
                 raise ValueError("evaluation request references the wrong experiment")
-            protocol.validate_evaluation_request(request)
+            saved_lineage_ids = protocol.saved_lineage_identifiers(state)
+            protocol.validate_evaluation_request(
+                request, saved_lineage_ids=saved_lineage_ids
+            )
             protocol.validate_panel_independence(
                 request,
                 protocol.recorded_research_panels(state, pending),
                 protected_overlap=_protected_panel_overlap(),
             )
             available = protocol.available_evaluation_candidates(pending, state)
-            requested, _ = protocol.planned_measurements(request, available)
+            requested, _ = protocol.planned_measurements(
+                request, available, saved_lineage_ids=saved_lineage_ids
+            )
             resolved_models = protocol.resolved_measurement_models(request, available)
             protocol.validate_paired_comparison_plan(
                 request,
@@ -809,10 +820,13 @@ def execute_pending_evaluations() -> int:
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
     validate_research_delta(state)
+    saved_lineage_ids = protocol.saved_lineage_identifiers(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         protocol.validate_evaluation_request(
-            request, allow_legacy_need_more_evidence=not is_v4
+            request,
+            allow_legacy_need_more_evidence=not is_v4,
+            saved_lineage_ids=saved_lineage_ids,
         )
         if is_v4:
             protocol.validate_panel_independence(
@@ -853,6 +867,7 @@ def execute_pending_evaluations() -> int:
                 and "need_more_evidence" in request
             )
         ),
+        saved_lineage_ids=saved_lineage_ids,
     )
     resolved_models = (
         protocol.resolved_measurement_models(request, available) if is_v4 else {}

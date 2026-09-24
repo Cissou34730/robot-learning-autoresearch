@@ -1064,6 +1064,7 @@ def validate_evaluation_request(
     request: dict,
     *,
     allow_legacy_need_more_evidence: bool = False,
+    saved_lineage_ids: set[str] | None = None,
 ) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
@@ -1098,8 +1099,9 @@ def validate_evaluation_request(
             value = comparison.get(field)
             if not isinstance(value, str) or not value.strip():
                 raise ValueError(f"paired comparison requires a non-empty {field}")
-    # Collect distinct candidates before detailed validation.
-    distinct_candidates = set()
+    # Collect each measurement's candidate and, for a research evaluation, its
+    # panel before the distinct-model limit is enforced.
+    measured: list[tuple[str, tuple[int, int] | None]] = []
     for entry in requested_measurements(request):
         if not isinstance(entry, dict):
             raise TypeError("each measurement must be an object")
@@ -1109,7 +1111,6 @@ def validate_evaluation_request(
         candidate = entry.get("candidate")
         if not isinstance(candidate, str) or not candidate.strip():
             raise ValueError(f"{instrument} requires a non-empty candidate")
-        distinct_candidates.add(candidate.strip())
         allowed_fields = (
             RESEARCH_EVALUATION_ENTRY_FIELDS
             if instrument == "research_evaluation"
@@ -1137,6 +1138,7 @@ def validate_evaluation_request(
             not isinstance(omitted_alternative, str) or not omitted_alternative.strip()
         ):
             raise ValueError("omitted_alternative must be a non-empty string or null")
+        panel: tuple[int, int] | None = None
         if instrument == "research_evaluation":
             missing = [field for field in ("episodes", "seed") if field not in entry]
             if missing:
@@ -1151,6 +1153,25 @@ def validate_evaluation_request(
                 raise ValueError("research_evaluation episodes must be positive")
             if not isinstance(entry["seed"], int) or isinstance(entry["seed"], bool):
                 raise ValueError("research_evaluation seed must be an integer")
+            panel = (entry["seed"], entry["episodes"])
+        measured.append((candidate.strip(), panel))
+    # A saved lineage measured on a panel another measurement in the same request
+    # also uses is the paired-comparison control, not a new candidate, so it does
+    # not consume one of the three distinct-model slots. The cap still bounds new
+    # candidate exploration at three.
+    controls = set(saved_lineage_ids or ())
+    distinct_candidates = {
+        candidate
+        for index, (candidate, panel) in enumerate(measured)
+        if not (
+            candidate in controls
+            and panel is not None
+            and any(
+                other != index and other_panel == panel
+                for other, (_, other_panel) in enumerate(measured)
+            )
+        )
+    }
     # Enforce the three-model limit per evaluation round.
     if len(distinct_candidates) > 3:
         raise ValueError(
@@ -1274,6 +1295,26 @@ def available_evaluation_candidates(pending: dict, state: dict) -> dict:
     return available
 
 
+def saved_lineage_identifiers(state: dict) -> set[str]:
+    """The saved-lineage roles a measurement request may name.
+
+    These names resolve to a frozen lineage rather than a new candidate, so a
+    same-panel measurement of one can serve as the paired-comparison control
+    without consuming a distinct-model slot.
+    """
+    identifiers = {
+        identifier
+        for identifier in ("working", "best_known")
+        if lineage_role(state, identifier) is not None
+    }
+    identifiers.update(
+        str(lineage.get("id"))
+        for lineage in state.get("retained_lineages", [])
+        if str(lineage.get("id", "")).strip()
+    )
+    return identifiers
+
+
 def upcoming_experiment_index(state: dict) -> int:
     """The identity the launcher's next preparation phase will allocate.
 
@@ -1388,11 +1429,17 @@ def preparation_measurement_context(state: dict) -> dict:
 
 
 def planned_measurements(
-    request: dict, available: dict, *, allow_legacy_need_more_evidence: bool = False
+    request: dict,
+    available: dict,
+    *,
+    allow_legacy_need_more_evidence: bool = False,
+    saved_lineage_ids: set[str] | None = None,
 ) -> tuple[list[dict], list[dict]]:
     """Resolve all typed measurements before either evaluator starts."""
     validate_evaluation_request(
-        request, allow_legacy_need_more_evidence=allow_legacy_need_more_evidence
+        request,
+        allow_legacy_need_more_evidence=allow_legacy_need_more_evidence,
+        saved_lineage_ids=saved_lineage_ids,
     )
     requested_names = {
         str(spec["candidate"]).strip() for spec in requested_measurements(request)
@@ -1565,12 +1612,15 @@ def validate_preparation_evaluation_request(
             "a preparation measurement must omit experiment; it names saved "
             "lineages, not a trained experiment"
         )
-    validate_evaluation_request(request)
+    saved_lineage_ids = saved_lineage_identifiers(state)
+    validate_evaluation_request(request, saved_lineage_ids=saved_lineage_ids)
     pending = preparation_measurement_context(state)
     available = available_evaluation_candidates(pending, state)
     if not available:
         raise ValueError("there are no saved lineages available to measure")
-    requested, _ = planned_measurements(request, available)
+    requested, _ = planned_measurements(
+        request, available, saved_lineage_ids=saved_lineage_ids
+    )
     resolved_models = resolved_measurement_models(request, available)
     validate_panel_independence(
         request,
