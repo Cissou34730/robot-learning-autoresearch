@@ -1017,7 +1017,92 @@ def _selected_panel_identity(panel: object) -> tuple | None:
     return None
 
 
-def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
+def _fingerprint_panel_ledger(
+    results: list[dict],
+) -> dict[tuple[str, tuple], list[str]]:
+    """Map each ``(model fingerprint, panel identity)`` to its detail artifacts.
+
+    Built once from ``research/results.jsonl`` so the current-lineage rendering
+    can resolve every selected panel to the measurement that produced it. The
+    ledger is presentation-only; it never rewrites the persisted lineage fields.
+    """
+    ledger: dict[tuple[str, tuple], list[str]] = {}
+    for result in results:
+        if not isinstance(result, dict):
+            continue
+        for instrument in ("research_evaluation", "task_reference"):
+            for entry in _measurement_entries(result, instrument):
+                if entry.get("instrument", instrument) != instrument:
+                    continue
+                metrics = (
+                    entry.get("metrics")
+                    if isinstance(entry.get("metrics"), dict)
+                    else {}
+                )
+                merged = {**metrics, **entry}
+                fingerprint = _entry_fingerprint(merged)
+                identity = _panel_identity(merged, instrument)
+                artifact = merged.get("evaluation_artifact")
+                if not fingerprint or identity is None or not artifact:
+                    continue
+                paths = ledger.setdefault((fingerprint, identity), [])
+                path = str(artifact)
+                if path not in paths:
+                    paths.append(path)
+    return ledger
+
+
+def _selection_measurement_ledger_lines(
+    lineage: dict, ledger: dict[tuple[str, tuple], list[str]] | None
+) -> list[str]:
+    """One fingerprint-matched ledger for the lineage's `selected_panels`.
+
+    For every selected panel it resolves the authoritative artifact path from
+    ``research/results.jsonl`` and states whether that path is already stored in
+    the lineage's `evaluation_artifacts`. An unresolvable panel is marked as a
+    missing link. The persisted `selected_panels` and `evaluation_artifacts`
+    fields are read-only here and are never rewritten.
+    """
+    panels = lineage.get("selected_panels")
+    if not isinstance(panels, list) or not panels:
+        return []
+    fingerprint = lineage.get("fingerprint")
+    fingerprint = "" if fingerprint is None else str(fingerprint)
+    recorded = lineage.get("evaluation_artifacts")
+    recorded_paths = (
+        {str(path) for path in recorded} if isinstance(recorded, list) else set()
+    )
+    ledger = ledger or {}
+    lines = [
+        "  - Fingerprint-matched measurement ledger from `research/results.jsonl`:"
+    ]
+    for panel in panels:
+        identity = _selected_panel_identity(panel)
+        if identity is None:
+            continue
+        label = _panel_identity_label(identity)
+        paths = ledger.get((fingerprint, identity)) if fingerprint else None
+        if not paths:
+            lines.append(
+                f"    - {label}: missing link "
+                "(no matching artifact in `research/results.jsonl`)"
+            )
+            continue
+        resolved = ", ".join(_recorded_path(path) for path in paths)
+        status = (
+            "already in `evaluation_artifacts`"
+            if any(path in recorded_paths for path in paths)
+            else "not in `evaluation_artifacts`"
+        )
+        lines.append(f"    - {label}: {resolved}; {status}")
+    return lines
+
+
+def _authoritative_lineage_lines(
+    identifier: str,
+    lineage: dict,
+    ledger: dict[tuple[str, tuple], list[str]] | None = None,
+) -> list[str]:
     evaluation_artifacts = lineage.get("evaluation_artifacts")
     evidence = (
         ", ".join(_recorded_path(path) for path in evaluation_artifacts)
@@ -1040,6 +1125,7 @@ def _authoritative_lineage_lines(identifier: str, lineage: dict) -> list[str]:
         f"  - Recorded evaluation artifacts: {evidence}",
         f"  - Researcher reason: {_recorded_value(lineage.get('reason'))}",
         *_selected_panels_lines(lineage),
+        *_selection_measurement_ledger_lines(lineage, ledger),
     ]
 
 
@@ -1089,7 +1175,10 @@ def _authoritative_lineage_alias_lines(
     return lines
 
 
-def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> list[str]:
+def _current_lineages_and_recipes_lines(
+    state: dict, current_params: dict, results: list[dict] | None = None
+) -> list[str]:
+    ledger = _fingerprint_panel_ledger(results or [])
     working = state.get("working_lineage")
     best_known = state.get("best_known_lineage")
     retained = [
@@ -1126,7 +1215,9 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
             identity = _lineage_fact_identity(lineage)
             canonical = canonical_by_identity.get(identity) if identity else None
             if canonical is None:
-                lines.extend(_authoritative_lineage_lines(identifier, lineage))
+                lines.extend(
+                    _authoritative_lineage_lines(identifier, lineage, ledger)
+                )
                 if identity is not None:
                     canonical_by_identity[identity] = (identifier, lineage)
             else:
@@ -1374,9 +1465,14 @@ def _v4_phase_section(
     return lines
 
 
-def _v4_lineage_section(state: dict, current_params: dict) -> list[str]:
+def _v4_lineage_section(
+    state: dict, current_params: dict, results: list[dict] | None = None
+) -> list[str]:
     """Lineage facts and the current experiment candidate inventory."""
-    lines = ["", *_current_lineages_and_recipes_lines(state, current_params)]
+    lines = [
+        "",
+        *_current_lineages_and_recipes_lines(state, current_params, results),
+    ]
     lines.extend(["", "## Working lineage", ""])
     lines.append(
         "- See `working` under **Current lineages and scientific recipes**."
@@ -1786,7 +1882,9 @@ def _v4_best_known_section(state: dict) -> list[str]:
     return lines
 
 
-def _v4_terminal_assessment_section(state: dict) -> list[str]:
+def _v4_terminal_assessment_section(
+    state: dict, results: list[dict] | None = None
+) -> list[str]:
     """The irreversible request, stated with the model it will freeze.
 
     Issue #59: the protocol frames the terminal assessment only as a risk, so a
@@ -1820,7 +1918,11 @@ def _v4_terminal_assessment_section(state: dict) -> list[str]:
             "describe:"
         ),
     ]
-    lines.extend(_authoritative_lineage_lines("best_known", lineage))
+    lines.extend(
+        _authoritative_lineage_lines(
+            "best_known", lineage, _fingerprint_panel_ledger(results or [])
+        )
+    )
     lines.append(
         "  - Expected verdict: "
         f"{_recorded_value(expectation.get('expected_verdict'))}"
@@ -2647,7 +2749,7 @@ def _render_v4_research_brief(
     else:
         lines.append("No experiment has completed in this campaign.")
 
-    lines.extend(_v4_lineage_section(state, current_params))
+    lines.extend(_v4_lineage_section(state, current_params, results))
 
     lines.extend(_v4_experiment_index_section(results, pending))
 
@@ -2666,7 +2768,7 @@ def _render_v4_research_brief(
     lines.extend(_v4_reusable_lineages_section(state))
     lines.extend(_v4_best_known_section(state))
 
-    lines.extend(_v4_terminal_assessment_section(state))
+    lines.extend(_v4_terminal_assessment_section(state, results))
 
     lines.extend(_v4_official_section(state, terminal))
     return "\n".join(lines).rstrip() + "\n"
