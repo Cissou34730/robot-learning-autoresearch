@@ -4,11 +4,11 @@
 
 **Current synthesis:** The working 100352-step PPO policy remains the strongest
 supported lineage at 880/900 (97.8%) over five distinct research panels. The
+expanded-radius transfer matched working on its disjoint panel, and the
 joint-limit barrier did not improve it: both measured barrier checkpoints scored
-196/200 on the new seed-7000 panel, while working scored 198/200; each barrier
-candidate lost both discordant episodes to working. The barrier hypothesis is
-therefore weakened under the tested recipe, and working remains the appropriate
-lineage and best-known designation.
+196/200 on the new seed-7000 panel, while working scored 198/200. The evidence
+therefore supports working as the current lineage and best-known designation,
+but does not establish objective-level performance.
 
 **Lessons and limits:** The barrier candidates shared working's failures at
 episodes 30 and 155 and added distinct failures (episodes 160 and 174 for
@@ -19,16 +19,19 @@ improvement: the proxy-peak checkpoint reached 1.00, while the late checkpoint
 fell to 0.96. The frozen model establishes branch ambiguity, finite joint
 limits, clipped 50 Hz torque control, and the 100-sample hold requirement, but
 does not identify whether the observed shortfall is caused by branch selection,
-actuation, or stabilization. Development measurements remain non-final, and the
-fixed task-reference panel is selection-contaminated.
+actuation, or stabilization. Realized measurements do show constrained
+negative-angle transients with saturation, limit proximity, no-reach outcomes,
+and interrupted holds, but these signatures do not establish a sufficient
+cause. Development measurements remain non-final, and the fixed task-reference
+panel is selection-contaminated.
 
 **Open questions:** Whether a different intervention can resolve the remaining
 negative-angle constrained transients remains unresolved. The relative
-contributions of branch selection, torque saturation, and post-entry hold
-regulation are also unresolved; the current measurements do not establish that
-any one is sufficient. The completed paired panel is sufficient for this
-lineage decision, so these questions do not require another measurement before
-closure.
+contributions of branch selection, torque saturation, post-entry hold
+regulation, and late PPO degradation are also unresolved; the current
+measurements do not establish that any one is sufficient. The available
+evidence is sufficient to distinguish the current lineage choice from the
+unresolved mechanism questions, but not to claim the official objective.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
