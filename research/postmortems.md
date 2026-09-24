@@ -4,9 +4,9 @@
 
 **Current synthesis:** The unchanged PPO recipe remains the strongest learned policy: experiment-2 `checkpoint-100352` achieved 97.5% on the disjoint 1,000-episode research panel, and the retained parent control achieved 97.4% on the new experiment-3 panel. The experiment-3 reduced-learning-rate, zero-entropy transfer recipe instead scored 89.5% and 90.0% on its measured checkpoints, so it did not improve the policy or establish the 98% objective.
 
-**Lessons and limits:** Training success and reward are proxies rather than task outcomes; experiment 3 reached a 0.98 proxy at 100352 steps while task success was only 89.5%, and its final 0.96 proxy checkpoint scored 90.0%. The adjusted run's paired comparisons strongly favored the unchanged parent, but changing learning rate and entropy together does not identify which parameter caused the degradation. The selection-panel score is not independent evidence, the task-reference panel is permanently reused, and no development result predicts the official verdict.
+**Lessons and limits:** Training success and reward are proxies rather than task outcomes; experiment 3 reached a 0.98 proxy at 100352 steps while task success was only 89.5%, and its final 0.96 proxy checkpoint scored 90.0%. The best-known policy's four task-reference failures were all at radii from 6.7 to 9.9 cm, while the pre-proposal training distribution covered only 14 to 20 cm; this coverage signal is small and panel-specific. The selection-panel score is not independent evidence, the task-reference panel is permanently reused, and no development result predicts the official verdict.
 
-**Open questions:** It remains unresolved whether another intervention can close the residual gap above the best-known policy's 97.5% disjoint-panel performance, and the official benchmark result is unknown.
+**Open questions:** It remains unresolved whether performance on the inner part of the official radius range can improve without sacrificing the learned outer-range behavior, and the official benchmark result is unknown.
 
 ## 840f1e05-cd5f-42ed-9505-50aafef87094 / Experiment 1
 
