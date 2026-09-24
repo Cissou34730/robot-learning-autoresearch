@@ -4,24 +4,27 @@
 
 **Current synthesis:** The campaign has learned robust reach-and-hold behavior
 but remains below reliable attainment of the human objective: the selected
-working policy has 586/600 pooled research successes and scored 193/200 on the
-latest disjoint panel. The transferred target-coverage intervention did not
-improve its start and ended at 192/200, while the hold-forfeit intervention
-scored 190/200 early and 171/200 late. The fixed task-reference result of 98%
-is reused development evidence, not independent confirmation.
+working policy has 778/800 pooled research successes and scored 192/200 on the
+latest disjoint panel. The transferred target-coverage intervention, the
+hold-forfeit intervention, and fresh full-radius training all failed to improve
+the working lineage; the fresh full-radius challengers scored only 121/200 and
+122/200 on the latest panel. The fixed task-reference result of 98% is reused
+development evidence, not independent confirmation.
 
 **Lessons and limits:** Recent working-lineage failures cluster around negative
 angles near -122 to -150 degrees and include inner targets, with most latest
-failures never entering tolerance and one reaching it only briefly. The
-baseline trained only on 14-20 cm radii; changing coverage during transfer did
-not improve the result, but does not distinguish coverage from transfer
-interference. Training reward and success proxies can diverge substantially
-from measured task success, as shown by the failed hold-forfeit intervention.
+failures never entering tolerance and one reaching it only briefly. Neither
+changing coverage during transfer nor fresh uniform training over 6-20 cm
+improved measured behavior; the fresh run instead lost broad reach-and-hold
+performance despite training-proxy progress. These results reject the tested
+recipes, but do not establish that every coverage schedule, initialization, or
+policy intervention is ineffective. Training reward and success proxies can
+diverge substantially from measured task success.
 
-**Open questions:** It remains unresolved whether fresh learning over the full
-official radius range can improve the residual geometric pocket while
-preserving broad reach-and-hold behavior, or whether the remaining failures
-reflect a policy limitation beyond target coverage.
+**Open questions:** It remains unresolved whether the residual failures reflect
+a policy or observation limitation beyond target coverage, and whether a
+different intervention can raise the selected policy from its current
+below-objective development performance without sacrificing broad behavior.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
@@ -131,3 +134,37 @@ assessment because the best disjoint development result remains below 98%.
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-3-working-200ep-seed10600-f48545f83637.json`;
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-3-checkpoint-35840-200ep-seed10600-f48545f83637.json`;
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-3-checkpoint-120832-200ep-seed10600-f48545f83637.json`.
+
+## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 4
+
+**Result:** Fresh training over the full official radius range produced no
+useful challenger; the existing working lineage remains the strongest saved
+policy.
+
+**Observed behavior:** On the new disjoint research panel, the working policy
+scored 192/200 (96.0%), while fresh full-radius `checkpoint-86016` scored
+121/200 (60.5%) and `checkpoint-120832` scored 122/200 (61.0%). Paired
+comparisons favored the working policy by 71-0 and 70-0 discordant wins,
+respectively. The final challenger was only one success better than the early
+challenger, and both remained far below the official 196/200 threshold.
+
+**Hypothesis assessment:** The hypothesis is contradicted under the tested
+recipe: fresh PPO training with uniform 0.06-0.20 m radii did not learn the
+residual cases while preserving broad reach-and-hold behavior, either at the
+training-reward peak or at the final checkpoint. The evidence is a single fresh
+run and two measured checkpoints, so it rejects this tested recipe rather than
+proving that all fresh training or radius curricula are ineffective.
+
+**Interpretation:** Keep the existing working and best-known lineage and revert
+the experiment-4 training-environment change. Neither measured challenger has a
+future-use advantage, so no experiment-4 candidate should be retained. The
+working policy remains below the human objective on the latest disjoint
+development panel; further training is an ordinary subsequent experiment, not
+part of this closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/c1523389-1363-42a7-b973-1bc6847ac445/experiment-4/inventory.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-4-working-200ep-seed10800-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-4-checkpoint-86016-200ep-seed10800-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-4-checkpoint-120832-200ep-seed10800-f48545f83637.json`.
