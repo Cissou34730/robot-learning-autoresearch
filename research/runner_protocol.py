@@ -184,6 +184,12 @@ SCIENTIFIC_MODEL_REASONING_FIELDS = (
     "alternatives",
     "diagnostic_decision",
 )
+POLICY_INTERVENTION_REASONING_FIELDS = (
+    "behavioral_path",
+    "failure_scope",
+    "lever_choice",
+    "behavioral_test",
+)
 
 
 # --- ownership -------------------------------------------------------------
@@ -598,6 +604,14 @@ def validate_scientific_reasoning(proposal: dict) -> None:
         _validate_reasoning_statement(
             f"scientific_model.{field}", scientific_model.get(field)
         )
+    if proposal["kind"] in {"training", "continuation"}:
+        policy_intervention = reasoning.get("policy_intervention")
+        if not isinstance(policy_intervention, dict):
+            raise TypeError("reasoning.policy_intervention must be an object")
+        for field in POLICY_INTERVENTION_REASONING_FIELDS:
+            _validate_reasoning_statement(
+                f"policy_intervention.{field}", policy_intervention.get(field)
+            )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
         raise ValueError("reasoning.evidence must be a non-empty list")

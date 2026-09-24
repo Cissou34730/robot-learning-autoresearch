@@ -223,6 +223,12 @@ then write one `research/proposal.json`. The common required fields are `kind`,
       "connection": "<section and specific fact, physical consequence or unknown in research/scientific_model.md, and why it matters or offers no useful distinction>",
       "alternatives": "<plausible competing explanations, including training or parameter explanations when relevant>",
       "diagnostic_decision": "<what measurement would change the intervention, if any, and why this training run is now more informative than requesting it>"
+    },
+    "policy_intervention": {
+      "behavioral_path": "<how the chosen code, parameters or continued learning could change the policy's observations, decisions or actions on measured failures>",
+      "failure_scope": "<which observed failures the intervention can plausibly affect and which it cannot; why the addressable failures matter to the objective>",
+      "lever_choice": "<a materially different available lever and why this intervention is preferable now>",
+      "behavioral_test": "<how to compare resulting policy behavior and complete task success against a saved reference on appropriate episodes>"
     }
   },
   "change": "<non-empty scientific intervention; training only>",
@@ -234,8 +240,11 @@ then write one `research/proposal.json`. The common required fields are `kind`,
 ```
 
 Exactly one of `hypothesis` or `scientific_question` is required; both are
-accepted and neither changes how the experiment is run or validated. Additional
-`reasoning` keys are accepted and recorded without validation.
+accepted and neither changes how the experiment is run or validated.
+`reasoning.policy_intervention` is required for `training` and `continuation`,
+including parameter-only changes and unchanged continuations; omit it for
+`replication`, which tests learning-process variance without an intervention.
+Additional `reasoning` keys are accepted and recorded without validation.
 
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
@@ -275,6 +284,20 @@ this reasoning and the existence and confinement of evidence sources, not
 scientific merit or whether a measurement would have been preferable. This
 contract applies equally to training, continuation and replication, not to the
 automatic baseline.
+
+For `training` and `continuation`, `policy_intervention` connects the selected
+lever to a plausible change in the *learned policy's behavior*, not just to a
+reward, proxy score or physical diagnosis. State which measured failure modes
+the change might and might not address, and why its addressable scope matters
+to the objective. Compare a materially different lever, including changes to
+observations, action mapping, learning method, training configuration or reward
+when relevant; none is preferred by this contract. When repeated interventions
+through one lever do not improve the task, reconsider that lever rather than
+only varying another coefficient. Specify a comparison that checks both the
+predicted behavior and complete task success on suitable episodes, preferably
+paired with a saved reference. The Runner requires these four explicit
+statements, not the scientific validity of the mechanism or the success of
+the experiment. Replication does not claim an intervention and is exempt.
 
 The campaign's Scientific strategy section must exist before submission. The
 Runner validates its three labels and snapshots the section with `reasoning` in

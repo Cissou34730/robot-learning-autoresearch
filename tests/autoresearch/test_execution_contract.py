@@ -1673,6 +1673,42 @@ def test_researcher_training_requires_model_to_decision_reasoning(kind):
     validate_training_proposal(proposal, baseline=False)
 
 
+@pytest.mark.parametrize("kind", ["training", "continuation"])
+def test_policy_intervention_requires_a_behavioral_path_and_comparison(kind):
+    proposal = _training_proposal()
+    if kind == "continuation":
+        proposal.update(
+            kind="continuation",
+            initialization="transfer",
+            training_parent="accepted",
+        )
+        proposal.pop("change")
+
+    intervention = proposal["reasoning"].pop("policy_intervention")
+    with pytest.raises(TypeError, match="reasoning.policy_intervention must be an object"):
+        validate_training_proposal(proposal, baseline=False)
+
+    for field in ("behavioral_path", "failure_scope", "lever_choice", "behavioral_test"):
+        proposal["reasoning"]["policy_intervention"] = {
+            **intervention,
+            field: " ",
+        }
+        with pytest.raises(ValueError, match=f"reasoning.policy_intervention.{field}"):
+            validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["policy_intervention"] = intervention
+    validate_training_proposal(proposal, baseline=False)
+
+
+def test_replication_does_not_require_an_intervention():
+    proposal = _training_proposal()
+    proposal.update(kind="replication", training_seed=19, replication_of=1)
+    proposal.pop("change")
+    proposal["reasoning"].pop("policy_intervention")
+
+    validate_training_proposal(proposal, baseline=False)
+
+
 def test_transfer_proposal_requires_a_training_parent(scientific_reasoning):
     proposal = {
         "kind": "training",
@@ -2021,6 +2057,12 @@ def _training_proposal() -> dict:
                 "connection": "The task requires a stable hold, but the plateau does not establish a physical cause.",
                 "alternatives": "The representation or insufficient training may limit learning.",
                 "diagnostic_decision": "Saved checkpoints already show the plateau; a fresh representation run tests whether the proposed change can improve it.",
+            },
+            "policy_intervention": {
+                "behavioral_path": "The changed observations may let the learned policy adjust its approach before reaching the target.",
+                "failure_scope": "It could change approach failures but need not improve post-entry hold stability.",
+                "lever_choice": "A reward change is an alternative, but testing the representation addresses this question directly.",
+                "behavioral_test": "Compare reach behavior and complete success on paired episodes against the saved policy.",
             },
         },
         "change": "change the observation representation",

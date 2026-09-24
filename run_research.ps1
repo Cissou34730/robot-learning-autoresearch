@@ -1210,6 +1210,7 @@ The final output should be a compact but substantive **Scientific model of the r
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
         $scientificModelDecisionGuidance
         "For any training, continuation, or replication proposal, supply reasoning.scientific_model as specified in research/instruments.md; connect a current campaign observation to a specific model finding, or name a model finding considered and explain why it offers no useful distinction. A citation alone is not a diagnosis."
+        "For training or continuation, supply reasoning.policy_intervention as specified in research/instruments.md: trace the change to policy behavior on observed failures, identify which failures it cannot address, compare a materially different lever, and plan a behavioral and task-success comparison. After repeated failures of one lever, reconsider the lever rather than just its coefficient; no method is prescribed."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }

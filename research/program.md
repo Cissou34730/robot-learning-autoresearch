@@ -168,6 +168,19 @@ scientific question and the compatibility of the learned representation.
 Neither fresh initialization nor transfer is preferred, and a recipe that has
 already been measured repeatedly is not a safer choice than one that has not.
 
+For training or continuation, translate the investigation into a policy change:
+explain how the selected code, parameters, or further learning could change
+what the policy perceives, decides, or commands on the observed failures.
+Identify failures it may not address and why the addressable ones matter to the
+objective. Compare a materially different available lever and explain why
+this one is preferable now; after repeated unsuccessful changes to one lever,
+reconsider the lever rather than just its next coefficient. State how to
+measure both the predicted behavioral change and complete task success against
+a saved reference. Record this reasoning in `reasoning.policy_intervention`.
+Reward, observations, action mapping, learning method, initialization and
+training parameters remain open choices. An unchanged-method replication
+tests variability, not an intervention, and does not owe this account.
+
 Establish or update the Scientific strategy, make only the code or parameter
 changes the selected operation calls for, and write `research/proposal.json`.
 The phase is incomplete until that deliverable exists and satisfies the contract

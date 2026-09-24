@@ -23,6 +23,12 @@ def scientific_reasoning():
             "alternatives": "The learning rate or training duration might explain the plateau.",
             "diagnostic_decision": "Existing checkpoints do not resolve process variance; the proposed run tests it directly without repeating those measurements.",
         },
+        "policy_intervention": {
+            "behavioral_path": "Further learning may change the policy's actions near the hold boundary.",
+            "failure_scope": "It may improve incomplete holds but not necessarily unreachable targets; this tests a residual task failure.",
+            "lever_choice": "Changing observations is another route, but the current question concerns training progression.",
+            "behavioral_test": "Compare hold interruptions and full success against the saved policy on paired episodes.",
+        },
     }
 
 
