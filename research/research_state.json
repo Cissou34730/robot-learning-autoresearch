@@ -1,184 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/evaluation-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-100ep-seed10000-f48545f83637.json",
-      "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/evaluation-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-200ep-seed20000-f48545f83637.json",
-      "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/task-reference-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the only candidate with 98% on the fixed task-reference panel, scored 99% on the initial research panel and 97.5% on the disjoint 200-episode panel, and won the recorded paired comparison against checkpoint-86016 while checkpoint-120832 was slightly worse.",
-    "scientific_commit": "dba6e9269339b807744e9c680ae2e2653ae5809b",
-    "selected_panels": [
-      {
-        "episodes": 100,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 20000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "8f8eaa6444aa691f3ce0bf5d64aa0f809a7fee0d",
-    "id": "e0fec0e7-77ed-4433-97cd-1944e1b15eca",
+    "base_commit": "c4fa369d7d79e452bc81ae420e13138b9d698428",
+    "id": "6d88dae6-5b36-4a77-8dbd-d65d20a64732",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T06:49:27.217703+00:00"
+    "started_at": "2026-09-24T08:58:07.784401+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "e0fec0e7-77ed-4433-97cd-1944e1b15eca": 2
+    "6d88dae6-5b36-4a77-8dbd-d65d20a64732": 0
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "restore",
-      "reason": "Experiment 2 changed only the training target sampler, and that recipe produced broad complete-hold regressions. Restore the complete scientific recipe associated with the best-known parent before any later work."
-    },
-    "code_parent_commit": "b545a05ad42314723c966caf05610243959fb77a",
-    "continue_from": "best_known",
-    "experiment": 2,
-    "reason": "The changed target sampler was contradicted on a fresh paired panel: checkpoint-115712 scored 178/200 and checkpoint-120832 scored 179/200, versus 197/200 for the transferred best-known parent. The parent remains the strongest measured policy and is the appropriate working lineage."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "fingerprint": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "b545a05ad42314723c966caf05610243959fb77a",
-    "experiment": 2,
-    "scientific_commit": "99557ab68ecf3f8dcba6a5910a6ffe81cadaca6e"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/evaluation-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-100ep-seed10000-f48545f83637.json",
-      "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/evaluation-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-200ep-seed20000-f48545f83637.json",
-      "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/task-reference-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The changed target sampler was contradicted on a fresh paired panel: checkpoint-115712 scored 178/200 and checkpoint-120832 scored 179/200, versus 197/200 for the transferred best-known parent. The parent remains the strongest measured policy and is the appropriate working lineage.",
-    "scientific_commit": "dba6e9269339b807744e9c680ae2e2653ae5809b",
-    "selected_panels": [
-      {
-        "episodes": 100,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 20000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 30000
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
