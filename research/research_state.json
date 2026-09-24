@@ -91,7 +91,7 @@
   "pending_analysis": null,
   "pending_campaign_conclusion": {
     "action": "no_further_experiment",
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-100352 is the strongest measured policy, but it achieved only 1082/1120 (96.61%) pooled successes across seven disjoint research panels and 153/160 (95.625%) on the latest panel, below the 98% objective. The tested target-sampling, hold-exit reward, and wider-network interventions did not improve it, while the reused 98% task-reference result is not independent confirmation. With the experiment budget exhausted, no further experiment is warranted in this campaign.",
     "terminal_expectation": null
   },
@@ -168,7 +168,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "no_further_experiment",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/e1-cada55eb5-72a17657e42b3ca2c51a88445245b809a264d505ec62cd984b848346a5dbfa18",
     "candidate": "checkpoint-100352",
