@@ -83,6 +83,7 @@ def test_subsequent_phase_prompts_read_the_frozen_model():
         assert ("$scientificModelDecisionGuidance" in corpus) is (
             prompt in ("analysisPrompt", "researchPrompt")
         )
+        assert ("reasoning.scientific_model" in corpus) is (prompt == "researchPrompt")
 
 
 def test_scientific_model_is_campaign_memory_and_protected_context():

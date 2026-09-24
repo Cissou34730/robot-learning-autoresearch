@@ -17,6 +17,12 @@ def scientific_reasoning():
         "contradicting_observation": "Progress remains unchanged.",
         "initialization_reason": "Use the selected initialization to test this mechanism.",
         "objective_link": "Resolve a source of failure relevant to the objective.",
+        "scientific_model": {
+            "observation": "Measured learning slows late in training.",
+            "connection": "The task requires sustained stabilization; this observation alone cannot identify a physical cause.",
+            "alternatives": "The learning rate or training duration might explain the plateau.",
+            "diagnostic_decision": "Existing checkpoints do not resolve process variance; the proposed run tests it directly without repeating those measurements.",
+        },
     }
 
 

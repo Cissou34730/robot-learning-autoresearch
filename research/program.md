@@ -85,6 +85,15 @@ training configuration, parameters, or learning evidence is more informative.
 The model does not establish what a policy did or require a physical
 intervention or another measurement.
 
+Before proposing another training run, state that connection to current campaign
+evidence and the competing explanations in `reasoning.scientific_model`. If a
+feasible measurement of a saved policy could change the planned intervention,
+request it first; otherwise explain why the direct experiment is more
+informative. When no physical distinction is useful, name the model
+consideration ruled out, say why, and pursue the training or learning-process
+question on its own merits. The Runner requires this decision argument, not a
+particular scientific answer.
+
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
 variability. Fresh training does not by itself establish that an intervention

@@ -1641,6 +1641,38 @@ def test_training_proposal_requires_only_its_scientific_shape(scientific_reasoni
     )
 
 
+@pytest.mark.parametrize("kind", ["training", "continuation", "replication"])
+def test_researcher_training_requires_model_to_decision_reasoning(kind):
+    proposal = _training_proposal()
+    proposal["kind"] = kind
+    if kind != "training":
+        proposal.pop("change")
+    if kind == "continuation":
+        proposal.update(initialization="transfer", training_parent="accepted")
+    if kind == "replication":
+        proposal.update(training_seed=19, replication_of=12)
+
+    model_reasoning = proposal["reasoning"].pop("scientific_model")
+    with pytest.raises(TypeError, match="reasoning.scientific_model must be an object"):
+        validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["scientific_model"] = model_reasoning
+    for field in ("observation", "connection", "alternatives", "diagnostic_decision"):
+        proposal["reasoning"]["scientific_model"] = {
+            **model_reasoning,
+            field: " ",
+        }
+        with pytest.raises(ValueError, match=f"reasoning.scientific_model.{field}"):
+            validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["scientific_model"] = {
+        **model_reasoning,
+        "connection": "The model's hold requirement does not distinguish training-seed variance.",
+        "diagnostic_decision": "The proposed run tests training variability directly.",
+    }
+    validate_training_proposal(proposal, baseline=False)
+
+
 def test_transfer_proposal_requires_a_training_parent(scientific_reasoning):
     proposal = {
         "kind": "training",
@@ -1984,6 +2016,12 @@ def _training_proposal() -> dict:
             "contradicting_observation": "The plateau persists.",
             "initialization_reason": "Test the representation from initialization.",
             "objective_link": "Determine whether representation limits objective progress.",
+            "scientific_model": {
+                "observation": "Learning plateaus.",
+                "connection": "The task requires a stable hold, but the plateau does not establish a physical cause.",
+                "alternatives": "The representation or insufficient training may limit learning.",
+                "diagnostic_decision": "Saved checkpoints already show the plateau; a fresh representation run tests whether the proposed change can improve it.",
+            },
         },
         "change": "change the observation representation",
         "initialization": "fresh",

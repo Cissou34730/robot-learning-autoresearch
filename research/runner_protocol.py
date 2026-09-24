@@ -171,14 +171,18 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
-# The reasoning a proposal must make explicit, reduced to three questions: what
-# the campaign objective gains, why this initialization, and which observation
-# would change the next decision. Every other reasoning field is optional
-# commentary the Runner records without validating.
+# The reasoning a proposal must make explicit: what the objective gains, why
+# this initialization, and which observation would change the next decision.
 REQUIRED_REASONING_FIELDS = (
     "objective_link",
     "initialization_reason",
     "expected_observation",
+)
+SCIENTIFIC_MODEL_REASONING_FIELDS = (
+    "observation",
+    "connection",
+    "alternatives",
+    "diagnostic_decision",
 )
 
 
@@ -580,22 +584,20 @@ def _validate_reasoning_statement(field: str, value: object) -> None:
 
 
 def validate_scientific_reasoning(proposal: dict) -> None:
-    """Check explicit reasoning, not its scientific merit or truthfulness.
-
-    Three statements are required, because three are what a next decision needs:
-    the link to the objective, the initialization choice, and the observation
-    that would change what is decided next. The taxonomy of investigation types
-    and its branch-specific fields were removed: classifying an investigation
-    before running it produced format compliance, not scientific content, and
-    no category described the most productive move observed across campaigns -
-    trying a materially different recipe.
-    """
+    """Check explicit reasoning, not its scientific merit or truthfulness."""
     reasoning = proposal.get("reasoning")
     if not isinstance(reasoning, dict):
         raise TypeError("proposal reasoning must be an object")
 
     for field in REQUIRED_REASONING_FIELDS:
         _validate_reasoning_statement(field, reasoning.get(field))
+    scientific_model = reasoning.get("scientific_model")
+    if not isinstance(scientific_model, dict):
+        raise TypeError("reasoning.scientific_model must be an object")
+    for field in SCIENTIFIC_MODEL_REASONING_FIELDS:
+        _validate_reasoning_statement(
+            f"scientific_model.{field}", scientific_model.get(field)
+        )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
         raise ValueError("reasoning.evidence must be a non-empty list")

@@ -217,7 +217,13 @@ then write one `research/proposal.json`. The common required fields are `kind`,
     ],
     "expected_observation": "<the observation that would change the next decision, and what it would change>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
-    "objective_link": "<why this investigation is useful for the campaign objective given current evidence>"
+    "objective_link": "<why this investigation is useful for the campaign objective given current evidence>",
+    "scientific_model": {
+      "observation": "<observed behavior or open question grounded in current campaign evidence>",
+      "connection": "<section and specific fact, physical consequence or unknown in research/scientific_model.md, and why it matters or offers no useful distinction>",
+      "alternatives": "<plausible competing explanations, including training or parameter explanations when relevant>",
+      "diagnostic_decision": "<what measurement would change the intervention, if any, and why this training run is now more informative than requesting it>"
+    }
   },
   "change": "<non-empty scientific intervention; training only>",
   "training_parent": "<string; required for transfer, otherwise omit>",
@@ -254,10 +260,21 @@ contains at least one source/observation pair. Cite inspected campaign artifacts
 logs, postmortems or code with precise observations; these are not restricted to
 evaluation results. `source` is a file path without a line-number suffix or
 fragment; put the relevant experiment, checkpoint, step range or code location in
-`observation` as needed. The Runner checks file existence and confinement to this
-repository, not the scientific conclusion or proof of inspection. This contract
-applies equally to training, continuation and replication, not to the automatic
-baseline.
+`observation` as needed. In `scientific_model`, distinguish what the frozen model
+establishes from what the current campaign observed. Identify the relevant
+section of `research/scientific_model.md` and explain its relevance, or name a
+model consideration and explain why it offers no useful distinction for this
+question. Do not infer a policy's failure cause from the
+model alone. If a feasible measurement on a saved lineage could change the
+intervention, request that measurement before proposing training; otherwise
+explain in `diagnostic_decision` why training directly is the better
+discriminator (or why existing measurements already answer the question). This
+does not privilege a physical intervention over training, parameter, or
+learning-process investigations. The Runner checks the presence and shape of
+this reasoning and the existence and confinement of evidence sources, not
+scientific merit or whether a measurement would have been preferable. This
+contract applies equally to training, continuation and replication, not to the
+automatic baseline.
 
 The campaign's Scientific strategy section must exist before submission. The
 Runner validates its three labels and snapshots the section with `reasoning` in

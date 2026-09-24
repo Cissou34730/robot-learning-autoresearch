@@ -131,7 +131,7 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
 }
 
 $scientificModelUseGuidance = "Read research/scientific_model.md as fixed context for the robot and task, and use it when relevant. Ground conclusions about training, parameter choices, and policy performance in the current campaign configuration, logs, and measurements; do not infer training outcomes from the scientific model."
-$scientificModelDecisionGuidance = "When interpreting an observed shortfall or unresolved behavior, check whether an established fact, physical consequence, or unknown in research/scientific_model.md distinguishes plausible causes. If so, identify what observed behavior or feasible measurement could discriminate them and which decision the result would change. If not, explain which training configuration, parameter, or learning evidence is more informative. The model does not establish what a policy did or require a physical intervention or another measurement."
+$scientificModelDecisionGuidance = "When interpreting an observed shortfall or unresolved behavior, check whether an established fact, physical consequence, or unknown in research/scientific_model.md distinguishes plausible causes. If so, identify what observed behavior or feasible measurement could discriminate them and which decision the result would change. Before intervening on an assumed cause, request a feasible decision-changing measurement when available; otherwise justify why a direct experiment is more informative. If no physical distinction is useful, explain which training configuration, parameter, or learning evidence is more informative. The model does not establish what a policy did or require a physical intervention."
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -1209,6 +1209,7 @@ The final output should be a compact but substantive **Scientific model of the r
         $scientificModelUseGuidance
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
         $scientificModelDecisionGuidance
+        "For any training, continuation, or replication proposal, supply reasoning.scientific_model as specified in research/instruments.md; connect a current campaign observation to a specific model finding, or name a model finding considered and explain why it offers no useful distinction. A citation alone is not a diagnosis."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
