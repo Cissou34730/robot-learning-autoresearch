@@ -2,25 +2,30 @@
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO checkpoint-100352 remains the strongest
-learned policy, with 772/800 (96.5%) pooled successes across five disjoint
-development panels. The three tested target-sampling interventions did not
-improve it. Remaining failures are concentrated in the negative-angle sector
-and include both failure to reach and occasional interruption after reaching.
+**Current synthesis:** The unchanged PPO checkpoint-100352 remains the
+strongest learned policy, with 929/960 (96.77%) pooled successes across six
+disjoint research panels. It reached 157/160 (98.125%) on the latest
+disjoint panel, but development measurements do not establish the official
+98% result. The three target-sampling interventions and the hold-exit reward
+intervention did not improve it. Remaining failures are concentrated in the
+negative-angle sector and include both failure to reach and interruption after
+reaching.
 
 **Lessons and limits:** The baseline trains on radii 14-20 cm rather than the
-official 6-20 cm range, but both transfer and fresh full-range sampling
-recipes were contradicted, and focused-angle transfer tied the parent early
-then degraded after continued training. Training proxies have not reliably
-selected held-out policies; the reused task-reference result cannot provide
-independent confirmation, and pooled disjoint evidence remains below the 98%
-objective. Failure geometry is descriptive and does not establish whether
-coverage, reward, representation, or optimization is causal.
+official 6-20 cm range, but the tested transfer and fresh full-range sampling
+recipes were contradicted, focused-angle transfer tied the parent early then
+degraded, and HOLD_EXIT_FORFEIT_FRACTION=0.5 was contradicted by both measured
+continuation checkpoints. Training proxies have not reliably selected held-out
+policies; the reused task-reference result cannot provide independent
+confirmation, and pooled disjoint evidence remains below the objective.
+Failure geometry is descriptive and does not establish whether coverage,
+reward, representation, or optimization is causal.
 
-**Open questions:** It remains unknown whether the zero hold-exit forfeiture
-leaves the learner insufficiently sensitive to brief departures from the
-tolerance band, and whether improving that signal can reduce the residual
-failures without sacrificing the established behavior elsewhere.
+**Open questions:** It remains unknown which representation, optimization, or
+training-signal change can address the residual negative-angle failures without
+sacrificing the established behavior. The latest evidence weakens the specific
+hold-exit forfeiture explanation, but does not resolve whether another
+hold-sensitive intervention could help.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
@@ -167,4 +172,44 @@ Further training belongs to a future ordinary experiment after this closure.
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-4-working-160ep-seed5000-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-4-checkpoint-5120-160ep-seed5000-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-4-checkpoint-120832-160ep-seed5000-f48545f83637.json`,
+`research/scenario.md`.
+
+## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 5
+
+**Result:** The HOLD_EXIT_FORFEIT_FRACTION=0.5 continuation did not produce a
+useful challenger. The established checkpoint-100352 remains working and best
+known, the changed recipe is reverted, and no experiment-5 candidate is
+retained.
+
+**Observed behavior:** On the new disjoint panel covering episodes 5200-5359,
+the unchanged working policy achieved 157/160 successes (98.125%). The
+experiment-5 checkpoint-35840 achieved 148/160 (92.5%), and the final
+checkpoint-120832 achieved 138/160 (86.25%). Paired comparisons favored
+working on all nine discordant episodes against checkpoint-35840 and all
+nineteen discordant episodes against checkpoint-120832. Across six disjoint
+research panels, working now has 929/960 successes (96.77%). The working
+failures in the latest artifact include both no-reach cases and one-step
+holds followed by an interruption, while the modified checkpoints also show
+repeated interruption-heavy failures.
+
+**Hypothesis assessment:** Contradicted under the tested reward-modified
+continuation. The predicted reduction in hold interruptions and improvement
+in held-out success did not occur at the early proxy checkpoint or after full
+continuation; both candidates were materially worse than the contemporaneous
+control. This rejects the tested coefficient and continuation recipe, not
+every possible hold-sensitive reward or training intervention.
+
+**Interpretation:** The new disjoint control panel independently supports
+preserving the established working policy, while the two measured challengers
+show that the modified reward is not a safe way to close the remaining gap.
+The pooled development result is still below the human objective, so the
+official benchmark is not requested. Further training remains an ordinary
+future experiment after this closure.
+
+**Evidence inspected:** `research/brief.md`,
+`research/research_state.json`,
+`research/checkpoints/challengers/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/experiment-5/inventory.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-5-working-160ep-seed5200-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-5-checkpoint-35840-160ep-seed5200-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-5-checkpoint-120832-160ep-seed5200-f48545f83637.json`,
 `research/scenario.md`.
