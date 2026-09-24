@@ -1222,54 +1222,11 @@ def compact_measurement_summary(record: dict) -> str:
     return "; ".join(parts)
 
 
-def _evaluation_fingerprint(entry: dict) -> str:
-    """The immutable model fingerprint recorded with a measurement, if present."""
-    metrics = entry.get("metrics") if isinstance(entry.get("metrics"), dict) else {}
-    value = entry.get("model_fingerprint") or metrics.get("model_fingerprint")
-    return "" if value is None else str(value)
-
-
-def _candidate_fingerprints(record: dict) -> dict[str, str]:
-    """Map each surfaced candidate label in a record to its model fingerprint.
-
-    The compact experiment-log decision cell names a candidate by a mutable
-    label such as ``checkpoint-100352``. The same ``(model <fingerprint12>)``
-    suffix the brief's aggregate evidence index uses is appended when that exact
-    label resolves to a measured model recorded by this experiment, so a reused
-    name is tagged with the identity it currently denotes.
-    """
-    mapping: dict[str, str] = {}
-    for candidate in record.get("candidates") or []:
-        if not isinstance(candidate, dict) or candidate.get("name") is None:
-            continue
-        name = str(candidate["name"])
-        for evaluation in candidate.get("evaluations") or []:
-            if isinstance(evaluation, dict):
-                fingerprint = _evaluation_fingerprint(evaluation)
-                if fingerprint:
-                    mapping.setdefault(name, fingerprint)
-    for key in ("requested_evaluations", "task_reference_evaluations"):
-        for entry in record.get(key) or []:
-            if not isinstance(entry, dict) or entry.get("candidate") is None:
-                continue
-            fingerprint = _evaluation_fingerprint(entry)
-            if fingerprint:
-                mapping.setdefault(str(entry["candidate"]), fingerprint)
-    return mapping
-
-
 def experiment_log_row(record: dict) -> str:
     from research.runner_protocol import operation_description
 
     def cell(value: object) -> str:
         return " ".join(str(value).replace("|", "/").split())
-
-    fingerprints = _candidate_fingerprints(record)
-
-    def qualify(label: object) -> str:
-        name = str(label)
-        fingerprint = fingerprints.get(name)
-        return f"{name} (model {fingerprint[:12]})" if fingerprint else name
 
     def intervention() -> str:
         parameter_changes = record.get("parameter_changes") or []
@@ -1296,10 +1253,10 @@ def experiment_log_row(record: dict) -> str:
     closure = record.get("closure_decision") or {}
     decisions = []
     if closure.get("continue_from"):
-        decisions.append(f"working {qualify(closure['continue_from'])}")
+        decisions.append(f"working {closure['continue_from']}")
     best_known = closure.get("best_known")
     if isinstance(best_known, dict) and best_known.get("candidate"):
-        decisions.append(f"best known {qualify(best_known['candidate'])}")
+        decisions.append(f"best known {best_known['candidate']}")
     code = closure.get("code")
     if isinstance(code, dict) and code.get("action"):
         decisions.append(f"code {code['action']}")
