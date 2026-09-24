@@ -1607,6 +1607,17 @@ def _aggregate_task_evidence(records: list[dict]) -> list[dict]:
         successes = sum(model["panels"].values())
         if episodes <= 0:
             continue
+        panel_scores = sorted(
+            (
+                {
+                    "seed": panel[1],
+                    "episodes": panel[2],
+                    "successes": successes,
+                }
+                for panel, successes in model["panels"].items()
+            ),
+            key=lambda item: (item["seed"], item["episodes"]),
+        )
         summaries.append(
             {
                 "fingerprint": model["fingerprint"],
@@ -1615,6 +1626,7 @@ def _aggregate_task_evidence(records: list[dict]) -> list[dict]:
                 "episodes": episodes,
                 "successes": successes,
                 "seeds": sorted(panel[1] for panel in model["panels"]),
+                "panel_scores": panel_scores,
             }
         )
     return sorted(summaries, key=lambda item: -item["episodes"])
@@ -1642,15 +1654,14 @@ def _aggregate_task_evidence_lines(state: dict, records: list[dict]) -> list[str
         fingerprint = summary["fingerprint"]
         identifiers = names.get(fingerprint) or []
         labels = identifiers or summary["labels"] or ["unnamed model"]
-        percent = 100.0 * summary["successes"] / summary["episodes"]
-        seeds = ", ".join(str(seed) for seed in summary["seeds"])
-        panels = summary["panels"]
+        panel_scores = "; ".join(
+            f"{panel['seed']}: {panel['successes']}/{panel['episodes']}"
+            for panel in summary["panel_scores"]
+        )
         lines.append(
             f"- {', '.join(labels)} (model {fingerprint[:12]}): "
-            f"{summary['successes']}/{summary['episodes']} successes "
-            f"({percent:.1f}%) over {panels} distinct "
-            f"{'panel' if panels == 1 else 'panels'} "
-            f"(seed{'' if panels == 1 else 's'} {seeds})."
+            f"{panel_scores}; pooled: "
+            f"{summary['successes']}/{summary['episodes']}."
         )
     return lines
 
