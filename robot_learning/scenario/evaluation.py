@@ -55,11 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        peak_joint_speed_rad_s = np.zeros(2, dtype=np.float64)
-        peak_action_abs = np.zeros(2, dtype=np.float64)
-        action_saturated_steps = 0
-        closest_branch_errors_rad: np.ndarray | None = None
-        closest_cartesian_error_cm: np.ndarray | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -67,12 +62,6 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            peak_joint_speed_rad_s = np.maximum(
-                peak_joint_speed_rad_s, np.abs(np.asarray(env.data.qvel[:2]))
-            )
-            action_abs = np.abs(np.asarray(action, dtype=np.float64))
-            peak_action_abs = np.maximum(peak_action_abs, action_abs)
-            action_saturated_steps += int(np.any(action_abs >= 0.999))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -82,13 +71,6 @@ def evaluate_research_model(
                     first_reach_step = steps
             elif was_in_tolerance:
                 hold_interruptions += 1
-            if distance_cm == min_distance_cm:
-                closest_branch_errors_rad = np.abs(
-                    np.asarray(obs[7:11], dtype=np.float64)
-                )
-                closest_cartesian_error_cm = 100.0 * np.asarray(
-                    obs[4:7], dtype=np.float64
-                )
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -121,32 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "peak_joint_speed_rad_s": peak_joint_speed_rad_s.tolist(),
-                "terminal_joint_speed_rad_s": np.abs(
-                    np.asarray(env.data.qvel[:2], dtype=np.float64)
-                ).tolist(),
-                "peak_action_abs": peak_action_abs.tolist(),
-                "action_saturated_steps": action_saturated_steps,
-                "closest_branch_error_rad": (
-                    None
-                    if closest_branch_errors_rad is None
-                    else closest_branch_errors_rad.tolist()
-                ),
-                "closest_branch": (
-                    None
-                    if closest_branch_errors_rad is None
-                    else (
-                        "elbow_positive"
-                        if float(np.linalg.norm(closest_branch_errors_rad[:2]))
-                        <= float(np.linalg.norm(closest_branch_errors_rad[2:]))
-                        else "elbow_negative"
-                    )
-                ),
-                "closest_cartesian_error_cm": (
-                    None
-                    if closest_cartesian_error_cm is None
-                    else closest_cartesian_error_cm.tolist()
-                ),
             }
         )
         if progress_callback is not None:
@@ -165,13 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {
-                "distance": "cm",
-                "time": "control_steps",
-                "joint_speed": "rad/s",
-                "joint_error": "rad",
-                "action": "normalized",
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 
