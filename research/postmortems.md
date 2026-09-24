@@ -2,11 +2,11 @@
 
 ## b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2 / Scientific strategy
 
-**Current synthesis:** PPO has learned strong reach-and-hold behavior, but the retained experiment-2 policy `checkpoint-105472` remains variable across disjoint panels, scoring 196/200, 191/200, and 198/200. The experiment-3 hold-forfeit intervention and experiment-4 lower-learning-rate continuation both underperformed the unchanged parent, leaving the retained parent as the strongest measured policy without establishing the official 98% result.
+**Current synthesis:** PPO has learned strong reach-and-hold behavior, but the retained experiment-2 policy `checkpoint-105472` varies across disjoint panels at 191/200, 196/200, and 198/200. The experiment-3 hold-forfeit intervention and experiment-4 lower-learning-rate continuation both underperformed the unchanged parent, leaving a near-threshold development policy without establishing the official 98% result.
 
-**Lessons and limits:** Training proxies do not rank task behavior reliably, and continued optimization has repeatedly degraded behavior after stronger intermediate checkpoints. On the experiment-3 panel, the unchanged parent achieved 196/200 versus 189/200 and 194/200 for the intervention checkpoints, with paired comparisons favoring the parent 7-0 and 2-0. On the experiment-4 panel, the parent achieved 198/200 versus 186/200 and 182/200 for the lower-rate checkpoints, with paired comparisons favoring the parent 12-0 and 16-0. The fixed task-reference panel is reused, and all development measurements remain distinct from the official 200-episode verdict.
+**Lessons and limits:** Training proxies do not rank task behavior reliably, and continued optimization has degraded behavior after stronger intermediate checkpoints. On the experiment-3 panel, the unchanged parent achieved 196/200 versus 189/200 and 194/200 for the intervention checkpoints; on the experiment-4 panel it achieved 198/200 versus 186/200 and 182/200, with paired comparisons favoring the parent in every comparison. The fixed task-reference panel is reused, and all development measurements remain distinct from the official 200-episode verdict.
 
-**Open questions:** The residual reach and interrupted-hold failures, and whether a different intervention can remove them without sacrificing broad behavior, remain unresolved. The official objective has not been demonstrated.
+**Open questions:** It remains unresolved whether fresh learning under the current full-radius recipe can produce similarly strong behavior and whether the residual reach and interrupted-hold failures can be removed without sacrificing broad behavior. The official objective has not been demonstrated.
 
 ## b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2 / Experiment 1
 
