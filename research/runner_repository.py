@@ -47,6 +47,10 @@ RUNNER_MEMORY_PREFIXES = (
 )
 
 
+class PublicationError(RuntimeError):
+    """A mandatory Runner commit could not be published to origin."""
+
+
 def repo_relative_path(path: Path) -> str:
     root = paths.ROOT.resolve()
     try:
@@ -262,7 +266,7 @@ def push_head() -> None:
     try:
         git("push", "origin", "HEAD")
     except RuntimeError as error:
-        raise RuntimeError(
+        raise PublicationError(
             "local commits could not be pushed to origin; "
             "the research loop stopped to avoid unpublished history"
         ) from error

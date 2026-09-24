@@ -2455,6 +2455,26 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                     "the beginning."
                 )
         return 130
+    except repository.PublicationError as error:
+        # A mandatory publication failure interrupts a frozen operation; it is
+        # not a scientific invalidation. Keep the accepted operation and the
+        # proposal under the same experiment index and retry the publication
+        # before training on the next launch.
+        result["error"] = str(error)[:500]
+        operation = state.get("pending_training_operation")
+        if isinstance(operation, dict):
+            operation["last_error"] = result["error"]
+        preserve_proposal = True
+        paths.RESTART_PENDING_PATH.write_text(
+            "Retry publication of the frozen scientific recipe.\n",
+            encoding="utf-8",
+        )
+        repository.write_state(state)
+        console.announce(
+            f"[error] experiment {index} scientific recipe is not yet published: "
+            f"{result['error']}"
+        )
+        return 1
     except Exception as error:  # noqa: BLE001
         result["error"] = str(error)[:500]
         operation = state.get("pending_training_operation")
