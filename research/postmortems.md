@@ -2,11 +2,11 @@
 
 ## 840f1e05-cd5f-42ed-9505-50aafef87094 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned substantially during training: the training-success proxy rose from 0 to 0.97 by checkpoint `checkpoint-100352`. On the disjoint 1,000-episode research panel, that checkpoint achieved 975/1,000 successes (97.5%), while the fixed task-reference panel returned 98.0%. The disjoint result establishes strong near-objective transfer but remains below the 98% objective; neither development panel is the official final assessment.
+**Current synthesis:** The unchanged PPO recipe learned a strong policy, with experiment-2 `checkpoint-100352` achieving 97.5% on both the 200-episode selection panel and the disjoint 1,000-episode research panel. It remains the best-known lineage, while the fixed task-reference panel returned 98.0%; these development results show near-objective transfer but do not establish the official 98% objective.
 
-**Lessons and limits:** Training success and reward are proxies rather than task outcomes, and the reward peak and success peak occur at different checkpoints. The research-panel comparison selected `checkpoint-100352`, so its score on that panel is not independent evidence; the fixed task-reference panel is permanently reused. Its separate 97.5% result on episodes 2200–3199 supports the policy as the strongest measured lineage, but does not establish the 98% objective or predict the official verdict.
+**Lessons and limits:** Training success and reward are proxies rather than task outcomes, and both the training proxy and measured task success regressed after the 100352-step checkpoint: the final checkpoint scored 97.0% on the 200-episode research panel. The selection-panel score is not independent evidence, the task-reference panel is permanently reused, and no result predicts the official verdict or attributes the residual failures to a particular training parameter.
 
-**Open questions:** The residual failures that keep the policy below 98% remain to be reduced, and the official benchmark result is unknown. Further training or a changed recipe can target those failures after closure; this closure does not claim that the human objective has been reached.
+**Open questions:** It remains unresolved whether the near-converged policy can be stabilized or refined beyond its 97.5% disjoint-panel performance, and the official benchmark result is unknown.
 
 ## 840f1e05-cd5f-42ed-9505-50aafef87094 / Experiment 1
 
