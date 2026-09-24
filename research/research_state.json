@@ -81,79 +81,31 @@
     "experiment": 1,
     "reason": "Select checkpoint-100352 as working because it achieved 196/200 on the fixed task-reference panel and 199/200 on the disjoint research panel, while the later checkpoint achieved 194/200 and 198/200 on those corresponding panels."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
+    "fingerprint": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/evaluation-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-        "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/evaluation-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-200ep-seed5000-f48545f83637.json",
-        "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/task-reference-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "This is the best-supported candidate: it meets the 98% development threshold on the fixed task-reference panel and exceeds it on an independent disjoint research panel, with no measured advantage for the later checkpoint.",
-      "scientific_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 4200
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 5000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 1,
-    "fingerprint": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "selected": "best_known",
-    "terminal_reason": "Submit checkpoint-100352 for the official assessment because it achieved 98.0% on the fixed task-reference panel and 99.5% on the disjoint 200-episode research panel. These development results support expecting the official objective to be reached, while the terminal benchmark is still required to establish that result."
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458",
@@ -166,7 +118,7 @@
   "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
     "candidate": "checkpoint-100352",
