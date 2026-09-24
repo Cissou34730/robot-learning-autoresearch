@@ -2,11 +2,11 @@
 
 ## b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2 / Scientific strategy
 
-**Current synthesis:** The PPO baseline learned strong reach-and-hold behavior, but no measured policy is securely above the 98% objective. The full-radius continuation produced a useful intermediate `checkpoint-105472`: it achieved 191/200 on the new disjoint research panel versus 189/200 for its parent and 98.5% on the reused task-reference panel versus the parent's 96.0%. The prior `checkpoint-95232` remains best-known on pooled research evidence at 580/600 including the new control panel, while `checkpoint-105472` remains below the objective on independent development evidence.
+**Current synthesis:** PPO has learned strong reach-and-hold behavior, but no measured policy establishes the 98% objective. Full-radius continuation improved intermediate `checkpoint-105472` to 191/200 on the new disjoint panel versus 189/200 for its parent, while the prior `checkpoint-95232` remains best-known on pooled research evidence at 580/600. The final experiment-2 checkpoint degraded, so the benefit of broader target coverage is useful but incomplete.
 
-**Lessons and limits:** Training proxies do not rank task behavior reliably: the experiment-2 checkpoint with 100% training success reached only 95.5% on the disjoint research panel, and the final checkpoint reached 92.0%. The intervention is partially supported as a way to improve the selected intermediate policy's transfer signal, but the 98.5% task-reference score is on a permanently reused panel and is not independent confirmation. Research and task-reference measurements are development evidence, not the official 200-episode verdict.
+**Lessons and limits:** Training proxies do not rank task behavior reliably, and the detailed working-policy failures are mostly interrupted holds after reaching tolerance, with a smaller set of reach failures. The 98.5% task-reference result is permanently reused and is not independent confirmation. Research and task-reference measurements remain development evidence, not the official 200-episode verdict.
 
-**Open questions:** Whether the apparent short-radius benefit of full-radius training generalizes beyond the measured panels, and what causes the remaining failures on the full official radius range, remain unresolved. The official objective has not been demonstrated.
+**Open questions:** Whether stronger reward pressure against leaving the tolerance band improves uninterrupted 100-step holds without sacrificing reach performance, and whether that change generalizes beyond the measured panels, remain unresolved. The official objective has not been demonstrated.
 
 ## b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2 / Experiment 1
 
