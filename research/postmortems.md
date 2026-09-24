@@ -50,8 +50,8 @@
 
 ## 229ee49c-81d2-4d70-b9d1-83d2c786555a / Scientific strategy
 
-**Current synthesis:** The PPO `checkpoint-100352` lineage remains a strong but uneven reach-and-hold policy. Experiment 4's lower-rate continuation tied the parent at `158/160` on the new seed-8000 panel at its proxy peak, then degraded to `147/160` at the final checkpoint. This adds no evidence that the changed learning rate improves progress toward the human objective.
+**Current synthesis:** The PPO `checkpoint-100352` lineage remains the strongest saved policy, with `781/800` pooled distinct research-panel successes. Experiments 2-4 tested broader target coverage, interrupted-hold forfeiture, and a lower learning rate; their measured proxy peaks tied the parent at best, while their later checkpoints degraded. The latest parent panel result was `158/160`, but development evidence remains below the official `196/200` assessment threshold.
 
-**Lessons and limits:** Training success and reward locate candidate checkpoints but are not task scores. Across experiments, continuation proxy peaks have tied the parent while later checkpoints have degraded, so the parent recipe and lineage remain the safest reusable state. The development panels, including the fixed task-reference panel, do not constitute the official 200-episode assessment; observed success remains below the required `196/200` threshold.
+**Lessons and limits:** Training success and reward are checkpoint-selection signals, not task scores. The observed residual failures include both missed tolerance and interrupted holds, and neither the reward nor learning-rate intervention established a task improvement. Research panels, including the fixed task-reference panel, are not the official 200-episode assessment.
 
-**Open questions:** It remains unknown whether a different training intervention or a carefully selected shorter continuation can improve the residual missed-tolerance and interrupted-hold failures without late degradation, and whether the selected lineage meets the objective on the separate official assessment.
+**Open questions:** It remains unknown whether fresh-initialization variance under the established PPO recipe can produce a policy that is reliably better than the selected lineage, and whether the selected lineage meets the objective on the separate official assessment.
