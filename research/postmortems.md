@@ -2,32 +2,26 @@
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Scientific strategy
 
-**Current synthesis:** The baseline learned robust reach-and-hold behavior but
-remains just below reliable attainment of the human objective: the selected
-`checkpoint-100352` achieved 393/400 pooled research successes and 96.5% on the
-latest disjoint panel. Experiment 2's target-coverage intervention produced no
-gain over its transferred start, and experiment 3's hold-stability reward
-intervention underperformed the unchanged control at both measured checkpoints.
-The fixed task-reference panel's 98% result is reused development evidence, not
-independent confirmation.
+**Current synthesis:** The campaign has learned robust reach-and-hold behavior
+but remains below reliable attainment of the human objective: the selected
+working policy has 586/600 pooled research successes and scored 193/200 on the
+latest disjoint panel. The transferred target-coverage intervention did not
+improve its start and ended at 192/200, while the hold-forfeit intervention
+scored 190/200 early and 171/200 late. The fixed task-reference result of 98%
+is reused development evidence, not independent confirmation.
 
-**Lessons and limits:** The residual failures remain compatible with an
-angle/radius coverage mismatch, but experiment 2 did not establish that
-targeted oversampling fixes it. Experiment 3 further shows that setting
-`HOLD_EXIT_FORFEIT_FRACTION` to `1.0` did not improve the measured task outcome:
-the unchanged control scored 193/200 on episodes 10600-10799, versus 190/200
-for the early challenger and 171/200 for the final challenger. Training proxies
-were misleading here: the early challenger had the run's highest training
-success and reward, while the final checkpoint degraded broadly and included
-500-step failures. These conclusions are scoped to this reward intervention and
-training recipe; they do not rule out other hold-stability designs.
+**Lessons and limits:** Recent working-lineage failures cluster around negative
+angles near -122 to -150 degrees and include inner targets, with most latest
+failures never entering tolerance and one reaching it only briefly. The
+baseline trained only on 14-20 cm radii; changing coverage during transfer did
+not improve the result, but does not distinguish coverage from transfer
+interference. Training reward and success proxies can diverge substantially
+from measured task success, as shown by the failed hold-forfeit intervention.
 
-**Open questions:** It remains unresolved whether the residual pocket reflects
-insufficient hold-stability learning, target-distribution coverage, or another
-policy limitation, and whether the selected policy can reach the official
-threshold without sacrificing its broad reach-and-hold behavior. A future
-experiment must improve the disjoint-panel result without relying on training
-reward or proxy success.
+**Open questions:** It remains unresolved whether fresh learning over the full
+official radius range can improve the residual geometric pocket while
+preserving broad reach-and-hold behavior, or whether the remaining failures
+reflect a policy limitation beyond target coverage.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
