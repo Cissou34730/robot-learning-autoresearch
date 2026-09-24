@@ -37,6 +37,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self,
         *,
         target_radius_range: tuple[float, float] = TARGET_RADIUS_RANGE,
+        target_angle_focus: tuple[float, float] | None = None,
+        target_angle_focus_probability: float = 0.0,
         success_threshold: float = SUCCESS_THRESHOLD,
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
@@ -47,6 +49,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        self.target_angle_focus = target_angle_focus
+        self.target_angle_focus_probability = float(target_angle_focus_probability)
+        if not 0.0 <= self.target_angle_focus_probability <= 1.0:
+            raise ValueError("target_angle_focus_probability must be between 0 and 1")
+        if target_angle_focus is not None:
+            lower, upper = target_angle_focus
+            if not -np.pi <= lower < upper <= np.pi:
+                raise ValueError("target_angle_focus must be an increasing range in [-pi, pi]")
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -81,7 +91,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        if (
+            self.target_angle_focus is not None
+            and self.np_random.random() < self.target_angle_focus_probability
+        ):
+            angle = float(self.np_random.uniform(*self.target_angle_focus))
+        else:
+            angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
