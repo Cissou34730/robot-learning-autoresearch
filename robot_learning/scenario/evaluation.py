@@ -20,7 +20,7 @@ from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
 
 
 def evaluate_research_model(
@@ -55,16 +55,41 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        max_abs_action = 0.0
+        saturated_action_steps = 0
+        min_open_branch_error = float("inf")
+        min_folded_branch_error = float("inf")
+        max_joint_speed = 0.0
+        final_joint_speed = float("nan")
         while not (terminated or truncated):
             action = runtime.predict(obs)
+            action_array = np.asarray(action, dtype=np.float64)
+            max_abs_action = max(max_abs_action, float(np.max(np.abs(action_array))))
+            saturated_action_steps += int(np.any(np.isclose(np.abs(action_array), 1.0)))
+            min_open_branch_error = min(
+                min_open_branch_error, float(np.linalg.norm(obs[7:9]))
+            )
+            min_folded_branch_error = min(
+                min_folded_branch_error, float(np.linalg.norm(obs[9:11]))
+            )
+            joint_speed = float(np.max(np.abs(obs[2:4])))
+            max_joint_speed = max(max_joint_speed, joint_speed)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
+            min_open_branch_error = min(
+                min_open_branch_error, float(np.linalg.norm(obs[7:9]))
+            )
+            min_folded_branch_error = min(
+                min_folded_branch_error, float(np.linalg.norm(obs[9:11]))
+            )
+            max_joint_speed = max(max_joint_speed, float(np.max(np.abs(obs[2:4]))))
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            final_joint_speed = float(np.max(np.abs(obs[2:4])))
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
@@ -103,6 +128,12 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "max_abs_action": max_abs_action,
+                "saturated_action_steps": saturated_action_steps,
+                "min_open_branch_error": min_open_branch_error,
+                "min_folded_branch_error": min_folded_branch_error,
+                "max_joint_speed": max_joint_speed,
+                "final_joint_speed": final_joint_speed,
             }
         )
         if progress_callback is not None:
@@ -121,7 +152,13 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "branch_error": "radians",
+                "action": "normalized_command",
+                "joint_speed": "radians_per_second",
+            },
         },
     }
 
