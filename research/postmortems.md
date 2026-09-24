@@ -3,26 +3,31 @@
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO checkpoint-100352 remains the
-strongest learned policy, with 929/960 (96.77%) pooled successes across six
-disjoint research panels. Its latest panel result was 157/160 (98.125%), but
-development measurements do not establish the official result. The tested
-target-sampling and hold-exit reward changes did not improve the policy, whose
-remaining failures are concentrated in the negative-angle sector and include
-both failure to reach and interruption after reaching.
+strongest learned policy, with 1082/1120 (96.61%) pooled successes across seven
+disjoint research panels. Its latest panel result was 153/160 (95.625%), while
+the fresh tanh [128,128] policy reached only 68/160 and 64/160 at its measured
+reward-peak and final checkpoints. Development measurements do not establish
+the official result. The tested target-sampling, hold-exit reward, and policy
+capacity changes did not improve the policy, whose remaining failures include
+negative-angle reach failures and hold interruptions.
 
 **Lessons and limits:** The baseline trains on radii 14-20 cm rather than the
 official 6-20 cm range, yet both tested full-range recipes were contradicted;
 focused-angle transfer tied the parent early then degraded, and
 HOLD_EXIT_FORFEIT_FRACTION=0.5 was contradicted at both measured checkpoints.
-Training proxies have not reliably selected held-out policies, the reused
+The fresh wider-network run was also contradicted: its high training reward
+and final training-success proxy did not predict held-out task behavior, and
+the diagnostics showed both no-reach and interrupted-hold failures. Training
+proxies have not reliably selected held-out policies, the reused
 task-reference result is not independent confirmation, and pooled disjoint
 evidence remains below the objective. Failure geometry is descriptive and does
 not identify coverage, reward, representation, or optimization as causal.
 
 **Open questions:** It remains unresolved whether the residual negative-angle
-failures reflect insufficient policy capacity or an optimization limitation,
-and whether either can be improved without sacrificing the established
-behavior elsewhere.
+failures reflect an optimization limitation, an observation or action-mapping
+limitation, or another training intervention. The tested fresh width increase
+is not evidence that every capacity change fails, but it provides no reason to
+carry this architecture forward.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
@@ -209,4 +214,46 @@ future experiment after this closure.
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-5-working-160ep-seed5200-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-5-checkpoint-35840-160ep-seed5200-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-5-checkpoint-120832-160ep-seed5200-f48545f83637.json`,
+`research/scenario.md`.
+
+## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 6
+
+**Result:** Fresh PPO training with a tanh [128,128] policy did not produce a
+useful challenger. The established checkpoint-100352 remains working and best
+known, the architecture change is reverted, and no experiment-6 candidate
+merits retention.
+
+**Observed behavior:** On the new disjoint panel covering episodes 5400-5559,
+the contemporaneous working control achieved 153/160 successes (95.625%).
+The wider-network checkpoint-110592, selected by its highest training reward
+of 171.97, achieved 68/160 (42.5%). The final checkpoint-120832, selected by
+the highest training-success proxy of 0.54, achieved 64/160 (40.0%). Paired
+comparisons favored working by 89-4 and 92-3 discordant episodes,
+respectively. The wider-network diagnostics contain both failures to reach
+and episodes that reached but repeatedly interrupted the hold. The working
+lineage's pooled result is now 1082/1120 (96.61%) across seven disjoint
+research panels, still below the 98% objective.
+
+**Hypothesis assessment:** Contradicted under the tested fresh
+capacity-increase recipe. Neither the reward-peak nor final wider checkpoint
+improved held-out reach-and-hold success; both were dramatically below the
+contemporaneous control, so the proposed representation benefit was not
+observed. This rejects the tested tanh [128,128] fresh recipe, not every
+possible capacity, initialization, or optimization intervention.
+
+**Interpretation:** The new disjoint control panel provides independent
+development evidence for preserving the established working policy, while the
+wider candidates show that training reward and training-success proxies are
+especially unsafe selection signals in this run. Because the best-supported
+lineage remains below the human objective and the fixed task-reference panel
+was reused for selection, the official benchmark is not requested. Further
+training remains a separate ordinary experiment after this closure.
+
+**Evidence inspected:** `research/brief.md`,
+`research/research_state.json`,
+`research/results.jsonl`,
+`research/checkpoints/challengers/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/experiment-6/inventory.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-6-working-160ep-seed5400-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-6-checkpoint-110592-160ep-seed5400-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-6-checkpoint-120832-160ep-seed5400-f48545f83637.json`,
 `research/scenario.md`.
