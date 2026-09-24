@@ -3,23 +3,25 @@
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Scientific strategy
 
 **Current synthesis:** The baseline learned robust reach-and-hold behavior but
-remains below reliable attainment of the human objective: `checkpoint-100352`
-achieved 393/400 pooled research successes, while its independent second panel
-was 97%. The fixed task-reference panel was 98%, but it is reused and is not
-independent confirmation. Experiment 2's target-coverage intervention did not
-improve the transferred policy on a new disjoint panel.
+remains just below reliable attainment of the human objective: the selected
+`checkpoint-100352` achieved 393/400 pooled research successes and 97% on the
+latest disjoint panel. Experiment 2's target-coverage intervention produced no
+gain over its transferred start and ended at 96%; the fixed task-reference
+panel's 98% result is reused development evidence, not independent confirmation.
 
 **Lessons and limits:** The residual failures are concentrated near angles
 roughly -116 to -142 degrees, with the task-reference failures also at inner
 radii of about 6.7-9.9 cm. The baseline training distribution began at 14 cm,
-so the evidence identifies a coverage mismatch, but experiment 2 does not
-establish that targeted oversampling fixes it: the transferred and early
-checkpoints both scored 97%, while the final checkpoint scored 96% on the new
-panel.
+so the evidence is consistent with a coverage mismatch, but experiment 2 does
+not establish that targeted oversampling fixes it or that coverage is the sole
+cause. The failure episodes run to 500 steps and finish near the 1 cm
+tolerance boundary, while the reward implementation currently assigns no
+hold-capital forfeit when a nearly completed hold exits the tolerance band.
 
-**Open questions:** The cause of the residual failure pocket remains unresolved.
-Further training, if pursued after closure, should be treated as a new
-experiment rather than as evidence that this intervention succeeded.
+**Open questions:** It remains unresolved whether the residual pocket reflects
+insufficient hold-stability learning, target-distribution coverage, or another
+policy limitation, and whether the selected policy can reach the official
+threshold without sacrificing its broad reach-and-hold behavior.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
