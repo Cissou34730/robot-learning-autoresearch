@@ -3,35 +3,40 @@
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Scientific strategy
 
 **Current synthesis:** The working 100352-step PPO policy remains the strongest
-supported lineage at 880/900 (97.8%) over five distinct research panels. The
-expanded-radius transfer matched working on its disjoint panel, and the
-joint-limit barrier did not improve it: both measured barrier checkpoints scored
-196/200 on the new seed-7000 panel, while working scored 198/200. The evidence
-therefore supports working as the current lineage and best-known designation,
-but does not establish objective-level performance.
+supported lineage at 1077/1100 (97.9%) over six distinct research panels.
+Experiment 4 changed only `HOLD_EXIT_FORFEIT_FRACTION`, from 0.0 to 0.5, while
+the 0.06-0.20 m training-radius range and PPO configuration were unchanged.
+That change did not improve complete reach-and-hold success: on the disjoint
+8000-8199 panel, its 105472-step and 120832-step candidates scored 179/200
+(89.5%) and 191/200 (95.5%), versus 197/200 (98.5%) for working. Working
+therefore remains both the working and best-known lineage; the evidence still
+does not establish objective-level performance under the official task.
 
-**Lessons and limits:** The barrier candidates shared working's failures at
-episodes 30 and 155 and added distinct failures (episodes 160 and 174 for
-checkpoint-105472; 82 and 93 for checkpoint-120832). These evaluation artifacts
-report all failures as 500-step truncations; reward totals are not comparable
-across the changed reward. Training proxies likewise did not predict an
-improvement: the proxy-peak checkpoint reached 1.00, while the late checkpoint
-fell to 0.96. The frozen model establishes branch ambiguity, finite joint
+**Lessons and limits:** The experiment-4 candidates had 21 and 9 failures,
+respectively, versus 3 for working; every failure was a 500-step truncation.
+The paired comparisons had zero wins for each changed-reward candidate and 18
+and 6 wins for working. The proxy peak nevertheless reported training success
+1.00, while the late checkpoint reported 0.97, so training proxies did not
+predict a task improvement and reward totals are not comparable across the
+changed reward. The frozen model establishes branch ambiguity, finite joint
 limits, clipped 50 Hz torque control, and the 100-sample hold requirement, but
-does not identify whether the observed shortfall is caused by branch selection,
-actuation, or stabilization. Realized measurements do show constrained
-negative-angle transients with saturation, limit proximity, no-reach outcomes,
-and interrupted holds, but these signatures do not establish a sufficient
-cause. Development measurements remain non-final, and the fixed task-reference
-panel is selection-contaminated.
+does not identify whether a policy shortfall is caused by branch selection,
+actuation, or stabilization. The current experiment artifacts expose outcomes
+and truncation, not that mechanism-level distinction; a later trajectory
+measurement of branch, saturation, joint-limit margin, and hold interruption
+could discriminate those possibilities before a new intervention. It cannot
+change this closure decision because both tested candidates are inferior on the
+disjoint paired panel. Development measurements remain non-final, and the fixed
+task-reference panel is selection-contaminated.
 
 **Open questions:** Whether a different intervention can resolve the remaining
 negative-angle constrained transients remains unresolved. The relative
 contributions of branch selection, torque saturation, post-entry hold
 regulation, and late PPO degradation are also unresolved; the current
 measurements do not establish that any one is sufficient. The available
-evidence is sufficient to distinguish the current lineage choice from the
-unresolved mechanism questions, but not to claim the official objective.
+evidence is sufficient to reject the experiment-4 reward change and preserve
+working, but not to claim the official objective or to choose a mechanism-level
+intervention without a decision-changing trajectory measurement.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
@@ -166,3 +171,45 @@ would not change the decision to keep working and revert the barrier recipe.
 `research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-3-checkpoint-105472-200ep-seed7000-7a148b2db3b3.json`;
 `research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-3-checkpoint-120832-200ep-seed7000-7a148b2db3b3.json`;
 `research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-3-working-200ep-seed7000-7a148b2db3b3.json`.
+
+## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 4
+
+**Result:** The partial hold-credit forfeiture did not improve the working
+lineage. Checkpoint-105472 scored 179/200 and checkpoint-120832 scored 191/200
+on the disjoint seed-8000 panel, while working scored 197/200. Working remains
+the selected working and best-known lineage, and the experiment-4 reward recipe
+should be reverted.
+
+**Observed behavior:** The only scientific change was increasing
+`HOLD_EXIT_FORFEIT_FRACTION` from 0.0 to 0.5; the target-radius range and PPO
+parameters were unchanged. The proxy-peak candidate had 1.00 training success
+but 21/200 measured failures. The late candidate had 0.97 training success and
+9/200 failures, while working had 3/200 failures. All measured failures were
+500-step truncations. Paired comparisons gave 0 candidate wins versus 18
+working wins for checkpoint-105472, and 0 versus 6 for checkpoint-120832.
+
+**Hypothesis assessment:** Weakened. The prediction that partial forfeiture
+would reduce hold-related failures or improve complete reach-and-hold success
+was not supported on the disjoint panel; both candidates were worse than
+working, including the late checkpoint where any benefit was expected to
+survive. This conclusion is scoped to the tested reward change, checkpoints,
+and panel; it does not identify the physical cause of the remaining failures
+or disprove other control or stabilization interventions.
+
+**Interpretation:** The model's branch ambiguity, joint limits, clipped
+actuation, and sampled 100-step hold semantics make several failure mechanisms
+physically plausible, but they do not establish what either policy did. The
+experiment-4 outcome is already sufficient for the lineage decision: another
+ordinary saved-policy panel could alter uncertainty about the size of the
+regression but is not expected to make either inferior candidate preferable.
+A future intervention should first use trajectory-level measurements if its
+choice depends on separating branch selection, saturation, limit proximity,
+and post-entry regulation. The development evidence remains below a justified
+official-benchmark request.
+
+**Evidence inspected:** `research/brief.md`;
+`research/scientific_model.md`;
+`research/results.jsonl`;
+`research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-4-checkpoint-105472-200ep-seed8000-4d866fbb9128.json`;
+`research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-4-checkpoint-120832-200ep-seed8000-4d866fbb9128.json`;
+`research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-4-working-200ep-seed8000-4d866fbb9128.json`.
