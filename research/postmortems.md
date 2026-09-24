@@ -3,28 +3,25 @@
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Scientific strategy
 
 **Current synthesis:** The campaign has learned robust reach-and-hold behavior
-but remains below reliable attainment of the human objective: the selected
-working policy has 778/800 pooled research successes and scored 192/200 on the
-latest disjoint panel. The transferred target-coverage intervention, the
-hold-forfeit intervention, and fresh full-radius training all failed to improve
-the working lineage; the fresh full-radius challengers scored only 121/200 and
-122/200 on the latest panel. The fixed task-reference result of 98% is reused
-development evidence, not independent confirmation.
+but remains below the human objective: the working and best-known policy has
+778/800 pooled research successes and scored 192/200 on the latest disjoint
+panel, versus the required 196/200. Transfer-based coverage shaping, hold-exit
+reward shaping, and fresh full-radius training did not improve it; the fresh
+full-radius challengers scored 121/200 and 122/200. The fixed task-reference
+result of 98% is reused development evidence, not independent confirmation.
 
-**Lessons and limits:** Recent working-lineage failures cluster around negative
-angles near -122 to -150 degrees and include inner targets, with most latest
-failures never entering tolerance and one reaching it only briefly. Neither
-changing coverage during transfer nor fresh uniform training over 6-20 cm
-improved measured behavior; the fresh run instead lost broad reach-and-hold
-performance despite training-proxy progress. These results reject the tested
-recipes, but do not establish that every coverage schedule, initialization, or
-policy intervention is ineffective. Training reward and success proxies can
-diverge substantially from measured task success.
+**Lessons and limits:** Working-lineage failures cluster around negative angles
+near -122 to -150 degrees and include inner targets; most recent failures never
+entered tolerance. The tested coverage recipes failed, and the fresh full-radius
+run lost broad behavior despite training-proxy progress. The evidence is
+consistent with a geometric representation or policy limitation, but does not
+identify the cause or rule out other training conditions. Training reward and
+success proxies can diverge substantially from measured task success.
 
-**Open questions:** It remains unresolved whether the residual failures reflect
-a policy or observation limitation beyond target coverage, and whether a
-different intervention can raise the selected policy from its current
-below-objective development performance without sacrificing broad behavior.
+**Open questions:** It remains unresolved whether the current observation gives
+the policy a sufficiently direct, continuous representation of target geometry
+in the residual failure region, and whether that limitation can be addressed
+without sacrificing broad reach-and-hold behavior.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
