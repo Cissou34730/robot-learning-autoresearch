@@ -3,31 +3,24 @@
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO checkpoint-100352 remains the strongest
-learned policy. It achieved 159/160 (99.375%) on the experiment-4 disjoint
-control panel, bringing its pooled disjoint development evidence to 772/800
-(96.5%) across five panels. The experiment-2 transfer recipe, experiment-3
-fresh full-radius recipe, and experiment-4 focused-angle transfer all failed
-to improve it. Residual failures remain concentrated in the negative-angle
-sector and include both failure to reach and occasional hold interruption.
+learned policy, with 772/800 (96.5%) pooled successes across five disjoint
+development panels. The three tested target-sampling interventions did not
+improve it. Remaining failures are concentrated in the negative-angle sector
+and include both failure to reach and occasional interruption after reaching.
 
-**Lessons and limits:** The baseline trains on radii 14-20 cm, narrower than the
-official 6-20 cm range. The tested transfer recipe combined full-range
-sampling with focused-sector oversampling and was contradicted. Fresh uniform
-6-20 cm training was also contradicted: its matched and final checkpoints
-achieved 120/160 (75.0%) and 117/160 (73.125%) while the contemporaneous
-working control achieved 158/160. Experiment 4's focused-angle checkpoint
-tied the working control at 159/160, while its final checkpoint fell to
-156/160. These results are evidence against the tested recipes, not against
-every possible target-coverage method. Training proxies have not reliably
-selected held-out policies; the 98% task-reference result for checkpoint-100352
-was reused for selection, and the pooled disjoint development result remains
-below the objective. Failure geometry is descriptive and does not establish a
-causal bottleneck.
+**Lessons and limits:** The baseline trains on radii 14-20 cm rather than the
+official 6-20 cm range, but both transfer and fresh full-range sampling
+recipes were contradicted, and focused-angle transfer tied the parent early
+then degraded after continued training. Training proxies have not reliably
+selected held-out policies; the reused task-reference result cannot provide
+independent confirmation, and pooled disjoint evidence remains below the 98%
+objective. Failure geometry is descriptive and does not establish whether
+coverage, reward, representation, or optimization is causal.
 
-**Open questions:** The relative roles of angular exposure, target-radius
-coverage, representation, and optimization in the residual failures remain
-unknown. It is also unresolved whether the negative-angle deficit can be
-reduced without sacrificing the already strong behavior elsewhere.
+**Open questions:** It remains unknown whether the zero hold-exit forfeiture
+leaves the learner insufficiently sensitive to brief departures from the
+tolerance band, and whether improving that signal can reduce the residual
+failures without sacrificing the established behavior elsewhere.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
