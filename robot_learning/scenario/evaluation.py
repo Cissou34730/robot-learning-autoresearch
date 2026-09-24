@@ -18,33 +18,9 @@ import numpy as np
 from robot_learning.paired_evidence import episode_outcomes
 from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
-from robot_learning.scenario.observations import reach_observation
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 5
-
-JOINT_LIMIT_DEGREES = 170.0
-
-
-def _branch_and_state_metrics(env) -> tuple[str, float, float, float]:
-    """Return the nearest nominal branch and instantaneous mechanical margins."""
-    observation = reach_observation(env.data)
-    open_error = float(np.linalg.norm(observation[7:9]))
-    folded_error = float(np.linalg.norm(observation[9:11]))
-    branch = "open" if open_error <= folded_error else "folded"
-    joint_limit_margin_degrees = float(
-        np.degrees(
-            np.min(np.deg2rad(JOINT_LIMIT_DEGREES) - np.abs(env.data.qpos[:2]))
-        )
-    )
-    max_joint_velocity_rad_s = float(np.max(np.abs(env.data.qvel[:2])))
-    max_abs_control = float(np.max(np.abs(env.data.ctrl[:2])))
-    return (
-        branch,
-        joint_limit_margin_degrees,
-        max_joint_velocity_rad_s,
-        max_abs_control,
-    )
+RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
 def evaluate_research_model(
@@ -79,16 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        branch_at_first_reach: str | None = None
-        branch_at_end: str | None = None
-        branch_switches = 0
-        previous_branch: str | None = None
-        min_joint_limit_margin_degrees = float("inf")
-        max_joint_velocity_rad_s = 0.0
-        max_end_effector_speed_m_s = 0.0
-        saturated_control_steps = 0
-        previous_end_effector = env.data.site("end_effector").xpos.copy()
-        control_dt = env.model.opt.timestep * env.frame_skip
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -108,32 +74,6 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
-            (
-                branch,
-                joint_limit_margin_degrees,
-                joint_velocity_rad_s,
-                max_abs_control,
-            ) = _branch_and_state_metrics(env)
-            if previous_branch is not None and branch != previous_branch:
-                branch_switches += 1
-            previous_branch = branch
-            branch_at_end = branch
-            if held_steps > 0 and branch_at_first_reach is None:
-                branch_at_first_reach = branch
-            min_joint_limit_margin_degrees = min(
-                min_joint_limit_margin_degrees, joint_limit_margin_degrees
-            )
-            max_joint_velocity_rad_s = max(
-                max_joint_velocity_rad_s, joint_velocity_rad_s
-            )
-            end_effector = env.data.site("end_effector").xpos.copy()
-            max_end_effector_speed_m_s = max(
-                max_end_effector_speed_m_s,
-                float(np.linalg.norm(end_effector - previous_end_effector) / control_dt),
-            )
-            previous_end_effector = end_effector
-            if max_abs_control >= 0.999999:
-                saturated_control_steps += 1
 
         episode_results.append(
             {
@@ -163,13 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "branch_at_first_reach": branch_at_first_reach,
-                "branch_at_end": branch_at_end,
-                "branch_switches": branch_switches,
-                "min_joint_limit_margin_degrees": min_joint_limit_margin_degrees,
-                "max_joint_velocity_rad_s": max_joint_velocity_rad_s,
-                "max_end_effector_speed_m_s": max_end_effector_speed_m_s,
-                "saturated_control_fraction": saturated_control_steps / steps,
             }
         )
         if progress_callback is not None:
@@ -177,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
