@@ -1,178 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/evaluation-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/evaluation-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-200ep-seed5000-f48545f83637.json",
-      "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/task-reference-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "This is the best-supported candidate: it meets the 98% development threshold on the fixed task-reference panel and exceeds it on an independent disjoint research panel, with no measured advantage for the later checkpoint.",
-    "scientific_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "4eb4b9f33080f0c559a71c24d31ca2980b86ce64",
-    "id": "488237cb-f9aa-4aa1-af1f-25083833e753",
+    "base_commit": "f2411db0157ba08ceb19a9e34cb0ab7870693f10",
+    "id": "3f8899d3-51f3-4f34-8ace-9209912451c8",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T20:30:42.471886+00:00"
+    "started_at": "2026-09-24T21:08:01.170012+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "488237cb-f9aa-4aa1-af1f-25083833e753": 1
+    "3f8899d3-51f3-4f34-8ace-9209912451c8": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "Keep the unchanged baseline scientific recipe because the selected checkpoint was trained with the current worktree recipe and no intervention needs to be restored or discarded."
-    },
-    "code_parent_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "Select checkpoint-100352 as working because it achieved 196/200 on the fixed task-reference panel and 199/200 on the disjoint research panel, while the later checkpoint achieved 194/200 and 198/200 on those corresponding panels."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "fingerprint": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458",
-    "experiment": 1,
-    "scientific_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/488237cb-f9aa-4aa1-af1f-25083833e753/e1-cada55eb5-c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/evaluation-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/488237cb-f9aa-4aa1-af1f-25083833e753/evaluation-488237cb-f9aa-4aa1-af1f-25083833e753-experiment-1-checkpoint-100352-200ep-seed5000-f48545f83637.json"
-    ],
-    "fingerprint": "c751a9fd30d2147c5d2f01eb732170b4ddef599e22f0ae168be4de38731cf186",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Select checkpoint-100352 as working because it achieved 196/200 on the fixed task-reference panel and 199/200 on the disjoint research panel, while the later checkpoint achieved 194/200 and 198/200 on those corresponding panels.",
-    "scientific_commit": "6b2be69dc3e17e0cd59652f2b1a041fc20c47458",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
