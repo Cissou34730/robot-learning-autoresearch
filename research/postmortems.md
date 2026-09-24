@@ -6,37 +6,37 @@
 supported lineage at 1077/1100 (97.9%) over six distinct research panels.
 Experiment 4 changed only `HOLD_EXIT_FORFEIT_FRACTION`, from 0.0 to 0.5, while
 the 0.06-0.20 m training-radius range and PPO configuration were unchanged.
-That change did not improve complete reach-and-hold success: on the disjoint
-8000-8199 panel, its 105472-step and 120832-step candidates scored 179/200
-(89.5%) and 191/200 (95.5%), versus 197/200 (98.5%) for working. Working
-therefore remains both the working and best-known lineage; the evidence still
-does not establish objective-level performance under the official task.
+That change weakened complete reach-and-hold success on the disjoint 8000-8199
+panel: its 105472-step and 120832-step candidates scored 179/200 (89.5%) and
+191/200 (95.5%), versus 197/200 (98.5%) for working. Working therefore remains
+both the working and best-known lineage, while objective-level performance under
+the official task remains unestablished.
 
 **Lessons and limits:** The experiment-4 candidates had 21 and 9 failures,
 respectively, versus 3 for working; every failure was a 500-step truncation.
-The paired comparisons had zero wins for each changed-reward candidate and 18
-and 6 wins for working. The proxy peak nevertheless reported training success
-1.00, while the late checkpoint reported 0.97, so training proxies did not
-predict a task improvement and reward totals are not comparable across the
-changed reward. The frozen model establishes branch ambiguity, finite joint
-limits, clipped 50 Hz torque control, and the 100-sample hold requirement, but
-does not identify whether a policy shortfall is caused by branch selection,
-actuation, or stabilization. The current experiment artifacts expose outcomes
-and truncation, not that mechanism-level distinction; a later trajectory
-measurement of branch, saturation, joint-limit margin, and hold interruption
-could discriminate those possibilities before a new intervention. It cannot
-change this closure decision because both tested candidates are inferior on the
-disjoint paired panel. Development measurements remain non-final, and the fixed
-task-reference panel is selection-contaminated.
+The current working diagnostics show all three failures on negative-angle
+targets, with nearly complete control saturation and negative minimum
+joint-limit margin; two entered tolerance for one sample and then exited, and
+one never entered. The expanded-radius lineage shows the same constrained
+transient signature on its disjoint panel. This is evidence about realized
+behavior, not proof that any one mechanism caused the shortfall. The frozen
+model establishes branch ambiguity, finite joint limits, clipped 50 Hz torque
+control, and the 100-sample hold requirement, but does not determine policy
+branch choice, actuation adequacy, or stabilization. Experiment-4 training
+proxies reached 1.00 at the measured peak and 0.97 late, yet task success was
+89.5% and 95.5%, so proxy success and continued training were not reliable
+indicators of task improvement. Development measurements remain non-final, and
+the fixed task-reference panel is selection-contaminated.
 
-**Open questions:** Whether a different intervention can resolve the remaining
-negative-angle constrained transients remains unresolved. The relative
-contributions of branch selection, torque saturation, post-entry hold
-regulation, and late PPO degradation are also unresolved; the current
-measurements do not establish that any one is sufficient. The available
-evidence is sufficient to reject the experiment-4 reward change and preserve
-working, but not to claim the official objective or to choose a mechanism-level
-intervention without a decision-changing trajectory measurement.
+**Open questions:** The relative contributions of branch selection, saturation,
+joint-limit proximity, post-entry regulation, and late PPO degradation remain
+unresolved. It is also unknown whether the repeated constrained-transient
+signature is specific to working or shared by the retained alternatives, and
+whether a control-, limit-, stabilization-, or learning-process intervention
+would improve it without sacrificing the broad task distribution. The evidence
+rejects the experiment-4 reward change and supports working, but does not claim
+the official objective or establish a sufficient mechanism for the residual
+shortfall.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
