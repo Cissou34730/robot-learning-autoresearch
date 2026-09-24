@@ -151,6 +151,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            joint_positions=self.data.qpos[:2],
         )
         self._previous_distance = distance
 
