@@ -22,10 +22,10 @@ for checkpoint-100352 was reused for selection, and every disjoint development
 result remains below the objective. Failure geometry is descriptive and does
 not establish a causal bottleneck.
 
-**Open questions:** The relative roles of target coverage, representation, and
-optimization in the residual failures remain unknown. Further training is an
-ordinary future experiment after closure; experiment 3 does not justify
-retaining its candidates or carrying its full-radius recipe forward.
+**Open questions:** The relative roles of angular exposure, target-radius
+coverage, representation, and optimization in the residual failures remain
+unknown. It is also unresolved whether the negative-angle deficit can be
+reduced without sacrificing the already strong behavior elsewhere.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
