@@ -2,11 +2,11 @@
 
 ## 6dab7993-582d-4243-b0a2-f935e51c2728 / Scientific strategy
 
-**Current synthesis:** PPO learned a strong reach-and-hold policy, but working checkpoint-100352 remains below the human objective at 925/960 pooled successes across six disjoint research panels, despite 159/160 on the latest panel. The four interventions tested so far produced no paired advantage over working, and the experiment-5 lower-rate endpoint fell to 152/160. Residual failures span radii and repeatedly cluster around negative angles from -90 to -180 degrees, with both reach and hold-instability patterns present.
+**Current synthesis:** PPO learned a strong reach-and-hold policy, but working checkpoint-100352 remains below objective-level development support at 925/960 pooled successes across six disjoint research panels, despite 159/160 on the latest panel. The tested challengers produced no paired advantage over working, while residual failures span radii, repeatedly cluster around negative angles from -90 to -180 degrees, and include both reach and hold-instability patterns.
 
-**Lessons and limits:** Measured task behavior, not training proxies, governs progress. Working remains best supported; experiment-2, experiment-3, experiment-4, and experiment-5 challengers produced no paired wins on their respective new panels, while the task-reference panel is reused development evidence rather than independent confirmation. The tested radius, angle-sector, hold-continuity, and lower-learning-rate recipes are weakened as sufficient explanations, but the evidence does not rule out other representation, reward, or optimization changes.
+**Lessons and limits:** Measured task behavior, not training proxies, governs progress. Working remains best supported; the radius, angle-sector, hold-continuity, and lower-learning-rate interventions are weakened as sufficient explanations under their tested transfer runs. The task-reference panel is reused development evidence, and the latest independent panel does not establish robust performance over the official distribution or the terminal objective.
 
-**Open questions:** It remains unresolved whether the residual negative-angle failures are primarily reachability/generalization errors or failures to sustain tolerance. Generalization across the full official distribution remains unestablished, and the official 200-episode assessment has not been requested; further training is a separate ordinary experiment after this closure.
+**Open questions:** It remains unresolved whether the residual geometry-dependent failures arise primarily from target representation and generalization, reachability, or sustaining tolerance after reaching. Robust performance over the full official distribution and the standing model's terminal result remain unestablished.
 
 ## 6dab7993-582d-4243-b0a2-f935e51c2728 / Experiment 1
 
