@@ -104,12 +104,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "no_further_experiment",
-    "progress": "committed",
-    "reason": "The standing best-known checkpoint-105472 is strong but variable at 974/1000 (97.4%) across five disjoint development panels, with 195/200 on the latest matched control panel. Fresh replication and the tested continuation interventions underperformed it, and unreliable training proxies plus repeated late-training degradation provide no basis to expect the official 98% verdict. The experiment budget is exhausted, and requesting the official assessment merely to resolve this uncertainty is not warranted.",
-    "terminal_expectation": null
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
