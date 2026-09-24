@@ -43,8 +43,6 @@ def evaluate_research_model(
         obs, _ = env.reset(seed=seed + episode)
         runtime.reset()
         target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
-        previous_end_effector = env.data.site("end_effector").xpos.copy()
-        control_dt = env.model.opt.timestep * env.frame_skip
         reward_total = 0.0
         steps = 0
         success = False
@@ -57,15 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        peak_joint_speed_rad_s = 0.0
-        peak_cartesian_speed_cm_s = 0.0
-        peak_action_abs = 0.0
-        saturated_action_steps = 0
-        minimum_ik_branch_error_rad = float("inf")
-        first_reach_branch: str | None = None
-        first_reach_branch_error_rad: float | None = None
-        final_closest_ik_branch: str | None = None
-        final_ik_branch_error_rad: float | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -76,41 +65,13 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            joint_speed_rad_s = float(np.max(np.abs(env.data.qvel[:2])))
-            peak_joint_speed_rad_s = max(peak_joint_speed_rad_s, joint_speed_rad_s)
-            end_effector = env.data.site("end_effector").xpos.copy()
-            cartesian_speed_cm_s = (
-                100.0 * float(np.linalg.norm(end_effector - previous_end_effector))
-                / control_dt
-            )
-            peak_cartesian_speed_cm_s = max(
-                peak_cartesian_speed_cm_s, cartesian_speed_cm_s
-            )
-            previous_end_effector = end_effector
-            applied_action_abs = np.abs(np.asarray(env.data.ctrl[:2], dtype=np.float64))
-            peak_action_abs = max(peak_action_abs, float(np.max(applied_action_abs)))
-            if np.any(applied_action_abs >= 1.0 - 1e-6):
-                saturated_action_steps += 1
-            branch_errors = {
-                "elbow_positive": float(np.linalg.norm(obs[7:9])),
-                "elbow_negative": float(np.linalg.norm(obs[9:11])),
-            }
-            closest_branch = min(branch_errors, key=branch_errors.get)
-            closest_branch_error_rad = branch_errors[closest_branch]
-            minimum_ik_branch_error_rad = min(
-                minimum_ik_branch_error_rad, closest_branch_error_rad
-            )
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    first_reach_branch = closest_branch
-                    first_reach_branch_error_rad = closest_branch_error_rad
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
-            final_closest_ik_branch = closest_branch
-            final_ik_branch_error_rad = closest_branch_error_rad
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -142,15 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "peak_joint_speed_rad_s": peak_joint_speed_rad_s,
-                "peak_cartesian_speed_cm_s": peak_cartesian_speed_cm_s,
-                "peak_action_abs": peak_action_abs,
-                "saturated_action_steps": saturated_action_steps,
-                "minimum_ik_branch_error_rad": minimum_ik_branch_error_rad,
-                "first_reach_branch": first_reach_branch,
-                "first_reach_branch_error_rad": first_reach_branch_error_rad,
-                "final_closest_ik_branch": final_closest_ik_branch,
-                "final_ik_branch_error_rad": final_ik_branch_error_rad,
             }
         )
         if progress_callback is not None:
@@ -158,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
