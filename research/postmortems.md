@@ -2,11 +2,11 @@
 
 ## b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2 / Scientific strategy
 
-**Current synthesis:** PPO has learned strong reach-and-hold behavior, but no development measurement establishes the official 98% result. The experiment-2 working policy `checkpoint-105472` scored 196/200 on the new disjoint experiment-3 panel, independently confirming that it can meet the development threshold on one panel, but it scored 191/200 on the earlier panel used in its selection. The experiment-3 hold-forfeit intervention was weaker than its unchanged parent, so the parent recipe remains the best current basis for development.
+**Current synthesis:** PPO has learned strong reach-and-hold behavior, but the retained experiment-2 policy `checkpoint-105472` is variable across disjoint panels, scoring 196/200 on one and 191/200 on another. The experiment-3 hold-forfeit intervention underperformed its unchanged parent, leaving the retained parent as the strongest measured policy without establishing the official 98% result.
 
-**Lessons and limits:** Training proxies do not rank task behavior reliably. On the new panel, the unchanged parent achieved 196/200 versus 189/200 for the experiment-3 proxy peak and 194/200 for its final checkpoint, with paired comparisons favoring the parent 7-0 and 2-0. The fixed task-reference result is permanently reused and is not independent confirmation. Research and task-reference measurements remain development evidence, not the official 200-episode verdict.
+**Lessons and limits:** Training proxies do not rank task behavior reliably, and the experiment-2 final checkpoint degraded relative to its stronger intermediate checkpoint. On the experiment-3 panel, the unchanged parent achieved 196/200 versus 189/200 and 194/200 for the intervention checkpoints, with paired comparisons favoring the parent 7-0 and 2-0. The fixed task-reference panel is reused, and all development measurements remain distinct from the official 200-episode verdict.
 
-**Open questions:** Whether a different intervention can remove the remaining reach failures and occasional interrupted holds without sacrificing the parent's broad performance remains unresolved. The official objective has not been demonstrated.
+**Open questions:** Whether continued optimization can improve or preserve the parent's broad behavior rather than degrade it, and whether another intervention can remove the remaining reach failures and interrupted holds, remain unresolved. The official objective has not been demonstrated.
 
 ## b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2 / Experiment 1
 
