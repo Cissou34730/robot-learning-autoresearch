@@ -2,26 +2,31 @@
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Scientific strategy
 
-**Current synthesis:** The campaign has learned robust reach-and-hold behavior
-but remains below the human objective: the working and best-known policy has
-778/800 pooled research successes and scored 192/200 on the latest disjoint
-panel, versus the required 196/200. Transfer-based coverage shaping, hold-exit
-reward shaping, and fresh full-radius training did not improve it; the fresh
-full-radius challengers scored 121/200 and 122/200. The fixed task-reference
-result of 98% is reused development evidence, not independent confirmation.
+**Current synthesis:** The campaign has learned robust reach-and-hold behavior.
+The unchanged working and best-known policy has 974/1000 pooled research
+successes and scored 196/200 on the latest disjoint panel, reaching the
+development proxy for the 98% objective. The experiment-5 observation
+augmentation did not improve it: its two measured challengers scored 57/200 and
+64/200. Transfer-based coverage shaping, hold-exit reward shaping, and fresh
+full-radius training also did not improve the working lineage. The fixed
+task-reference result of 98% is reused development evidence, not independent
+confirmation; only the requested official benchmark can declare the objective.
 
 **Lessons and limits:** Working-lineage failures cluster around negative angles
 near -122 to -150 degrees and include inner targets; most recent failures never
-entered tolerance. The tested coverage recipes failed, and the fresh full-radius
-run lost broad behavior despite training-proxy progress. The evidence is
-consistent with a geometric representation or policy limitation, but does not
-identify the cause or rule out other training conditions. Training reward and
-success proxies can diverge substantially from measured task success.
+entered tolerance. The tested coverage recipes failed, the fresh full-radius
+run lost broad behavior despite training-proxy progress, and the experiment-5
+augmented observations caused broad failures in both measured checkpoints. The
+evidence is consistent with a geometric representation or policy limitation,
+but does not identify the cause or rule out other training conditions. Training
+reward and success proxies can diverge substantially from measured task
+success.
 
-**Open questions:** It remains unresolved whether the current observation gives
-the policy a sufficiently direct, continuous representation of target geometry
-in the residual failure region, and whether that limitation can be addressed
-without sacrificing broad reach-and-hold behavior.
+**Open questions:** The cause of the working policy's four residual failures is
+unresolved, as is whether a different representation can address them without
+sacrificing broad reach-and-hold behavior. The disjoint development result is
+encouraging but remains a development measurement rather than the official
+verdict.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
@@ -165,3 +170,37 @@ part of this closure.
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-4-working-200ep-seed10800-f48545f83637.json`;
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-4-checkpoint-86016-200ep-seed10800-f48545f83637.json`;
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-4-checkpoint-120832-200ep-seed10800-f48545f83637.json`.
+
+## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 5
+
+**Result:** The observation augmentation was contradicted under the tested
+recipe. The unchanged working lineage remains the useful policy and is ready
+for official assessment after independent development confirmation.
+
+**Observed behavior:** On the new disjoint 200-episode research panel, the
+unchanged `working` policy scored 196/200 (98.0%), while experiment-5
+`checkpoint-100352` scored 57/200 (28.5%) and `checkpoint-120832` scored
+64/200 (32.0%). The working policy had four failures, all truncated after
+losing or never completing the hold; the augmented challengers failed broadly,
+with most episodes never entering tolerance and truncating at 500 steps.
+
+**Hypothesis assessment:** The hypothesis that adding polar and normalized
+target features would improve robustness is contradicted under this tested
+observation and training recipe: both measured checkpoints were far worse than
+the unchanged working policy. This rejects the tested augmentation for lineage
+selection, but does not prove that every additional geometric representation or
+training condition would fail.
+
+**Interpretation:** Continue from `working` and revert the experiment-5
+observation change so the selected policy and its complete inference recipe
+remain aligned. Neither challenger has a demonstrated future-use advantage, so
+neither should be retained. The 196/200 result is independent development
+evidence at the objective threshold, but the official benchmark remains the
+only final verdict; request it with an expected `goal_reached` outcome.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/c1523389-1363-42a7-b973-1bc6847ac445/experiment-5/inventory.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-5-working-200ep-seed11000-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-5-checkpoint-100352-200ep-seed11000-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-5-checkpoint-120832-200ep-seed11000-f48545f83637.json`.
