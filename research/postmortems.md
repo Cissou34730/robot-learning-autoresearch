@@ -2,32 +2,22 @@
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO checkpoint-100352 remains the
-strongest learned policy, with 1082/1120 (96.61%) pooled successes across seven
-disjoint research panels. Its latest panel result was 153/160 (95.625%), while
-the fresh tanh [128,128] policy reached only 68/160 and 64/160 at its measured
-reward-peak and final checkpoints. Development measurements do not establish
-the official result. The tested target-sampling, hold-exit reward, and policy
-capacity changes did not improve the policy, whose remaining failures include
-negative-angle reach failures and hold interruptions.
+**Current synthesis:** The unchanged PPO checkpoint-100352 is the strongest
+measured policy, with 1082/1120 (96.61%) pooled successes across seven disjoint
+research panels; its latest result was 153/160 (95.625%). The tested
+target-sampling, hold-exit reward, and wider-network changes all failed to
+improve it, and residual failures include negative-angle reach failures and
+hold interruptions.
 
-**Lessons and limits:** The baseline trains on radii 14-20 cm rather than the
-official 6-20 cm range, yet both tested full-range recipes were contradicted;
-focused-angle transfer tied the parent early then degraded, and
-HOLD_EXIT_FORFEIT_FRACTION=0.5 was contradicted at both measured checkpoints.
-The fresh wider-network run was also contradicted: its high training reward
-and final training-success proxy did not predict held-out task behavior, and
-the diagnostics showed both no-reach and interrupted-hold failures. Training
-proxies have not reliably selected held-out policies, the reused
-task-reference result is not independent confirmation, and pooled disjoint
-evidence remains below the objective. Failure geometry is descriptive and does
-not identify coverage, reward, representation, or optimization as causal.
+**Lessons and limits:** The baseline uses the narrower 14-20 cm training range,
+but both tested full-range recipes were contradicted. Training proxies did not
+reliably predict held-out behavior, and the reused 98% task-reference result is
+not independent confirmation. Pooled disjoint evidence remains below the 98%
+objective; failure geometry is descriptive, not causal evidence.
 
-**Open questions:** It remains unresolved whether the residual negative-angle
-failures reflect an optimization limitation, an observation or action-mapping
-limitation, or another training intervention. The tested fresh width increase
-is not evidence that every capacity change fails, but it provides no reason to
-carry this architecture forward.
+**Open questions:** The relative roles of target coverage, reward, observation
+and action mapping, representation, and optimization remain unresolved. The
+campaign evidence does not establish that any one of these is the bottleneck.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
