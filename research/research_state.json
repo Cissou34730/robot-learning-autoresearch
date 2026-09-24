@@ -94,7 +94,7 @@
   "pending_analysis": null,
   "pending_campaign_conclusion": {
     "action": "request_final_benchmark",
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-100352 is the strongest measured policy, with 1082/1120 successes (96.607%) pooled across seven disjoint research panels and 157/160 on the latest panel, but this remains below the 98% objective. All tested challengers lacked a paired advantage, and the reused task-reference panel cannot provide independent confirmation. Development evidence therefore suggests a strong but not reliably objective-reaching policy; the official 200-episode assessment is the remaining authoritative measurement.",
     "terminal_expectation": {
       "expected_verdict": "uncertain",
