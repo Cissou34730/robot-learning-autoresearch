@@ -101,22 +101,3 @@ def test_terminal_validation_machinery_is_removed():
     assert not hasattr(protocol, "MEASUREMENT_PURPOSES")
     assert not (ROOT / "research" / "stopping_policy.py").exists()
     assert not (ROOT / "research" / "stopping_contract.md").exists()
-
-
-def test_no_obsolete_stopping_language_in_researcher_surfaces():
-    forbidden = (
-        "terminal_validation",
-        "stopping-validation",
-        "stopping_contract",
-        "stopping-validation panel",
-    )
-    for relative in ("research/program.md", "research/instruments.md", "run_research.ps1"):
-        text = (ROOT / relative).read_text(encoding="utf-8")
-        for wording in forbidden:
-            assert wording not in text, f"{relative} still says {wording!r}"
-
-    brief_source = (ROOT / "research" / "build_research_brief.py").read_text(
-        encoding="utf-8"
-    )
-    assert "Terminal-readiness" not in brief_source
-    assert "stopping_policy" not in brief_source

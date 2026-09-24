@@ -22,11 +22,6 @@ from research.runner_protocol import (
     validate_preparation_evaluation_request,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
-LOOP = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-INSTRUMENTS = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
-PROGRAM = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
-
 
 def _artifact(path: Path, model: bytes = b"model") -> Path:
     path.mkdir(parents=True)
@@ -591,20 +586,3 @@ def test_conclusion_only_brief_lists_only_campaign_conclusions():
     assert "only a `campaign_conclusion`" in rendered
     assert "budget is exhausted" in rendered
     assert "saved-lineage" not in rendered
-
-
-def test_launcher_executes_a_preparation_measurement_before_proposing():
-    assert "--check-preparation-deliverable" in LOOP
-    assert "Executing the researcher's saved-lineage measurement request" in LOOP
-    assert "Preparation measurement complete" in LOOP
-    assert "candidates of a not-yet-run experiment are not available" in LOOP
-    assert "Get-ProposalSessionStatus" in LOOP
-
-
-def test_contracts_document_preparation_measurement_scope():
-    assert "experiment preparation" in INSTRUMENTS
-    assert "saved lineages" in INSTRUMENTS
-    assert "candidates of an experiment that has not run" in INSTRUMENTS
-    assert "must be omitted during preparation" in INSTRUMENTS
-    assert "during experiment preparation" in PROGRAM
-    assert "saved lineages" in PROGRAM

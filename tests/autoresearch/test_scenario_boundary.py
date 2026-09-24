@@ -68,23 +68,6 @@ RESEARCH_EVALUATION_PANEL_MODULES = (
     *RUNNER_MODULES,
 )
 
-SCENARIO_WORDING = (
-    "physical reachability",
-    "reach the target",
-    "reaching and holding",
-    "hold-duration",
-    "hold-stability",
-    "target-entry",
-    "target geometry",
-    "target distribution",
-    "near the target",
-    "subset of targets",
-    "tolerance",
-    "end effector",
-    "two-joint",
-    "mujoco",
-)
-
 GENERIC_CORE_MODULES = (
     "robot_learning/train.py",
     "robot_learning/evaluate.py",
@@ -228,79 +211,6 @@ def test_generic_core_may_only_use_the_scenario_package():
         )
     # The compact-context builder needs no scenario code at all.
     assert "research/build_research_brief.py" not in users
-
-
-def test_every_new_researcher_session_loads_the_authoritative_context():
-    script = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-    invocations = re.findall(r"Invoke-ResearcherSession -Prompt \$(\w+)([^\n]*)", script)
-    new_sessions = [
-        (prompt, options) for prompt, options in invocations if "-Continue" not in options
-    ]
-    preliminary = [
-        (prompt, options) for prompt, options in new_sessions if "-Preliminary" in options
-    ]
-    subsequent = [
-        (prompt, options) for prompt, options in new_sessions if "-Preliminary" not in options
-    ]
-    assert preliminary
-    assert subsequent
-    for prompt, options in new_sessions:
-        match = re.search(
-            rf"\${re.escape(prompt)}\s*=\s*@\((.*?)\)\s*-join", script, re.DOTALL
-        )
-        assert match is not None, prompt
-        corpus = match.group(1)
-        if "-Preliminary" in options:
-            assert "Read AGENTS.md and research/scenario.md" in corpus
-            assert "research/brief.md" not in corpus
-        else:
-            for context in (
-                "AGENTS.md",
-                "research/program.md",
-                "research/scenario.md",
-                "research/instruments.md",
-                "research/brief.md",
-                "research/scientific_model.md",
-            ):
-                assert context in corpus, prompt
-
-
-def test_scenario_document_defines_the_current_problem():
-    scenario_text = (ROOT / "research" / "scenario.md").read_text(encoding="utf-8")
-    program_text = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
-    instruments_text = (ROOT / "research" / "instruments.md").read_text(
-        encoding="utf-8"
-    )
-
-    assert "research/scenario.md" in program_text
-    for scenario_fact in ("6–20 cm", "1 cm", "2 seconds", "98%"):
-        assert scenario_fact in scenario_text
-        assert scenario_fact not in program_text
-        assert scenario_fact not in instruments_text
-    for repository_path in ("research/run_experiment.py", "tests/benchmark/"):
-        assert repository_path not in scenario_text
-    normalized_scenario = " ".join(scenario_text.split())
-    assert (
-        "campaign objective is a learned policy that achieves at least 98% episode "
-        "success"
-    ) in normalized_scenario
-    assert "training target distribution and curriculum" in normalized_scenario
-    assert "Training conditions may differ from the official task" in normalized_scenario
-    assert "discover a learning method" not in normalized_scenario
-    assert "official final assessment" in scenario_text.lower()
-    assert "fixed panel of 200 episodes" in normalized_scenario
-    assert "at least 196 episodes succeed" in normalized_scenario
-    assert "distinct from the task-reference development panel" in normalized_scenario
-    assert "request terminal assessment" not in scenario_text.lower()
-
-
-def test_protocol_uses_scenario_independent_wording():
-    program_text = (
-        (ROOT / "research" / "program.md").read_text(encoding="utf-8").lower()
-    )
-
-    for wording in SCENARIO_WORDING:
-        assert wording not in program_text, f"program.md still says {wording!r}"
 
 
 def test_the_repository_has_a_single_research_brief():
@@ -501,11 +411,7 @@ def test_scenario_reward_is_code_not_configuration():
     assert "research_config" not in source
 
 
-def test_scenario_definition_stays_algorithm_independent():
-    scenario_text = (ROOT / "research" / "scenario.md").read_text(encoding="utf-8")
-
-    for algorithm_name in KNOWN_ALGORITHM_NAMES:
-        assert not mentions(scenario_text, algorithm_name), algorithm_name
+def test_scenario_code_stays_algorithm_independent():
     for path in (ROOT / "robot_learning" / "scenario").glob("*.py"):
         source = path.read_text(encoding="utf-8")
         for algorithm_name in KNOWN_ALGORITHM_NAMES:

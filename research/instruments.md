@@ -14,6 +14,10 @@ Artifact paths exposed by the brief and research contracts are relative to the
 repository. Use them directly from the repository working directory; do not
 reconstruct them as absolute paths.
 
+For the official benchmark result, use `research/brief.md` under **Current
+status -> Reported result**. Its durable metrics and artifact reference remain
+in `research/research_state.json`.
+
 `jello` is available through the researcher environment for JSON and JSONL
 artifacts. Its expressions use Python syntax, not `jq` syntax. Researcher-owned
 analysis tools and read-only implementation inspection are also available.
@@ -37,10 +41,6 @@ The deliverable must exist and contain non-whitespace content. The launcher
 validates that requirement; it does not judge the scientific substance. The
 model is read-only after this phase for the rest of the campaign, and a fresh
 campaign reset removes it so the next Researcher writes a new one.
-
-For the official benchmark result, use `research/brief.md` under **Current
-status -> Reported result**. Its durable metrics and artifact reference remain
-in `research/research_state.json`.
 
 ### Query Stable-Baselines3 logs
 
@@ -69,11 +69,8 @@ observation layout. Task mechanics and success measurement remain shared.
 
 During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
 
-Tests are outside the Researcher's surface. The Researcher does not create,
-modify or maintain test files, and it never repairs a test file on the Runner's
-instruction. Any path under `tests/` in a proposal is rejected as a path the
-Researcher does not own; such paths must be dropped from the proposal, because
-they are not the Researcher's changes to make.
+Tests are human-owned under `AGENTS.md`. The Runner rejects test paths in a
+Researcher proposal.
 
 During post-training analysis and its optional refinement rounds, the Researcher
 may modify researcher-owned measurement and analysis code before requesting
@@ -145,8 +142,7 @@ Several measurements may share one identical panel. A panel overlapping the
 protected benchmark episodes is rejected, and historical records remain readable.
 
 Identical reuse is permitted and is accounted for: every reuse is reported with
-its history so it cannot read as fresh evidence. The scientific consequence of
-reuse is stated in `research/program.md`.
+its history so it cannot read as fresh evidence.
 
 Within one request, multiple measurements of the same model count as one toward
 the distinct-model limit. This includes different seeds, episode counts, labels,
@@ -209,7 +205,6 @@ then write one `research/proposal.json`. The common required fields are `kind`,
   "kind": "<training | continuation | replication>",
   "family": "<non-empty hypothesis-family identifier>",
   "hypothesis": "<non-empty proposition the experiment tests>",
-  "scientific_question": "<non-empty open question; use instead of hypothesis>",
   "initialization": "<fresh | transfer>",
   "reasoning": {
     "evidence": [
@@ -231,24 +226,25 @@ then write one `research/proposal.json`. The common required fields are `kind`,
 }
 ```
 
-Exactly one of `hypothesis` or `scientific_question` is required; both are
-accepted and neither changes how the experiment is run or validated.
+At least one of `hypothesis` or `scientific_question` must be a non-empty string.
+Both may be supplied; neither changes how the experiment is run or validated.
+The example uses `hypothesis`; use `scientific_question` instead or alongside it
+for an open question.
 `reasoning.policy_intervention` is required for `training` and `continuation`,
 including parameter-only changes and unchanged continuations; omit it for
 `replication`, which tests learning-process variance without an intervention.
 `reasoning.scientific_model` is optional for every kind of proposal. Include it
-when a specific fact, consequence or unknown in `research/scientific_model.md`
-informs the decision or a physical claim. If included, it must be a non-empty
-object of non-empty statements; the previous `observation`, `connection`,
+when relevant. If included, it must be a non-empty object of non-empty
+statements; the previous `observation`, `connection`,
 `alternatives` and `diagnostic_decision` fields remain valid but are not required.
 Additional `reasoning` keys are accepted and recorded without validation.
 
 | Kind | Meaning | Required or conditional fields |
 | --- | --- | --- |
 | `training` | Trains a changed scientific recipe for any investigation type. | `change` must be a non-empty description; the intervention must also be a researcher-owned code change or non-empty `params`. Transfer requires `training_parent`. |
-| `training` with `extends_lineage: true` (adjusted continuation) | Continues an eligible lineage's training while changing the recipe. It starts from the parent's weights and trains the current worktree science plus `params`. The hypothesis is a prediction about how that adjustment changes continued training. | Requires `initialization: "transfer"`, `training_parent`, a non-empty `change`, and `extends_lineage: true`; a researcher-owned code change or non-empty `params` is still required. |
-| `continuation` | Continues an eligible lineage's training on the selected recipe. Without `params` it is the unchanged recipe; with `params` it is the parent's restored recipe plus those overrides. The hypothesis is a prediction about continuing training: further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes and `change` are forbidden. |
-| `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The hypothesis is a prediction about reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
+| `training` with `extends_lineage: true` (adjusted continuation) | Continues an eligible lineage's training while changing the recipe. It starts from the parent's weights and trains the current worktree science plus `params`. The question concerns how that adjustment changes continued training. | Requires `initialization: "transfer"`, `training_parent`, a non-empty `change`, and `extends_lineage: true`; a researcher-owned code change or non-empty `params` is still required. |
+| `continuation` | Continues an eligible lineage's training on the selected recipe. Without `params` it is the unchanged recipe; with `params` it is the parent's restored recipe plus those overrides. The question concerns further progress, plateau, or degradation. | Requires `initialization: "transfer"` and `training_parent`. Code changes and `change` are forbidden. |
+| `replication` | Starts the current unchanged method from scratch and groups the run with an earlier experiment for replication evidence. The question concerns reproducibility or variance of the learning process. | Requires `initialization: "fresh"`, a positive integer `replication_of` naming an existing experiment in the current campaign, and an explicit non-negative integer `training_seed`. Code changes, `params` and `change` are forbidden. |
 
 `training_seed` is optional for ordinary training and continuation, and must be
 a non-negative integer when present. `params` is optional for ordinary training
@@ -266,25 +262,16 @@ contains at least one source/observation pair. Cite inspected campaign artifacts
 logs, postmortems or code with precise observations; these are not restricted to
 evaluation results. `source` is a file path without a line-number suffix or
 fragment; put the relevant experiment, checkpoint, step range or code location in
-`observation` as needed. When using `scientific_model`, distinguish what the
-frozen model establishes from what the current campaign observed; do not infer
-a policy's failure cause from the model alone. A measurement is useful when its
-possible outcomes could change the next decision, not because a physical
-explanation is required. The Runner checks the required reasoning and the
+`observation` as needed. The Runner checks the required reasoning and the
 existence and confinement of evidence sources, not scientific merit. This
 contract applies equally to training, continuation and replication, not to the
 automatic baseline.
 
-For `training` and `continuation`, `policy_intervention` describes a possible
-change in the *learned policy's behavior*, not just a reward, proxy score or
-physical diagnosis. Specify a comparison that checks both behavior and complete
-task success on suitable episodes, preferably paired with a saved reference.
-Identify affected and unaffected failures when the proposal makes a
-failure-specific claim. Neither a different lever nor an established mechanism
-is required: reward, observations, action mapping, learning method, training
-configuration and continued learning remain open choices. The Runner requires
-the behavioral path and test, not the scientific validity or success of the
-experiment. Replication does not claim an intervention and is exempt.
+For `training` and `continuation`, `policy_intervention` requires non-empty
+`behavioral_path` and `behavioral_test` statements. Previously used
+`failure_scope` and `lever_choice` statements remain accepted but are not
+required. The Runner does not judge their scientific merit. Replication does
+not claim an intervention and is exempt.
 
 The campaign's Scientific strategy section must exist before submission. The
 Runner validates its three labels and snapshots the section with `reasoning` in
@@ -304,33 +291,12 @@ extended lineage and records that the parent's recipe was restored.
 
 ### Training-parent eligibility and retention
 
-Eligibility is a provenance invariant, not a preference about a form field. A
-`training_parent` resolves only through `working`, `best_known`, or a retained
-lineage ID because only those names carry a closure-produced record with all the
-facts training and recovery require: the complete inference artifact (`model.zip`
-and its preprocessing runtime), a `fingerprint` that still matches the bytes on
-disk, a `scientific_commit` for restoring the recipe that produced the parent,
-and the effective `parameters` in force when it was trained. A raw candidate
-checkpoint has none of those records, so the Runner cannot name its recipe or
-verify its identity and it cannot serve as a parent.
-
-The usable-parent set is also the surviving-weights set. At closure,
-`finalize_pending_v4_closure` removes `model.zip`, `vecnormalize.pkl`,
-`replay_buffer.pkl` and `policy_runtime.pkl` from every candidate that is not
-named `working` or `best_known` and is not explicitly retained. Retention is
-therefore the only mechanism that turns a candidate into a future
-`training_parent`; a candidate that receives no role can never be extended,
-re-measured, or compared against later, and its removal is irreversible.
-Retention has no budget.
-
-The `reasoning` object contains the common and type-specific fields shown in the
-schemas. `evidence` is a non-empty array of source/observation objects. Every
-listed type-specific string, `initialization_reason`, and `objective_link` is
-non-empty, except that `alternative` and `contradicting_observation` may be a
-`not_applicable` object carrying a non-empty reason. An optional
-`reasoning.confidence` of `strong`, `moderate` or `weak` qualifies a
-confirmatory or diagnostic prediction only. Their scientific use is defined in
-`research/program.md`.
+`training_parent` may name only `working`, `best_known`, or a retained lineage.
+Those roles preserve the complete inference artifact and the recipe needed to
+resume training. Raw candidate checkpoints are not eligible. At closure,
+unselected and unretained candidate weights are removed; retention is the only
+way to keep such a candidate for later training or measurement, and has no
+budget.
 
 The automatic baseline trains the unchanged method from scratch for 120,000 steps.
 
@@ -342,12 +308,8 @@ campaign. It groups the new run with the referenced experiment for replication
 evidence; it does not restore that experiment’s code or configuration and does
 not claim exact replay.
 
-A `replication_of` group therefore records related evidence. It does not
-establish an exact reproduction of a previous learning trajectory. A fresh run
-of a recipe previously exercised through transfer does not reproduce the
-transferred learning trajectory; it tests whether the current recipe can learn
-from fresh initialization. Scientific claims about replication must use that
-narrower interpretation.
+A fresh run of a recipe previously exercised through transfer does not replay
+the transferred learning trajectory.
 
 ## Conclude the campaign
 
@@ -382,12 +344,9 @@ outstanding researcher-owned change first; unlike a training proposal or a linea
 decision, a conclusion neither publishes nor restores a recipe.
 
 A preparation phase that has already executed a measurement round on saved
-lineages may not conclude: it owes an experiment proposal. The round was
-requested because its result would change the next decision, and in this phase
-that decision is which experiment to prepare. Concluding is available from a
-preparation phase that spends no measurement round, from experiment closure
-through `request_final_benchmark`, and whenever no further experiment may be
-prepared.
+lineages may not conclude: it owes an experiment proposal. A conclusion remains
+available when no measurement round was spent or when the experiment budget is
+exhausted.
 
 When the experiment budget is exhausted, no further training experiment may be
 prepared, but a campaign conclusion remains legal regardless of any measurement
@@ -441,8 +400,7 @@ The heading format is `## <Campaign ID> / Experiment <integer>`, where `<Campaig
 
 Evidence references are Researcher-authored scientific content. The Runner does
 not validate cited path tokens because naming an artifact cannot establish that
-it was inspected or understood. An unmeasured checkpoint is unmeasured, not zero
-success.
+it was inspected or understood.
 New non-baseline entries require a non-empty `Hypothesis assessment`. Its wording
 and conclusion belong to the Researcher; the Runner checks only that it is
 present. This assessment does not determine saved-policy usefulness, recipe,

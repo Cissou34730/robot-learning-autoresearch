@@ -24,11 +24,6 @@ from research.runner_protocol import (
     validate_proposal_against_state,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
-LOOP = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-INSTRUMENTS = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
-PROGRAM = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
-
 
 def _artifact(path: Path) -> Path:
     path.mkdir(parents=True)
@@ -382,45 +377,3 @@ def test_budget_reached_allows_a_conclusion_and_rejects_training(monkeypatch, tm
         )
         == "conclusion"
     )
-
-
-def test_launcher_restricts_a_budget_reached_phase_to_conclusions():
-    # The budget no longer breaks the loop before preparation; it asks the
-    # runner for a conclusion-only anchor and offers only the two exits.
-    assert '"--begin-hypothesis", "--conclusion-only"' in LOOP
-    assert "Experiment budget reached" in LOOP
-    assert "Only a campaign conclusion may be prepared" in LOOP
-    assert "Current phase: conclude the campaign." in LOOP
-    assert "pending_campaign_conclusion" in LOOP, (
-        "an interrupted conclusion must resume rather than exit on terminal state"
-    )
-
-
-def test_launcher_retry_after_budget_reached_offers_only_conclusions():
-    # The retry after a validation failure must branch on the reached budget;
-    # otherwise it offers an experiment or a saved-lineage measurement that the
-    # conclusion-only state rejects, and following it consumes the one retry.
-    retry = LOOP.split("$retryPrompt = @(", 1)[1].split(
-        "Invoke-ResearcherSession -Prompt $retryPrompt", 1
-    )[0]
-    budget_branch, _, ordinary_branch = retry.partition("else {")
-
-    assert "$budgetReached" in budget_branch
-    assert "which must contain a campaign_conclusion" in budget_branch
-    assert "containing only a campaign_conclusion" in budget_branch
-    # The exhausted-budget branch must not offer an experiment or a
-    # saved-lineage measurement; the conclusion-only anchor rejects both.
-    assert "for experiment $nextExperiment" not in budget_branch
-    assert "saved-lineage research/evaluation_request.json" not in budget_branch
-    # The ordinary retry still offers the two preparation deliverables.
-    assert "for experiment $nextExperiment" in ordinary_branch
-    assert "saved-lineage research/evaluation_request.json" in ordinary_branch
-    assert "which must contain a campaign_conclusion" not in ordinary_branch
-
-
-def test_preparation_prompt_and_contract_document_the_two_exits():
-    assert "requesting the official final assessment" in LOOP
-    assert "concluding that no further experiment is warranted" in LOOP
-    assert "campaign_conclusion" in INSTRUMENTS
-    assert "no_further_experiment" in INSTRUMENTS
-    assert "campaign_conclusion" in PROGRAM

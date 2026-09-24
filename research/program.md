@@ -21,12 +21,8 @@ reason to spend a full training run.
 Repository operation and ownership are defined in `AGENTS.md`, the current
 scientific problem in `research/scenario.md`, and every available instrument and
 request contract in `research/instruments.md`. `research/brief.md` supplies the
-current campaign state. In the preliminary scientific-model phase, read only
-`AGENTS.md`, `research/scenario.md`, and the relevant human-authored system
-implementation; do not read the program, instruments, brief, or campaign
-artifacts. In subsequent Researcher phases, read `AGENTS.md`,
-`research/program.md`, `research/scenario.md`, `research/instruments.md`,
-`research/brief.md`, and `research/scientific_model.md`.
+current campaign state. The preliminary model phase excludes campaign evidence;
+the launcher supplies the reading material appropriate to each phase.
 
 ## Roles
 
@@ -36,10 +32,12 @@ working around it.
 
 **Researcher** - owns scientific decisions and researcher-owned code: the
 learning method within the installed stack, reward, observations, training
-environment, research evaluation and measurement instrumentation. Tests are not
-part of the Researcher's surface: it never creates, modifies or maintains test
-files, and any path under `tests/` in its delta is rejected as a path it does not
-own. The current implementation is a starting point, not a prescribed method.
+environment, research evaluation and measurement instrumentation. Tests are
+human-owned, as specified in `AGENTS.md`. The current implementation is a
+starting point, not a prescribed method.
+Training conditions, including the target distribution and curriculum, may
+differ from the official task; the learned policy is judged on the unchanged
+official task.
 
 **Runner** - validates deliverables, executes training and measurements,
 persists results, applies lineage decisions and runs the final benchmark. It
@@ -95,9 +93,7 @@ component-level attribution then remains limited.
 
 The Researcher determines the amount and type of evidence appropriate to the
 investigation, including measurements, comparisons, diagnostics, replications
-and additional analysis rounds. Repeated execution of identical deterministic
-episodes does not create new episode coverage; whether additional distinct
-evidence is useful remains a scientific decision.
+and additional analysis rounds.
 
 Distinguish lack of improvement in a run, evidence against a hypothesis, and a
 practical decision not to pursue an intervention. Scope conclusions to the tested
@@ -124,15 +120,15 @@ The phase order is:
    consequences, and unknowns. The model is frozen for the campaign,
    regenerated on a fresh reset, and read alongside the brief in subsequent
    Researcher phases;
-2. prepare a new hypothesis and experiment;
-3. Runner training;
-4. post-training analysis, which may request and execute one or more measurement
-   rounds or close directly from logs and existing evidence;
-5. close the experiment and resolve its working lineage, scientific recipe
-   decision, and optional best-known designation;
-6. either prepare the next experiment, request Runner execution of the final
-   benchmark as a terminal campaign action, or record that no further experiment
-   is warranted.
+2. the Runner automatically trains the unchanged baseline as experiment 1,
+   without a Researcher-authored preparation proposal;
+3. post-training analysis may request measurements or close directly from
+   logs and existing evidence;
+4. closure resolves the working lineage, scientific recipe and optional
+   best-known designation;
+5. the Researcher may prepare the next experiment, request the final benchmark,
+   or conclude that no further experiment is warranted. Accepted experiments
+   return to Runner training, analysis and closure.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -165,10 +161,11 @@ behavior and complete task success against a saved reference. If the proposal
 claims to address specific failures, distinguish those it might affect from
 those it cannot. An uncertain intervention may test an open question; do not
 invent a mechanism or switch levers merely to justify another experiment.
-Record the behavioral path and test in `reasoning.policy_intervention`. Reward,
-observations, action mapping, learning method, initialization and training
-parameters remain open choices. An unchanged-method replication tests
-variability, not an intervention, and does not owe this account.
+Record this in the training proposal using the contract in
+`research/instruments.md`. Reward, observations, action mapping, learning
+method, initialization and training parameters remain open choices. An
+unchanged-method replication tests variability, not an intervention, and does
+not owe this account.
 
 Establish or update the Scientific strategy, make only the code or parameter
 changes the selected operation calls for, and write `research/proposal.json`.
@@ -188,6 +185,11 @@ A conclusion resolves no science, so it requires a clean scientific surface: any
 researcher-owned change must be reverted or resolved first. When the experiment
 budget is exhausted, only a conclusion may be prepared; a further training
 experiment is rejected.
+
+A preparation measurement on saved lineages commits that phase to an experiment
+proposal; it cannot be followed by a campaign conclusion in the same phase.
+When the experiment budget is exhausted, a conclusion remains available even
+after such a measurement.
 
 ## Post-training analysis
 
@@ -285,17 +287,15 @@ in the synthesis rather than rewriting what was believed at the time.
 ## Stopping
 
 Continue development while a scientifically useful path toward the human
-objective remains. Request the terminal assessment when you expect it to return
-`goal_reached` for the selected best-known model, stating the evidence and the
-uncertainty behind that expectation. If you do not expect that verdict, then
-either a path remains to pursue or there is nothing further to report: say which,
-and act accordingly.
+objective remains. Request the official benchmark only when you expect
+`goal_reached` for the selected best-known model, stating the evidence and
+uncertainty behind that expectation. Otherwise pursue a useful path or conclude
+that no further experiment is warranted. Neither the number of experiments
+already run nor the cost of another is itself a reason to stop.
 
-The official benchmark is a verdict you claim, not an instrument you consult. Do
-not request it in order to find out how the model performs, to settle an
-uncertainty that development measurements did not settle, or because no further
-measurement looks informative. Anything you need to know in order to decide must
-be measured while you can still act on the answer.
+The official benchmark is a terminal verdict, not a diagnostic instrument.
+Do not request it to settle an uncertainty that development measurements
+could resolve; plan the needed evidence while you can still act on it.
 
 Development measurements support model selection and scientific judgment, and
 never declare the objective reached. A measurement used to select a model is not
@@ -303,20 +303,13 @@ automatically independent confirmation. After observing a promising result, the
 Researcher may request another measurement round on a disjoint panel before
 closing the experiment.
 
-Another useful investigation does not prohibit stopping. Development evidence is
-never a substitute for the official verdict, and a campaign that never requests it
-produces no official result at all. Equally, a campaign that submits a model no
-better than the one it started with has converted its whole allocation into a
-single measurement. Neither the number of experiments already run nor the cost of
-running another is itself a reason to stop.
+Another useful investigation does not prohibit stopping. A campaign that never
+requests the benchmark produces no official result.
 
 Request the official benchmark from experiment preparation or closure, targeting
 the frozen best-known model. Requesting it ends the campaign after either verdict:
 `goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
 plan further work conditional on benchmark failure. Only this benchmark declares
-the official result. The verdict reports the result; it is not designed to
-diagnose a policy and carries no diagnostic detail, so plan your development
-evidence so that it, and not the verdict, tells you what you need to know. Both
-verdicts are legitimate campaign outcomes: `goal_not_reached` on a well-evidenced
-submission is not a failure of the Researcher's process, and the campaign's
-scientific record survives the verdict intact.
+the official result. Both verdicts are legitimate campaign outcomes:
+`goal_not_reached` on a well-evidenced submission is not a failure of the
+Researcher's process, and the scientific record survives.

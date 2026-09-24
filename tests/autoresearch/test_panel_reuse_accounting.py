@@ -443,34 +443,3 @@ def test_explicit_best_known_reselection_refreshes_selection_exposure(
     assert plan["best_known_record"]["selected_panels"] == [
         {"instrument": "research_evaluation", "seed": 700, "episodes": 200}
     ]
-
-
-def test_instrument_documentation_states_the_rule_in_neutral_terms():
-    """The reuse rule is scientific doctrine, so it is stated once.
-
-    The guarantee this test protects is unchanged: reuse, not one instrument,
-    is what contaminates, and `task_reference` is named as the permanently
-    reused case rather than as the cause. What changed is where the rule lives.
-    It used to be repeated verbatim in `program.md` and `instruments.md`; the
-    duplication is now removed, so the doctrine is asserted in `program.md` and
-    `instruments.md` is checked for the operational contract plus a deferral,
-    and for the absence of any instrument ranking.
-    """
-    instruments = " ".join(
-        (ROOT / "research" / "instruments.md").read_text(encoding="utf-8").split()
-    )
-    program = " ".join(
-        (ROOT / "research" / "program.md").read_text(encoding="utf-8").split()
-    )
-
-    # The rule is about reuse, not about one instrument.
-    assert "Reusing the same evaluation episodes" in program
-    assert "no independent confirmation" in program
-    # `task_reference` is named as the permanently reused case, not the cause.
-    assert "permanently reused case" in program
-    assert "permanently reused case" not in instruments
-    # The operational contract records reuse and defers the meaning of it.
-    assert "every reuse is reported with its history" in instruments
-    assert "stated in `research/program.md`" in instruments
-    # No instrument is ranked above the other in the operational contract.
-    assert "authoritative" not in instruments

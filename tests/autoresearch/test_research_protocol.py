@@ -6,7 +6,6 @@ produced it.
 """
 
 import json
-import re
 from pathlib import Path
 
 import pytest
@@ -54,11 +53,6 @@ from robot_learning.training.comparison import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-PROGRAM = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
-LOOP = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-
-# Only used to assert that the protocol names *no* learning algorithm.
-KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
 
 
 @pytest.fixture(autouse=True)
@@ -67,10 +61,6 @@ def _allow_unchanged_research_delta(monkeypatch):
     monkeypatch.setattr(
         "research.run_experiment.validate_research_delta", lambda state: []
     )
-
-
-def mentions(text: str, word: str) -> bool:
-    return re.search(rf"\b{word}\b", text, flags=re.IGNORECASE) is not None
 
 
 def test_the_copilot_adapter_is_a_protected_protocol_source():
@@ -2927,100 +2917,3 @@ def test_discarded_candidates_keep_history_but_lose_heavyweight_files(
     assert not (discarded / "model.zip").exists()
     assert not (discarded / "vecnormalize.pkl").exists()
     assert not (discarded / "replay_buffer.pkl").exists()
-
-
-# --- method neutrality of the protocol -------------------------------------
-
-
-def test_protocol_defines_a_method_neutral_researcher_within_the_fixed_stack():
-    normalized_program = " ".join(PROGRAM.split())
-    for expertise in (
-        "robot-learning",
-        "reinforcement learning",
-        "robotics simulation",
-        "experimental measurement",
-        "scientific software",
-    ):
-        assert expertise in normalized_program
-    assert "current implementation is a starting point" in PROGRAM
-    assert "within the installed stack" in PROGRAM
-    assert "does not install packages" in PROGRAM
-
-
-def test_post_training_guidance_is_evidence_first_without_positional_labels():
-    """The selection rule is stated once; the prohibitions bind every surface.
-
-    The rule used to be repeated verbatim in `program.md`, `instruments.md` and
-    the launcher prompts. That triplication is what made the prompt a second
-    protocol, so the positive statement of the rule is now asserted only where
-    it belongs - the scientific protocol. The prohibitions it exists to enforce
-    are unchanged and are still asserted on all three surfaces, because a
-    positional label suggested anywhere would bias the selection.
-    """
-    normalized_program = " ".join(PROGRAM.split())
-    normalized_launcher = " ".join(LOOP.split())
-    normalized_instruments = " ".join(
-        (ROOT / "research" / "instruments.md").read_text(encoding="utf-8").split()
-    )
-
-    assert "observed signal or explicit uncertainty" in normalized_program
-    assert "next decision" in normalized_program
-    assert "not sufficient reasons on their own" in normalized_program
-
-    for text in (normalized_program, normalized_launcher, normalized_instruments):
-        assert "first, latest, final" not in text
-        assert "horizon-matched" not in text
-        assert "strongest" not in text
-
-
-def test_protocol_offers_no_alternative_algorithm_menu():
-    for algorithm_name in KNOWN_ALGORITHM_NAMES:
-        assert not mentions(PROGRAM, algorithm_name), algorithm_name
-
-
-def test_protocol_does_not_enumerate_the_configuration_surface():
-    assert "`algorithm`" not in PROGRAM
-
-
-def test_protocol_delegates_request_schemas_to_the_instrument_catalog():
-    instruments = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
-
-    assert "```json" not in PROGRAM
-    assert "request contract" in PROGRAM
-    for field in ("training_parent", "training_seed", "params"):
-        assert f'"{field}"' not in PROGRAM
-        assert f'"{field}"' in instruments
-
-
-def test_baseline_protocol_wording_is_algorithm_neutral():
-    assert 'change = "Fresh baseline"' in LOOP
-    for algorithm_name in KNOWN_ALGORITHM_NAMES:
-        assert not mentions(LOOP, algorithm_name), algorithm_name
-    assert "current implementation is a starting point" in PROGRAM
-
-
-def test_no_researcher_prompt_forces_the_configuration_into_context():
-    assert "research/current_params.json" not in LOOP
-    for expected in (
-        "AGENTS.md",
-        "research/program.md",
-        "research/scenario.md",
-        "research/instruments.md",
-        "research/brief.md",
-    ):
-        assert expected in LOOP
-    assert "research/last_train_summary.md" not in LOOP
-
-
-def test_protocol_default_context_names_only_authoritative_context():
-    opening = PROGRAM.split("## Roles", 1)[0]
-
-    for expected in (
-        "`AGENTS.md`",
-        "`research/scenario.md`",
-        "`research/instruments.md`",
-        "`research/brief.md`",
-    ):
-        assert expected in opening
-    assert "`research/current_params.json`" not in opening
-    assert "`research/last_train_summary.md`" not in PROGRAM

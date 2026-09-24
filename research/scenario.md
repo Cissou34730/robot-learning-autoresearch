@@ -34,12 +34,4 @@ panel; development measurements are not combined with the official result.
 ## Immutable task boundary
 
 The official robot, physics, task distribution, interaction semantics, and
-success definition are human-owned. The Researcher must not redefine them to
-make the result easier to achieve.
-
-## Scientific freedom
-
-The Researcher owns the learning method and training conditions, including the
-training target distribution and curriculum. Training conditions may differ
-from the official task; the resulting learned policy must still operate on the
-unchanged official task.
+success definition are fixed by the human-authored robot and benchmark contracts.
