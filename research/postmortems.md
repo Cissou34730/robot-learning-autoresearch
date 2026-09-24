@@ -2,11 +2,11 @@
 
 ## 6dab7993-582d-4243-b0a2-f935e51c2728 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned the reach-and-hold behavior but remains below the human objective on the independent researcher panels. Checkpoint-100352 is the strongest measured policy: it achieved 151/160 (94.375%) on each of two disjoint panels, while checkpoint-120832 achieved 151/160 and 149/160. The fixed task-reference panel reported 196/200 (98%) for checkpoint-100352, but that panel is reused and is not independent confirmation.
+**Current synthesis:** The unchanged PPO baseline learned the reach-and-hold behavior but remains below the human objective on independent researcher panels. Checkpoint-100352 is the strongest measured policy at 151/160 (94.375%) on both panels. Its failures repeatedly include official targets at 7-11 cm, although training currently samples only 14-20 cm; the fixed task-reference result is reused and is not independent confirmation.
 
 **Lessons and limits:** Training proxies identified a useful late checkpoint but did not establish the 98% objective. The disjoint research measurements support selecting checkpoint-100352 over the final checkpoint, with 2 versus 0 discordant wins in the matched comparison across 320 pooled executions, but the comparison is small in absolute margin and development measurements are not the official result. The task-reference result demonstrates transfer to the protected task panel, yet its permanent reuse limits confirmation. The measured failures show that the policy is close but not reliably at the required success level.
 
-**Open questions:** Whether additional training or a targeted scientific intervention can raise the independent success rate from roughly 94% to at least the 98% objective remains unresolved. The failure pattern and generalization across the full official distribution also remain to be established.
+**Open questions:** It remains unresolved whether exposure to the full official radius range can reduce the residual failures enough to reach 98%, and whether the remaining angle-associated failures reflect a separate limitation. Generalization across the full official distribution remains to be established.
 
 ## 6dab7993-582d-4243-b0a2-f935e51c2728 / Experiment 1
 
