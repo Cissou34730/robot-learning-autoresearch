@@ -77,22 +77,13 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
-When interpreting an observed shortfall or unresolved behavior, check whether
-an established fact, physical consequence, or unknown in the frozen scientific
-model distinguishes plausible causes. If so, identify what observation or
-decision-changing measurement could discriminate them; otherwise explain why
-training configuration, parameters, or learning evidence is more informative.
-The model does not establish what a policy did or require a physical
-intervention or another measurement.
-
-Before proposing another training run, state that connection to current campaign
-evidence and the competing explanations in `reasoning.scientific_model`. If a
-feasible measurement of a saved policy could change the planned intervention,
-request it first; otherwise explain why the direct experiment is more
-informative. When no physical distinction is useful, name the model
-consideration ruled out, say why, and pursue the training or learning-process
-question on its own merits. The Runner requires this decision argument, not a
-particular scientific answer.
+Use the frozen scientific model when a physical fact or unknown informs a
+decision or distinguishes plausible causes. Ground physical claims in the
+specific model finding and current campaign evidence; the model does not
+establish what a policy did. A training or learning-process question needs no
+model argument when the model offers no useful distinction. Choose measurements
+when their possible outcomes could change the next decision; otherwise proceed
+directly without collecting evidence just to satisfy a proposal format.
 
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
@@ -168,18 +159,16 @@ scientific question and the compatibility of the learned representation.
 Neither fresh initialization nor transfer is preferred, and a recipe that has
 already been measured repeatedly is not a safer choice than one that has not.
 
-For training or continuation, translate the investigation into a policy change:
-explain how the selected code, parameters, or further learning could change
-what the policy perceives, decides, or commands on the observed failures.
-Identify failures it may not address and why the addressable ones matter to the
-objective. Compare a materially different available lever and explain why
-this one is preferable now; after repeated unsuccessful changes to one lever,
-reconsider the lever rather than just its next coefficient. State how to
-measure both the predicted behavioral change and complete task success against
-a saved reference. Record this reasoning in `reasoning.policy_intervention`.
-Reward, observations, action mapping, learning method, initialization and
-training parameters remain open choices. An unchanged-method replication
-tests variability, not an intervention, and does not owe this account.
+For training or continuation, explain how the selected code, parameters, or
+further learning might change the policy's behavior and how to compare that
+behavior and complete task success against a saved reference. If the proposal
+claims to address specific failures, distinguish those it might affect from
+those it cannot. An uncertain intervention may test an open question; do not
+invent a mechanism or switch levers merely to justify another experiment.
+Record the behavioral path and test in `reasoning.policy_intervention`. Reward,
+observations, action mapping, learning method, initialization and training
+parameters remain open choices. An unchanged-method replication tests
+variability, not an intervention, and does not owe this account.
 
 Establish or update the Scientific strategy, make only the code or parameter
 changes the selected operation calls for, and write `research/proposal.json`.

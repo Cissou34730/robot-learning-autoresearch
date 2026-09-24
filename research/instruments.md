@@ -218,16 +218,8 @@ then write one `research/proposal.json`. The common required fields are `kind`,
     "expected_observation": "<the observation that would change the next decision, and what it would change>",
     "initialization_reason": "<why fresh, or why transfer from this training_parent>",
     "objective_link": "<why this investigation is useful for the campaign objective given current evidence>",
-    "scientific_model": {
-      "observation": "<observed behavior or open question grounded in current campaign evidence>",
-      "connection": "<section and specific fact, physical consequence or unknown in research/scientific_model.md, and why it matters or offers no useful distinction>",
-      "alternatives": "<plausible competing explanations, including training or parameter explanations when relevant>",
-      "diagnostic_decision": "<what measurement would change the intervention, if any, and why this training run is now more informative than requesting it>"
-    },
     "policy_intervention": {
-      "behavioral_path": "<how the chosen code, parameters or continued learning could change the policy's observations, decisions or actions on measured failures>",
-      "failure_scope": "<which observed failures the intervention can plausibly affect and which it cannot; why the addressable failures matter to the objective>",
-      "lever_choice": "<a materially different available lever and why this intervention is preferable now>",
+      "behavioral_path": "<how the chosen code, parameters or continued learning might change the policy's behavior>",
       "behavioral_test": "<how to compare resulting policy behavior and complete task success against a saved reference on appropriate episodes>"
     }
   },
@@ -244,6 +236,11 @@ accepted and neither changes how the experiment is run or validated.
 `reasoning.policy_intervention` is required for `training` and `continuation`,
 including parameter-only changes and unchanged continuations; omit it for
 `replication`, which tests learning-process variance without an intervention.
+`reasoning.scientific_model` is optional for every kind of proposal. Include it
+when a specific fact, consequence or unknown in `research/scientific_model.md`
+informs the decision or a physical claim. If included, it must be a non-empty
+object of non-empty statements; the previous `observation`, `connection`,
+`alternatives` and `diagnostic_decision` fields remain valid but are not required.
 Additional `reasoning` keys are accepted and recorded without validation.
 
 | Kind | Meaning | Required or conditional fields |
@@ -269,35 +266,25 @@ contains at least one source/observation pair. Cite inspected campaign artifacts
 logs, postmortems or code with precise observations; these are not restricted to
 evaluation results. `source` is a file path without a line-number suffix or
 fragment; put the relevant experiment, checkpoint, step range or code location in
-`observation` as needed. In `scientific_model`, distinguish what the frozen model
-establishes from what the current campaign observed. Identify the relevant
-section of `research/scientific_model.md` and explain its relevance, or name a
-model consideration and explain why it offers no useful distinction for this
-question. Do not infer a policy's failure cause from the
-model alone. If a feasible measurement on a saved lineage could change the
-intervention, request that measurement before proposing training; otherwise
-explain in `diagnostic_decision` why training directly is the better
-discriminator (or why existing measurements already answer the question). This
-does not privilege a physical intervention over training, parameter, or
-learning-process investigations. The Runner checks the presence and shape of
-this reasoning and the existence and confinement of evidence sources, not
-scientific merit or whether a measurement would have been preferable. This
+`observation` as needed. When using `scientific_model`, distinguish what the
+frozen model establishes from what the current campaign observed; do not infer
+a policy's failure cause from the model alone. A measurement is useful when its
+possible outcomes could change the next decision, not because a physical
+explanation is required. The Runner checks the required reasoning and the
+existence and confinement of evidence sources, not scientific merit. This
 contract applies equally to training, continuation and replication, not to the
 automatic baseline.
 
-For `training` and `continuation`, `policy_intervention` connects the selected
-lever to a plausible change in the *learned policy's behavior*, not just to a
-reward, proxy score or physical diagnosis. State which measured failure modes
-the change might and might not address, and why its addressable scope matters
-to the objective. Compare a materially different lever, including changes to
-observations, action mapping, learning method, training configuration or reward
-when relevant; none is preferred by this contract. When repeated interventions
-through one lever do not improve the task, reconsider that lever rather than
-only varying another coefficient. Specify a comparison that checks both the
-predicted behavior and complete task success on suitable episodes, preferably
-paired with a saved reference. The Runner requires these four explicit
-statements, not the scientific validity of the mechanism or the success of
-the experiment. Replication does not claim an intervention and is exempt.
+For `training` and `continuation`, `policy_intervention` describes a possible
+change in the *learned policy's behavior*, not just a reward, proxy score or
+physical diagnosis. Specify a comparison that checks both behavior and complete
+task success on suitable episodes, preferably paired with a saved reference.
+Identify affected and unaffected failures when the proposal makes a
+failure-specific claim. Neither a different lever nor an established mechanism
+is required: reward, observations, action mapping, learning method, training
+configuration and continued learning remain open choices. The Runner requires
+the behavioral path and test, not the scientific validity or success of the
+experiment. Replication does not claim an intervention and is exempt.
 
 The campaign's Scientific strategy section must exist before submission. The
 Runner validates its three labels and snapshots the section with `reasoning` in

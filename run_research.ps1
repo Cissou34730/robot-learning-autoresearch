@@ -131,7 +131,7 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
 }
 
 $scientificModelUseGuidance = "Read research/scientific_model.md as fixed context for the robot and task, and use it when relevant. Ground conclusions about training, parameter choices, and policy performance in the current campaign configuration, logs, and measurements; do not infer training outcomes from the scientific model."
-$scientificModelDecisionGuidance = "When interpreting an observed shortfall or unresolved behavior, check whether an established fact, physical consequence, or unknown in research/scientific_model.md distinguishes plausible causes. If so, identify what observed behavior or feasible measurement could discriminate them and which decision the result would change. Before intervening on an assumed cause, request a feasible decision-changing measurement when available; otherwise justify why a direct experiment is more informative. If no physical distinction is useful, explain which training configuration, parameter, or learning evidence is more informative. The model does not establish what a policy did or require a physical intervention."
+$scientificModelDecisionGuidance = "Use research/scientific_model.md when a physical fact or unknown informs a decision; ground physical claims in that finding and current evidence rather than inferring what a policy did from the model. If the model offers no useful distinction, pursue the training or learning question without a model argument. Request a measurement only when its possible outcomes could change the next decision; otherwise proceed directly."
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -1209,8 +1209,8 @@ The final output should be a compact but substantive **Scientific model of the r
         $scientificModelUseGuidance
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
         $scientificModelDecisionGuidance
-        "For any training, continuation, or replication proposal, supply reasoning.scientific_model as specified in research/instruments.md; connect a current campaign observation to a specific model finding, or name a model finding considered and explain why it offers no useful distinction. A citation alone is not a diagnosis."
-        "For training or continuation, supply reasoning.policy_intervention as specified in research/instruments.md: trace the change to policy behavior on observed failures, identify which failures it cannot address, compare a materially different lever, and plan a behavioral and task-success comparison. After repeated failures of one lever, reconsider the lever rather than just its coefficient; no method is prescribed."
+        "Include reasoning.scientific_model only when a specific model finding informs the proposal or a physical claim; distinguish model facts from observed policy behavior. No model-based explanation is required when the model offers no useful distinction."
+        "For training or continuation, supply reasoning.policy_intervention as specified in research/instruments.md: explain how the change might affect learned behavior and how to compare both behavior and complete task success against a saved reference. Do not invent a mechanism, a failure scope, or a different lever just to fill a proposal field; all researcher-owned reward, environment, observation, action, and learning-method changes remain available."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }

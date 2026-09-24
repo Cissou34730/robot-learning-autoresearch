@@ -178,16 +178,8 @@ REQUIRED_REASONING_FIELDS = (
     "initialization_reason",
     "expected_observation",
 )
-SCIENTIFIC_MODEL_REASONING_FIELDS = (
-    "observation",
-    "connection",
-    "alternatives",
-    "diagnostic_decision",
-)
 POLICY_INTERVENTION_REASONING_FIELDS = (
     "behavioral_path",
-    "failure_scope",
-    "lever_choice",
     "behavioral_test",
 )
 
@@ -597,13 +589,14 @@ def validate_scientific_reasoning(proposal: dict) -> None:
 
     for field in REQUIRED_REASONING_FIELDS:
         _validate_reasoning_statement(field, reasoning.get(field))
-    scientific_model = reasoning.get("scientific_model")
-    if not isinstance(scientific_model, dict):
-        raise TypeError("reasoning.scientific_model must be an object")
-    for field in SCIENTIFIC_MODEL_REASONING_FIELDS:
-        _validate_reasoning_statement(
-            f"scientific_model.{field}", scientific_model.get(field)
-        )
+    if "scientific_model" in reasoning:
+        scientific_model = reasoning["scientific_model"]
+        if not isinstance(scientific_model, dict):
+            raise TypeError("reasoning.scientific_model must be an object")
+        if not scientific_model:
+            raise ValueError("reasoning.scientific_model must not be empty")
+        for field, value in scientific_model.items():
+            _validate_reasoning_statement(f"scientific_model.{field}", value)
     if proposal["kind"] in {"training", "continuation"}:
         policy_intervention = reasoning.get("policy_intervention")
         if not isinstance(policy_intervention, dict):

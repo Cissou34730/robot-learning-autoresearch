@@ -1642,7 +1642,7 @@ def test_training_proposal_requires_only_its_scientific_shape(scientific_reasoni
 
 
 @pytest.mark.parametrize("kind", ["training", "continuation", "replication"])
-def test_researcher_training_requires_model_to_decision_reasoning(kind):
+def test_model_reasoning_is_optional_but_validated_when_provided(kind):
     proposal = _training_proposal()
     proposal["kind"] = kind
     if kind != "training":
@@ -1652,23 +1652,23 @@ def test_researcher_training_requires_model_to_decision_reasoning(kind):
     if kind == "replication":
         proposal.update(training_seed=19, replication_of=12)
 
-    model_reasoning = proposal["reasoning"].pop("scientific_model")
+    proposal["reasoning"].pop("scientific_model")
+    validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["scientific_model"] = None
     with pytest.raises(TypeError, match="reasoning.scientific_model must be an object"):
         validate_training_proposal(proposal, baseline=False)
 
-    proposal["reasoning"]["scientific_model"] = model_reasoning
-    for field in ("observation", "connection", "alternatives", "diagnostic_decision"):
-        proposal["reasoning"]["scientific_model"] = {
-            **model_reasoning,
-            field: " ",
-        }
-        with pytest.raises(ValueError, match=f"reasoning.scientific_model.{field}"):
-            validate_training_proposal(proposal, baseline=False)
+    proposal["reasoning"]["scientific_model"] = {}
+    with pytest.raises(ValueError, match="reasoning.scientific_model must not be empty"):
+        validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["scientific_model"] = {"connection": " "}
+    with pytest.raises(ValueError, match="reasoning.scientific_model.connection"):
+        validate_training_proposal(proposal, baseline=False)
 
     proposal["reasoning"]["scientific_model"] = {
-        **model_reasoning,
-        "connection": "The model's hold requirement does not distinguish training-seed variance.",
-        "diagnostic_decision": "The proposed run tests training variability directly.",
+        "connection": "The hold requirement is relevant to the proposed behavior."
     }
     validate_training_proposal(proposal, baseline=False)
 
@@ -1688,13 +1688,18 @@ def test_policy_intervention_requires_a_behavioral_path_and_comparison(kind):
     with pytest.raises(TypeError, match="reasoning.policy_intervention must be an object"):
         validate_training_proposal(proposal, baseline=False)
 
-    for field in ("behavioral_path", "failure_scope", "lever_choice", "behavioral_test"):
+    for field in ("behavioral_path", "behavioral_test"):
         proposal["reasoning"]["policy_intervention"] = {
             **intervention,
             field: " ",
         }
         with pytest.raises(ValueError, match=f"reasoning.policy_intervention.{field}"):
             validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["policy_intervention"] = {
+        field: intervention[field] for field in ("behavioral_path", "behavioral_test")
+    }
+    validate_training_proposal(proposal, baseline=False)
 
     proposal["reasoning"]["policy_intervention"] = intervention
     validate_training_proposal(proposal, baseline=False)
