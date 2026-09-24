@@ -2,38 +2,30 @@
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned a strong reach-and-hold
-policy, but current evidence remains below the 98% campaign objective. The
-checkpoint at 100352 steps is the most useful policy: it achieved 97% on each
-of two research panels covering 300 distinct episodes, whereas the later
-120832-step checkpoint achieved 96% on both panels and showed substantially more
-hold interruptions. The 98% result for checkpoint-100352 on the fixed
-task-reference panel is not independent confirmation because that panel was
-used in selecting the candidate. The remaining failures are concentrated in a
-negative-angle sector and include both no-reach and short-hold outcomes. The
-frozen model makes branch choice, joint-limit proximity, saturation, and
-low-velocity stabilization physically distinct possibilities, but existing
-outcomes do not identify which occurred in a failed episode.
+**Current synthesis:** The working 100352-step PPO policy remains the strongest
+development lineage at 487/500 (97.4%) across three distinct research panels;
+the retained 120832-step policy has 484/500 (96.8%). The latest 200-episode
+panel gave both 196/200, but the same four negative-angle episodes failed for
+both policies. Their trajectories all ended with one open-branch switch,
+99-100% saturated control, and negative joint-limit margin; the working policy
+briefly reached one target before losing its one-step hold, while the other
+three were no-reach outcomes. Three targets were inside 12.4 cm, below the
+current 14 cm training-radius floor.
 
-**Lessons and limits:** Training reward and proxy success were useful for
-locating candidates but did not rank final behavior reliably: the reward peak
-at checkpoint-86016 measured 96%, and the later proxy plateau did not improve
-the selected policy. The disjoint research panel reproduced the 100352-step
-policy's 97% result and its advantage over checkpoint-120832, supporting the
-working-lineage choice but not the official objective. The frozen model
-establishes full-angle targets, two nominal inverse-kinematic branches,
--170-to-170-degree joints, and 50 Hz torque control with a 100-sample hold; it
-does not establish which branch a policy selected or whether it saturated.
-The task-reference panel is fixed and permanently reused, so its 196/200 result
-is development evidence rather than independent confirmation.
+**Lessons and limits:** The realized diagnostics make the residual shortfall
+consistent with a training-coverage and limit/actuation interaction, while the
+matched core signature across the lineages weakens a late-training-specific
+explanation.
+The frozen model establishes the full-angle, 6-20 cm official distribution,
+branch ambiguity, joint limits, and clipped 50 Hz torque control, but it does
+not by itself establish that radius coverage caused these failures. Development
+measurements remain non-final, and the fixed task-reference panel is
+selection-contaminated.
 
-**Open questions:** Whether the negative-angle failures arise from an
-inadmissible or poorly selected inverse-kinematic branch, a joint-limit or
-actuation limitation, or learned feedback that fails to stabilize remains
-unresolved. The realized branch, joint-limit margin, control saturation, and
-velocity around entry and exit are the observations needed to distinguish these
-causes and determine whether a targeted intervention should favor reach
-coverage, actuation, or hold stability.
+**Open questions:** Whether exposing the policy to the official inner-radius
+range improves the negative-angle reach failures without harming already
+covered targets remains unresolved; the 18.4 cm failure also leaves a possible
+branch or actuation limitation.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
