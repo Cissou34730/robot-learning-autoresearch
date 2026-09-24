@@ -21,6 +21,7 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SCHEMA_VERSION = 6
 
 
 def evaluate_research_model(
@@ -55,6 +56,14 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        max_joint_speed_rad_s = 0.0
+        max_abs_action = 0.0
+        saturated_action_steps = 0
+        previous_branch: int | None = None
+        branch_switches = 0
+        min_branch_error_rad = float("inf")
+        first_reach_branch: int | None = None
+        first_reach_branch_error_rad: float | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -74,6 +83,25 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
+            max_joint_speed_rad_s = max(
+                max_joint_speed_rad_s, float(np.max(np.abs(env.data.qvel)))
+            )
+            applied_action = np.asarray(env.data.ctrl, dtype=np.float64)
+            max_abs_action = max(max_abs_action, float(np.max(np.abs(applied_action))))
+            saturated_action_steps += int(np.any(np.abs(applied_action) >= 0.999999))
+            branch_errors = (
+                float(np.sum(np.abs(obs[7:9]))),
+                float(np.sum(np.abs(obs[9:11]))),
+            )
+            branch = int(branch_errors[1] < branch_errors[0])
+            if previous_branch is not None and branch != previous_branch:
+                branch_switches += 1
+            previous_branch = branch
+            branch_error = branch_errors[branch]
+            min_branch_error_rad = min(min_branch_error_rad, branch_error)
+            if held_steps > 0 and first_reach_branch is None:
+                first_reach_branch = branch
+                first_reach_branch_error_rad = branch_error
 
         episode_results.append(
             {
@@ -103,6 +131,13 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "max_joint_speed_rad_s": max_joint_speed_rad_s,
+                "max_abs_action": max_abs_action,
+                "saturated_action_steps": saturated_action_steps,
+                "branch_switches": branch_switches,
+                "first_reach_branch": first_reach_branch,
+                "first_reach_branch_error_rad": first_reach_branch_error_rad,
+                "min_branch_error_rad": min_branch_error_rad,
             }
         )
         if progress_callback is not None:
@@ -110,7 +145,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": RESEARCH_EVALUATION_SCHEMA_VERSION,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -121,7 +156,18 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "joint_speed": "rad/s",
+                "action": "normalized_motor_command",
+                "branch_error": "rad",
+            },
+            "branch_convention": {
+                "0": "elbow_open",
+                "1": "elbow_folded",
+                "selection": "branch with the lower summed absolute IK angle error",
+            },
         },
     }
 
