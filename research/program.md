@@ -77,6 +77,14 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
+When interpreting an observed shortfall or unresolved behavior, check whether
+an established fact, physical consequence, or unknown in the frozen scientific
+model distinguishes plausible causes. If so, identify what observation or
+decision-changing measurement could discriminate them; otherwise explain why
+training configuration, parameters, or learning evidence is more informative.
+The model does not establish what a policy did or require a physical
+intervention or another measurement.
+
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
 variability. Fresh training does not by itself establish that an intervention

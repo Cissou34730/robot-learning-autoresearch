@@ -131,6 +131,7 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
 }
 
 $scientificModelUseGuidance = "Read research/scientific_model.md as fixed context for the robot and task, and use it when relevant. Ground conclusions about training, parameter choices, and policy performance in the current campaign configuration, logs, and measurements; do not infer training outcomes from the scientific model."
+$scientificModelDecisionGuidance = "When interpreting an observed shortfall or unresolved behavior, check whether an established fact, physical consequence, or unknown in research/scientific_model.md distinguishes plausible causes. If so, identify what observed behavior or feasible measurement could discriminate them and which decision the result would change. If not, explain which training configuration, parameter, or learning evidence is more informative. The model does not establish what a policy did or require a physical intervention or another measurement."
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -854,6 +855,7 @@ if ($ResearcherBackend -eq "opencode") {
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
             $scientificModelUseGuidance
             "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
+            $scientificModelDecisionGuidance
             "If updating the current campaign's Scientific strategy in research/postmortems.md, revise the existing section in place; do not append a second section with the same heading."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
             "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
@@ -1206,6 +1208,7 @@ The final output should be a compact but substantive **Scientific model of the r
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
         $scientificModelUseGuidance
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
+        $scientificModelDecisionGuidance
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
