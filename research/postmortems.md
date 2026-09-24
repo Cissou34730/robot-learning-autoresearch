@@ -2,28 +2,27 @@
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline remains the strongest learned
-policy. The working and best-known checkpoint-100352 achieved 455/480
-successes (94.7917%) across three disjoint research panels after the
-experiment-2 control measurement. The target-coverage transfer produced
-151/160 (94.375%) at both its training-proxy peak and final checkpoint, versus
-152/160 (95.00%) for the parent on the same new panel.
+**Current synthesis:** The unchanged PPO checkpoint-100352 remains the strongest
+learned policy, with 455/480 successes (94.7917%) across three disjoint
+research panels. The experiment-2 transfer checkpoints each achieved 151/160
+(94.375%) on their new panel, below the parent control's 152/160 (95.00%).
+Residual failures are concentrated in the negative-angle sector and include
+both failure to reach and occasional hold interruption.
 
-**Lessons and limits:** The experiment-2 hypothesis is contradicted under the
-tested continuation: expanding training radii to 6-20 cm and oversampling the
-previously difficult angular sector did not improve held-out success, and each
-transfer checkpoint lost the sole discordant paired episode to the parent.
-Training proxies therefore remained insufficient for selecting a policy. The
-fixed task-reference result for checkpoint-100352 was reused for selection and
-is not independent confirmation; all development measurements remain below the
-98% objective. This single transfer recipe does not establish that target
-coverage can never help, nor does it identify whether representation or
-optimization is the limiting factor.
+**Lessons and limits:** The baseline trains on radii 14-20 cm, narrower than the
+official 6-20 cm range. The tested transfer recipe combined full-range
+sampling with focused-sector oversampling and was contradicted, so it does not
+settle whether full-range coverage learned from scratch is useful. Training
+proxies have not reliably selected held-out policies; the 98% task-reference
+result for checkpoint-100352 was reused for selection, and every disjoint
+development result remains below the objective. Failure geometry is descriptive
+and does not establish a causal bottleneck.
 
-**Open questions:** Which change to the learned representation, optimization,
-or failure-directed training can close the remaining gap without degrading the
-parent's broad-task behavior remains unresolved. The residual failure geometry
-is descriptive evidence, not a causal diagnosis.
+**Open questions:** Whether uniform full-range training from fresh
+initialization generalizes better than the narrow-range baseline or the
+failed transfer recipe remains unresolved. The relative roles of target
+coverage, representation, and optimization in the residual failures are also
+unknown.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
