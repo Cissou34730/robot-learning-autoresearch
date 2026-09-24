@@ -6,17 +6,20 @@
 remains below reliable attainment of the human objective: `checkpoint-100352`
 achieved 393/400 pooled research successes, while its independent second panel
 was 97%. The fixed task-reference panel was 98%, but it is reused and is not
-independent confirmation.
+independent confirmation. Experiment 2's target-coverage intervention did not
+improve the transferred policy on a new disjoint panel.
 
 **Lessons and limits:** The residual failures are concentrated near angles
 roughly -116 to -142 degrees, with the task-reference failures also at inner
 radii of about 6.7-9.9 cm. The baseline training distribution began at 14 cm,
-so the evidence identifies a coverage mismatch, but does not establish that it
-caused the failures or that changing it will preserve broad performance.
+so the evidence identifies a coverage mismatch, but experiment 2 does not
+establish that targeted oversampling fixes it: the transferred and early
+checkpoints both scored 97%, while the final checkpoint scored 96% on the new
+panel.
 
-**Open questions:** It remains unresolved whether greater exposure to the
-observed inner-radius and angular failure region removes that failure pocket
-without degrading the already learned reach-and-hold behavior.
+**Open questions:** The cause of the residual failure pocket remains unresolved.
+Further training, if pursued after closure, should be treated as a new
+experiment rather than as evidence that this intervention succeeded.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
@@ -54,3 +57,38 @@ ordinary next experiment rather than more interpretation of this baseline.
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-86016-200ep-seed10000-f48545f83637.json`;
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/task-reference-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-86016-task-reference-v1.json`;
 `research/brief.md`.
+
+## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 2
+
+**Result:** The target-coverage intervention did not produce a better measured
+policy, and the experiment-1 working lineage remains the most useful saved
+policy.
+
+**Observed behavior:** On the new disjoint 200-episode panel, the transferred
+`checkpoint-100352` scored 194/200 (97.0%), matching the experiment-2 early
+proxy-peak `checkpoint-10240` at 194/200. The final
+`checkpoint-120832` scored 192/200 (96.0%). The paired comparison was 0-0
+discordant wins for `checkpoint-10240` versus the transfer, and 0-2 in favor
+of the transfer for the final checkpoint. All three remain below the official
+98% threshold of 196/200; these are development measurements, not a final
+assessment.
+
+**Hypothesis assessment:** The hypothesis is weakened: expanding the training
+radius to the official inner-radius range and oversampling the observed hard
+angle sector produced no early improvement and did not preserve the transfer
+level at the final checkpoint. The single disjoint panel does not identify
+which failure mechanisms changed, so it does not prove that coverage is
+irrelevant or that another coverage schedule could not help.
+
+**Interpretation:** The intervention should not replace the experiment-1
+working or best-known lineage. The current experiment-2 code is reverted so
+the scientific surface matches the selected lineage; the measured challenger
+artifacts are not retained because none provides a demonstrated future-use
+advantage. Further training remains an ordinary subsequent experiment, not a
+decision made in this closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-2-checkpoint-100352-200ep-seed10400-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-2-checkpoint-10240-200ep-seed10400-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-2-checkpoint-120832-200ep-seed10400-f48545f83637.json`;
+`research/checkpoints/challengers/c1523389-1363-42a7-b973-1bc6847ac445/experiment-2/inventory.json`.
