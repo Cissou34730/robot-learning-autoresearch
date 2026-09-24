@@ -2,31 +2,27 @@
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned a strong reach-and-hold
-policy, but the best candidate has not yet demonstrated the 98% objective on
-independent development panels. `checkpoint-100352` is the strongest measured
-policy: it achieved 189/200 (94.5%) on each of two disjoint research panels,
-while nearby late checkpoints were no better. Its 196/200 (98%) task-reference
-result is encouraging but comes from the fixed panel used for selection and is
-not independent confirmation. Further development should target the remaining
-failure cases rather than treating the training reward plateau or the
-task-reference score as objective attainment.
+**Current synthesis:** The PPO reach-and-hold policy is competent but remains
+below the objective: `checkpoint-100352` achieved 189/200 (94.5%) on each of
+two disjoint research panels, while continued training to `checkpoint-120832`
+did not improve it. The selected policy's 98% task-reference result is
+development evidence only because that panel was reused for selection. Its
+pooled residual failures include target radii throughout the official 6–20 cm
+range, including targets below the current 14–20 cm training range.
 
 **Lessons and limits:** Direct task success, not training reward, determined the
-lineage choice. The late proxy peak transferred to stable but sub-threshold
-research success, and continued training to `checkpoint-120832` did not improve
-it (188/200 and 187/200 on the two research panels). Pairwise differences were
-small, so the evidence supports selecting `checkpoint-100352` without claiming
-that the baseline recipe or its late-checkpoint ordering is causally optimal.
-The research panels provide 400 distinct episodes for the selected model; the
-fixed task-reference panel remains development evidence only, and the official
-200-episode assessment is still unmeasured.
+lineage choice, and the selected policy is reproducible but sub-threshold.
+Detailed failures include interrupted holds and timeouts, and their geometry
+does not establish that radius coverage is the sole cause. The two research
+panels provide 400 distinct episodes for the selected model; the fixed
+task-reference panel and all development measurements remain insufficient to
+declare the official objective reached.
 
-**Open questions:** Which scientific intervention can reduce the residual
-reach-or-hold failures without sacrificing the broad angular and radial
-coverage learned by the baseline remains unresolved. The current measurements
-do not identify whether those failures are best addressed by reward shaping,
-training distribution, or another learning-method change.
+**Open questions:** Whether exposing training to the full official radial
+distribution improves inner-radius reach-and-hold reliability without reducing
+outer-radius performance remains unresolved. It is also unresolved whether the
+remaining failures primarily reflect target distribution, hold behavior, or
+another learning-method limitation.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
