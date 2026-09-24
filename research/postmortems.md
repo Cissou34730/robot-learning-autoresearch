@@ -2,11 +2,11 @@
 
 ## 8635b3d2-8904-405a-a15e-d72fb56435d8 / Scientific strategy
 
-**Current synthesis:** The baseline learned a strong reach-and-hold policy, but the best measured candidate remains below the 98% human objective. `checkpoint-100352` is the strongest available lineage: it achieved 95.0% on a disjoint 200-episode research panel and 94.375% on the earlier panel, while the later `checkpoint-120832` achieved 93.5% and 94.375%. The 98.0% task-reference result for `checkpoint-100352` was used to select it and is therefore not independent confirmation.
+**Current synthesis:** The baseline learned a strong but sub-target reach-and-hold policy. `checkpoint-100352` is the strongest available lineage, with 95.0% on the disjoint 200-episode panel and 94.375% on the earlier panel, while `checkpoint-120832` reached 93.5% and 94.375%. Across the two panels, 19 of 360 episodes failed; 9 entered tolerance but did not complete the 100-step hold. The 98.0% task-reference result for `checkpoint-100352` was used for selection and is not independent confirmation.
 
-**Lessons and limits:** Training proxies identify the learned transition but do not establish task success: measured success was 93.125% at the reward peak and 94.375–95.0% for the stronger late checkpoints. The paired comparison favors `checkpoint-100352` over `checkpoint-120832` by 3 discordant episodes to 0 across 360 shared episodes, but this is a small behavioral margin and development panels do not establish the official result. The unchanged baseline recipe is a useful starting point for further training, while the cause of the residual failures is unresolved.
+**Lessons and limits:** Training proxies identify the learned transition but do not establish task success: measured success was 93.125% at the reward peak and 94.375–95.0% for the stronger late checkpoints. The paired comparison favors `checkpoint-100352` over `checkpoint-120832` by 3 discordant episodes to 0 across 360 shared episodes, but this is a small behavioral margin and development panels do not establish the official result. Residual failures include both missed reaches and interrupted holds; the current reward gives no forfeiture signal when an in-progress hold is exited.
 
-**Open questions:** Which training or task-coverage change can reduce the remaining failures without repeating the late-training regression, and whether the selected policy's measured 95.0% transfers to the official 200-episode assessment remain unresolved.
+**Open questions:** Whether explicitly valuing uninterrupted hold completion can reduce the remaining failures without damaging reach behavior or recreating the late-training regression remains unresolved. Whether the selected policy's measured 95.0% transfers to the official 200-episode assessment also remains unresolved.
 
 ## 8635b3d2-8904-405a-a15e-d72fb56435d8 / Experiment 1
 
