@@ -3,26 +3,29 @@
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO checkpoint-100352 remains the strongest
-learned policy, with 455/480 successes (94.7917%) across three disjoint
-research panels. The experiment-2 transfer checkpoints each achieved 151/160
-(94.375%) on their new panel, below the parent control's 152/160 (95.00%).
+learned policy. It achieved 158/160 (98.75%) on the experiment-3 disjoint
+control panel, bringing its pooled disjoint development evidence to 613/640
+(95.78125%) across four panels. The experiment-2 transfer recipe and the
+experiment-3 fresh full-radius recipe both failed to improve it.
 Residual failures are concentrated in the negative-angle sector and include
 both failure to reach and occasional hold interruption.
 
 **Lessons and limits:** The baseline trains on radii 14-20 cm, narrower than the
 official 6-20 cm range. The tested transfer recipe combined full-range
-sampling with focused-sector oversampling and was contradicted, so it does not
-settle whether full-range coverage learned from scratch is useful. Training
-proxies have not reliably selected held-out policies; the 98% task-reference
-result for checkpoint-100352 was reused for selection, and every disjoint
-development result remains below the objective. Failure geometry is descriptive
-and does not establish a causal bottleneck.
+sampling with focused-sector oversampling and was contradicted. Fresh uniform
+6-20 cm training was also contradicted: its matched and final checkpoints
+achieved 120/160 (75.0%) and 117/160 (73.125%) while the contemporaneous
+working control achieved 158/160. This is evidence against these tested
+recipes, not against every possible target-coverage method. Training proxies
+have not reliably selected held-out policies; the 98% task-reference result
+for checkpoint-100352 was reused for selection, and every disjoint development
+result remains below the objective. Failure geometry is descriptive and does
+not establish a causal bottleneck.
 
-**Open questions:** Whether uniform full-range training from fresh
-initialization generalizes better than the narrow-range baseline or the
-failed transfer recipe remains unresolved. The relative roles of target
-coverage, representation, and optimization in the residual failures are also
-unknown.
+**Open questions:** The relative roles of target coverage, representation, and
+optimization in the residual failures remain unknown. Further training is an
+ordinary future experiment after closure; experiment 3 does not justify
+retaining its candidates or carrying its full-radius recipe forward.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
@@ -93,3 +96,42 @@ supported to retain as an alternative.
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-2-working-160ep-seed4600-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-2-checkpoint-30720-160ep-seed4600-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-2-checkpoint-120832-160ep-seed4600-f48545f83637.json`.
+
+## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 3
+
+**Result:** Fresh PPO training with uniform target radii over 6-20 cm did
+not produce a useful challenger. The existing `working` checkpoint-100352
+remains selected, the experiment-3 recipe should be reverted, and no
+experiment-3 candidate merits retention.
+
+**Observed behavior:** On the new disjoint 160-episode panel, the
+experiment-3 checkpoint-100352 achieved 120/160 (75.0%) and the final
+checkpoint-120832 achieved 117/160 (73.125%). The matched working control
+achieved 158/160 (98.75%). The paired comparisons favored `working` by net
+wins of 38 and 41 episodes, respectively. The fresh run's training-success
+proxy remained at 0.01 at both measured late checkpoints, so its rising
+training reward did not indicate comparable held-out task success.
+
+**Hypothesis assessment:** Contradicted under the tested fresh
+uniform-full-radius recipe. The predicted improvement over the narrow-radius
+policy was absent; both measured challengers were 23.75 to 25.625 percentage
+points worse than the contemporaneous control, and the final checkpoint was
+slightly worse than the matched checkpoint. This rejects the tested recipe as
+the next development direction, but does not prove that every fresh
+full-range curriculum or target-coverage intervention will fail.
+
+**Interpretation:** The working lineage is the best-supported reusable policy,
+but its independent pooled disjoint evidence is still 613/640 (95.78125%),
+below the 98% human objective. The fixed task-reference result is not
+independent confirmation because it was used during selection. Closure should
+therefore preserve `working` and the existing `best_known` designation,
+restore the parent's scientific recipe, discard the experiment-3 challengers,
+and leave any further training to a future ordinary experiment rather than
+requesting the final benchmark now.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`,
+`research/checkpoints/challengers/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/experiment-3/inventory.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-3-working-160ep-seed4800-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d3938ddeb1-experiment-3-checkpoint-100352-160ep-seed4800-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-3-checkpoint-120832-160ep-seed4800-f48545f83637.json`.
