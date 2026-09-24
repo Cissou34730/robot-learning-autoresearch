@@ -1,90 +1,19 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/8635b3d2-8904-405a-a15e-d72fb56435d8/e1-cada55eb5-2220c023097f53c97b4377928ec589a9f09e3d813c99067fcc0727ee69652336",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/8635b3d2-8904-405a-a15e-d72fb56435d8/evaluation-8635b3d2-8904-405a-a15e-d72fb56435d8-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/8635b3d2-8904-405a-a15e-d72fb56435d8/evaluation-8635b3d2-8904-405a-a15e-d72fb56435d8-experiment-1-checkpoint-100352-200ep-seed4360-f48545f83637.json",
-      "research/evaluations/8635b3d2-8904-405a-a15e-d72fb56435d8/task-reference-8635b3d2-8904-405a-a15e-d72fb56435d8-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "2220c023097f53c97b4377928ec589a9f09e3d813c99067fcc0727ee69652336",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the best disjoint research result (190/200, 95.0%), pooled research result (341/360, 94.72%), and task-reference result (98.0%). The task-reference score was used for selection and is not treated as independent confirmation.",
-    "scientific_commit": "140e84b25e1ea47e5a2fbbbe5cc12e72868e1e51",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4360
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "b38eeeefac3c107b3475f8de8e19ee8ff66a4358",
-    "id": "8635b3d2-8904-405a-a15e-d72fb56435d8",
+    "base_commit": "e73f5b83df560841618e5acf97127083083f5619",
+    "id": "6dab7993-582d-4243-b0a2-f935e51c2728",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T17:09:33.475065+00:00"
+    "started_at": "2026-09-24T21:07:07.610694+00:00"
   },
-  "campaign_conclusion": {
-    "action": "no_further_experiment",
-    "reason": "The experiment budget is exhausted. The retained 64x64 PPO checkpoint-100352 is the strongest supported policy, but it achieved 1314/1360 (96.62%) across seven disjoint development panels and 192/200 on the latest panel, below the 98% objective. The task-reference result of 98.0% was used for selection and is not independent confirmation. The tested reward, target-coverage, capacity, replication, and reduced-learning-rate routes did not produce a supported successor, so no further experiment is warranted within this campaign."
-  },
+  "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "8635b3d2-8904-405a-a15e-d72fb56435d8": 6
+    "6dab7993-582d-4243-b0a2-f935e51c2728": 0
   },
-  "last_allocated_experiment": 6,
-  "last_experiment": 6,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Experiment 6 changed only PPO learning_rate from 0.0003 to 0.0001, and the continuation contradicted the expected preservation or improvement of the parent. Restore the parent's complete scientific recipe."
-    },
-    "code_parent_commit": "dc5b2849c7ce70f33f1f31d904894428a63de253",
-    "continue_from": "working",
-    "experiment": 6,
-    "reason": "The retained checkpoint-100352 working policy remains stronger than both measured reduced-learning-rate challengers on the disjoint episodes 5360-5559: 192/200 versus 181/200 and 180/200, with paired wins of 11-0 and 12-0. Preserve it as the active policy for a separate future experiment."
-  },
-  "last_verdict": "researcher concluded that no further experiment is warranted",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -94,97 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "dc5b2849c7ce70f33f1f31d904894428a63de253",
-    "experiment": 6,
-    "scientific_commit": "e9c2610ec92b682792a4b62b57673d7869906489"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "no_further_experiment",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/8635b3d2-8904-405a-a15e-d72fb56435d8/e1-cada55eb5-2220c023097f53c97b4377928ec589a9f09e3d813c99067fcc0727ee69652336",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/8635b3d2-8904-405a-a15e-d72fb56435d8/evaluation-8635b3d2-8904-405a-a15e-d72fb56435d8-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/8635b3d2-8904-405a-a15e-d72fb56435d8/evaluation-8635b3d2-8904-405a-a15e-d72fb56435d8-experiment-1-checkpoint-100352-200ep-seed4360-f48545f83637.json"
-    ],
-    "fingerprint": "2220c023097f53c97b4377928ec589a9f09e3d813c99067fcc0727ee69652336",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The retained checkpoint-100352 working policy remains stronger than both measured reduced-learning-rate challengers on the disjoint episodes 5360-5559: 192/200 versus 181/200 and 180/200, with paired wins of 11-0 and 12-0. Preserve it as the active policy for a separate future experiment.",
-    "scientific_commit": "140e84b25e1ea47e5a2fbbbe5cc12e72868e1e51",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4360
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4560
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4760
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4960
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5160
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5360
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
