@@ -2,34 +2,31 @@
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Scientific strategy
 
-**Current synthesis:** The working 100352-step PPO policy remains the best
-supported lineage at 682/700 (97.4%) over four distinct research panels; the
-retained 120832-step policy has 484/500 (96.8%). The experiment-2
-105472-step candidate scored 199/200 on its selection panel and 195/200 on a
-disjoint panel, exactly matching the prior working policy in a paired
-comparison with zero discordant episodes. The selection-panel score is not
-independent evidence, so the radius-expanded candidate does not justify
-replacing the working or best-known lineage.
+**Current synthesis:** The working 100352-step PPO policy remains the strongest
+supported lineage at 682/700 (97.4%) over four distinct research panels. The
+expanded-radius 105472-step policy scored 199/200 on its selection panel and
+195/200 on a disjoint paired panel, exactly matching working with zero
+discordant episodes, so it has not displaced the working or best-known lineage.
+The residual failures are concentrated in negative-angle episodes rather than
+being explained by the late checkpoint or by the former radius floor alone.
 
-**Lessons and limits:** Expanding training radii from 0.14-0.20 m to the
-official 0.06-0.20 m range produced no measured improvement over the prior
-lineage. On the disjoint panel, both policies failed the same five
-negative-angle episodes; the failures ended on the open branch after one
-switch, with at least 99.6% saturated control and negative joint-limit
-margin. Two episodes briefly reached the target for one hold step and three
-did not reach, and three of the five failed targets were within the old
+**Lessons and limits:** On the disjoint panel, both policies shared five
+failures ending on the open branch after one switch, with 99.6-100% saturated
+control and negative joint-limit margin; three were no-reach outcomes and two
+held for only one step. Three failed targets were within the old 0.14-0.20 m
 training range. The frozen model establishes branch ambiguity, joint limits,
-clipped 50 Hz torque control, and the 100-sample hold requirement, but it does
-not establish which of branch selection, actuation, or stabilization caused
-the observed failures. The fixed task-reference panel remains
-selection-contaminated and development measurements remain non-final.
+clipped 50 Hz torque control, and the 100-sample hold requirement, while the
+realized diagnostics associate the shortfall with a constrained transient
+without proving whether branch choice, actuation, or stabilization is causal.
+Development measurements remain non-final and the fixed task-reference panel
+is selection-contaminated.
 
-**Open questions:** The radius-only explanation is weakened but not
-eliminated; the shared branch-switch, saturation, and limit-margin signature
-leaves branch choice, constrained transient control, and hold stabilization
-unresolved. The measurements support retaining a reusable expanded-radius
-candidate, but another saved-policy panel would not distinguish those causes
-or change the present lineage decision.
+**Open questions:** Whether a policy trained to avoid joint-limit excursions
+can select and stabilize an admissible branch on the difficult negative-angle
+trajectories remains unresolved. The relative contributions of branch
+selection, torque saturation, and post-entry hold regulation are also
+unresolved; the current evidence does not establish that any one is
+sufficient.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
