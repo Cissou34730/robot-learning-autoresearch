@@ -1,13 +1,5 @@
 # Research postmortems
 
-## 229ee49c-81d2-4d70-b9d1-83d2c786555a / Scientific strategy
-
-**Current synthesis:** The PPO baseline remains a strong but uneven reach-and-hold policy: `working`/`best_known` (`checkpoint-100352`) has 623/640 successes (97.3%) across four distinct research panels, below the 196/200 objective. Broadening the training-radius distribution produced no paired change, and penalizing interrupted holds produced no proxy-peak gain before a severe late decline; the saved parent remains the strongest reusable lineage.
-
-**Lessons and limits:** Training reward and success proxies identify candidates but are not task scores: experiment 3's proxy peak matched the parent at 158/160, while its final checkpoint fell to 124/160 with 34 paired losses. The measured failures still include missed tolerance and interrupted holds, so neither reward intervention isolated a reliable cause of residual errors. All development panels, including the fixed task-reference panel, remain non-official evidence and do not establish objective attainment.
-
-**Open questions:** The evidence does not establish whether later optimization can improve the selected policy without the late-training degradation seen in prior continuations, nor whether the selected lineage meets the separate official 200-episode assessment.
-
 ## 229ee49c-81d2-4d70-b9d1-83d2c786555a / Experiment 1
 
 **Result:** The baseline produced a useful policy, with `checkpoint-100352` selected as the working and best-known lineage; no final benchmark is requested.

@@ -373,7 +373,9 @@ than inherited as a published terminal state.
 **Phase:** Experiment closure.
 
 In the same file, maintain one revisable section for the active campaign. It can
-also be edited during experiment preparation. The exact heading and labels are:
+also be edited during experiment preparation. Revise the existing section in
+place rather than appending another section with the same campaign heading.
+The exact heading and labels are:
 
 ```markdown
 ## <Campaign ID> / Scientific strategy

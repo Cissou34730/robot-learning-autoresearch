@@ -537,6 +537,11 @@ def check_analysis_deliverable() -> int:
         pending = state.get("pending_analysis")
         if state.get("schema_version") != 4 or not isinstance(pending, dict):
             raise TypeError("no experiment is awaiting post-training analysis")
+        if paths.POSTMORTEM_PATH.exists():
+            protocol.scientific_strategy_section(
+                paths.POSTMORTEM_PATH.read_text(encoding="utf-8"),
+                repository.current_campaign_id(state),
+            )
         measurement_valid = False
         closure_valid = False
         if paths.EVALUATION_REQUEST_PATH.exists():

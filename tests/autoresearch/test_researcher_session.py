@@ -352,6 +352,42 @@ def test_launcher_stops_for_either_terminal_official_assessment():
     assert "break" in terminal_guard
 
 
+def test_analysis_preflight_rejects_duplicate_strategy_before_accepting_closure(
+    tmp_path, monkeypatch, capsys
+):
+    from research import run_experiment, runner_paths
+
+    campaign_id = "current"
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": campaign_id},
+        "pending_analysis": {"experiment": 4},
+    }
+    strategy = f"## {campaign_id} / Scientific strategy\n\n**Current synthesis:** Current.\n"
+    postmortems = tmp_path / "postmortems.md"
+    postmortems.write_text(strategy + "\n" + strategy, encoding="utf-8")
+    proposal = tmp_path / "proposal.json"
+    proposal.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(runner_paths, "POSTMORTEM_PATH", postmortems)
+    monkeypatch.setattr(runner_paths, "PROPOSAL_PATH", proposal)
+    monkeypatch.setattr(
+        runner_paths, "EVALUATION_REQUEST_PATH", tmp_path / "evaluation_request.json"
+    )
+    monkeypatch.setattr(run_experiment.repository, "read_state", lambda: state)
+    monkeypatch.setattr(run_experiment, "reanchor_phase_parent", lambda _: None)
+    monkeypatch.setattr(
+        run_experiment.protocol, "validate_proposal_against_state", lambda *_: None
+    )
+    monkeypatch.setattr(run_experiment, "validate_research_delta", lambda _: None)
+
+    assert run_experiment.check_analysis_deliverable() == 1
+    assert "duplicate scientific strategy sections" in capsys.readouterr().out
+
+    postmortems.write_text(strategy, encoding="utf-8")
+    assert run_experiment.check_analysis_deliverable() == 0
+    assert "ANALYSIS_DELIVERABLE_VALID: closure" in capsys.readouterr().out
+
+
 # --- the evaluation-request preflight --------------------------------------
 
 

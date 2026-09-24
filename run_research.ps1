@@ -854,6 +854,7 @@ if ($ResearcherBackend -eq "opencode") {
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
             $scientificModelUseGuidance
             "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
+            "If updating the current campaign's Scientific strategy in research/postmortems.md, revise the existing section in place; do not append a second section with the same heading."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
             "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
