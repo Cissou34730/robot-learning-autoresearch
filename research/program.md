@@ -75,18 +75,13 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
-Compare observed behavior with the frozen scientific model's established facts,
-physical consequences, and unknowns. Use distinctions from the model to form or
-separate plausible questions, not as evidence of what a policy did. If the model
-offers no useful distinction for the current question, state that rather than
-inventing a physical explanation.
-
-Evidence gathering may discover or refine the scientific question. The
-Researcher may inspect code, logs and artifacts, perform lightweight analysis,
-and create or modify researcher-owned analysis and measurement instrumentation.
-If the quantity you need is not emitted, modify researcher-owned instrumentation
-before requesting it. Measurements remain optional; do not collect evidence only
-to satisfy a proposal format.
+Use the frozen scientific model to frame questions, interpret observations, and
+design analysis or measurements. Evidence gathering may discover or refine the
+scientific question. The Researcher may inspect code, logs and artifacts, use
+existing tools, perform lightweight analysis, and create or modify
+researcher-owned analysis and measurement instrumentation. If the quantity you
+need is not emitted, modify researcher-owned instrumentation before requesting
+it. Measurements remain optional.
 
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
@@ -164,11 +159,7 @@ For training or continuation, explain how the selected code, parameters, or
 further learning might change the policy's behavior and how to compare that
 behavior and complete task success against a saved reference. If the proposal
 claims to address specific failures, distinguish those it might affect from
-those it cannot. Start from the observed limitation the intervention is meant to
-affect, not from whichever configurable lever is easiest to describe. If it
-targets something other than the dominant measured limitation, explain why that
-target is still the better route to the human objective or investigate the
-mismatch first. An uncertain intervention may test an open question; do not
+those it cannot. An uncertain intervention may test an open question; do not
 invent a mechanism or switch levers merely to justify another experiment.
 Record this in the training proposal using the contract in
 `research/instruments.md`. Reward, observations, action mapping, learning
@@ -226,11 +217,9 @@ evidence or a specific unresolved question makes it informative.
 
 During this phase, request measurements of current candidates or eligible saved
 lineages through `research/evaluation_request.json`. Researcher-owned measurement
-instrumentation may be changed when needed. If the quantity needed to understand
-the result is not emitted, create or modify researcher-owned analysis or
-measurement instrumentation before requesting the next round. Each completed
-round returns to analysis with prior measurements available; reconsider the
-decision in light of the new evidence rather than assuming closure is next.
+instrumentation may be changed when needed. Each completed round returns to
+analysis with prior measurements available; reconsider the decision in light of
+the new evidence rather than assuming closure is next.
 
 A measurement request is also available during experiment preparation, but its
 scope is narrower: it may measure only saved lineages (`working`, `best_known`,

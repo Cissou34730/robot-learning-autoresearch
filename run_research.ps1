@@ -130,8 +130,8 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
     throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
 }
 
-$scientificModelUseGuidance = "Read research/scientific_model.md as fixed context for the robot and task. Compare observed behavior with its established facts, physical consequences, and unknowns; do not merely cite it, and do not infer what a policy did from the model alone. If it offers no useful distinction for the current question, say so rather than inventing one."
-$researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
+$scientificModelUseGuidance = "Use research/scientific_model.md to frame questions, interpret observations, and design analysis or measurements."
+$researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, use existing tools, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -1210,8 +1210,7 @@ The final output should be a compact but substantive **Scientific model of the r
         $scientificModelUseGuidance
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
         $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
-        "Use reasoning.scientific_model to record a model distinction that informs the proposal; omit it when the model offers no useful distinction rather than inventing a physical explanation."
-        "Begin with the observed behavior, not with an available configurable lever. For training or continuation, identify the limitation the change is meant to affect, then connect the change to possible learned behavior and a complete-task comparison. If it does not target the dominant measured limitation, explain why it is still the better route to the human objective or investigate the mismatch first. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
+        "For training or continuation, connect the proposed change to possible learned behavior and a complete-task comparison. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
