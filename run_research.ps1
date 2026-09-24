@@ -1234,7 +1234,7 @@ The final output should be a compact but substantive **Scientific model of the r
                 ""
             }
             else {
-                "Code or configuration edits are required only when the selected operation calls for them."
+                "The current implementation is a starting point, not a prescribed method. You have a total freedom in the researcher perimeter. You may change code, implementations, configuration values, anywhere in the researcher-owned scientific surface, including the reward, training environment, observations, action mapping, learning method, training procedure, evaluation, and instrumentation. You can add and remove, change and transform."
             })
         $(if ($budgetReached) {
                 "Expected deliverable: research/proposal.json containing only a campaign_conclusion, using the contract in research/instruments.md."
