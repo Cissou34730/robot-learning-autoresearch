@@ -1,105 +1,19 @@
 {
-  "best_known_designation_counter": 2,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/e2-ca3d05779-14d326846eddd86a8f99b6455616156669223e9ed3d34188cec6b4dd340d7370",
-    "candidate": "checkpoint-105472",
-    "designation_ordinal": 2,
-    "evaluation_artifacts": [
-      "research/evaluations/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/evaluation-b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2-experiment-2-checkpoint-105472-200ep-seed2400-f48545f83637.json",
-      "research/evaluations/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/evaluation-b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2-experiment-3-working-200ep-seed2600-f48545f83637.json",
-      "research/evaluations/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/task-reference-b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2-experiment-2-checkpoint-105472-task-reference-v1.json"
-    ],
-    "fingerprint": "14d326846eddd86a8f99b6455616156669223e9ed3d34188cec6b4dd340d7370",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the selected working policy, has the strongest current disjoint-panel result at 196/200, and has a slightly higher pooled research rate than the existing best-known policy. This designation is development-only and does not claim official objective attainment.",
-    "scientific_commit": "0806e184aebdb561e4d2d13387747225b853bf3c",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2400
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2600
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2800
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3200
-      }
-    ],
-    "training_steps": 200704
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "37a171909b11776b822052e04ffef42f2b052373",
-    "id": "b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2",
+    "base_commit": "7cf8fcdd7b5806ba6a267eeaa01e5e9b1d78085e",
+    "id": "c1523389-1363-42a7-b973-1bc6847ac445",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T00:23:58.411496+00:00"
+    "started_at": "2026-09-24T08:55:56.112011+00:00"
   },
-  "campaign_conclusion": {
-    "action": "no_further_experiment",
-    "reason": "The standing best-known checkpoint-105472 is strong but variable at 974/1000 (97.4%) across five disjoint development panels, with 195/200 on the latest matched control panel. Fresh replication and the tested continuation interventions underperformed it, and unreliable training proxies plus repeated late-training degradation provide no basis to expect the official 98% verdict. The experiment budget is exhausted, and requesting the official assessment merely to resolve this uncertainty is not warranted."
-  },
+  "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2": 6
+    "c1523389-1363-42a7-b973-1bc6847ac445": 0
   },
-  "last_allocated_experiment": 6,
-  "last_experiment": 6,
-  "last_lineage_decision": {
-    "best_known": "working",
-    "code": {
-      "action": "restore",
-      "reason": "The short-radius-focused target sampler was contradicted by both measured continuation checkpoints. Restore the complete working lineage recipe so the selected policy and its scientific provenance remain aligned."
-    },
-    "code_parent_commit": "6a1986a57457c265f8e44814395b9fb81079f352",
-    "continue_from": "working",
-    "experiment": 6,
-    "reason": "The unchanged working lineage achieved 195/200 on the new disjoint 3200-3399 panel, while the focused-curriculum checkpoints achieved 193/200 and 181/200. Paired comparisons favored the parent 2-0 and 14-0, so checkpoint-105472 remains the most useful policy. Its 974/1000 pooled result across five disjoint development panels is strong but variable and does not establish the official 98% objective."
-  },
-  "last_verdict": "researcher concluded that no further experiment is warranted",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -109,144 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "6a1986a57457c265f8e44814395b9fb81079f352",
-    "experiment": 6,
-    "scientific_commit": "9bbce613202738073d7297dd0cb10f71980f8dc1"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/e1-c8cf701d5-db6794e53d41f0a31f04f19c612d7da014ed07d7adb5c351c3b1f07fff101dd7",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/evaluation-b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2-experiment-1-checkpoint-120832-200ep-seed2000-f48545f83637.json",
-        "research/evaluations/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/evaluation-b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2-experiment-1-checkpoint-120832-200ep-seed2200-f48545f83637.json"
-      ],
-      "fingerprint": "db6794e53d41f0a31f04f19c612d7da014ed07d7adb5c351c3b1f07fff101dd7",
-      "id": "baseline-final-120832",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It is a close alternative with 97.0% on both research panels and 97.0% on the fixed task-reference panel, and therefore preserves a useful late-training policy for future comparison or continuation despite trailing checkpoint-95232 on pooled research evidence.",
-      "scientific_commit": "75cb5e092d3a3f0704cea0b590e03b3b8865ea83",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 2000
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 2200
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 120832
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "no_further_experiment",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/e2-ca3d05779-14d326846eddd86a8f99b6455616156669223e9ed3d34188cec6b4dd340d7370",
-    "candidate": "checkpoint-105472",
-    "evaluation_artifacts": [
-      "research/evaluations/b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2/evaluation-b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2-experiment-2-checkpoint-105472-200ep-seed2400-f48545f83637.json"
-    ],
-    "fingerprint": "14d326846eddd86a8f99b6455616156669223e9ed3d34188cec6b4dd340d7370",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The unchanged working lineage achieved 195/200 on the new disjoint 3200-3399 panel, while the focused-curriculum checkpoints achieved 193/200 and 181/200. Paired comparisons favored the parent 2-0 and 14-0, so checkpoint-105472 remains the most useful policy. Its 974/1000 pooled result across five disjoint development panels is strong but variable and does not establish the official 98% objective.",
-    "scientific_commit": "0806e184aebdb561e4d2d13387747225b853bf3c",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2400
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2600
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2800
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3200
-      }
-    ],
-    "training_steps": 200704
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
