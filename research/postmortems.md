@@ -2,24 +2,27 @@
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned a useful reach-and-hold
-policy, but current development evidence remains below the 98% objective.
-Among the measured late checkpoints, checkpoint-100352 is the strongest
-available policy: it achieved 303/320 successes (94.6875%) across two disjoint
-research panels and retained a small paired advantage over checkpoint-120832.
+**Current synthesis:** The unchanged PPO baseline learned a strong but
+sub-target reach-and-hold policy. The working and best-known checkpoint-100352
+achieved 303/320 successes (94.6875%) across two disjoint research panels,
+while the retained checkpoint-120832 achieved 301/320. In the pooled
+diagnostics, all 17 working-policy failures occurred in the -180 to -90 degree
+target-angle quadrant.
 
-**Lessons and limits:** Training proxies marked the transition to useful
-behavior, but they did not establish the human objective; the reward-peak
-checkpoint was weaker than the late checkpoints. The fixed task-reference
-panel reported 98% for checkpoint-100352, but it was used for candidate
-selection and is permanently reused, so it is not independent confirmation.
-The disjoint research panels provide the independent closure comparison, not an
-official result.
+**Lessons and limits:** Late training proxies tracked useful behavior but did
+not establish the human objective, and continuing the baseline beyond
+checkpoint-100352 did not improve independent success. The fixed
+task-reference result of 98% for checkpoint-100352 was reused for selection,
+so it is not independent confirmation. The baseline training distribution
+also covered only 14-20 cm, narrower than the official 6-20 cm range; the
+failure geometry is descriptive of 320 development episodes and does not
+establish causality.
 
-**Open questions:** The residual failures and the best intervention for closing
-the gap to 98% remain unresolved. The retained final checkpoint provides a
-future comparison point, while further training or a changed recipe must be
-evaluated separately after this closure.
+**Open questions:** Whether broader radius coverage and greater exposure to
+the observed difficult angular sector improve held-out reach-and-hold success
+without sacrificing performance elsewhere remains unresolved. It is also
+unknown whether the remaining failures are primarily a target-coverage issue
+or a limitation of the learned representation and optimization.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
