@@ -4,28 +4,25 @@
 
 **Current synthesis:** The unchanged PPO checkpoint-100352 remains the
 strongest learned policy, with 929/960 (96.77%) pooled successes across six
-disjoint research panels. It reached 157/160 (98.125%) on the latest
-disjoint panel, but development measurements do not establish the official
-98% result. The three target-sampling interventions and the hold-exit reward
-intervention did not improve it. Remaining failures are concentrated in the
-negative-angle sector and include both failure to reach and interruption after
-reaching.
+disjoint research panels. Its latest panel result was 157/160 (98.125%), but
+development measurements do not establish the official result. The tested
+target-sampling and hold-exit reward changes did not improve the policy, whose
+remaining failures are concentrated in the negative-angle sector and include
+both failure to reach and interruption after reaching.
 
 **Lessons and limits:** The baseline trains on radii 14-20 cm rather than the
-official 6-20 cm range, but the tested transfer and fresh full-range sampling
-recipes were contradicted, focused-angle transfer tied the parent early then
-degraded, and HOLD_EXIT_FORFEIT_FRACTION=0.5 was contradicted by both measured
-continuation checkpoints. Training proxies have not reliably selected held-out
-policies; the reused task-reference result cannot provide independent
-confirmation, and pooled disjoint evidence remains below the objective.
-Failure geometry is descriptive and does not establish whether coverage,
-reward, representation, or optimization is causal.
+official 6-20 cm range, yet both tested full-range recipes were contradicted;
+focused-angle transfer tied the parent early then degraded, and
+HOLD_EXIT_FORFEIT_FRACTION=0.5 was contradicted at both measured checkpoints.
+Training proxies have not reliably selected held-out policies, the reused
+task-reference result is not independent confirmation, and pooled disjoint
+evidence remains below the objective. Failure geometry is descriptive and does
+not identify coverage, reward, representation, or optimization as causal.
 
-**Open questions:** It remains unknown which representation, optimization, or
-training-signal change can address the residual negative-angle failures without
-sacrificing the established behavior. The latest evidence weakens the specific
-hold-exit forfeiture explanation, but does not resolve whether another
-hold-sensitive intervention could help.
+**Open questions:** It remains unresolved whether the residual negative-angle
+failures reflect insufficient policy capacity or an optimization limitation,
+and whether either can be improved without sacrificing the established
+behavior elsewhere.
 
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 1
 
