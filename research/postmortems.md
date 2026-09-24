@@ -3,24 +3,26 @@
 ## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO checkpoint-100352 remains the strongest
-learned policy. It achieved 158/160 (98.75%) on the experiment-3 disjoint
-control panel, bringing its pooled disjoint development evidence to 613/640
-(95.78125%) across four panels. The experiment-2 transfer recipe and the
-experiment-3 fresh full-radius recipe both failed to improve it.
-Residual failures are concentrated in the negative-angle sector and include
-both failure to reach and occasional hold interruption.
+learned policy. It achieved 159/160 (99.375%) on the experiment-4 disjoint
+control panel, bringing its pooled disjoint development evidence to 772/800
+(96.5%) across five panels. The experiment-2 transfer recipe, experiment-3
+fresh full-radius recipe, and experiment-4 focused-angle transfer all failed
+to improve it. Residual failures remain concentrated in the negative-angle
+sector and include both failure to reach and occasional hold interruption.
 
 **Lessons and limits:** The baseline trains on radii 14-20 cm, narrower than the
 official 6-20 cm range. The tested transfer recipe combined full-range
 sampling with focused-sector oversampling and was contradicted. Fresh uniform
 6-20 cm training was also contradicted: its matched and final checkpoints
 achieved 120/160 (75.0%) and 117/160 (73.125%) while the contemporaneous
-working control achieved 158/160. This is evidence against these tested
-recipes, not against every possible target-coverage method. Training proxies
-have not reliably selected held-out policies; the 98% task-reference result
-for checkpoint-100352 was reused for selection, and every disjoint development
-result remains below the objective. Failure geometry is descriptive and does
-not establish a causal bottleneck.
+working control achieved 158/160. Experiment 4's focused-angle checkpoint
+tied the working control at 159/160, while its final checkpoint fell to
+156/160. These results are evidence against the tested recipes, not against
+every possible target-coverage method. Training proxies have not reliably
+selected held-out policies; the 98% task-reference result for checkpoint-100352
+was reused for selection, and the pooled disjoint development result remains
+below the objective. Failure geometry is descriptive and does not establish a
+causal bottleneck.
 
 **Open questions:** The relative roles of angular exposure, target-radius
 coverage, representation, and optimization in the residual failures remain
@@ -135,3 +137,41 @@ requesting the final benchmark now.
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-3-working-160ep-seed4800-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d3938ddeb1-experiment-3-checkpoint-100352-160ep-seed4800-f48545f83637.json`,
 `research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-3-checkpoint-120832-160ep-seed4800-f48545f83637.json`.
+
+## 93fca4d6-78e6-41ed-a38d-36d3938ddeb1 / Experiment 4
+
+**Result:** Focused negative-angle training did not improve the working
+policy. The existing `working` and `best_known` checkpoint-100352 lineages
+remain selected, the changed recipe should be reverted, and no experiment-4
+candidate merits retention.
+
+**Observed behavior:** On the new disjoint panel covering episodes 5000-5159,
+the working control and experiment-4 checkpoint-5120 both achieved 159/160
+(99.375%), with no discordant paired episodes. The final checkpoint-120832
+achieved 156/160 (97.5%); the working policy won all three discordant paired
+episodes. The working lineage now has 772/800 pooled successes (96.5%) across
+five disjoint research panels, which remains below the 98% objective.
+
+**Hypothesis assessment:** Contradicted under the tested focused-angle
+continuation. Oversampling the observed -180 to -90 degree sector produced no
+held-out gain at the early proxy checkpoint and degraded performance after the
+full continuation. The tied early-checkpoint score does not independently
+justify selecting that lineage because the same panel supplied the selection
+evidence; it only supports retaining the established parent. This does not
+rule out every intervention on angular exposure, representation, or
+optimization.
+
+**Interpretation:** Preserve checkpoint-100352 as both working and best known,
+restore the parent's scientific recipe, and discard the experiment-4
+challengers. The latest panel independently confirms strong behavior for the
+established lineage, but the pooled evidence is still below the human
+objective, so the irreversible final benchmark should not be requested.
+Further training belongs to a future ordinary experiment after this closure.
+
+**Evidence inspected:** `research/brief.md`,
+`research/results.jsonl`,
+`research/checkpoints/challengers/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/experiment-4/inventory.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-4-working-160ep-seed5000-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-4-checkpoint-5120-160ep-seed5000-f48545f83637.json`,
+`research/evaluations/93fca4d6-78e6-41ed-a38d-36d3938ddeb1/evaluation-93fca4d6-78e6-41ed-a38d-36d3938ddeb1-experiment-4-checkpoint-120832-160ep-seed5000-f48545f83637.json`,
+`research/scenario.md`.
