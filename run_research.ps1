@@ -130,8 +130,8 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
     throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
 }
 
-$scientificModelUseGuidance = "Read research/scientific_model.md as fixed context for the robot and task, and use it when relevant. Ground conclusions about training, parameter choices, and policy performance in the current campaign configuration, logs, and measurements; do not infer training outcomes from the scientific model."
-$scientificModelDecisionGuidance = "Ground physical claims in research/scientific_model.md and observed campaign evidence; the model alone does not establish what a policy did. Request a measurement only when its possible outcomes could change the next decision."
+$scientificModelUseGuidance = "Read research/scientific_model.md as fixed context for the robot and task. Compare observed behavior with its established facts, physical consequences, and unknowns; do not merely cite it, and do not infer what a policy did from the model alone. If it offers no useful distinction for the current question, say so rather than inventing one."
+$researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -855,7 +855,7 @@ if ($ResearcherBackend -eq "opencode") {
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
             $scientificModelUseGuidance
             "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
-            $scientificModelDecisionGuidance
+            $researchFreedomGuidance
             "If updating the current campaign's Scientific strategy in research/postmortems.md, revise the existing section in place; do not append a second section with the same heading."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
             "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
@@ -938,6 +938,7 @@ if ($ResearcherBackend -eq "opencode") {
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
                 $scientificModelUseGuidance
+                $researchFreedomGuidance
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
                 "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
             ) -join " "
@@ -1208,9 +1209,9 @@ The final output should be a compact but substantive **Scientific model of the r
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
         $scientificModelUseGuidance
         "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
-        $scientificModelDecisionGuidance
-        "Use reasoning.scientific_model only if relevant; do not invent a physical explanation to justify training."
-        "For training or continuation, connect the proposed change to possible learned behavior and a complete-task comparison. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
+        $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
+        "Use reasoning.scientific_model to record a model distinction that informs the proposal; omit it when the model offers no useful distinction rather than inventing a physical explanation."
+        "Begin with the observed behavior, not with an available configurable lever. For training or continuation, identify the limitation the change is meant to affect, then connect the change to possible learned behavior and a complete-task comparison. If it does not target the dominant measured limitation, explain why it is still the better route to the human objective or investigate the mismatch first. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
