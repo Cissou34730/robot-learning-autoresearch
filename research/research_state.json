@@ -1,198 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/229ee49c-81d2-4d70-b9d1-83d2c786555a/e1-cada55eb5-54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/229ee49c-81d2-4d70-b9d1-83d2c786555a/evaluation-229ee49c-81d2-4d70-b9d1-83d2c786555a-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/229ee49c-81d2-4d70-b9d1-83d2c786555a/evaluation-229ee49c-81d2-4d70-b9d1-83d2c786555a-experiment-1-checkpoint-100352-160ep-seed5000-f48545f83637.json",
-      "research/evaluations/229ee49c-81d2-4d70-b9d1-83d2c786555a/task-reference-229ee49c-81d2-4d70-b9d1-83d2c786555a-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the best-supported saved policy: it matches the final checkpoint on the original research panel, scores higher on the disjoint panel, and has the stronger training-success proxy. The task-reference panel is reused and is not treated as independent confirmation.",
-    "scientific_commit": "45fcf7fb0cb908f463b3c3bde680ae7ab9b31ca4",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 5000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "ee1cb8ad345311bdf7f38447612641a21d24d6ce",
-    "id": "229ee49c-81d2-4d70-b9d1-83d2c786555a",
+    "base_commit": "8f8eaa6444aa691f3ce0bf5d64aa0f809a7fee0d",
+    "id": "e0fec0e7-77ed-4433-97cd-1944e1b15eca",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-23T22:12:40.554425+00:00"
+    "started_at": "2026-09-24T06:49:27.217703+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "229ee49c-81d2-4d70-b9d1-83d2c786555a": 5
+    "e0fec0e7-77ed-4433-97cd-1944e1b15eca": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "keep",
-      "reason": "Experiment 5 made no researcher-owned code or parameter changes. Keep the complete unchanged PPO recipe associated with the established working lineage."
-    },
-    "code_parent_commit": "c8f5801aab2aa067b10ea5a9de745688744d13e6",
-    "continue_from": "working",
-    "experiment": 5,
-    "reason": "The fresh unchanged-recipe replication scored 148/200 at checkpoint-100352 and 136/200 at checkpoint-120832 on the disjoint seed-9000 panel, while working scored 196/200. The challengers therefore provide no basis to replace the established working lineage, and the final replication checkpoint degraded after the earlier proxy plateau."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/229ee49c-81d2-4d70-b9d1-83d2c786555a/e1-cada55eb5-54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-    "fingerprint": "54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "c8f5801aab2aa067b10ea5a9de745688744d13e6",
-    "experiment": 5,
-    "scientific_commit": "85b746c6e9ce18aa7ccfe6a41b5d70f8e1a9486b"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/229ee49c-81d2-4d70-b9d1-83d2c786555a/e1-cada55eb5-54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/229ee49c-81d2-4d70-b9d1-83d2c786555a/evaluation-229ee49c-81d2-4d70-b9d1-83d2c786555a-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/229ee49c-81d2-4d70-b9d1-83d2c786555a/evaluation-229ee49c-81d2-4d70-b9d1-83d2c786555a-experiment-1-checkpoint-100352-160ep-seed5000-f48545f83637.json"
-    ],
-    "fingerprint": "54304e2b763a026b6ed35e3e5135db51fc07922bfd962908a4d1948c7d7b5c15",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The fresh unchanged-recipe replication scored 148/200 at checkpoint-100352 and 136/200 at checkpoint-120832 on the disjoint seed-9000 panel, while working scored 196/200. The challengers therefore provide no basis to replace the established working lineage, and the final replication checkpoint degraded after the earlier proxy plateau.",
-    "scientific_commit": "45fcf7fb0cb908f463b3c3bde680ae7ab9b31ca4",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 5000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 6000
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 7000
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 8000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 9000
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
