@@ -196,7 +196,9 @@ def git_bytes(commit: str, relative: str) -> bytes:
     return bytes(git("show", f"{commit}:{relative}", text=False))
 
 
-def clean_campaign_changes() -> None:
+def clean_campaign_changes(*, recipe_ref: str | None = None) -> None:
+    if recipe_ref:
+        verify_recipe_source(resolve_commit(recipe_ref, "RecipeRef"))
     changed = set()
     for arguments in (
         ("diff", "--name-only", "--no-renames", "-z"),
@@ -204,7 +206,16 @@ def clean_campaign_changes() -> None:
     ):
         changed.update(path for path in str(git(*arguments)).split("\0") if path)
     unrelated = sorted(
-        path for path in changed if not path_is_covered(path, list(CAMPAIGN_PATHS))
+        path
+        for path in changed
+        if not path_is_covered(path, list(CAMPAIGN_PATHS))
+        and not (
+            recipe_ref
+            and (
+                protocol.is_researcher_owned(path)
+                or path in protocol.PARAMETER_ONLY_PATHS
+            )
+        )
     )
     if unrelated:
         raise RuntimeError(
@@ -217,11 +228,13 @@ def clean_campaign_changes() -> None:
         git("clean", "-fd", "--")
 
 
-def ensure_clean_repository(*, clean: bool = False) -> None:
+def ensure_clean_repository(
+    *, clean: bool = False, recipe_ref: str | None = None
+) -> None:
     git("symbolic-ref", "--quiet", "--short", "HEAD")
     git("remote", "get-url", "origin")
     if clean:
-        clean_campaign_changes()
+        clean_campaign_changes(recipe_ref=recipe_ref)
     if str(git("status", "--porcelain", "--untracked-files=all")).strip():
         raise RuntimeError(
             "the working tree is not clean; commit or resolve its changes before resetting research"
@@ -980,7 +993,10 @@ def main() -> int:
             raise ValueError(
                 "baseline requires --baseline-ref and rejects --recipe-ref"
             )
-        ensure_clean_repository(clean=args.clean)
+        ensure_clean_repository(
+            clean=args.clean,
+            recipe_ref=args.recipe_ref if args.mode == "fresh" else None,
+        )
         if args.mode == "fresh":
             campaign_id, source, backup = reset_fresh(args.recipe_ref)
             print("=== Research state reset ===")

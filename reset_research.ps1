@@ -8,6 +8,8 @@ Reset the current campaign, optionally restoring a scientific recipe first.
 .EXAMPLE
 .\reset_research.ps1 -Mode Fresh -Clean -Force
 .EXAMPLE
+.\reset_research.ps1 -Mode Fresh -RecipeRef <git-ref> -Clean -Force
+.EXAMPLE
 .\reset_research.ps1 -Mode Baseline -BaselineRef <git-ref> -Force
 .EXAMPLE
 .\reset_research.ps1 -Recover <operation.json> -Force
