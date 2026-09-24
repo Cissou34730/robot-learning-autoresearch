@@ -89,12 +89,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "no_further_experiment",
-    "progress": "committed",
-    "reason": "The experiment budget is exhausted. The retained 64x64 PPO checkpoint-100352 is the strongest supported policy, but it achieved 1314/1360 (96.62%) across seven disjoint development panels and 192/200 on the latest panel, below the 98% objective. The task-reference result of 98.0% was used for selection and is not independent confirmation. The tested reward, target-coverage, capacity, replication, and reduced-learning-rate routes did not produce a supported successor, so no further experiment is warranted within this campaign.",
-    "terminal_expectation": null
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
