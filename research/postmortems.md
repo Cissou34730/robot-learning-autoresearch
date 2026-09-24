@@ -2,23 +2,21 @@
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Scientific strategy
 
-**Current synthesis:** The baseline learned the reach-and-hold behavior but did not
-meet the human objective reliably. The strongest measured policy is
-`checkpoint-100352`: it achieved 393/400 successes across two disjoint research
-panels, while the late final checkpoint achieved 391/400. The independent second
-panel put both policies at 97%, so the first-panel lead and the fixed
-task-reference score are not independent confirmation of the objective.
+**Current synthesis:** The baseline learned robust reach-and-hold behavior but
+remains below reliable attainment of the human objective: `checkpoint-100352`
+achieved 393/400 pooled research successes, while its independent second panel
+was 97%. The fixed task-reference panel was 98%, but it is reused and is not
+independent confirmation.
 
-**Lessons and limits:** The late training region is useful but has plateaued near,
-not at, the 98% objective under the measured conditions. The paired comparison
-favors `checkpoint-100352` by 2-0 discordant wins over the pooled panels, but the
-small difference does not establish a causal explanation for the residual
-failures. The 21 unmeasured checkpoints remain unmeasured rather than failed.
+**Lessons and limits:** The residual failures are concentrated near angles
+roughly -116 to -142 degrees, with the task-reference failures also at inner
+radii of about 6.7-9.9 cm. The baseline training distribution began at 14 cm,
+so the evidence identifies a coverage mismatch, but does not establish that it
+caused the failures or that changing it will preserve broad performance.
 
-**Open questions:** A subsequent experiment must determine whether changing the
-learning recipe or training target can remove the remaining failures without
-losing the late-policy behavior. It is also unresolved whether the retained
-late-plateau checkpoint is useful as a continuation alternative.
+**Open questions:** It remains unresolved whether greater exposure to the
+observed inner-radius and angular failure region removes that failure pocket
+without degrading the already learned reach-and-hold behavior.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
