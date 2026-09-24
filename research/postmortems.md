@@ -2,11 +2,11 @@
 
 ## 6dab7993-582d-4243-b0a2-f935e51c2728 / Scientific strategy
 
-**Current synthesis:** PPO learned a strong reach-and-hold policy, but working checkpoint-100352 remains below objective-level development support at 925/960 pooled successes across six disjoint research panels, despite 159/160 on the latest panel. The tested challengers produced no paired advantage over working, while residual failures span radii, repeatedly cluster around negative angles from -90 to -180 degrees, and include both reach and hold-instability patterns.
+**Current synthesis:** PPO learned a strong reach-and-hold policy, but the standing best-known checkpoint-100352 remains below the objective on development evidence at 1082/1120 pooled successes (96.607%) across seven disjoint research panels, despite 157/160 on the latest panel. All tested challengers failed to produce a paired advantage, while residual failures span radii and repeatedly cluster around negative angles from -90 to -180 degrees, with both reach and hold-instability patterns.
 
-**Lessons and limits:** Measured task behavior, not training proxies, governs progress. Working remains best supported; the radius, angle-sector, hold-continuity, and lower-learning-rate interventions are weakened as sufficient explanations under their tested transfer runs. The task-reference panel is reused development evidence, and the latest independent panel does not establish robust performance over the official distribution or the terminal objective.
+**Lessons and limits:** Measured task behavior, not training proxies, governs progress. The radius, angle-sector, hold-continuity, lower-learning-rate, and fresh geometry-observation interventions are weakened or rejected as sufficient explanations under their tested recipes. The task-reference panel is reused development evidence, and no development measurement establishes robust performance over the official distribution or the terminal objective.
 
-**Open questions:** It remains unresolved whether the residual geometry-dependent failures arise primarily from target representation and generalization, reachability, or sustaining tolerance after reaching. Robust performance over the full official distribution and the standing model's terminal result remain unestablished.
+**Open questions:** The relative contributions of target representation, reachability, generalization, and sustaining tolerance remain unresolved. The standing model's result on the official 200-episode assessment remains unestablished.
 
 ## 6dab7993-582d-4243-b0a2-f935e51c2728 / Experiment 1
 
