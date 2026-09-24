@@ -64,7 +64,10 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-24T14:35:46.497407+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "no_further_experiment",
+    "reason": "The standing best-known checkpoint-100352 is the strongest measured policy, but it achieved only 1082/1120 (96.61%) pooled successes across seven disjoint research panels and 153/160 (95.625%) on the latest panel, below the 98% objective. The tested target-sampling, hold-exit reward, and wider-network interventions did not improve it, while the reused 98% task-reference result is not independent confirmation. With the experiment budget exhausted, no further experiment is warranted in this campaign."
+  },
   "campaign_experiment_counters": {
     "93fca4d6-78e6-41ed-a38d-36d3938ddeb1": 6
   },
@@ -81,12 +84,17 @@
     "experiment": 6,
     "reason": "The established checkpoint-100352 working policy remains the strongest measured lineage. On the new disjoint episodes 5400-5559 it achieved 153/160 successes, while the wider-network reward-peak and final checkpoints achieved only 68/160 and 64/160, with paired comparisons favoring working by 89-4 and 92-3 discordant episodes. The working lineage remains below the 98% objective, so preserve it for future development rather than requesting the irreversible official assessment."
   },
-  "last_verdict": "researcher selected working as working",
+  "last_verdict": "researcher concluded that no further experiment is warranted",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "no_further_experiment",
+    "progress": "planned",
+    "reason": "The standing best-known checkpoint-100352 is the strongest measured policy, but it achieved only 1082/1120 (96.61%) pooled successes across seven disjoint research panels and 153/160 (95.625%) on the latest panel, below the 98% objective. The tested target-sampling, hold-exit reward, and wider-network interventions did not improve it, while the reused 98% task-reference result is not independent confirmation. With the experiment budget exhausted, no further experiment is warranted in this campaign.",
+    "terminal_expectation": null
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
