@@ -1,87 +1,19 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/840f1e05-cd5f-42ed-9505-50aafef87094/e2-cada55eb5-627c437e4f85b4284e918cfeac2fa7b0b20324bd82862a75511eb3a0ac835de7",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/840f1e05-cd5f-42ed-9505-50aafef87094/evaluation-840f1e05-cd5f-42ed-9505-50aafef87094-experiment-2-checkpoint-100352-1000ep-seed2200-f48545f83637.json",
-      "research/evaluations/840f1e05-cd5f-42ed-9505-50aafef87094/evaluation-840f1e05-cd5f-42ed-9505-50aafef87094-experiment-2-checkpoint-100352-200ep-seed2000-f48545f83637.json",
-      "research/evaluations/840f1e05-cd5f-42ed-9505-50aafef87094/task-reference-840f1e05-cd5f-42ed-9505-50aafef87094-experiment-2-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "627c437e4f85b4284e918cfeac2fa7b0b20324bd82862a75511eb3a0ac835de7",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the strongest measured candidate across the selection research panel and the disjoint confirmation panel, with 97.5% on each research panel, and it is therefore the best-supported policy even though development evidence does not establish that the official objective has been reached.",
-    "scientific_commit": "43842e2cec8caaf47ecb4e83901372e42bfe3dc6",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 1000,
-        "instrument": "research_evaluation",
-        "seed": 2200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "785a1dc84380f0a3b23d4078655260a87d1a17c3",
-    "id": "840f1e05-cd5f-42ed-9505-50aafef87094",
+    "base_commit": "789b9de8b5848f5f8128fb629e2035a2a86626d9",
+    "id": "93fca4d6-78e6-41ed-a38d-36d3938ddeb1",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T11:30:18.533179+00:00"
+    "started_at": "2026-09-24T14:35:46.497407+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "840f1e05-cd5f-42ed-9505-50aafef87094": 5
+    "93fca4d6-78e6-41ed-a38d-36d3938ddeb1": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 4,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "restore",
-      "reason": "Experiment 4 changed the training target-radius distribution without improving measured task success. Restore the complete scientific recipe associated with the existing best-known lineage for subsequent development."
-    },
-    "code_parent_commit": "26dbef46afb7abd7e427f90205a7c1a17b8eb881",
-    "continue_from": "best_known",
-    "experiment": 4,
-    "reason": "The full-radius transfer checkpoints each scored 96.5% on the new disjoint 1,000-episode panel, exactly matching the unchanged parent and remaining below the best-known lineage's prior 97.5% disjoint result. Preserve the existing best-known policy as the working lineage; the experiment-4 candidates provide no evidence for retention."
-  },
-  "last_verdict": "researcher selected best_known as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -91,85 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "b49bddcabf39f152cb447821fd14a254dbb7b887",
-    "experiment": 5,
-    "scope": [
-      "robot_learning/scenario/training_environment.py"
-    ]
-  },
-  "pending_scientific_parent": "b49bddcabf39f152cb447821fd14a254dbb7b887",
+  "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/840f1e05-cd5f-42ed-9505-50aafef87094/e2-cada55eb5-627c437e4f85b4284e918cfeac2fa7b0b20324bd82862a75511eb3a0ac835de7",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/840f1e05-cd5f-42ed-9505-50aafef87094/evaluation-840f1e05-cd5f-42ed-9505-50aafef87094-experiment-2-checkpoint-100352-1000ep-seed2200-f48545f83637.json",
-      "research/evaluations/840f1e05-cd5f-42ed-9505-50aafef87094/evaluation-840f1e05-cd5f-42ed-9505-50aafef87094-experiment-2-checkpoint-100352-200ep-seed2000-f48545f83637.json",
-      "research/evaluations/840f1e05-cd5f-42ed-9505-50aafef87094/task-reference-840f1e05-cd5f-42ed-9505-50aafef87094-experiment-2-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "627c437e4f85b4284e918cfeac2fa7b0b20324bd82862a75511eb3a0ac835de7",
-    "origin_experiment": 2,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The full-radius transfer checkpoints each scored 96.5% on the new disjoint 1,000-episode panel, exactly matching the unchanged parent and remaining below the best-known lineage's prior 97.5% disjoint result. Preserve the existing best-known policy as the working lineage; the experiment-4 candidates provide no evidence for retention.",
-    "scientific_commit": "43842e2cec8caaf47ecb4e83901372e42bfe3dc6",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 1000,
-        "instrument": "research_evaluation",
-        "seed": 2200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 1000,
-        "instrument": "research_evaluation",
-        "seed": 3200
-      },
-      {
-        "episodes": 1000,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      }
-    ],
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
