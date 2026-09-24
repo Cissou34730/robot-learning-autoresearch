@@ -1,92 +1,19 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/8c345590-23d1-446d-b3de-14fca7c9df5d/e1-cada55eb5-66123825237a438f34c753fa8049f7e9c0292ca260d0ee53ffc283437a5d87e6",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/evaluation-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-1-checkpoint-100352-200ep-seed2000-f48545f83637.json",
-      "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/evaluation-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-1-checkpoint-100352-400ep-seed2200-f48545f83637.json",
-      "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/task-reference-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "66123825237a438f34c753fa8049f7e9c0292ca260d0ee53ffc283437a5d87e6",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has the highest complete-task success among the measured candidates on the independent disjoint research evidence and is consistently ahead of checkpoint-120832 in the paired comparison.",
-    "scientific_commit": "1393a04af861db95acc08495054356e1259beae1",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 400,
-        "instrument": "research_evaluation",
-        "seed": 2200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 400,
-        "instrument": "research_evaluation",
-        "seed": 7400
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "961fd42191b803cbd83aff9e99405dea4dad0e44",
-    "id": "8c345590-23d1-446d-b3de-14fca7c9df5d",
+    "base_commit": "e3c04cce6e4148bbe72318c6267fb8af9d183993",
+    "id": "9576b1ba-f1c9-49ee-8862-366174c4795d",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T13:28:35.967015+00:00"
+    "started_at": "2026-09-24T19:37:24.452668+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "8c345590-23d1-446d-b3de-14fca7c9df5d": 9
+    "9576b1ba-f1c9-49ee-8862-366174c4795d": 0
   },
-  "last_allocated_experiment": 9,
-  "last_experiment": 9,
-  "last_lineage_decision": {
-    "best_known": "best_known",
-    "code": {
-      "action": "restore",
-      "reason": "Experiment 9 changed PPO learning_rate and ent_coef relative to best_known; restore the complete best-known scientific recipe rather than preserve the regressed continuation configuration."
-    },
-    "code_parent_commit": "71b4e171a55aaa3be2097f5dca74992e39eb2243",
-    "continue_from": "best_known",
-    "experiment": 9,
-    "reason": "The lower-learning-rate, zero-entropy continuation was inferior on the fresh disjoint panel: checkpoint-75776 achieved 90.75% and checkpoint-120832 89.75%, versus 96.5% for best_known, with 23 and 27 discordant wins for best_known and no candidate wins. Restore the established best-known recipe for future development."
-  },
-  "last_verdict": "researcher selected best_known as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -96,159 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "71b4e171a55aaa3be2097f5dca74992e39eb2243",
-    "experiment": 9,
-    "scientific_commit": "9088aadd136600fec8ce60e8ad6f8a68f9636e27"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/8c345590-23d1-446d-b3de-14fca7c9df5d/e2-cada55eb5-bfbb9a50523d8c4d24771f21cc8f2348e91013180c0f1577869ab709b6e1cb9d",
-      "candidate": "checkpoint-100352",
-      "evaluation_artifacts": [],
-      "fingerprint": "bfbb9a50523d8c4d24771f21cc8f2348e91013180c0f1577869ab709b6e1cb9d",
-      "id": "experiment-2-unmeasured-100352",
-      "origin_experiment": 2,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "This is a distinct experiment-2 transfer snapshot at the inherited 100352-step position and remains unmeasured. Retain it as a possible future comparison without treating it as evidence of improvement or as a replacement for best_known.",
-      "scientific_commit": "a731b42a3d980ecb8e0de1882739368aca895215",
-      "selected_panels": [],
-      "training_steps": 200704
-    },
-    {
-      "artifact": "research/checkpoints/retained/8c345590-23d1-446d-b3de-14fca7c9df5d/e7-c678e5b6d-f222c0413a011f33c3528321ebee62ecf359de0b1010a5bdbd434c345254c902",
-      "candidate": "checkpoint-40960",
-      "evaluation_artifacts": [
-        "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/evaluation-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-7-checkpoint-40960-400ep-seed6200-a42d66e796eb.json"
-      ],
-      "fingerprint": "f222c0413a011f33c3528321ebee62ecf359de0b1010a5bdbd434c345254c902",
-      "id": "experiment-7-action-scale-40960",
-      "origin_experiment": 7,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the measured early scaled policy as a lower-speed diagnostic alternative: it reduced median peak joint speed and saturated-action steps substantially while matching best_known task success on one disjoint panel. It is not designated best-known, but can support a future action or trajectory-control comparison.",
-      "scientific_commit": "ee2c6899176ddced77faaea53bd71dc4c54a529b",
-      "selected_panels": [
-        {
-          "episodes": 400,
-          "instrument": "research_evaluation",
-          "seed": 6200
-        }
-      ],
-      "training_steps": 141312
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/8c345590-23d1-446d-b3de-14fca7c9df5d/e1-cada55eb5-66123825237a438f34c753fa8049f7e9c0292ca260d0ee53ffc283437a5d87e6",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/evaluation-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-1-checkpoint-100352-200ep-seed2000-f48545f83637.json",
-      "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/evaluation-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-1-checkpoint-100352-400ep-seed2200-f48545f83637.json",
-      "research/evaluations/8c345590-23d1-446d-b3de-14fca7c9df5d/task-reference-8c345590-23d1-446d-b3de-14fca7c9df5d-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "66123825237a438f34c753fa8049f7e9c0292ca260d0ee53ffc283437a5d87e6",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The lower-learning-rate, zero-entropy continuation was inferior on the fresh disjoint panel: checkpoint-75776 achieved 90.75% and checkpoint-120832 89.75%, versus 96.5% for best_known, with 23 and 27 discordant wins for best_known and no candidate wins. Restore the established best-known recipe for future development.",
-    "scientific_commit": "1393a04af861db95acc08495054356e1259beae1",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 400,
-        "instrument": "research_evaluation",
-        "seed": 2200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 400,
-        "instrument": "research_evaluation",
-        "seed": 7400
-      }
-    ],
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
