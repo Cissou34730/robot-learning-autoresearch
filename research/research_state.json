@@ -79,7 +79,10 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-24T00:23:58.411496+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "no_further_experiment",
+    "reason": "The standing best-known checkpoint-105472 is strong but variable at 974/1000 (97.4%) across five disjoint development panels, with 195/200 on the latest matched control panel. Fresh replication and the tested continuation interventions underperformed it, and unreliable training proxies plus repeated late-training degradation provide no basis to expect the official 98% verdict. The experiment budget is exhausted, and requesting the official assessment merely to resolve this uncertainty is not warranted."
+  },
   "campaign_experiment_counters": {
     "b62e8ccc-3c2e-4a3f-9477-2aa04cacd0d2": 6
   },
@@ -96,12 +99,17 @@
     "experiment": 6,
     "reason": "The unchanged working lineage achieved 195/200 on the new disjoint 3200-3399 panel, while the focused-curriculum checkpoints achieved 193/200 and 181/200. Paired comparisons favored the parent 2-0 and 14-0, so checkpoint-105472 remains the most useful policy. Its 974/1000 pooled result across five disjoint development panels is strong but variable and does not establish the official 98% objective."
   },
-  "last_verdict": "researcher selected working as working",
+  "last_verdict": "researcher concluded that no further experiment is warranted",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "no_further_experiment",
+    "progress": "planned",
+    "reason": "The standing best-known checkpoint-105472 is strong but variable at 974/1000 (97.4%) across five disjoint development panels, with 195/200 on the latest matched control panel. Fresh replication and the tested continuation interventions underperformed it, and unreliable training proxies plus repeated late-training degradation provide no basis to expect the official 98% verdict. The experiment budget is exhausted, and requesting the official assessment merely to resolve this uncertainty is not warranted.",
+    "terminal_expectation": null
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
