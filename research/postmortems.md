@@ -3,30 +3,32 @@
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Scientific strategy
 
 **Current synthesis:** The working 100352-step PPO policy remains the strongest
-supported lineage at 682/700 (97.4%) over four distinct research panels. The
-expanded-radius 105472-step policy scored 199/200 on its selection panel and
-195/200 on a disjoint paired panel, exactly matching working with zero
-discordant episodes, so it has not displaced the working or best-known lineage.
-The residual failures are concentrated in negative-angle episodes rather than
-being explained by the late checkpoint or by the former radius floor alone.
+supported lineage at 880/900 (97.8%) over five distinct research panels. The
+joint-limit barrier did not improve it: both measured barrier checkpoints scored
+196/200 on the new seed-7000 panel, while working scored 198/200; each barrier
+candidate lost both discordant episodes to working. The barrier hypothesis is
+therefore weakened under the tested recipe, and working remains the appropriate
+lineage and best-known designation.
 
-**Lessons and limits:** On the disjoint panel, both policies shared five
-failures ending on the open branch after one switch, with 99.6-100% saturated
-control and negative joint-limit margin; three were no-reach outcomes and two
-held for only one step. Three failed targets were within the old 0.14-0.20 m
-training range. The frozen model establishes branch ambiguity, joint limits,
-clipped 50 Hz torque control, and the 100-sample hold requirement, while the
-realized diagnostics associate the shortfall with a constrained transient
-without proving whether branch choice, actuation, or stabilization is causal.
-Development measurements remain non-final and the fixed task-reference panel
-is selection-contaminated.
+**Lessons and limits:** The barrier candidates shared working's failures at
+episodes 30 and 155 and added distinct failures (episodes 160 and 174 for
+checkpoint-105472; 82 and 93 for checkpoint-120832). These evaluation artifacts
+report all failures as 500-step truncations; reward totals are not comparable
+across the changed reward. Training proxies likewise did not predict an
+improvement: the proxy-peak checkpoint reached 1.00, while the late checkpoint
+fell to 0.96. The frozen model establishes branch ambiguity, finite joint
+limits, clipped 50 Hz torque control, and the 100-sample hold requirement, but
+does not identify whether the observed shortfall is caused by branch selection,
+actuation, or stabilization. Development measurements remain non-final, and the
+fixed task-reference panel is selection-contaminated.
 
-**Open questions:** Whether a policy trained to avoid joint-limit excursions
-can select and stabilize an admissible branch on the difficult negative-angle
-trajectories remains unresolved. The relative contributions of branch
-selection, torque saturation, and post-entry hold regulation are also
-unresolved; the current evidence does not establish that any one is
-sufficient.
+**Open questions:** Whether a different intervention can resolve the remaining
+negative-angle constrained transients remains unresolved. The relative
+contributions of branch selection, torque saturation, and post-entry hold
+regulation are also unresolved; the current measurements do not establish that
+any one is sufficient. The completed paired panel is sufficient for this
+lineage decision, so these questions do not require another measurement before
+closure.
 
 ## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 1
 
@@ -123,3 +125,41 @@ measurement is expected to change this closure decision.
 `research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-2-checkpoint-105472-200ep-seed6000-4d866fbb9128.json`;
 `research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-2-working-200ep-seed6000-4d866fbb9128.json`;
 `research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-2-checkpoint-120832-200ep-seed5000-4d866fbb9128.json`.
+
+## 6d88dae6-5b36-4a77-8dbd-d65d20a64732 / Experiment 3
+
+**Result:** The transferred joint-limit barrier did not improve the working
+policy. Checkpoint-105472 and checkpoint-120832 each scored 196/200 on the
+seed-7000 panel, versus 198/200 for working. Working remains the selected
+working and best-known lineage; the barrier recipe is not retained.
+
+**Observed behavior:** Each barrier candidate had four failures and working had
+two. Both barrier candidates failed on the same working episodes 30 and 155,
+while checkpoint-105472 additionally failed episodes 160 and 174 and
+checkpoint-120832 additionally failed episodes 82 and 93. The paired
+comparisons had zero candidate wins and two working wins for each candidate.
+The proxy-peak barrier checkpoint had training success 1.00; the final
+checkpoint had 0.96. The artifacts expose episode success, truncation, steps,
+and reward totals, but reward totals cannot be compared across this reward
+change.
+
+**Hypothesis assessment:** Weakened. The barrier did not reduce the measured
+failure count or improve paired outcomes; both candidates lost one percentage
+point to working on the disjoint panel. This conclusion is scoped to the
+transferred barrier recipe, its checkpoints, and the seed-7000 panel. It does
+not disprove that another limit-aware or control-focused intervention could
+help, and the development result does not establish the official objective.
+
+**Interpretation:** The frozen model makes joint limits, two inverse-kinematic
+branches, clipped torque control, and uninterrupted hold physically relevant,
+but it cannot establish policy causation. The new paired measurements already
+answer the closure question: the changed reward has no evidence of improving
+the selected lineage and adds distinct failures, so another saved-policy panel
+would not change the decision to keep working and revert the barrier recipe.
+
+**Evidence inspected:** `research/brief.md`;
+`research/scientific_model.md`;
+`research/results.jsonl`;
+`research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-3-checkpoint-105472-200ep-seed7000-7a148b2db3b3.json`;
+`research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-3-checkpoint-120832-200ep-seed7000-7a148b2db3b3.json`;
+`research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-3-working-200ep-seed7000-7a148b2db3b3.json`.
