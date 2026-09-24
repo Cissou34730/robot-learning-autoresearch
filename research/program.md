@@ -254,11 +254,11 @@ in the synthesis rather than rewriting what was believed at the time.
 ## Stopping
 
 Continue development while a scientifically useful path toward the human
-objective remains. Request the terminal assessment when you expect it to return
-`goal_reached` for the selected best-known model, stating the evidence and the
-uncertainty behind that expectation. If you do not expect that verdict, then
-either a path remains to pursue or there is nothing further to report: say which,
-and act accordingly.
+objective remains. Request the terminal assessment when adjudicating the frozen
+best-known model is the highest-value remaining campaign action, whether the
+expected verdict is `goal_reached`, `goal_not_reached`, or `uncertain`. State the
+expected verdict, the evidence, the uncertainty, and the reason for accepting
+terminality.
 
 The official benchmark is a verdict you claim, not an instrument you consult. Do
 not request it in order to find out how the model performs, to settle an
