@@ -2,11 +2,11 @@
 
 ## 840f1e05-cd5f-42ed-9505-50aafef87094 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO recipe remains the strongest learned policy: experiment-2 `checkpoint-100352` achieved 97.5% on the disjoint 1,000-episode research panel, and the retained parent controls achieved 97.4% and 96.5% on later disjoint panels. Experiment 3's reduced-learning-rate, zero-entropy transfer recipe scored 89.5% and 90.0%, while experiment 4's full-radius transfer checkpoints and parent control all scored 96.5%; neither intervention improved the policy or established the 98% objective.
+**Current synthesis:** The unchanged PPO `checkpoint-100352` remains the strongest measured policy, reaching 97.5% on a disjoint 1,000-episode panel, while later parent controls reached 97.4% and 96.5%. The reduced-learning-rate/zero-entropy transfer and uniform full-radius transfer did not improve task success, and development evidence remains below or insufficient to establish the 98% objective.
 
-**Lessons and limits:** Training success and reward are proxies rather than task outcomes; experiment 3 reached a 0.98 proxy at 100352 steps while task success was only 89.5%, and experiment 4 reached a 1.0 proxy at 105472 steps while task success was 96.5%. Expanding training targets to the full official radius range did not improve the matched parent control on the tested panel, but the aggregate result does not isolate which radii account for the failures. The selection-panel score is not independent evidence, the task-reference panel is permanently reused, and no development result predicts the official verdict.
+**Lessons and limits:** Training success and reward are proxies rather than task outcomes: experiment 3 reached a 0.98 proxy with 89.5% task success, and experiment 4 reached a 1.0 proxy with 96.5% task success. Best-known failures repeatedly cluster near target angles -160 to -120 degrees, including all 25 failures on the experiment-2 disjoint panel and all 26 parent failures on the experiment-3 panel, but the full-radius experiment did not improve the matched parent. Selection and task-reference panels are not independent confirmation, and no development result predicts the official verdict.
 
-**Open questions:** It remains unresolved which scientific change can raise the unchanged PPO policy above its near-objective plateau without sacrificing existing behavior, and the official benchmark result is unknown.
+**Open questions:** It remains unresolved whether the recurring difficult angular sector can be improved without sacrificing behavior elsewhere, and the official benchmark result is unknown.
 
 ## 840f1e05-cd5f-42ed-9505-50aafef87094 / Experiment 1
 
