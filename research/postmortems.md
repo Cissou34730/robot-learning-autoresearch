@@ -4,24 +4,30 @@
 
 **Current synthesis:** The baseline learned robust reach-and-hold behavior but
 remains just below reliable attainment of the human objective: the selected
-`checkpoint-100352` achieved 393/400 pooled research successes and 97% on the
+`checkpoint-100352` achieved 393/400 pooled research successes and 96.5% on the
 latest disjoint panel. Experiment 2's target-coverage intervention produced no
-gain over its transferred start and ended at 96%; the fixed task-reference
-panel's 98% result is reused development evidence, not independent confirmation.
+gain over its transferred start, and experiment 3's hold-stability reward
+intervention underperformed the unchanged control at both measured checkpoints.
+The fixed task-reference panel's 98% result is reused development evidence, not
+independent confirmation.
 
-**Lessons and limits:** The residual failures are concentrated near angles
-roughly -116 to -142 degrees, with the task-reference failures also at inner
-radii of about 6.7-9.9 cm. The baseline training distribution began at 14 cm,
-so the evidence is consistent with a coverage mismatch, but experiment 2 does
-not establish that targeted oversampling fixes it or that coverage is the sole
-cause. The failure episodes run to 500 steps and finish near the 1 cm
-tolerance boundary, while the reward implementation currently assigns no
-hold-capital forfeit when a nearly completed hold exits the tolerance band.
+**Lessons and limits:** The residual failures remain compatible with an
+angle/radius coverage mismatch, but experiment 2 did not establish that
+targeted oversampling fixes it. Experiment 3 further shows that setting
+`HOLD_EXIT_FORFEIT_FRACTION` to `1.0` did not improve the measured task outcome:
+the unchanged control scored 193/200 on episodes 10600-10799, versus 190/200
+for the early challenger and 171/200 for the final challenger. Training proxies
+were misleading here: the early challenger had the run's highest training
+success and reward, while the final checkpoint degraded broadly and included
+500-step failures. These conclusions are scoped to this reward intervention and
+training recipe; they do not rule out other hold-stability designs.
 
 **Open questions:** It remains unresolved whether the residual pocket reflects
 insufficient hold-stability learning, target-distribution coverage, or another
 policy limitation, and whether the selected policy can reach the official
-threshold without sacrificing its broad reach-and-hold behavior.
+threshold without sacrificing its broad reach-and-hold behavior. A future
+experiment must improve the disjoint-panel result without relying on training
+reward or proxy success.
 
 ## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 1
 
@@ -94,3 +100,40 @@ decision made in this closure.
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-2-checkpoint-10240-200ep-seed10400-f48545f83637.json`;
 `research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-2-checkpoint-120832-200ep-seed10400-f48545f83637.json`;
 `research/checkpoints/challengers/c1523389-1363-42a7-b973-1bc6847ac445/experiment-2/inventory.json`.
+
+## c1523389-1363-42a7-b973-1bc6847ac445 / Experiment 3
+
+**Result:** The hold-stability reward intervention did not improve task success
+and degraded substantially by the final checkpoint; the prior working lineage
+remains the strongest measured policy.
+
+**Observed behavior:** On the new disjoint 200-episode research panel, the
+unchanged `working` policy scored 193/200 (96.5%), the experiment-3
+`checkpoint-35840` scored 190/200 (95.0%), and the final
+`checkpoint-120832` scored 171/200 (85.5%). Paired comparisons favored
+`working` over `checkpoint-35840` by 3-0 and over `checkpoint-120832` by 22-0
+discordant wins. The early checkpoint favored the final checkpoint 22-3, but
+both challengers were below the official 196/200 threshold and this was
+development evidence rather than a final assessment.
+
+**Hypothesis assessment:** The hypothesis is contradicted under the tested
+recipe: setting `HOLD_EXIT_FORFEIT_FRACTION` to `1.0` produced neither an early
+task-success improvement nor persistence through continued training, and the
+final policy was materially worse than the unchanged control. The panel
+comparison supports rejecting this intervention for lineage selection, but it
+does not prove that all hold-stability reward shaping is ineffective or identify
+the complete cause of the late degradation.
+
+**Interpretation:** The experiment-1 working/best-known policy should be
+preserved, and the experiment-3 reward change should be reverted. The measured
+challengers provide no demonstrated future-use advantage, so their weights
+should not be retained. Further training remains a separate ordinary next
+experiment after this closure; the current evidence does not justify terminal
+assessment because the best disjoint development result remains below 98%.
+
+**Evidence inspected:** `research/brief.md`;
+`research/postmortems.md`;
+`research/checkpoints/challengers/c1523389-1363-42a7-b973-1bc6847ac445/experiment-3/inventory.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-3-working-200ep-seed10600-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-3-checkpoint-35840-200ep-seed10600-f48545f83637.json`;
+`research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-3-checkpoint-120832-200ep-seed10600-f48545f83637.json`.
