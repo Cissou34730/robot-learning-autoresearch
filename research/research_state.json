@@ -96,7 +96,7 @@
     "experiment": 1,
     "scientific_commit": "1393a04af861db95acc08495054356e1259beae1"
   },
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "8c957e19a0db6fa4fe551ee4962590aa1d3cbdf7",
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
   "preparation_measurement": null,
