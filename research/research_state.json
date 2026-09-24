@@ -64,7 +64,10 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-24T17:09:33.475065+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "no_further_experiment",
+    "reason": "The experiment budget is exhausted. The retained 64x64 PPO checkpoint-100352 is the strongest supported policy, but it achieved 1314/1360 (96.62%) across seven disjoint development panels and 192/200 on the latest panel, below the 98% objective. The task-reference result of 98.0% was used for selection and is not independent confirmation. The tested reward, target-coverage, capacity, replication, and reduced-learning-rate routes did not produce a supported successor, so no further experiment is warranted within this campaign."
+  },
   "campaign_experiment_counters": {
     "8635b3d2-8904-405a-a15e-d72fb56435d8": 6
   },
@@ -81,12 +84,17 @@
     "experiment": 6,
     "reason": "The retained checkpoint-100352 working policy remains stronger than both measured reduced-learning-rate challengers on the disjoint episodes 5360-5559: 192/200 versus 181/200 and 180/200, with paired wins of 11-0 and 12-0. Preserve it as the active policy for a separate future experiment."
   },
-  "last_verdict": "researcher selected working as working",
+  "last_verdict": "researcher concluded that no further experiment is warranted",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "no_further_experiment",
+    "progress": "planned",
+    "reason": "The experiment budget is exhausted. The retained 64x64 PPO checkpoint-100352 is the strongest supported policy, but it achieved 1314/1360 (96.62%) across seven disjoint development panels and 192/200 on the latest panel, below the 98% objective. The task-reference result of 98.0% was used for selection and is not independent confirmation. The tested reward, target-coverage, capacity, replication, and reduced-learning-rate routes did not produce a supported successor, so no further experiment is warranted within this campaign.",
+    "terminal_expectation": null
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
