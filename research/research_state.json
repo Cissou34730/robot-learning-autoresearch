@@ -1,87 +1,19 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/6d88dae6-5b36-4a77-8dbd-d65d20a64732/e1-cada55eb5-a82e7530b49f628df26a8d97ff764506b9cbe02980beab57fb3ae3932284ae70",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-100352-100ep-seed2000-f48545f83637.json",
-      "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-100352-200ep-seed3000-f48545f83637.json",
-      "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/task-reference-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "a82e7530b49f628df26a8d97ff764506b9cbe02980beab57fb3ae3932284ae70",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the reproducible research-panel leader at 97% on both panels and is more stable than the later checkpoint; the fixed task-reference result is treated as non-independent selection evidence.",
-    "scientific_commit": "35e2cf47c22c3d1ae7b5d0f3cf8dfccd5e635024",
-    "selected_panels": [
-      {
-        "episodes": 100,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "c4fa369d7d79e452bc81ae420e13138b9d698428",
-    "id": "6d88dae6-5b36-4a77-8dbd-d65d20a64732",
+    "base_commit": "f3ff7253ca3418d6ecf6d1620ab1bc35702bfc19",
+    "id": "419d7c63-8c74-423c-b48c-4b4f9338690d",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T08:58:07.784401+00:00"
+    "started_at": "2026-09-24T12:55:38.701782+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "6d88dae6-5b36-4a77-8dbd-d65d20a64732": 4
+    "419d7c63-8c74-423c-b48c-4b4f9338690d": 0
   },
-  "last_allocated_experiment": 4,
-  "last_experiment": 4,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Revert HOLD_EXIT_FORFEIT_FRACTION to the parent recipe because the tested partial hold-credit forfeiture produced no measured task improvement and substantial regression on the disjoint paired panel."
-    },
-    "code_parent_commit": "783a4567e9b8db5663c4a6bbb8a82b38a9e9e14d",
-    "continue_from": "working",
-    "experiment": 4,
-    "reason": "The working checkpoint scored 197/200 on the disjoint seed-8000 panel, while the changed-reward checkpoints scored 179/200 and 191/200 and had zero paired wins against working. Preserve working as the strongest supported lineage and do not retain inferior experiment-4 candidates."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -91,195 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "783a4567e9b8db5663c4a6bbb8a82b38a9e9e14d",
-    "experiment": 4,
-    "scientific_commit": "20f08d7a6dca61e27192dd6a10567ac95857d8fd"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/6d88dae6-5b36-4a77-8dbd-d65d20a64732/e1-c8cf701d5-e1df4160a73a6730e91288acbcef359748627d667b2a9dc4afab440155e0b01e",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-120832-100ep-seed2000-f48545f83637.json",
-        "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-120832-200ep-seed3000-f48545f83637.json"
-      ],
-      "fingerprint": "e1df4160a73a6730e91288acbcef359748627d667b2a9dc4afab440155e0b01e",
-      "id": "baseline-final-120832",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the late-training checkpoint as a measured negative control for future comparisons because it shares the baseline recipe, is independently fingerprinted, and exposes the late-plateau degradation in success and hold stability.",
-      "scientific_commit": "35e2cf47c22c3d1ae7b5d0f3cf8dfccd5e635024",
-      "selected_panels": [
-        {
-          "episodes": 100,
-          "instrument": "research_evaluation",
-          "seed": 2000
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 3000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 120832
-    },
-    {
-      "artifact": "research/checkpoints/retained/6d88dae6-5b36-4a77-8dbd-d65d20a64732/e2-ca3d05779-65c7b9a4eae1583fe31df0cf60e05dbaa375add0acdf85a1b6baf28f8564f637",
-      "candidate": "checkpoint-105472",
-      "evaluation_artifacts": [
-        "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-2-checkpoint-105472-200ep-seed5000-4d866fbb9128.json",
-        "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-2-checkpoint-105472-200ep-seed6000-4d866fbb9128.json"
-      ],
-      "fingerprint": "65c7b9a4eae1583fe31df0cf60e05dbaa375add0acdf85a1b6baf28f8564f637",
-      "id": "experiment-2-expanded-radius-105472",
-      "origin_experiment": 2,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the complete policy trained with the expanded 0.06-0.20 m radius range because it matches working on the disjoint paired panel and preserves a reusable alternative for future targeted continuation despite no demonstrated advantage.",
-      "scientific_commit": "238b17224575ec78adc4a6c8598142c06078bdc1",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 5000
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 6000
-        }
-      ],
-      "training_steps": 205824
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/6d88dae6-5b36-4a77-8dbd-d65d20a64732/e1-cada55eb5-a82e7530b49f628df26a8d97ff764506b9cbe02980beab57fb3ae3932284ae70",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-100352-100ep-seed2000-f48545f83637.json",
-      "research/evaluations/6d88dae6-5b36-4a77-8dbd-d65d20a64732/evaluation-6d88dae6-5b36-4a77-8dbd-d65d20a64732-experiment-1-checkpoint-100352-200ep-seed3000-f48545f83637.json"
-    ],
-    "fingerprint": "a82e7530b49f628df26a8d97ff764506b9cbe02980beab57fb3ae3932284ae70",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The working checkpoint scored 197/200 on the disjoint seed-8000 panel, while the changed-reward checkpoints scored 179/200 and 191/200 and had zero paired wins against working. Preserve working as the strongest supported lineage and do not retain inferior experiment-4 candidates.",
-    "scientific_commit": "35e2cf47c22c3d1ae7b5d0f3cf8dfccd5e635024",
-    "selected_panels": [
-      {
-        "episodes": 100,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 6000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 7000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 8000
-      }
-    ],
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
