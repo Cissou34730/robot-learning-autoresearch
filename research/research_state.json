@@ -81,79 +81,31 @@
     "experiment": 2,
     "reason": "The changed target sampler was contradicted on a fresh paired panel: checkpoint-115712 scored 178/200 and checkpoint-120832 scored 179/200, versus 197/200 for the transferred best-known parent. The parent remains the strongest measured policy and is the appropriate working lineage."
   },
-  "last_verdict": "researcher selected best_known as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
+    "fingerprint": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/evaluation-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-100ep-seed10000-f48545f83637.json",
-        "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/evaluation-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-200ep-seed20000-f48545f83637.json",
-        "research/evaluations/e0fec0e7-77ed-4433-97cd-1944e1b15eca/task-reference-e0fec0e7-77ed-4433-97cd-1944e1b15eca-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It is the only candidate with 98% on the fixed task-reference panel, scored 99% on the initial research panel and 97.5% on the disjoint 200-episode panel, and won the recorded paired comparison against checkpoint-86016 while checkpoint-120832 was slightly worse.",
-      "scientific_commit": "dba6e9269339b807744e9c680ae2e2653ae5809b",
-      "selected_panels": [
-        {
-          "episodes": 100,
-          "instrument": "research_evaluation",
-          "seed": 10000
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 20000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 2,
-    "fingerprint": "ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
-    "selected": "best_known",
-    "terminal_reason": "The restored best-known parent achieved 197/200 successes (98.5%) on a fresh research panel disjoint from the panels used to select it, exceeding the 196/200 objective threshold, while both experiment-2 challengers were substantially worse on the same episodes. This is sufficient development evidence to expect a goal_reached official verdict; the official benchmark remains the only terminal assessment."
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "b545a05ad42314723c966caf05610243959fb77a",
@@ -166,7 +118,7 @@
   "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/e0fec0e7-77ed-4433-97cd-1944e1b15eca/e1-cada55eb5-ad1a4122cc4bd3f950f5b666a6e8f99240b3daffb871cf82bfe071dc13ea5a89",
     "candidate": "checkpoint-100352",
