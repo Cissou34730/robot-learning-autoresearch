@@ -1405,6 +1405,18 @@ def _precedent_prose_inline(pending: dict | None) -> bool:
     return isinstance(pending, dict)
 
 
+def _fingerprint_qualified_label(label: str, fingerprint: str) -> str:
+    """A surfaced candidate label with the aggregate index's model suffix.
+
+    ``_aggregate_task_evidence_lines`` already disambiguates a reused candidate
+    name by appending ``(model <fingerprint12>)``; the rationale quotes repeat
+    the same bare name, so they append the identical suffix for the measured
+    model the name resolves to. When no fingerprint is recorded the label is
+    left exactly as before.
+    """
+    return f"{label} (model {fingerprint[:12]})" if fingerprint else label
+
+
 def _experiment_rationale(result: dict) -> list[str]:
     """De-templated rationale recorded by one experiment's measurement rounds.
 
@@ -1433,9 +1445,12 @@ def _experiment_rationale(result: dict) -> list[str]:
             for item in round_results.get(key) or []:
                 if not isinstance(item, dict) or not item.get("selection"):
                     continue
+                label = _fingerprint_qualified_label(
+                    str(item.get("candidate", "-")), _entry_fingerprint(item)
+                )
                 items.extend(
                     _indented_label_block(
-                        f"Choice rationale for `{item.get('candidate', '-')}`",
+                        f"Choice rationale for `{label}`",
                         str(item["selection"]),
                         600,
                         RESULTS_REFERENCE,
@@ -2409,9 +2424,12 @@ def _v4_measurement_rounds_section(
                         f"{_compact(str(item['selection']), 600, reference=source_reference)}"
                     )
                 else:
+                    label = _fingerprint_qualified_label(
+                        str(item.get("candidate", "-")), _entry_fingerprint(item)
+                    )
                     precedent.extend(
                         _indented_label_block(
-                            f"Choice rationale for `{item.get('candidate', '-')}`",
+                            f"Choice rationale for `{label}`",
                             str(item["selection"]),
                             600,
                             source_reference,
@@ -2453,9 +2471,12 @@ def _v4_measurement_rounds_section(
                         f"{_compact(str(item['selection']), 600, reference=source_reference)}"
                     )
                 else:
+                    label = _fingerprint_qualified_label(
+                        str(item.get("candidate", "-")), _entry_fingerprint(item)
+                    )
                     precedent.extend(
                         _indented_label_block(
-                            f"Choice rationale for `{item.get('candidate', '-')}`",
+                            f"Choice rationale for `{label}`",
                             str(item["selection"]),
                             600,
                             source_reference,
