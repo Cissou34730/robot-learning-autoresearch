@@ -1,255 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/c1523389-1363-42a7-b973-1bc6847ac445/e1-cada55eb5-e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json",
-      "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-100352-200ep-seed10200-f48545f83637.json",
-      "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/task-reference-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the best-supported measured policy, with 393/400 pooled research successes versus 391/400 for checkpoint-120832 and a paired 2-0 lead.",
-    "scientific_commit": "143fce697f28a0c5c115b5f4c7896b25d74c5f5a",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "7cf8fcdd7b5806ba6a267eeaa01e5e9b1d78085e",
-    "id": "c1523389-1363-42a7-b973-1bc6847ac445",
+    "base_commit": "785a1dc84380f0a3b23d4078655260a87d1a17c3",
+    "id": "840f1e05-cd5f-42ed-9505-50aafef87094",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T08:55:56.112011+00:00"
+    "started_at": "2026-09-24T11:30:18.533179+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "c1523389-1363-42a7-b973-1bc6847ac445": 5
+    "840f1e05-cd5f-42ed-9505-50aafef87094": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Experiment 5's added polar and normalized target observations did not improve task success and caused broad degradation in both measured checkpoints. Revert the complete scientific recipe to the selected working lineage."
-    },
-    "code_parent_commit": "5270064fcbc689578ccd297616ec16b67226e232",
-    "continue_from": "working",
-    "experiment": 5,
-    "reason": "The unchanged working lineage scored 196/200 on the new disjoint research panel, while both experiment-5 observation-augmentation checkpoints failed broadly at 57/200 and 64/200. The working policy is therefore the strongest useful lineage and has independent development evidence at the objective threshold."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-  "official_benchmark_expectation": {
-    "expected_verdict": "goal_reached",
-    "reason": "The selected working policy achieved 196/200 (98.0%) on a research panel disjoint from the panels used to select it, after prior development results below threshold. This is encouraging independent development evidence, but the official frozen panel is still required to determine whether the human objective is reached."
-  },
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/c1523389-1363-42a7-b973-1bc6847ac445/e1-cada55eb5-e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-    "fingerprint": "e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "5270064fcbc689578ccd297616ec16b67226e232",
-    "experiment": 5,
-    "scientific_commit": "c47e7330c74daaee0aca076579d9a66db2d54f60"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/c1523389-1363-42a7-b973-1bc6847ac445/e1-c8cf701d5-ae6360937635885156719ca4f5483fd6ebbcc3f0a8997a19a8cfb23cedbb537c",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-120832-200ep-seed10000-f48545f83637.json",
-        "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-120832-200ep-seed10200-f48545f83637.json"
-      ],
-      "fingerprint": "ae6360937635885156719ca4f5483fd6ebbcc3f0a8997a19a8cfb23cedbb537c",
-      "id": "late-plateau-120832",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Preserve the final late-plateau policy as a reusable continuation and comparison alternative; it ties the working policy on the independent panel despite its lower pooled result.",
-      "scientific_commit": "143fce697f28a0c5c115b5f4c7896b25d74c5f5a",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 10000
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 10200
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 120832
-    }
-  ],
+  "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/c1523389-1363-42a7-b973-1bc6847ac445/e1-cada55eb5-e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json",
-      "research/evaluations/c1523389-1363-42a7-b973-1bc6847ac445/evaluation-c1523389-1363-42a7-b973-1bc6847ac445-experiment-1-checkpoint-100352-200ep-seed10200-f48545f83637.json"
-    ],
-    "fingerprint": "e0e905c8bbc5effb9f7d495eb2fc73061dcbc02febc253f022722479fe0a8535",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The unchanged working lineage scored 196/200 on the new disjoint research panel, while both experiment-5 observation-augmentation checkpoints failed broadly at 57/200 and 64/200. The working policy is therefore the strongest useful lineage and has independent development evidence at the objective threshold.",
-    "scientific_commit": "143fce697f28a0c5c115b5f4c7896b25d74c5f5a",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10600
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10800
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 11000
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
