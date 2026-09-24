@@ -1,87 +1,19 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/3f8899d3-51f3-4f34-8ace-9209912451c8/e1-cada55eb5-4de3a23c3f684517eebc81370f3f36174dc9b18c4327cf60725d463754d6d55f",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/3f8899d3-51f3-4f34-8ace-9209912451c8/evaluation-3f8899d3-51f3-4f34-8ace-9209912451c8-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json",
-      "research/evaluations/3f8899d3-51f3-4f34-8ace-9209912451c8/evaluation-3f8899d3-51f3-4f34-8ace-9209912451c8-experiment-1-checkpoint-100352-200ep-seed10200-f48545f83637.json",
-      "research/evaluations/3f8899d3-51f3-4f34-8ace-9209912451c8/task-reference-3f8899d3-51f3-4f34-8ace-9209912451c8-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "4de3a23c3f684517eebc81370f3f36174dc9b18c4327cf60725d463754d6d55f",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It leads checkpoint-95232 and checkpoint-120832 on the two disjoint research panels in pooled success, while the fixed task-reference panel also ranks it highest. Its measured residual failures justify further development rather than terminal assessment.",
-    "scientific_commit": "6e9fd386b9d9211495d7c80d6f16a4828a2d27dc",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "f2411db0157ba08ceb19a9e34cb0ab7870693f10",
-    "id": "3f8899d3-51f3-4f34-8ace-9209912451c8",
+    "base_commit": "e5934414b14d3ec0f96e44251de6a3dd0ace01d2",
+    "id": "f0cf745a-e772-45c6-9002-6f8f0f0c8595",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-24T21:08:01.170012+00:00"
+    "started_at": "2026-09-24T22:32:52.841223+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "3f8899d3-51f3-4f34-8ace-9209912451c8": 2
+    "f0cf745a-e772-45c6-9002-6f8f0f0c8595": 0
   },
-  "last_allocated_experiment": 2,
-  "last_experiment": 2,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Experiment 2 changed the researcher-owned training environment from 14-20 cm sampling to 6-20 cm sampling without improving measured behavior. Restore the scientific parent's complete recipe so the selected working lineage and its training configuration remain consistent."
-    },
-    "code_parent_commit": "081923450a50ea2cda5ebf67e451ad5cfeca30fa",
-    "continue_from": "working",
-    "experiment": 2,
-    "reason": "The saved working policy and both measured experiment-2 checkpoints each achieved 194/200 successes on the fresh disjoint panel. Paired comparisons found zero wins and zero discordant episodes for either challenger, and the same six episodes failed for all three policies. The broader 6-20 cm training-radius distribution therefore did not improve complete success or the observed near-radius reach-and-hold failures, so the existing checkpoint-100352 lineage remains the defensible working choice."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -91,77 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "081923450a50ea2cda5ebf67e451ad5cfeca30fa",
-    "experiment": 2,
-    "scientific_commit": "df27c99be08564cd79411708e3be2ae53f3542e3"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/3f8899d3-51f3-4f34-8ace-9209912451c8/e1-cada55eb5-4de3a23c3f684517eebc81370f3f36174dc9b18c4327cf60725d463754d6d55f",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/3f8899d3-51f3-4f34-8ace-9209912451c8/evaluation-3f8899d3-51f3-4f34-8ace-9209912451c8-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json",
-      "research/evaluations/3f8899d3-51f3-4f34-8ace-9209912451c8/evaluation-3f8899d3-51f3-4f34-8ace-9209912451c8-experiment-1-checkpoint-100352-200ep-seed10200-f48545f83637.json"
-    ],
-    "fingerprint": "4de3a23c3f684517eebc81370f3f36174dc9b18c4327cf60725d463754d6d55f",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The saved working policy and both measured experiment-2 checkpoints each achieved 194/200 successes on the fresh disjoint panel. Paired comparisons found zero wins and zero discordant episodes for either challenger, and the same six episodes failed for all three policies. The broader 6-20 cm training-radius distribution therefore did not improve complete success or the observed near-radius reach-and-hold failures, so the existing checkpoint-100352 lineage remains the defensible working choice.",
-    "scientific_commit": "6e9fd386b9d9211495d7c80d6f16a4828a2d27dc",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 10400
-      }
-    ],
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
