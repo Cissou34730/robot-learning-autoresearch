@@ -3,27 +3,23 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a competent reach-and-hold policy, but
-the intervention in experiment 3 did not improve it. On the new disjoint
-4800–4999 panel, the best experiment-3 checkpoint scored 194/200 (97.0%),
-while `best_known` scored 197/200 (98.5%). The latter is independent of the
-panels used to select `best_known`, but all development measurements remain
-insufficient to declare the official objective reached.
+the standing `best_known` lineage is inconsistent across development panels:
+it pooled 766/800 (95.75%) and scored 197/200 (98.5%) on the latest disjoint
+panel. Full-radius target training and full hold-exit forfeiture both failed
+to improve it; the latter's strongest checkpoint scored 194/200 (97.0%).
 
 **Lessons and limits:** Direct task success, rather than training proxies,
-governs the policy comparison. Full-radius target sampling did not improve
-the measured policy, and the experiment-2 failures include both episodes that
-never reached tolerance and episodes that entered tolerance but interrupted
-the hold. The current reward had no forfeiture for leaving a partial hold,
-which leaves the contribution of hold credit assignment unresolved. Experiment
-3 made partial-hold exit costly, but its measured checkpoints were below the
-same-panel control; the 97.0% checkpoint still had two interrupted holds and
-four no-reach failures, while the control's three failures were no-reach. The
-development panels remain insufficient to declare the official objective.
+governs comparisons. The measured failures include both no-reach episodes and
+interrupted holds, so neither target coverage nor hold-credit shaping explains
+the remaining gap alone. The current observation encodes pose, velocity,
+relative target position, and inverse-kinematics errors but not hold progress.
+Development measurements, including the reused 98% task-reference result,
+cannot declare the official objective.
 
-**Open questions:** The hold-exit forfeiture route is weakened and should not
-replace the best-known recipe. The remaining no-reach failures may require
-changes to observations, control behavior, or the learning method rather than
-reward shaping. The official benchmark has not yet adjudicated the objective.
+**Open questions:** It remains unresolved whether making the task's partial
+hold state explicit to the policy can improve uninterrupted reach-and-hold
+reliability without sacrificing reach performance. It is also unresolved
+whether the standing lineage meets the official fixed-panel objective.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
