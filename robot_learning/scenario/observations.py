@@ -33,17 +33,31 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
+    open_residuals = np.array(
+        [
+            wrap_to_pi(shoulder_open - float(data.qpos[0])),
+            wrap_to_pi(elbow_open - float(data.qpos[1])),
+        ]
+    )
+    folded_residuals = np.array(
+        [
+            wrap_to_pi(shoulder_folded - float(data.qpos[0])),
+            wrap_to_pi(elbow_folded - float(data.qpos[1])),
+        ]
+    )
+    branch_margin = float(
+        np.linalg.norm(open_residuals) - np.linalg.norm(folded_residuals)
+    )
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
-            end_effector - data.mocap_pos[0],
+            (end_effector - data.mocap_pos[0])[:2],
+            [branch_margin],
             [
-                wrap_to_pi(shoulder_open - float(data.qpos[0])),
-                wrap_to_pi(elbow_open - float(data.qpos[1])),
-                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-                wrap_to_pi(elbow_folded - float(data.qpos[1])),
+                *open_residuals,
+                *folded_residuals,
             ],
         ]
     ).astype(np.float32)
