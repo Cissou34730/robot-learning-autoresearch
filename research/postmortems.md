@@ -4,45 +4,45 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 196/200 on the latest disjoint panel and
-1173/1200 across six distinct research panels. The reward intervention produced
+98% solution. It achieved 189/200 on the latest preparation panel and
+1362/1400 across seven distinct research panels. The reward intervention produced
 176/200 and 186/200 challengers, and the periodic-observation intervention
 produced 41/200 and 53/200 challengers; neither intervention produced a paired
-win over the parent. The periodic candidates failed broadly, not only in the
-known negative-angle sector. The parent failures remain structured no-entry
-events, but the evidence does not establish their physical or control cause.
+win over the parent. The preparation telemetry adds a third saved-lineage
+comparison: the parent reached 189/200 on the new panel, the radius-expanded
+lineage 187/200, and the reward-shaped lineage 180/200. The parent failures
+remain concentrated no-entry events, but the evidence does not establish their
+physical or control cause.
 
 **Lessons and limits:** Radius expansion did not remove the shared
 negative-angle failure identities, and reward changes regressed complete task
-behavior. Earlier telemetry associated the failures with low Jacobian
-conditioning and prolonged saturation, but did not establish whether those
-states cause failure or result from it. Adding sine/cosine encodings to the
-wrapped branch errors caused severe broad degradation in a fresh policy:
-20.5% and 26.5% success versus 98.0% for the paired parent, with parent wins
-on all 155 and 143 discordant episodes. This rejects the tested periodic
-recipe and strongly weakens the simple representation hypothesis, but does not
-prove that wrapped errors are irrelevant because the total intervention also
-changed the observation dimension and learning problem. Development panels
+behavior. Across the saved lineages, failures were associated with poorer
+minimum planar-Jacobian conditioning and prolonged saturated commands, while
+entry speed and branch-at-entry did not consistently separate successes from
+failures. These are correlations, not causal evidence: saturation may be a
+cause, a consequence of poor conditioning, or a marker of an unrecoverable
+trajectory. Adding sine/cosine encodings to the wrapped branch errors caused
+severe broad degradation in a fresh policy, rejecting that tested recipe
+without proving that all observation changes are unhelpful. Development panels
 remain non-official, and the parent has not established the human objective on
 the final benchmark.
 
-**Open questions:** Whether the persistent failures arise from
-configuration-dependent control difficulty, branch-transition dynamics, or
-their interaction with poor Jacobian conditioning and actuator saturation.
-The next intervention must preserve the parent's broad reach-and-hold behavior
-and distinguish these mechanisms rather than adding another unvalidated
-observation representation.
+**Open questions:** Whether reducing effective torque demand below the actuator
+clip can make the controller recoverable in the poorly conditioned sector;
+whether any benefit survives the loss of peak torque authority; and whether
+the same change preserves approach, branch selection, and complete holding
+away from that sector.
 
-**Active inquiry:** Determine whether the remaining negative-angle no-entry
-failures are caused by configuration-dependent control and branch-transition
-dynamics, with low conditioning and prolonged saturation as candidate
-mechanisms rather than established causes. The periodic encoding result
-redirects this inquiry: a broad regression and zero paired wins are evidence
-against the tested representation intervention, not proof that any one
-alternative mechanism is causal. Evidence that isolates a transition or
-conditioning signature while preserving complete reach-and-hold behavior would
-support a targeted intervention; failure to separate those mechanisms would
-require retaining the parent and revising the question.
+**Active inquiry:** Test whether the persistent negative-angle no-entry failures
+are partly caused by a policy repeatedly requesting commands at the actuator
+limit, rather than by the wrapped branch representation alone. Continue the
+working lineage with a stateless 0.9 action-headroom map applied identically in
+training and exported inference, while keeping observations, reward, target
+sampling, and PPO settings unchanged. Improvement in paired complete success
+with reduced saturation and no broad regression would support saturation as a
+causal control limitation; unchanged failures or loss of reach authority would
+redirect the inquiry toward branch-transition dynamics or configuration
+conditioning and retain the parent.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
