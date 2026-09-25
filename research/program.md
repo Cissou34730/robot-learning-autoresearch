@@ -308,19 +308,11 @@ in the synthesis rather than rewriting what was believed at the time.
 ## Stopping
 
 Continue development while a scientifically useful path toward the human
-objective remains. Before requesting the official benchmark, answer this forced
-forecast from the evidence already available:
-
-> If the official benchmark were run now and I had to predict one verdict from
-> the evidence already available, which would I predict: `goal_reached` or
-> `goal_not_reached`? Why?
-
-Request the benchmark only when the predicted verdict is `goal_reached` for the
-selected best-known model. Otherwise pursue a useful path or conclude that no
-further experiment is warranted. The forecast is a judgment under uncertainty,
-not a requirement to prove the verdict or gather more evidence. Neither the
-number of experiments already run nor the cost of another is itself a reason to
-stop.
+objective remains. Request the official benchmark only when you expect
+`goal_reached` for the selected best-known model, stating the evidence and
+uncertainty behind that expectation. Otherwise pursue a useful path or conclude
+that no further experiment is warranted. Neither the number of experiments
+already run nor the cost of another is itself a reason to stop.
 
 The official benchmark is a terminal verdict, not a diagnostic instrument.
 Do not request it to settle an uncertainty that development measurements
