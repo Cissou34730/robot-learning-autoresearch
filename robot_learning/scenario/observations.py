@@ -8,7 +8,7 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 13
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -33,24 +33,12 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    q1, q2 = (float(value) for value in data.qpos)
-    q1_velocity, q2_velocity = (float(value) for value in data.qvel)
-    q1_plus_q2 = q1 + q2
-    end_effector_velocity = np.array(
-        [
-            -UPPER_ARM_LENGTH * np.sin(q1) * q1_velocity
-            - FOREARM_LENGTH * np.sin(q1_plus_q2) * (q1_velocity + q2_velocity),
-            UPPER_ARM_LENGTH * np.cos(q1) * q1_velocity
-            + FOREARM_LENGTH * np.cos(q1_plus_q2) * (q1_velocity + q2_velocity),
-        ]
-    )
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
-            end_effector_velocity,
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
