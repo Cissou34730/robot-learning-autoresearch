@@ -123,114 +123,35 @@
     "experiment": 6,
     "reason": "Keep the incumbent checkpoint-100352 lineage: it achieved 195/200 on the new disjoint replication panel, while the fresh replication's final checkpoint achieved 193/200 and its earlier measured checkpoints achieved only 31/200 and 35/200. The incumbent remains the strongest measured policy, although no development panel establishes the official objective."
   },
-  "last_verdict": "researcher requested the official final benchmark",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
+  "official_benchmark_expectation": {
+    "expected_verdict": "goal_not_reached",
+    "reason": "The frozen best-known checkpoint-100352 is the strongest measured policy, but it achieved 1363/1400 across seven disjoint development panels, including 195/200 on the latest panel, while the 196/200 task-reference result is reused development evidence. The official objective therefore appears unlikely, although panel sampling leaves meaningful uncertainty that only the official 200-episode assessment can resolve."
+  },
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/e1-cada55eb5-10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
+    "fingerprint": "10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/e1-cada55eb5-10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/e1-cada55eb5-10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/evaluation-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json",
-        "research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/evaluation-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-100352-200ep-seed10200-f48545f83637.json",
-        "research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/task-reference-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It has the highest pooled research success among the measured candidates, 194/200 on the disjoint panel, 196/200 on the reused task-reference panel, and a small paired advantage over the final checkpoint.",
-      "scientific_commit": "ae1f50d5eacab6fe35e815368c3f693724164fe6",
-      "selected_panels": [
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 10000
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 10200
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 10400
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 10600
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 10800
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 11000
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 11200
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 6,
-    "fingerprint": "10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
-    "selected": "best_known",
-    "terminal_expectation": {
-      "expected_verdict": "goal_not_reached",
-      "reason": "The frozen best-known checkpoint-100352 is the strongest measured policy, but it achieved 1363/1400 across seven disjoint development panels, including 195/200 on the latest panel, while the 196/200 task-reference result is reused development evidence. The official objective therefore appears unlikely, although panel sampling leaves meaningful uncertainty that only the official 200-episode assessment can resolve."
-    }
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "c0763a5e3bd45eda8f6d89d66838ed60e2f22c02",
@@ -303,7 +224,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/e1-cada55eb5-10bc057abd7b8865e0242bf290bf6a679d1c16b8a2947b7aa0c6c6e71e0f48bb",
     "candidate": "checkpoint-100352",
