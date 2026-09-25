@@ -3,23 +3,23 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a strong but variable reach-and-hold
-policy. The restored gamma-0.99 policy (model `9cd2645d98b9`) achieved
-1161/1200 (96.75%) across six disjoint research panels, including 196/200 on
-the latest panel, so one objective-level development result is independently
-supported but stable 98% performance is not. Full-radius training, hold-exit
-forfeiture, explicit hold progress, and gamma 0.995 did not improve the
-directly measured policy.
+policy. The gamma-0.99 working policy (model `9cd2645d98b9`) achieved
+1354/1400 (96.71%) across seven disjoint research panels, including 193/200
+on the latest panel, so stable 98% performance is not demonstrated. Full-radius
+training, hold-exit forfeiture, explicit hold progress, gamma 0.995, and zero
+entropy regularization did not improve the directly measured policy.
 
 **Lessons and limits:** Direct task success governs comparisons; training
-reward and success proxies do not. The gamma-0.995 transfer scored 73.0%,
-74.5%, and 93.5% on its measured checkpoints versus 98.0% for the same-panel
-control. Residual failures include both no-reach episodes and interrupted
-holds, and development panels, including the reused task-reference panel,
-cannot establish the official result.
+reward and success proxies do not. The entropy-zero transfer scored 90.5%,
+80.5%, and 87.0% versus 96.5% for the same-panel working control, with no
+challenger wins in any paired comparison. Residual failures include both
+no-reach episodes and interrupted holds, and development panels, including the
+reused task-reference panel, cannot establish the official result.
 
 **Open questions:** The cause of the remaining no-reach and interrupted-hold
 failures is unresolved. It is also unresolved whether the strongest reusable
-policy meets the official fixed-panel objective.
+policy meets the official fixed-panel objective; further training is a
+separate post-closure experiment.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
@@ -214,3 +214,40 @@ is a separate post-closure decision.
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-checkpoint-100352-200ep-seed5200-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-checkpoint-120832-200ep-seed5200-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-best_known-200ep-seed5200-f48545f83637.json`.
+
+## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 6
+
+**Result:** Removing PPO entropy regularization produced no useful challenger.
+The gamma-0.99 working lineage remains the strongest reusable policy, and the
+entropy coefficient should be restored to 0.01.
+
+**Observed behavior:** On the disjoint research panel covering episodes
+5400-5599, the entropy-zero checkpoints scored 181/200 (90.5%) at 65536
+steps, 161/200 (80.5%) at 86016 steps, and 174/200 (87.0%) at 120832 steps.
+The same-panel working control scored 193/200 (96.5%). The paired comparisons
+gave the control 12, 32, and 19 discordant wins, with no challenger wins.
+The challenger artifacts include 500-step truncations and interrupted holds.
+
+**Hypothesis assessment:** Contradicted under the tested transferred
+entropy-zero conditions. Removing entropy regularization did not improve
+uninterrupted reach-and-hold success or preserve the parent's reliability at
+any measured late checkpoint. This rejects the intervention as the current
+recipe, but does not establish that all optimization or learning-method
+alternatives are ineffective.
+
+**Interpretation:** The current working policy's seven-panel research total is
+1354/1400 (96.71%), so the objective is not stably demonstrated and the
+development result is not an official verdict. The experiment-6 evidence is
+already sufficient to resolve the entropy intervention without another
+measurement round. Close with the gamma-0.99 working lineage, re-designate it
+as best known because it outperforms the current gamma-0.995 best-known
+artifact in the recorded direct measurements, and leave further training to a
+separate post-closure experiment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/research_state.json`;
+`research/checkpoints/challengers/8f4d116e-7b66-4ca1-ab31-5915330bf310/experiment-6/inventory.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-6-checkpoint-65536-200ep-seed5400-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-6-checkpoint-86016-200ep-seed5400-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-6-checkpoint-120832-200ep-seed5400-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-6-working-200ep-seed5400-f48545f83637.json`.
