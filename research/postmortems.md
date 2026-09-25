@@ -2,46 +2,42 @@
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Scientific strategy
 
-**Current synthesis:** The baseline learned a substantial reach-and-hold behavior,
-but its remaining failures are structured rather than random hold noise. On the
-disjoint 22000--22199 panel, the saved parent succeeded on 194/200 episodes
-(97.0%), while the radius-expanded checkpoints at 105472 and 120832 each
-succeeded on 193/200. On the independent telemetry panel, all three policies
-succeeded on 197/200, but they failed on the same three target identities in the
-negative-angle sector. Across the four distinct research panels, the parent
-achieved 781/800 (97.6%) and each measured experiment-2 checkpoint achieved
-390/400 (97.5%). The radius expansion did not produce a reproducible improvement.
+**Current synthesis:** The learned parent has substantial reach-and-hold
+competence but remains a near-objective policy rather than an established
+98% solution. On the fresh 24000--24199 panel it achieved 196/200, while the
+matched-duration and final experiment-3 challengers achieved 176/200 and
+186/200. The challengers never beat the parent on a discordant episode and
+introduced failures across a much broader angle range than the parent's four
+no-entry failures. The reward intervention therefore did not solve the
+negative-angle limitation and degraded complete-task behavior.
+Across five distinct development panels the parent is 977/1000 (97.7%), which
+is strong evidence of a near-objective lineage but not an official result.
 
-**Lessons and limits:** The telemetry shows that every episode that entered
-tolerance used the elbow-open branch at entry; it does not rule out earlier
-branch transients or prove branch choice is causal. Failure episodes did not have
-a consistent excess endpoint speed at entry, while their actuator commands were
-at saturation for essentially the full truncated horizon and their minimum
-planar Jacobian determinants were lower than the successful episodes in this
-panel. These are mechanistic associations, not intervention evidence: the
-conditioning minimum can be a consequence of the failed trajectory, and the
-saturation count does not identify which joint or whether saturation caused the
-loss of stabilization. The parent remains the strongest defensible working
-policy, but its pooled development result is below the objective and no
-development panel establishes the official result.
+**Lessons and limits:** The experiment weakens the explanation that cheap
+actions and retained partial hold credit were the main cause of the failures.
+For checkpoint-100352, 20 of 24 failures entered tolerance but never completed
+100 uninterrupted steps; for checkpoint-120832, 11 of 14 had that pattern,
+whereas all four parent failures were no-entry cases. The paired comparison
+supports rejecting this reward recipe for the active lineage, but it does not
+isolate action cost from hold-credit forfeiture or from continuation and
+optimization effects. Development panels remain non-official, and the parent
+has not established the human objective on the final benchmark.
 
-**Open questions:** Whether low-Jacobian configurations initiate the persistent
-failure or arise from an already unstable trajectory; whether prolonged actuator
-saturation is a controller limitation, a consequence of the target geometry, or
-both; whether branch switching occurs before tolerance entry; whether penalizing
-large torques and forfeiting accumulated hold progress can improve stabilization;
-and whether such shaping sacrifices approach performance elsewhere.
+**Open questions:** Whether the persistent no-entry cases arise from
+configuration-dependent conditioning, an unobserved branch transient, or a
+limitation of the policy's state and action representation; whether the
+conditioning signature is causal or a consequence of the failed trajectory;
+and whether the same mechanism can be changed without sacrificing the broad
+reach-and-hold behavior.
 
-**Active inquiry:** Test whether the negative-angle failures were partly a
-learned control-cost and hold-credit failure: before this intervention, the
-reward made saturated actions cheap and gave no loss of accumulated hold credit
-when a hold was abandoned.
-Transfer the working policy with stronger action regularization and full hold
-credit forfeiture on exit, while leaving the target distribution and observation
-contract unchanged. Reduced saturation, fewer interrupted holds, and loss of the
-same failure sector without regressions elsewhere would support a stabilization
-mechanism; unchanged no-entry failures or broad approach regressions would
-redirect attention to conditioning, branch transients, or representation.
+**Active inquiry:** Determine whether the remaining negative-angle no-entry
+failures are caused by the controller's information and control representation
+in poorly conditioned configurations, or by branch-transition dynamics that
+the current policy cannot stabilize. Evidence that distinguishes these
+mechanisms must improve paired complete-task outcomes without broad
+regression; persistent no-entry failures or another broad hold regression
+would redirect the inquiry toward the task geometry and its controller
+interaction rather than reward shaping.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -132,3 +128,46 @@ trajectory variants may be useful for future paired work without treating their
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-working-200ep-seed23000-a27165d6de57.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-checkpoint-105472-200ep-seed23000-a27165d6de57.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-checkpoint-120832-200ep-seed23000-a27165d6de57.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 3
+
+**Result:** Stronger action regularization and full hold-credit forfeiture did
+not improve stabilization. On the paired 24000--24199 panel, the working
+parent achieved 196/200, while experiment-3 checkpoint-100352 achieved
+176/200 and checkpoint-120832 achieved 186/200. The parent remains working and
+best-known; the experiment-3 reward recipe is rejected and the parent recipe
+is restored. Both measured challengers are retained as negative controls for
+future mechanism comparisons.
+
+**Observed behavior:** The parent lost four episodes, all by failing to enter
+tolerance. The 100352-step challenger lost 24 episodes: four no-entry failures
+and 20 failures that entered tolerance but never sustained 100 uninterrupted
+steps. The 120832-step challenger lost 14 episodes: three no-entry failures
+and 11 incomplete holds. The challengers' failures extended beyond the
+recurring negative-angle sector, and paired comparisons recorded zero
+challenger wins against the parent.
+
+**Hypothesis assessment:** The hypothesis that stronger action regularization
+combined with full hold-credit forfeiture would reduce interrupted holds while
+preserving broad reach-and-hold behavior is contradicted on this panel. The
+intervention produced a large complete-task regression and more incomplete
+holds, not the predicted stabilization. Because both reward terms changed
+together and the policies were continued through learning, the measurements
+reject the recipe as a useful intervention but do not identify which term or
+learning interaction caused the regression.
+
+**Interpretation:** The evidence does not support continuing reward shaping as
+the primary explanation for the failure sector. The parent is the most
+defensible lineage for subsequent work, while the two measured challengers
+remain useful negative controls. The next scientific distinction is between
+conditioning, branch-transition behavior, and the information or control
+representation; no official objective attainment is claimed.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-3/parameters.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-3-working-200ep-seed24000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-3-checkpoint-100352-200ep-seed24000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-3-checkpoint-120832-200ep-seed24000-48e4acc98c39.json`;
+`robot_learning/scenario/reward.py`.
