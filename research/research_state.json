@@ -1,178 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/evaluation-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json",
-      "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/evaluation-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-200ep-seed5200-48e4acc98c39.json",
-      "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/task-reference-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the leading candidate on the independent disjoint research panel, is strongest in pooled distinct-panel evidence, and has no measuredly superior alternative.",
-    "scientific_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "30c7626a39735dd32e05230824b6afc0ce8b09e5",
-    "id": "ce95d72f-a17e-402c-aa10-459f2b8ccecf",
+    "base_commit": "42871c30494f079e1435c3232d0e519d36ad0ea3",
+    "id": "999bd25e-73f3-4cc7-9b9f-de2d67fcf678",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-25T10:05:38.882892+00:00"
+    "started_at": "2026-09-25T11:49:34.239240+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "ce95d72f-a17e-402c-aa10-459f2b8ccecf": 1
+    "999bd25e-73f3-4cc7-9b9f-de2d67fcf678": 0
   },
-  "last_allocated_experiment": 1,
-  "last_experiment": 1,
-  "last_lineage_decision": {
-    "best_known": "checkpoint-100352",
-    "code": {
-      "action": "keep",
-      "reason": "The unchanged baseline recipe produced the strongest measured candidate, and no code or parameter change is needed for closure."
-    },
-    "code_parent_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047",
-    "continue_from": "checkpoint-100352",
-    "experiment": 1,
-    "reason": "The checkpoint-100352 policy is the strongest complete reach-and-hold candidate: it leads the two distinct research panels at 347/360 pooled successes and reaches 196/200 on the disjoint panel. The evidence supports keeping this lineage while recognizing that development measurements are not the official result."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "fingerprint": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047",
-    "experiment": 1,
-    "scientific_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/evaluation-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json",
-      "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/evaluation-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-200ep-seed5200-48e4acc98c39.json"
-    ],
-    "fingerprint": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The checkpoint-100352 policy is the strongest complete reach-and-hold candidate: it leads the two distinct research panels at 347/360 pooled successes and reaches 196/200 on the disjoint panel. The evidence supports keeping this lineage while recognizing that development measurements are not the official result.",
-    "scientific_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 5200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
