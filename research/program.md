@@ -136,9 +136,13 @@ The phase order is:
    logs and existing evidence;
 4. closure resolves the working lineage, scientific recipe and optional
    best-known designation;
-5. the Researcher may prepare the next experiment, request the final benchmark,
-   or conclude that no further experiment is warranted. Accepted experiments
-   return to Runner training, analysis and closure.
+5. after baseline closure, the Researcher completes at least one post-baseline
+   scientific operation before the final benchmark becomes available. This may
+   be a preparation measurement on a saved lineage or another experiment,
+   including replication, continuation or fresh training;
+6. the Researcher may then prepare another experiment, request the final
+   benchmark, or conclude that no further experiment is warranted. Accepted
+   experiments return to Runner training, analysis and closure.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -314,6 +318,12 @@ uncertainty behind that expectation. Otherwise pursue a useful path or conclude
 that no further experiment is warranted. Neither the number of experiments
 already run nor the cost of another is itself a reason to stop.
 
+The unchanged baseline establishes the starting point but cannot by itself
+authorize terminal assessment. Complete one post-baseline scientific operation
+first. A preparation measurement completed after baseline closure satisfies this
+requirement, as does completing experiment 2 or any later experiment. Measurement
+rounds performed inside baseline analysis remain part of the baseline and do not.
+
 The official benchmark is a terminal verdict, not a diagnostic instrument.
 Do not request it to settle an uncertainty that development measurements
 could resolve; plan the needed evidence while you can still act on it.
@@ -327,10 +337,11 @@ closing the experiment.
 Another useful investigation does not prohibit stopping. A campaign that never
 requests the benchmark produces no official result.
 
-Request the official benchmark from experiment preparation or closure, targeting
-the frozen best-known model. Requesting it ends the campaign after either verdict:
-`goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
-plan further work conditional on benchmark failure. Only this benchmark declares
-the official result. Both verdicts are legitimate campaign outcomes:
+After the post-baseline operation requirement is satisfied, request the official
+benchmark from experiment preparation or closure, targeting the frozen best-known
+model. Requesting it ends the campaign after either verdict: `goal_reached` or
+`goal_not_reached`, and that decision is irreversible. Do not plan further work
+conditional on benchmark failure. Only this benchmark declares the official
+result. Both verdicts are legitimate campaign outcomes:
 `goal_not_reached` on a well-evidenced submission is not a failure of the
 Researcher's process, and the scientific record survives.

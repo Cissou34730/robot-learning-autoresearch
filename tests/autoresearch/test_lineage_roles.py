@@ -450,6 +450,44 @@ def test_v4_omitted_best_known_keeps_the_incumbent(monkeypatch, tmp_path):
     ]
 
 
+def test_v4_final_benchmark_requires_a_post_baseline_operation(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
+    existing = _lineage(incumbent, steps=10_000)
+    state = {
+        "schema_version": 4,
+        "working_lineage": existing.copy(),
+        "best_known_lineage": existing.copy(),
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 1,
+            "continue_from": "best_known",
+            "reason": "Keep the incumbent.",
+            "code": {"action": "keep", "reason": "No code change."},
+            "request_final_benchmark": True,
+            "terminal_reason": "Submit the incumbent.",
+        }
+    }
+
+    with pytest.raises(ValueError, match="post-baseline scientific operation"):
+        protocol.plan_previous_result_decision(proposal, state)
+
+    state["pending_researcher_decision"]["experiment"] = 2
+    proposal["previous_result_decision"]["experiment"] = 2
+    assert protocol.plan_previous_result_decision(proposal, state)[
+        "request_final_benchmark"
+    ]
+
+
 def test_v4_same_best_known_model_is_idempotent(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     incumbent = _artifact(tmp_path / "incumbent", "incumbent")

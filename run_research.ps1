@@ -1119,18 +1119,25 @@ The final output should be a compact but substantive **Scientific model of the r
 
     if ($null -ne $researchState.pending_researcher_decision) {
         Update-ResearchBrief
-        Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $($researchState.pending_researcher_decision.experiment) ==="
+        $closingExperiment = [int]$researchState.pending_researcher_decision.experiment
+        $baselineClosure = $researchState.schema_version -eq 4 -and $closingExperiment -eq 1
+        Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $closingExperiment ==="
         $decisionPrompt = @(
-            "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
+            "Current phase: close experiment $closingExperiment and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
             $scientificModelUseGuidance
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
-            "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
+            $(if ($baselineClosure) {
+                    "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, and the optional best-known designation. Because this is the baseline closure, request_final_benchmark must be false; terminal assessment becomes available after one completed post-baseline scientific operation."
+                }
+                else {
+                    "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
+                    "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
+                })
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment
+        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision" -Experiment $closingExperiment
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
             break
         }
@@ -1171,6 +1178,15 @@ The final output should be a compact but substantive **Scientific model of the r
     $allocatedExperiment = [Math]::Max(
         [int]$researchState.last_allocated_experiment,
         [int]$researchState.last_experiment
+    )
+    $completedPreparationRounds = 0
+    if ($null -ne $researchState.preparation_measurement -and $null -ne $researchState.preparation_measurement.rounds) {
+        $completedPreparationRounds = @($researchState.preparation_measurement.rounds).Count
+    }
+    $finalAssessmentEligible = (
+        $researchState.schema_version -ne 4 -or
+        [int]$researchState.last_experiment -gt 1 -or
+        $completedPreparationRounds -gt 0
     )
     $budgetReached = $MaxExperiments -gt 0 -and $allocatedExperiment -ge $MaxExperiments
     if ($budgetReached) {
@@ -1215,12 +1231,20 @@ The final output should be a compact but substantive **Scientific model of the r
         $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
         "For training or continuation, connect the proposed change to possible learned behavior and a complete-task comparison. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
         $(if ($budgetReached) {
-                "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
+                $(if ($finalAssessmentEligible) {
+                        "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
+                    }
+                    else {
+                        "Only one outcome is legal in this phase: conclude that no further experiment is warranted through a campaign_conclusion in research/proposal.json. Final assessment is not available because no post-baseline scientific operation has completed."
+                    })
+            }
+            elseif ($finalAssessmentEligible) {
+                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes, with no default or preference implied by their order: a measurement round on saved lineages; replication; continuation or training with fresh or transfer initialization; requesting the official final assessment of the standing best-known model; or concluding that no further experiment is warranted. After a measurement round, this phase reopens with its evidence and all of these outcomes remain available."
             }
             else {
-                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes, with no default or preference implied by their order: a measurement round on saved lineages; replication; continuation or training with fresh or transfer initialization; requesting the official final assessment of the standing best-known model; or concluding that no further experiment is warranted. After a measurement round, this phase reopens with its evidence and all of these outcomes remain available."
+                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes, with no default or preference implied by their order: a measurement round on saved lineages; replication; continuation or training with fresh or transfer initialization; or concluding that no further experiment is warranted. Final assessment becomes available after one of those post-baseline scientific operations completes; a preparation measurement returns to this phase with its evidence."
             })
-        $(if ($budgetReached) {
+        $(if ($budgetReached -or -not $finalAssessmentEligible) {
                 ""
             }
             else {
@@ -1281,7 +1305,12 @@ The final output should be a compact but substantive **Scientific model of the r
             $(if ($budgetReached) {
                     "Current phase: conclude the campaign. The experiment budget is exhausted; no further experiment may be prepared. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
                     "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json, which must contain a campaign_conclusion, preserving valid researcher-owned edits that belong to this unfinished experiment."
-                    "Only two outcomes are legal: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
+                    $(if ($finalAssessmentEligible) {
+                            "Only two outcomes are legal: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
+                        }
+                        else {
+                            "Only one outcome is legal: conclude that no further experiment is warranted through a campaign_conclusion in research/proposal.json. Final assessment is not available because no post-baseline scientific operation has completed."
+                        })
                     "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                     "Expected deliverable: a corrected research/proposal.json containing only a campaign_conclusion."
                     "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."

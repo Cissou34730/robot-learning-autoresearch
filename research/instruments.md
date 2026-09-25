@@ -339,10 +339,13 @@ containing only a `campaign_conclusion` object:
 `request_final_benchmark` submits the standing `best_known` lineage for the
 official final assessment. It requires a designated best-known model and reuses
 the closure decision of the same name: the official benchmark runs once and the
-campaign ends after its verdict. Its `reason` is the terminal rationale for the
-request. `no_further_experiment` records the Researcher's judgement that no
-further experiment is warranted without requesting that assessment; it ends the
-campaign. Neither outcome creates an experiment record,
+campaign ends after its verdict. It is unavailable until one post-baseline
+scientific operation has completed: either a preparation measurement after
+baseline closure or experiment 2 or later. Its `reason` is the terminal rationale
+for the request. `no_further_experiment` records the Researcher's judgement that
+no further experiment is warranted without requesting that assessment; it
+remains available immediately after baseline and ends the campaign. Neither
+outcome creates an experiment record,
 an experiment-index row or an intervention count. A `campaign_conclusion` is
 accepted only while no measurement, analysis, closure or official assessment is
 pending; each pending phase requires its own deliverable.
@@ -472,7 +475,9 @@ to proceed after closure. Setting it to `true` requests terminal assessment of
 `best_known`; the Runner ends the campaign after either `goal_reached` or
 `goal_not_reached`. The result is not available to a later hypothesis. The
 scientific decision rule for requesting assessment is defined in
-`research/program.md`.
+`research/program.md`. Baseline closure must omit the request or set it to
+`false`; experiment 2 and later may request it because a post-baseline operation
+has then completed.
 
 When `request_final_benchmark` is `true`, `terminal_reason` is required and must
 be non-empty. It is the terminal rationale for the irreversible request, distinct
