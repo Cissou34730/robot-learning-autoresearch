@@ -4,38 +4,45 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 196/200 on the fresh experiment-3 panel and
-977/1000 across five distinct research panels. The reward intervention instead
-produced 176/200 and 186/200 challengers, with broad incomplete-hold failures
-and no paired wins over the parent. The remaining parent failures are therefore
-structured no-entry events, not evidence that stronger hold shaping is needed.
+98% solution. It achieved 196/200 on the latest disjoint panel and
+1173/1200 across six distinct research panels. The reward intervention produced
+176/200 and 186/200 challengers, and the periodic-observation intervention
+produced 41/200 and 53/200 challengers; neither intervention produced a paired
+win over the parent. The periodic candidates failed broadly, not only in the
+known negative-angle sector. The parent failures remain structured no-entry
+events, but the evidence does not establish their physical or control cause.
 
 **Lessons and limits:** Radius expansion did not remove the shared
 negative-angle failure identities, and reward changes regressed complete task
 behavior. Earlier telemetry associated the failures with low Jacobian
 conditioning and prolonged saturation, but did not establish whether those
-states cause failure or result from it. The observation currently exposes
-wrapped branch-angle errors as scalar values; these are discontinuous at the
-angle boundary even though the physical configuration is continuous. This is a
-plausible representation limitation, not an established cause. Development
-panels remain non-official, and the parent has not established the human
-objective on the final benchmark.
+states cause failure or result from it. Adding sine/cosine encodings to the
+wrapped branch errors caused severe broad degradation in a fresh policy:
+20.5% and 26.5% success versus 98.0% for the paired parent, with parent wins
+on all 155 and 143 discordant episodes. This rejects the tested periodic
+recipe and strongly weakens the simple representation hypothesis, but does not
+prove that wrapped errors are irrelevant because the total intervention also
+changed the observation dimension and learning problem. Development panels
+remain non-official, and the parent has not established the human objective on
+the final benchmark.
 
-**Open questions:** Whether a smooth periodic encoding of branch errors lets
-the policy select and control configurations across the persistent sector;
-whether branch-transition dynamics remain limiting after that representation
-change; and whether any improvement can occur without sacrificing the parent's
-broad reach-and-hold behavior.
+**Open questions:** Whether the persistent failures arise from
+configuration-dependent control difficulty, branch-transition dynamics, or
+their interaction with poor Jacobian conditioning and actuator saturation.
+The next intervention must preserve the parent's broad reach-and-hold behavior
+and distinguish these mechanisms rather than adding another unvalidated
+observation representation.
 
-**Active inquiry:** Test whether the remaining negative-angle no-entry failures
-are partly caused by the wrapped angular representation rather than by reward
-or target coverage. Train a fresh policy that preserves the existing
-observation features and adds sine/cosine encodings of all four branch errors.
-An improvement in paired complete-task outcomes, especially removal of the
-negative-angle no-entry cases without new hold regressions, would support a
-representation mechanism; persistent sector failures or broad degradation
-would redirect the inquiry toward branch-transition dynamics and
-configuration-dependent control.
+**Active inquiry:** Determine whether the remaining negative-angle no-entry
+failures are caused by configuration-dependent control and branch-transition
+dynamics, with low conditioning and prolonged saturation as candidate
+mechanisms rather than established causes. The periodic encoding result
+redirects this inquiry: a broad regression and zero paired wins are evidence
+against the tested representation intervention, not proof that any one
+alternative mechanism is causal. Evidence that isolates a transition or
+conditioning signature while preserving complete reach-and-hold behavior would
+support a targeted intervention; failure to separate those mechanisms would
+require retaining the parent and revising the question.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -169,3 +176,49 @@ representation; no official objective attainment is claimed.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-3-checkpoint-100352-200ep-seed24000-48e4acc98c39.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-3-checkpoint-120832-200ep-seed24000-48e4acc98c39.json`;
 `robot_learning/scenario/reward.py`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 4
+
+**Result:** Adding sine/cosine encodings of the four inverse-kinematic
+branch-angle errors to the existing observation produced a severe complete-task
+regression. The 100352-step and 120832-step candidates achieved 41/200
+(20.5%) and 53/200 (26.5%) on the disjoint episodes 25000--25199 panel, while
+the paired working parent achieved 196/200 (98.0%). The parent won every
+discordant episode: 155 for the proxy-peak candidate and 143 for the final
+candidate. The working lineage remains selected and best-known; the periodic
+recipe is rejected and reverted. Both measured candidates are retained as
+negative controls for the representation investigation.
+
+**Observed behavior:** The periodic candidates did not merely preserve the
+known no-entry sector. They failed on a broad set of targets where the parent
+completed reach and hold, with many failures never entering tolerance and
+additional trajectories entering briefly or failing to hold. Their late
+checkpoint improved from 20.5% to 26.5% but remained far below the parent, so
+continued training did not recover the parent's behavior within this run.
+
+**Hypothesis assessment:** The hypothesis that periodic branch-error features
+would remove negative-angle no-entry failures while preserving broad behavior
+is contradicted on the paired panel. The result rejects this observation
+recipe as a useful intervention and strongly weakens the claim that scalar
+wrapped branch errors are the primary actionable cause. Because the policy was
+trained fresh with a changed observation dimension, the result does not
+identify whether optimization, feature interactions, branch selection, or
+physical control dynamics caused the regression.
+
+**Interpretation:** The parent is the only defensible continuation: it retains
+the broadest measured reach-and-hold behavior and is exactly at the 98.0%
+threshold on this development panel, without establishing the official
+objective. The experiment rules out a broad periodic augmentation as a safe
+next step, but leaves configuration-dependent control, branch-transition
+dynamics, conditioning, and saturation as competing explanations. Retaining
+the two measured challengers preserves a sharply negative representation
+control for later mechanism comparisons without treating it as a viable
+training parent.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/scientific_model.md`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-4-working-200ep-seed25000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-4-checkpoint-100352-200ep-seed25000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-4-checkpoint-120832-200ep-seed25000-48e4acc98c39.json`;
+`robot_learning/scenario/observations.py`.
