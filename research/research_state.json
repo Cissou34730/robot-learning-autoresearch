@@ -117,15 +117,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "request_final_benchmark",
-    "progress": "committed",
-    "reason": "The standing best-known model achieved 1354/1400 (96.71%) across seven disjoint research panels, including 193/200 on the latest panel, below the 196/200 threshold. The tested target-distribution, reward, observation, discount, and entropy interventions did not improve it, while the reused task-reference result cannot establish the official objective. The official fixed 200-episode assessment is therefore expected to remain below 98%, although its distinct panel is the only authoritative test and the campaign budget is exhausted.",
-    "terminal_expectation": {
-      "expected_verdict": "goal_not_reached",
-      "reason": "The standing best-known model achieved 1354/1400 (96.71%) across seven disjoint research panels, including 193/200 on the latest panel, below the 196/200 threshold. The tested target-distribution, reward, observation, discount, and entropy interventions did not improve it, while the reused task-reference result cannot establish the official objective. The official fixed 200-episode assessment is therefore expected to remain below 98%, although its distinct panel is the only authoritative test and the campaign budget is exhausted."
-    }
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": {
