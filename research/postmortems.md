@@ -2,11 +2,11 @@
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
 
-**Current synthesis:** The unchanged PPO recipe remains the strongest measured approach. The selected parent scored 194/200 on the new experiment-2 panel, while the zero-entropy continuation scored 193/200 at its final checkpoint and did not improve the human-objective proxy on an independent development panel. The current working and best-known lineage therefore remains checkpoint-100352 under the parent recipe, but the development evidence is still below the 196/200 objective threshold.
+**Current synthesis:** The unchanged PPO recipe remains the strongest measured approach. The selected parent scored 194/200 on the latest disjoint panel, while the zero-entropy continuation scored 193/200 at its final checkpoint. The current working and best-known lineage is checkpoint-100352 under the parent recipe, and development evidence remains below the 196/200 objective threshold.
 
-**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the continuation boundary scored 172/200 and the early post-parent checkpoint 166/200 despite training success proxies of 0.99 and 0.98, while the final continuation recovered to 193/200. The new panel is independent of the panels used to select the parent; the fixed task-reference result remains reused development evidence. These measurements evaluate only the tested zero-entropy continuation and measured checkpoints.
+**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the continuation boundary scored 172/200 and the early post-parent checkpoint 166/200 despite training success proxies of 0.99 and 0.98, while the final continuation recovered to 193/200. On the latest panel, four of six failures were inner targets at 14.2 cm or less, outside the current 14–20 cm training range; the remaining failures reached tolerance but lost the hold. The new panel is independent of the panels used to select the parent, while the fixed task-reference result remains reused development evidence.
 
-**Open questions:** It remains unresolved whether the residual failures reflect late-training instability, task difficulty, or a behavioral reach/hold issue, and whether another intervention can exceed 196/200 on a new panel. The present evidence does not establish the official objective or isolate the causes of the remaining failures.
+**Open questions:** It remains unresolved how much of the residual failure rate comes from missing inner-radius training coverage versus reach-and-hold control stability, and whether a policy trained across the official radius range can exceed 196/200 on a new panel. The present evidence does not establish the official objective or isolate those causes.
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
 
