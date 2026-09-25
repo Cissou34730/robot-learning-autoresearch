@@ -2,27 +2,25 @@
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
-**Current synthesis:** The PPO reach-and-hold policy is competent but remains
-below the objective. The full-radius transfer produced 190/200 (95.0%) for
-the pre-peak, proxy-peak, and final measured checkpoints on the disjoint
-4600–4799 research panel, while the prior `best_known` scored 191/200
-(95.5%) on the same panel. The selected baseline's 98% task-reference result
-is development evidence only because that panel was reused for selection.
+**Current synthesis:** PPO has learned a competent reach-and-hold policy, but
+development success remains below the objective: all three measured
+experiment-2 full-radius checkpoints scored 190/200 (95.0%) on episodes
+4600–4799, while `best_known` scored 191/200 (95.5%) on that same panel.
+The selected baseline's 98% task-reference result is development evidence only
+because that panel was reused for selection.
 
-**Lessons and limits:** Direct task success, not training reward, determined
-the lineage choices. Exposing training to the full official radial range did
-not produce a material improvement over the prior policy: each of the three
-measured experiment-2 checkpoints lost the only discordant paired episode to
-the same-panel control. This weakens radius coverage as a sufficient
-explanation for the residual failures, but one 200-episode panel cannot
-exclude small effects or establish causal attribution. All development
-measurements remain insufficient to declare the official objective reached.
+**Lessons and limits:** Direct task success, rather than training proxies,
+governs the policy comparison. Full-radius target sampling did not improve
+the measured policy, and the experiment-2 failures include both episodes that
+never reached tolerance and episodes that entered tolerance but interrupted
+the hold. The current reward had no forfeiture for leaving a partial hold,
+which leaves the contribution of hold credit assignment unresolved. The
+development panels remain insufficient to declare the official objective.
 
-**Open questions:** Whether the remaining failures primarily reflect hold
-behavior, observations, or another learning-method limitation remains
-unresolved. The experiment-2 working policy has only one disjoint research
-panel, and no development measurement can replace the official final
-assessment.
+**Open questions:** Whether making a broken partial hold costly improves
+100-step hold reliability without reducing reach performance remains
+unresolved. It is also unknown whether the remaining no-reach failures
+require changes to observations or to the learning method rather than reward.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
