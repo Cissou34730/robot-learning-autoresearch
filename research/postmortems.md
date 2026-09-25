@@ -3,23 +3,26 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a competent reach-and-hold policy, but
-the standing `best_known` lineage is inconsistent across development panels:
-it pooled 766/800 (95.75%) and scored 197/200 (98.5%) on the latest disjoint
-panel. Full-radius target training and full hold-exit forfeiture both failed
-to improve it; the latter's strongest checkpoint scored 194/200 (97.0%).
+the standing `best_known` lineage remains below the objective in pooled
+development evidence: it scored 965/1000 (96.5%) across five disjoint research
+panels, including 199/200 (99.5%) on the latest panel. Full-radius target
+training, full hold-exit forfeiture, and a fresh observation with explicit hold
+progress all failed to improve it; the latest challenger reached only 113/200
+(56.5%).
 
 **Lessons and limits:** Direct task success, rather than training proxies,
-governs comparisons. The measured failures include both no-reach episodes and
-interrupted holds, so neither target coverage nor hold-credit shaping explains
-the remaining gap alone. The current observation encodes pose, velocity,
-relative target position, and inverse-kinematics errors but not hold progress.
+governs comparisons. The explicit hold-progress observation was tested with
+fresh initialization and produced 53.0%, 54.0%, and 56.5% at the measured late
+checkpoints despite rising training reward, with many timeouts and incomplete
+holds. This strongly rejects that recipe under the tested budget, but does not
+prove that every state-representation or training-method change will fail.
 Development measurements, including the reused 98% task-reference result,
 cannot declare the official objective.
 
-**Open questions:** It remains unresolved whether making the task's partial
-hold state explicit to the policy can improve uninterrupted reach-and-hold
-reliability without sacrificing reach performance. It is also unresolved
-whether the standing lineage meets the official fixed-panel objective.
+**Open questions:** It remains unresolved which learning-method change can
+address the standing lineage's residual no-reach and interrupted-hold failures
+without sacrificing its strong reach behavior. It is also unresolved whether
+the standing lineage meets the official fixed-panel objective.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
@@ -137,3 +140,43 @@ below the objective and further scientific development remains useful.
 `research/results.jsonl`; `research/research_state.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-3-checkpoint-90112-200ep-seed4800-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-3-best_known-200ep-seed4800-f48545f83637.json`.
+
+## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 4
+
+**Result:** Adding normalized accumulated hold progress to the observation
+produced a substantially worse policy than the retained best-known lineage.
+The intervention should be closed and its fresh 12-feature recipe should not
+remain active.
+
+**Observed behavior:** On the new disjoint episodes 5000-5199, the measured
+challenger checkpoints scored 106/200 (53.0%), 108/200 (54.0%), and 113/200
+(56.5%) at 100352, 105472, and 120832 steps. The same-panel best-known
+control scored 199/200 (99.5%), with paired comparisons giving it 93, 91, and
+87 discordant wins over the three challengers. The challengers frequently
+timed out at 500 steps or failed to complete the uninterrupted hold. The final
+checkpoint's training reward rose to 140.10 and its training-success proxy was
+only 0.05, so those proxies did not indicate useful official-task behavior.
+
+**Hypothesis assessment:** Contradicted under the tested fresh-training
+conditions. Explicitly observing normalized hold progress did not improve
+uninterrupted reach-and-hold reliability or preserve reach performance; every
+measured challenger was far below the same-panel control. This is strong
+evidence against retaining this representation recipe, but one fresh run does
+not establish that all alternative representations or optimization methods are
+ineffective.
+
+**Interpretation:** The saved experiment-4 candidates are not reusable
+policies relative to the existing lineage, and the panel provides enough
+evidence for closure without another measurement round. The best-known policy's
+199/200 result is independent of its prior selection panels because episodes
+5000-5199 are new, but it remains development evidence rather than an official
+verdict. Restore the best-known complete recipe and artifact; any further
+training is a separate post-closure experiment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/research_state.json`;
+`research/checkpoints/challengers/8f4d116e-7b66-4ca1-ab31-5915330bf310/experiment-4/inventory.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-checkpoint-100352-200ep-seed5000-765f20eb658a.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-checkpoint-105472-200ep-seed5000-765f20eb658a.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-checkpoint-120832-200ep-seed5000-765f20eb658a.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-best_known-200ep-seed5000-765f20eb658a.json`.
