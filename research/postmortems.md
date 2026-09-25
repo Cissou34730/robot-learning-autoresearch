@@ -2,11 +2,11 @@
 
 ## 4b17531f-ff44-4b08-997f-e703fc28eb8e / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned competent reach-and-hold behavior, but the best characterized checkpoint remains below the 98% human objective on both disjoint research panels. Checkpoint-100352 is the strongest available policy: it achieved 151/160 successes on each research panel, while the late checkpoint-120832 achieved 151/160 and then 149/160. The 98% result for checkpoint-100352 on the fixed task-reference panel is useful task-transfer evidence but is not independent confirmation because that panel was reused for selection.
+**Current synthesis:** The unchanged PPO baseline learned competent reach-and-hold behavior, but the best characterized checkpoint remains below the 98% human objective on both disjoint research panels. Checkpoint-100352 is the strongest available policy, with 151/160 successes on each panel; checkpoint-120832 reached 151/160 and then 149/160. The fixed task-reference result of 98% for checkpoint-100352 is useful transfer evidence, but not independent confirmation because that panel was reused for selection.
 
-**Lessons and limits:** Training success and reward identified a useful late-training region but did not establish the required task success; the reward peak at checkpoint-86016 was weaker than checkpoint-100352. The disjoint paired comparison favors checkpoint-100352 over checkpoint-120832 by 2-0 discordant wins, with pooled research success of 302/320 versus 300/320. These are development measurements, not the official 200-episode assessment, and the unmeasured checkpoints provide no additional evidence.
+**Lessons and limits:** Training success and reward identified a useful late-training region but did not establish the required task success; the reward peak at checkpoint-86016 was weaker than checkpoint-100352. The disjoint paired comparison favors checkpoint-100352 over checkpoint-120832 by 2-0 discordant wins, with pooled research success of 302/320 versus 300/320. These development measurements are not the official 200-episode assessment, and unmeasured checkpoints provide no additional evidence.
 
-**Open questions:** Further training or a changed scientific recipe is needed to determine whether the residual failures can be reduced to the 98% objective. The current measurements do not identify their cause or establish whether continued training will improve or degrade the selected policy.
+**Open questions:** It remains unresolved whether the residual failures can be reduced by continued optimization and whether the late decline reflects update magnitude, stochastic variation, or a plateau. The current measurements do not identify the cause or establish the best recipe for crossing the objective.
 
 ## 4b17531f-ff44-4b08-997f-e703fc28eb8e / Experiment 1
 
