@@ -2,11 +2,11 @@
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
 
-**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage remain the strongest measured approach, with 1168/1200 successes across six disjoint research panels and 196/200 on the latest panel. The incumbent is near the development threshold, but development evidence does not establish the official objective.
+**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage are the strongest measured approach. The best-known policy achieved 1363/1400 across seven disjoint research panels, including 195/200 on the latest panel; the reused task-reference panel scored 196/200. This is strong but below the 196/200 development threshold in most panels, and none of these measurements establishes the official objective.
 
-**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints. The zero-entropy, full-radius, mixed hard-angle, and broader-closeness-reward transfer interventions produced no measured successor above the unchanged control; experiment 5 fell to 164/200 and 170/200 at its measured early checkpoints and recovered only to 193/200 at the end. The latest control failures were all 500-step truncations without success, while earlier evidence also includes hold interruptions. Development panels remain 200-episode samples, and the reused task-reference panel and all research panels are not the official assessment.
+**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints. The zero-entropy, full-radius, mixed hard-angle, broader-closeness-reward, and fresh-replication results produced no measured successor above the unchanged control. The incumbent's residual failures include 500-step truncations and earlier hold interruptions. All development panels contain 200 episodes, the task-reference panel is reused, and neither it nor the research panels is the official assessment.
 
-**Open questions:** It remains unresolved whether the residual failures reflect stochastic variation in the unchanged learning process or a systematic limitation of the current recipe, and whether any development gain would generalize to the official assessment.
+**Open questions:** It remains unresolved whether the residual failures reflect stochastic variation or a systematic limitation of the unchanged recipe, and whether the near-threshold development performance generalizes to the official assessment.
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
 
