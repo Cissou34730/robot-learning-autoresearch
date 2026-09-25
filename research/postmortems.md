@@ -4,40 +4,38 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. On the fresh 24000--24199 panel it achieved 196/200, while the
-matched-duration and final experiment-3 challengers achieved 176/200 and
-186/200. The challengers never beat the parent on a discordant episode and
-introduced failures across a much broader angle range than the parent's four
-no-entry failures. The reward intervention therefore did not solve the
-negative-angle limitation and degraded complete-task behavior.
-Across five distinct development panels the parent is 977/1000 (97.7%), which
-is strong evidence of a near-objective lineage but not an official result.
+98% solution. It achieved 196/200 on the fresh experiment-3 panel and
+977/1000 across five distinct research panels. The reward intervention instead
+produced 176/200 and 186/200 challengers, with broad incomplete-hold failures
+and no paired wins over the parent. The remaining parent failures are therefore
+structured no-entry events, not evidence that stronger hold shaping is needed.
 
-**Lessons and limits:** The experiment weakens the explanation that cheap
-actions and retained partial hold credit were the main cause of the failures.
-For checkpoint-100352, 20 of 24 failures entered tolerance but never completed
-100 uninterrupted steps; for checkpoint-120832, 11 of 14 had that pattern,
-whereas all four parent failures were no-entry cases. The paired comparison
-supports rejecting this reward recipe for the active lineage, but it does not
-isolate action cost from hold-credit forfeiture or from continuation and
-optimization effects. Development panels remain non-official, and the parent
-has not established the human objective on the final benchmark.
+**Lessons and limits:** Radius expansion did not remove the shared
+negative-angle failure identities, and reward changes regressed complete task
+behavior. Earlier telemetry associated the failures with low Jacobian
+conditioning and prolonged saturation, but did not establish whether those
+states cause failure or result from it. The observation currently exposes
+wrapped branch-angle errors as scalar values; these are discontinuous at the
+angle boundary even though the physical configuration is continuous. This is a
+plausible representation limitation, not an established cause. Development
+panels remain non-official, and the parent has not established the human
+objective on the final benchmark.
 
-**Open questions:** Whether the persistent no-entry cases arise from
-configuration-dependent conditioning, an unobserved branch transient, or a
-limitation of the policy's state and action representation; whether the
-conditioning signature is causal or a consequence of the failed trajectory;
-and whether the same mechanism can be changed without sacrificing the broad
-reach-and-hold behavior.
+**Open questions:** Whether a smooth periodic encoding of branch errors lets
+the policy select and control configurations across the persistent sector;
+whether branch-transition dynamics remain limiting after that representation
+change; and whether any improvement can occur without sacrificing the parent's
+broad reach-and-hold behavior.
 
-**Active inquiry:** Determine whether the remaining negative-angle no-entry
-failures are caused by the controller's information and control representation
-in poorly conditioned configurations, or by branch-transition dynamics that
-the current policy cannot stabilize. Evidence that distinguishes these
-mechanisms must improve paired complete-task outcomes without broad
-regression; persistent no-entry failures or another broad hold regression
-would redirect the inquiry toward the task geometry and its controller
-interaction rather than reward shaping.
+**Active inquiry:** Test whether the remaining negative-angle no-entry failures
+are partly caused by the wrapped angular representation rather than by reward
+or target coverage. Train a fresh policy that preserves the existing
+observation features and adds sine/cosine encodings of all four branch errors.
+An improvement in paired complete-task outcomes, especially removal of the
+negative-angle no-entry cases without new hold regressions, would support a
+representation mechanism; persistent sector failures or broad degradation
+would redirect the inquiry toward branch-transition dynamics and
+configuration-dependent control.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
