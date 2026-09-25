@@ -11,7 +11,6 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
-from collections.abc import Sequence
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -42,34 +41,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
-        target_angle_ranges: Sequence[tuple[float, float]] | None = None,
-        target_angle_weights: Sequence[float] | None = None,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.target_angle_ranges = (
-            tuple(target_angle_ranges) if target_angle_ranges is not None else None
-        )
-        self.target_angle_weights = (
-            tuple(target_angle_weights)
-            if target_angle_weights is not None
-            else None
-        )
-        if self.target_angle_ranges is not None:
-            if not self.target_angle_ranges:
-                raise ValueError("target_angle_ranges must not be empty")
-            if self.target_angle_weights is not None:
-                if len(self.target_angle_weights) != len(self.target_angle_ranges):
-                    raise ValueError(
-                        "target_angle_weights must match target_angle_ranges"
-                    )
-                if any(weight < 0 for weight in self.target_angle_weights):
-                    raise ValueError("target_angle_weights must be non-negative")
-                if sum(self.target_angle_weights) <= 0:
-                    raise ValueError("target_angle_weights must have positive mass")
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -104,22 +81,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        if self.target_angle_ranges is None:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
-        else:
-            range_index = int(
-                self.np_random.choice(
-                    len(self.target_angle_ranges),
-                    p=(
-                        np.asarray(self.target_angle_weights, dtype=np.float64)
-                        / sum(self.target_angle_weights)
-                        if self.target_angle_weights is not None
-                        else None
-                    ),
-                )
-            )
-            angle_range = self.target_angle_ranges[range_index]
-            angle = float(self.np_random.uniform(*angle_range))
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
