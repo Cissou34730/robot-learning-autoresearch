@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from research import runner_protocol as protocol
 from research import runner_repository as repository
 from research.run_experiment import apply_previous_result_decision
 
@@ -43,6 +44,7 @@ def _lineage(path: Path, *, steps: int) -> dict:
         "scientific_commit": "a" * 40,
         "training_steps": steps,
         "evaluation_artifacts": [],
+        "designation_ordinal": 1,
         "reason": f"Preserve {path.name}.",
     }
 
@@ -101,18 +103,35 @@ def test_published_v4_roles_survive_clean_clone(monkeypatch, tmp_path):
     proposal = {
         "previous_result_decision": {
             "experiment": 3,
-            "continue_from": "checkpoint-100352",
+            "continue_from": {
+                "source": "experiment_candidate",
+                "experiment": 3,
+                "checkpoint": "checkpoint-100352",
+                "expected_fingerprint": repository.artifact_fingerprint(working),
+            },
             "reason": "Continue the working model.",
             "code": {"action": "keep", "reason": "Keep the recipe."},
             "retain": [
                 {
-                    "candidate": "checkpoint-40960",
+                    "candidate": {
+                        "source": "experiment_candidate",
+                        "experiment": 3,
+                        "checkpoint": "checkpoint-40960",
+                        "expected_fingerprint": repository.artifact_fingerprint(
+                            alternative
+                        ),
+                    },
                     "id": "alternative",
                     "reason": "Preserve a distinct alternative.",
                 }
             ],
         }
     }
+    proposal["previous_result_decision"]["confirm_transaction"] = (
+        protocol.plan_previous_result_decision(proposal, state)["lineage_transaction"][
+            "hash"
+        ]
+    )
 
     assert not apply_previous_result_decision(proposal, state)
     published = repository.read_state()

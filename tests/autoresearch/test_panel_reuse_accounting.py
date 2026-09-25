@@ -390,6 +390,7 @@ def _lineage(path: Path, *, steps: int) -> dict:
         "training_steps": steps,
         "evaluation_artifacts": [],
         "selected_panels": [],
+        "designation_ordinal": 1,
         "reason": f"Preserve {path.name}.",
     }
 
@@ -428,11 +429,21 @@ def test_explicit_best_known_reselection_refreshes_selection_exposure(
         {
             "previous_result_decision": {
                 "experiment": 2,
-                "continue_from": "best_known",
+                "continue_from": {
+                    "source": "lineage_role",
+                    "role": "best_known",
+                    "designation_ordinal": 1,
+                    "expected_fingerprint": fingerprint,
+                },
                 "reason": "Keep the incumbent.",
                 "code": {"action": "keep", "reason": "No code change."},
                 "best_known": {
-                    "candidate": "best_known",
+                    "selection": {
+                        "source": "lineage_role",
+                        "role": "best_known",
+                        "designation_ordinal": 1,
+                        "expected_fingerprint": fingerprint,
+                    },
                     "reason": "Confirm the incumbent.",
                 },
             }

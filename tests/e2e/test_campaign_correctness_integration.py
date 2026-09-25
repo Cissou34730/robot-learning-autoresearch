@@ -52,6 +52,28 @@ def write(root: Path, relative: str, content: str) -> Path:
     return destination
 
 
+def candidate_selection(state: dict, name: str) -> dict:
+    pending = state.get("pending_analysis") or state["pending_researcher_decision"]
+    item = next(c for c in pending["candidates"] if c["name"] == name)
+    return {
+        "source": "experiment_candidate",
+        "experiment": pending["experiment"],
+        "checkpoint": name,
+        "expected_fingerprint": repository.artifact_fingerprint(
+            repository.resolve_repo_path(item["artifact"])
+        ),
+    }
+
+
+def confirmed(proposal: dict, state: dict) -> dict:
+    proposal["previous_result_decision"]["confirm_transaction"] = (
+        protocol.plan_previous_result_decision(proposal, state)["lineage_transaction"][
+            "hash"
+        ]
+    )
+    return proposal
+
+
 def redirect_paths(monkeypatch, root: Path) -> None:
     research = root / "research"
     replacements = {
@@ -265,16 +287,20 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     first_decision = {
         "previous_result_decision": {
             "experiment": 1,
-            "continue_from": first_candidate,
+            "continue_from": candidate_selection(
+                repository.read_state(), first_candidate
+            ),
             "reason": "Continue the measured baseline.",
             "best_known": {
-                "candidate": first_candidate,
+                "selection": candidate_selection(
+                    repository.read_state(), first_candidate
+                ),
                 "reason": "It is the only measured model.",
-                "evidence": [first_evidence],
             },
             "code": {"action": "keep", "reason": "Keep recipe A."},
         }
     }
+    confirmed(first_decision, repository.read_state())
     assert (
         run_experiment.resolve_pending_lineage(first_decision, repository.read_state())
         == 0
@@ -362,11 +388,14 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     second_decision = {
         "previous_result_decision": {
             "experiment": 2,
-            "continue_from": second_candidate,
+            "continue_from": candidate_selection(
+                repository.read_state(), second_candidate
+            ),
             "reason": "Continue the improved trajectory.",
             "code": {"action": "keep", "reason": "Keep restored recipe A."},
         }
     }
+    confirmed(second_decision, repository.read_state())
     assert (
         run_experiment.resolve_pending_lineage(second_decision, repository.read_state())
         == 0

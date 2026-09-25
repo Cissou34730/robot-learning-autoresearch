@@ -1445,6 +1445,7 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
 
 
 def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
+    protocol.require_lineage_transaction_confirmation(plan)
     operation = state.get("pending_closure_operation")
     if operation is None:
         pending_field = (
@@ -1470,6 +1471,7 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "pending": plan["pending"],
         "pending_field": pending_field,
         "decision": plan["decision"],
+        "lineage_transaction": plan.get("lineage_transaction"),
         "working_name": plan["working_name"],
         "working_record": plan["working_record"],
         "best_known_record": plan["best_known_record"],
@@ -1661,7 +1663,9 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
                 else raw_state["pending_researcher_decision"]
             )["experiment"]
         ),
-        str(proposal["previous_result_decision"]["continue_from"]),
+        protocol.lineage_selection_label(
+            proposal["previous_result_decision"]["continue_from"]
+        ),
         code_action=str(proposal["previous_result_decision"]["code"]["action"])
         .strip()
         .lower(),

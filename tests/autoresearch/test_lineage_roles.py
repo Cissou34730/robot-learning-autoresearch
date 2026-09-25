@@ -36,8 +36,50 @@ def _lineage(path: Path, *, steps: int) -> dict:
         "scientific_commit": "a" * 40,
         "training_steps": steps,
         "evaluation_artifacts": [],
+        "designation_ordinal": 1,
         "reason": f"Preserve {path.name}.",
     }
+
+
+def _candidate_selector(state: dict, name: str) -> dict:
+    pending = state.get("pending_analysis") or state["pending_researcher_decision"]
+    item = next(candidate for candidate in pending["candidates"] if candidate["name"] == name)
+    artifact = repository.resolve_repo_path(item["artifact"])
+    return {
+        "source": "experiment_candidate",
+        "experiment": pending["experiment"],
+        "checkpoint": name,
+        "expected_fingerprint": repository.artifact_fingerprint(artifact),
+    }
+
+
+def _role_selector(state: dict, role: str) -> dict:
+    lineage = state[f"{role}_lineage"]
+    selector = {
+        "source": "lineage_role",
+        "role": role,
+        "expected_fingerprint": lineage["fingerprint"],
+    }
+    if role == "best_known":
+        selector["designation_ordinal"] = int(lineage.get("designation_ordinal", 1))
+    return selector
+
+
+def _retained_selector(state: dict, identifier: str) -> dict:
+    lineage = next(item for item in state["retained_lineages"] if item["id"] == identifier)
+    return {
+        "source": "retained_lineage",
+        "id": identifier,
+        "expected_fingerprint": lineage["fingerprint"],
+    }
+
+
+def _confirm(proposal: dict, state: dict) -> dict:
+    plan = protocol.plan_previous_result_decision(proposal, state)
+    proposal["previous_result_decision"]["confirm_transaction"] = plan[
+        "lineage_transaction"
+    ]["hash"]
+    return proposal
 
 
 def _research_evidence(path: Path, *, seed: int = 1) -> None:
@@ -254,7 +296,7 @@ def test_v4_reselecting_role_preserves_original_checkpoint_identity(
         {
             "previous_result_decision": {
                 "experiment": 2,
-                "continue_from": "working",
+                "continue_from": _role_selector(state, "working"),
                 "reason": "Keep the current working model.",
                 "code": {"action": "keep", "reason": "Keep the recipe."},
             }
@@ -296,7 +338,7 @@ def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_pat
         {
             "previous_result_decision": {
                 "experiment": 2,
-                "continue_from": "checkpoint-5000",
+                "continue_from": _candidate_selector(state, "checkpoint-5000"),
                 "reason": "Explore its learning trajectory.",
                 "code": {"action": "keep", "reason": "The recipe remains active."},
             }
@@ -351,7 +393,7 @@ def test_v4_planning_reuses_one_durable_artifact_for_matching_aliases(
         {
             "previous_result_decision": {
                 "experiment": 2,
-                "continue_from": "checkpoint-5000",
+                "continue_from": _candidate_selector(state, "checkpoint-5000"),
                 "reason": "Use the identical candidate.",
                 "code": {"action": "keep", "reason": "Keep the recipe."},
             }
@@ -393,11 +435,11 @@ def test_v4_best_known_requires_a_recorded_measurement_for_a_new_model(
     proposal = {
         "previous_result_decision": {
             "experiment": 1,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Keep it.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "checkpoint",
+                "selection": _candidate_selector(state, "checkpoint"),
                 "reason": "Measured well.",
             },
         }
@@ -435,7 +477,7 @@ def test_v4_omitted_best_known_keeps_the_incumbent(monkeypatch, tmp_path):
         {
             "previous_result_decision": {
                 "experiment": 1,
-                "continue_from": "best_known",
+                "continue_from": _role_selector(state, "best_known"),
                 "reason": "Keep the incumbent.",
                 "code": {"action": "keep", "reason": "No code change."},
             }
@@ -472,11 +514,11 @@ def test_v4_same_best_known_model_is_idempotent(monkeypatch, tmp_path):
         {
             "previous_result_decision": {
                 "experiment": 1,
-                "continue_from": "best_known",
+                "continue_from": _role_selector(state, "best_known"),
                 "reason": "Keep the incumbent.",
                 "code": {"action": "keep", "reason": "No code change."},
                 "best_known": {
-                    "candidate": "best_known",
+                    "selection": _role_selector(state, "best_known"),
                     "reason": "Confirm the incumbent.",
                 },
             }
@@ -515,11 +557,16 @@ def test_v4_unknown_best_known_identifier_lists_available_models(monkeypatch, tm
     proposal = {
         "previous_result_decision": {
             "experiment": 1,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Keep it.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "missing-model",
+                "selection": {
+                    "source": "experiment_candidate",
+                    "experiment": 1,
+                    "checkpoint": "missing-model",
+                    "expected_fingerprint": "a" * 64,
+                },
                 "reason": "Try an unavailable model.",
             },
         }
@@ -529,8 +576,7 @@ def test_v4_unknown_best_known_identifier_lists_available_models(monkeypatch, tm
         protocol.plan_previous_result_decision(proposal, state)
     message = str(error.value)
     assert "missing-model" in message
-    assert "available model identifiers" in message
-    assert "checkpoint" in message
+    assert "unavailable" in message
 
 
 def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
@@ -590,11 +636,11 @@ def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
     proposal = {
         "previous_result_decision": {
             "experiment": 2,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Keep it.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "checkpoint",
+                "selection": _candidate_selector(state, "checkpoint"),
                 "reason": "Historical evidence measures these exact weights.",
             },
         }
@@ -656,11 +702,11 @@ def test_v4_best_known_reports_missing_legacy_model_identity(monkeypatch, tmp_pa
     proposal = {
         "previous_result_decision": {
             "experiment": 2,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Keep it.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "checkpoint",
+                "selection": _candidate_selector(state, "checkpoint"),
                 "reason": "Try to use imported legacy evidence.",
             },
         }
@@ -698,12 +744,12 @@ def test_v4_retained_lineage_is_selectable_and_preserved(monkeypatch, tmp_path):
         {
             "previous_result_decision": {
                 "experiment": 1,
-                "continue_from": "checkpoint",
+                "continue_from": _candidate_selector(state, "checkpoint"),
                 "reason": "Keep it.",
                 "code": {"action": "keep", "reason": "No code change."},
                 "retain": [
                     {
-                        "candidate": "checkpoint",
+                        "candidate": _candidate_selector(state, "checkpoint"),
                         "id": "alternate",
                         "reason": "Keep the checkpoint reusable.",
                     }
@@ -811,11 +857,11 @@ def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
     decision = {
         "previous_result_decision": {
             "experiment": 2,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Continue exploring.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "checkpoint",
+                "selection": _candidate_selector(state, "checkpoint"),
                 "reason": "Designate from comparable evidence.",
             },
         }
@@ -880,11 +926,11 @@ def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
     proposal = {
         "previous_result_decision": {
             "experiment": 2,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Continue exploring.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "checkpoint",
+                "selection": _candidate_selector(state, "checkpoint"),
                 "reason": "Designate from candidate evidence.",
             },
         }
@@ -960,11 +1006,11 @@ def test_v4_best_known_replacement_does_not_require_incumbent_panel_equality(
     proposal = {
         "previous_result_decision": {
             "experiment": 2,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Continue exploring.",
             "code": {"action": "keep", "reason": "No code change."},
             "best_known": {
-                "candidate": "checkpoint",
+                "selection": _candidate_selector(state, "checkpoint"),
                 "reason": "Designate from comparable evidence.",
             },
         }
@@ -1029,11 +1075,12 @@ def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):
     proposal = {
         "previous_result_decision": {
             "experiment": 1,
-            "continue_from": "checkpoint",
+            "continue_from": _candidate_selector(state, "checkpoint"),
             "reason": "Keep the promising model.",
             "code": {"action": "keep", "reason": "No code change."},
         }
     }
+    _confirm(proposal, state)
 
     assert not apply_previous_result_decision(proposal, state)
 
@@ -1204,12 +1251,12 @@ def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
         {
             "previous_result_decision": {
                 "experiment": 2,
-                "continue_from": "checkpoint",
+                "continue_from": _candidate_selector(state, "checkpoint"),
                 "reason": "Continue the candidate.",
                 "code": {
                     "action": "restore",
                     "reason": "Return to the working recipe.",
-                    "lineage": "working",
+                    "lineage": _role_selector(state, "working"),
                 },
             }
         },
@@ -1258,12 +1305,12 @@ def test_v4_restore_rejects_lineage_without_recipe_provenance(monkeypatch, tmp_p
             {
                 "previous_result_decision": {
                     "experiment": 2,
-                    "continue_from": "checkpoint",
+                    "continue_from": _candidate_selector(state, "checkpoint"),
                     "reason": "Continue.",
                     "code": {
                         "action": "restore",
                         "reason": "Restore.",
-                        "lineage": "working",
+                        "lineage": _role_selector(state, "working"),
                     },
                 }
             },

@@ -900,7 +900,9 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
         )
-        plan_previous_result_decision(proposal, state)
+        plan = plan_previous_result_decision(proposal, state)
+        if state.get("schema_version") == 4:
+            require_lineage_transaction_confirmation(plan)
     elif proposal.get("kind") == "replication":
         campaign_id = repository.current_campaign_id(raw_state)
         recorded = (
@@ -2138,6 +2140,282 @@ def designation_counter_for(state: dict) -> int:
     return recorded
 
 
+class LineageTransactionConfirmationRequired(ValueError):
+    """Raised when a resolved lineage transaction awaits its exact confirmation."""
+
+
+def require_lineage_transaction_confirmation(plan: dict) -> None:
+    """Refuse to change any role until the exact transaction hash is confirmed."""
+    transaction = plan.get("lineage_transaction")
+    if not isinstance(transaction, dict) or not transaction.get(
+        "confirmation_required"
+    ):
+        return
+    transaction_hash = str(transaction.get("hash", ""))
+    raise LineageTransactionConfirmationRequired(
+        "lineage transaction confirmation required: the Runner resolved the typed "
+        f"selection into transaction hash {transaction_hash}. No role was changed. "
+        "Inspect the resolved identities below and resubmit the same "
+        "previous_result_decision with confirm_transaction set to that exact hash, "
+        "or submit a revised selection.\n"
+        + json.dumps(
+            {
+                "transaction_hash": transaction_hash,
+                "preview": transaction.get("preview"),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+
+
+LINEAGE_SELECTION_SOURCES = (
+    "lineage_role",
+    "experiment_candidate",
+    "retained_lineage",
+)
+
+
+def validate_lineage_selector(value: object, *, description: str) -> dict:
+    """Validate one typed, fingerprint-bound model selection.
+
+    The selection names its namespace explicitly -- an existing role tenure, a
+    current experiment candidate, or a retained lineage -- and binds the expected
+    immutable artifact fingerprint. A bare string cannot express either, so it is
+    rejected rather than resolved by context.
+    """
+    if isinstance(value, str):
+        raise TypeError(
+            f"{description} must be a typed lineage selection object with a "
+            "source and expected_fingerprint, not a bare string"
+        )
+    if not isinstance(value, dict):
+        raise TypeError(f"{description} must be a typed lineage selection object")
+    source = str(value.get("source", "")).strip()
+    if source not in LINEAGE_SELECTION_SOURCES:
+        raise ValueError(
+            f"{description} source must be one of {list(LINEAGE_SELECTION_SOURCES)}"
+        )
+    expected = value.get("expected_fingerprint")
+    if not isinstance(expected, str) or not expected.strip():
+        raise ValueError(f"{description} requires a non-empty expected_fingerprint")
+    expected = expected.strip()
+    if source == "lineage_role":
+        extra = set(value) - {
+            "source",
+            "role",
+            "designation_ordinal",
+            "expected_fingerprint",
+        }
+        if extra:
+            raise ValueError(f"unsupported {description} fields: {sorted(extra)}")
+        role = str(value.get("role", "")).strip()
+        if role not in {"working", "best_known"}:
+            raise ValueError(f"{description} role must be working or best_known")
+        selection = {
+            "source": source,
+            "role": role,
+            "expected_fingerprint": expected,
+        }
+        if role == "best_known":
+            ordinal = value.get("designation_ordinal")
+            if isinstance(ordinal, bool) or not isinstance(ordinal, int) or ordinal < 1:
+                raise ValueError(
+                    f"{description} best_known selection requires a positive "
+                    "designation_ordinal"
+                )
+            selection["designation_ordinal"] = ordinal
+        elif "designation_ordinal" in value:
+            raise ValueError(
+                f"{description} working selection must omit designation_ordinal"
+            )
+        return selection
+    if source == "experiment_candidate":
+        extra = set(value) - {
+            "source",
+            "experiment",
+            "checkpoint",
+            "expected_fingerprint",
+        }
+        if extra:
+            raise ValueError(f"unsupported {description} fields: {sorted(extra)}")
+        experiment = value.get("experiment")
+        if (
+            isinstance(experiment, bool)
+            or not isinstance(experiment, int)
+            or experiment < 1
+        ):
+            raise ValueError(
+                f"{description} experiment_candidate requires a positive experiment"
+            )
+        checkpoint = str(value.get("checkpoint", "")).strip()
+        if not checkpoint:
+            raise ValueError(
+                f"{description} experiment_candidate requires a checkpoint"
+            )
+        return {
+            "source": source,
+            "experiment": experiment,
+            "checkpoint": checkpoint,
+            "expected_fingerprint": expected,
+        }
+    extra = set(value) - {"source", "id", "expected_fingerprint"}
+    if extra:
+        raise ValueError(f"unsupported {description} fields: {sorted(extra)}")
+    identifier = str(value.get("id", "")).strip()
+    if not identifier:
+        raise ValueError(f"{description} retained_lineage requires a stable id")
+    return {
+        "source": source,
+        "id": identifier,
+        "expected_fingerprint": expected,
+    }
+
+
+def lineage_selector_label(selector: dict) -> str:
+    """The stable display label of a typed lineage selection."""
+    source = selector["source"]
+    if source == "lineage_role":
+        return str(selector["role"])
+    if source == "experiment_candidate":
+        return str(selector["checkpoint"])
+    return str(selector["id"])
+
+
+def lineage_selection_label(value: object) -> str:
+    """A label for either a typed selector or a legacy selection string."""
+    if isinstance(value, dict):
+        try:
+            return lineage_selector_label(value)
+        except (KeyError, TypeError):
+            return ""
+    return str(value).strip()
+
+
+def resolve_lineage_selector(
+    selector: dict,
+    pending: dict,
+    state: dict,
+    *,
+    description: str,
+    allowed_sources: tuple[str, ...] = LINEAGE_SELECTION_SOURCES,
+) -> dict:
+    """Bind a typed selection to one concrete, fingerprint-checked artifact.
+
+    Resolution is identity validation only: the selector's namespace, tenure
+    ordinal, and expected fingerprint must describe exactly one current model.
+    A stale fingerprint, a superseded role tenure, or a checkpoint from another
+    experiment is rejected instead of being silently resolved by context.
+    """
+    source = selector["source"]
+    if source not in allowed_sources:
+        raise ValueError(
+            f"{description} source {source!r} is not allowed here; "
+            f"use one of {list(allowed_sources)}"
+        )
+    expected = selector["expected_fingerprint"]
+    if source == "lineage_role":
+        role = selector["role"]
+        lineage = state.get(f"{role}_lineage")
+        if not isinstance(lineage, dict):
+            raise ValueError(f"{description} selects an unavailable {role} lineage")
+        if role == "best_known":
+            ordinal = lineage.get("designation_ordinal")
+            if isinstance(ordinal, bool) or not isinstance(ordinal, int):
+                ordinal = -1
+            if int(selector["designation_ordinal"]) != int(ordinal):
+                raise ValueError(
+                    f"{description} designation_ordinal "
+                    f"{selector['designation_ordinal']} does not describe the "
+                    "current best_known tenure"
+                )
+        recorded = str(lineage.get("fingerprint") or "")
+        if recorded != expected:
+            raise ValueError(
+                f"{description} expected_fingerprint does not match the current "
+                f"{role} lineage"
+            )
+        resolved = dict(lineage)
+        resolved["name"] = role
+        resolved["_selector"] = dict(selector)
+        return resolved
+    if source == "experiment_candidate":
+        if int(selector["experiment"]) != int(pending["experiment"]):
+            raise ValueError(
+                f"{description} names experiment {selector['experiment']}, not the "
+                f"pending experiment {int(pending['experiment'])}"
+            )
+        candidate = next(
+            (
+                item
+                for item in pending.get("candidates", [])
+                if str(item.get("name", "")) == selector["checkpoint"]
+            ),
+            None,
+        )
+        if candidate is None:
+            raise ValueError(
+                f"{description} checkpoint {selector['checkpoint']!r} is unavailable"
+            )
+        artifact = repository.resolve_repo_path(candidate["artifact"])
+        repository.require_complete_artifact(artifact, f"{description} candidate")
+        actual = repository.artifact_fingerprint(artifact)
+        if actual != expected:
+            raise ValueError(
+                f"{description} expected_fingerprint does not match the candidate "
+                "artifact"
+            )
+        resolved = dict(candidate)
+        resolved["fingerprint"] = expected
+        resolved["_current_candidate"] = True
+        resolved["_selector"] = dict(selector)
+        return resolved
+    lineage = retained_lineage(state, selector["id"])
+    if lineage is None:
+        raise ValueError(
+            f"{description} retained lineage {selector['id']!r} is unavailable"
+        )
+    if str(lineage.get("fingerprint") or "") != expected:
+        raise ValueError(
+            f"{description} expected_fingerprint does not match retained lineage "
+            f"{selector['id']!r}"
+        )
+    resolved = dict(lineage)
+    resolved["name"] = selector["id"]
+    resolved["_selector"] = dict(selector)
+    return resolved
+
+
+def _lineage_role_snapshot(lineage: object, selector: object = None) -> dict | None:
+    """The immutable identity facts the transaction preview exposes for a role."""
+    if not isinstance(lineage, dict):
+        return None
+    return {
+        "source": (
+            str(selector.get("source")) if isinstance(selector, dict) else "recorded"
+        ),
+        "reference": (
+            lineage_selector_label(selector)
+            if isinstance(selector, dict)
+            else str(lineage.get("id") or lineage.get("candidate") or "")
+        ),
+        "artifact": lineage.get("artifact"),
+        "fingerprint": lineage.get("fingerprint"),
+        "origin_experiment": lineage.get("origin_experiment"),
+        "candidate": lineage.get("candidate"),
+        "training_steps": lineage.get("training_steps"),
+        "parameters": lineage.get("parameters"),
+        "scientific_commit": lineage.get("scientific_commit"),
+        "evidence": sorted(lineage.get("evaluation_artifacts") or []),
+    }
+
+
+def lineage_transaction_hash(preview: dict) -> str:
+    """The deterministic hash a Researcher confirms before state changes."""
+    canonical = json.dumps(preview, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
     sources = {
         item["name"]: {**item, "_current_candidate": True}
@@ -2941,20 +3219,21 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "remove_retained",
         "request_final_benchmark",
         "terminal_expectation",
+        "confirm_transaction",
     }
     extra = set(decision) - allowed
     if extra:
         raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
-    working_name, working_reason = (
-        str(decision.get("continue_from", "")).strip(),
-        str(decision.get("reason", "")).strip(),
+    working_reason = str(decision.get("reason", "")).strip()
+    if not working_reason:
+        raise ValueError("continue_from requires a non-empty reason")
+    working_selector = validate_lineage_selector(
+        decision.get("continue_from"), description="continue_from"
     )
-    sources = _v4_sources(pending, state)
-    if not working_reason or working_name not in sources:
-        raise ValueError(
-            f"continue_from must be one of {sorted(sources)} with a reason"
-        )
-    working_source = sources[working_name]
+    working_name = lineage_selector_label(working_selector)
+    working_source = resolve_lineage_selector(
+        working_selector, pending, state, description="continue_from"
+    )
     working_artifact = repository.resolve_repo_path(working_source["artifact"])
     repository.require_complete_artifact(
         working_artifact, f"selected lineage {working_name!r}"
@@ -2976,19 +3255,22 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             "code restore requires lineage; other code actions require only action and reason"
         )
     parent = str(pending.get("code_parent_commit", "")).strip()
+    restore_selector = None
+    restore_label = None
     if code_action == "restore":
-        restore_name = str(code["lineage"]).strip()
-        restore_source = _v4_sources(pending, state).get(restore_name)
-        if restore_name not in {"working", "best_known"} and not retained_lineage(
-            state, restore_name
-        ):
-            raise ValueError(
-                "code restore lineage must be working, best_known, or a retained lineage ID"
-            )
-        if restore_source is None:
-            raise ValueError(f"code restore lineage {restore_name!r} is unavailable")
+        restore_selector = validate_lineage_selector(
+            code["lineage"], description="code restore lineage"
+        )
+        restore_label = lineage_selector_label(restore_selector)
+        restore_source = resolve_lineage_selector(
+            restore_selector,
+            pending,
+            state,
+            description="code restore lineage",
+            allowed_sources=("lineage_role", "retained_lineage"),
+        )
         code_plan = plan_lineage_restore(restore_source)
-        code_plan["lineage"] = restore_name
+        code_plan["lineage"] = restore_label
     else:
         code_plan = plan_code_lineage_decision(
             pending,
@@ -3008,30 +3290,32 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         else None,
         None,
     )
+    best_selector = None
+    best_source = None
+    best_reason = None
     if best_decision is not None:
-        available_names = sorted(sources)
-        requested_name = (
-            str(best_decision.get("candidate", "")).strip()
-            if isinstance(best_decision, dict)
-            else ""
-        )
+        available_names = sorted(_v4_sources(pending, state))
         if not isinstance(best_decision, dict) or set(best_decision) != {
-            "candidate",
+            "selection",
             "reason",
         }:
             raise ValueError(
-                f"best_known request for model identifier {requested_name!r} is invalid; "
-                "it requires exactly candidate and reason; "
+                "best_known requires exactly selection and reason; "
                 f"available model identifiers: {available_names}"
             )
-        best_name = str(best_decision["candidate"]).strip()
-        if best_name not in sources or not str(best_decision["reason"]).strip():
+        best_selector = validate_lineage_selector(
+            best_decision["selection"], description="best_known selection"
+        )
+        best_name = lineage_selector_label(best_selector)
+        best_reason = str(best_decision["reason"]).strip()
+        if not best_reason:
             raise ValueError(
-                f"best_known candidate {best_name!r} is unavailable or has no reason; "
-                f"requested model identifier: {best_name!r}; "
+                f"best_known selection {best_name!r} has no reason; "
                 f"available model identifiers: {available_names}"
             )
-        best_source = sources[best_name]
+        best_source = resolve_lineage_selector(
+            best_selector, pending, state, description="best_known selection"
+        )
         best_artifact = repository.resolve_repo_path(best_source["artifact"])
         repository.require_complete_artifact(best_artifact, "best-known lineage")
         evidence_catalog = _development_evidence_catalog(pending, state)
@@ -3104,17 +3388,13 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     ):
         raise ValueError("cannot remove a retained lineage selected for a role")
     new_retained: list[dict] = []
+    retained_displays: list[dict] = []
     known_ids = retained_ids - set(removal_ids)
     for item in decision.get("retain", []):
         if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
-            raise ValueError(
-                "each retained lineage requires only candidate, id, and reason"
-            )
-        candidate_name, identifier, reason = (
-            str(item["candidate"]).strip(),
-            str(item["id"]).strip(),
-            str(item["reason"]).strip(),
-        )
+            raise ValueError("each retained lineage requires candidate, id, and reason")
+        identifier = str(item["id"]).strip()
+        reason = str(item["reason"]).strip()
         if (
             not identifier
             or Path(identifier).name != identifier
@@ -3122,11 +3402,20 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             or identifier in known_ids
         ):
             raise ValueError("retained lineage ID must be unique and file-name-safe")
-        if candidate_name not in sources or not reason:
+        if not reason:
             raise ValueError(
                 "retained lineages require an available candidate and reason"
             )
-        source = sources[candidate_name]
+        candidate_selector = validate_lineage_selector(
+            item["candidate"], description=f"retain candidate {identifier!r}"
+        )
+        candidate_name = lineage_selector_label(candidate_selector)
+        source = resolve_lineage_selector(
+            candidate_selector,
+            pending,
+            state,
+            description=f"retain candidate {identifier!r}",
+        )
         artifact = repository.resolve_repo_path(source["artifact"])
         repository.require_complete_artifact(
             artifact, f"retained lineage {identifier!r}"
@@ -3135,6 +3424,14 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             {
                 "id": identifier,
                 **_v4_lineage_record(source, pending, artifact, reason, state),
+            }
+        )
+        retained_displays.append(
+            {
+                "candidate": candidate_name,
+                "id": identifier,
+                "reason": reason,
+                "selection": candidate_selector,
             }
         )
         known_ids.add(identifier)
@@ -3160,9 +3457,83 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         best_record,
         retained_records,
     )
+    preview = {
+        "experiment": int(pending["experiment"]),
+        "working": {
+            "old": _lineage_role_snapshot(state.get("working_lineage")),
+            "proposed": _lineage_role_snapshot(working_record, working_selector),
+            "reason": working_reason,
+        },
+        "best_known": {
+            "old": _lineage_role_snapshot(state.get("best_known_lineage")),
+            "proposed": _lineage_role_snapshot(best_record, best_selector),
+            "reason": best_reason,
+        },
+        "retained_additions": [
+            _lineage_role_snapshot(record) for record in new_retained
+        ],
+        "retained_removals": [
+            {
+                "id": lineage.get("id"),
+                "artifact": lineage.get("artifact"),
+                "fingerprint": lineage.get("fingerprint"),
+            }
+            for lineage in removed
+        ],
+        "code": {
+            "action": code_action,
+            "parent": code_plan.get("parent"),
+            "restore": code_plan.get("lineage"),
+        },
+        "request_final_benchmark": request_final,
+    }
+    transaction_hash = lineage_transaction_hash(preview)
+    confirmation_required = decision.get("confirm_transaction") != transaction_hash
+    display_decision = {
+        "experiment": int(pending["experiment"]),
+        "continue_from": working_name,
+        "reason": working_reason,
+        "code": {"action": code_action, "reason": code_reason},
+        "lineage_transaction": {
+            "hash": transaction_hash,
+            "selection": {
+                "working": working_selector,
+                "best_known": best_selector,
+                "restore": restore_selector,
+                "retain": [entry["selection"] for entry in retained_displays],
+            },
+        },
+    }
+    if code_action == "restore":
+        display_decision["code"]["lineage"] = restore_label
+    if best_record is not None:
+        display_decision["best_known"] = {
+            "candidate": best_name,
+            "reason": best_reason,
+        }
+    if retained_displays:
+        display_decision["retain"] = [
+            {
+                "candidate": entry["candidate"],
+                "id": entry["id"],
+                "reason": entry["reason"],
+            }
+            for entry in retained_displays
+        ]
+    if removal_ids:
+        display_decision["remove_retained"] = list(removal_ids)
+    if request_final:
+        display_decision["request_final_benchmark"] = True
+        display_decision["terminal_expectation"] = terminal_expectation
     return {
         "pending": pending,
-        "decision": decision,
+        "decision": display_decision,
+        "raw_decision": decision,
+        "lineage_transaction": {
+            "hash": transaction_hash,
+            "preview": preview,
+            "confirmation_required": confirmation_required,
+        },
         "working_name": working_name,
         "working_record": working_record,
         "best_known_record": best_record,

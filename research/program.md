@@ -218,6 +218,18 @@ known. A separate explicit, evidence-backed `best_known` designation identifies
 the selected policy, not a required training parent. Selecting it does not decide
 whether to end development or request final assessment.
 
+A lineage decision is a typed, fingerprint-bound transaction. Each selected
+model names its namespace — an existing role tenure, a current experiment
+candidate, or a retained lineage — and the immutable fingerprint it expects. The
+Runner resolves the complete transaction and returns a persisted preview of the
+old and proposed role assignments, origins, effective parameters, and
+fingerprint-matched evidence before changing any role. Confirm that exact
+transaction hash, or submit a revised selection, before it is applied: a
+fingerprint, a `best_known` tenure, or an experiment scope that changed in
+between is deterministically rejected rather than silently resolved. The Runner
+validates identity and provenance only; it does not rank models or interpret the
+reason.
+
 An eligible `training_parent` can only be `working`, `best_known`, or an
 explicitly retained lineage ID. Retention is therefore the only way to create a
 future training parent from a candidate: a candidate that receives no role has

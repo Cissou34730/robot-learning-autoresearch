@@ -2901,8 +2901,11 @@ def render_research_brief() -> str:
             ),
             (
                 "The next proposal must include `previous_result_decision` with "
-                f"`experiment`, `continue_from` ({', '.join(choices)}), `reason`, "
-                "and a `code` decision (`keep` or `revert`) with its reason."
+                f"`experiment`, a typed `continue_from` selection naming one of "
+                f"({', '.join(choices)}) or a lineage role/retained ID, `reason`, "
+                "and a `code` decision (`keep` or `revert`) with its reason. The "
+                "Runner returns the resolved transaction hash and requires it back "
+                "in `confirm_transaction` before any role changes."
             ),
             (
                 "The code/configuration parent before that experiment was commit "

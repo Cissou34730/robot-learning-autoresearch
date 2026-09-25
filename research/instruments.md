@@ -432,20 +432,50 @@ Write a lineage-only `research/proposal.json`:
 {
   "previous_result_decision": {
     "experiment": "<current experiment integer>",
-    "continue_from": "<current checkpoint, working, best_known, or retained ID>",
+    "continue_from": {
+      "source": "<lineage_role | experiment_candidate | retained_lineage>",
+      "expected_fingerprint": "<immutable artifact fingerprint>",
+      "role": "<working | best_known; lineage_role only>",
+      "designation_ordinal": "<current best_known tenure; lineage_role best_known only>",
+      "experiment": "<current experiment integer; experiment_candidate only>",
+      "checkpoint": "<candidate name; experiment_candidate only>",
+      "id": "<stable retained ID; retained_lineage only>"
+    },
     "reason": "<non-empty scientific reason>",
     "code": {
       "action": "<keep | revert | restore>",
       "reason": "<non-empty reason>",
-      "lineage": "<working | best_known | retained lineage ID; restore only>"
+      "lineage": {
+        "source": "<lineage_role | retained_lineage>",
+        "expected_fingerprint": "<immutable artifact fingerprint>",
+        "role": "<working | best_known; lineage_role only>",
+        "designation_ordinal": "<current best_known tenure; lineage_role best_known only>",
+        "id": "<stable retained ID; retained_lineage only>"
+      }
     },
     "best_known": {
-      "candidate": "<available model ID>",
+      "selection": {
+        "source": "<lineage_role | experiment_candidate | retained_lineage>",
+        "expected_fingerprint": "<immutable artifact fingerprint>",
+        "role": "<working | best_known; lineage_role only>",
+        "designation_ordinal": "<current best_known tenure; lineage_role best_known only>",
+        "experiment": "<current experiment integer; experiment_candidate only>",
+        "checkpoint": "<candidate name; experiment_candidate only>",
+        "id": "<stable retained ID; retained_lineage only>"
+      },
       "reason": "<non-empty designation reason>"
     },
     "retain": [
       {
-        "candidate": "<available non-active candidate>",
+        "candidate": {
+          "source": "<lineage_role | experiment_candidate | retained_lineage>",
+          "expected_fingerprint": "<immutable artifact fingerprint>",
+          "role": "<working | best_known; lineage_role only>",
+          "designation_ordinal": "<current best_known tenure; lineage_role best_known only>",
+          "experiment": "<current experiment integer; experiment_candidate only>",
+          "checkpoint": "<candidate name; experiment_candidate only>",
+          "id": "<stable retained ID; retained_lineage only>"
+        },
         "id": "<stable identifier>",
         "reason": "<non-empty reason>"
       }
@@ -457,10 +487,32 @@ Write a lineage-only `research/proposal.json`:
     "terminal_expectation": {
       "expected_verdict": "<goal_reached | goal_not_reached | uncertain>",
       "reason": "<non-empty evidence-and-uncertainty rationale; required when request_final_benchmark is true>"
-    }
+    },
+    "confirm_transaction": "<transaction hash from the Runner's resolved preview>"
   }
 }
 ```
+
+Every model selection is a typed selection object, never a bare string. The
+`source` names the selection namespace explicitly:
+
+- `lineage_role` selects the current `working` or `best_known` tenure; a
+  `best_known` selection also states the `designation_ordinal` of that tenure.
+- `experiment_candidate` selects a checkpoint by its `experiment` and
+  `checkpoint` name.
+- `retained_lineage` selects a retained lineage by its stable `id`.
+
+`expected_fingerprint` is the immutable artifact fingerprint the Researcher
+believes it is selecting. The Runner resolves the complete transaction and
+returns a persisted preview of the old and proposed role assignments, their
+fingerprints, origins, effective parameters, and fingerprint-matched evidence.
+Before any role changes it emits the transaction hash. The Researcher must
+resubmit the same `previous_result_decision` with `confirm_transaction` set to
+that exact hash, or submit a revised selection. A fingerprint that no longer
+matches, a superseded `designation_ordinal`, a checkpoint from another
+experiment, or a stale confirmation is deterministically rejected and requires a
+fresh selection. The Runner validates identity and provenance only: it never
+decides which model is scientifically preferable and never interprets the reason.
 
 `best_known`, `retain`, `remove_retained`, and `request_final_benchmark` are
 optional. Omitted `best_known` preserves the existing best-known lineage; it does
@@ -468,8 +520,8 @@ not promote `continue_from`. This request selects the working model, chooses the
 scientific recipe action, and manages retained lineages. Unretained model
 artifacts are removed; their recorded history and measurements remain.
 
-If `best_known` names the current best-known model, the designation is accepted
-idempotently. If it names another available model, the Runner resolves that
+If `best_known` selects the current best-known model, the designation is accepted
+idempotently. If it selects another available model, the Runner resolves that
 model's recorded measurements from the current campaign state. A new designation
 requires at least one recorded measurement for the selected model; the Runner
 checks only that a measurement exists, not whether the evidence is scientifically
@@ -491,22 +543,27 @@ well-formed, and renders it back with the frozen model so the expectation is
 explicit rather than a bare flag. Omit `terminal_expectation` when a final
 benchmark is not requested.
 
-`experiment` is an integer. `continue_from` and both `reason` values are
-non-empty strings. The compatible field name `code.action` controls the complete
-researcher-owned scientific recipe: researcher-owned source and
-`research/current_params.json`. `keep` keeps the experiment's complete
-scientific recipe; `revert` restores the scientific parent's complete recipe;
-and `restore` restores the complete recipe associated with the explicitly named
-eligible lineage. For `restore`, `code.lineage` is required; for `keep` and
-`revert`, omit `code.lineage`. The exact currently valid parent and restore
-identifiers are listed in `research/brief.md`. `best_known` requires exactly a
-candidate string and reason string. The candidate must be an available model
-identifier. When a new model is selected, the Runner resolves its recorded
-measurements and stores those paths in the lineage. `retain` is an array of
-candidate/id/reason objects, `remove_retained` is an array of unique retained IDs,
-and `request_final_benchmark` is a boolean. `terminal_expectation` is an object
-with an `expected_verdict` and a non-empty `reason`, required with a `true`
-request.
+`experiment` is an integer. `continue_from` is a typed selection object and
+both `reason` values are non-empty strings. The compatible field name
+`code.action` controls the complete researcher-owned scientific recipe:
+researcher-owned source and `research/current_params.json`. `keep` keeps the
+experiment's complete scientific recipe; `revert` restores the scientific
+parent's complete recipe; and `restore` restores the complete recipe associated
+with the explicitly named eligible lineage. For `restore`, `code.lineage` is a
+typed selection object restricted to `lineage_role` or `retained_lineage`; for
+`keep` and `revert`, omit `code.lineage`. The exact currently valid lineage
+identities and fingerprints are listed in `research/brief.md`. `best_known`
+requires exactly a typed selection object and reason string; the selected model
+must be available and its expected fingerprint must match. When a new model is
+selected, the Runner resolves its recorded measurements and stores those paths
+in the lineage. `retain` is an array of candidate/id/reason objects whose
+candidate is a typed selection object, `remove_retained` is an array of unique
+retained IDs, and `request_final_benchmark` is a boolean. `terminal_expectation`
+is an object with an `expected_verdict` and a non-empty `reason`, required with a
+`true` request. `confirm_transaction` is the exact transaction hash the Runner
+returned for the resolved selection; it is required before any role changes.
+The Runner persists the resolved transaction with the closure so the confirmed
+assignment is reproducible from the stored preview.
 
 ## Request the official benchmark
 
