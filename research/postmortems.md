@@ -3,40 +3,46 @@
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Scientific strategy
 
 **Current synthesis:** The baseline learned a substantial reach-and-hold behavior,
-but its remaining failures are structured rather than random hold noise. On the
-first research panel, checkpoint-100352 and checkpoint-120832 each succeeded on
-195/200 episodes, with identical binary outcomes. The protected task-reference
-panel separated them: checkpoint-100352 achieved 196/200 (98.0%), while the final
-checkpoint achieved 194/200 (97.0%). The detailed research diagnostics place the
-proxy-peak failures in a narrow negative-angle sector around -128 to -150 degrees:
-some episodes never enter tolerance and others enter for only one to three steps.
-The final checkpoint does not remove this sector and has slightly larger residual
-errors on the research panel.
+but its remaining failures are structured rather than random hold noise. On both
+disjoint research panels, checkpoint-100352 and checkpoint-120832 each succeeded
+on 195/200 episodes, while the protected task-reference panel measured the
+working checkpoint at 196/200. The detailed diagnostics place the repeated
+failures in a narrow negative-angle sector around -128 to -155 degrees. They
+include both episodes that never enter tolerance and episodes that enter for only
+one to three steps. The baseline training distribution is also narrower than the
+human distribution: `training_environment.py` trained only on radii 0.14--0.20 m,
+whereas the task spans 0.06--0.20 m. This is an untested distribution-coverage
+mechanism, not an established cause of the angular failure sector.
 
 **Lessons and limits:** The measurements support the physical interpretation that
-branch choice, configuration-dependent conditioning, and stabilization can create
-target-specific failures, but they do not identify the causal controller
-mechanism. The late checkpoints usually reach tolerance and then hold
-successfully; the failure sector is the limiting behavior observed here. One
-research panel is 97.5%, below the 98% objective, while one independent
-development panel is exactly 98.0%, so the available evidence does not yet make
-official success an expectation. The panels are development evidence and neither
-is the official final assessment.
+branch choice, configuration-dependent conditioning, approach dynamics, and
+stabilization can create target-specific failures, but they do not identify the
+causal controller mechanism. The late checkpoints usually reach tolerance and
+then hold successfully; the failure sector is the limiting behavior observed
+here. The failed research targets span roughly 0.10--0.17 m as well as a
+near-0.14 m case, so radius coverage is plausible but not sufficient as an
+explanation. Both disjoint research panels are 97.5%, below the 98% objective;
+the protected panel is development evidence and neither panel is the official
+final assessment.
 
-**Open questions:** Whether the negative-angle failure sector is caused primarily
-by branch or conditioning effects, approach dynamics, or local stabilization;
-whether a future policy can eliminate the sector without sacrificing the rest of
-the target distribution; and how much of the remaining error is intrinsic to
-the current observation and control representation.
+**Open questions:** Whether broader radius coverage changes the negative-angle
+failure sector or only improves inner-target behavior; whether the no-entry and
+interrupted-hold failures share a mechanism; whether branch choice, approach
+dynamics, or local stabilization is causal; whether a future policy can eliminate
+the sector without sacrificing the rest of the target distribution; and how much
+of the remaining error is intrinsic to the current observation and control
+representation.
 
-**Active inquiry:** Carry forward the distinction between broad reach-and-hold
-competence and the reproducible negative-angle failure sector. This matters
-because the human objective requires at least 196 successes on the official
-panel, while both disjoint research panels produced 195/200 for the two viable
-late checkpoints. Evidence that changes this inquiry would be a policy that
-eliminates the repeated sector while preserving complete holds elsewhere; the
-current evidence instead supports treating checkpoint-100352 as a strong
-near-objective baseline, not as demonstrated objective attainment.
+**Active inquiry:** Test whether the baseline's radius-limited training
+distribution left insufficient experience for the configurations associated with
+the repeated negative-angle failures. Continue the working policy while exposing
+training to the complete 0.06--0.20 m radius range, then compare complete
+reach-and-hold outcomes and failure diagnostics against the saved working
+lineage on disjoint episodes. A reduction of both no-entry and interrupted-hold
+failures without loss elsewhere would support a coverage mechanism; unchanged
+angular failures would redirect attention to branch conditioning, approach
+dynamics, or stabilization. The current working checkpoint remains a strong
+near-objective baseline, not demonstrated objective attainment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
