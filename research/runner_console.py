@@ -415,9 +415,6 @@ def render_decision_card(plan: dict) -> str:
             "",
             "Scientific recipe",
             plan["code_action"],
-            "",
-            "Final benchmark",
-            "requested" if plan["request_final_benchmark"] else "not requested",
         ]
         return "\n".join(lines)
     retained = [
@@ -447,13 +444,6 @@ def render_decision_card(plan: dict) -> str:
                 *(f"  {lineage['id']}" for lineage in plan["removed_retained"]),
             ]
         )
-    lines.extend(
-        [
-            "",
-            "Final benchmark",
-            "requested" if plan["request_final_benchmark"] else "not requested",
-        ]
-    )
     return "\n".join(lines)
 
 

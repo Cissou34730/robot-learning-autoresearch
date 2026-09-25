@@ -946,6 +946,59 @@ def validate_terminal_expectation(value: object) -> dict:
     return {"expected_verdict": expected, "reason": reason}
 
 
+CONTINUATION_COMPARISON_FORMS = ("feasible_continuation", "no_useful_continuation")
+
+
+def validate_continuation_comparison(value: object) -> dict:
+    """The comparative record every terminal campaign choice must carry.
+
+    A terminal choice ends the campaign, so the campaign action-selection phase
+    requires the Researcher to compare it with the best available continuation
+    and record either a concrete feasible continuation with the reason the
+    terminal choice has greater expected decision value, or an evidence-grounded
+    statement that no scientifically useful continuation can be formulated. The
+    Runner validates only the structure; it does not judge the science.
+    """
+    if not isinstance(value, dict):
+        raise TypeError("continuation_comparison must be an object")
+    form = str(value.get("form", "")).strip()
+    if form == "feasible_continuation":
+        extra = set(value) - {"form", "continuation", "reason"}
+        if extra:
+            raise ValueError(
+                "unsupported continuation_comparison fields: "
+                f"{sorted(extra)}"
+            )
+        continuation = str(value.get("continuation", "")).strip()
+        if not continuation:
+            raise ValueError(
+                "continuation_comparison feasible_continuation requires one "
+                "concrete feasible continuation"
+            )
+        reason = str(value.get("reason", "")).strip()
+        if not reason:
+            raise ValueError("continuation_comparison requires a non-empty reason")
+        return {"form": form, "continuation": continuation, "reason": reason}
+    if form == "no_useful_continuation":
+        extra = set(value) - {"form", "reason"}
+        if extra:
+            raise ValueError(
+                "unsupported continuation_comparison fields: "
+                f"{sorted(extra)}"
+            )
+        reason = str(value.get("reason", "")).strip()
+        if not reason:
+            raise ValueError(
+                "continuation_comparison no_useful_continuation requires an "
+                "evidence-grounded statement"
+            )
+        return {"form": form, "reason": reason}
+    raise ValueError(
+        "continuation_comparison form must be feasible_continuation or "
+        "no_useful_continuation"
+    )
+
+
 def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     """Validate a preparation-phase decision that ends without a new experiment.
 
@@ -990,9 +1043,16 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
             "campaign_conclusion action must be request_final_benchmark or "
             "no_further_experiment"
         )
+    continuation_comparison = validate_continuation_comparison(
+        conclusion.get("continuation_comparison")
+    )
     terminal_expectation = None
     if action == "request_final_benchmark":
-        extra = set(conclusion) - {"action", "terminal_expectation"}
+        extra = set(conclusion) - {
+            "action",
+            "terminal_expectation",
+            "continuation_comparison",
+        }
         if extra:
             raise ValueError(
                 f"unsupported campaign_conclusion fields: {sorted(extra)}"
@@ -1002,7 +1062,7 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
         )
         reason = terminal_expectation["reason"]
     else:
-        extra = set(conclusion) - {"action", "reason"}
+        extra = set(conclusion) - {"action", "reason", "continuation_comparison"}
         if extra:
             raise ValueError(
                 f"unsupported campaign_conclusion fields: {sorted(extra)}"
@@ -1024,6 +1084,7 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
         "action": action,
         "reason": reason,
         "terminal_expectation": terminal_expectation,
+        "continuation_comparison": continuation_comparison,
         "campaign_conclusion": conclusion,
         "best_known": best_known if action == "request_final_benchmark" else None,
     }
@@ -1944,8 +2005,6 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         "code",
         "retain",
         "remove_retained",
-        "request_final_benchmark",
-        "terminal_expectation",
     }
     extra = set(decision) - allowed
     if extra:
@@ -2070,29 +2129,12 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         )
         retained_ids.add(identifier)
 
-    request_final = decision.get("request_final_benchmark", False)
-    if not isinstance(request_final, bool):
-        raise TypeError("request_final_benchmark must be true or false")
-    terminal_expectation = None
-    if request_final:
-        terminal_expectation = validate_terminal_expectation(
-            decision.get("terminal_expectation")
-        )
-    selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
-    if (
-        request_final
-        and state.get("official_benchmark_artifact") == selected_fingerprint
-    ):
-        raise ValueError(
-            "the selected accepted artifact already received an official benchmark"
-        )
     return {
         "pending": pending,
         "decision": decision,
         "selected": selected,
         "selected_name": selected_name,
         "selected_artifact": selected_artifact,
-        "selected_fingerprint": selected_fingerprint,
         "code_action": code_action,
         "code_reason": code_reason,
         "code_plan": code_plan,
@@ -2101,8 +2143,6 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         ],
         "retentions": retention_plans,
         "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
-        "request_final_benchmark": request_final,
-        "terminal_expectation": terminal_expectation,
     }
 
 
@@ -3263,8 +3303,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "best_known",
         "retain",
         "remove_retained",
-        "request_final_benchmark",
-        "terminal_expectation",
         "confirm_transaction",
     }
     extra = set(decision) - allowed
@@ -3481,16 +3519,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             }
         )
         known_ids.add(identifier)
-    request_final = decision.get("request_final_benchmark", False)
-    if not isinstance(request_final, bool):
-        raise TypeError("request_final_benchmark must be true or false")
-    terminal_expectation = None
-    if request_final:
-        terminal_expectation = validate_terminal_expectation(
-            decision.get("terminal_expectation")
-        )
-    if request_final and best_record is None:
-        raise ValueError("a final benchmark requires a designated best-known model")
     retained_records = [
         lineage for lineage in retained if lineage["id"] not in removal_ids
     ] + new_retained
@@ -3531,7 +3559,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             "parent": code_plan.get("parent"),
             "restore": code_plan.get("lineage"),
         },
-        "request_final_benchmark": request_final,
     }
     transaction_hash = lineage_transaction_hash(preview)
     confirmation_required = lineage_transaction_changes_roles(
@@ -3570,9 +3597,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         ]
     if removal_ids:
         display_decision["remove_retained"] = list(removal_ids)
-    if request_final:
-        display_decision["request_final_benchmark"] = True
-        display_decision["terminal_expectation"] = terminal_expectation
     return {
         "pending": pending,
         "decision": display_decision,
@@ -3593,8 +3617,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "artifact_publications": publications,
         "retentions": [],
         "removed_retained": removed,
-        "request_final_benchmark": request_final,
-        "terminal_expectation": terminal_expectation,
         "hypothesis_assessment": hypothesis_assessment,
         "designation_counter": designation_counter,
     }

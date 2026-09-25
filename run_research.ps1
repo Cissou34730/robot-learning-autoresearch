@@ -979,10 +979,10 @@ if ($ResearcherBackend -eq "opencode") {
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
-            "Terminal assessment of the frozen best-known model is available, is irreversible, and ends the campaign."
+            "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, and the optional best-known designation, as separate decisions. Closure resolves only the completed experiment: it never requests the official benchmark and never ends the campaign."
+            "After this closure the Runner opens the campaign action-selection phase, where the next experiment, a saved-lineage measurement, terminal assessment, and a no-further-experiment conclusion are compared."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
-            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
+            "Do not request terminal assessment, design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
         Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {

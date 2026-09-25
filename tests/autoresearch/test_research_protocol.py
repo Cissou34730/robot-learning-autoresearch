@@ -1326,151 +1326,25 @@ def _lineage_decision():
     }
 
 
-def test_final_benchmark_runs_after_separate_lineage_resolution(monkeypatch, tmp_path):
+def test_closure_no_longer_requests_the_final_benchmark(monkeypatch, tmp_path):
+    """The closure contract resolves only the completed experiment.
+
+    Terminal assessment is now a separate campaign action-selection decision, so
+    the closure rejects the retired ``request_final_benchmark`` fields instead of
+    staging the official benchmark.
+    """
     _artifact(tmp_path / "archive" / "candidate")
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", tmp_path / "state.json")
-    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
-
     state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
-    request = _lineage_decision()
-    request["previous_result_decision"]["request_final_benchmark"] = True
-    request["previous_result_decision"]["terminal_expectation"] = {
+    decision = _lineage_decision()
+    decision["previous_result_decision"]["request_final_benchmark"] = True
+    decision["previous_result_decision"]["terminal_expectation"] = {
         "expected_verdict": "goal_reached",
         "reason": "Submit the measured policy.",
     }
-    calls = []
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model, progress_callback=None: (
-            calls.append(model)
-            or {
-                "episodes": 200,
-                "seed": 1000,
-                "success_percent": 100.0,
-                "goal_reached": True,
-            }
-        ),
-    )
-    assert not apply_previous_result_decision(request, state)
-    assert calls == []
-    assert state["pending_researcher_decision"] is None
-    assert state["pending_final_benchmark"]["artifact"] == "accepted"
-    assert not (tmp_path / "GOAL_REACHED").exists()
 
-    assert execute_pending_final_benchmark() == 0
-    assert calls == [tmp_path / "accepted" / "model.zip"]
-    persisted = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
-    assert persisted["official_metrics"]["success_percent"] == 100.0
-    assert persisted["pending_final_benchmark"] is None
-    assert persisted["official_benchmark_verdict"] == "goal_reached"
-    assert persisted["terminal_campaign_status"] == "goal_reached"
-    assert (tmp_path / "GOAL_REACHED").exists()
-
-
-def test_legacy_champion_path_is_canonicalized_before_final_benchmark(
-    monkeypatch, tmp_path
-):
-    accepted = _artifact(tmp_path / "research" / "checkpoints" / "accepted")
-    state_path = tmp_path / "state.json"
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    state = {
-        "accepted_artifact": "research\\checkpoints\\accepted",
-        "accepted_metrics": {"success_percent": 50.0},
-        "accepted_parameters": {},
-        "accepted_training_steps": 100,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 8,
-            "candidates": [],
-            "champion_available": True,
-            "champion_evaluations": [],
-            "parameters": {},
-            "initialization": "fresh",
-            "training_budget_steps": 100,
-        },
-    }
-    decision = {
-        "previous_result_decision": {
-            "experiment": 8,
-            "continue_from": "champion",
-            "reason": "Keep the accepted lineage.",
-            "code": {"action": "keep", "reason": "Keep the accepted code."},
-            "request_final_benchmark": True,
-            "terminal_expectation": {
-                "expected_verdict": "goal_reached",
-                "reason": "Submit the accepted lineage.",
-            },
-        }
-    }
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model, progress_callback=None: {
-            "episodes": 1,
-            "seed": 1000,
-            "success_percent": 50.0,
-            "goal_reached": False,
-        },
-    )
-
-    assert not apply_previous_result_decision(decision, state)
-    assert state["accepted_artifact"] == "research/checkpoints/accepted"
-    assert state["pending_final_benchmark"]["artifact"] == state["accepted_artifact"]
-    assert execute_pending_final_benchmark() == 0
-
-
-def test_pending_final_benchmark_survives_failure_and_failed_result(
-    monkeypatch, tmp_path
-):
-    _artifact(tmp_path / "archive" / "candidate")
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
-    state_path = tmp_path / "state.json"
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    state = _decision_state("archive/candidate", [evaluation(1000, [True] * 2)])
-    request = _lineage_decision()
-    request["previous_result_decision"]["request_final_benchmark"] = True
-    request["previous_result_decision"]["terminal_expectation"] = {
-        "expected_verdict": "goal_reached",
-        "reason": "Submit the measured policy.",
-    }
-    assert not apply_previous_result_decision(request, state)
-
-    def failed_benchmark(model, progress_callback=None):
-        del model, progress_callback
-        raise RuntimeError("benchmark crashed")
-
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model", failed_benchmark
-    )
-    with pytest.raises(RuntimeError, match="benchmark crashed"):
-        execute_pending_final_benchmark()
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert (
-        persisted["pending_final_benchmark"]["fingerprint"]
-        == state["pending_final_benchmark"]["fingerprint"]
-    )
-    assert persisted["official_metrics"] is None
-
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        lambda model, progress_callback=None: {
-            "episodes": 200,
-            "seed": 1000,
-            "success_percent": 97.5,
-            "goal_reached": False,
-        },
-    )
-    assert execute_pending_final_benchmark() == 0
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert persisted["pending_final_benchmark"] is None
-    assert persisted["official_metrics"]["success_percent"] == 97.5
-    assert not (tmp_path / "GOAL_REACHED").exists()
+    with pytest.raises(ValueError, match="unsupported lineage decision fields"):
+        plan_previous_result_decision(decision, state)
 
 
 def test_v4_final_benchmark_freezes_best_known_and_records_terminal_failure(
@@ -1566,24 +1440,6 @@ def test_terminal_campaign_rejects_new_proposals():
             {"hypothesis": "another run"},
             {"terminal_campaign_status": "goal_not_reached"},
         )
-
-
-def test_identical_artifact_cannot_repeat_final_benchmark(monkeypatch, tmp_path):
-    _artifact(tmp_path / "archive" / "candidate")
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
-    state = _decision_state("archive/candidate", [evaluation(44, [True, False])])
-    decision = _lineage_decision()
-    decision["previous_result_decision"]["request_final_benchmark"] = True
-    decision["previous_result_decision"]["terminal_expectation"] = {
-        "expected_verdict": "goal_reached",
-        "reason": "Submit the measured policy.",
-    }
-    fingerprint = plan_previous_result_decision(decision, state)["selected_fingerprint"]
-    state["official_benchmark_artifact"] = fingerprint
-
-    with pytest.raises(ValueError, match="already received"):
-        plan_previous_result_decision(decision, state)
 
 
 def test_research_evaluation_request_rejects_official_benchmark(monkeypatch, tmp_path):

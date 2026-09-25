@@ -1420,26 +1420,6 @@ def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
             repository.resolve_repo_path(lineage["artifact"])
         )
     # Completed evaluations are research history and survive their checkpoints.
-    if plan["request_final_benchmark"]:
-        state["pending_final_benchmark"] = {
-            "experiment": int(pending["experiment"]),
-            "selected": selected_name,
-            "artifact": state["accepted_artifact"],
-            "fingerprint": plan["selected_fingerprint"],
-            "terminal_expectation": plan.get("terminal_expectation"),
-        }
-        repository.write_state(state)
-        console.announce(
-            "\n"
-            + console.render_final_benchmark_card(
-                selected=selected_name,
-                artifact=str(state["accepted_artifact"]),
-                fingerprint=str(plan["selected_fingerprint"]),
-                terminal_expectation=plan.get("terminal_expectation"),
-                request=True,
-            )
-            + "\n"
-        )
     console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
@@ -1489,8 +1469,6 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "retained": plan["retained"],
         "removed_retained": plan["removed_retained"],
         "artifact_publications": plan["artifact_publications"],
-        "request_final_benchmark": plan["request_final_benchmark"],
-        "terminal_expectation": plan.get("terminal_expectation"),
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
         "designation_counter": plan.get("designation_counter", 0),
     }
@@ -1556,28 +1534,6 @@ def apply_pending_v4_closure(state: dict) -> bool:
         "code_parent_commit": pending.get("code_parent_commit"),
     }
     state["last_verdict"] = f"researcher selected {plan['working_name']} as working"
-    if plan["request_final_benchmark"]:
-        best_known = plan["best_known_record"]
-        state["pending_final_benchmark"] = {
-            "experiment": int(pending["experiment"]),
-            "selected": "best_known",
-            "artifact": best_known["artifact"],
-            "fingerprint": best_known["fingerprint"],
-            "best_known": best_known,
-            "terminal_expectation": plan.get("terminal_expectation"),
-        }
-        console.announce(
-            "\n"
-            + console.render_final_benchmark_card(
-                selected="best_known",
-                artifact=str(best_known["artifact"]),
-                fingerprint=str(best_known["fingerprint"]),
-                lineage=best_known,
-                terminal_expectation=plan.get("terminal_expectation"),
-                request=True,
-            )
-            + "\n"
-        )
     if pending_field == "pending_analysis":
         result = pending["result"]
         result.update(
@@ -1691,15 +1647,18 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
     """
     action = operation["action"]
     terminal_expectation = operation.get("terminal_expectation")
+    continuation_comparison = operation.get("continuation_comparison")
     if action == "request_final_benchmark":
         state["campaign_conclusion"] = {
             "action": action,
             "terminal_expectation": terminal_expectation,
+            "continuation_comparison": continuation_comparison,
         }
     else:
         state["campaign_conclusion"] = {
             "action": action,
             "reason": operation["reason"],
+            "continuation_comparison": continuation_comparison,
         }
     # A clean conclusion releases the preparation anchor for both outcomes.
     state["pending_scientific_parent"] = None
@@ -1784,6 +1743,7 @@ def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
             "action": plan["action"],
             "reason": plan["reason"],
             "terminal_expectation": plan.get("terminal_expectation"),
+            "continuation_comparison": plan.get("continuation_comparison"),
             "progress": "planned",
         }
         repository.write_state(state)

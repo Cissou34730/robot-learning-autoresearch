@@ -94,6 +94,10 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, dict]:
     return state_path, proposal_path, state
 
 
+def _continuation(reason: str = "No useful alternative was available.") -> dict:
+    return {"form": "no_useful_continuation", "reason": reason}
+
+
 def _conclusion(action: str, reason: str = "The evidence supports this decision."):
     if action == "request_final_benchmark":
         return {
@@ -103,9 +107,20 @@ def _conclusion(action: str, reason: str = "The evidence supports this decision.
                     "expected_verdict": "goal_reached",
                     "reason": reason,
                 },
+                "continuation_comparison": _continuation(
+                    "No scientifically useful continuation can be formulated."
+                ),
             }
         }
-    return {"campaign_conclusion": {"action": action, "reason": reason}}
+    return {
+        "campaign_conclusion": {
+            "action": action,
+            "reason": reason,
+            "continuation_comparison": _continuation(
+                "No scientifically useful continuation can be formulated."
+            ),
+        }
+    }
 
 
 def _stub_publication(monkeypatch) -> list[str]:
@@ -181,6 +196,10 @@ def test_no_further_experiment_ends_the_campaign_without_an_experiment_row(
     assert persisted["campaign_conclusion"] == {
         "action": "no_further_experiment",
         "reason": "The evidence supports this decision.",
+        "continuation_comparison": {
+            "form": "no_useful_continuation",
+            "reason": "No scientifically useful continuation can be formulated.",
+        },
     }
     assert persisted["pending_scientific_parent"] is None
     # A decision, never an experiment-history row.
@@ -230,6 +249,41 @@ def test_final_benchmark_conclusion_requires_a_designated_best_known(
 
     with pytest.raises(ValueError, match="best-known"):
         plan_campaign_conclusion(_conclusion("request_final_benchmark"), state)
+
+
+def test_terminal_choice_requires_a_continuation_comparison(monkeypatch, tmp_path):
+    _, _, state = _configure(monkeypatch, tmp_path)
+
+    for action in ("request_final_benchmark", "no_further_experiment"):
+        proposal = _conclusion(action)
+        del proposal["campaign_conclusion"]["continuation_comparison"]
+        with pytest.raises((TypeError, ValueError), match="continuation_comparison"):
+            plan_campaign_conclusion(proposal, state)
+
+    proposal = _conclusion("no_further_experiment")
+    proposal["campaign_conclusion"]["continuation_comparison"] = {"form": "stop"}
+    with pytest.raises(ValueError, match="form must be"):
+        plan_campaign_conclusion(proposal, state)
+
+
+def test_continuation_comparison_accepts_both_recorded_forms(monkeypatch, tmp_path):
+    _, _, state = _configure(monkeypatch, tmp_path)
+
+    for comparison in (
+        {
+            "form": "feasible_continuation",
+            "continuation": "Train another policy from the working lineage.",
+            "reason": "Assessment has greater expected decision value now.",
+        },
+        {
+            "form": "no_useful_continuation",
+            "reason": "No scientifically useful continuation can be formulated.",
+        },
+    ):
+        proposal = _conclusion("no_further_experiment")
+        proposal["campaign_conclusion"]["continuation_comparison"] = comparison
+        plan = plan_campaign_conclusion(proposal, state)
+        assert plan["continuation_comparison"] == comparison
 
 
 def test_campaign_conclusion_requires_a_known_action_and_reason(monkeypatch, tmp_path):

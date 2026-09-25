@@ -312,8 +312,14 @@ narrower interpretation.
 
 ## Conclude the campaign
 
-**Phase:** Experiment preparation.
+**Phase:** Campaign action selection (experiment preparation), opened after every
+experiment closure.
 
+After a closure the Runner always opens this phase. It exposes the remaining
+experiment capacity and lets the Researcher inspect the active-campaign evidence
+and formulate the best available continuation before choosing exactly one of: a
+next experiment; a saved-lineage measurement; terminal assessment of the frozen
+best-known model; or the conclusion that no further experiment is warranted.
 Preparation may end without a new experiment. Write `research/proposal.json`
 containing only a `campaign_conclusion` object:
 
@@ -324,6 +330,11 @@ containing only a `campaign_conclusion` object:
     "terminal_expectation": {
       "expected_verdict": "<goal_reached | goal_not_reached | uncertain>",
       "reason": "<non-empty evidence-and-uncertainty rationale>"
+    },
+    "continuation_comparison": {
+      "form": "feasible_continuation",
+      "continuation": "<one concrete feasible continuation>",
+      "reason": "<why the terminal choice has greater expected decision value>"
     }
   }
 }
@@ -333,23 +344,36 @@ containing only a `campaign_conclusion` object:
 {
   "campaign_conclusion": {
     "action": "no_further_experiment",
-    "reason": "<non-empty reason for the decision>"
+    "reason": "<non-empty reason for the decision>",
+    "continuation_comparison": {
+      "form": "no_useful_continuation",
+      "reason": "<evidence-grounded statement that no scientifically useful continuation can be formulated>"
+    }
   }
 }
 ```
 
+Every terminal choice carries a required `continuation_comparison` object that
+records either a `feasible_continuation` — one concrete feasible continuation
+plus the reason the terminal choice has greater expected decision value — or a
+`no_useful_continuation` with an evidence-grounded statement that no
+scientifically useful continuation can be formulated. The first form needs
+`continuation` and `reason`; the second needs only `reason`. The Runner validates
+only the structure, the referenced artifact identity, the remaining experiment
+capacity, and the legal operation type; it does not judge whether the
+continuation is scientifically good or whether stopping is justified.
+
 `request_final_benchmark` submits the standing `best_known` lineage for the
-official final assessment. It requires a designated best-known model and reuses
-the closure decision of the same name: the official benchmark runs once and the
-campaign ends after its verdict. Its required `terminal_expectation` object
-carries the verdict the Researcher expects and the evidence-and-uncertainty
-rationale behind it; it replaces the free-form-only rationale for the request.
-All three `expected_verdict` values are accepted. `no_further_experiment` records
-the Researcher's judgement that no further experiment is warranted without
-requesting that assessment; it ends the campaign. Neither outcome creates an experiment record,
-an experiment-index row or an intervention count. A `campaign_conclusion` is
-accepted only while no measurement, analysis, closure or official assessment is
-pending; each pending phase requires its own deliverable.
+official final assessment. It requires a designated best-known model: the
+official benchmark runs once and the campaign ends after its verdict. Its
+required `terminal_expectation` object carries the verdict the Researcher expects
+and the evidence-and-uncertainty rationale behind it. All three
+`expected_verdict` values are accepted. `no_further_experiment` records the
+Researcher's judgement that no further experiment is warranted without requesting
+that assessment; it ends the campaign. Neither outcome creates an experiment
+record, an experiment-index row or an intervention count. A `campaign_conclusion`
+is accepted only while no measurement, analysis, closure or official assessment
+is pending; each pending phase requires its own deliverable.
 
 A conclusion resolves no science, so it is accepted only while the researcher's
 scientific surface matches the preparation anchor. Revert or resolve any
@@ -359,10 +383,9 @@ decision, a conclusion neither publishes nor restores a recipe.
 A preparation phase that has already executed a measurement round on saved
 lineages may not conclude: it owes an experiment proposal. The round was
 requested because its result would change the next decision, and in this phase
-that decision is which experiment to prepare. Concluding is available from a
-preparation phase that spends no measurement round, from experiment closure
-through `request_final_benchmark`, and whenever no further experiment may be
-prepared.
+that decision is which experiment to prepare. Concluding is available from an
+action-selection phase that spends no measurement round, and whenever no further
+experiment may be prepared.
 
 When the experiment budget is exhausted, no further training experiment may be
 prepared, but a campaign conclusion remains legal regardless of any measurement
@@ -483,11 +506,6 @@ Write a lineage-only `research/proposal.json`:
     "remove_retained": [
       "<retained-lineage identifier>"
     ],
-    "request_final_benchmark": "<boolean>",
-    "terminal_expectation": {
-      "expected_verdict": "<goal_reached | goal_not_reached | uncertain>",
-      "reason": "<non-empty evidence-and-uncertainty rationale; required when request_final_benchmark is true>"
-    },
     "confirm_transaction": "<transaction hash from the Runner's resolved preview>"
   }
 }
@@ -514,11 +532,12 @@ experiment, or a stale confirmation is deterministically rejected and requires a
 fresh selection. The Runner validates identity and provenance only: it never
 decides which model is scientifically preferable and never interprets the reason.
 
-`best_known`, `retain`, `remove_retained`, and `request_final_benchmark` are
-optional. Omitted `best_known` preserves the existing best-known lineage; it does
-not promote `continue_from`. This request selects the working model, chooses the
-scientific recipe action, and manages retained lineages. Unretained model
-artifacts are removed; their recorded history and measurements remain.
+`best_known`, `retain`, and `remove_retained` are optional. Omitted `best_known`
+preserves the existing best-known lineage; it does not promote `continue_from`.
+This request selects the working model, chooses the scientific recipe action, and
+manages retained lineages. It resolves only the completed experiment and never
+terminates the campaign. Unretained model artifacts are removed; their recorded
+history and measurements remain.
 
 If `best_known` selects the current best-known model, the designation is accepted
 idempotently. If it selects another available model, the Runner resolves that
@@ -527,21 +546,13 @@ requires at least one recorded measurement for the selected model; the Runner
 checks only that a measurement exists, not whether the evidence is scientifically
 sufficient and not whether scores compare favorably.
 
-Omitting `request_final_benchmark` or setting it to `false` allows the campaign
-to proceed after closure. Setting it to `true` requests terminal assessment of
-`best_known`; the Runner ends the campaign after either `goal_reached` or
-`goal_not_reached`. The result is not available to a later hypothesis. The
-scientific decision rule for requesting assessment is defined in
+Closure never requests terminal assessment. It resolves only the completed
+experiment: the hypothesis assessment, the scientific recipe disposition, the
+working lineage, the optional best-known designation, and retention. After every
+closure the Runner opens the campaign action-selection phase, where terminal
+assessment or a no-further-experiment conclusion is a separate, comparative
+decision. The scientific decision rule for requesting assessment is defined in
 `research/program.md`.
-
-When `request_final_benchmark` is `true`, `terminal_expectation` is required. It
-is an object carrying `expected_verdict` (`goal_reached`, `goal_not_reached`, or
-`uncertain`) and a non-empty `reason`, the evidence-and-uncertainty rationale for
-the irreversible request, distinct from the working-lineage `reason`. All three
-verdicts are accepted; the Runner validates only that the field is present and
-well-formed, and renders it back with the frozen model so the expectation is
-explicit rather than a bare flag. Omit `terminal_expectation` when a final
-benchmark is not requested.
 
 `experiment` is an integer. `continue_from` is a typed selection object and
 both `reason` values are non-empty strings. The compatible field name
@@ -557,18 +568,21 @@ requires exactly a typed selection object and reason string; the selected model
 must be available and its expected fingerprint must match. When a new model is
 selected, the Runner resolves its recorded measurements and stores those paths
 in the lineage. `retain` is an array of candidate/id/reason objects whose
-candidate is a typed selection object, `remove_retained` is an array of unique
-retained IDs, and `request_final_benchmark` is a boolean. `terminal_expectation`
-is an object with an `expected_verdict` and a non-empty `reason`, required with a
-`true` request. `confirm_transaction` is the exact transaction hash the Runner
-returned for the resolved selection; it is required before any role changes.
-The Runner persists the resolved transaction with the closure so the confirmed
-assignment is reproducible from the stored preview.
+candidate is a typed selection object, and `remove_retained` is an array of
+unique retained IDs. `confirm_transaction` is the exact transaction hash the
+Runner returned for the resolved selection; it is required before any role
+changes. The Runner persists the resolved transaction with the closure so the
+confirmed assignment is reproducible from the stored preview.
 
 ## Request the official benchmark
 
-Set `request_final_benchmark` to `true` and give `terminal_expectation` in
-`previous_result_decision`.
+**Phase:** Campaign action selection (experiment preparation), after an
+experiment closure.
+
+Terminal assessment is a `campaign_conclusion` in `research/proposal.json`, never
+a closure decision. Set `action` to `request_final_benchmark`, give
+`terminal_expectation`, and record the required `continuation_comparison`; the
+contract is in "Conclude the campaign" above.
 
 When the request is accepted, the Runner emits a confirmation card and the brief
 records a **Pending terminal assessment** section naming the frozen `best_known`
@@ -580,7 +594,6 @@ The decision is irreversible, but the Runner does not add a reversal or a second
 verdict: both `goal_reached` and `goal_not_reached` are legitimate campaign
 outcomes.
 
-After applying the lineage decision, the Runner assesses the frozen best-known
-model and writes the terminal verdict to `research/brief.md`. The campaign ends
-after either verdict. This operation does not produce evidence for another
-hypothesis.
+After applying the conclusion, the Runner assesses the frozen best-known model
+and writes the terminal verdict to `research/brief.md`. The campaign ends after
+either verdict. This operation does not produce evidence for another hypothesis.

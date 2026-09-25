@@ -2692,11 +2692,6 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
                     "continue_from": "candidate",
                     "reason": "Selected measured lineage.",
                     "code": {"action": "keep", "reason": "Keep this parent."},
-                    "request_final_benchmark": True,
-                    "terminal_expectation": {
-                        "expected_verdict": "goal_reached",
-                        "reason": "Submit the selected measured lineage.",
-                    },
                 }
             }
         ),
@@ -2734,25 +2729,6 @@ def test_lineage_resolution_finishes_before_next_experiment_training(
     resolved = json.loads(state_path.read_text(encoding="utf-8"))
     assert committed == [(3, "candidate")]
     assert resolved["pending_researcher_decision"] is None
-    assert resolved["pending_final_benchmark"]["selected"] == "candidate"
-
-    def evaluate_after_commit(model, progress_callback=None):
-        assert committed == [(3, "candidate")]
-        assert model == tmp_path / "accepted" / "model.zip"
-        # The terminal assessment reports its episodes instead of running silent.
-        assert progress_callback is not None
-        progress_callback(200, 200)
-        return {
-            "episodes": 200,
-            "seed": 1000,
-            "success_percent": 100.0,
-            "goal_reached": True,
-        }
-
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        evaluate_after_commit,
-    )
-    from research.run_experiment import execute_pending_final_benchmark
-
-    assert execute_pending_final_benchmark() == 0
+    # Closure resolves only the completed experiment; the terminal assessment is
+    # a separate campaign action-selection decision.
+    assert resolved.get("pending_final_benchmark") is None

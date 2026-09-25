@@ -110,9 +110,11 @@ The phase order is:
    rounds or close directly from logs and existing evidence;
 4. close the experiment and resolve its working lineage, scientific recipe
    decision, and optional best-known designation;
-5. either prepare the next experiment, request Runner execution of the final
-   benchmark as a terminal campaign action, or record that no further experiment
-   is warranted.
+5. the Runner opens the campaign action-selection phase: after every closure the
+   Researcher compares the best available continuation with the alternatives and
+   chooses exactly one of a next experiment, a saved-lineage measurement,
+   terminal assessment of the frozen best-known model, or the conclusion that no
+   further experiment is warranted.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -146,10 +148,17 @@ in `research/instruments.md`. Continuing an unchanged method requires no code or
 parameter modification. The automatic baseline requires no Researcher-authored
 rationale.
 
-Preparation need not propose an experiment. It may instead request the official
-final assessment of the standing best-known model, or record that no further
-experiment is warranted. Each is written as a `campaign_conclusion` in
-`research/proposal.json` and is recorded as a decision, never as an experiment.
+Preparation is the campaign action-selection phase the Runner opens after every
+experiment closure. It exposes the remaining experiment capacity and lets the
+Researcher inspect the active-campaign evidence and formulate the best available
+continuation before choosing. Preparation need not propose an experiment. It may
+instead request the official final assessment of the standing best-known model,
+or record that no further experiment is warranted. Each is written as a
+`campaign_conclusion` in `research/proposal.json` and is recorded as a decision,
+never as an experiment. A terminal choice must record either one concrete
+feasible continuation and why the terminal choice has greater expected decision
+value, or an evidence-grounded statement that no scientifically useful
+continuation can be formulated; the Runner validates only that structural record.
 Requesting the assessment submits the designated best-known model for the
 terminal verdict; concluding that no further experiment is warranted ends the
 campaign without one. Neither has to be reached through an intermediate closure.
@@ -216,7 +225,8 @@ scientific recipe. Retain reusable alternatives when justified; unretained model
 artifacts are removed by the Runner. A promising working policy need not be best
 known. A separate explicit, evidence-backed `best_known` designation identifies
 the selected policy, not a required training parent. Selecting it does not decide
-whether to end development or request final assessment.
+whether to end development or request terminal assessment; that comparison
+belongs to the campaign action-selection phase that follows.
 
 A lineage decision is a typed, fingerprint-bound transaction. Each selected
 model names its namespace — an existing role tenure, a current experiment
@@ -248,8 +258,8 @@ checks artifact identity and recorded measurement integrity, not scientific meri
 
 Further training is an ordinary next experiment after closure, including training
 that targets the selected policy's own residual failures. Whether the campaign
-continues or requests terminal assessment is a separate decision resolved in this
-closure.
+continues or requests terminal assessment is decided in the campaign
+action-selection phase that always follows the closure.
 
 ## Scientific memory
 
@@ -270,7 +280,10 @@ objective remains. Request the terminal assessment when adjudicating the frozen
 best-known model is the highest-value remaining campaign action, whether the
 expected verdict is `goal_reached`, `goal_not_reached`, or `uncertain`. State the
 expected verdict, the evidence, the uncertainty, and the reason for accepting
-terminality.
+terminality. A terminal choice is comparative: record either one concrete
+feasible continuation and why terminal assessment has greater expected decision
+value, or an evidence-grounded statement that no scientifically useful
+continuation can be formulated.
 
 The official benchmark is a verdict you claim, not an instrument you consult. Do
 not request it in order to find out how the model performs, to settle an
@@ -291,8 +304,9 @@ better than the one it started with has converted its whole allocation into a
 single measurement. Neither the number of experiments already run nor the cost of
 running another is itself a reason to stop.
 
-Request the official benchmark from experiment preparation or closure, targeting
-the frozen best-known model. Requesting it ends the campaign after either verdict:
+Request the official benchmark from the campaign action-selection phase
+(experiment preparation) after a closure, targeting the frozen best-known model.
+Requesting it ends the campaign after either verdict:
 `goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
 plan further work conditional on benchmark failure. Only this benchmark declares
 the official result. The verdict reports the result; it is not designed to
