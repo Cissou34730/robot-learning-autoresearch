@@ -11,7 +11,6 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
-from collections.abc import Callable
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -38,7 +37,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self,
         *,
         target_radius_range: tuple[float, float] = TARGET_RADIUS_RANGE,
-        target_angle_sampler: Callable[[np.random.Generator], float] | None = None,
         success_threshold: float = SUCCESS_THRESHOLD,
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
@@ -49,7 +47,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.target_angle_sampler = target_angle_sampler
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -84,10 +81,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        if self.target_angle_sampler is None:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
-        else:
-            angle = float(self.target_angle_sampler(self.np_random))
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
