@@ -55,6 +55,19 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        control_dt = float(env.model.opt.timestep * env.frame_skip)
+        max_joint_speed_rad_s = 0.0
+        max_in_tolerance_joint_speed_rad_s = 0.0
+        max_end_effector_speed_m_s = 0.0
+        max_in_tolerance_end_effector_speed_m_s = 0.0
+        max_in_tolerance_distance_cm: float | None = None
+        first_reach_joint_speed_rad_s: float | None = None
+        first_reach_end_effector_speed_m_s: float | None = None
+        first_reach_branch: str | None = None
+        first_reach_branch_residuals_rad: list[float] | None = None
+        previous_end_effector = np.asarray(
+            env.data.site("end_effector").xpos, dtype=np.float64
+        ).copy()
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,13 +75,49 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            joint_speed_rad_s = float(np.linalg.norm(env.data.qvel))
+            end_effector = np.asarray(
+                env.data.site("end_effector").xpos, dtype=np.float64
+            )
+            end_effector_speed_m_s = float(
+                np.linalg.norm(end_effector - previous_end_effector) / control_dt
+            )
+            previous_end_effector = end_effector.copy()
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            max_joint_speed_rad_s = max(max_joint_speed_rad_s, joint_speed_rad_s)
+            max_end_effector_speed_m_s = max(
+                max_end_effector_speed_m_s, end_effector_speed_m_s
+            )
             if held_steps > 0:
                 in_tolerance_steps += 1
+                if max_in_tolerance_distance_cm is None:
+                    max_in_tolerance_distance_cm = distance_cm
+                else:
+                    max_in_tolerance_distance_cm = max(
+                        max_in_tolerance_distance_cm, distance_cm
+                    )
+                max_in_tolerance_joint_speed_rad_s = max(
+                    max_in_tolerance_joint_speed_rad_s, joint_speed_rad_s
+                )
+                max_in_tolerance_end_effector_speed_m_s = max(
+                    max_in_tolerance_end_effector_speed_m_s, end_effector_speed_m_s
+                )
                 if first_reach_step is None:
                     first_reach_step = steps
+                    branch_residuals = [
+                        float(np.linalg.norm(obs[7:9])),
+                        float(np.linalg.norm(obs[9:11])),
+                    ]
+                    first_reach_branch_residuals_rad = branch_residuals
+                    first_reach_branch = (
+                        "open"
+                        if branch_residuals[0] <= branch_residuals[1]
+                        else "folded"
+                    )
+                    first_reach_joint_speed_rad_s = joint_speed_rad_s
+                    first_reach_end_effector_speed_m_s = end_effector_speed_m_s
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -103,6 +152,21 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "max_joint_speed_rad_s": max_joint_speed_rad_s,
+                "max_in_tolerance_joint_speed_rad_s": (
+                    max_in_tolerance_joint_speed_rad_s
+                ),
+                "max_end_effector_speed_m_s": max_end_effector_speed_m_s,
+                "max_in_tolerance_end_effector_speed_m_s": (
+                    max_in_tolerance_end_effector_speed_m_s
+                ),
+                "max_in_tolerance_distance_cm": max_in_tolerance_distance_cm,
+                "first_reach_joint_speed_rad_s": first_reach_joint_speed_rad_s,
+                "first_reach_end_effector_speed_m_s": (
+                    first_reach_end_effector_speed_m_s
+                ),
+                "first_reach_branch": first_reach_branch,
+                "first_reach_branch_residuals_rad": first_reach_branch_residuals_rad,
             }
         )
         if progress_callback is not None:
@@ -110,7 +174,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 6,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -121,7 +185,13 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "joint_speed": "rad_per_s",
+                "end_effector_speed": "m_per_s",
+                "branch_residual": "rad",
+            },
         },
     }
 
