@@ -19,6 +19,21 @@ from research import runner_paths as paths
 # Detailed evidence belongs to the evaluation artifact, not to the compact
 # history or the protocol state.
 DETAILED_EVIDENCE_FIELDS = ("episode_results", "research_evidence")
+# Evaluation semantics is the evidence domain of a research measurement. A
+# historical measurement that predates the fingerprint carries no domain, so it
+# is read as the explicit `legacy-unknown` domain and is never merged with an
+# identified semantics.
+LEGACY_EVALUATION_SEMANTICS = "legacy-unknown"
+
+
+def evaluation_semantics_domain(value: object) -> str:
+    """The evidence domain of a recorded evaluation semantics fingerprint."""
+    if value is None:
+        return LEGACY_EVALUATION_SEMANTICS
+    text = str(value)
+    return text if text else LEGACY_EVALUATION_SEMANTICS
+
+
 # Transient Runner-owned control files: they carry a single phase handover and
 # are discarded, never accumulated. They are Git-ignored and are never history.
 RUNNER_CONTROL_PATHS = {
@@ -474,11 +489,15 @@ def _canonicalize_selected_panel(panel: object) -> dict:
             raise TypeError("lineage record selected panel seed must be an integer")
         if isinstance(episodes, bool) or not isinstance(episodes, int):
             raise TypeError("lineage record selected panel episodes must be an integer")
-        return {
+        identity = {
             "instrument": "research_evaluation",
             "seed": seed,
             "episodes": episodes,
         }
+        semantics = panel.get("evaluation_semantics")
+        if semantics is not None and str(semantics):
+            identity["evaluation_semantics"] = str(semantics)
+        return identity
     raise ValueError(
         "lineage record selected panel instrument must be research_evaluation or "
         "task_reference"
@@ -1010,12 +1029,20 @@ def current_campaign_base_commit(state: dict) -> str | None:
 
 
 def evaluation_reference(evaluation: dict) -> dict:
-    """Everything except the detail the evaluation artifact already holds."""
+    """Everything except the detail the evaluation artifact already holds.
+
+    The reference always carries the evaluation-semantics evidence domain, using
+    the explicit ``legacy-unknown`` domain when the measurement recorded none, so
+    a reuse record is never left without its fingerprint.
+    """
     reference = {
         key: value
         for key, value in evaluation.items()
         if key not in DETAILED_EVIDENCE_FIELDS
     }
+    reference["evaluation_semantics"] = evaluation_semantics_domain(
+        evaluation.get("evaluation_semantics")
+    )
     _canonicalize_evaluation_artifact(reference)
     return reference
 
@@ -1106,10 +1133,10 @@ def campaign_coverage(records: list[dict]) -> dict:
                 _add_episode_identities(
                     bucket,
                     instrument="research_evaluation",
-                    marker=str(
+                    marker=evaluation_semantics_domain(
                         item.get(
                             "evaluation_semantics",
-                            metrics.get("evaluation_semantics", ""),
+                            metrics.get("evaluation_semantics"),
                         )
                     ),
                     seed=int(item.get("seed", metrics.get("seed", 0)) or 0),

@@ -18,9 +18,11 @@ from research.runner_protocol import (
 )
 from research.runner_repository import (
     ARTIFACT_FILES,
+    LEGACY_EVALUATION_SEMANTICS,
     MEASUREMENT_LEDGER_KEYS,
     campaign_coverage,
     compact_measurement_summary,
+    evaluation_semantics_domain,
 )
 from robot_learning.training.progress import parse_training_records
 
@@ -990,7 +992,12 @@ def _selected_panel_identity(panel: object) -> tuple | None:
         if all(
             isinstance(value, int) and not isinstance(value, bool) for value in panel
         ):
-            return ("research_evaluation", int(seed), int(episodes))
+            return (
+                "research_evaluation",
+                int(seed),
+                int(episodes),
+                LEGACY_EVALUATION_SEMANTICS,
+            )
         return None
     if not isinstance(panel, dict):
         return None
@@ -1013,7 +1020,12 @@ def _selected_panel_identity(panel: object) -> tuple | None:
             return None
         if isinstance(episodes, bool) or not isinstance(episodes, int):
             return None
-        return ("research_evaluation", seed, episodes)
+        return (
+            "research_evaluation",
+            seed,
+            episodes,
+            evaluation_semantics_domain(panel.get("evaluation_semantics")),
+        )
     return None
 
 
@@ -1387,15 +1399,14 @@ def _v4_evidence_lines(
             if item.get("seed") is not None
         }
         semantics = {
-            str(item["evaluation_semantics"])
+            evaluation_semantics_domain(item.get("evaluation_semantics"))
             for item in research_evaluations
-            if item.get("evaluation_semantics")
         }
         lines.append(
             f"- `research_evaluation`: {len(research_evaluations)} measurements; "
             f"episode counts {numeric_values(episodes) if episodes else 'not recorded'}; "
             f"seeds {numeric_values(seeds) if seeds else 'not recorded'}; semantics "
-            f"{text_values(semantics) if semantics else 'not recorded'}."
+            f"{text_values(semantics)}."
         )
     if task_reference_evaluations:
         panels = {
@@ -1662,18 +1673,21 @@ def _lineage_names_by_fingerprint(state: dict) -> dict[str, list[str]]:
 
 
 def _aggregate_task_evidence(records: list[dict]) -> list[dict]:
-    """Each measured model's research-panel results summed over distinct panels.
+    """Each measured model's research-panel results within one evidence domain.
 
     Every panel result is already shown individually, one measurement at a time.
     A model measured across several disjoint panels therefore had no campaign-
     level total anywhere in the brief, and assembling one by hand was left to the
     Researcher at the moment it decided whether to stop.
 
-    Only distinct panel identities are summed, so a reused panel contributes its
-    episodes once and cannot inflate a model's aggregate. The aggregate is a
-    count of measured episodes and successes: it carries no threshold, no
-    comparison and no readiness verdict, because the objective belongs to
-    ``research/scenario.md`` and the verdict to the official benchmark alone.
+    Panels are summed per ``(model fingerprint, evaluation semantics)`` domain.
+    Only distinct panel identities within one domain are summed, so a reused
+    panel contributes its episodes once and cannot inflate a model's aggregate,
+    and a success count is never pooled across evaluation semantics. The
+    aggregate is a count of measured episodes and successes: it carries no
+    threshold, no comparison and no readiness verdict, because the objective
+    belongs to ``research/scenario.md`` and the verdict to the official
+    benchmark alone.
     """
     models: dict[str, dict] = {}
     for record in records:
@@ -1688,44 +1702,59 @@ def _aggregate_task_evidence(records: list[dict]) -> list[dict]:
                 continue
             if not isinstance(episodes, int) or not isinstance(seed, int):
                 continue
-            panel = (str(merged.get("evaluation_semantics", "")), seed, episodes)
+            semantics = evaluation_semantics_domain(merged.get("evaluation_semantics"))
             model = models.setdefault(
                 fingerprint,
-                {"fingerprint": fingerprint, "panels": {}, "labels": []},
+                {"fingerprint": fingerprint, "domains": {}, "labels": []},
             )
-            model["panels"].setdefault(panel, successes)
+            domain = model["domains"].setdefault(semantics, {})
+            domain.setdefault((seed, episodes), successes)
             label = str(merged.get("candidate", "")).strip()
             if label and label not in model["labels"]:
                 model["labels"].append(label)
     summaries = []
     for model in models.values():
-        episodes = sum(panel[2] for panel in model["panels"])
-        successes = sum(model["panels"].values())
-        if episodes <= 0:
-            continue
-        panel_scores = sorted(
-            (
+        domains = []
+        for semantics, panels in model["domains"].items():
+            episodes = sum(panel[1] for panel in panels)
+            successes = sum(panels.values())
+            if episodes <= 0:
+                continue
+            domains.append(
                 {
-                    "seed": panel[1],
-                    "episodes": panel[2],
+                    "semantics": semantics,
+                    "panels": len(panels),
+                    "episodes": episodes,
                     "successes": successes,
+                    "panel_scores": sorted(
+                        (
+                            {
+                                "seed": panel[0],
+                                "episodes": panel[1],
+                                "successes": value,
+                            }
+                            for panel, value in panels.items()
+                        ),
+                        key=lambda item: (item["seed"], item["episodes"]),
+                    ),
                 }
-                for panel, successes in model["panels"].items()
-            ),
-            key=lambda item: (item["seed"], item["episodes"]),
-        )
+            )
+        if not domains:
+            continue
         summaries.append(
             {
                 "fingerprint": model["fingerprint"],
                 "labels": model["labels"],
-                "panels": len(model["panels"]),
-                "episodes": episodes,
-                "successes": successes,
-                "seeds": sorted(panel[1] for panel in model["panels"]),
-                "panel_scores": panel_scores,
+                "domains": sorted(domains, key=lambda item: item["semantics"]),
             }
         )
-    return sorted(summaries, key=lambda item: -item["episodes"])
+    return sorted(
+        summaries,
+        key=lambda item: (
+            -max(domain["episodes"] for domain in item["domains"]),
+            item["fingerprint"],
+        ),
+    )
 
 
 def _aggregate_task_evidence_lines(state: dict, records: list[dict]) -> list[str]:
@@ -1737,12 +1766,13 @@ def _aggregate_task_evidence_lines(state: dict, records: list[dict]) -> list[str
     lines = [
         "",
         (
-            "Aggregate research-panel evidence per measured model, summed over "
-            "the distinct panels that measured it. A reused panel counts once. "
-            "These are measured development counts, not an official result and "
-            "not a readiness indicator; the objective they must be judged "
-            "against is defined in `research/scenario.md` and only the official "
-            "benchmark reports the official result:"
+            "Aggregate research-panel evidence per measured model, partitioned by "
+            "evaluation semantics. Panels measured under different evaluation "
+            "semantics are never pooled; a reused panel counts once within its "
+            "semantics domain. These are measured development counts, not an "
+            "official result and not a readiness indicator; the objective they "
+            "must be judged against is defined in `research/scenario.md` and only "
+            "the official benchmark reports the official result:"
         ),
         "",
     ]
@@ -1750,15 +1780,16 @@ def _aggregate_task_evidence_lines(state: dict, records: list[dict]) -> list[str
         fingerprint = summary["fingerprint"]
         identifiers = names.get(fingerprint) or []
         labels = identifiers or summary["labels"] or ["unnamed model"]
-        panel_scores = "; ".join(
-            f"{panel['seed']}: {panel['successes']}/{panel['episodes']}"
-            for panel in summary["panel_scores"]
-        )
-        lines.append(
-            f"- {', '.join(labels)} (model {fingerprint[:12]}): "
-            f"{panel_scores}; pooled: "
-            f"{summary['successes']}/{summary['episodes']}."
-        )
+        lines.append(f"- {', '.join(labels)} (model {fingerprint[:12]}):")
+        for domain in summary["domains"]:
+            panel_scores = "; ".join(
+                f"{panel['seed']}: {panel['successes']}/{panel['episodes']}"
+                for panel in domain["panel_scores"]
+            )
+            lines.append(
+                f"  - semantics `{domain['semantics']}`: {panel_scores}; "
+                f"subtotal {domain['successes']}/{domain['episodes']}."
+            )
     return lines
 
 
@@ -2237,16 +2268,25 @@ def _panel_identity(entry: dict, instrument: str) -> tuple | None:
         return None
     if isinstance(episodes, bool) or not isinstance(episodes, int):
         return None
-    return ("research_evaluation", seed, episodes)
+    return (
+        "research_evaluation",
+        seed,
+        episodes,
+        evaluation_semantics_domain(entry.get("evaluation_semantics")),
+    )
 
 
 def _panel_identity_label(identity: tuple) -> str:
     if identity[0] == "task_reference":
         return f"panel `{identity[1]}`"
-    _, seed, episodes = identity
+    _, seed, episodes = identity[:3]
     if episodes > 0:
-        return f"episodes {seed}–{seed + episodes - 1}"
-    return f"episode {seed}"
+        label = f"episodes {seed}–{seed + episodes - 1}"
+    else:
+        label = f"episode {seed}"
+    if len(identity) > 3 and identity[3] != LEGACY_EVALUATION_SEMANTICS:
+        label += f" (semantics `{identity[3]}`)"
+    return label
 
 
 def _record_panel_uses(record: dict) -> list[tuple[tuple, str]]:

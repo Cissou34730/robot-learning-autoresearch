@@ -2480,7 +2480,15 @@ def _selection_panel_identity(entry: dict, instrument: str) -> dict | None:
         return None
     if isinstance(episodes, bool) or not isinstance(episodes, int):
         return None
-    return {"instrument": "research_evaluation", "seed": seed, "episodes": episodes}
+    identity = {
+        "instrument": "research_evaluation",
+        "seed": seed,
+        "episodes": episodes,
+    }
+    semantics = entry.get("evaluation_semantics")
+    if semantics is not None and str(semantics):
+        identity["evaluation_semantics"] = str(semantics)
+    return identity
 
 
 def _selection_panel_key(identity: dict) -> tuple:
@@ -2519,11 +2527,15 @@ def _normalized_selection_panel(item: object) -> dict | None:
                 return None
             if isinstance(episodes, bool) or not isinstance(episodes, int):
                 return None
-            return {
+            identity = {
                 "instrument": "research_evaluation",
                 "seed": seed,
                 "episodes": episodes,
             }
+            semantics = item.get("evaluation_semantics")
+            if semantics is not None and str(semantics):
+                identity["evaluation_semantics"] = str(semantics)
+            return identity
     return None
 
 
@@ -2909,7 +2921,9 @@ def _evidence_records_compatible(candidate: dict, reference: dict) -> bool:
         return candidate_settings == reference_settings
     if candidate["instrument"] != "research_evaluation":
         return False
-    if candidate_settings[3] != reference_settings[3]:
+    if repository.evaluation_semantics_domain(
+        candidate_settings[3]
+    ) != repository.evaluation_semantics_domain(reference_settings[3]):
         return False
     return bool(_record_episode_seeds(candidate) & _record_episode_seeds(reference))
 
