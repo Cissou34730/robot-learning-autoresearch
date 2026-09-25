@@ -3,26 +3,23 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a strong but variable reach-and-hold
-policy. The standing `best_known` lineage scored 965/1000 (96.5%) across the
-first five disjoint research panels and 196/200 (98.0%) on the new disjoint
-panel, for 1161/1200 (96.75%) pooled across six panels. This is independent
-confirmation of one objective-level development result, but not a stable
-demonstration of the 98% objective. Full-radius target training, full hold-exit
-forfeiture, explicit hold progress in a fresh observation, and the increased
-discount factor all failed to improve the retained lineage.
+policy. The restored gamma-0.99 policy (model `9cd2645d98b9`) achieved
+1161/1200 (96.75%) across six disjoint research panels, including 196/200 on
+the latest panel, so one objective-level development result is independently
+supported but stable 98% performance is not. Full-radius training, hold-exit
+forfeiture, explicit hold progress, and gamma 0.995 did not improve the
+directly measured policy.
 
-**Lessons and limits:** Direct task success, not training proxies, governs
-comparisons. The gamma 0.995 transfer produced 73.0%, 74.5%, and 93.5% on its
-measured checkpoints versus 98.0% for the same-panel control, so the tested
-longer-horizon credit-assignment change should not remain active. Residual
-failures include both no-reach episodes and interrupted holds; the tested
-interventions do not isolate a remaining cause. Development panels, including
-the reused 98% task-reference panel, cannot establish the official result.
+**Lessons and limits:** Direct task success governs comparisons; training
+reward and success proxies do not. The gamma-0.995 transfer scored 73.0%,
+74.5%, and 93.5% on its measured checkpoints versus 98.0% for the same-panel
+control. Residual failures include both no-reach episodes and interrupted
+holds, and development panels, including the reused task-reference panel,
+cannot establish the official result.
 
-**Open questions:** The cause of the standing lineage's remaining no-reach and
-interrupted-hold failures remains unresolved, as does whether it meets the
-official fixed-panel objective. Other learning-method changes remain possible,
-but the tested gamma intervention is not a useful continuation.
+**Open questions:** The cause of the remaining no-reach and interrupted-hold
+failures is unresolved. It is also unresolved whether the strongest reusable
+policy meets the official fixed-panel objective.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
