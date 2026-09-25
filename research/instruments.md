@@ -37,18 +37,27 @@ three registers explicitly in the document:
 - **Unknowns:** Quantities, dynamics, limitations, or outcomes not established
   by the available facts; do not fill these gaps with invented measurements.
 
+Describe approach, reaching, tolerance entry, settling, and sustained task
+completion as coupled parts of the embodied control problem. A task-stage
+outcome does not by itself establish its cause, and a change intended for one
+capability may alter another. Keep meaningful quantities balanced across the
+complete behavior; they are scientific vocabulary, not ranked priorities or
+candidate interventions.
+
 The deliverable must exist and contain non-whitespace content. The launcher
 validates that requirement; it does not judge the scientific substance. The
 model is read-only after this phase for the rest of the campaign, and a fresh
 campaign reset removes it so the next Researcher writes a new one.
 
-### Query Stable-Baselines3 logs
+## Query Stable-Baselines3 logs
 
 ```powershell
 uv run python research/query_training_log.py --experiment <id> --from-step <start> --to-step <end>
 ```
 
-All arguments are required. Bounds are inclusive. Results preserve separate training attempts and are not aggregated.
+The command prints preserved raw training records for the requested inclusive
+timestep range. All arguments are required. Results preserve separate training
+attempts and are not aggregated.
 
 Use `uv run` for lightweight analysis and focused checks on researcher-owned code. Persistent outputs must remain in researcher-owned paths.
 
@@ -368,17 +377,18 @@ The exact heading and labels are:
 
 **Current synthesis:** <present interpretation of relevant campaign evidence>
 
-**Lessons and limits:** <reusable findings, source references and scope; or what remains unknown>
+**Lessons and limits:** <supported or weakened findings, source references, scope, and limitations>
 
-**Open questions:** <uncertainties not yet resolved>
+**Open questions:** <unranked behavioral or scientific distinctions not yet resolved, without candidate implementations or a next action>
 ```
 
 All three labeled entries must contain text and may span multiple lines. Their
-scientific meaning is defined in `research/program.md`. The Runner checks the
-section's structure, associates the active campaign section with the proposal,
-and displays it in the brief. It does not author scientific content. The legacy
-`Direction` label remains readable as a synthesis, and historical experiment
-entries and strategy sections remain readable.
+scientific meaning is defined in `research/program.md`. The entries are
+fallible, non-exhaustive memory and do not rank the next decision. The Runner
+checks the section's structure, associates the active campaign section with the
+proposal, and displays it in the brief. It does not author scientific content.
+The legacy `Direction` label remains readable as a synthesis, and historical
+experiment entries and strategy sections remain readable.
 
 Append to `research/postmortems.md`:
 

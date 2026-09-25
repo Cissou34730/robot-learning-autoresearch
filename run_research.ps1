@@ -130,8 +130,8 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
     throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
 }
 
-$scientificModelUseGuidance = "Use research/scientific_model.md to frame questions, interpret observations, and design analysis or measurements."
-$researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, use existing tools, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
+$scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's physical reference when framing questions, interpreting observations, and designing analysis or measurements. Keep its coupled robot-task constraints visible, but do not treat its unknowns or listed quantities as ranked priorities or an intervention menu; current campaign evidence determines what remains relevant."
+$researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, use existing tools, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. Existing evidence tools include research/query_training_log.py for preserved raw Stable-Baselines3 records; research/instruments.md documents its command. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -856,7 +856,7 @@ if ($ResearcherBackend -eq "opencode") {
             $scientificModelUseGuidance
             "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
             $researchFreedomGuidance
-            "If updating the current campaign's Scientific strategy in research/postmortems.md, revise the existing section in place; do not append a second section with the same heading."
+            "If updating the current campaign's Scientific strategy in research/postmortems.md, revise the existing section in place as fallible, non-binding memory of evidence, limits, and unresolved behavioral distinctions; do not turn it into a ranked agenda or candidate-code list, and do not append a second section with the same heading."
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
             "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
@@ -1007,12 +1007,14 @@ Analyze, from first principles and from the human-authored implementation:
 * the important dynamic properties of the simulated robot, including timing, damping, inertia, control authority, and any other properties that materially affect behavior;
 * the initial physical state and how it shapes the task the controller must solve;
 * the geometry and physical requirements of the task;
-* the distinct physical capabilities required for success, including reaching, trajectory control, convergence, stabilization, and any other relevant behaviors;
+* the coupled physical capabilities required for success, including reaching, trajectory control, convergence, stabilization, and any other relevant behaviors, together with physically justified interactions between them;
 * the sensing and observation model: what physical state is observable, what is derived, what may be ambiguous, and what information is unavailable;
 * the relationship between observation, control action, robot motion, and task outcome;
 * alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions where relevant;
 * physical, kinematic, dynamic, control, or observability constraints that may create qualitatively different classes of behavior or failure;
-* which physical quantities would be scientifically meaningful for understanding the robot's behavior.
+* which physical quantities across the complete behavior would be scientifically meaningful for understanding the robot.
+
+Treat approach, reaching, tolerance entry, settling, and sustained task completion as coupled parts of one embodied control process. A task-stage label such as non-reach or interrupted hold describes an observed outcome, not by itself its cause. When the implementation supports the conclusion, explain how changing one capability could alter another. Do not rank capabilities, unknowns, or measurable quantities as priorities for later research.
 
 For each important conclusion, distinguish between:
 
@@ -1049,7 +1051,7 @@ You may inspect only the system intentionally defined by the human before autono
 
 If a file mixes human-defined system specification with campaign-generated state, use only the human-defined specification and ignore the generated state.
 
-The final output should be a compact but substantive **Scientific model of the robot and task**. It should explain how the system works physically and scientifically, not merely list what files contain.
+The final output should be a compact but substantive **Scientific model of the robot and task**. It should explain how the complete coupled system works physically and scientifically, not merely list what files contain or imply a future intervention agenda.
 '@
             if (-not $scientificModelPhasePrompt.Trim() -or $scientificModelPhasePrompt -match "PLACEHOLDER") {
                 throw "The scientific-model phase prompt is still a placeholder. The maintainer must supply it before starting a campaign."
@@ -1208,14 +1210,15 @@ The final output should be a compact but substantive **Scientific model of the r
             })
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
         $scientificModelUseGuidance
-        "Review the campaign's evidence and rewrite the Scientific strategy as a short current synthesis that prescribes no next action."
+        "Review the campaign's evidence and rewrite the Scientific strategy as short, fallible, non-binding memory of current observations, weakened explanations, limits, and unresolved behavioral distinctions. It prescribes no next action, ranks no uncertainty, and names no candidate code change."
+        "Begin the next decision from the human objective and current campaign evidence. The Scientific strategy is revisable memory, not an authority, backlog, or obligation. The frozen scientific model remains the physical reference but does not prioritize the next action."
         $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
         "For training or continuation, connect the proposed change to possible learned behavior and a complete-task comparison. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
             else {
-                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or a measurement round on saved lineages. After a measurement round, this phase reopens with its evidence and all of these outcomes remain available."
+                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes, with no default or preference implied by their order: a measurement round on saved lineages; replication; continuation or training with fresh or transfer initialization; requesting the official final assessment of the standing best-known model; or concluding that no further experiment is warranted. After a measurement round, this phase reopens with its evidence and all of these outcomes remain available."
             })
         $(if ($budgetReached) {
                 ""
@@ -1240,7 +1243,7 @@ The final output should be a compact but substantive **Scientific model of the r
                 "Expected deliverable: research/proposal.json containing only a campaign_conclusion, using the contract in research/instruments.md."
             }
             else {
-                "Expected deliverable: one research/proposal.json for experiment $nextExperiment that either proposes the selected operation or records a campaign conclusion, using the contract in research/instruments.md, plus any edits called for by the selected operation. Alternatively, write research/evaluation_request.json to measure saved lineages before deciding; the completed round returns to this phase with its results available. The request may name only saved lineages (working, best_known, or a retained ID); candidates of a not-yet-run experiment are not available."
+                "Expected deliverable: either research/evaluation_request.json to measure saved lineages before deciding, or one research/proposal.json for experiment $nextExperiment that proposes the selected operation or records a campaign conclusion, using the contracts in research/instruments.md. Include only edits called for by the selected operation. A completed measurement round returns to this phase with its results available. A preparation request may name only saved lineages (working, best_known, or a retained ID); candidates of a not-yet-run experiment are not available."
             })
         $(if ($budgetReached) {
                 "The phase is incomplete until the campaign conclusion has been written. A campaign conclusion is recorded as a decision, never as an experiment."

@@ -1679,7 +1679,8 @@ def _v4_synthesis_section(postmortems: str, campaign_id: str | None) -> list[str
         "",
         (
             "Researcher-authored interpretation of the campaign evidence. "
-            "It is memory for reassessment, not a prescribed next direction:"
+            "It is fallible, non-binding memory for reassessment, not a ranked "
+            "agenda or prescribed next direction:"
         ),
         "",
     ]
@@ -2870,7 +2871,8 @@ def render_research_brief() -> str:
             "",
             (
                 "Researcher-authored interpretation of the campaign evidence. "
-                "It is memory for reassessment, not a prescribed next direction:"
+                "It is fallible, non-binding memory for reassessment, not a ranked "
+                "agenda or prescribed next direction:"
             ),
             "",
             "\n".join(strategy.splitlines()[1:]).strip()
@@ -3055,11 +3057,26 @@ def render_research_brief() -> str:
                 "setting relevant, not to look for something to change."
             ),
             (
+                "- Preserved raw Stable-Baselines3 records are queryable through "
+                "`research/query_training_log.py`; `research/instruments.md` "
+                "documents the command."
+            ),
+            (
                 "- Do not read full experiment or postmortem history unless the compact "
                 "evidence is insufficient for one specific decision."
             ),
             "- One experiment should test one identifiable hypothesis; a continuation may test whether more training changes the conclusion.",
-            "- Keep historical observations and decisions intact; revise the campaign's scientific strategy as evidence changes. Record lessons with their sources and limits, not a prescribed line count.",
+            (
+                "- Keep compatible explanations and the evidence that could "
+                "distinguish them visible when behavior remains unexplained. An "
+                "observed failure stage is not itself a cause or a code lever."
+            ),
+            (
+                "- Keep historical observations and decisions intact; revise the "
+                "campaign's Scientific strategy as evidence changes. It is fallible, "
+                "non-binding memory rather than a priority list, backlog, or source "
+                "of obligations."
+            ),
         ]
     )
     return "\n".join(lines).rstrip() + "\n"

@@ -75,13 +75,22 @@ training dynamics, implementation findings, and unexplained discrepancies betwee
 training and evaluation. A finding need not be the largest behavioral deficit to
 offer the most promising route forward.
 
-Use the frozen scientific model to frame questions, interpret observations, and
-design analysis or measurements. Evidence gathering may discover or refine the
-scientific question. The Researcher may inspect code, logs and artifacts, use
-existing tools, perform lightweight analysis, and create or modify
-researcher-owned analysis and measurement instrumentation. If the quantity you
-need is not emitted, modify researcher-owned instrumentation before requesting
-it. Measurements remain optional.
+Use the frozen scientific model as the campaign's physical reference when
+framing questions, interpreting observations, and designing analysis or
+measurements. Preserve the coupling between approach, reaching, tolerance entry,
+settling and sustained task completion; an observed failure stage does not by
+itself establish its cause. The model's unknowns and meaningful quantities are
+neither ranked priorities nor an intervention menu. Current campaign evidence
+determines what remains relevant.
+
+Evidence gathering may discover or refine the scientific question. The
+Researcher may inspect code, logs and artifacts, use existing tools, perform
+lightweight analysis, and create or modify researcher-owned analysis and
+measurement instrumentation. Preserved raw Stable-Baselines3 records are
+available through `research/query_training_log.py`, whose command is documented
+in `research/instruments.md`. If the quantity you need is not emitted, modify
+researcher-owned instrumentation before requesting it. Measurements remain
+optional.
 
 Match evidence to the decision and the strength of the claim. Evaluation of a
 saved policy describes that policy; replication informs learning-process
@@ -117,7 +126,8 @@ The phase order is:
    `research/scientific_model.md` from the human-authored task and
    physical-system implementation, without reading campaign evidence or
    proposing experiments. It distinguishes established facts, physical
-   consequences, and unknowns. The model is frozen for the campaign,
+   consequences, and unknowns while describing coupled task capabilities without
+   ranking them as later research priorities. The model is frozen for the campaign,
    regenerated on a fresh reset, and read alongside the brief in subsequent
    Researcher phases;
 2. the Runner automatically trains the unchanged baseline as experiment 1,
@@ -137,13 +147,18 @@ contracts in `AGENTS.md` and `research/instruments.md`.
 
 ## Experiment preparation
 
-Inspect relevant repository state and completed evidence, then identify the
-scientific question and the concrete downstream decision that its possible
-outcomes could change; only then choose the operation that answers it. State how
-the question serves the human objective, and state the observation that would
-change that downstream decision. A question may be phrased as a hypothesis or
-left open; the protocol treats the two alike. Do not invent a causal mechanism
-or a prediction merely to satisfy the proposal format.
+Begin from the human objective, relevant repository state and completed
+evidence. The Scientific strategy is one revisable interpretation of that
+evidence; its open questions are neither a queue nor priorities for the next
+decision. Keep unexplained behavior and competing interpretations distinct from
+candidate implementation changes until an operation is selected.
+
+Identify the scientific question and the concrete downstream decision that its
+possible outcomes could change; only then choose the operation that answers it.
+State how the question serves the human objective, and state the observation
+that would change that downstream decision. A question may be phrased as a
+hypothesis or left open; the protocol treats the two alike. Do not invent a
+causal mechanism or a prediction merely to satisfy the proposal format.
 
 For a replication or other process-variance question, state what decision
 follows from each possible result. If every outcome would leave the relevant
@@ -186,10 +201,12 @@ researcher-owned change must be reverted or resolved first. When the experiment
 budget is exhausted, only a conclusion may be prepared; a further training
 experiment is rejected.
 
-A preparation measurement on saved lineages returns to preparation with the new
-evidence. The Researcher may then request another measurement round, prepare an
-experiment, request the official assessment, or conclude that no further
-experiment is warranted.
+A preparation measurement, an experiment, and either campaign conclusion are
+peer preparation outcomes; none is preferred by this protocol. A preparation
+measurement on saved lineages returns to preparation with the new evidence. The
+Researcher may then request another measurement round, prepare an experiment,
+request the official assessment, or conclude that no further experiment is
+warranted.
 
 ## Post-training analysis
 
@@ -276,10 +293,14 @@ closure.
 
 Maintain the active campaign's **Scientific strategy** in
 `research/postmortems.md` using the format in `research/instruments.md`. It is a
-short current synthesis: what the campaign's evidence currently suggests, the
-limitations that matter, and the questions that remain unresolved. It is
-revisable evidence, not an action list, and no open question is owed an
-experiment.
+short, fallible and non-exhaustive current synthesis: what the campaign's
+evidence currently suggests, which explanations have been weakened, the limits
+of those findings, and the behavioral or scientific distinctions that remain
+unresolved. It is revisable evidence, not an action list. Its uncertainties are
+not ranked, no candidate implementation belongs there, and no open question is
+owed an experiment. Each preparation decision starts again from the human
+objective and the relevant body of evidence rather than inheriting the
+strategy's previous prioritization.
 
 Preserve historical observations and decisions; revise current interpretations
 in the synthesis rather than rewriting what was believed at the time.
