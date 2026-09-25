@@ -11,6 +11,7 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
+import inspect
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -97,7 +98,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         ]
 
     def _observation(self) -> np.ndarray:
-        return self.policy_io.observe(self.data)
+        observe = self.policy_io.observe
+        if "held_steps" in inspect.signature(observe).parameters:
+            return observe(
+                self.data,
+                held_steps=self._held_steps,
+                hold_steps_required=self.hold_steps_required,
+            )
+        return observe(self.data)
 
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None

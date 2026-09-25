@@ -8,10 +8,12 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 11
+OBSERVATION_SIZE = 12
 
 
-def reach_observation(data) -> np.ndarray:
+def reach_observation(
+    data, *, held_steps: int = 0, hold_steps_required: int = 100
+) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
@@ -34,6 +36,9 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
+    if hold_steps_required <= 0:
+        raise ValueError("hold_steps_required must be positive")
+    hold_progress = np.clip(held_steps / hold_steps_required, 0.0, 1.0)
     return np.concatenate(
         [
             data.qpos,
@@ -44,6 +49,7 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
+                hold_progress,
             ],
         ]
     ).astype(np.float32)
