@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## 6a67124b-e88d-49da-aebe-ed9ee362dec4 / Scientific strategy
+
+**Current synthesis:** The unchanged PPO baseline learned a strong reach-and-hold policy late in training. The best measured checkpoint, `checkpoint-100352`, achieved 195/200 on the first research panel and 196/200 on a disjoint research panel, while the fixed task-reference panel measured 196/200. The final checkpoint was consistently weaker at 194/200 on both research panels and 194/200 on the reused task-reference panel. The evidence supports selecting `checkpoint-100352` as the current working and best-known lineage, but development measurements do not establish the official objective.
+
+**Lessons and limits:** Training-time success and reward tracked the emergence of useful task behavior, but they did not distinguish the best late checkpoints reliably: continued training after `checkpoint-100352` degraded measured success. The disjoint research panel confirms the selected checkpoint's near-threshold result without relying on the panel that first motivated selection. The fixed task-reference panel is corroborative but permanently reused, and all development measurements are distinct from the official 200-episode assessment. Evidence covers only this baseline recipe and one training seed.
+
+**Open questions:** Whether the selected policy reaches at least 98% on the official final panel remains unresolved. The residual failure pattern and whether further training or a changed recipe can improve the near-threshold policy are also unresolved.
+
+## 6a67124b-e88d-49da-aebe-ed9ee362dec4 / Experiment 1
+
+**Result:** The fresh PPO baseline produced a near-objective policy; `checkpoint-100352` is the strongest closure candidate.
+
+**Observed behavior:** Training-time success rose from 0.42 at `checkpoint-86016` to 0.97 at `checkpoint-100352`, then was 0.95 at `checkpoint-120832`; reward similarly peaked before the final checkpoint. On research evaluation, `checkpoint-100352` scored 195/200 on episodes 2000-2199 and 196/200 on disjoint episodes 2200-2399. The final checkpoint scored 194/200 on both panels. On the reused task-reference-v1 panel, the selected checkpoint scored 196/200 and the final checkpoint 194/200. The selected checkpoint therefore meets the 98% count on the disjoint development panel, while the official result remains unmeasured.
+
+**Hypothesis assessment:** The baseline hypothesis is supported in the limited sense that the unchanged method learned substantial task competence and approached the human objective. It is not evidence that the objective has been reached: the selected policy is at threshold on one 200-episode development panel, below it on another, and no development panel is the official assessment. The late proxy improvement corresponded to genuine task progress, but the final training interval weakened measured performance.
+
+**Interpretation:** Select `checkpoint-100352` because it is consistently stronger than the final checkpoint across both research panels and on the fixed reference panel, with independent disjoint-panel confirmation of its near-threshold performance. Keep the baseline scientific recipe unchanged for lineage restoration. No weaker late checkpoint is retained because it adds no demonstrated advantage or independent capability; future training can proceed from the selected lineage and address the remaining uncertainty.
+
+**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/checkpoints/challengers/6a67124b-e88d-49da-aebe-ed9ee362dec4/experiment-1/inventory.json`; `research/evaluations/6a67124b-e88d-49da-aebe-ed9ee362dec4/evaluation-6a67124b-e88d-49da-aebe-ed9ee362dec4-experiment-1-checkpoint-100352-200ep-seed2000-f48545f83637.json`; `research/evaluations/6a67124b-e88d-49da-aebe-ed9ee362dec4/evaluation-6a67124b-e88d-49da-aebe-ed9ee362dec4-experiment-1-checkpoint-100352-200ep-seed2200-f48545f83637.json`; `research/evaluations/6a67124b-e88d-49da-aebe-ed9ee362dec4/task-reference-6a67124b-e88d-49da-aebe-ed9ee362dec4-experiment-1-checkpoint-100352-task-reference-v1.json`; corresponding `checkpoint-120832` research and task-reference artifacts.
