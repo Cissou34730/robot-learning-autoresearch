@@ -77,6 +77,28 @@ def test_measurement_rounds_resume_the_originating_researcher_session():
     )
 
 
+def test_principal_investigator_persona_reaches_every_researcher_phase():
+    persona = (
+        "You are the principal investigator responsible for leading this campaign "
+        "toward a learned policy that satisfies the human objective"
+    )
+    prompts = (
+        SCRIPT.split("$analysisPrompt = @(", 1)[1].split(") -join", 1)[0],
+        SCRIPT.split("$evaluationPrompt = @(", 1)[1].split(") -join", 1)[0],
+        SCRIPT.split("$decisionPrompt = @(", 1)[1].split(") -join", 1)[0],
+        SCRIPT.split("$researchPrompt = @(", 1)[1].split(") -join", 1)[0],
+    )
+
+    assert persona in SCRIPT
+    assert all("$researcherPersonaGuidance" in prompt for prompt in prompts)
+    scientific_model_prompt = SCRIPT.split(
+        "$scientificModelPhasePrompt = @'", 1
+    )[1].split("'@", 1)[0]
+    assert persona in scientific_model_prompt
+    assert "autonomous principal scientist" not in SCRIPT
+    assert "autonomous robotics research engineer" not in SCRIPT
+
+
 @pytest.mark.parametrize("content,valid", [(None, False), (" \n", False), ("facts\n", True)])
 def test_scientific_model_deliverable_preflight(tmp_path, monkeypatch, capsys, content, valid):
     model = tmp_path / "scientific_model.md"

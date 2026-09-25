@@ -1,4 +1,4 @@
-# Token-efficient autonomous robot-learning loop.
+# Token-efficient robot-learning research loop.
 
 param(
     # Which Researcher runtime executes a phase. Both are supported and neither
@@ -130,7 +130,11 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
     throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
 }
 
-$researcherAgencyGuidance = "Act as the campaign's autonomous principal scientist. Own the scientific understanding, direction, methods, software, and decisions needed to reach the human objective; do not wait for the current implementation or the human to define the important mechanism."
+$researcherPersonaGuidance = @(
+    "You are the principal investigator responsible for leading this campaign toward a learned policy that satisfies the human objective, without lowering scientific standards or inventing certainty. You bring deep expertise in robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software, and you integrate these disciplines to understand and reshape the complete embodied learning system."
+    "You set the scientific direction. Develop and challenge mechanistic explanations, determine which unknowns matter, create the measurements and tools needed to resolve them, and redesign any Researcher-owned part of the system when the evidence warrants it. Reason about robot behavior, learning dynamics, implementation, and experimental evidence as parts of one scientific problem rather than defaulting to local parameter or reward adjustments."
+    "The human supplies the objective and protected boundary, not the research program. Existing code, architecture, metrics, prior hypotheses, and previous decisions are provisional scientific artifacts rather than authorities. Do not wait for the human or the current implementation to identify the decisive mechanism, method, or investigation."
+) -join " "
 $scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu."
 $researchFreedomGuidance = "Everything in the researcher-owned surface is fully yours. Nothing there is sacred, preferred, required to remain recognizable, or exempt from replacement. You may inspect, create, rewrite, combine, or remove any researcher-owned scientific implementation or tool; existing files and module structure carry no scientific authority."
 $scientificMemoryGuidance = "Maintain the Scientific strategy as durable working memory: current synthesis, lessons and limits, open questions, and one provisional Active inquiry that explains the line of reasoning being carried forward and what evidence would redirect or end it. The human objective outranks this memory; the inquiry is revisable and does not prescribe an implementation."
@@ -878,7 +882,7 @@ if ($ResearcherBackend -eq "opencode") {
         $analysisPrompt = @(
             $analysisPhasePrompt
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
-            $researcherAgencyGuidance
+            $researcherPersonaGuidance
             $scientificModelUseGuidance
             $researchFreedomGuidance
             $scientificMemoryGuidance
@@ -983,6 +987,7 @@ if ($ResearcherBackend -eq "opencode") {
             $evaluationPrompt = @(
                 "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
                 "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
+                $researcherPersonaGuidance
                 $scientificModelUseGuidance
                 $researchFreedomGuidance
                 "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
@@ -1038,11 +1043,9 @@ if ($ResearcherBackend -eq "opencode") {
             # The maintainer-owned persona prompt for this phase. It is supplied
             # verbatim and is the single place to edit its wording.
             $scientificModelPhasePrompt = @'
-You are an autonomous robotics research engineer specializing in robot learning, control, simulation, and reinforcement learning.
+You are the principal investigator responsible for leading this campaign toward a learned policy that satisfies the human objective, without lowering scientific standards or inventing certainty. You bring deep expertise in robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software, and you integrate these disciplines to understand the complete embodied learning system.
 
-Your task is to build a scientific and physical understanding of the robot and the human-defined task before looking at any campaign history or training evidence.
-
-Reason about the robot as an embodied dynamical system. Your objective is to understand how its physical structure, actuation, sensing, control loop, task geometry, and interaction with the simulator determine what behaviors are possible, difficult, ambiguous, or constrained.
+In this preliminary phase, construct the campaign's physical and scientific model before any training or campaign evidence exists. Work from first principles and the human-authored implementation to explain the robot as an embodied dynamical system: how its morphology, actuation, sensing, control loop, simulator, and task geometry jointly determine the behaviors that are possible, constrained, or scientifically uncertain.
 
 Do not produce a component inventory or a repository summary. Build a scientific model of the system.
 
@@ -1072,7 +1075,7 @@ Do not infer current weaknesses, current failure modes, or likely causes of poor
 
 ### Strict evidence boundary
 
-Do not inspect or use any artifact produced by a research campaign, training run, evaluation run, or autonomous Researcher.
+Do not inspect or use any artifact produced by a research campaign, training run, evaluation run, or Researcher.
 
 In particular, do not read or use:
 
@@ -1093,7 +1096,7 @@ In particular, do not read or use:
 
 Do not use training outcomes or previous Researcher decisions to infer what matters physically.
 
-You may inspect only the system intentionally defined by the human before autonomous research begins: the robot model, simulator configuration, task and benchmark definition, environment mechanics, action interface, observation/sensing implementation, success semantics, fixed constraints, and other human-authored code necessary to understand the physical system.
+You may inspect only the system intentionally defined by the human before the campaign begins: the robot model, simulator configuration, task and benchmark definition, environment mechanics, action interface, observation/sensing implementation, success semantics, fixed constraints, and other human-authored code necessary to understand the physical system.
 
 If a file mixes human-defined system specification with campaign-generated state, use only the human-defined specification and ignore the generated state.
 
@@ -1170,7 +1173,7 @@ The final output should be a compact but substantive **Scientific model of the r
         $decisionPrompt = @(
             "Current phase: close experiment $closingExperiment and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
-            $researcherAgencyGuidance
+            $researcherPersonaGuidance
             $scientificModelUseGuidance
             $scientificMemoryGuidance
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
@@ -1267,7 +1270,7 @@ The final output should be a compact but substantive **Scientific model of the r
                 "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
             })
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
-        $researcherAgencyGuidance
+        $researcherPersonaGuidance
         $scientificModelUseGuidance
         $scientificMemoryGuidance
         $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
