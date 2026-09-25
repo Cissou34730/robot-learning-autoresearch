@@ -343,10 +343,10 @@ scientific surface matches the preparation anchor. Revert or resolve any
 outstanding researcher-owned change first; unlike a training proposal or a lineage
 decision, a conclusion neither publishes nor restores a recipe.
 
-A preparation phase that has already executed a measurement round on saved
-lineages may not conclude: it owes an experiment proposal. A conclusion remains
-available when no measurement round was spent or when the experiment budget is
-exhausted.
+A preparation measurement returns to preparation with its evidence available.
+The Researcher may then request another measurement round, prepare an experiment,
+request the official assessment, or conclude that no further experiment is
+warranted.
 
 When the experiment budget is exhausted, no further training experiment may be
 prepared, but a campaign conclusion remains legal regardless of any measurement

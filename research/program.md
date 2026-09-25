@@ -186,10 +186,10 @@ researcher-owned change must be reverted or resolved first. When the experiment
 budget is exhausted, only a conclusion may be prepared; a further training
 experiment is rejected.
 
-A preparation measurement on saved lineages commits that phase to an experiment
-proposal; it cannot be followed by a campaign conclusion in the same phase.
-When the experiment budget is exhausted, a conclusion remains available even
-after such a measurement.
+A preparation measurement on saved lineages returns to preparation with the new
+evidence. The Researcher may then request another measurement round, prepare an
+experiment, request the official assessment, or conclude that no further
+experiment is warranted.
 
 ## Post-training analysis
 

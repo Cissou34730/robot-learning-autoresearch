@@ -1215,7 +1215,7 @@ The final output should be a compact but substantive **Scientific model of the r
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
             else {
-                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or, before any of these, a measurement round on saved lineages. A measurement round on saved lineages commits this phase to proposing an experiment: after it, concluding is no longer accepted here."
+                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or a measurement round on saved lineages. After a measurement round, this phase reopens with its evidence and all of these outcomes remain available."
             })
         $(if ($budgetReached) {
                 ""

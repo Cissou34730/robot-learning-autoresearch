@@ -939,15 +939,10 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     for the official final assessment or records that no further experiment is
     warranted. Neither outcome creates an experiment record.
 
-    A preparation measurement round may not be spent and then converted into a
-    conclusion. Measuring a saved lineage during preparation consumes no
-    experiment, so a phase that measures and then concludes obtains its terminal
-    decision for free, which is how two campaigns ended on their own first
-    model. The request is justified by the next decision it would change, and in
-    this phase that decision is which experiment to prepare; the phase therefore
-    still owes a proposal. Concluding remains available without spending the
-    round, after an experiment, and whenever no further experiment may be
-    prepared at all.
+    Preparation measurements inform this decision without committing the phase
+    to training. After any number of saved-lineage measurement rounds, the
+    Researcher may request another round, prepare an experiment, request the
+    official assessment, or conclude that no further experiment is warranted.
     """
     if state.get("schema_version") != 4:
         raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
@@ -955,15 +950,6 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
         raise ValueError(
             "a campaign conclusion is not accepted while a closure operation is pending"
         )
-    if not state.get("preparation_conclusion_only"):
-        ledger = preparation_ledger(state)
-        if ledger is not None and list(ledger.get("rounds") or []):
-            raise ValueError(
-                "this preparation phase already executed a measurement round on "
-                "saved lineages, so it owes an experiment proposal; a campaign "
-                "conclusion is accepted from a preparation phase that spends no "
-                "measurement round"
-            )
     if set(proposal) != {"campaign_conclusion"}:
         raise ValueError("a campaign conclusion must contain only campaign_conclusion")
     conclusion = proposal["campaign_conclusion"]

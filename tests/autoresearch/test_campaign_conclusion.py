@@ -322,17 +322,9 @@ def test_main_rejects_a_conclusion_with_unresolved_science(monkeypatch, tmp_path
         run_experiment.main()
 
 
-def test_a_spent_preparation_measurement_round_owes_an_experiment_proposal(
+def test_a_spent_preparation_measurement_round_may_inform_a_conclusion(
     monkeypatch, tmp_path
 ):
-    """Issue: measuring in preparation must not buy a free terminal decision.
-
-    Campaigns e88f7b9e and 7624cdd2 both ended by measuring already-saved
-    lineages during preparation - which consumes no experiment - and then
-    concluding from that round. The round is requested because its result would
-    change the next decision, and in this phase that decision is which
-    experiment to prepare, so the phase still owes a proposal.
-    """
     _, _, state = _configure(monkeypatch, tmp_path)
     state["preparation_measurement"] = {
         "experiment": 4,
@@ -340,8 +332,10 @@ def test_a_spent_preparation_measurement_round_owes_an_experiment_proposal(
     }
 
     for action in ("request_final_benchmark", "no_further_experiment"):
-        with pytest.raises(ValueError, match="owes an experiment proposal"):
+        assert (
             validate_proposal_against_state(_conclusion(action), state)
+            == "conclusion"
+        )
 
 
 def test_an_unspent_preparation_phase_may_still_conclude(monkeypatch, tmp_path):
