@@ -16,10 +16,21 @@ TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 HARD_TARGET_PROBABILITY = 0.20
 HARD_TARGET_RADIUS_RANGE = (0.06, 0.14)
 HARD_TARGET_ANGLE_MIN = 2.0 * np.pi / 3.0
+TERMINAL_FAILURE_PENALTY = 50.0
 
 
 class TargetMixtureArmReachEnv(TwoJointArmReachEnv):
     """Keep broad training coverage while revisiting the difficult target band."""
+
+    def step(self, action: np.ndarray):
+        observation, reward, terminated, truncated, info = super().step(action)
+        if truncated and not terminated:
+            info = dict(info)
+            reward_components = dict(info["reward_components"])
+            reward_components["terminal_failure"] = -TERMINAL_FAILURE_PENALTY
+            info["reward_components"] = reward_components
+            reward -= TERMINAL_FAILURE_PENALTY
+        return observation, reward, terminated, truncated, info
 
     def _sample_target_position(self) -> None:
         if self.np_random.random() >= HARD_TARGET_PROBABILITY:
