@@ -2,11 +2,11 @@
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
 
-**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage remain the strongest measured approach, with 1168/1200 successes across six disjoint research panels and 196/200 on the latest panel. This latest disjoint result confirms the incumbent's relative standing, but development evidence does not establish the official objective.
+**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage remain the strongest measured approach, with 1168/1200 successes across six disjoint research panels and 196/200 on the latest panel. The incumbent is near the development threshold, but development evidence does not establish the official objective.
 
 **Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints. The zero-entropy, full-radius, mixed hard-angle, and broader-closeness-reward transfer interventions produced no measured successor above the unchanged control; experiment 5 fell to 164/200 and 170/200 at its measured early checkpoints and recovered only to 193/200 at the end. The latest control failures were all 500-step truncations without success, while earlier evidence also includes hold interruptions. Development panels remain 200-episode samples, and the reused task-reference panel and all research panels are not the official assessment.
 
-**Open questions:** It remains unresolved whether alternative reward shaping can reduce the residual reach failures without degrading complete reach-and-hold behavior elsewhere, and whether any development gain would generalize to the official assessment.
+**Open questions:** It remains unresolved whether the residual failures reflect stochastic variation in the unchanged learning process or a systematic limitation of the current recipe, and whether any development gain would generalize to the official assessment.
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
 
