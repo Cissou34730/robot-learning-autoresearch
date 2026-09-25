@@ -9,7 +9,9 @@ import sys
 from collections.abc import Callable
 from contextlib import contextmanager
 from dataclasses import dataclass
+from functools import update_wrapper
 from pathlib import Path
+from types import FunctionType
 
 import cloudpickle
 import numpy as np
@@ -109,9 +111,48 @@ def validate_runtime_files(model_path: Path) -> dict:
     return payload
 
 
+def _restore_policy_io_closure_sharing(policy_io: PolicyIO) -> PolicyIO:
+    """Reconnect cells that cloudpickle duplicates across sibling closures."""
+    callables = (policy_io.observe, policy_io.action, policy_io.reset)
+    shared_cells = {}
+    closure_keys = []
+
+    for function in callables:
+        if not isinstance(function, FunctionType) or function.__closure__ is None:
+            closure_keys.append(None)
+            continue
+        scope = function.__qualname__.rpartition(".")[0]
+        keys = []
+        for name, cell in zip(
+            function.__code__.co_freevars, function.__closure__, strict=True
+        ):
+            key = (function.__module__, scope, name)
+            shared_cells.setdefault(key, cell)
+            keys.append(key)
+        closure_keys.append(keys)
+
+    restored = []
+    for function, keys in zip(callables, closure_keys, strict=True):
+        if keys is None:
+            restored.append(function)
+            continue
+        rebuilt = FunctionType(
+            function.__code__,
+            function.__globals__,
+            function.__name__,
+            function.__defaults__,
+            tuple(shared_cells[key] for key in keys),
+        )
+        update_wrapper(rebuilt, function)
+        rebuilt.__kwdefaults__ = function.__kwdefaults__
+        restored.append(rebuilt)
+
+    return PolicyIO(*restored)
+
+
 class PolicyRuntime:
     def __init__(self, payload, model_path, algorithm):
-        self.io = payload["io"]
+        self.io = _restore_policy_io_closure_sharing(payload["io"])
         self.normalizer = payload["normalizer"]
         self.model = payload["loader"](model_path, algorithm)
         self.observation_space = self.model.observation_space

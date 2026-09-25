@@ -71,6 +71,40 @@ def stateful_module(monkeypatch, size, weight=0.75):
     return module
 
 
+def observation_coupled_module(monkeypatch, size):
+    """A disposable module whose policy-I/O callbacks share reassigned state."""
+    name = "robot_learning.scenario.runtime_test_observation_coupled_policy"
+    module = types.ModuleType(name)
+    exec(  # noqa: S102 -- a disposable scientific module tests by-value capture
+        "import numpy as np\n"
+        "from gymnasium.spaces import Box\n"
+        "from robot_learning.policy_runtime import PolicyIO\n"
+        f"SIZE = {size}\n"
+        "def make_io():\n"
+        " latest = None\n"
+        " def observe(data):\n"
+        "  nonlocal latest\n"
+        "  latest = float(data)\n"
+        "  return np.full(SIZE, latest, dtype=np.float32)\n"
+        " def action(value):\n"
+        "  if latest is None: raise RuntimeError('observation required')\n"
+        "  return np.asarray(value, dtype=float) + latest\n"
+        " def reset():\n"
+        "  nonlocal latest\n"
+        "  latest = None\n"
+        " return PolicyIO(observe, action, reset)\n"
+        "class Model:\n"
+        " def __init__(self):\n"
+        "  self.observation_space = Box(-np.inf, np.inf, (SIZE,), dtype=np.float32)\n"
+        "  self.action_space = Box(-1, 1, (2,), dtype=np.float32)\n"
+        " def predict(self, obs, **kwargs): return np.zeros(2), None\n"
+        "def load(path, algorithm=None): return Model()\n",
+        module.__dict__,
+    )
+    monkeypatch.setitem(sys.modules, name, module)
+    return module
+
+
 def artifact(tmp_path, module):
     tmp_path.mkdir(parents=True, exist_ok=True)
     path = tmp_path / "model.zip"
@@ -142,6 +176,22 @@ def test_stateful_action_mapping_is_frozen_independent_and_resettable(
     np.testing.assert_allclose(first.io.action([-1.0, 1.0]), [-0.875, 0.875])
     first.io.reset()
     np.testing.assert_allclose(first.io.action([-1.0, 1.0]), [-1.0, 1.0])
+
+
+def test_policy_io_callbacks_retain_shared_reassigned_state(monkeypatch, tmp_path):
+    module = observation_coupled_module(monkeypatch, 3)
+    path = stateful_artifact(tmp_path, module)
+    first = load_runtime(path)
+    second = load_runtime(path)
+
+    np.testing.assert_allclose(first.io.observe(2), [2, 2, 2])
+    np.testing.assert_allclose(first.io.action([1, -1]), [3, 1])
+    with pytest.raises(RuntimeError, match="observation required"):
+        second.io.action([1, -1])
+
+    first.io.reset()
+    with pytest.raises(RuntimeError, match="observation required"):
+        first.io.action([1, -1])
 
 
 def test_environment_owns_each_policy_io_episode_reset(monkeypatch, tmp_path):
