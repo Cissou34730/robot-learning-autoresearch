@@ -28,20 +28,20 @@ development panel establishes the official result.
 **Open questions:** Whether low-Jacobian configurations initiate the persistent
 failure or arise from an already unstable trajectory; whether prolonged actuator
 saturation is a controller limitation, a consequence of the target geometry, or
-both; whether branch switching occurs before tolerance entry; and whether the
-current observation and torque representation can support reliable local
-stabilization without sacrificing the rest of the target distribution.
+both; whether branch switching occurs before tolerance entry; whether penalizing
+large torques and forfeiting accumulated hold progress can improve stabilization;
+and whether such shaping sacrifices approach performance elsewhere.
 
-**Active inquiry:** Carry forward the unresolved negative-angle failures as a
-conditioning-and-stabilization problem rather than a radius-coverage problem.
-The common failure identities, persistent saturation, and conditioning
-association justify testing a future policy that can arrest motion and maintain
-the tolerance hold in these configurations. Evidence of reduced saturation and
-failure-sector loss without regressions elsewhere would support that mechanism;
-unchanged failures despite altered transient control would redirect attention to
-observability or branch transients. Until such evidence exists, the campaign
-should preserve the parent as the working and best-known policy without claiming
-objective attainment.
+**Active inquiry:** Test whether the negative-angle failures were partly a
+learned control-cost and hold-credit failure: before this intervention, the
+reward made saturated actions cheap and gave no loss of accumulated hold credit
+when a hold was abandoned.
+Transfer the working policy with stronger action regularization and full hold
+credit forfeiture on exit, while leaving the target distribution and observation
+contract unchanged. Reduced saturation, fewer interrupted holds, and loss of the
+same failure sector without regressions elsewhere would support a stabilization
+mechanism; unchanged no-entry failures or broad approach regressions would
+redirect attention to conditioning, branch transients, or representation.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
