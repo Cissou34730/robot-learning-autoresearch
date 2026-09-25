@@ -66,7 +66,18 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-25T19:13:35.018664+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "continuation_comparison": {
+      "continuation": "Continue the working checkpoint-100352 with the unchanged PPO recipe and transfer initialization.",
+      "form": "feasible_continuation",
+      "reason": "This continuation is feasible, but checkpoint-120832 already represents additional training with the same recipe and tied the selected checkpoint at 97.5% on the disjoint panel while scoring lower on the task-reference panel. No measured improvement or validated intervention route remains to justify spending another full experiment before obtaining the official objective verdict."
+    },
+    "terminal_expectation": {
+      "expected_verdict": "goal_not_reached",
+      "reason": "The standing best-known checkpoint-100352 achieved 195/200 (97.5%) on the disjoint researcher panel, below the 196/200 objective. It reached 98% on the reused task-reference panel, so the official result remains uncertain, but the independent evidence makes goal_not_reached the more likely verdict."
+    }
+  },
   "campaign_experiment_counters": {
     "670368bb-2a56-4874-bd71-a57d639fd0bf": 1
   },
@@ -83,15 +94,97 @@
     "experiment": 1,
     "reason": "Select checkpoint-100352 as the working lineage. It is measured at 99% on the first researcher panel, 97.5% on the disjoint 200-episode panel, and 98% on the fixed task-reference panel. The disjoint comparison with checkpoint-120832 is tied, so the task-reference result and earlier proxy peak provide the modest remaining basis for this selection while recognizing that the fixed-panel result is reused evidence."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
+  "last_verdict": "researcher requested the official final benchmark",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "continuation_comparison": {
+      "continuation": "Continue the working checkpoint-100352 with the unchanged PPO recipe and transfer initialization.",
+      "form": "feasible_continuation",
+      "reason": "This continuation is feasible, but checkpoint-120832 already represents additional training with the same recipe and tied the selected checkpoint at 97.5% on the disjoint panel while scoring lower on the task-reference panel. No measured improvement or validated intervention route remains to justify spending another full experiment before obtaining the official objective verdict."
+    },
+    "progress": "planned",
+    "reason": "The standing best-known checkpoint-100352 achieved 195/200 (97.5%) on the disjoint researcher panel, below the 196/200 objective. It reached 98% on the reused task-reference panel, so the official result remains uncertain, but the independent evidence makes goal_not_reached the more likely verdict.",
+    "terminal_expectation": {
+      "expected_verdict": "goal_not_reached",
+      "reason": "The standing best-known checkpoint-100352 achieved 195/200 (97.5%) on the disjoint researcher panel, below the 196/200 objective. It reached 98% on the reused task-reference panel, so the official result remains uncertain, but the independent evidence makes goal_not_reached the more likely verdict."
+    }
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
+  "pending_final_benchmark": {
+    "artifact": "research/checkpoints/retained/670368bb-2a56-4874-bd71-a57d639fd0bf/e1-cada55eb5-4f51238f4e553ffcbddc7bca066e54073bc3855364aa5da0f3f803e550c6a4c1",
+    "best_known": {
+      "artifact": "research/checkpoints/retained/670368bb-2a56-4874-bd71-a57d639fd0bf/e1-cada55eb5-4f51238f4e553ffcbddc7bca066e54073bc3855364aa5da0f3f803e550c6a4c1",
+      "candidate": "checkpoint-100352",
+      "designation_ordinal": 1,
+      "evaluation_artifacts": [
+        "research/evaluations/670368bb-2a56-4874-bd71-a57d639fd0bf/evaluation-670368bb-2a56-4874-bd71-a57d639fd0bf-experiment-1-checkpoint-100352-100ep-seed20000-f48545f83637.json",
+        "research/evaluations/670368bb-2a56-4874-bd71-a57d639fd0bf/evaluation-670368bb-2a56-4874-bd71-a57d639fd0bf-experiment-1-checkpoint-100352-200ep-seed21000-f48545f83637.json",
+        "research/evaluations/670368bb-2a56-4874-bd71-a57d639fd0bf/task-reference-670368bb-2a56-4874-bd71-a57d639fd0bf-experiment-1-checkpoint-100352-task-reference-v1.json"
+      ],
+      "fingerprint": "4f51238f4e553ffcbddc7bca066e54073bc3855364aa5da0f3f803e550c6a4c1",
+      "origin_experiment": 1,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "Designate checkpoint-100352 as best-known because it has the stronger fixed task-reference score (98% versus 97%) and the same 97.5% result as checkpoint-120832 on the disjoint researcher panel. This is a development designation, not a claim that the official objective has been reached.",
+      "scientific_commit": "ed9788cf718f0f629bf3a70ee95e45200a75a09e",
+      "selected_panels": [
+        {
+          "episodes": 100,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 20000
+        },
+        {
+          "episodes": 200,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 21000
+        },
+        {
+          "episodes": 200,
+          "instrument": "task_reference",
+          "panel": "task-reference-v1",
+          "panel_version": 1,
+          "seed": 7300
+        }
+      ],
+      "training_steps": 100352
+    },
+    "experiment": 1,
+    "fingerprint": "4f51238f4e553ffcbddc7bca066e54073bc3855364aa5da0f3f803e550c6a4c1",
+    "selected": "best_known",
+    "terminal_expectation": {
+      "expected_verdict": "goal_not_reached",
+      "reason": "The standing best-known checkpoint-100352 achieved 195/200 (97.5%) on the disjoint researcher panel, below the 196/200 objective. It reached 98% on the reused task-reference panel, so the official result remains uncertain, but the independent evidence makes goal_not_reached the more likely verdict."
+    }
+  },
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "ed9788cf718f0f629bf3a70ee95e45200a75a09e",
