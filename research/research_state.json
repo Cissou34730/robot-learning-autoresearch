@@ -99,20 +99,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "request_final_benchmark",
-    "continuation_comparison": {
-      "continuation": "Continue the working checkpoint-100352 with the unchanged PPO recipe and transfer initialization.",
-      "form": "feasible_continuation",
-      "reason": "This continuation is feasible, but checkpoint-120832 already represents additional training with the same recipe and tied the selected checkpoint at 97.5% on the disjoint panel while scoring lower on the task-reference panel. No measured improvement or validated intervention route remains to justify spending another full experiment before obtaining the official objective verdict."
-    },
-    "progress": "committed",
-    "reason": "The standing best-known checkpoint-100352 achieved 195/200 (97.5%) on the disjoint researcher panel, below the 196/200 objective. It reached 98% on the reused task-reference panel, so the official result remains uncertain, but the independent evidence makes goal_not_reached the more likely verdict.",
-    "terminal_expectation": {
-      "expected_verdict": "goal_not_reached",
-      "reason": "The standing best-known checkpoint-100352 achieved 195/200 (97.5%) on the disjoint researcher panel, below the 196/200 objective. It reached 98% on the reused task-reference panel, so the official result remains uncertain, but the independent evidence makes goal_not_reached the more likely verdict."
-    }
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": {
