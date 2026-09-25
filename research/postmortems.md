@@ -2,11 +2,11 @@
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
 
-**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage remain the strongest measured approach. On the new experiment-4 disjoint panel, the unchanged working policy scored 192/200 (96%), while the mixed hard-angle curriculum scored 175/200 at checkpoint 100352, 180/200 at checkpoint 90112, and 191/200 at checkpoint 120832. The current policy remains below the 196/200 development threshold, and development evidence does not establish the official objective.
+**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage remain the strongest measured approach, with 972/1000 successes across the five disjoint research panels and 192/200 on the latest panel. The current policy remains below the 196/200 development threshold, and development evidence does not establish the official objective.
 
-**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the targeted curriculum's highest-proxy measured checkpoint scored only 180/200, and its continuation-boundary checkpoint scored 175/200, both below the unchanged control. The final curriculum checkpoint recovered to 191/200 but still lost five paired episodes to the working policy across the accumulated comparison coverage. These results contradict the tested curriculum intervention, not all possible training changes; 22 checkpoints remain unmeasured, development panels remain 200-episode samples, and the reused task-reference panel and all research panels are not the official assessment.
+**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints. The zero-entropy, full-radius, and mixed hard-angle transfer interventions produced no measured successor above the unchanged control; the mixed curriculum fell to 175/200 and 180/200 at its boundary and proxy-peak checkpoints, then recovered only to 191/200. The latest control failures were all 500-step truncations without success, while earlier evidence also includes hold interruptions. Development panels remain 200-episode samples, and the reused task-reference panel and all research panels are not the official assessment.
 
-**Open questions:** It remains unresolved whether another training intervention can improve the residual hard-angle reach behavior without degrading the broader official target distribution, and whether any development gain would generalize to the official assessment. Further training is a separate next experiment after this closure.
+**Open questions:** It remains unresolved whether alternative reward shaping can reduce the residual reach failures without degrading complete reach-and-hold behavior elsewhere, and whether any development gain would generalize to the official assessment.
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
 
