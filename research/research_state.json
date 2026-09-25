@@ -1,186 +1,33 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a/e1-cada55eb5-ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a/evaluation-dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a-experiment-1-checkpoint-100352-200ep-seed2000-48e4acc98c39.json",
-      "research/evaluations/dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a/task-reference-dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It is the strongest measured candidate under the protected task-reference panel and is tied for strongest on the disjoint research panel; the designation records practical usefulness without claiming official objective attainment.",
-    "scientific_commit": "1e43302793ee630a6eb615143c8e3732624db333",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "5970f5c3283ccb0b3a37206f2fcfeb8e49dbb613",
-    "id": "dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a",
+    "base_commit": "c6dc633d5914d31e1c1a17fba1d222399ec4a33e",
+    "id": "73885bf1-0281-48ec-b5de-4c676c3540ed",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-25T06:56:26.884674+00:00"
+    "started_at": "2026-09-25T10:01:15.963009+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a": 5
+    "73885bf1-0281-48ec-b5de-4c676c3540ed": 0
   },
-  "last_allocated_experiment": 5,
-  "last_experiment": 5,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "Restore the parent's complete scientific recipe, including the original hold-progress forfeiture setting. The experiment-5 reward change did not improve complete behavior and late training caused a broad regression."
-    },
-    "code_parent_commit": "f2308f580ca696fe86bcbe95fe6c4ef7a60f2f14",
-    "continue_from": "working",
-    "experiment": 5,
-    "reason": "The unchanged working lineage is the best-supported policy. On the new disjoint episodes 7000-7199 panel it achieved 198/200, tying the experiment-5 proxy peak with zero discordant wins, while the final experiment-5 checkpoint fell to 155/200 and lost 43 paired episodes. The reward intervention provides no evidence for replacing working."
-  },
-  "last_verdict": "official benchmark did not reach the goal",
-  "official_benchmark_artifact": "ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-  "official_benchmark_model": {
-    "artifact": "research/checkpoints/retained/dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a/e1-cada55eb5-ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-    "fingerprint": "ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-    "selected": "best_known"
-  },
-  "official_benchmark_verdict": "goal_not_reached",
-  "official_metrics": {
-    "episodes": 200,
-    "final_distance_cm": {
-      "mean": 0.366294668791641,
-      "median": 0.31898383051878665,
-      "worst": 2.2435044003034936
-    },
-    "goal_reached": false,
-    "schema_version": 1,
-    "seed": 1000,
-    "success_percent": 97.0
-  },
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
+  "official_benchmark_model": null,
+  "official_benchmark_verdict": null,
+  "official_metrics": null,
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "f2308f580ca696fe86bcbe95fe6c4ef7a60f2f14",
-    "experiment": 5,
-    "scientific_commit": "712d59bed09e8c06c68980759b57e72ea3f0bb79"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": "goal_not_reached",
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a/e1-cada55eb5-ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a/evaluation-dd6d401e-1c3b-46d0-8ecf-3b9304fbff2a-experiment-1-checkpoint-100352-200ep-seed2000-48e4acc98c39.json"
-    ],
-    "fingerprint": "ce3ef3d202b4902d8e314094e36d241854011006da6832afb470d8bb748fcbec",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The unchanged working lineage is the best-supported policy. On the new disjoint episodes 7000-7199 panel it achieved 198/200, tying the experiment-5 proxy peak with zero discordant wins, while the final experiment-5 checkpoint fell to 155/200 and lost 43 paired episodes. The reward intervention provides no evidence for replacing working.",
-    "scientific_commit": "1e43302793ee630a6eb615143c8e3732624db333",
-    "selected_panels": [
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 2000
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 3000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 4000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 6000
-      },
-      {
-        "episodes": 200,
-        "instrument": "research_evaluation",
-        "seed": 7000
-      }
-    ],
-    "training_steps": 100352
-  }
+  "terminal_campaign_status": null,
+  "working_lineage": null
 }
