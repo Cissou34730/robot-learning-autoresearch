@@ -16,6 +16,7 @@ TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 HARD_TARGET_PROBABILITY = 0.20
 HARD_TARGET_RADIUS_RANGE = (0.06, 0.14)
 HARD_TARGET_ANGLE_MIN = 2.0 * np.pi / 3.0
+HARD_TARGET_ANGLE_SIGN = -1.0
 
 
 class TargetMixtureArmReachEnv(TwoJointArmReachEnv):
@@ -27,7 +28,7 @@ class TargetMixtureArmReachEnv(TwoJointArmReachEnv):
             return
 
         angle = float(
-            self.np_random.choice((-1.0, 1.0))
+            HARD_TARGET_ANGLE_SIGN
             * self.np_random.uniform(HARD_TARGET_ANGLE_MIN, np.pi)
         )
         radius = float(
