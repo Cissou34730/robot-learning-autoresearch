@@ -80,6 +80,16 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
 
+    def _joint_limit_margin(self) -> float:
+        return float(
+            np.min(
+                np.minimum(
+                    self.data.qpos - self.model.jnt_range[:, 0],
+                    self.model.jnt_range[:, 1] - self.data.qpos,
+                )
+            )
+        )
+
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
@@ -151,6 +161,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            joint_limit_margin=self._joint_limit_margin(),
         )
         self._previous_distance = distance
 
