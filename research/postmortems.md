@@ -3,24 +3,27 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a competent reach-and-hold policy, but
-development success remains below the objective: all three measured
-experiment-2 full-radius checkpoints scored 190/200 (95.0%) on episodes
-4600–4799, while `best_known` scored 191/200 (95.5%) on that same panel.
-The selected baseline's 98% task-reference result is development evidence only
-because that panel was reused for selection.
+the intervention in experiment 3 did not improve it. On the new disjoint
+4800–4999 panel, the best experiment-3 checkpoint scored 194/200 (97.0%),
+while `best_known` scored 197/200 (98.5%). The latter is independent of the
+panels used to select `best_known`, but all development measurements remain
+insufficient to declare the official objective reached.
 
 **Lessons and limits:** Direct task success, rather than training proxies,
 governs the policy comparison. Full-radius target sampling did not improve
 the measured policy, and the experiment-2 failures include both episodes that
 never reached tolerance and episodes that entered tolerance but interrupted
 the hold. The current reward had no forfeiture for leaving a partial hold,
-which leaves the contribution of hold credit assignment unresolved. The
+which leaves the contribution of hold credit assignment unresolved. Experiment
+3 made partial-hold exit costly, but its measured checkpoints were below the
+same-panel control; the 97.0% checkpoint still had two interrupted holds and
+four no-reach failures, while the control's three failures were no-reach. The
 development panels remain insufficient to declare the official objective.
 
-**Open questions:** Whether making a broken partial hold costly improves
-100-step hold reliability without reducing reach performance remains
-unresolved. It is also unknown whether the remaining no-reach failures
-require changes to observations or to the learning method rather than reward.
+**Open questions:** The hold-exit forfeiture route is weakened and should not
+replace the best-known recipe. The remaining no-reach failures may require
+changes to observations, control behavior, or the learning method rather than
+reward shaping. The official benchmark has not yet adjudicated the objective.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
@@ -100,3 +103,41 @@ assessment is requested by this closure.
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-checkpoint-105472-200ep-seed4600-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-checkpoint-120832-200ep-seed4600-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-best_known-200ep-seed4600-f48545f83637.json`.
+
+## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 3
+
+**Result:** Full hold-exit forfeiture weakened the transferred policy rather
+than improving it. `best_known` remains both the working and best-known
+lineage; the experiment-3 reward change should be reverted.
+
+**Observed behavior:** On the disjoint research panel covering episodes
+4800-4999, `checkpoint-90112` scored 194/200 (97.0%),
+`checkpoint-105472` scored 182/200 (91.0%), and `checkpoint-120832` scored
+185/200 (92.5%). The same-panel `best_known` control scored 197/200 (98.5%).
+The paired comparisons gave the control 3, 15, and 12 discordant wins over
+the three experiment-3 checkpoints, with no challenger wins. The detailed
+`checkpoint-90112` artifact records four no-reach failures and two interrupted
+holds, so the targeted reward change did not remove the hold failures and also
+did not preserve the control's reach reliability.
+
+**Hypothesis assessment:** Weakened. The prediction that full hold-progress
+forfeiture would improve direct success and hold stability without harming
+reach was not supported on the new panel: the strongest checkpoint was 1.5
+percentage points below the control, and later checkpoints were substantially
+worse. This is evidence against retaining the intervention as the current
+recipe, not proof that every possible hold-related reward design is ineffective.
+
+**Interpretation:** The disjoint 4800-4999 result provides independent
+development evidence for the existing best-known policy, but its 197/200
+score does not replace the earlier 189/200, 189/200, and 191/200 results or
+constitute the official verdict. The experiment has a clear lineage decision,
+so no additional measurement is needed to decide this intervention: restore
+the best-known recipe and leave future work to a separately prepared
+experiment focused on the remaining no-reach failures. No terminal assessment
+is requested in this closure because the pooled development evidence remains
+below the objective and further scientific development remains useful.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/research_state.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-3-checkpoint-90112-200ep-seed4800-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-3-best_known-200ep-seed4800-f48545f83637.json`.
