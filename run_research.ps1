@@ -1229,9 +1229,14 @@ The final output should be a compact but substantive **Scientific model of the r
             else {
                 "If you propose training, state the question or hypothesis, the evidence motivating it, the observation that would change the next decision, and the parent and initialization the question calls for."
             })
-        "Before requesting the official final assessment, answer this forced forecast from the evidence already available:"
-        $finalBenchmarkForecastQuestion
-        "Request the official final assessment only when your predicted verdict is goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
+        $(if ($budgetReached) {
+                ""
+            }
+            else {
+                "Before requesting the official final assessment, answer this forced forecast from the evidence already available:"
+                $finalBenchmarkForecastQuestion
+                "Request the official final assessment only when your predicted verdict is goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
+            })
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         $(if ($budgetReached) {
                 ""
