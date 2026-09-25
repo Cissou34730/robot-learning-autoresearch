@@ -722,6 +722,40 @@ def read_state() -> dict:
     return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
 
 
+def persist_lineage_transaction(transaction: dict) -> None:
+    """Publish a resolved lineage transaction for the Researcher to confirm.
+
+    The transaction hash binds the complete preview, so the Researcher can read
+    the exact hash from this persisted preview instead of only from the refusal
+    message.
+    """
+    path = paths.lineage_transaction_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(
+        path,
+        {
+            "hash": str(transaction.get("hash", "")),
+            "preview": transaction.get("preview"),
+        },
+    )
+
+
+def read_lineage_transaction() -> dict | None:
+    """The last transaction the Runner resolved, or None when none is pending."""
+    path = paths.lineage_transaction_path()
+    if not path.exists():
+        return None
+    value = json.loads(path.read_text(encoding="utf-8"))
+    return value if isinstance(value, dict) else None
+
+
+def clear_lineage_transaction() -> None:
+    """Discard a resolved transaction once it has been applied or superseded."""
+    path = paths.lineage_transaction_path()
+    if path.exists():
+        path.unlink()
+
+
 def load_state(
     *,
     allow_unmeasured: bool = False,

@@ -28,6 +28,11 @@ CANDIDATE_ROOT = ROOT / "models" / "candidates"
 EVALUATION_DIR = RESEARCH_DIR / "evaluations"
 
 
+def lineage_transaction_path() -> Path:
+	"""The resolved lineage transaction awaiting the Researcher's confirmation."""
+	return RESEARCH_DIR / "lineage_transaction.json"
+
+
 def training_log_path(experiment: int, attempt: int, campaign_id: str | None = None) -> Path:
 	if campaign_id:
 		return TRAINING_LOG_DIR / campaign_id / f"experiment-{experiment}-attempt-{attempt}.log"

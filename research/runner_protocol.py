@@ -2145,12 +2145,20 @@ class LineageTransactionConfirmationRequired(ValueError):
 
 
 def require_lineage_transaction_confirmation(plan: dict) -> None:
-    """Refuse to change any role until the exact transaction hash is confirmed."""
+    """Refuse to change any role until the exact transaction hash is confirmed.
+
+    The resolved transaction is persisted as soon as it is known, so the
+    Researcher can confirm it from the repository preview rather than only from
+    the refusal message. A transaction that changes no role is applied directly
+    and clears any earlier preview.
+    """
     transaction = plan.get("lineage_transaction")
-    if not isinstance(transaction, dict) or not transaction.get(
-        "confirmation_required"
-    ):
+    if not isinstance(transaction, dict):
         return
+    if not transaction.get("confirmation_required"):
+        repository.clear_lineage_transaction()
+        return
+    repository.persist_lineage_transaction(transaction)
     transaction_hash = str(transaction.get("hash", ""))
     raise LineageTransactionConfirmationRequired(
         "lineage transaction confirmation required: the Runner resolved the typed "
@@ -2414,6 +2422,30 @@ def lineage_transaction_hash(preview: dict) -> str:
     """The deterministic hash a Researcher confirms before state changes."""
     canonical = json.dumps(preview, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _role_identity(snapshot: object) -> tuple | None:
+    """The immutable identity a role assignment exposes, or None when absent."""
+    if not isinstance(snapshot, dict):
+        return None
+    return (snapshot.get("artifact"), snapshot.get("fingerprint"))
+
+
+def lineage_transaction_changes_roles(preview: dict) -> bool:
+    """Whether a resolved transaction changes at least one role assignment.
+
+    A provenance re-declaration that keeps every role's artifact and fingerprint
+    is not a role change: it is applied directly. Any role whose artifact or
+    fingerprint differs, or that is added or removed, is a real change that must
+    be confirmed.
+    """
+    for role in ("working", "best_known"):
+        section = preview.get(role)
+        if not isinstance(section, dict):
+            continue
+        if _role_identity(section.get("old")) != _role_identity(section.get("proposed")):
+            return True
+    return bool(preview.get("retained_additions") or preview.get("retained_removals"))
 
 
 def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
@@ -3488,7 +3520,9 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "request_final_benchmark": request_final,
     }
     transaction_hash = lineage_transaction_hash(preview)
-    confirmation_required = decision.get("confirm_transaction") != transaction_hash
+    confirmation_required = lineage_transaction_changes_roles(
+        preview
+    ) and decision.get("confirm_transaction") != transaction_hash
     display_decision = {
         "experiment": int(pending["experiment"]),
         "continue_from": working_name,

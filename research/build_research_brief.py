@@ -2654,6 +2654,34 @@ def _v4_official_section(state: dict, terminal) -> list[str]:
     ]
 
 
+def _v4_pending_lineage_transaction_section() -> list[str]:
+    """The resolved lineage transaction the Runner is waiting to have confirmed."""
+    path = RESEARCH_DIR / "lineage_transaction.json"
+    if not path.exists():
+        return []
+    try:
+        transaction = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    if not isinstance(transaction, dict) or not transaction.get("hash"):
+        return []
+    return [
+        "",
+        "## Pending lineage transaction confirmation",
+        "",
+        (
+            "The Runner resolved a lineage decision that changes a role and "
+            "refused to apply it until the exact transaction is confirmed. "
+            "Resubmit the same `previous_result_decision` with "
+            f"`confirm_transaction` set to `{transaction['hash']}` to apply it."
+        ),
+        "",
+        "```json",
+        json.dumps(transaction, indent=2, sort_keys=True),
+        "```",
+    ]
+
+
 def _render_v4_research_brief(
     state: dict,
     results: list[dict],
@@ -2750,6 +2778,8 @@ def _render_v4_research_brief(
         lines.append("No experiment has completed in this campaign.")
 
     lines.extend(_v4_lineage_section(state, current_params, results))
+
+    lines.extend(_v4_pending_lineage_transaction_section())
 
     lines.extend(_v4_experiment_index_section(results, pending))
 

@@ -1482,3 +1482,200 @@ def test_v4_clearance_interrupt_restores_recoverable_operation(monkeypatch):
 
     assert state["pending_closure_operation"] is operation
     assert writes[-1]["pending_closure_operation"] is operation
+
+
+def _durable_lineage(tmp_path: Path, name: str, marker: str, *, steps: int) -> dict:
+    artifact = _artifact(
+        tmp_path / "research" / "checkpoints" / "retained" / name, marker
+    )
+    lineage = _lineage(artifact, steps=steps)
+    lineage["artifact"] = repository.repo_relative_path(artifact)
+    return lineage
+
+
+def _v4_decision_state(
+    *,
+    working: dict | None,
+    best_known: dict | None,
+    candidates: list[dict] | None = None,
+    experiment: int = 4,
+) -> dict:
+    return {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": working,
+        "best_known_lineage": best_known,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": experiment,
+            "candidates": candidates or [],
+            "parameters": {},
+            "initialization": "transfer",
+            "parent_training_steps": 100_352,
+        },
+    }
+
+
+def test_v4_provenance_redeclaration_needs_no_confirmation(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _durable_lineage(tmp_path, "working", "working", steps=100_352)
+    best = _durable_lineage(tmp_path, "best", "best", steps=100_352)
+    state = _v4_decision_state(working=working, best_known=best)
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 4,
+            "continue_from": _role_selector(state, "working"),
+            "reason": "Keep the current working model.",
+            "code": {"action": "keep", "reason": "Keep the recipe."},
+            "best_known": {
+                "selection": _role_selector(state, "best_known"),
+                "reason": "Keep the current best-known model.",
+            },
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(proposal, state)
+
+    assert plan["lineage_transaction"]["confirmation_required"] is False
+    assert plan["working_record"]["artifact"] == working["artifact"]
+    assert plan["working_record"]["fingerprint"] == working["fingerprint"]
+    assert plan["best_known_record"]["artifact"] == best["artifact"]
+    assert plan["best_known_record"]["fingerprint"] == best["fingerprint"]
+    assert plan["artifact_publications"] == []
+
+    protocol.require_lineage_transaction_confirmation(plan)
+    assert repository.read_lineage_transaction() is None
+
+
+def test_v4_role_change_confirms_the_persisted_transaction_hash(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _durable_lineage(tmp_path, "working", "working", steps=100_352)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = _v4_decision_state(
+        working=working,
+        best_known=None,
+        candidates=[
+            {
+                "name": "checkpoint",
+                "artifact": repository.repo_relative_path(candidate),
+                "timesteps": 5_000,
+                "evaluations": [],
+            }
+        ],
+    )
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 4,
+            "continue_from": _candidate_selector(state, "checkpoint"),
+            "reason": "Adopt the candidate.",
+            "code": {"action": "keep", "reason": "Keep the recipe."},
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(proposal, state)
+    assert plan["lineage_transaction"]["confirmation_required"] is True
+
+    with pytest.raises(protocol.LineageTransactionConfirmationRequired) as refusal:
+        protocol.require_lineage_transaction_confirmation(plan)
+    assert plan["lineage_transaction"]["hash"] in str(refusal.value)
+
+    persisted = repository.read_lineage_transaction()
+    assert persisted is not None
+    assert persisted["hash"] == plan["lineage_transaction"]["hash"]
+    assert persisted["preview"] == plan["lineage_transaction"]["preview"]
+
+    proposal["previous_result_decision"]["confirm_transaction"] = persisted["hash"]
+    confirmed = protocol.plan_previous_result_decision(proposal, state)
+    assert confirmed["lineage_transaction"]["confirmation_required"] is False
+
+    protocol.require_lineage_transaction_confirmation(confirmed)
+    assert repository.read_lineage_transaction() is None
+
+
+def test_v4_wrong_transaction_hash_is_refused(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _durable_lineage(tmp_path, "working", "working", steps=100_352)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = _v4_decision_state(
+        working=working,
+        best_known=None,
+        candidates=[
+            {
+                "name": "checkpoint",
+                "artifact": repository.repo_relative_path(candidate),
+                "timesteps": 5_000,
+                "evaluations": [],
+            }
+        ],
+    )
+    proposal = {
+        "previous_result_decision": {
+            "experiment": 4,
+            "continue_from": _candidate_selector(state, "checkpoint"),
+            "reason": "Adopt the candidate.",
+            "code": {"action": "keep", "reason": "Keep the recipe."},
+            "confirm_transaction": "0" * 64,
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(proposal, state)
+
+    assert plan["lineage_transaction"]["confirmation_required"] is True
+    with pytest.raises(protocol.LineageTransactionConfirmationRequired):
+        protocol.require_lineage_transaction_confirmation(plan)
+
+
+def test_v4_stale_transaction_hash_is_refused(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _durable_lineage(tmp_path, "working", "working", steps=100_352)
+    first = _artifact(tmp_path / "first", "first")
+    second = _artifact(tmp_path / "second", "second")
+    state = _v4_decision_state(
+        working=working,
+        best_known=None,
+        candidates=[
+            {
+                "name": "first",
+                "artifact": repository.repo_relative_path(first),
+                "timesteps": 5_000,
+                "evaluations": [],
+            }
+        ],
+    )
+    first_decision = {
+        "previous_result_decision": {
+            "experiment": 4,
+            "continue_from": _candidate_selector(state, "first"),
+            "reason": "Adopt the first candidate.",
+            "code": {"action": "keep", "reason": "Keep the recipe."},
+        }
+    }
+    first_plan = protocol.plan_previous_result_decision(first_decision, state)
+    with pytest.raises(protocol.LineageTransactionConfirmationRequired):
+        protocol.require_lineage_transaction_confirmation(first_plan)
+    stale_hash = repository.read_lineage_transaction()["hash"]
+
+    state["pending_researcher_decision"]["candidates"] = [
+        {
+            "name": "second",
+            "artifact": repository.repo_relative_path(second),
+            "timesteps": 5_000,
+            "evaluations": [],
+        }
+    ]
+    revised = {
+        "previous_result_decision": {
+            "experiment": 4,
+            "continue_from": _candidate_selector(state, "second"),
+            "reason": "Adopt the second candidate.",
+            "code": {"action": "keep", "reason": "Keep the recipe."},
+            "confirm_transaction": stale_hash,
+        }
+    }
+
+    plan = protocol.plan_previous_result_decision(revised, state)
+
+    assert plan["lineage_transaction"]["hash"] != stale_hash
+    assert plan["lineage_transaction"]["confirmation_required"] is True
