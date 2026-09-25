@@ -81,79 +81,31 @@
     "experiment": 1,
     "reason": "The checkpoint-100352 policy is the strongest complete reach-and-hold candidate: it leads the two distinct research panels at 347/360 pooled successes and reaches 196/200 on the disjoint panel. The evidence supports keeping this lineage while recognizing that development measurements are not the official result."
   },
-  "last_verdict": "researcher selected checkpoint-100352 as working",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
+    "fingerprint": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/evaluation-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json",
-        "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/evaluation-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-200ep-seed5200-48e4acc98c39.json",
-        "research/evaluations/ce95d72f-a17e-402c-aa10-459f2b8ccecf/task-reference-ce95d72f-a17e-402c-aa10-459f2b8ccecf-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "It is the leading candidate on the independent disjoint research panel, is strongest in pooled distinct-panel evidence, and has no measuredly superior alternative.",
-      "scientific_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 4200
-        },
-        {
-          "episodes": 200,
-          "instrument": "research_evaluation",
-          "seed": 5200
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 1,
-    "fingerprint": "c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
-    "selected": "best_known",
-    "terminal_reason": "The selected policy achieved 196/200 on a disjoint development panel after independent confirmation of the selection, while the remaining failures are sparse and the fixed task-reference result is not independent. This is sufficient readiness to submit the frozen best-known policy for the official 200-episode benchmark, which alone can determine whether the 98% human objective is met."
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "2df91419d2a7508f3b178c611f1dd787c06ee047",
@@ -166,7 +118,7 @@
   "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/ce95d72f-a17e-402c-aa10-459f2b8ccecf/e1-cada55eb5-c7fc6a821f6c4b11986d5b65de13b49a827b34b0adfe87bb3335d18c01fd5a2c",
     "candidate": "checkpoint-100352",
