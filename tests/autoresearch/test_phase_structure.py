@@ -16,6 +16,13 @@ from research import run_experiment, runner_paths, runner_protocol, runner_repos
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+PROGRAM = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
+INSTRUMENTS = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
+FINAL_BENCHMARK_FORECAST_QUESTION = (
+    "If the official benchmark were run now and I had to predict one verdict from "
+    "the evidence already available, which would I predict: `goal_reached` or "
+    "`goal_not_reached`? Why?"
+)
 
 
 def test_evaluation_design_is_only_the_legacy_compatibility_path():
@@ -46,6 +53,28 @@ def test_scientific_model_is_campaign_memory_and_protected_context():
     assert not runner_protocol.is_researcher_owned(model)
     assert runner_repository.is_runner_memory(model)
     assert model not in runner_repository.RUNNER_CONTROL_PATHS
+
+
+def test_final_benchmark_request_uses_forced_forecast_in_each_decision_phase():
+    assignment = (
+        "$finalBenchmarkForecastQuestion = "
+        f"'{FINAL_BENCHMARK_FORECAST_QUESTION}'"
+    )
+    assert assignment in SCRIPT
+
+    closure = SCRIPT.split("$decisionPrompt = @(", 1)[1].split(
+        "Invoke-ResearcherSession -Prompt $decisionPrompt", 1
+    )[0]
+    preparation = SCRIPT.split("$researchPrompt = @(", 1)[1].split(
+        "Invoke-ResearcherSession -Prompt $researchPrompt", 1
+    )[0]
+    assert "$finalBenchmarkForecastQuestion" in closure
+    assert "$finalBenchmarkForecastQuestion" in preparation
+    normalized_program = " ".join(
+        line.removeprefix("> ").strip() for line in PROGRAM.splitlines()
+    )
+    assert FINAL_BENCHMARK_FORECAST_QUESTION in " ".join(normalized_program.split())
+    assert FINAL_BENCHMARK_FORECAST_QUESTION in " ".join(INSTRUMENTS.split())
 
 
 @pytest.mark.parametrize("content,valid", [(None, False), (" \n", False), ("facts\n", True)])

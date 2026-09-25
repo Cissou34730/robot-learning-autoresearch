@@ -132,6 +132,7 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
 
 $scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's physical reference when framing questions, interpreting observations, and designing analysis or measurements. Keep its coupled robot-task constraints visible, but do not treat its unknowns or listed quantities as ranked priorities or an intervention menu; current campaign evidence determines what remains relevant."
 $researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, use existing tools, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. Existing evidence tools include research/query_training_log.py for preserved raw Stable-Baselines3 records; research/instruments.md documents its command. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
+$finalBenchmarkForecastQuestion = 'If the official benchmark were run now and I had to predict one verdict from the evidence already available, which would I predict: `goal_reached` or `goal_not_reached`? Why?'
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -1126,7 +1127,9 @@ The final output should be a compact but substantive **Scientific model of the r
             $scientificModelUseGuidance
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
             "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
-            "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
+            "Before requesting the official benchmark, answer this forced forecast from the evidence already available:"
+            $finalBenchmarkForecastQuestion
+            "Request the official benchmark only when your predicted verdict is goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -1226,12 +1229,9 @@ The final output should be a compact but substantive **Scientific model of the r
             else {
                 "If you propose training, state the question or hypothesis, the evidence motivating it, the observation that would change the next decision, and the parent and initialization the question calls for."
             })
-        $(if ($budgetReached) {
-                ""
-            }
-            else {
-                "Request the official final assessment only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
-            })
+        "Before requesting the official final assessment, answer this forced forecast from the evidence already available:"
+        $finalBenchmarkForecastQuestion
+        "Request the official final assessment only when your predicted verdict is goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         $(if ($budgetReached) {
                 ""

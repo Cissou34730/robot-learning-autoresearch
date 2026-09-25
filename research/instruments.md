@@ -476,10 +476,14 @@ scientific decision rule for requesting assessment is defined in
 
 When `request_final_benchmark` is `true`, `terminal_reason` is required and must
 be non-empty. It is the terminal rationale for the irreversible request, distinct
-from the working-lineage `reason`. The Runner validates only that it is present
-and non-empty; it renders it back with the frozen model so the decision is
-explicit rather than a bare flag. Omit `terminal_reason` when a final benchmark is
-not requested.
+from the working-lineage `reason`. It answers the forced forecast, "If the
+official benchmark were run now and I had to predict one verdict from the
+evidence already available, which would I predict: `goal_reached` or
+`goal_not_reached`? Why?", and a request is scientifically valid only when that
+predicted verdict is `goal_reached`. The Runner validates only that
+`terminal_reason` is present and non-empty; it renders it back with the frozen
+model so the decision is explicit rather than a bare flag. Omit `terminal_reason`
+when a final benchmark is not requested.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
 non-empty strings. The compatible field name `code.action` controls the complete
