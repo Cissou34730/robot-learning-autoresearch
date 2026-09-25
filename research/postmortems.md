@@ -2,11 +2,11 @@
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
 
-**Current synthesis:** The unchanged PPO recipe remains the strongest measured approach. On the experiment-3 disjoint panel, the working parent scored 193/200 while every measured full-radius continuation checkpoint scored 192/200. The current working and best-known lineage remains checkpoint-100352 under the parent recipe, and development evidence remains below the 196/200 objective threshold.
+**Current synthesis:** The unchanged PPO recipe and checkpoint-100352 lineage remain the strongest measured approach: the working policy scored 193/200 on the experiment-3 disjoint panel, while each measured full-radius continuation checkpoint scored 192/200. Across the recorded working-lineage panels it scored 780/800, still below the 196/200 development threshold, and its observed reach failures cluster around inner targets at angles roughly -155 to -120 degrees.
 
-**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the zero-entropy continuation's early checkpoints scored 172/200 and 166/200 despite strong training proxies, and the full-radius continuation's measured checkpoints all scored 192/200 despite a proxy peak of 1.0. The experiment-3 parent control is independent of the panels used to select the parent; the fixed task-reference result remains reused development evidence. These 200-episode development panels do not establish the official result or identify whether the remaining failures are caused by reach difficulty or hold stability.
+**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the zero-entropy continuation's early checkpoints scored 172/200 and 166/200 despite strong training proxies, and the full-radius continuation's measured checkpoints all scored 192/200 despite a proxy peak of 1.0. The observed failure locations describe a residual mode but do not establish its cause; development panels remain 200-episode samples, and the reused task-reference panel and all research panels are not the official assessment.
 
-**Open questions:** It remains unresolved whether a different intervention can address the residual inner-target and hold failures well enough to exceed 196/200 on a new panel. The tested full-radius continuation did not answer that question, and the present evidence does not establish the official objective or isolate the failure causes.
+**Open questions:** It remains unresolved whether targeted training coverage can improve the residual hard-angle reach behavior without degrading the rest of the official target distribution, and whether any resulting development gain would generalize to the official assessment.
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
 
