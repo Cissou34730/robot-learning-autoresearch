@@ -23,7 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-STABILIZATION_VELOCITY_COEFFICIENT = 2.0
 
 
 @dataclass(frozen=True)
@@ -54,7 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    endpoint_speed: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -92,13 +90,6 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    stabilization_velocity = 0.0
-    if current_distance <= success_threshold:
-        stabilization_velocity = -(
-            STABILIZATION_VELOCITY_COEFFICIENT * endpoint_speed**2
-        )
-    reward += stabilization_velocity
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -112,7 +103,6 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
-            "stabilization_velocity": float(stabilization_velocity),
             "action_cost": float(action_cost),
         },
     )
