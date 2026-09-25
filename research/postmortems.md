@@ -3,46 +3,45 @@
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Scientific strategy
 
 **Current synthesis:** The baseline learned a substantial reach-and-hold behavior,
-but its remaining failures are structured rather than random hold noise. On both
-disjoint research panels, checkpoint-100352 and checkpoint-120832 each succeeded
-on 195/200 episodes, while the protected task-reference panel measured the
-working checkpoint at 196/200. The detailed diagnostics place the repeated
-failures in a narrow negative-angle sector around -128 to -155 degrees. They
-include both episodes that never enter tolerance and episodes that enter for only
-one to three steps. The baseline training distribution is also narrower than the
-human distribution: `training_environment.py` trained only on radii 0.14--0.20 m,
-whereas the task spans 0.06--0.20 m. This is an untested distribution-coverage
-mechanism, not an established cause of the angular failure sector.
+but its remaining failures are structured rather than random hold noise. On the
+disjoint 22000--22199 panel, the saved parent succeeded on 194/200 episodes
+(97.0%), while the radius-expanded checkpoints at 105472 and 120832 each
+succeeded on 193/200. On the independent telemetry panel, all three policies
+succeeded on 197/200, but they failed on the same three target identities in the
+negative-angle sector. Across the four distinct research panels, the parent
+achieved 781/800 (97.6%) and each measured experiment-2 checkpoint achieved
+390/400 (97.5%). The radius expansion did not produce a reproducible improvement.
 
-**Lessons and limits:** The measurements support the physical interpretation that
-branch choice, configuration-dependent conditioning, approach dynamics, and
-stabilization can create target-specific failures, but they do not identify the
-causal controller mechanism. The late checkpoints usually reach tolerance and
-then hold successfully; the failure sector is the limiting behavior observed
-here. The failed research targets span roughly 0.10--0.17 m as well as a
-near-0.14 m case, so radius coverage is plausible but not sufficient as an
-explanation. Both disjoint research panels are 97.5%, below the 98% objective;
-the protected panel is development evidence and neither panel is the official
-final assessment.
+**Lessons and limits:** The telemetry shows that every episode that entered
+tolerance used the elbow-open branch at entry; it does not rule out earlier
+branch transients or prove branch choice is causal. Failure episodes did not have
+a consistent excess endpoint speed at entry, while their actuator commands were
+at saturation for essentially the full truncated horizon and their minimum
+planar Jacobian determinants were lower than the successful episodes in this
+panel. These are mechanistic associations, not intervention evidence: the
+conditioning minimum can be a consequence of the failed trajectory, and the
+saturation count does not identify which joint or whether saturation caused the
+loss of stabilization. The parent remains the strongest defensible working
+policy, but its pooled development result is below the objective and no
+development panel establishes the official result.
 
-**Open questions:** Whether broader radius coverage changes the negative-angle
-failure sector or only improves inner-target behavior; whether the no-entry and
-interrupted-hold failures share a mechanism; whether branch choice, approach
-dynamics, or local stabilization is causal; whether a future policy can eliminate
-the sector without sacrificing the rest of the target distribution; and how much
-of the remaining error is intrinsic to the current observation and control
-representation.
+**Open questions:** Whether low-Jacobian configurations initiate the persistent
+failure or arise from an already unstable trajectory; whether prolonged actuator
+saturation is a controller limitation, a consequence of the target geometry, or
+both; whether branch switching occurs before tolerance entry; and whether the
+current observation and torque representation can support reliable local
+stabilization without sacrificing the rest of the target distribution.
 
-**Active inquiry:** Test whether the baseline's radius-limited training
-distribution left insufficient experience for the configurations associated with
-the repeated negative-angle failures. Continue the working policy while exposing
-training to the complete 0.06--0.20 m radius range, then compare complete
-reach-and-hold outcomes and failure diagnostics against the saved working
-lineage on disjoint episodes. A reduction of both no-entry and interrupted-hold
-failures without loss elsewhere would support a coverage mechanism; unchanged
-angular failures would redirect attention to branch conditioning, approach
-dynamics, or stabilization. The current working checkpoint remains a strong
-near-objective baseline, not demonstrated objective attainment.
+**Active inquiry:** Carry forward the unresolved negative-angle failures as a
+conditioning-and-stabilization problem rather than a radius-coverage problem.
+The common failure identities, persistent saturation, and conditioning
+association justify testing a future policy that can arrest motion and maintain
+the tolerance hold in these configurations. Evidence of reduced saturation and
+failure-sector loss without regressions elsewhere would support that mechanism;
+unchanged failures despite altered transient control would redirect attention to
+observability or branch transients. Until such evidence exists, the campaign
+should preserve the parent as the working and best-known policy without claiming
+objective attainment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -85,3 +84,51 @@ policy for future comparison.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-1-checkpoint-120832-200ep-seed21000-48e4acc98c39.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-1-checkpoint-100352-task-reference-v1.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-1-checkpoint-120832-task-reference-v1.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 2
+
+**Result:** Expanding training target radii from 0.14--0.20 m to the complete
+0.06--0.20 m range did not improve the measured policy lineage. The parent
+achieved 194/200 on the first disjoint panel and 197/200 on the telemetry panel;
+both measured continuation checkpoints achieved 193/200 and 197/200,
+respectively. The parent remains working and best-known. The radius-expanded
+checkpoints are retained as measured alternatives, and the scientific recipe is
+reverted to the parent recipe.
+
+**Observed behavior:** The first disjoint panel preserved the negative-angle
+failure sector, with both no-entry and interrupted-hold failures. On the
+telemetry panel, all three policies failed on the same episodes (35, 67, and
+150), all near -144 to -153 degrees. Every episode that entered tolerance was
+closer to the elbow-open inverse-kinematic branch than the folded branch at
+entry. Failure episodes had no consistent excess endpoint speed at entry, but
+they remained actuator-saturated for about 499 of 500 control steps and showed
+lower minimum planar Jacobian determinants than successful episodes in the same
+panel.
+
+**Hypothesis assessment:** The hypothesis that complete radius coverage would
+reduce the recurring negative-angle failures is weakened. The continuation did
+not improve the independent panel, pooled performance was 97.5% versus 97.6%
+for the parent, and the common failure identities persisted. The evidence does
+not establish that radius coverage has no benefit outside this failure sector.
+The telemetry weakens branch-entry and entry-speed explanations as sole causes
+and makes prolonged saturation in poorly conditioned trajectories a more useful
+working explanation, but the association is not causal and does not identify a
+single sufficient mechanism.
+
+**Interpretation:** The intervention answered the radius question without
+solving the task. The stable target identities across policies indicate a
+shared geometry/controller interaction rather than random checkpoint noise.
+Selecting the parent preserves the strongest accumulated development evidence;
+retaining both continuation checkpoints preserves distinct policies whose
+trajectory variants may be useful for future paired work without treating their
+98.5% telemetry-panel result as independent objective attainment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/results.jsonl`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-working-200ep-seed22000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-checkpoint-105472-200ep-seed22000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-checkpoint-120832-200ep-seed22000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-working-200ep-seed23000-a27165d6de57.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-checkpoint-105472-200ep-seed23000-a27165d6de57.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-2-checkpoint-120832-200ep-seed23000-a27165d6de57.json`.
