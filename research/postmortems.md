@@ -4,11 +4,11 @@ No experiments recorded.
 
 ## 670368bb-2a56-4874-bd71-a57d639fd0bf / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned strong reach-and-hold behavior. Checkpoints 100352 and 120832 both achieved 195/200 (97.5%) on the disjoint researcher panel, while checkpoint 100352 scored 98% on the fixed task-reference panel and checkpoint 120832 scored 97%. The disjoint comparison found no wins or discordant episodes, so checkpoint 100352 is selected as the working and best-known lineage based on the modest task-reference advantage and earlier proxy peak, not on an independent advantage from the reused panel.
+**Current synthesis:** The unchanged PPO baseline learned strong reach-and-hold behavior. The selected checkpoint-100352 and retained checkpoint-120832 are tied at 195/200 (97.5%) on the disjoint researcher panel; checkpoint-100352 scored 98% on the reused task-reference panel versus 97% for checkpoint-120832. The selected lineage is therefore the best-supported development policy, but not an independently established improvement over the late-training alternative.
 
-**Lessons and limits:** Measured task behavior was substantially better than training proxies alone suggested, and continued training past checkpoint 100352 did not show a measured improvement. The development measurements are not the official final assessment; the 97.5% disjoint result is below the 98% campaign objective and the fixed task-reference panel was reused during selection. The baseline recipe and exact model fingerprints are preserved in the closure decision.
+**Lessons and limits:** Measured task behavior was better than training proxies alone suggested, while continued training past checkpoint-100352 did not improve the measured result. The 97.5% disjoint result is below the 98% objective, and the fixed task-reference panel was reused during selection; neither development record is the official final assessment. The baseline recipe and exact model fingerprints are preserved in the closure decision.
 
-**Open questions:** Whether the selected policy achieves at least 196/200 on the official final panel remains unresolved. The two late checkpoints are effectively tied on the independent researcher panel, so this experiment does not establish a causal benefit from stopping at checkpoint 100352.
+**Open questions:** Whether the selected policy achieves at least 196/200 on the official final panel remains unresolved. The available measurements do not establish a causal benefit from stopping at checkpoint-100352 or a validated route for improving the residual failures.
 
 ## 670368bb-2a56-4874-bd71-a57d639fd0bf / Experiment 1
 
