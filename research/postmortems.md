@@ -3,24 +3,26 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a strong but variable reach-and-hold
-policy. The standing `best_known` lineage scored 965/1000 (96.5%) across five
-disjoint research panels, including 199/200 (99.5%) on the latest panel, so
-development evidence remains below a stable demonstration of the 98% objective.
-Full-radius target training, full hold-exit forfeiture, and explicit hold
-progress in a fresh observation all failed to improve the retained lineage.
+policy. The standing `best_known` lineage scored 965/1000 (96.5%) across the
+first five disjoint research panels and 196/200 (98.0%) on the new disjoint
+panel, for 1161/1200 (96.75%) pooled across six panels. This is independent
+confirmation of one objective-level development result, but not a stable
+demonstration of the 98% objective. Full-radius target training, full hold-exit
+forfeiture, explicit hold progress in a fresh observation, and the increased
+discount factor all failed to improve the retained lineage.
 
 **Lessons and limits:** Direct task success, not training proxies, governs
-comparisons. Residual failures include both no-reach episodes and interrupted
-holds; the tested interventions do not isolate a remaining cause. The
-hold-progress observation was strongly unsuccessful under fresh training, but
-this does not rule out other learning-method changes. Development panels,
-including the reused 98% task-reference panel, cannot establish the official
-result.
+comparisons. The gamma 0.995 transfer produced 73.0%, 74.5%, and 93.5% on its
+measured checkpoints versus 98.0% for the same-panel control, so the tested
+longer-horizon credit-assignment change should not remain active. Residual
+failures include both no-reach episodes and interrupted holds; the tested
+interventions do not isolate a remaining cause. Development panels, including
+the reused 98% task-reference panel, cannot establish the official result.
 
-**Open questions:** The relationship between PPO's long-horizon credit
-assignment and reliable 100-step holds remains unresolved. It is also
-unresolved whether the standing lineage meets the official fixed-panel
-objective.
+**Open questions:** The cause of the standing lineage's remaining no-reach and
+interrupted-hold failures remains unresolved, as does whether it meets the
+official fixed-panel objective. Other learning-method changes remain possible,
+but the tested gamma intervention is not a useful continuation.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
@@ -178,3 +180,40 @@ training is a separate post-closure experiment.
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-checkpoint-105472-200ep-seed5000-765f20eb658a.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-checkpoint-120832-200ep-seed5000-765f20eb658a.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-4-best_known-200ep-seed5000-765f20eb658a.json`.
+
+## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 5
+
+**Result:** Increasing PPO gamma from 0.99 to 0.995 did not produce a useful
+challenger. The existing `best_known` lineage remains the working and
+best-known policy, and the gamma change should be reverted.
+
+**Observed behavior:** On the new research panel covering episodes 5200-5399,
+the gamma-0.995 checkpoints scored 146/200 (73.0%) at 70656 steps, 149/200
+(74.5%) at 100352 steps, and 187/200 (93.5%) at 120832 steps. The same-panel
+`best_known` control scored 196/200 (98.0%). Paired comparisons gave the
+control 51, 47, and 10 discordant wins over the three challengers, with only
+one challenger win at 70656 and one at 120832. The final challenger was closer
+to the control but still below the objective and below the control.
+
+**Hypothesis assessment:** Contradicted under the tested transferred
+gamma-0.995 conditions. The longer discount horizon did not improve direct
+reach-and-hold success or preserve the parent's reliability across the late
+trajectory; every measured challenger underperformed its same-panel control.
+This rejects this intervention as the current recipe, but does not establish
+that all discounting or learning-method alternatives are ineffective.
+
+**Interpretation:** The new 5200-5399 panel is disjoint from the panels used to
+select `best_known`, so its 196/200 result is independent development evidence
+for the standing lineage. However, the lineage's pooled six-panel result is
+1161/1200 (96.75%), and the fixed task-reference panel remains reused
+development evidence. The experiment therefore closes with the prior lineage
+and recipe restored; further training or another learning-method investigation
+is a separate post-closure decision.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`; `research/research_state.json`;
+`research/checkpoints/challengers/8f4d116e-7b66-4ca1-ab31-5915330bf310/experiment-5/inventory.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-checkpoint-70656-200ep-seed5200-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-checkpoint-100352-200ep-seed5200-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-checkpoint-120832-200ep-seed5200-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-5-best_known-200ep-seed5200-f48545f83637.json`.
