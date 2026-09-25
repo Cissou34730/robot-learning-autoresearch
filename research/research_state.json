@@ -74,7 +74,13 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-25T10:12:12.590132+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "terminal_expectation": {
+      "expected_verdict": "goal_not_reached",
+      "reason": "The standing best-known checkpoint-100352 is the strongest available policy, but it achieved 778/800 successes (97.25%) across four disjoint research panels, below the 98% objective despite reaching 196/200 on two panels. The targeted transfer run and fresh replication were both materially weaker and supplied no credible replacement. The official panel remains a distinct unresolved sample, so terminal assessment is warranted to adjudicate the best-known policy; the development evidence makes goal_not_reached more likely than goal_reached while retaining sampling uncertainty."
+    }
+  },
   "campaign_experiment_counters": {
     "6a67124b-e88d-49da-aebe-ed9ee362dec4": 3
   },
@@ -91,15 +97,100 @@
     "experiment": 3,
     "reason": "Keep checkpoint-100352 as the working lineage because the new disjoint panel independently measured it at 196/200, while the fresh replication scored only 67/200 and 97/200 and won zero paired episodes against it. The replication produced no policy that improves the campaign's measured position."
   },
-  "last_verdict": "researcher selected working as working",
+  "last_verdict": "researcher requested the official final benchmark",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "progress": "planned",
+    "reason": "The standing best-known checkpoint-100352 is the strongest available policy, but it achieved 778/800 successes (97.25%) across four disjoint research panels, below the 98% objective despite reaching 196/200 on two panels. The targeted transfer run and fresh replication were both materially weaker and supplied no credible replacement. The official panel remains a distinct unresolved sample, so terminal assessment is warranted to adjudicate the best-known policy; the development evidence makes goal_not_reached more likely than goal_reached while retaining sampling uncertainty.",
+    "terminal_expectation": {
+      "expected_verdict": "goal_not_reached",
+      "reason": "The standing best-known checkpoint-100352 is the strongest available policy, but it achieved 778/800 successes (97.25%) across four disjoint research panels, below the 98% objective despite reaching 196/200 on two panels. The targeted transfer run and fresh replication were both materially weaker and supplied no credible replacement. The official panel remains a distinct unresolved sample, so terminal assessment is warranted to adjudicate the best-known policy; the development evidence makes goal_not_reached more likely than goal_reached while retaining sampling uncertainty."
+    }
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
+  "pending_final_benchmark": {
+    "artifact": "research/checkpoints/retained/6a67124b-e88d-49da-aebe-ed9ee362dec4/e1-cada55eb5-ea0f3e5666bdfc5deb3e48db606c31717369d03101bdab71e1544fbc7b1fef06",
+    "best_known": {
+      "artifact": "research/checkpoints/retained/6a67124b-e88d-49da-aebe-ed9ee362dec4/e1-cada55eb5-ea0f3e5666bdfc5deb3e48db606c31717369d03101bdab71e1544fbc7b1fef06",
+      "candidate": "checkpoint-100352",
+      "designation_ordinal": 1,
+      "evaluation_artifacts": [
+        "research/evaluations/6a67124b-e88d-49da-aebe-ed9ee362dec4/evaluation-6a67124b-e88d-49da-aebe-ed9ee362dec4-experiment-1-checkpoint-100352-200ep-seed2000-f48545f83637.json",
+        "research/evaluations/6a67124b-e88d-49da-aebe-ed9ee362dec4/evaluation-6a67124b-e88d-49da-aebe-ed9ee362dec4-experiment-1-checkpoint-100352-200ep-seed2200-f48545f83637.json",
+        "research/evaluations/6a67124b-e88d-49da-aebe-ed9ee362dec4/task-reference-6a67124b-e88d-49da-aebe-ed9ee362dec4-experiment-1-checkpoint-100352-task-reference-v1.json"
+      ],
+      "fingerprint": "ea0f3e5666bdfc5deb3e48db606c31717369d03101bdab71e1544fbc7b1fef06",
+      "origin_experiment": 1,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "Designate checkpoint-100352 as best known because its disjoint research-panel result reaches 196/200 and its pooled 391/400 research result is stronger than the final checkpoint's 388/400, with matching direction on the reused task-reference panel.",
+      "scientific_commit": "947428a67f83be5c19d821fcb766aa3ee2cf767a",
+      "selected_panels": [
+        {
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "seed": 2000
+        },
+        {
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "seed": 2200
+        },
+        {
+          "episodes": 200,
+          "instrument": "task_reference",
+          "panel": "task-reference-v1",
+          "panel_version": 1,
+          "seed": 7300
+        },
+        {
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "seed": 2400
+        },
+        {
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "seed": 2600
+        }
+      ],
+      "training_steps": 100352
+    },
+    "experiment": 3,
+    "fingerprint": "ea0f3e5666bdfc5deb3e48db606c31717369d03101bdab71e1544fbc7b1fef06",
+    "selected": "best_known",
+    "terminal_expectation": {
+      "expected_verdict": "goal_not_reached",
+      "reason": "The standing best-known checkpoint-100352 is the strongest available policy, but it achieved 778/800 successes (97.25%) across four disjoint research panels, below the 98% objective despite reaching 196/200 on two panels. The targeted transfer run and fresh replication were both materially weaker and supplied no credible replacement. The official panel remains a distinct unresolved sample, so terminal assessment is warranted to adjudicate the best-known policy; the development evidence makes goal_not_reached more likely than goal_reached while retaining sampling uncertainty."
+    }
+  },
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "8a1ed7e6bfe97099eec332885a7c2f23821d68e7",
