@@ -1,87 +1,19 @@
 {
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/4b17531f-ff44-4b08-997f-e703fc28eb8e/e1-cada55eb5-941f507177a18ef14a39c2ea99df07eea8f92bb933054b95d7ddabe42331ebaa",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/4b17531f-ff44-4b08-997f-e703fc28eb8e/evaluation-4b17531f-ff44-4b08-997f-e703fc28eb8e-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/4b17531f-ff44-4b08-997f-e703fc28eb8e/evaluation-4b17531f-ff44-4b08-997f-e703fc28eb8e-experiment-1-checkpoint-100352-160ep-seed4360-f48545f83637.json",
-      "research/evaluations/4b17531f-ff44-4b08-997f-e703fc28eb8e/task-reference-4b17531f-ff44-4b08-997f-e703fc28eb8e-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "941f507177a18ef14a39c2ea99df07eea8f92bb933054b95d7ddabe42331ebaa",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The disjoint research measurements consistently give checkpoint-100352 151/160 successes, compared with 151/160 and 149/160 for the final checkpoint-120832; it is the best-supported available policy while remaining below the official 98% objective.",
-    "scientific_commit": "521254be6d60c3923cbc0659a3f22797a26dc434",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4360
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      }
-    ],
-    "training_steps": 100352
-  },
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "68f6347f0736c5a78c96d8b78f982cf2f7bfc644",
-    "id": "4b17531f-ff44-4b08-997f-e703fc28eb8e",
+    "base_commit": "8cb04f41cd5758fc5cd89d035322025ad60f1db2",
+    "id": "6a67124b-e88d-49da-aebe-ed9ee362dec4",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-25T03:03:18.852383+00:00"
+    "started_at": "2026-09-25T10:12:12.590132+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "4b17531f-ff44-4b08-997f-e703fc28eb8e": 3
+    "6a67124b-e88d-49da-aebe-ed9ee362dec4": 0
   },
-  "last_allocated_experiment": 3,
-  "last_experiment": 3,
-  "last_lineage_decision": {
-    "best_known": null,
-    "code": {
-      "action": "revert",
-      "reason": "The experiment changed only the training target-radius distribution from 14-20 cm to 6-20 cm, and the intervention did not improve measured reach-and-hold success. Restore the complete parent scientific recipe rather than carrying this unproductive coverage change forward."
-    },
-    "code_parent_commit": "c472fc854b50904b73537869a6cdce5844d7da0f",
-    "continue_from": "working",
-    "experiment": 3,
-    "reason": "Experiment 3 did not improve the saved working policy: its matched-step, proxy-peak, and final candidates each scored 151/160 on a new disjoint panel, while the working parent scored 152/160 and won the only discordant episode in each paired comparison. Retain the parent as the strongest measured policy for a separately prepared next experiment."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_allocated_experiment": 0,
+  "last_experiment": 0,
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -91,82 +23,11 @@
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "c472fc854b50904b73537869a6cdce5844d7da0f",
-    "experiment": 3,
-    "scientific_commit": "83b7db8cf558a431f62dbbf39bad155ba5fa7915"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
   "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/4b17531f-ff44-4b08-997f-e703fc28eb8e/e1-cada55eb5-941f507177a18ef14a39c2ea99df07eea8f92bb933054b95d7ddabe42331ebaa",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/4b17531f-ff44-4b08-997f-e703fc28eb8e/evaluation-4b17531f-ff44-4b08-997f-e703fc28eb8e-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-      "research/evaluations/4b17531f-ff44-4b08-997f-e703fc28eb8e/evaluation-4b17531f-ff44-4b08-997f-e703fc28eb8e-experiment-1-checkpoint-100352-160ep-seed4360-f48545f83637.json"
-    ],
-    "fingerprint": "941f507177a18ef14a39c2ea99df07eea8f92bb933054b95d7ddabe42331ebaa",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "Experiment 3 did not improve the saved working policy: its matched-step, proxy-peak, and final candidates each scored 151/160 on a new disjoint panel, while the working parent scored 152/160 and won the only discordant episode in each paired comparison. Retain the parent as the strongest measured policy for a separately prepared next experiment.",
-    "scientific_commit": "521254be6d60c3923cbc0659a3f22797a26dc434",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4360
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4520
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4680
-      }
-    ],
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
