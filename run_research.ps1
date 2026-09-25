@@ -130,8 +130,12 @@ if ($ResearcherBackend -eq "opencode" -and $Reasoning -eq "max") {
     throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
 }
 
-$scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's physical reference when framing questions, interpreting observations, and designing analysis or measurements. Keep its coupled robot-task constraints visible, but do not treat its unknowns or listed quantities as ranked priorities or an intervention menu; current campaign evidence determines what remains relevant."
-$researchFreedomGuidance = "Evidence gathering may discover or refine the scientific question. You may inspect code, logs, and artifacts, use existing tools, perform lightweight analysis, and create or modify researcher-owned analysis and measurement instrumentation. Existing evidence tools include research/query_training_log.py for preserved raw Stable-Baselines3 records; research/instruments.md documents its command. If the quantity you need is not emitted, modify researcher-owned instrumentation before requesting it."
+$researcherAgencyGuidance = "Act as the campaign's autonomous principal scientist. Own the scientific understanding, direction, methods, software, and decisions needed to reach the human objective; do not wait for the current implementation or the human to define the important mechanism."
+$scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu."
+$researchFreedomGuidance = "Everything in the researcher-owned surface is fully yours. Nothing there is sacred, preferred, required to remain recognizable, or exempt from replacement. You may inspect, create, rewrite, combine, or remove any researcher-owned scientific implementation or tool; existing files and module structure carry no scientific authority."
+$scientificMemoryGuidance = "Maintain the Scientific strategy as durable working memory: current synthesis, lessons and limits, open questions, and one provisional Active inquiry that explains the line of reasoning being carried forward and what evidence would redirect or end it. The human objective outranks this memory; the inquiry is revisable and does not prescribe an implementation."
+$script:ResumeAnalysisSession = $false
+$script:ResumePreparationSession = $false
 
 function Request-CampaignStop([string]$message) {
     if ($script:CampaignStopRequested) {
@@ -421,11 +425,19 @@ function Invoke-ResearcherSession {
         if (-not $script:ResearcherSessionId) {
             throw "There is no researcher session to continue for this phase."
         }
+        if (
+            $script:ResearcherSessionPhase -ne $Phase -or
+            $script:ResearcherSessionExperiment -ne $Experiment
+        ) {
+            throw "The active researcher session belongs to another phase."
+        }
     }
     else {
         # Each phase owns its session, so a retry resumes that phase and
         # never inherits whichever session last ran on this machine.
         $script:ResearcherSessionId = [guid]::NewGuid().ToString()
+        $script:ResearcherSessionPhase = $Phase
+        $script:ResearcherSessionExperiment = $Experiment
     }
     Write-Status "=== Researcher phase: $Phase ===" -Color Magenta -Label researcher
     Write-Status "Model: $model, reasoning: $reasoning" -Color Magenta -Label researcher
@@ -834,6 +846,13 @@ if ($ResearcherBackend -eq "opencode") {
                 throw "Runner execution of the accepted measurement request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
             }
             Update-ResearchBrief
+            if (
+                $script:ResearcherSessionId -and
+                $script:ResearcherSessionPhase -eq "post-training analysis" -and
+                $script:ResearcherSessionExperiment -eq $analysisExperiment
+            ) {
+                $script:ResumeAnalysisSession = $true
+            }
             continue
         }
         # Only a stale closure proposal is cleared here. The runner removes a
@@ -850,19 +869,36 @@ if ($ResearcherBackend -eq "opencode") {
         else {
             "Current phase: initial post-training analysis for trained experiment $analysisExperiment."
         }
+        $resumeAnalysisSession = (
+            $script:ResumeAnalysisSession -and
+            $script:ResearcherSessionId -and
+            $script:ResearcherSessionPhase -eq "post-training analysis" -and
+            $script:ResearcherSessionExperiment -eq $analysisExperiment
+        )
         $analysisPrompt = @(
             $analysisPhasePrompt
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
+            $researcherAgencyGuidance
             $scientificModelUseGuidance
-            "Assess progress toward a learned policy satisfying the human objective, from the observed training and measurement evidence."
             $researchFreedomGuidance
-            "If updating the current campaign's Scientific strategy in research/postmortems.md, revise the existing section in place as fallible, non-binding memory of evidence, limits, and unresolved behavioral distinctions; do not turn it into a ranked agenda or candidate-code list, and do not append a second section with the same heading."
+            $scientificMemoryGuidance
+            $(if ($resumeAnalysisSession) {
+                    "The measurement you requested is complete. Continue the same investigation from its results and your existing session context."
+                }
+                else {
+                    "Assess the trained policies and evidence against the human objective and the campaign's active inquiry."
+                })
             "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
-            "If the lineage you are about to select scored well on a panel that was used to select it, that score is not independent evidence; confirming it requires a disjoint panel, and the fixed task-reference panel is a permanently reused one."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis" -Experiment $analysisExperiment
+        if ($resumeAnalysisSession) {
+            Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis" -Experiment $analysisExperiment -Continue
+        }
+        else {
+            Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis" -Experiment $analysisExperiment
+        }
+        $script:ResumeAnalysisSession = $false
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
             break
         }
@@ -887,7 +923,8 @@ if ($ResearcherBackend -eq "opencode") {
                 throw "Researcher ended twice without a valid post-training analysis deliverable. Last validation error: $($analysisStatus.Reason)"
             }
         }
-        if (Test-Path "research\evaluation_request.json") {
+        $analysisRequestedMeasurement = Test-Path "research\evaluation_request.json"
+        if ($analysisRequestedMeasurement) {
             $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
         }
         else {
@@ -904,6 +941,9 @@ if ($ResearcherBackend -eq "opencode") {
             throw "Runner execution of the accepted analysis deliverable failed. The researcher phase is not reopened."
         }
         Update-ResearchBrief
+        if ($analysisRequestedMeasurement) {
+            $script:ResumeAnalysisSession = $true
+        }
         Write-Status "=== Post-training analysis outcome recorded ===" Green
         continue
     }
@@ -927,6 +967,12 @@ if ($ResearcherBackend -eq "opencode") {
                 throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
             }
             Update-ResearchBrief
+            if (
+                $script:ResearcherSessionId -and
+                $script:ResearcherSessionPhase -eq "new hypothesis"
+            ) {
+                $script:ResumePreparationSession = $true
+            }
             Write-Status "=== Preparation measurement complete; returning to preparation ===" Green
             continue
         }
@@ -1120,20 +1166,16 @@ The final output should be a compact but substantive **Scientific model of the r
     if ($null -ne $researchState.pending_researcher_decision) {
         Update-ResearchBrief
         $closingExperiment = [int]$researchState.pending_researcher_decision.experiment
-        $baselineClosure = $researchState.schema_version -eq 4 -and $closingExperiment -eq 1
         Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $closingExperiment ==="
         $decisionPrompt = @(
             "Current phase: close experiment $closingExperiment and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
+            $researcherAgencyGuidance
             $scientificModelUseGuidance
+            $scientificMemoryGuidance
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            $(if ($baselineClosure) {
-                    "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, and the optional best-known designation. Because this is the baseline closure, request_final_benchmark must be false; terminal assessment becomes available after one completed post-baseline scientific operation."
-                }
-                else {
-                    "Close the experiment from the available evidence. Resolve the recipe action, the working lineage, retention, the optional best-known designation, and whether to request the official benchmark, as separate decisions."
-                    "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
-                })
+            "Close the experiment from the available evidence. Resolve the recipe action, working lineage, retention, optional best-known designation, and whether to request the official benchmark as separate decisions."
+            "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving development uncertainty."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
@@ -1179,15 +1221,6 @@ The final output should be a compact but substantive **Scientific model of the r
         [int]$researchState.last_allocated_experiment,
         [int]$researchState.last_experiment
     )
-    $completedPreparationRounds = 0
-    if ($null -ne $researchState.preparation_measurement -and $null -ne $researchState.preparation_measurement.rounds) {
-        $completedPreparationRounds = @($researchState.preparation_measurement.rounds).Count
-    }
-    $finalAssessmentEligible = (
-        $researchState.schema_version -ne 4 -or
-        [int]$researchState.last_experiment -gt 1 -or
-        $completedPreparationRounds -gt 0
-    )
     $budgetReached = $MaxExperiments -gt 0 -and $allocatedExperiment -ge $MaxExperiments
     if ($budgetReached) {
         # The budget forbids allocating another training experiment, but the
@@ -1217,52 +1250,40 @@ The final output should be a compact but substantive **Scientific model of the r
     Write-Status "=== Researcher forming next hypothesis ==="
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $nextExperiment = $allocatedExperiment + 1
+    $resumePreparationSession = (
+        $script:ResumePreparationSession -and
+        $script:ResearcherSessionId -and
+        $script:ResearcherSessionPhase -eq "new hypothesis" -and
+        $script:ResearcherSessionExperiment -eq $nextExperiment
+    )
     $researchPrompt = @(
         $(if ($budgetReached) {
                 "Current phase: conclude the campaign. The experiment budget is exhausted; no further experiment may be prepared."
+            }
+            elseif ($resumePreparationSession) {
+                "Current phase: continue preparing experiment $nextExperiment. The measurement you requested is complete; continue the same investigation from its results and your existing session context."
             }
             else {
                 "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending."
             })
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
+        $researcherAgencyGuidance
         $scientificModelUseGuidance
-        "Review the campaign's evidence and rewrite the Scientific strategy as short, fallible, non-binding memory of current observations, weakened explanations, limits, and unresolved behavioral distinctions. It prescribes no next action, ranks no uncertainty, and names no candidate code change."
-        "Begin the next decision from the human objective and current campaign evidence. The Scientific strategy is revisable memory, not an authority, backlog, or obligation. The frozen scientific model remains the physical reference but does not prioritize the next action."
+        $scientificMemoryGuidance
         $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
-        "For training or continuation, connect the proposed change to possible learned behavior and a complete-task comparison. No particular lever or established mechanism is required; see research/instruments.md for the proposal contract."
         $(if ($budgetReached) {
-                $(if ($finalAssessmentEligible) {
-                        "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
-                    }
-                    else {
-                        "Only one outcome is legal in this phase: conclude that no further experiment is warranted through a campaign_conclusion in research/proposal.json. Final assessment is not available because no post-baseline scientific operation has completed."
-                    })
-            }
-            elseif ($finalAssessmentEligible) {
-                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes, with no default or preference implied by their order: a measurement round on saved lineages; replication; continuation or training with fresh or transfer initialization; requesting the official final assessment of the standing best-known model; or concluding that no further experiment is warranted. After a measurement round, this phase reopens with its evidence and all of these outcomes remain available."
+                "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
             else {
-                "Decide the next scientifically useful action toward the human objective. Available preparation outcomes, with no default or preference implied by their order: a measurement round on saved lineages; replication; continuation or training with fresh or transfer initialization; or concluding that no further experiment is warranted. Final assessment becomes available after one of those post-baseline scientific operations completes; a preparation measurement returns to this phase with its evidence."
-            })
-        $(if ($budgetReached -or -not $finalAssessmentEligible) {
-                ""
-            }
-            else {
-                "If you propose training, state the question or hypothesis, the evidence motivating it, the observation that would change the next decision, and the parent and initialization the question calls for."
+                "Choose the scientifically justified preparation outcome: measure saved lineages, prepare training or replication, request the official assessment, or conclude that no further experiment is warranted. No outcome is the default."
             })
         $(if ($budgetReached) {
                 ""
             }
             else {
-                "Request the official final assessment only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving an uncertainty your development measurements left open, and no development panel ever declares the objective reached."
+                "Request the official final assessment only if you expect it to return goal_reached; it is a terminal verdict, not an instrument for resolving development uncertainty."
             })
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
-        $(if ($budgetReached) {
-                ""
-            }
-            else {
-                "The current implementation is a starting point, not a prescribed method. You have a total freedom in the researcher perimeter. You may change code, implementations, configuration values, anywhere in the researcher-owned scientific surface, including the reward, training environment, observations, action mapping, learning method, training procedure, evaluation, and instrumentation. You can add and remove, change and transform."
-            })
         $(if ($budgetReached) {
                 "Expected deliverable: research/proposal.json containing only a campaign_conclusion, using the contract in research/instruments.md."
             }
@@ -1282,7 +1303,13 @@ The final output should be a compact but substantive **Scientific model of the r
                 "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal or accepted measurement request."
             })
     ) -join " "
-    Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment
+    if ($resumePreparationSession) {
+        Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment -Continue
+    }
+    else {
+        Invoke-ResearcherSession -Prompt $researchPrompt -Phase "new hypothesis" -Experiment $nextExperiment
+    }
+    $script:ResumePreparationSession = $false
     if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
         break
     }
@@ -1305,12 +1332,7 @@ The final output should be a compact but substantive **Scientific model of the r
             $(if ($budgetReached) {
                     "Current phase: conclude the campaign. The experiment budget is exhausted; no further experiment may be prepared. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
                     "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json, which must contain a campaign_conclusion, preserving valid researcher-owned edits that belong to this unfinished experiment."
-                    $(if ($finalAssessmentEligible) {
-                            "Only two outcomes are legal: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
-                        }
-                        else {
-                            "Only one outcome is legal: conclude that no further experiment is warranted through a campaign_conclusion in research/proposal.json. Final assessment is not available because no post-baseline scientific operation has completed."
-                        })
+                    "Only two outcomes are legal: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
                     "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                     "Expected deliverable: a corrected research/proposal.json containing only a campaign_conclusion."
                     "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
@@ -1358,6 +1380,7 @@ The final output should be a compact but substantive **Scientific model of the r
             throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
         }
         Update-ResearchBrief
+        $script:ResumePreparationSession = $true
         Write-Status "=== Preparation measurement complete; the next hypothesis returns with new evidence ===" Green
         continue
     }

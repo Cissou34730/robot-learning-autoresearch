@@ -326,9 +326,8 @@ def test_a_spent_preparation_measurement_round_may_inform_a_conclusion(
     monkeypatch, tmp_path
 ):
     _, _, state = _configure(monkeypatch, tmp_path)
-    state["last_experiment"] = 1
     state["preparation_measurement"] = {
-        "experiment": 2,
+        "experiment": 4,
         "rounds": [{"round": 1, "evaluations": []}],
     }
 
@@ -341,27 +340,25 @@ def test_a_spent_preparation_measurement_round_may_inform_a_conclusion(
 
 def test_an_unspent_preparation_phase_may_still_conclude(monkeypatch, tmp_path):
     _, _, state = _configure(monkeypatch, tmp_path)
-    state["last_experiment"] = 1
-    state["preparation_measurement"] = {"experiment": 2, "rounds": []}
+    state["preparation_measurement"] = {"experiment": 4, "rounds": []}
 
-    with pytest.raises(ValueError, match="post-baseline scientific operation"):
-        validate_proposal_against_state(
-            _conclusion("request_final_benchmark"), state
-        )
     assert (
-        validate_proposal_against_state(_conclusion("no_further_experiment"), state)
+        validate_proposal_against_state(_conclusion("request_final_benchmark"), state)
         == "conclusion"
     )
 
 
-def test_baseline_alone_cannot_request_the_final_benchmark(monkeypatch, tmp_path):
+def test_baseline_alone_may_request_the_final_benchmark(monkeypatch, tmp_path):
     _, _, state = _configure(monkeypatch, tmp_path)
     state["last_experiment"] = 1
+    state["preparation_measurement"] = {"experiment": 2, "rounds": []}
 
-    with pytest.raises(ValueError, match="post-baseline scientific operation"):
+    assert (
         validate_proposal_against_state(
             _conclusion("request_final_benchmark"), state
         )
+        == "conclusion"
+    )
 
 
 def test_budget_reached_allows_a_conclusion_and_rejects_training(monkeypatch, tmp_path):

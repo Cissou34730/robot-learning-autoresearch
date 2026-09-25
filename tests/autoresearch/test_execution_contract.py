@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pytest
 
+from research import build_research_brief as brief
 from research import runner_execution as execution
 from research import runner_protocol as protocol
 from research import runner_repository as repository
@@ -56,6 +57,56 @@ from research.runner_repository import (
     resolve_repo_path,
     synchronize_experiment_log,
 )
+
+
+def test_research_memory_requires_an_active_inquiry(monkeypatch, tmp_path):
+    evidence = tmp_path / "evidence.txt"
+    evidence.write_text("Observed behavior.", encoding="utf-8")
+    postmortems = tmp_path / "postmortems.md"
+    postmortems.write_text(
+        "## campaign / Scientific strategy\n\n"
+        "**Current synthesis:** A current explanation.\n\n"
+        "**Lessons and limits:** One observation with limited scope.\n\n"
+        "**Open questions:** Which mechanism explains it?\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", postmortems)
+    proposal = {
+        "reasoning": {
+            "evidence": [
+                {"source": "evidence.txt", "observation": "Observed behavior."}
+            ]
+        }
+    }
+    state = {"campaign": {"id": "campaign"}}
+
+    with pytest.raises(ValueError, match="Active inquiry"):
+        protocol.validate_research_memory(proposal, state)
+
+    postmortems.write_text(
+        postmortems.read_text(encoding="utf-8")
+        + "\n**Active inquiry:** Test what evidence would distinguish the mechanisms.\n",
+        encoding="utf-8",
+    )
+    protocol.validate_research_memory(proposal, state)
+
+
+def test_brief_keeps_active_inquiry_subordinate_to_the_human_objective():
+    section = "\n".join(
+        brief._v4_synthesis_section(
+            "## campaign / Scientific strategy\n\n"
+            "**Current synthesis:** A current explanation.\n\n"
+            "**Lessons and limits:** One observation with limited scope.\n\n"
+            "**Open questions:** Which mechanism explains it?\n\n"
+            "**Active inquiry:** Test what evidence distinguishes the mechanisms.\n",
+            "campaign",
+        )
+    )
+
+    assert "provisional active inquiry" in section
+    assert "The human objective outranks it" in section
+    assert "redirect or end the inquiry" in section
 
 
 def _paired_evidence_plan(candidate_paths: list[str], reference_paths: list[str]):
@@ -2431,6 +2482,7 @@ def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
         "**Direction:** Investigate the plateau.\n\n"
         "**Lessons and limits:** evidence.txt records a single observation.\n\n"
         "**Open questions:** Is further training useful?\n\n"
+        "**Active inquiry:** Test whether measured progression resumes.\n\n"
         "**Conditional next steps:** Continue if progression resumes.\n\n"
         "**Reconsider when:** No further progress.\n",
         encoding="utf-8",

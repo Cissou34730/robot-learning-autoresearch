@@ -138,6 +138,11 @@ path takes precedence over any researcher-owned prefix.
   post-training analysis, exactly one actionable request is submitted: a
   measurement request or a closure proposal with its postmortem.
 
+Within this surface, the Researcher has unrestricted scientific authority.
+Nothing is sacred, preferred, required to remain recognizable, or exempt from
+replacement. It may create, rewrite, combine, or remove researcher-owned
+implementations and tools; the existing architecture carries no authority.
+
 Tests are not part of the Researcher-owned surface. The Researcher does not
 create, modify or maintain test files, and any path under `tests/` in its delta
 is rejected as a path it does not own: it must drop those paths from the

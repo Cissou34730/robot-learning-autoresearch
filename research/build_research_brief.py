@@ -1678,9 +1678,10 @@ def _v4_synthesis_section(postmortems: str, campaign_id: str | None) -> list[str
         "## Provisional scientific synthesis",
         "",
         (
-            "Researcher-authored interpretation of the campaign evidence. "
-            "It is fallible, non-binding memory for reassessment, not a ranked "
-            "agenda or prescribed next direction:"
+            "Researcher-authored working memory of the campaign: its current "
+            "synthesis, lessons and limits, open questions, and provisional "
+            "active inquiry. The human objective outranks it, and evidence may "
+            "redirect or end the inquiry:"
         ),
         "",
     ]
@@ -2870,9 +2871,10 @@ def render_research_brief() -> str:
             "## Provisional scientific synthesis",
             "",
             (
-                "Researcher-authored interpretation of the campaign evidence. "
-                "It is fallible, non-binding memory for reassessment, not a ranked "
-                "agenda or prescribed next direction:"
+                "Researcher-authored working memory of the campaign: its current "
+                "synthesis, lessons and limits, open questions, and provisional "
+                "active inquiry. The human objective outranks it, and evidence may "
+                "redirect or end the inquiry:"
             ),
             "",
             "\n".join(strategy.splitlines()[1:]).strip()
@@ -3053,8 +3055,7 @@ def render_research_brief() -> str:
             ),
             (
                 "- `research/current_params.json` holds the active method's "
-                "configuration. Read it when a diagnosed mechanism makes a specific "
-                "setting relevant, not to look for something to change."
+                "configuration."
             ),
             (
                 "- Preserved raw Stable-Baselines3 records are queryable through "
@@ -3065,17 +3066,11 @@ def render_research_brief() -> str:
                 "- Do not read full experiment or postmortem history unless the compact "
                 "evidence is insufficient for one specific decision."
             ),
-            "- One experiment should test one identifiable hypothesis; a continuation may test whether more training changes the conclusion.",
             (
-                "- Keep compatible explanations and the evidence that could "
-                "distinguish them visible when behavior remains unexplained. An "
-                "observed failure stage is not itself a cause or a code lever."
-            ),
-            (
-                "- Keep historical observations and decisions intact; revise the "
-                "campaign's Scientific strategy as evidence changes. It is fallible, "
-                "non-binding memory rather than a priority list, backlog, or source "
-                "of obligations."
+                "- Keep historical observations and decisions intact. Revise the "
+                "Scientific strategy as evidence changes so its Active inquiry "
+                "preserves continuity without becoming an authority over the human "
+                "objective."
             ),
         ]
     )

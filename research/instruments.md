@@ -283,7 +283,7 @@ required. The Runner does not judge their scientific merit. Replication does
 not claim an intervention and is exempt.
 
 The campaign's Scientific strategy section must exist before submission. The
-Runner validates its three labels and snapshots the section with `reasoning` in
+Runner validates its four labels and snapshots the section with `reasoning` in
 the experiment record. Existing historical records without these fields remain
 readable.
 
@@ -339,13 +339,10 @@ containing only a `campaign_conclusion` object:
 `request_final_benchmark` submits the standing `best_known` lineage for the
 official final assessment. It requires a designated best-known model and reuses
 the closure decision of the same name: the official benchmark runs once and the
-campaign ends after its verdict. It is unavailable until one post-baseline
-scientific operation has completed: either a preparation measurement after
-baseline closure or experiment 2 or later. Its `reason` is the terminal rationale
-for the request. `no_further_experiment` records the Researcher's judgement that
-no further experiment is warranted without requesting that assessment; it
-remains available immediately after baseline and ends the campaign. Neither
-outcome creates an experiment record,
+campaign ends after its verdict. Its `reason` is the terminal rationale for the
+request. `no_further_experiment` records the Researcher's judgement that no
+further experiment is warranted without requesting that assessment; it ends the
+campaign. Neither outcome creates an experiment record,
 an experiment-index row or an intervention count. A `campaign_conclusion` is
 accepted only while no measurement, analysis, closure or official assessment is
 pending; each pending phase requires its own deliverable.
@@ -383,13 +380,16 @@ The exact heading and labels are:
 **Lessons and limits:** <supported or weakened findings, source references, scope, and limitations>
 
 **Open questions:** <unranked behavioral or scientific distinctions not yet resolved, without candidate implementations or a next action>
+
+**Active inquiry:** <the provisional scientific question or line of reasoning being carried forward, why it matters to the human objective, and what evidence would redirect or end it>
 ```
 
-All three labeled entries must contain text and may span multiple lines. Their
+All four labeled entries must contain text and may span multiple lines. Their
 scientific meaning is defined in `research/program.md`. The entries are
-fallible, non-exhaustive memory and do not rank the next decision. The Runner
-checks the section's structure, associates the active campaign section with the
-proposal, and displays it in the brief. It does not author scientific content.
+fallible working memory. `Active inquiry` preserves continuity without requiring
+an implementation or outranking the human objective. The Runner checks the
+section's structure, associates the active campaign section with the proposal,
+and displays it in the brief. It does not author scientific content.
 The legacy `Direction` label remains readable as a synthesis, and historical
 experiment entries and strategy sections remain readable.
 
@@ -475,9 +475,7 @@ to proceed after closure. Setting it to `true` requests terminal assessment of
 `best_known`; the Runner ends the campaign after either `goal_reached` or
 `goal_not_reached`. The result is not available to a later hypothesis. The
 scientific decision rule for requesting assessment is defined in
-`research/program.md`. Baseline closure must omit the request or set it to
-`false`; experiment 2 and later may request it because a post-baseline operation
-has then completed.
+`research/program.md`.
 
 When `request_final_benchmark` is `true`, `terminal_reason` is required and must
 be non-empty. It is the terminal rationale for the irreversible request, distinct

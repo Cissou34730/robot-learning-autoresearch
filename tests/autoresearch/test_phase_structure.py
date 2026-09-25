@@ -48,6 +48,35 @@ def test_scientific_model_is_campaign_memory_and_protected_context():
     assert model not in runner_repository.RUNNER_CONTROL_PATHS
 
 
+def test_measurement_rounds_resume_the_originating_researcher_session():
+    analysis = SCRIPT.split(
+        "if ($researchState.schema_version -eq 4 -and "
+        "$null -ne $researchState.pending_analysis)",
+        1,
+    )[1].split("if ($null -ne $researchState.pending_evaluation_request)", 1)[0]
+    preparation_return = SCRIPT.split(
+        'if (Test-Path "research\\evaluation_request.json")',
+        1,
+    )[1].split(
+        'Write-Status "=== Preparation measurement complete; '
+        'the next hypothesis returns with new evidence ==="',
+        1,
+    )[0]
+
+    assert "$script:ResumeAnalysisSession = $true" in analysis
+    assert (
+        'Invoke-ResearcherSession -Prompt $analysisPrompt '
+        '-Phase "post-training analysis" -Experiment $analysisExperiment -Continue'
+        in analysis
+    )
+    assert "$script:ResumePreparationSession = $true" in preparation_return
+    assert (
+        'Invoke-ResearcherSession -Prompt $researchPrompt '
+        '-Phase "new hypothesis" -Experiment $nextExperiment -Continue'
+        in SCRIPT
+    )
+
+
 @pytest.mark.parametrize("content,valid", [(None, False), (" \n", False), ("facts\n", True)])
 def test_scientific_model_deliverable_preflight(tmp_path, monkeypatch, capsys, content, valid):
     model = tmp_path / "scientific_model.md"

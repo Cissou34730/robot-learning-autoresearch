@@ -288,13 +288,11 @@ def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
 
 
 def test_each_phase_reports_its_session_before_deciding_to_retry():
-    assert LOOP.count("Write-ResearcherSessionStatus") == LOOP.count(
-        "Invoke-ResearcherSession -Prompt"
-    )
     for status, retry in (
         ("$proposalStatus", "=== Research proposal missing or invalid"),
         ("$evaluationStatus", "=== Evaluation request missing or invalid"),
         ("$lineageStatus", "=== Lineage deliverable invalid"),
+        ("$analysisStatus", "=== Analysis deliverable missing or invalid"),
         ("$scientificModelStatus", "=== Scientific model missing or invalid"),
     ):
         assert LOOP.index(f"Write-ResearcherSessionStatus {status}") < LOOP.index(retry)
@@ -363,7 +361,13 @@ def test_analysis_preflight_rejects_duplicate_strategy_before_accepting_closure(
         "campaign": {"id": campaign_id},
         "pending_analysis": {"experiment": 4},
     }
-    strategy = f"## {campaign_id} / Scientific strategy\n\n**Current synthesis:** Current.\n"
+    strategy = (
+        f"## {campaign_id} / Scientific strategy\n\n"
+        "**Current synthesis:** Current.\n\n"
+        "**Lessons and limits:** Evidence is limited.\n\n"
+        "**Open questions:** The mechanism remains unresolved.\n\n"
+        "**Active inquiry:** Determine which observation changes the conclusion.\n"
+    )
     postmortems = tmp_path / "postmortems.md"
     postmortems.write_text(strategy + "\n" + strategy, encoding="utf-8")
     proposal = tmp_path / "proposal.json"

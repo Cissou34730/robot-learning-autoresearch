@@ -664,7 +664,7 @@ def validate_research_memory(proposal: dict, state: dict) -> None:
         raise ValueError(
             "scientific strategy needs a non-empty 'Current synthesis' entry"
         )
-    for label in ("Lessons and limits", "Open questions"):
+    for label in ("Lessons and limits", "Open questions", "Active inquiry"):
         match = re.search(
             rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
             section,
@@ -931,30 +931,6 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     return contract
 
 
-def has_completed_post_baseline_operation(
-    state: dict, *, closing_experiment: int | None = None
-) -> bool:
-    """Whether terminal assessment has been unlocked after the baseline."""
-    if closing_experiment is not None and closing_experiment > 1:
-        return True
-    if int(state.get("last_experiment", 0) or 0) > 1:
-        return True
-    measurement = state.get("preparation_measurement")
-    return isinstance(measurement, dict) and bool(measurement.get("rounds"))
-
-
-def require_post_baseline_operation_for_final(
-    state: dict, *, closing_experiment: int | None = None
-) -> None:
-    if not has_completed_post_baseline_operation(
-        state, closing_experiment=closing_experiment
-    ):
-        raise ValueError(
-            "the official final assessment requires one completed post-baseline "
-            "scientific operation"
-        )
-
-
 def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     """Validate a preparation-phase decision that ends without a new experiment.
 
@@ -993,7 +969,6 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
         raise ValueError("campaign_conclusion requires a non-empty reason")
     best_known = state.get("best_known_lineage")
     if action == "request_final_benchmark":
-        require_post_baseline_operation_for_final(state)
         if not isinstance(best_known, dict):
             raise ValueError("a final benchmark requires a designated best-known model")
         artifact = repository.resolve_repo_path(best_known["artifact"])
@@ -3014,10 +2989,6 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     terminal_reason = str(decision.get("terminal_reason", "")).strip()
     if request_final and not terminal_reason:
         raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
-    if request_final:
-        require_post_baseline_operation_for_final(
-            state, closing_experiment=int(pending["experiment"])
-        )
     if request_final and best_record is None:
         raise ValueError("a final benchmark requires a designated best-known model")
     retained_records = [

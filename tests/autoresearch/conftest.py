@@ -42,6 +42,7 @@ def scientific_memory(monkeypatch, tmp_path):
         "**Current synthesis:** Investigate the plateau.\n\n"
         "**Lessons and limits:** Progress slows; evidence.txt; one training seed.\n\n"
         "**Open questions:** Optimization or insufficient budget?\n\n"
+        "**Active inquiry:** Determine whether additional learning changes the plateau.\n\n"
         "**Reconsider when:** No progress after the additional training.\n"
     )
     memory.write_text(
