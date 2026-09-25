@@ -2,27 +2,25 @@
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
-**Current synthesis:** PPO has learned a competent reach-and-hold policy, but
-the standing `best_known` lineage remains below the objective in pooled
-development evidence: it scored 965/1000 (96.5%) across five disjoint research
-panels, including 199/200 (99.5%) on the latest panel. Full-radius target
-training, full hold-exit forfeiture, and a fresh observation with explicit hold
-progress all failed to improve it; the latest challenger reached only 113/200
-(56.5%).
+**Current synthesis:** PPO has learned a strong but variable reach-and-hold
+policy. The standing `best_known` lineage scored 965/1000 (96.5%) across five
+disjoint research panels, including 199/200 (99.5%) on the latest panel, so
+development evidence remains below a stable demonstration of the 98% objective.
+Full-radius target training, full hold-exit forfeiture, and explicit hold
+progress in a fresh observation all failed to improve the retained lineage.
 
-**Lessons and limits:** Direct task success, rather than training proxies,
-governs comparisons. The explicit hold-progress observation was tested with
-fresh initialization and produced 53.0%, 54.0%, and 56.5% at the measured late
-checkpoints despite rising training reward, with many timeouts and incomplete
-holds. This strongly rejects that recipe under the tested budget, but does not
-prove that every state-representation or training-method change will fail.
-Development measurements, including the reused 98% task-reference result,
-cannot declare the official objective.
+**Lessons and limits:** Direct task success, not training proxies, governs
+comparisons. Residual failures include both no-reach episodes and interrupted
+holds; the tested interventions do not isolate a remaining cause. The
+hold-progress observation was strongly unsuccessful under fresh training, but
+this does not rule out other learning-method changes. Development panels,
+including the reused 98% task-reference panel, cannot establish the official
+result.
 
-**Open questions:** It remains unresolved which learning-method change can
-address the standing lineage's residual no-reach and interrupted-hold failures
-without sacrificing its strong reach behavior. It is also unresolved whether
-the standing lineage meets the official fixed-panel objective.
+**Open questions:** The relationship between PPO's long-horizon credit
+assignment and reliable 100-step holds remains unresolved. It is also
+unresolved whether the standing lineage meets the official fixed-panel
+objective.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
