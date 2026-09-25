@@ -3,26 +3,26 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** The PPO reach-and-hold policy is competent but remains
-below the objective: `checkpoint-100352` achieved 189/200 (94.5%) on each of
-two disjoint research panels, while continued training to `checkpoint-120832`
-did not improve it. The selected policy's 98% task-reference result is
-development evidence only because that panel was reused for selection. Its
-pooled residual failures include target radii throughout the official 6–20 cm
-range, including targets below the current 14–20 cm training range.
+below the objective. The full-radius transfer produced 190/200 (95.0%) for
+the pre-peak, proxy-peak, and final measured checkpoints on the disjoint
+4600–4799 research panel, while the prior `best_known` scored 191/200
+(95.5%) on the same panel. The selected baseline's 98% task-reference result
+is development evidence only because that panel was reused for selection.
 
-**Lessons and limits:** Direct task success, not training reward, determined the
-lineage choice, and the selected policy is reproducible but sub-threshold.
-Detailed failures include interrupted holds and timeouts, and their geometry
-does not establish that radius coverage is the sole cause. The two research
-panels provide 400 distinct episodes for the selected model; the fixed
-task-reference panel and all development measurements remain insufficient to
-declare the official objective reached.
+**Lessons and limits:** Direct task success, not training reward, determined
+the lineage choices. Exposing training to the full official radial range did
+not produce a material improvement over the prior policy: each of the three
+measured experiment-2 checkpoints lost the only discordant paired episode to
+the same-panel control. This weakens radius coverage as a sufficient
+explanation for the residual failures, but one 200-episode panel cannot
+exclude small effects or establish causal attribution. All development
+measurements remain insufficient to declare the official objective reached.
 
-**Open questions:** Whether exposing training to the full official radial
-distribution improves inner-radius reach-and-hold reliability without reducing
-outer-radius performance remains unresolved. It is also unresolved whether the
-remaining failures primarily reflect target distribution, hold behavior, or
-another learning-method limitation.
+**Open questions:** Whether the remaining failures primarily reflect hold
+behavior, observations, or another learning-method limitation remains
+unresolved. The experiment-2 working policy has only one disjoint research
+panel, and no development measurement can replace the official final
+assessment.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
@@ -63,3 +63,42 @@ future advantage over the selected lineage.
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-1-checkpoint-100352-200ep-seed4200-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-1-checkpoint-100352-200ep-seed4400-f48545f83637.json`;
 `research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/task-reference-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-1-checkpoint-100352-task-reference-v1.json`.
+
+## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 2
+
+**Result:** Full-radius target training produced a useful but still
+sub-threshold policy; `checkpoint-105472` is selected as the experiment-2
+working lineage, while the prior `checkpoint-100352` remains best known.
+
+**Observed behavior:** The pre-peak `checkpoint-95232`, proxy-peak
+`checkpoint-105472`, and final `checkpoint-120832` each achieved 190/200
+(95.0%) on the disjoint research panel covering episodes 4600–4799. The
+same-panel `best_known` control achieved 191/200 (95.5%); each paired
+comparison had zero challenger wins and one control win. These results remain
+below the official threshold of 196/200. The experiment changed training
+radius sampling from 0.14–0.20 m to 0.06–0.20 m without changing official task
+mechanics or PPO hyperparameters.
+
+**Hypothesis assessment:** Weakened. The prediction that full-radius transfer
+would materially raise direct success above the established baseline was not
+supported: all three measured checkpoints tied at 95.0% and were slightly
+below the same-panel control. The result does not prove that radius coverage
+has no effect because the comparison has one 200-episode panel and no
+component-level control, but it weakens radius coverage as the primary
+explanation for the remaining failures.
+
+**Interpretation:** `checkpoint-105472` is a measured, reusable working policy
+for the current full-radius recipe, but it is not a better-supported
+best-known policy than `checkpoint-100352`. The new disjoint panel confirms
+that the intervention did not reach the human objective; the fixed
+task-reference panel is not independent confirmation, and no terminal
+assessment is requested by this closure.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/research_state.json`;
+`research/checkpoints/challengers/8f4d116e-7b66-4ca1-ab31-5915330bf310/experiment-2/inventory.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-checkpoint-95232-200ep-seed4600-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-checkpoint-105472-200ep-seed4600-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-checkpoint-120832-200ep-seed4600-f48545f83637.json`;
+`research/evaluations/8f4d116e-7b66-4ca1-ab31-5915330bf310/evaluation-8f4d116e-7b66-4ca1-ab31-5915330bf310-experiment-2-best_known-200ep-seed4600-f48545f83637.json`.
