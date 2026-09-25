@@ -2,11 +2,11 @@
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned a strong reach-and-hold policy late in training. Checkpoint-100352 is the best-supported candidate: it achieved 199/200 on the first research panel and 194/200 on the disjoint panel, while checkpoint-120832 achieved 197/200 and 194/200. The disjoint result is below the 98% objective, so development evidence does not establish that the objective has been reached. The fixed task-reference panel reports 196/200 for checkpoint-100352, but it was used in candidate selection and is permanently reused, so it is not independent confirmation.
+**Current synthesis:** The unchanged PPO recipe produced a strong but not yet objective-level reach-and-hold policy. Checkpoint-100352 is the best-supported candidate, scoring 199/200 on the first research panel and 194/200 on the disjoint panel; checkpoint-120832 scored 197/200 and 194/200. The disjoint result is below the 98% objective, and the 196/200 task-reference result for checkpoint-100352 is reused development evidence rather than independent confirmation.
 
-**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the training-reward peak at checkpoint-90112 reached only 94% on research evaluation and 93% on the task-reference panel. Checkpoint-100352 has a small paired advantage over checkpoint-120832 on the shared research episodes, including the disjoint round, but the 200-episode panels leave residual-failure uncertainty. The measured set covers three late checkpoints; unmeasured checkpoints remain unmeasured rather than failed.
+**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the training-reward peak at checkpoint-90112 reached only 94% on research evaluation and 93% on the task-reference panel. Checkpoint-100352 has a small paired advantage over checkpoint-120832 on the shared research episodes, but the 200-episode panels leave residual-failure uncertainty and unmeasured checkpoints remain unmeasured.
 
-**Open questions:** Whether further training or a scientific intervention can remove the remaining failures and produce a policy that robustly exceeds 98% remains unresolved. The current measurements do not isolate the causes of those failures.
+**Open questions:** It remains unresolved whether the residual failures reflect late-training instability or task difficulty, whether a successor can exceed 196/200 on a new panel, and which behavioral factors cause the failures. The current measurements do not isolate those causes.
 
 ## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
 
