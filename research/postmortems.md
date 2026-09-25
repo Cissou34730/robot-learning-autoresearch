@@ -3,23 +3,21 @@
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Scientific strategy
 
 **Current synthesis:** PPO has learned a strong but variable reach-and-hold
-policy. The gamma-0.99 working policy (model `9cd2645d98b9`) achieved
+policy. The gamma-0.99 standing best-known model (`9cd2645d98b9`) achieved
 1354/1400 (96.71%) across seven disjoint research panels, including 193/200
-on the latest panel, so stable 98% performance is not demonstrated. Full-radius
-training, hold-exit forfeiture, explicit hold progress, gamma 0.995, and zero
-entropy regularization did not improve the directly measured policy.
+on the latest panel, while every tested intervention underperformed or failed
+to improve it.
 
 **Lessons and limits:** Direct task success governs comparisons; training
-reward and success proxies do not. The entropy-zero transfer scored 90.5%,
-80.5%, and 87.0% versus 96.5% for the same-panel working control, with no
-challenger wins in any paired comparison. Residual failures include both
-no-reach episodes and interrupted holds, and development panels, including the
-reused task-reference panel, cannot establish the official result.
+reward and success proxies do not. The residual failures include both no-reach
+episodes and interrupted holds, so the tested radius, reward, observation,
+discount, and entropy changes do not identify a single cause. Development
+panels, including the reused task-reference panel, cannot establish the
+official result.
 
-**Open questions:** The cause of the remaining no-reach and interrupted-hold
-failures is unresolved. It is also unresolved whether the strongest reusable
-policy meets the official fixed-panel objective; further training is a
-separate post-closure experiment.
+**Open questions:** It remains unresolved whether the standing best-known
+model reaches the 98% criterion on the official fixed panel and how its
+remaining no-reach and interrupted-hold failures arise.
 
 ## 8f4d116e-7b66-4ca1-ab31-5915330bf310 / Experiment 1
 
