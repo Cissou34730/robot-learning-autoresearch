@@ -13,7 +13,6 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
-import mujoco
 import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
@@ -21,27 +20,7 @@ from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 5
-
-
-def _jacobian_metrics(env) -> tuple[float, float | None]:
-    jacobian_position = np.zeros((3, env.model.nv), dtype=np.float64)
-    jacobian_rotation = np.zeros((3, env.model.nv), dtype=np.float64)
-    mujoco.mj_jacSite(
-        env.model,
-        env.data,
-        jacobian_position,
-        jacobian_rotation,
-        env.model.site("end_effector").id,
-    )
-    singular_values = np.linalg.svd(jacobian_position[:2, :2], compute_uv=False)
-    minimum_singular_value = float(singular_values[-1])
-    condition = (
-        float(singular_values[0] / minimum_singular_value)
-        if minimum_singular_value > 1e-12
-        else None
-    )
-    return minimum_singular_value, condition
+RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
 def evaluate_research_model(
@@ -57,7 +36,6 @@ def evaluate_research_model(
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
-    control_limit = np.asarray(env.action_space.high, dtype=np.float64)
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
@@ -77,26 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        max_abs_joint_velocity = 0.0
-        max_abs_joint_acceleration = 0.0
-        max_abs_control = 0.0
-        max_abs_actuator_torque = 0.0
-        control_saturated_steps = 0
-        min_jacobian_singular_value = float("inf")
-        max_jacobian_condition = 0.0
-        jacobian_singular_steps = 0
-        in_tolerance_max_abs_joint_velocity = 0.0
-        in_tolerance_max_abs_joint_acceleration = 0.0
-        in_tolerance_max_abs_control = 0.0
-        in_tolerance_max_abs_actuator_torque = 0.0
-        in_tolerance_control_saturated_steps = 0
-        in_tolerance_min_jacobian_singular_value = float("inf")
-        in_tolerance_max_jacobian_condition = 0.0
-        in_tolerance_jacobian_singular_steps = 0
-        entry_max_abs_joint_velocity: float | None = None
-        entry_max_abs_control: float | None = None
-        entry_min_jacobian_singular_value: float | None = None
-        entry_jacobian_condition: float | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -116,70 +74,6 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
-
-            joint_velocity = np.abs(np.asarray(env.data.qvel[:2], dtype=np.float64))
-            joint_acceleration = np.abs(
-                np.asarray(env.data.qacc[:2], dtype=np.float64)
-            )
-            control = np.abs(np.asarray(env.data.ctrl[:2], dtype=np.float64))
-            actuator_torque = np.abs(
-                np.asarray(env.data.qfrc_actuator[:2], dtype=np.float64)
-            )
-            control_saturated = bool(
-                np.any(control >= control_limit[:2] - 1e-6)
-            )
-            jacobian_minimum, jacobian_condition = _jacobian_metrics(env)
-            max_abs_joint_velocity = max(
-                max_abs_joint_velocity, float(np.max(joint_velocity))
-            )
-            max_abs_joint_acceleration = max(
-                max_abs_joint_acceleration, float(np.max(joint_acceleration))
-            )
-            max_abs_control = max(max_abs_control, float(np.max(control)))
-            max_abs_actuator_torque = max(
-                max_abs_actuator_torque, float(np.max(actuator_torque))
-            )
-            control_saturated_steps += int(control_saturated)
-            min_jacobian_singular_value = min(
-                min_jacobian_singular_value, jacobian_minimum
-            )
-            if jacobian_condition is None:
-                jacobian_singular_steps += 1
-            else:
-                max_jacobian_condition = max(
-                    max_jacobian_condition, jacobian_condition
-                )
-            if held_steps > 0:
-                in_tolerance_max_abs_joint_velocity = max(
-                    in_tolerance_max_abs_joint_velocity,
-                    float(np.max(joint_velocity)),
-                )
-                in_tolerance_max_abs_joint_acceleration = max(
-                    in_tolerance_max_abs_joint_acceleration,
-                    float(np.max(joint_acceleration)),
-                )
-                in_tolerance_max_abs_control = max(
-                    in_tolerance_max_abs_control, float(np.max(control))
-                )
-                in_tolerance_max_abs_actuator_torque = max(
-                    in_tolerance_max_abs_actuator_torque,
-                    float(np.max(actuator_torque)),
-                )
-                in_tolerance_control_saturated_steps += int(control_saturated)
-                in_tolerance_min_jacobian_singular_value = min(
-                    in_tolerance_min_jacobian_singular_value, jacobian_minimum
-                )
-                if jacobian_condition is None:
-                    in_tolerance_jacobian_singular_steps += 1
-                else:
-                    in_tolerance_max_jacobian_condition = max(
-                        in_tolerance_max_jacobian_condition, jacobian_condition
-                    )
-                if first_reach_step == steps:
-                    entry_max_abs_joint_velocity = float(np.max(joint_velocity))
-                    entry_max_abs_control = float(np.max(control))
-                    entry_min_jacobian_singular_value = jacobian_minimum
-                    entry_jacobian_condition = jacobian_condition
 
         episode_results.append(
             {
@@ -209,63 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "max_abs_joint_velocity": max_abs_joint_velocity,
-                "max_abs_joint_acceleration": max_abs_joint_acceleration,
-                "max_abs_control": max_abs_control,
-                "max_abs_actuator_torque": max_abs_actuator_torque,
-                "control_saturated_steps": control_saturated_steps,
-                "min_jacobian_singular_value": min_jacobian_singular_value,
-                "max_jacobian_condition": (
-                    max_jacobian_condition
-                    if jacobian_singular_steps < steps
-                    else None
-                ),
-                "jacobian_singular_steps": jacobian_singular_steps,
-                "in_tolerance_max_abs_joint_velocity": (
-                    in_tolerance_max_abs_joint_velocity
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "in_tolerance_max_abs_joint_acceleration": (
-                    in_tolerance_max_abs_joint_acceleration
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "in_tolerance_max_abs_control": (
-                    in_tolerance_max_abs_control
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "in_tolerance_max_abs_actuator_torque": (
-                    in_tolerance_max_abs_actuator_torque
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "in_tolerance_control_saturated_steps": (
-                    in_tolerance_control_saturated_steps
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "in_tolerance_min_jacobian_singular_value": (
-                    in_tolerance_min_jacobian_singular_value
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "in_tolerance_max_jacobian_condition": (
-                    in_tolerance_max_jacobian_condition
-                    if in_tolerance_steps > 0
-                    and in_tolerance_jacobian_singular_steps < in_tolerance_steps
-                    else None
-                ),
-                "in_tolerance_jacobian_singular_steps": (
-                    in_tolerance_jacobian_singular_steps
-                    if in_tolerance_steps > 0
-                    else None
-                ),
-                "entry_max_abs_joint_velocity": entry_max_abs_joint_velocity,
-                "entry_max_abs_control": entry_max_abs_control,
-                "entry_min_jacobian_singular_value": entry_min_jacobian_singular_value,
-                "entry_jacobian_condition": entry_jacobian_condition,
             }
         )
         if progress_callback is not None:
@@ -273,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
