@@ -55,34 +55,14 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        action_magnitude_total = 0.0
-        peak_absolute_action = 0.0
-        peak_action_delta = 0.0
-        previous_action: np.ndarray | None = None
-        closest_joint_positions: np.ndarray | None = None
-        closest_joint_velocities: np.ndarray | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            applied_action = np.asarray(env.data.ctrl, dtype=np.float64).copy()
-            action_magnitude_total += float(np.sum(np.abs(applied_action)))
-            peak_absolute_action = max(
-                peak_absolute_action, float(np.max(np.abs(applied_action)))
-            )
-            if previous_action is not None:
-                peak_action_delta = max(
-                    peak_action_delta,
-                    float(np.max(np.abs(applied_action - previous_action))),
-                )
-            previous_action = applied_action
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            if distance_cm < min_distance_cm:
-                min_distance_cm = distance_cm
-                closest_joint_positions = env.data.qpos.copy()
-                closest_joint_velocities = env.data.qvel.copy()
+            min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
@@ -123,19 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "mean_absolute_action": action_magnitude_total / steps,
-                "peak_absolute_action": peak_absolute_action,
-                "peak_action_delta": peak_action_delta,
-                "closest_joint_positions": (
-                    None
-                    if closest_joint_positions is None
-                    else closest_joint_positions.tolist()
-                ),
-                "closest_joint_velocities": (
-                    None
-                    if closest_joint_velocities is None
-                    else closest_joint_velocities.tolist()
-                ),
             }
         )
         if progress_callback is not None:
@@ -143,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
