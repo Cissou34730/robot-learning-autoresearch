@@ -102,15 +102,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "request_final_benchmark",
-    "progress": "committed",
-    "reason": "The standing best-known checkpoint-100352 is the strongest available policy, but it achieved 778/800 successes (97.25%) across four disjoint research panels, below the 98% objective despite reaching 196/200 on two panels. The targeted transfer run and fresh replication were both materially weaker and supplied no credible replacement. The official panel remains a distinct unresolved sample, so terminal assessment is warranted to adjudicate the best-known policy; the development evidence makes goal_not_reached more likely than goal_reached while retaining sampling uncertainty.",
-    "terminal_expectation": {
-      "expected_verdict": "goal_not_reached",
-      "reason": "The standing best-known checkpoint-100352 is the strongest available policy, but it achieved 778/800 successes (97.25%) across four disjoint research panels, below the 98% objective despite reaching 196/200 on two panels. The targeted transfer run and fresh replication were both materially weaker and supplied no credible replacement. The official panel remains a distinct unresolved sample, so terminal assessment is warranted to adjudicate the best-known policy; the development evidence makes goal_not_reached more likely than goal_reached while retaining sampling uncertainty."
-    }
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": {
