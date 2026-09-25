@@ -9,6 +9,7 @@ import numpy as np
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
 OBSERVATION_SIZE = 11
+JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
 
 
 def reach_observation(data) -> np.ndarray:
@@ -33,12 +34,26 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
+    open_limit_margin = min(
+        JOINT_LIMIT_RADIANS - abs(wrap_to_pi(shoulder_open)),
+        JOINT_LIMIT_RADIANS - abs(elbow_open),
+    )
+    folded_limit_margin = min(
+        JOINT_LIMIT_RADIANS - abs(wrap_to_pi(shoulder_folded)),
+        JOINT_LIMIT_RADIANS - abs(elbow_folded),
+    )
+    branch_limit_margin_difference = (
+        open_limit_margin - folded_limit_margin
+    ) / np.pi
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
-            end_effector - data.mocap_pos[0],
+            [
+                *(end_effector - data.mocap_pos[0])[:2],
+                branch_limit_margin_difference,
+            ],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
