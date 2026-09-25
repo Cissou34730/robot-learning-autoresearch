@@ -1,3 +1,21 @@
 # Research postmortems
 
-No experiments recorded.
+## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Scientific strategy
+
+**Current synthesis:** The unchanged PPO baseline learned a strong reach-and-hold policy late in training. Checkpoint-100352 is the best-supported candidate: it achieved 199/200 on the first research panel and 194/200 on the disjoint panel, while checkpoint-120832 achieved 197/200 and 194/200. The disjoint result is below the 98% objective, so development evidence does not establish that the objective has been reached. The fixed task-reference panel reports 196/200 for checkpoint-100352, but it was used in candidate selection and is permanently reused, so it is not independent confirmation.
+
+**Lessons and limits:** Complete task measurements, rather than training reward or proxy success, distinguish useful checkpoints: the training-reward peak at checkpoint-90112 reached only 94% on research evaluation and 93% on the task-reference panel. Checkpoint-100352 has a small paired advantage over checkpoint-120832 on the shared research episodes, including the disjoint round, but the 200-episode panels leave residual-failure uncertainty. The measured set covers three late checkpoints; unmeasured checkpoints remain unmeasured rather than failed.
+
+**Open questions:** Whether further training or a scientific intervention can remove the remaining failures and produce a policy that robustly exceeds 98% remains unresolved. The current measurements do not isolate the causes of those failures.
+
+## ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa / Experiment 1
+
+**Result:** The fresh baseline produced a near-objective policy, with checkpoint-100352 the strongest measured candidate; it did not establish the human objective on the independent development panel.
+
+**Observed behavior:** The run showed a sharp late learning transition and disagreement between training proxies: checkpoint-90112 had the highest listed training reward but only 94% research success, while checkpoint-100352 had 99.5% on the initial research panel and checkpoint-120832 had 98.5%. On the disjoint research panel, checkpoint-100352 and checkpoint-120832 each achieved 194/200 (97%). The fixed task-reference panel gave checkpoint-100352 196/200 (98%) and checkpoint-120832 194/200 (97%); this panel was reused for selection and is not independent evidence. The disjoint paired comparison favored checkpoint-100352 by 2 to 0 discordant wins over 400 covered episodes.
+
+**Hypothesis assessment:** Partially supported. The baseline established a useful, high-performing starting policy and identified a robust late-training region, but the evidence did not show the 98% objective on the disjoint research panel. This conclusion is limited to the unchanged recipe, the measured late checkpoints, and the available 200-episode panels; it does not reject unmeasured checkpoints or future training.
+
+**Interpretation:** Checkpoint-100352 is the best current working and best-known lineage because it leads on the selection panel, remains competitive on disjoint episodes, and slightly outperforms the final checkpoint in paired comparisons. Checkpoint-120832 is retained as a close alternative. The proxy reward peak is not a reliable selection rule, and further training remains an ordinary next-experiment option after closure.
+
+**Evidence inspected:** `research/checkpoints/challengers/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/experiment-1/inventory.json`; `research/research_state.json`; `research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/evaluation-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json`; `research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/evaluation-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-100352-200ep-seed10200-f48545f83637.json`; `research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/evaluation-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-120832-200ep-seed10000-f48545f83637.json`; `research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/evaluation-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-120832-200ep-seed10200-f48545f83637.json`; `research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/task-reference-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-100352-task-reference-v1.json`; `research/evaluations/ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa/task-reference-ce64c0ca-01b8-4d79-ab15-1ff5a6d582aa-experiment-1-checkpoint-120832-task-reference-v1.json`.
