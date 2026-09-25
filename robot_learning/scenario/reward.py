@@ -23,8 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-JOINT_LIMIT_SAFETY_MARGIN = 0.1
-JOINT_LIMIT_PENALTY_COEFFICIENT = 0.5
 
 
 @dataclass(frozen=True)
@@ -46,13 +44,6 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
-def _joint_limit_penalty(joint_limit_margin: float | None) -> float:
-    if joint_limit_margin is None:
-        return 0.0
-    violation = max(JOINT_LIMIT_SAFETY_MARGIN - joint_limit_margin, 0.0)
-    return -JOINT_LIMIT_PENALTY_COEFFICIENT * violation
-
-
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -62,7 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    joint_limit_margin: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -100,9 +90,6 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    joint_limit_penalty = _joint_limit_penalty(joint_limit_margin)
-    reward += joint_limit_penalty
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -116,7 +103,6 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
-            "joint_limit_penalty": float(joint_limit_penalty),
             "action_cost": float(action_cost),
         },
     )

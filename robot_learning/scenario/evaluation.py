@@ -55,20 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        control_dt = env.model.opt.timestep * env.frame_skip
-        previous_end_effector = np.asarray(
-            env.data.site("end_effector").xpos, dtype=np.float64
-        ).copy()
-        max_endpoint_speed = 0.0
-        max_endpoint_speed_during_hold = 0.0
-        max_joint_speed = 0.0
-        max_joint_speed_during_hold = 0.0
-        max_abs_applied_control = 0.0
-        saturated_control_steps = 0
-        min_joint_limit_margin = float("inf")
-        first_reach_endpoint_speed: float | None = None
-        first_reach_joint_speed: float | None = None
-        first_reach_joint_limit_margin: float | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -76,40 +62,6 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            end_effector_position = np.asarray(
-                env.data.site("end_effector").xpos, dtype=np.float64
-            )
-            endpoint_speed = float(
-                np.linalg.norm(
-                    (end_effector_position - previous_end_effector) / control_dt
-                )
-            )
-            previous_end_effector = end_effector_position.copy()
-            joint_speed = float(np.linalg.norm(env.data.qvel))
-            joint_limit_margin = float(
-                np.min(
-                    np.minimum(
-                        env.data.qpos - env.model.jnt_range[:, 0],
-                        env.model.jnt_range[:, 1] - env.data.qpos,
-                    )
-                )
-            )
-            applied_control = np.asarray(env.data.ctrl, dtype=np.float64)
-            max_abs_applied_control = max(
-                max_abs_applied_control, float(np.max(np.abs(applied_control)))
-            )
-            if np.any(np.abs(applied_control) >= 0.999):
-                saturated_control_steps += 1
-            max_endpoint_speed = max(max_endpoint_speed, endpoint_speed)
-            max_joint_speed = max(max_joint_speed, joint_speed)
-            min_joint_limit_margin = min(min_joint_limit_margin, joint_limit_margin)
-            if held_steps > 0:
-                max_endpoint_speed_during_hold = max(
-                    max_endpoint_speed_during_hold, endpoint_speed
-                )
-                max_joint_speed_during_hold = max(
-                    max_joint_speed_during_hold, joint_speed
-                )
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -117,9 +69,6 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    first_reach_endpoint_speed = endpoint_speed
-                    first_reach_joint_speed = joint_speed
-                    first_reach_joint_limit_margin = joint_limit_margin
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -154,22 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "max_endpoint_speed_m_per_s": max_endpoint_speed,
-                "max_endpoint_speed_during_hold_m_per_s": (
-                    max_endpoint_speed_during_hold
-                ),
-                "first_reach_endpoint_speed_m_per_s": first_reach_endpoint_speed,
-                "max_joint_speed_rad_per_s": max_joint_speed,
-                "max_joint_speed_during_hold_rad_per_s": (
-                    max_joint_speed_during_hold
-                ),
-                "first_reach_joint_speed_rad_per_s": first_reach_joint_speed,
-                "max_abs_applied_control": max_abs_applied_control,
-                "saturated_control_steps": saturated_control_steps,
-                "min_joint_limit_margin_rad": min_joint_limit_margin,
-                "first_reach_joint_limit_margin_rad": (
-                    first_reach_joint_limit_margin
-                ),
             }
         )
         if progress_callback is not None:
