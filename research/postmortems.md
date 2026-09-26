@@ -2,11 +2,11 @@
 
 ## ec8a0728-5e76-46b3-b705-73b0aa542d7b / Scientific strategy
 
-**Current synthesis:** Experiment 2 produced three full-range-training checkpoints at 199/200 (99.5%) on a new disjoint research panel, exceeding the 98% objective threshold, while the unchanged parent also scored 199/200 on that same panel. Checkpoint-105472 is selected as the working and best-known policy because it reached the run's highest training success and tied the other measured experiment-2 checkpoints; this is strong development evidence, not an official assessment.
+**Current synthesis:** The campaign's strongest policy-level evidence is 199/200 (99.5%) for the experiment-2 checkpoints and the unchanged parent on a disjoint development panel. Checkpoint-105472 is the standing best-known policy, selected among tied measured checkpoints using its highest training-success proxy; the full-range intervention preserved behavior but did not demonstrate a behavioral improvement.
 
-**Lessons and limits:** The full 6-20 cm training intervention preserved behavior and reached 199/200 for checkpoints 100352, 105472, and 120832, but it did not improve the paired parent on the seed-5000 panel; all four policies shared the same binary outcome pattern, including the failure at episode seed 5099. The panel is disjoint from the panel that selected the parent, while the fixed task-reference panel remains permanently reused and non-independent. The evidence supports the policy-level objective on development data but not a causal benefit from the intervention or official final performance.
+**Lessons and limits:** All four policies shared the same binary outcome pattern, including one failure at episode seed 5099, and the paired comparisons had zero discordant episodes. The seed-5000 panel is disjoint from the panel that selected the parent; the task-reference panel is reused and non-independent. Development evidence supports strong observed behavior but cannot establish the causal benefit of full-range training or the official result.
 
-**Open questions:** It remains unresolved whether the 199/200 result generalizes to the official final panel and what residual reach or hold condition causes the shared failure.
+**Open questions:** Generalization of the 199/200 result to the held-out official panel remains unresolved, as does the reach or hold condition behind the shared failure.
 
 ## ec8a0728-5e76-46b3-b705-73b0aa542d7b / Experiment 1
 
