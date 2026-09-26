@@ -4,45 +4,46 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 189/200 on the latest preparation panel and
-1362/1400 across seven distinct research panels. The reward intervention produced
-176/200 and 186/200 challengers, and the periodic-observation intervention
-produced 41/200 and 53/200 challengers; neither intervention produced a paired
-win over the parent. The preparation telemetry adds a third saved-lineage
-comparison: the parent reached 189/200 on the new panel, the radius-expanded
-lineage 187/200, and the reward-shaped lineage 180/200. The parent failures
-remain concentrated no-entry events, but the evidence does not establish their
-physical or control cause.
+98% solution. It achieved 1752/1800 across nine distinct research panels.
+The reward intervention produced 176/200 and 186/200 challengers, and the
+periodic-observation intervention produced 41/200 and 53/200 challengers;
+neither intervention produced a paired win over the parent. Experiment 5's
+two action-headroom checkpoints each achieved 391/400 on two fresh panels,
+versus 390/400 for the parent on those same panels. The gain was one rescued
+episode on the first panel and zero on the second, while the recurring failure
+identities remained.
 
 **Lessons and limits:** Radius expansion did not remove the shared
 negative-angle failure identities, and reward changes regressed complete task
-behavior. Across the saved lineages, failures were associated with poorer
-minimum planar-Jacobian conditioning and prolonged saturated commands, while
-entry speed and branch-at-entry did not consistently separate successes from
-failures. These are correlations, not causal evidence: saturation may be a
-cause, a consequence of poor conditioning, or a marker of an unrecoverable
-trajectory. Adding sine/cosine encodings to the wrapped branch errors caused
-severe broad degradation in a fresh policy, rejecting that tested recipe
+behavior. The corrected experiment-5 evaluator shows that the 0.9 map removes
+physical command saturation, but the five failures on episodes 28000-28199
+are shared by the parent and both headroom checkpoints. The candidates also
+have slightly lower minimum Jacobian determinants and later entry on average,
+so the absence of saturation does not make the trajectories recoverable.
+The one-episode pooled gain is not reproduced on the second panel, and the
+100352- and 105472-step candidates add no distinguishable task outcome.
+Saturation is therefore a marker or contributor at most, not an established
+sufficient cause. Adding sine/cosine encodings to the wrapped branch errors
+caused severe broad degradation in a fresh policy, rejecting that tested recipe
 without proving that all observation changes are unhelpful. Development panels
 remain non-official, and the parent has not established the human objective on
 the final benchmark.
 
-**Open questions:** Whether reducing effective torque demand below the actuator
-clip can make the controller recoverable in the poorly conditioned sector;
-whether any benefit survives the loss of peak torque authority; and whether
-the same change preserves approach, branch selection, and complete holding
-away from that sector.
+**Open questions:** Which configuration-dependent mechanism creates the
+repeatable negative-angle failures despite unchanged task mechanics: branch
+transition, poor local conditioning, insufficient stabilization, or an
+interaction among them. It is also unresolved whether a policy can preserve
+the parent's broad approach and hold behavior while changing only that
+failure-sector behavior.
 
-**Active inquiry:** Test whether the persistent negative-angle no-entry failures
-are partly caused by a policy repeatedly requesting commands at the actuator
-limit, rather than by the wrapped branch representation alone. Continue the
-working lineage with a stateless 0.9 action-headroom map applied identically in
-training and exported inference, while keeping observations, reward, target
-sampling, and PPO settings unchanged. Improvement in paired complete success
-with reduced saturation and no broad regression would support saturation as a
-causal control limitation; unchanged failures or loss of reach authority would
-redirect the inquiry toward branch-transition dynamics or configuration
-conditioning and retain the parent.
+**Active inquiry:** The persistent failure sector is more consistent with a
+configuration- or branch-dependent control limitation than with actuator
+clipping alone: eliminating measured physical saturation did not remove the
+shared failures, and continued headroom training added no further benefit.
+Evidence that changes the failure identities while preserving complete
+reach-and-hold behavior would support a conditioning or branch-transition
+explanation; repeated shared failures under such controls would require
+revising that interpretation rather than treating saturation as causal.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -222,3 +223,52 @@ training parent.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-4-checkpoint-100352-200ep-seed25000-48e4acc98c39.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-4-checkpoint-120832-200ep-seed25000-48e4acc98c39.json`;
 `robot_learning/scenario/observations.py`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 5
+
+**Result:** The stateless 0.9 action-headroom map did not produce a reliable
+complete-task improvement. Both measured checkpoints achieved 391/400 over
+the two fresh panels, compared with 390/400 for the parent on the same
+episodes. The experiment-5 recipe is reverted, the parent remains working
+and best-known, and both measured headroom checkpoints are retained as
+controlled alternatives.
+
+**Observed behavior:** On episodes 27000-27199, each headroom checkpoint
+rescued the parent's failure at episode 27089 and shared the parent's other
+four failures. On episodes 28000-28199, the parent and both headroom
+checkpoints shared all five failures: 28018, 28030, 28145, 28171, and 28194.
+The corrected evaluator measured zero physical saturation steps for both
+headroom checkpoints, while the parent averaged 119.3 saturation steps per
+episode and its failures averaged 498.6. The headroom failures still had
+near-zero minimum Jacobian determinants, delayed entry when entry occurred,
+and incomplete holds. The 100352- and 105472-step checkpoints had the same
+complete-task outcomes; continued adaptation did not add evidence.
+
+**Hypothesis assessment:** The hypothesis is weakened. The intervention
+successfully changed the physical command regime and removed the measured
+actuator saturation signature without broad success collapse, but the expected
+failure-sector recovery was not reproducible: it occurred once on the first
+panel and not at all on the second. The shared failures under zero measured
+saturation reject saturation as a sufficient causal explanation. The evidence
+does not establish whether saturation contributes upstream to the trajectory
+or is only a consequence or marker of poor conditioning.
+
+**Interpretation:** Reducing command authority alone does not solve the
+repeatable negative-angle failures. The unchanged failure identities despite
+the changed physical command regime redirect the scientific inquiry toward
+configuration-dependent conditioning, branch-transition behavior, and local
+stabilization. The parent is the safer working lineage because the headroom
+mapping adds no reliable task benefit, while both checkpoints remain useful
+controlled alternatives for later comparisons.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/results.jsonl`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-checkpoint-100352-200ep-seed27000-6f556e2004f1.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-checkpoint-105472-200ep-seed27000-6f556e2004f1.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-working-200ep-seed27000-6f556e2004f1.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-checkpoint-100352-200ep-seed28000-238ccfe3776f.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-checkpoint-105472-200ep-seed28000-238ccfe3776f.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-working-200ep-seed28000-238ccfe3776f.json`;
+`robot_learning/scenario/policy_io.py`;
+`robot_learning/scenario/evaluation.py`.
