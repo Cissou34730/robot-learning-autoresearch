@@ -1289,6 +1289,24 @@ The final output should be a compact but substantive **Scientific model of the r
     # conclusion-only state it is actually in.
     Update-ResearchBrief
 
+    if (Test-Path "research\evaluation_request.json" -PathType Leaf) {
+        if (Test-PreparationDeliverable) {
+            Write-Status "=== Resuming the researcher's saved-lineage measurement request ==="
+            $runnerExitCode = Invoke-PreparationMeasurement
+            if ($runnerExitCode -eq 130) {
+                Write-Status "=== Preparation measurement paused; completed measurements were saved ===" Yellow
+                break
+            }
+            if ($runnerExitCode -ne 0) {
+                throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
+            }
+            Update-ResearchBrief
+            Write-Status "=== Preparation measurement complete; the next hypothesis returns with new evidence ===" Green
+            continue
+        }
+        Write-Status "=== Existing preparation deliverable is invalid; returning it to the principal investigator ===" Yellow
+    }
+
     Write-Status "=== Principal investigator advancing the active inquiry ==="
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $nextExperiment = $allocatedExperiment + 1

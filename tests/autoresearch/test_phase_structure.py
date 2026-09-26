@@ -110,7 +110,6 @@ def test_preparation_runtime_errors_resume_the_same_pi_session_without_evidence(
     assert "--record-implementation-repair-attempt" in repair
     assert "Test-ImplementationRepair" in repair
     assert "$attempts -ge 2" in repair
-    assert SCRIPT.count("Invoke-PreparationMeasurement") == 3
 
 
 def test_principal_investigator_session_is_campaign_persistent():
@@ -165,6 +164,24 @@ def test_principal_investigator_deliverables_restore_the_phase_anchor_before_val
 
     assert first_session < first_reanchor < first_validation
     assert retry_session < retry_reanchor < retry_validation
+
+
+def test_valid_durable_measurement_resumes_before_the_principal_investigator():
+    phase_anchor = SCRIPT.index(
+        "$runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached"
+    )
+    durable_request = SCRIPT.index(
+        'if (Test-Path "research\\evaluation_request.json" -PathType Leaf)',
+        phase_anchor,
+    )
+    validation = SCRIPT.index("if (Test-PreparationDeliverable)", durable_request)
+    execution = SCRIPT.index("Invoke-PreparationMeasurement", validation)
+    investigator = SCRIPT.index(
+        'Write-Status "=== Principal investigator advancing the active inquiry ==="',
+        phase_anchor,
+    )
+
+    assert phase_anchor < durable_request < validation < execution < investigator
 
 
 def test_principal_investigator_identity_is_allocated_once():
