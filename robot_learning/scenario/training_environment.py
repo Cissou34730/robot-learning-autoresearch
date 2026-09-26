@@ -8,22 +8,12 @@ excluded from the research-evaluation semantics fingerprint.
 """
 
 import gymnasium as gym
-import numpy as np
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-TRAINING_TARGET_ANGLE_FOCUS = (
-    -np.deg2rad(155.0),
-    -np.deg2rad(110.0),
-)
-TRAINING_TARGET_ANGLE_FOCUS_PROBABILITY = 0.35
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(
-        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        target_angle_focus=TRAINING_TARGET_ANGLE_FOCUS,
-        target_angle_focus_probability=TRAINING_TARGET_ANGLE_FOCUS_PROBABILITY,
-    )
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
