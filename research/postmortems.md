@@ -3,24 +3,21 @@
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned useful reach-and-hold
-behavior late in training but remains below the 98% human objective on all
-development measurements. Among the measured late checkpoints, checkpoint-95232
-is the strongest on the pooled disjoint research panels at 301/320 (94.06%),
-slightly ahead of checkpoint-120832 at 300/320 (93.75%). The fixed
-task-reference panel gives 96% and 97% respectively, but it is reused and
-therefore is not independent confirmation.
+behavior but remains below the 98% human objective: checkpoint-95232 achieved
+301/320 (94.06%) on pooled disjoint research panels, while checkpoint-120832
+achieved 300/320 (93.75%). The fixed task-reference panel scored them at 96%
+and 97%, respectively, but its reuse prevents independent confirmation.
 
-**Lessons and limits:** Training reward and training success identify the
-learning transition but do not rank the final policies reliably: checkpoint-86016
-had the highest training reward yet was weaker behaviorally. The disjoint
-research panel supports selecting checkpoint-95232 over the final checkpoint,
-while the reused task-reference result leaves a small unresolved difference.
-These development measurements do not establish the official result; the
-98%-success objective remains unconfirmed.
+**Lessons and limits:** The baseline trains only on 14-20 cm targets although
+the official task spans 6-20 cm. Training reward and training success also do
+not rank final policies reliably: checkpoint-86016 had the highest training
+reward but weaker measured behavior. The current development evidence therefore
+supports the selected working lineage without establishing the official result
+or isolating the cause of its residual failures.
 
-**Open questions:** Whether further training or a changed scientific recipe can
-close the remaining gap to 98% is unresolved. The official benchmark result for
-the selected policy is also unknown.
+**Open questions:** Whether exposing training to the full official radius range
+can improve generalization beyond the baseline plateau remains unresolved. The
+official benchmark result for the selected policy is also unknown.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
