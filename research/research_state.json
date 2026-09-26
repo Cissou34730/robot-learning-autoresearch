@@ -100,20 +100,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "request_final_benchmark",
-    "best_nonterminal_action_comparison": {
-      "action": "training with transfer initialization from best_known and a new researcher-owned intervention",
-      "evidence": "Experiment 2 tested broader target-radius coverage from the best-known parent; its three measured transfer checkpoints each matched the best-known control at 191/200 with zero paired discordance and no radius-bin improvement. The remaining failures include both episodes that never reached tolerance and occasional hold interruptions, but no untested intervention has evidence sufficient to prioritize one.",
-      "reason": "Another training run could explore a speculative reward, observation, or training intervention, but it would not resolve the standing policy's official status and has no demonstrated route to improvement. The terminal assessment directly evaluates the frozen best-known artifact against the human objective, making it the higher-value remaining action."
-    },
-    "progress": "committed",
-    "reason": "The standing best-known checkpoint-100352 achieved 195/200 and 196/200 on the first two disjoint research panels (391/400 pooled, 97.75%) and 191/200 on the latest disjoint panel. The variation leaves sampling uncertainty, but the latest result and pooled result both remain below the official 196/200 threshold, so a below-threshold official verdict is more likely.",
-    "terminal_expectation": {
-      "expected_verdict": "goal_not_reached",
-      "reason": "The standing best-known checkpoint-100352 achieved 195/200 and 196/200 on the first two disjoint research panels (391/400 pooled, 97.75%) and 191/200 on the latest disjoint panel. The variation leaves sampling uncertainty, but the latest result and pooled result both remain below the official 196/200 threshold, so a below-threshold official verdict is more likely."
-    }
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": {
