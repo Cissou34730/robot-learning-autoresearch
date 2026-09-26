@@ -31,18 +31,22 @@ branch-transition policy error, poor local conditioning, insufficient
 stabilization, or an interaction among them. It remains unresolved whether
 the parent lacks a suitable control representation for this transition or
 whether the learned trajectory can be changed without sacrificing broad
-reach-and-hold behavior.
+reach-and-hold behavior. It is also unresolved whether the modest rescues seen
+under headroom or slew control are repeatable policy effects or panel-specific
+variation.
 
 **Active inquiry:** The provisional inquiry is whether the recurring failures
-come from a policy-controlled branch/conditioning transition that can be
-altered while preserving the parent's robust 11-value observation contract and
+come from a policy-controlled branch/conditioning transition whose behavior can
+be distinguished from saturation and command-rate effects while preserving
 broad task behavior. Experiment 9 ends the narrower targeted-exposure test:
 matching failure identities at the proxy-peak checkpoint and added failures at
-the final checkpoint provide no support for exposure alone. The inquiry would
-be redirected by paired evidence showing a repeatable rescue of the shared
-target situations with no broad regression, and ended if subsequent
-task-level comparisons continue to show unchanged failures or trade them for
-new broad failures.
+the final checkpoint provide no support for exposure alone. A disjoint paired
+measurement of the saved headroom and slew alternatives, with branch,
+conditioning, entry-velocity, and applied-action telemetry, is the next
+discriminating evidence. Repeatable shared-failure rescue without broad
+regression would justify selecting that lineage for further development;
+unchanged failure identities or exchanged failures would redirect the inquiry
+away from these fixed physical-control mappings.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
