@@ -80,6 +80,12 @@ The human objective outranks this memory. The map is not a backlog or
 implementation prescription. Preserve historical experiment and inquiry
 records; revise the single current strategy section as understanding changes.
 
+Apply rigor to conclusions and freedom to experiments. A confirmatory
+intervention may predict a behavioral path. A substantially different method
+may instead state explicitly that the path is uncertain and identify the
+behavior or failure structure the experiment will map. Exploratory uncertainty
+never lowers the evidence required for a later claim or the final objective.
+
 ## Lifecycle
 
 1. At campaign start, create `research/scientific_model.md` from the protected
@@ -90,8 +96,8 @@ records; revise the single current strategy section as understanding changes.
    request training.
 4. Post-training analysis may request one or more measurement rounds or close
    the experiment.
-5. Closure resolves the working lineage, scientific recipe, retention and
-   optional best-known designation.
+5. Closure resolves the working lineage, the active inquiry's experimental
+   lineage, scientific recipe, retention and optional best-known designation.
 6. Inquiry preparation may request measurements on saved lineages, close the
    active inquiry without training, prepare training or replication, request
    the official benchmark, or conclude that no further work is warranted.
@@ -124,6 +130,9 @@ Preparation may produce:
 
 Update the causal research map so the current distinctions survive the session.
 Closing an inquiry continues the campaign and allocates no experiment.
+If the inquiry owns an experimental lineage, closure must explicitly promote it
+to working, retain it as an alternative, or abandon it. Promotion does not
+silently change the best-known designation.
 
 ### Post-training analysis
 
@@ -137,13 +146,21 @@ dynamics, test an explanation or reveal that the question itself should change.
 The same session continues after requested measurements during one launcher
 run.
 
+When an analysis or diagnostic operation recurs, prefer turning it into a
+reusable tool or output under `research/lab/`. Published laboratory files are
+shown in the brief so later inquiry and analysis work can reuse them instead of
+reconstructing the same inspection ad hoc.
+
 ### Experiment closure
 
 Record observations, interpretations, limitations and the investigation's
-effect on the working understanding. Resolve the working lineage, complete
+effect on the working understanding. Resolve the working lineage, the inquiry-owned experimental lineage, complete
 scientific recipe, retained alternatives and optional best-known designation as
-separate decisions. A failed hypothesis does not automatically make a measured
-policy useless, and a useful policy does not establish its proposed cause.
+separate decisions. The experimental lineage may advance while `working` stays
+stable, so a method can mature across several experiments without being treated
+as the campaign incumbent. A failed hypothesis does not automatically make a
+measured policy useless, and a useful policy does not establish its proposed
+cause.
 
 Further investigation, final assessment and campaign conclusion are scientific
 decisions, not automatic consequences of closure.

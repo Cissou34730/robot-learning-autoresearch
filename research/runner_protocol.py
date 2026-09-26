@@ -5,6 +5,7 @@ performing the destructive part of the answer. The `plan_*` operations resolve
 a complete decision that `run_experiment` and `runner_repository` then apply.
 """
 
+import copy
 import hashlib
 import json
 import re
@@ -182,12 +183,6 @@ REQUIRED_REASONING_FIELDS = (
     "initialization_reason",
     "expected_observation",
 )
-POLICY_INTERVENTION_REASONING_FIELDS = (
-    "behavioral_path",
-    "behavioral_test",
-)
-
-
 # --- ownership -------------------------------------------------------------
 
 
@@ -540,6 +535,16 @@ def retained_lineage(state: dict, identifier: str) -> dict | None:
 
 def lineage_role(state: dict, identifier: str) -> dict | None:
     """Resolve a Researcher-facing lineage ID without changing its identity."""
+    if identifier == "inquiry":
+        lineage = state.get("inquiry_lineage")
+        active = state.get("active_inquiry")
+        if (
+            not isinstance(lineage, dict)
+            or not isinstance(active, dict)
+            or lineage.get("inquiry_id") != active.get("id")
+        ):
+            return None
+        return lineage
     if identifier in {"working", "best_known"}:
         lineage = state.get(f"{identifier}_lineage")
         return lineage if isinstance(lineage, dict) else None
@@ -645,9 +650,23 @@ def validate_scientific_reasoning(proposal: dict) -> None:
         policy_intervention = reasoning.get("policy_intervention")
         if not isinstance(policy_intervention, dict):
             raise TypeError("reasoning.policy_intervention must be an object")
-        for field in POLICY_INTERVENTION_REASONING_FIELDS:
-            _validate_reasoning_statement(
-                f"policy_intervention.{field}", policy_intervention.get(field)
+        _validate_reasoning_statement(
+            "policy_intervention.behavioral_test",
+            policy_intervention.get("behavioral_test"),
+        )
+        behavioral_path = policy_intervention.get("behavioral_path")
+        exploratory_uncertainty = policy_intervention.get(
+            "exploratory_uncertainty"
+        )
+        if not (
+            isinstance(behavioral_path, str) and behavioral_path.strip()
+        ) and not (
+            isinstance(exploratory_uncertainty, str)
+            and exploratory_uncertainty.strip()
+        ):
+            raise ValueError(
+                "reasoning.policy_intervention requires behavioral_path or "
+                "exploratory_uncertainty"
             )
     evidence = reasoning.get("evidence")
     if not isinstance(evidence, list) or not evidence:
@@ -1030,8 +1049,13 @@ def plan_inquiry_decision(proposal: dict, state: dict) -> dict:
     decision = proposal.get("inquiry_decision")
     if not isinstance(decision, dict):
         raise TypeError("inquiry_decision must be an object")
-    if set(decision) != {"action", "outcome"}:
-        raise ValueError("inquiry_decision requires exactly action and outcome")
+    allowed = {"action", "outcome", "experimental_lineage"}
+    extra = set(decision) - allowed
+    if extra or not {"action", "outcome"} <= set(decision):
+        raise ValueError(
+            "inquiry_decision requires action and outcome, with an optional "
+            "experimental_lineage disposition"
+        )
     if decision.get("action") != "close":
         raise ValueError("inquiry_decision action must be close")
     outcome = str(decision.get("outcome", "")).strip()
@@ -1048,10 +1072,69 @@ def plan_inquiry_decision(proposal: dict, state: dict) -> dict:
             "postmortems.md needs the current campaign's Scientific strategy section"
         )
     scientific_strategy_registers(section)
+    experimental = state.get("inquiry_lineage")
+    disposition = decision.get("experimental_lineage")
+    if isinstance(experimental, dict):
+        if not isinstance(disposition, dict):
+            raise TypeError(
+                "closing an inquiry with an experimental lineage requires an "
+                "explicit promote, retain, or abandon disposition"
+            )
+        disposition_action = str(disposition.get("action", "")).strip()
+        expected_fields = (
+            {"action", "id", "reason"}
+            if disposition_action == "retain"
+            else {"action", "reason"}
+        )
+        if set(disposition) != expected_fields or disposition_action not in {
+            "promote",
+            "retain",
+            "abandon",
+        }:
+            raise ValueError(
+                "experimental_lineage disposition must be promote or abandon "
+                "with a reason, or retain with id and reason"
+            )
+        disposition_reason = str(disposition.get("reason", "")).strip()
+        if not disposition_reason:
+            raise ValueError(
+                "experimental_lineage disposition requires a non-empty reason"
+            )
+        disposition = dict(disposition)
+        if disposition_action in {"promote", "retain"}:
+            repository.require_complete_inference_artifact(
+                repository.resolve_repo_path(experimental["artifact"]),
+                "inquiry experimental lineage",
+            )
+        if disposition_action == "retain":
+            identifier = str(disposition.get("id", "")).strip()
+            retained_ids = {
+                str(lineage.get("id"))
+                for lineage in state.get("retained_lineages", [])
+                if isinstance(lineage, dict)
+            }
+            if (
+                not identifier
+                or Path(identifier).name != identifier
+                or identifier in {".", ".."}
+                or identifier in retained_ids
+            ):
+                raise ValueError(
+                    "retained experimental lineage ID must be unique and "
+                    "file-name-safe"
+                )
+            disposition["id"] = identifier
+    elif disposition is not None:
+        raise ValueError(
+            "experimental_lineage disposition requires an active experimental "
+            "lineage"
+        )
     return {
         "action": "close",
         "outcome": outcome,
         "inquiry_id": int(active["id"]),
+        "experimental_lineage": copy.deepcopy(experimental),
+        "experimental_lineage_disposition": disposition,
     }
 
 
@@ -1338,7 +1421,7 @@ def validate_panel_independence(
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:
     """Models a request may name, including independent reusable lineage roles."""
     available = {item["name"]: item for item in pending["candidates"]}
-    identifiers = ["working", "best_known"]
+    identifiers = ["working", "best_known", "inquiry"]
     identifiers.extend(
         str(lineage.get("id"))
         for lineage in state.get("retained_lineages", [])
@@ -1395,7 +1478,7 @@ def preparation_ledger(state: dict) -> dict | None:
 def _current_lineage_fingerprints(state: dict) -> dict[str, str]:
     """The currently resolved fingerprint of every requestable saved lineage."""
     fingerprints: dict[str, str] = {}
-    for identifier in ("working", "best_known"):
+    for identifier in ("working", "best_known", "inquiry"):
         lineage = lineage_role(state, identifier)
         if isinstance(lineage, dict):
             fingerprints[identifier] = str(lineage.get("fingerprint") or "")
@@ -1642,7 +1725,8 @@ def validate_preparation_evaluation_request(
     """Validate a preparation request that may name saved lineages only.
 
     Preparation has no pending experiment, so the requestable models are the
-    eligible saved lineages (``working``, ``best_known`` or a retained ID).
+    eligible saved lineages (``working``, ``best_known``, ``inquiry`` or a
+    retained ID).
     Naming an experiment's candidate fails as an unknown candidate. The returned
     synthetic context is what execution resolves the request against.
     """
@@ -2200,7 +2284,7 @@ def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
         item["name"]: {**item, "_current_candidate": True}
         for item in pending["candidates"]
     }
-    for identifier in ("working", "best_known"):
+    for identifier in ("working", "best_known", "inquiry"):
         lineage = lineage_role(state, identifier)
         if lineage is not None:
             sources[identifier] = {**lineage, "name": identifier}
@@ -2384,12 +2468,15 @@ def _v4_artifact_publications(
     working_record: dict,
     best_known_record: dict | None,
     retained: list[dict],
+    inquiry_record: dict | None = None,
 ) -> list[dict]:
     """Freeze complete durable-artifact work before closure mutation begins."""
     campaign_id = repository.current_campaign_id(state)
     records = [("working", working_record)]
     if best_known_record is not None:
         records.append(("best_known", best_known_record))
+    if inquiry_record is not None:
+        records.append(("inquiry", inquiry_record))
     records.extend((f"retained:{item['id']}", item) for item in retained)
     grouped: dict[str, list[tuple[str, dict, Path]]] = {}
     for role, record in records:
@@ -2940,6 +3027,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "reason",
         "code",
         "best_known",
+        "experimental_lineage",
         "retain",
         "remove_retained",
         "request_final_benchmark",
@@ -2982,11 +3070,12 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     if code_action == "restore":
         restore_name = str(code["lineage"]).strip()
         restore_source = _v4_sources(pending, state).get(restore_name)
-        if restore_name not in {"working", "best_known"} and not retained_lineage(
-            state, restore_name
+        if restore_name not in {"working", "best_known", "inquiry"} and not (
+            retained_lineage(state, restore_name)
         ):
             raise ValueError(
-                "code restore lineage must be working, best_known, or a retained lineage ID"
+                "code restore lineage must be working, best_known, inquiry, or "
+                "a retained lineage ID"
             )
         if restore_source is None:
             raise ValueError(f"code restore lineage {restore_name!r} is unavailable")
@@ -3088,6 +3177,55 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
                 existing_best, best_fingerprint, designation_counter
             )
             best_record["designation_ordinal"] = designation_counter
+    existing_inquiry = (
+        dict(state["inquiry_lineage"])
+        if isinstance(state.get("inquiry_lineage"), dict)
+        else None
+    )
+    inquiry_name = None
+    inquiry_record = (
+        dict(existing_inquiry) if existing_inquiry is not None else None
+    )
+    if "experimental_lineage" in decision:
+        inquiry_decision = decision["experimental_lineage"]
+        if inquiry_decision is None:
+            inquiry_record = None
+        else:
+            if not isinstance(inquiry_decision, dict) or set(inquiry_decision) != {
+                "candidate",
+                "reason",
+            }:
+                raise ValueError(
+                    "experimental_lineage must be null or contain exactly "
+                    "candidate and reason"
+                )
+            active_inquiry = state.get("active_inquiry")
+            if not isinstance(active_inquiry, dict):
+                raise ValueError(
+                    "an experimental lineage requires an active inquiry"
+                )
+            inquiry_name = str(inquiry_decision["candidate"]).strip()
+            inquiry_reason = str(inquiry_decision["reason"]).strip()
+            if inquiry_name not in sources or not inquiry_reason:
+                raise ValueError(
+                    f"experimental_lineage candidate {inquiry_name!r} is "
+                    "unavailable or has no reason; "
+                    f"available model identifiers: {sorted(sources)}"
+                )
+            inquiry_source = sources[inquiry_name]
+            inquiry_artifact = repository.resolve_repo_path(
+                inquiry_source["artifact"]
+            )
+            repository.require_complete_artifact(
+                inquiry_artifact, "inquiry experimental lineage"
+            )
+            inquiry_record = _v4_lineage_record(
+                inquiry_source,
+                pending,
+                inquiry_artifact,
+                inquiry_reason,
+            )
+            inquiry_record["inquiry_id"] = int(active_inquiry["id"])
     retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
     removal_ids = decision.get("remove_retained", [])
     if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):
@@ -3098,9 +3236,11 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
     if len(removed) != len(removal_ids):
         raise ValueError("unknown retained lineages in remove_retained")
     retained_ids = {item["id"] for item in retained}
-    if {name for name in (working_name, best_name) if name in retained_ids} & set(
-        removal_ids
-    ):
+    if {
+        name
+        for name in (working_name, best_name, inquiry_name)
+        if name in retained_ids
+    } & set(removal_ids):
         raise ValueError("cannot remove a retained lineage selected for a role")
     new_retained: list[dict] = []
     known_ids = retained_ids - set(removal_ids)
@@ -3153,6 +3293,17 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         working_record,
         best_record,
         retained_records,
+        inquiry_record,
+    )
+    released_inquiry_lineage = (
+        existing_inquiry
+        if existing_inquiry is not None
+        and (
+            inquiry_record is None
+            or inquiry_record.get("fingerprint")
+            != existing_inquiry.get("fingerprint")
+        )
+        else None
     )
     return {
         "pending": pending,
@@ -3161,6 +3312,9 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         "working_record": working_record,
         "best_known_record": best_record,
         "best_known_name": best_name,
+        "inquiry_lineage_record": inquiry_record,
+        "inquiry_lineage_name": inquiry_name,
+        "released_inquiry_lineage": released_inquiry_lineage,
         "code_action": code_action,
         "code_reason": code_reason,
         "code_plan": code_plan,

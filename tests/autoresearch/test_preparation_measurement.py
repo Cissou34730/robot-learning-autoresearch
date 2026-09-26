@@ -3,7 +3,7 @@
 Preparation is where the next experiment, its parent and its initialization are
 chosen, yet measurement used to be available only during post-training analysis.
 A preparation-phase ``research/evaluation_request.json`` may now measure saved
-lineages (``working``, ``best_known`` or a retained ID); it may not name the
+lineages (``working``, ``best_known``, ``inquiry`` or a retained ID); it may not name the
 candidates of an experiment that has not run, and it must omit the ``experiment``
 field. The completed round returns to preparation, scoped to the upcoming
 experiment, and is carried into that experiment's analysis when it starts.
@@ -462,6 +462,109 @@ def test_measurement_only_inquiry_closes_without_allocating_an_experiment(
     )
 
 
+def test_closing_inquiry_releases_its_unpromoted_experimental_lineage(
+    monkeypatch, tmp_path
+):
+    state_path, _, proposal_path, state = _configure(monkeypatch, tmp_path)
+    experimental = _artifact(tmp_path / "archive" / "inquiry", b"experimental")
+    state["inquiry_lineage"] = {
+        **_lineage(
+            "archive/inquiry",
+            repository.artifact_fingerprint(experimental),
+        ),
+        "inquiry_id": 1,
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "inquiry_decision": {
+                    "action": "close",
+                    "outcome": "The experimental branch no longer warrants continuation.",
+                    "experimental_lineage": {
+                        "action": "abandon",
+                        "reason": "Its evidence does not justify preserving the branch.",
+                    },
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+
+    assert (
+        run_experiment.resolve_inquiry_decision(
+            json.loads(proposal_path.read_text(encoding="utf-8"))
+        )
+        == 0
+    )
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["inquiry_lineage"] is None
+    assert not experimental.joinpath("model.zip").exists()
+    assert experimental.joinpath("artifact.json").is_file()
+    inquiry = next(
+        item
+        for item in repository.history_records()
+        if item.get("record_type") == "inquiry"
+    )
+    assert inquiry["experimental_lineage"]["candidate"] == "checkpoint"
+
+
+@pytest.mark.parametrize("action", ["promote", "retain"])
+def test_closing_inquiry_can_preserve_its_experimental_lineage(
+    monkeypatch, tmp_path, action
+):
+    state_path, _, proposal_path, state = _configure(monkeypatch, tmp_path)
+    experimental = _artifact(tmp_path / "archive" / "inquiry", b"experimental")
+    state["inquiry_lineage"] = {
+        **_lineage(
+            "archive/inquiry",
+            repository.artifact_fingerprint(experimental),
+        ),
+        "inquiry_id": 1,
+    }
+    disposition = {
+        "action": action,
+        "reason": "The branch remains scientifically useful.",
+    }
+    if action == "retain":
+        disposition["id"] = "inquiry-one-method"
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "inquiry_decision": {
+                    "action": "close",
+                    "outcome": "The inquiry reached a bounded conclusion.",
+                    "experimental_lineage": disposition,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+
+    assert (
+        run_experiment.resolve_inquiry_decision(
+            json.loads(proposal_path.read_text(encoding="utf-8"))
+        )
+        == 0
+    )
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    preserved = (
+        persisted["working_lineage"]
+        if action == "promote"
+        else persisted["retained_lineages"][-1]
+    )
+    assert preserved["candidate"] == "checkpoint"
+    assert "inquiry_id" not in preserved
+    assert experimental.joinpath("model.zip").is_file()
+
+
 def test_inquiry_recovery_does_not_duplicate_history(monkeypatch, tmp_path):
     state_path, _, proposal_path, state = _configure(monkeypatch, tmp_path)
     proposal_path.write_text(
@@ -605,6 +708,66 @@ def _completed_experiment_3() -> dict:
             }
         ],
     }
+
+
+def test_brief_leads_with_inquiry_lineage_and_surfaces_laboratory_outputs():
+    state = _brief_state()
+    state.update(
+        {
+            "schema_version": 4,
+            "working_lineage": {
+                **_lineage("archive/working", "working-fingerprint"),
+                "candidate": "working-checkpoint",
+            },
+            "best_known_lineage": None,
+            "retained_lineages": [],
+            "active_inquiry": {"id": 2, "status": "active"},
+            "inquiry_lineage": {
+                **_lineage("archive/inquiry", "inquiry-fingerprint"),
+                "candidate": "experimental-checkpoint",
+                "inquiry_id": 2,
+            },
+            "principal_investigator_session": None,
+            "campaign_lab": {
+                "commit": "a" * 40,
+                "fingerprint": "b" * 64,
+                "manifest": [
+                    {
+                        "path": "research/lab/settling_analysis.json",
+                        "fingerprint": "c" * 64,
+                    }
+                ],
+            },
+            "pending_analysis": None,
+            "pending_final_benchmark": None,
+            "terminal_campaign_status": None,
+        }
+    )
+    rendered = brief._render_v4_research_brief(
+        state,
+        [],
+        [],
+        "## campaign / Scientific strategy\n\n"
+        "**Current synthesis:** A synthesis.\n\n"
+        "**Lessons and limits:** A limit.\n\n"
+        "**Competing explanations:** Two explanations.\n\n"
+        "**Decision frontier:** A distinction.",
+        "campaign",
+        "base",
+        "current method",
+        {},
+    )
+
+    assert rendered.index("## Causal research map") < rendered.index(
+        "## Inquiry continuity"
+    )
+    assert rendered.index("### Inquiry experimental lineage") < rendered.index(
+        "## Latest experiment"
+    )
+    assert rendered.index("## Development evidence index") < rendered.index(
+        "## Current lineages and scientific recipes"
+    )
+    assert "`research/lab/settling_analysis.json`" in rendered
 
 
 def test_preparation_rounds_render_for_the_upcoming_experiment():

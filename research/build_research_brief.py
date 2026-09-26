@@ -1102,15 +1102,26 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         *(([("best_known", best_known)]) if isinstance(best_known, dict) else []),
         *((str(lineage["id"]), lineage) for lineage in retained),
     ]
-    identifiers = ", ".join(f"`{identifier}`" for identifier, _ in lineages)
+    identifiers = [
+        identifier for identifier, _ in lineages
+    ]
+    if isinstance(state.get("inquiry_lineage"), dict):
+        identifiers.insert(0, "inquiry")
     lines = [
         "## Current lineages and scientific recipes",
         "",
-        f"- Valid `training_parent` identifiers: {identifiers or 'not recorded'}",
+        "- Valid `training_parent` identifiers: "
+        + (
+            ", ".join(f"`{identifier}`" for identifier in identifiers)
+            if identifiers
+            else "not recorded"
+        ),
         (
             "These are the only models the Runner can verify and restore as a "
-            "parent. A new identifier is created only by a closure that names a "
-            "candidate `working` or `best_known`, or retains it with an ID; the "
+            "parent. The `inquiry` role is an experimental lineage owned by the "
+            "active inquiry; it may advance without replacing `working` or "
+            "`best_known`. A new identifier is created only by a closure that "
+            "assigns one of those roles or retains a candidate with an ID; the "
             "complete inference artifact, matching fingerprint, scientific commit "
             "and effective parameters are recorded at that moment. Candidates "
             "without such a role have their weights removed at closure and cannot "
@@ -1553,8 +1564,13 @@ def _v4_experiment_index_section(
 def _lineage_names_by_fingerprint(state: dict) -> dict[str, list[str]]:
     """Every saved-lineage identifier that currently resolves to each artifact."""
     names: dict[str, list[str]] = {}
-    for identifier in ("working", "best_known"):
-        lineage = state.get(f"{identifier}_lineage")
+    for identifier in ("working", "best_known", "inquiry"):
+        field = (
+            "inquiry_lineage"
+            if identifier == "inquiry"
+            else f"{identifier}_lineage"
+        )
+        lineage = state.get(field)
         if isinstance(lineage, dict) and lineage.get("fingerprint"):
             names.setdefault(str(lineage["fingerprint"]), []).append(identifier)
     for lineage in state.get("retained_lineages") or []:
@@ -2202,6 +2218,9 @@ def _closure_selected_labels(record: dict) -> set[str]:
     best = closure.get("best_known")
     if isinstance(best, dict) and best.get("candidate") is not None:
         selected.add(str(best["candidate"]))
+    experimental = closure.get("experimental_lineage")
+    if isinstance(experimental, dict) and experimental.get("candidate") is not None:
+        selected.add(str(experimental["candidate"]))
     for retained in closure.get("retain") or []:
         if isinstance(retained, dict) and retained.get("candidate") is not None:
             selected.add(str(retained["candidate"]))
@@ -2576,7 +2595,9 @@ def _render_v4_research_brief(
         campaign_id,
         campaign_base_commit,
     )
+    lines.extend(_v4_synthesis_section(postmortems, campaign_id))
     active_inquiry = state.get("active_inquiry")
+    inquiry_lineage = state.get("inquiry_lineage")
     pi_session = state.get("principal_investigator_session")
     lab = state.get("campaign_lab")
     lines.extend(
@@ -2604,12 +2625,49 @@ def _render_v4_research_brief(
             ),
         ]
     )
+    if isinstance(inquiry_lineage, dict):
+        lines.extend(["", "### Inquiry experimental lineage", ""])
+        lines.extend(_authoritative_lineage_lines("inquiry", inquiry_lineage))
+        lines.append(
+            "This lineage may advance without replacing the working or "
+            "best-known policy."
+        )
+    else:
+        lines.extend(
+            [
+                "",
+                "### Inquiry experimental lineage",
+                "",
+                "No experimental lineage is currently assigned to this inquiry.",
+            ]
+        )
     if inquiries:
         lines.extend(["", "### Closed inquiry outcomes", ""])
         for inquiry in inquiries[-5:]:
             lines.append(
                 f"- Inquiry {inquiry.get('inquiry_id')}: {inquiry.get('outcome', '-')}"
             )
+    if isinstance(lab, dict):
+        lines.extend(
+            [
+                "",
+                "## Campaign laboratory",
+                "",
+                (
+                    "Published tools and outputs from `research/lab/`. Reuse these "
+                    "artifacts when an analysis recurs instead of reconstructing it "
+                    "ad hoc:"
+                ),
+                "",
+            ]
+        )
+        manifest = lab.get("manifest")
+        if isinstance(manifest, list) and manifest:
+            for item in manifest:
+                if isinstance(item, dict) and item.get("path"):
+                    lines.append(f"- `{item['path']}`")
+        else:
+            lines.append("- No published laboratory files.")
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
@@ -2675,24 +2733,22 @@ def _render_v4_research_brief(
     else:
         lines.append("No experiment has completed in this campaign.")
 
-    lines.extend(_v4_lineage_section(state, current_params))
-
-    lines.extend(_v4_experiment_index_section(results, pending))
-
     lines.extend(_v4_evidence_section(state, pending, results, inquiries))
 
     lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
-    lines.extend(_v4_activity_record_section(state, results, pending, inquiries))
+    lines.extend(_v4_lineage_section(state, current_params))
 
-    lines.extend(_v4_synthesis_section(postmortems, campaign_id))
+    lines.extend(_v4_reusable_lineages_section(state))
+    lines.extend(_v4_best_known_section(state))
+
+    lines.extend(_v4_experiment_index_section(results, pending))
+
+    lines.extend(_v4_activity_record_section(state, results, pending, inquiries))
 
     lines.extend(_v4_repeated_operations_section(results))
 
     lines.extend(_v4_intervention_surfaces_section(results))
-
-    lines.extend(_v4_reusable_lineages_section(state))
-    lines.extend(_v4_best_known_section(state))
 
     lines.extend(_v4_terminal_assessment_section(state))
 

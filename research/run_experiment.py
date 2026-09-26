@@ -1508,6 +1508,9 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "working_record": plan["working_record"],
         "best_known_record": plan["best_known_record"],
         "best_known_name": plan["best_known_name"],
+        "inquiry_lineage_record": plan["inquiry_lineage_record"],
+        "inquiry_lineage_name": plan["inquiry_lineage_name"],
+        "released_inquiry_lineage": plan["released_inquiry_lineage"],
         "code_action": plan["code_action"],
         "code_reason": plan["code_reason"],
         "code_plan": {
@@ -1575,6 +1578,9 @@ def apply_pending_v4_closure(state: dict) -> bool:
     state["preparation_measurement"] = None
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
+    state["inquiry_lineage"] = plan.get(
+        "inquiry_lineage_record", state.get("inquiry_lineage")
+    )
     state["retained_lineages"] = plan["retained"]
     state["best_known_designation_counter"] = plan.get(
         "designation_counter", state.get("best_known_designation_counter", 0)
@@ -1584,6 +1590,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
         "continue_from": plan["working_name"],
         "reason": plan["decision"]["reason"],
         "best_known": plan["best_known_name"],
+        "experimental_lineage": plan.get("inquiry_lineage_name"),
         "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
         "code_parent_commit": pending.get("code_parent_commit"),
     }
@@ -1621,6 +1628,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
                 "postmortem": repository.repo_relative_path(paths.POSTMORTEM_PATH),
                 "working_lineage": plan["working_record"],
                 "best_known_lineage": plan["best_known_record"],
+                "inquiry_lineage": plan.get("inquiry_lineage_record"),
             }
         )
         if plan.get("hypothesis_assessment") is not None:
@@ -1654,6 +1662,11 @@ def finalize_pending_v4_closure(state: dict) -> None:
             repository.remove_heavyweight_artifacts(artifact)
     for lineage in plan["removed_retained"]:
         artifact = repository.resolve_repo_path(lineage["artifact"])
+        if artifact not in protected:
+            repository.remove_heavyweight_artifacts(artifact)
+    released_inquiry = plan.get("released_inquiry_lineage")
+    if isinstance(released_inquiry, dict) and released_inquiry.get("artifact"):
+        artifact = repository.resolve_repo_path(released_inquiry["artifact"])
         if artifact not in protected:
             repository.remove_heavyweight_artifacts(artifact)
     operation["progress"] = "cleanup_complete"
@@ -1866,10 +1879,12 @@ def complete_inquiry_decision(state: dict) -> None:
     if not isinstance(operation, dict):
         raise TypeError("there is no pending inquiry closure")
     progress = operation.get("progress")
-    if progress not in {"planned", "recorded", "durable"}:
+    if progress not in {"planned", "recorded", "lineage_released", "durable"}:
         raise ValueError(f"unknown inquiry closure progress: {progress!r}")
     inquiry_id = int(operation["inquiry_id"])
     if progress == "planned":
+        experimental = operation.get("experimental_lineage")
+        disposition = operation.get("experimental_lineage_disposition")
         ledger = state.get("preparation_measurement")
         inquiry_ledger = (
             ledger
@@ -1908,10 +1923,26 @@ def complete_inquiry_decision(state: dict) -> None:
                 ),
                 "scientific_strategy": strategy,
                 "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
+                "experimental_lineage": copy.deepcopy(
+                    experimental
+                ),
+                "experimental_lineage_disposition": copy.deepcopy(disposition),
             }
         )
+        if isinstance(experimental, dict) and isinstance(disposition, dict):
+            selected = copy.deepcopy(experimental)
+            selected.pop("inquiry_id", None)
+            selected["reason"] = str(disposition["reason"]).strip()
+            action = disposition["action"]
+            if action == "promote":
+                state["working_lineage"] = selected
+            elif action == "retain":
+                state.setdefault("retained_lineages", []).append(
+                    {"id": disposition["id"], **selected}
+                )
         state["last_inquiry"] = inquiry_id
         state["active_inquiry"] = None
+        state["inquiry_lineage"] = None
         state["preparation_measurement"] = None
         state["pending_scientific_parent"] = None
         state["last_verdict"] = f"inquiry {inquiry_id} closed"
@@ -1919,6 +1950,15 @@ def complete_inquiry_decision(state: dict) -> None:
         repository.write_state(state)
         progress = "recorded"
     if progress == "recorded":
+        experimental = operation.get("experimental_lineage")
+        if isinstance(experimental, dict) and experimental.get("artifact"):
+            artifact = repository.resolve_repo_path(experimental["artifact"])
+            if artifact not in repository.role_and_retention_artifacts(state):
+                repository.remove_heavyweight_artifacts(artifact)
+        operation["progress"] = "lineage_released"
+        repository.write_state(state)
+        progress = "lineage_released"
+    if progress == "lineage_released":
         _publish_runner_memory(f"close inquiry {inquiry_id}")
         operation["progress"] = "durable"
         repository.write_state(state)

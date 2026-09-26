@@ -1747,7 +1747,7 @@ def test_model_reasoning_is_optional_but_validated_when_provided(kind):
 
 
 @pytest.mark.parametrize("kind", ["training", "continuation"])
-def test_policy_intervention_requires_a_behavioral_path_and_comparison(kind):
+def test_policy_intervention_accepts_confirmatory_or_exploratory_reasoning(kind):
     proposal = _training_proposal()
     if kind == "continuation":
         proposal.update(
@@ -1763,16 +1763,38 @@ def test_policy_intervention_requires_a_behavioral_path_and_comparison(kind):
     ):
         validate_training_proposal(proposal, baseline=False)
 
-    for field in ("behavioral_path", "behavioral_test"):
-        proposal["reasoning"]["policy_intervention"] = {
-            **intervention,
-            field: " ",
-        }
-        with pytest.raises(ValueError, match=f"reasoning.policy_intervention.{field}"):
-            validate_training_proposal(proposal, baseline=False)
+    proposal["reasoning"]["policy_intervention"] = {
+        **intervention,
+        "behavioral_test": " ",
+    }
+    with pytest.raises(
+        ValueError, match="reasoning.policy_intervention.behavioral_test"
+    ):
+        validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["policy_intervention"] = {
+        **intervention,
+        "behavioral_path": " ",
+    }
+    with pytest.raises(
+        ValueError,
+        match="requires behavioral_path or exploratory_uncertainty",
+    ):
+        validate_training_proposal(proposal, baseline=False)
 
     proposal["reasoning"]["policy_intervention"] = {
         field: intervention[field] for field in ("behavioral_path", "behavioral_test")
+    }
+    validate_training_proposal(proposal, baseline=False)
+
+    proposal["reasoning"]["policy_intervention"] = {
+        "exploratory_uncertainty": (
+            "The transformed method may expose a different learning regime; "
+            "its behavioral path is intentionally not assumed."
+        ),
+        "behavioral_test": (
+            "Characterize its failures against the prior inquiry lineage."
+        ),
     }
     validate_training_proposal(proposal, baseline=False)
 

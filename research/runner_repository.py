@@ -571,7 +571,7 @@ def canonicalize_lineage_record(lineage: dict) -> None:
         set(lineage)
         - LINEAGE_RECORD_FIELDS
         - LINEAGE_RECORD_OPTIONAL_FIELDS
-        - {"id", "campaign_id"}
+        - {"id", "campaign_id", "inquiry_id"}
     )
     if missing or extra:
         raise ValueError(
@@ -645,6 +645,7 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
     state.setdefault("last_allocated_inquiry", 0)
     state.setdefault("last_inquiry", 0)
     state.setdefault("active_inquiry", None)
+    state.setdefault("inquiry_lineage", None)
     state.setdefault("pending_inquiry_operation", None)
     state.setdefault("principal_investigator_session", None)
     state.setdefault("campaign_lab", None)
@@ -673,6 +674,19 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
         or int(active_inquiry["id"]) < 1
     ):
         raise ValueError("active_inquiry must identify one active inquiry")
+    inquiry_lineage = state["inquiry_lineage"]
+    if inquiry_lineage is not None:
+        canonicalize_lineage_record(inquiry_lineage)
+        inquiry_id = inquiry_lineage.get("inquiry_id")
+        if (
+            not isinstance(inquiry_id, int)
+            or isinstance(inquiry_id, bool)
+            or not isinstance(active_inquiry, dict)
+            or inquiry_id != active_inquiry.get("id")
+        ):
+            raise ValueError(
+                "inquiry_lineage must belong to the active inquiry"
+            )
     pi_session = state["principal_investigator_session"]
     if pi_session is not None and (
         not isinstance(pi_session, dict)
@@ -690,12 +704,16 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
     for role in ("working_lineage", "best_known_lineage"):
         lineage = state.get(role)
         if lineage is not None:
+            if "inquiry_id" in lineage:
+                raise ValueError(f"{role} cannot carry inquiry ownership")
             canonicalize_lineage_record(lineage)
     retained = state.get("retained_lineages", [])
     if not isinstance(retained, list):
         raise TypeError("retained_lineages must be a list")
     identifiers: set[str] = set()
     for lineage in retained:
+        if isinstance(lineage, dict) and "inquiry_id" in lineage:
+            raise ValueError("retained lineage cannot carry inquiry ownership")
         canonicalize_lineage_record(lineage)
         identifier = lineage.get("id")
         if (
@@ -712,6 +730,11 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
                 require_complete_inference_artifact(
                     resolve_repo_path(lineage["artifact"]), role
                 )
+        if inquiry_lineage is not None:
+            require_complete_inference_artifact(
+                resolve_repo_path(inquiry_lineage["artifact"]),
+                "inquiry_lineage",
+            )
         for lineage in retained:
             require_complete_inference_artifact(
                 resolve_repo_path(lineage["artifact"]),
@@ -815,6 +838,7 @@ def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
         "last_allocated_inquiry": 0,
         "last_inquiry": 0,
         "active_inquiry": None,
+        "inquiry_lineage": None,
         "pending_inquiry_operation": None,
         "principal_investigator_session": None,
         "campaign_lab": None,
@@ -993,6 +1017,7 @@ def migrate_research_state() -> bool:
         schema_version=4,
         working_lineage=working,
         best_known_lineage=copy.deepcopy(working) if measured else None,
+        inquiry_lineage=None,
         retained_lineages=converted.get("retained_lineages", []),
         pending_analysis=_migrated_pending_analysis(original),
         pending_evaluation_request=None,
@@ -1709,6 +1734,7 @@ def role_and_retention_artifacts(state: dict) -> set[Path]:
     records = [
         state.get("working_lineage"),
         state.get("best_known_lineage"),
+        state.get("inquiry_lineage"),
         *(state.get("retained_lineages") or []),
     ]
     return {

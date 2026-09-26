@@ -60,11 +60,16 @@ def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
     best_known = _artifact(tmp_path / "best-known-checkpoint", "best-known")
+    inquiry = _artifact(tmp_path / "inquiry-checkpoint", "inquiry")
     retained = _artifact(tmp_path / "retained-checkpoint", "retained")
+    inquiry_lineage = _lineage(inquiry, steps=70_000)
+    inquiry_lineage["inquiry_id"] = 3
     state = {
         "schema_version": 4,
+        "active_inquiry": {"id": 3, "status": "active"},
         "working_lineage": _lineage(working, steps=120_000),
         "best_known_lineage": _lineage(best_known, steps=80_000),
+        "inquiry_lineage": inquiry_lineage,
         "retained_lineages": [
             {"id": "alternative", **_lineage(retained, steps=60_000)}
         ],
@@ -76,12 +81,16 @@ def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path
     best_parent = protocol.training_parent(
         {"training_parent": "best_known"}, state, "transfer"
     )
+    inquiry_parent = protocol.training_parent(
+        {"training_parent": "inquiry"}, state, "transfer"
+    )
     retained_parent = protocol.training_parent(
         {"training_parent": "alternative"}, state, "transfer"
     )
 
     assert working_parent == ("working", working, 120_000)
     assert best_parent == ("best_known", best_known, 80_000)
+    assert inquiry_parent == ("inquiry", inquiry, 70_000)
     assert retained_parent == ("alternative", retained, 60_000)
     assert working.joinpath("model.zip").read_bytes() == b"working"
     assert best_known.joinpath("model.zip").read_bytes() == b"best-known"
@@ -177,11 +186,16 @@ def test_v4_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     working = _artifact(tmp_path / "working-checkpoint", "working")
     best_known = _artifact(tmp_path / "best-known-checkpoint", "best-known")
+    inquiry = _artifact(tmp_path / "inquiry-checkpoint", "inquiry")
     retained = _artifact(tmp_path / "retained-checkpoint", "retained")
+    inquiry_lineage = _lineage(inquiry, steps=70_000)
+    inquiry_lineage["inquiry_id"] = 3
     state = {
         "schema_version": 4,
+        "active_inquiry": {"id": 3, "status": "active"},
         "working_lineage": _lineage(working, steps=120_000),
         "best_known_lineage": _lineage(best_known, steps=80_000),
+        "inquiry_lineage": inquiry_lineage,
         "retained_lineages": [
             {"id": "alternative", **_lineage(retained, steps=60_000)}
         ],
@@ -202,10 +216,12 @@ def test_v4_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path
         "checkpoint-40k",
         "working",
         "best_known",
+        "inquiry",
         "alternative",
     }
     assert available["working"]["artifact"] == working.name
     assert available["best_known"]["artifact"] == best_known.name
+    assert available["inquiry"]["artifact"] == inquiry.name
     assert available["alternative"]["artifact"] == retained.name
 
 
@@ -312,6 +328,103 @@ def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_pat
         "research/checkpoints/retained/"
     )
     assert state["best_known_lineage"]["artifact"] == original_best_artifact
+
+
+def test_v4_inquiry_lineage_advances_without_promoting_working(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    candidate = _artifact(tmp_path / "candidate", "experimental")
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "active_inquiry": {"id": 4, "status": "active"},
+        "working_lineage": _lineage(working, steps=120_000),
+        "best_known_lineage": _lineage(working, steps=120_000),
+        "inquiry_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 2,
+            "candidates": [
+                {
+                    "name": "checkpoint-5000",
+                    "artifact": candidate.name,
+                    "timesteps": 5_000,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {"algorithm": {"name": "ppo"}},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+
+    plan = protocol.plan_previous_result_decision(
+        {
+            "previous_result_decision": {
+                "experiment": 2,
+                "continue_from": "working",
+                "reason": "Keep the established control unchanged.",
+                "experimental_lineage": {
+                    "candidate": "checkpoint-5000",
+                    "reason": "Advance the inquiry despite lower current performance.",
+                },
+                "code": {
+                    "action": "keep",
+                    "reason": "Keep developing the experimental recipe.",
+                },
+            }
+        },
+        state,
+    )
+
+    assert plan["working_record"]["fingerprint"] == repository.artifact_fingerprint(
+        working
+    )
+    assert plan["inquiry_lineage_record"]["candidate"] == "checkpoint-5000"
+    assert plan["inquiry_lineage_record"]["inquiry_id"] == 4
+    assert plan["inquiry_lineage_name"] == "checkpoint-5000"
+
+
+def test_v4_inquiry_lineage_is_an_independent_training_parent(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    experimental = _artifact(tmp_path / "experimental", "experimental")
+    lineage = _lineage(experimental, steps=45_000)
+    lineage["inquiry_id"] = 2
+    state = {
+        "schema_version": 4,
+        "active_inquiry": {"id": 2, "status": "active"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "inquiry_lineage": lineage,
+        "retained_lineages": [],
+    }
+
+    parent = protocol.training_parent(
+        {"training_parent": "inquiry"}, state, "transfer"
+    )
+
+    assert parent == ("inquiry", experimental, 45_000)
+    assert experimental in repository.role_and_retention_artifacts(state)
+
+
+def test_v4_state_rejects_an_experimental_lineage_from_another_inquiry(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    experimental = _artifact(tmp_path / "experimental", "experimental")
+    lineage = _lineage(experimental, steps=45_000)
+    lineage["inquiry_id"] = 1
+    state = repository.empty_v4_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    state["active_inquiry"] = {"id": 2, "status": "active"}
+    state["inquiry_lineage"] = lineage
+
+    with pytest.raises(
+        ValueError, match="inquiry_lineage must belong to the active inquiry"
+    ):
+        repository.validate_v4_state(state, allow_missing_artifact=False)
 
 
 def test_v4_planning_reuses_one_durable_artifact_for_matching_aliases(
