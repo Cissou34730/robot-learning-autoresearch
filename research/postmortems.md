@@ -2,25 +2,21 @@
 
 ## 3e3387d5-4eae-4e5e-a34b-c8dfa83788e5 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned strong but slightly
-below-threshold reach-and-hold behavior. Checkpoint-100352 is the strongest
-measured policy: it achieved 195/200 (97.5%) on research episodes 2000-2199
-and 196/200 (98.0%) on the disjoint research episodes 2200-2399, for 391/400
-(97.75%) pooled success. The fixed task-reference score of 98% is descriptive
-only because that panel was used in selecting the checkpoint; it is not
-independent confirmation. The official objective therefore remains unresolved.
+**Current synthesis:** The PPO baseline learned strong, stable, near-threshold
+reach-and-hold behavior: checkpoint-100352 achieved 391/400 (97.75%) across
+two disjoint research panels. Its 98% task-reference result is descriptive
+only because that panel was used for selection, so the official objective
+remains unresolved.
 
-**Lessons and limits:** Training proxies identified a useful selection region
-but did not establish the objective: checkpoint-86016 measured 192/200 and
-checkpoint-120832 measured 194/200 on the first research panel, both below
-checkpoint-100352. The selected policy's four research-panel failures include
-episodes that never reached the tolerance region, so residual failures are
-real task failures rather than a rounding issue. Development panels do not
-replace the fixed 200-episode official assessment.
+**Lessons and limits:** Checkpoint-100352 outperformed the measured earlier and
+later checkpoints, but its residual research-panel failures are genuine task
+failures, including episodes that never reached tolerance. The baseline trains
+on 14-20 cm targets although the official distribution spans 6-20 cm.
+Development measurements do not replace the fixed 200-episode official
+assessment.
 
-**Open questions:** Whether the retained baseline can meet at least 196/200
-on the official panel is unresolved, as is whether a changed training recipe
-can eliminate the small but persistent residual failure rate.
+**Open questions:** The evidence does not establish the official verdict or
+whether broader training-radius coverage changes the residual failure rate.
 
 ## 3e3387d5-4eae-4e5e-a34b-c8dfa83788e5 / Experiment 1
 
