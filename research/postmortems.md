@@ -4,50 +4,50 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 2143/2200 across eleven distinct research panels.
-Experiments 2--6 did not establish a reliable improvement over the working
-lineage. On the fresh 30000--30199 panel, the parent achieved 197/200, while
-the saved slew and action-headroom controls each achieved 196/200. The
-experiment-7 targeted-coverage challengers were not measured, so none has
-evidence that warrants replacing the parent.
+98% solution. It achieved 2337/2400 across twelve distinct research panels.
+Experiments 2--7 did not establish a reliable improvement over the working
+lineage. On the fresh 31000--31199 panel, the parent and headroom control each
+achieved 194/200, while the slew control achieved 195/200. The experiment-7
+targeted-coverage challengers remain unmeasured, so none has evidence that
+warrants replacing the parent.
 
-**Lessons and limits:** The parent failed at seeds 30030, 30045, and 30090.
-The slew control shared those failures and added 30184, while the headroom
-control shared 30030 and turned the other three into incomplete holds. All four
-control failures switched branches and entered low-Jacobian regions, but
-successful trajectories also switched branches in roughly half of episodes, so
-neither observation identifies a cause. The parent saturated for 499 steps on
-each no-entry failure. Headroom removed saturation without rescuing those
-targets, and slew reduced saturation but produced a slow incomplete hold.
-These paired controls weaken saturation and fixed command slew as sufficient
-explanations, but they do not distinguish branch transition, conditioning, and
-stabilization. The direct effect of experiment 7's targeted exposure remains
-unmeasured; training-log proxy values are not task-success evidence. All
-results are development measurements, and the parent has not established the
-human objective on the final benchmark.
+**Lessons and limits:** On the fresh 31000--31199 panel, the working policy
+failed six episodes and the headroom control failed the same six; the slew
+control failed five of those six and rescued one. Every failure switched the
+nearest inverse-kinematic branch and reached a very small Jacobian determinant,
+but branch switching also occurred in about 46% of successful episodes, so it
+is not sufficient as a causal explanation. Working failures were almost
+entirely no-entry failures with roughly 499 saturated steps and high action
+variation. Headroom removed saturation entirely without rescuing any shared
+failure. Slew reduced entry velocity and action variation but still failed to
+enter tolerance on the five shared targets. These paired observations weaken
+saturation, fixed command slew, and entry/hold speed as sufficient explanations;
+they support a configuration-dependent transition/conditioning interaction,
+while the telemetry remains associative rather than causal. The direct effect
+of experiment 7's targeted exposure remains unmeasured, and all results are
+development measurements rather than the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
-repeatable negative-angle failures despite unchanged task mechanics: branch
-transition, poor local conditioning, insufficient stabilization, or an
-interaction among them. It remains unresolved whether targeted exposure can
-change the failure identity without sacrificing broad competence, and whether
-entry, settling, and hold-stage measurements can separate these mechanisms
-without relying on terminal success alone.
+repeatable negative-angle failures despite unchanged task mechanics: a
+branch-transition policy error, poor local conditioning, insufficient
+stabilization, or an interaction among them. It remains unresolved whether
+explicit endpoint-velocity and conditioning information can change the failure
+identity without sacrificing broad competence, and whether targeted exposure
+has any direct benefit independent of representation.
 
 **Active inquiry:** The current evidence makes actuator clipping and command
-smoothness insufficient explanations: removing measured saturation did not
-rescue the shared targets, and limiting command changes preserved them while
-delaying acquisition. The provisional question is whether branch-dependent
-conditioning and local stabilization, rather than target exposure alone, limit
-completion in the negative-angle sector. A fresh paired measurement of the
-working policy and retained headroom and slew controls will compare branch
-transitions, Jacobian conditioning, entry velocity, hold velocity, saturation,
-and action variation on the same episodes. Rescue with preserved broad
-completion would reopen the data-coverage explanation; unchanged identities
-with stage-specific conditioning differences would redirect it toward controller
-representation or stabilization. The inquiry ends or changes only when those
-measurements fail to distinguish the mechanisms or support a more direct
-intervention.
+smoothness insufficient explanations: headroom removed saturation without
+rescuing the shared targets, and slew reduced command and entry speeds while
+leaving five shared no-entry failures. The provisional question is whether
+making endpoint velocity and local Jacobian conditioning explicit lets a
+controller manage the branch-transition/near-singular regime that the current
+policy handles unreliably. A fresh policy with only these four derived
+observation values will be compared with the saved working lineage on
+disjoint panels; rescue of the shared sector with preserved broad completion
+would support an information/representation limitation, while broad regression
+or unchanged failure identities would redirect the inquiry away from this
+representation. The unmeasured experiment-7 intervention remains a separate
+data-coverage question and is not treated as evidence for this decision.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
