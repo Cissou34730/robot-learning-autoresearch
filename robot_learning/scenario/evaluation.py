@@ -13,6 +13,7 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
+import mujoco
 import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
@@ -21,6 +22,29 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+
+
+def _nearest_ik_branch(observation: np.ndarray) -> int:
+    branch_errors = observation[7:11].reshape(2, 2)
+    return int(np.argmin(np.sum(np.square(branch_errors), axis=1)))
+
+
+def _configuration_diagnostics(env) -> tuple[float, float]:
+    jacobian = np.zeros((3, env.model.nv), dtype=np.float64)
+    mujoco.mj_jacSite(
+        env.model,
+        env.data,
+        jacobian,
+        None,
+        mujoco.mj_name2id(
+            env.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+        ),
+    )
+    planar_jacobian = jacobian[:2, :2]
+    endpoint_velocity_cm_s = float(
+        np.linalg.norm(jacobian @ np.asarray(env.data.qvel, dtype=np.float64)) * 100.0
+    )
+    return float(abs(np.linalg.det(planar_jacobian))), endpoint_velocity_cm_s
 
 
 def evaluate_research_model(
@@ -55,6 +79,13 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        previous_branch = _nearest_ik_branch(obs)
+        branch_switches = 0
+        min_abs_jacobian_determinant = float("inf")
+        max_endpoint_velocity_cm_s = 0.0
+        entry_endpoint_velocity_cm_s: float | None = None
+        entry_branch: int | None = None
+        saturated_steps = 0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -65,10 +96,26 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            branch = _nearest_ik_branch(obs)
+            if branch != previous_branch:
+                branch_switches += 1
+            previous_branch = branch
+            abs_jacobian_determinant, endpoint_velocity_cm_s = (
+                _configuration_diagnostics(env)
+            )
+            min_abs_jacobian_determinant = min(
+                min_abs_jacobian_determinant, abs_jacobian_determinant
+            )
+            max_endpoint_velocity_cm_s = max(
+                max_endpoint_velocity_cm_s, endpoint_velocity_cm_s
+            )
+            saturated_steps += int(info.get("action_saturated", False))
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    entry_endpoint_velocity_cm_s = endpoint_velocity_cm_s
+                    entry_branch = branch
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -103,6 +150,12 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "branch_switches": branch_switches,
+                "entry_branch": entry_branch,
+                "entry_endpoint_velocity_cm_s": entry_endpoint_velocity_cm_s,
+                "min_abs_jacobian_determinant": min_abs_jacobian_determinant,
+                "max_endpoint_velocity_cm_s": max_endpoint_velocity_cm_s,
+                "saturated_steps": saturated_steps,
             }
         )
         if progress_callback is not None:
@@ -121,7 +174,12 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "endpoint_velocity": "cm/s",
+                "jacobian_determinant": "m",
+                "time": "control_steps",
+            },
         },
     }
 
