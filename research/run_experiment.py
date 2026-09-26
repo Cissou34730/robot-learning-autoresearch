@@ -15,6 +15,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,9 @@ from robot_learning.training import research_config
 
 TIMESTEPS = 120_000
 TRAIN_SEED = 0
+RESEARCHER_IMPLEMENTATION_ERROR_EXIT = 3
+MAX_IMPLEMENTATION_REPAIR_ATTEMPTS = 2
+_TRACEBACK_FILE = re.compile(r'File "([^"]+)", line \d+')
 
 PROPOSAL_ERRORS = (
     json.JSONDecodeError,
@@ -363,6 +367,127 @@ def validate_research_delta(raw_state: dict) -> list[str]:
     lab_changes = repository.campaign_lab_change_paths(repository.status_paths((".",)))
     protocol.validate_research_delta_ownership([*code_changes, *lab_changes])
     return code_changes
+
+
+def _researcher_failure_path(
+    error: Exception, code_changes: list[str]
+) -> str | None:
+    """Return the causal changed Researcher path for an execution traceback."""
+    matches = _TRACEBACK_FILE.findall(str(error))
+    if not matches:
+        return None
+    candidate = Path(matches[-1])
+    if not candidate.is_absolute():
+        candidate = paths.ROOT / candidate
+    try:
+        relative = candidate.resolve().relative_to(paths.ROOT.resolve()).as_posix()
+    except ValueError:
+        return None
+    normalized_changes = {path.replace("\\", "/") for path in code_changes}
+    if relative not in normalized_changes or not protocol.is_researcher_owned(relative):
+        return None
+    return relative
+
+
+def _request_fingerprint() -> str:
+    if not paths.EVALUATION_REQUEST_PATH.is_file():
+        raise FileNotFoundError("research/evaluation_request.json is missing")
+    return repository.file_fingerprint(paths.EVALUATION_REQUEST_PATH)
+
+
+def _remove_operational_failures(active_round: dict | None) -> bool:
+    """Remove legacy runtime failures that were incorrectly stored as evidence."""
+    if not isinstance(active_round, dict):
+        return False
+    results = active_round.get("results")
+    if not isinstance(results, dict):
+        return False
+    changed = False
+    for key in ("research_evaluations", "task_reference_evaluations"):
+        records = results.get(key)
+        if not isinstance(records, list):
+            continue
+        retained = [
+            record
+            for record in records
+            if not isinstance(record, dict) or record.get("status") != "failed"
+        ]
+        if len(retained) != len(records):
+            results[key] = retained
+            changed = True
+    return changed
+
+
+def _record_researcher_implementation_error(
+    state: dict,
+    pending: dict,
+    error: Exception,
+    causal_path: str,
+) -> int:
+    attempts = int(pending.get("implementation_repair_attempts", 0))
+    pending["implementation_error"] = {
+        "causal_path": causal_path,
+        "error": str(error)[-12_000:],
+        "request_fingerprint": _request_fingerprint(),
+    }
+    pending["implementation_repair_attempts"] = attempts
+    state["pending_evaluation_request"] = pending
+    repository.write_state(state)
+    print(
+        "RESEARCHER_IMPLEMENTATION_ERROR: accepted measurement produced no "
+        f"scientific evidence; repair {causal_path}"
+    )
+    return RESEARCHER_IMPLEMENTATION_ERROR_EXIT
+
+
+def record_implementation_repair_attempt() -> int:
+    """Record one completed Researcher repair session."""
+    state = repository.read_state()
+    pending = state.get("pending_evaluation_request")
+    if not isinstance(pending, dict) or not isinstance(
+        pending.get("implementation_error"), dict
+    ):
+        print("IMPLEMENTATION_REPAIR_INVALID: no implementation error is pending")
+        return 1
+    attempts = int(pending.get("implementation_repair_attempts", 0))
+    if attempts >= MAX_IMPLEMENTATION_REPAIR_ATTEMPTS:
+        print(
+            "IMPLEMENTATION_REPAIR_INVALID: the Researcher already used both "
+            "implementation repair attempts"
+        )
+        return 1
+    pending["implementation_repair_attempts"] = attempts + 1
+    repository.write_state(state)
+    print(f"IMPLEMENTATION_REPAIR_RECORDED: attempt {attempts + 1}")
+    return 0
+
+
+def complete_implementation_repair() -> int:
+    """Validate a repair without allowing the accepted measurement to change."""
+    state = repository.read_state()
+    pending = state.get("pending_evaluation_request")
+    repair = (
+        pending.get("implementation_error") if isinstance(pending, dict) else None
+    )
+    if not isinstance(repair, dict):
+        print("IMPLEMENTATION_REPAIR_INVALID: no implementation error is pending")
+        return 1
+    try:
+        if int(pending.get("implementation_repair_attempts", 0)) < 1:
+            raise ValueError("no completed implementation repair attempt was recorded")
+        if _request_fingerprint() != str(repair.get("request_fingerprint", "")):
+            raise ValueError(
+                "research/evaluation_request.json changed after it was accepted"
+            )
+        code_changes = validate_research_delta(state)
+        execution.validate_changed_sources(code_changes)
+    except (OSError, RuntimeError, TypeError, ValueError) as error:
+        print(f"IMPLEMENTATION_REPAIR_INVALID: {error}")
+        return 1
+    pending.pop("implementation_error", None)
+    repository.write_state(state)
+    print("IMPLEMENTATION_REPAIR_VALID")
+    return 0
 
 
 def validate_campaign_conclusion_delta(raw_state: dict) -> None:
@@ -855,7 +980,13 @@ def execute_pending_evaluations() -> int:
             raise ValueError(
                 "the preparation measurement belongs to another scientific inquiry"
             )
-    validate_research_delta(state)
+    code_changes = validate_research_delta(state)
+    if preparation and isinstance(pending.get("implementation_error"), dict):
+        print(
+            "RESEARCHER_IMPLEMENTATION_ERROR: accepted measurement is awaiting "
+            "implementation repair"
+        )
+        return RESEARCHER_IMPLEMENTATION_ERROR_EXIT
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         protocol.validate_evaluation_request(
@@ -943,6 +1074,8 @@ def execute_pending_evaluations() -> int:
         rounds = pending.get("evaluation_rounds")
         if isinstance(rounds, list) and rounds:
             active_round = rounds[-1]
+    if _remove_operational_failures(active_round):
+        repository.write_state(state)
     console.announce("\n" + console.render_evaluation_plan(request, experiment) + "\n")
 
     executed: list[dict] = list(pending.get("partial_evaluations", []))
@@ -1067,19 +1200,17 @@ def execute_pending_evaluations() -> int:
                     episodes=episodes,
                     output_path=output_path,
                 )
-            except Exception:
-                if active_round is not None:
-                    active_round["results"]["research_evaluations"].append(
-                        {
-                            "instrument": "research_evaluation",
-                            "candidate": name,
-                            "selection": selection,
-                            "omitted_alternative": omitted_alternative,
-                            "label": label,
-                            "status": "failed",
-                        }
+            except Exception as error:
+                causal_path = (
+                    _researcher_failure_path(error, code_changes)
+                    if preparation
+                    else None
+                )
+                if causal_path is not None:
+                    output_path.unlink(missing_ok=True)
+                    return _record_researcher_implementation_error(
+                        state, pending, error, causal_path
                     )
-                    repository.write_state(state)
                 raise
             if is_v4:
                 _seal_paired_evidence_artifact(evidence_plan, output_path)
@@ -1189,19 +1320,17 @@ def execute_pending_evaluations() -> int:
                     output_path=output_path,
                     task_reference=True,
                 )
-            except Exception:
-                if active_round is not None:
-                    active_round["results"]["task_reference_evaluations"].append(
-                        {
-                            "instrument": "task_reference",
-                            "candidate": name,
-                            "selection": selection,
-                            "omitted_alternative": omitted_alternative,
-                            "label": label,
-                            "status": "failed",
-                        }
+            except Exception as error:
+                causal_path = (
+                    _researcher_failure_path(error, code_changes)
+                    if preparation
+                    else None
+                )
+                if causal_path is not None:
+                    output_path.unlink(missing_ok=True)
+                    return _record_researcher_implementation_error(
+                        state, pending, error, causal_path
                     )
-                    repository.write_state(state)
                 raise
             reference_executed.append(
                 {
@@ -2739,6 +2868,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
     parser.add_argument("--check-evaluation-request", action="store_true")
     parser.add_argument("--check-analysis-deliverable", action="store_true")
+    parser.add_argument("--record-implementation-repair-attempt", action="store_true")
+    parser.add_argument("--complete-implementation-repair", action="store_true")
     parser.add_argument("--begin-hypothesis", action="store_true")
     parser.add_argument("--conclusion-only", action="store_true")
     parser.add_argument("--migrate-research-state", action="store_true")
@@ -2771,6 +2902,10 @@ def main() -> int:
         return check_evaluation_request()
     if args.check_analysis_deliverable:
         return check_analysis_deliverable()
+    if args.record_implementation_repair_attempt:
+        return record_implementation_repair_attempt()
+    if args.complete_implementation_repair:
+        return complete_implementation_repair()
     if args.check_lineage_evidence is not None:
         return check_lineage_evidence(args.check_lineage_evidence)
     # Past this point the Runner may write history, so the derived human-readable

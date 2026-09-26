@@ -14,6 +14,10 @@ Stable-Baselines3. Dependencies are human-owned: the Researcher may use the
 installed stack but may not install packages or modify `pyproject.toml` or
 `uv.lock`.
 
+The locked runtime APIs are native `mujoco==3.12.0` (not legacy `mujoco-py`),
+`gymnasium==1.3.0` and `stable-baselines3==2.9.0`. Researcher-owned integrations
+must target those packages and versions.
+
 `jello` is available through the researcher environment for JSON and JSONL artifacts.
 
 All project Python execution goes through `uv run`. Never invoke system

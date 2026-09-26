@@ -69,6 +69,7 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, Path, dict]:
     monkeypatch.setattr(
         "research.run_experiment.validate_research_delta", lambda state: []
     )
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda state: None)
     monkeypatch.setattr(
         "research.runner_protocol.evaluation_semantics_fingerprint", lambda: "test"
     )
@@ -348,6 +349,197 @@ def test_preparation_measurement_rejects_an_experiment_field_on_execution(
 
     with pytest.raises(ValueError, match="must omit experiment"):
         run_experiment.execute_pending_evaluations()
+
+
+def test_researcher_code_error_reopens_without_recording_scientific_failure(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
+    scenario_path = tmp_path / "robot_learning" / "scenario" / "environment.py"
+    scenario_path.parent.mkdir(parents=True)
+    scenario_path.write_text("VALUE = 1\n", encoding="utf-8")
+    relative = "robot_learning/scenario/environment.py"
+    monkeypatch.setattr(
+        "research.run_experiment.validate_research_delta",
+        lambda state: [relative],
+    )
+
+    def fail_from_researcher_code(*args, **kwargs):
+        del args, kwargs
+        raise RuntimeError(
+            "evaluation failed:\n"
+            "Traceback (most recent call last):\n"
+            f'  File "{scenario_path}", line 12, in step\n'
+            "AttributeError: native API member is unavailable"
+        )
+
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact",
+        fail_from_researcher_code,
+    )
+    request_path.write_text(json.dumps(_request()), encoding="utf-8")
+
+    assert (
+        run_experiment.execute_pending_evaluations()
+        == run_experiment.RESEARCHER_IMPLEMENTATION_ERROR_EXIT
+    )
+
+    pending = json.loads(state_path.read_text(encoding="utf-8"))[
+        "pending_evaluation_request"
+    ]
+    assert pending["implementation_error"]["causal_path"] == relative
+    assert pending["implementation_repair_attempts"] == 0
+    assert pending["partial_evaluations"] == []
+    assert pending["evaluation_rounds"][-1]["results"]["research_evaluations"] == []
+    assert request_path.exists()
+
+
+def test_external_runtime_error_stops_without_reopening_the_researcher(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
+    scenario_path = tmp_path / "robot_learning" / "scenario" / "environment.py"
+    scenario_path.parent.mkdir(parents=True)
+    scenario_path.write_text("VALUE = 1\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "research.run_experiment.validate_research_delta",
+        lambda state: ["robot_learning/scenario/environment.py"],
+    )
+
+    def fail_in_dependency(*args, **kwargs):
+        del args, kwargs
+        raise RuntimeError(
+            "evaluation failed:\n"
+            "Traceback (most recent call last):\n"
+            f'  File "{scenario_path}", line 12, in step\n'
+            '  File "C:\\runtime\\site-packages\\mujoco\\bindings.py", '
+            "line 20, in call\n"
+            "RuntimeError: native failure"
+        )
+
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact",
+        fail_in_dependency,
+    )
+    request_path.write_text(json.dumps(_request()), encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="native failure"):
+        run_experiment.execute_pending_evaluations()
+
+    pending = json.loads(state_path.read_text(encoding="utf-8"))[
+        "pending_evaluation_request"
+    ]
+    assert "implementation_error" not in pending
+    assert pending["evaluation_rounds"][-1]["results"]["research_evaluations"] == []
+
+
+def test_implementation_repair_is_bounded_and_freezes_the_request(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
+    request_path.write_text(json.dumps(_request()), encoding="utf-8")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["pending_evaluation_request"] = {
+        "implementation_error": {
+            "causal_path": "robot_learning/scenario/environment.py",
+            "error": "AttributeError",
+            "request_fingerprint": repository.file_fingerprint(request_path),
+        },
+        "implementation_repair_attempts": 0,
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    assert run_experiment.record_implementation_repair_attempt() == 0
+    request_path.write_text(json.dumps(_request(seed=11)), encoding="utf-8")
+    assert run_experiment.complete_implementation_repair() == 1
+    assert run_experiment.record_implementation_repair_attempt() == 0
+    assert run_experiment.record_implementation_repair_attempt() == 1
+
+    pending = json.loads(state_path.read_text(encoding="utf-8"))[
+        "pending_evaluation_request"
+    ]
+    assert pending["implementation_repair_attempts"] == 2
+    assert "implementation_error" in pending
+
+
+def test_valid_implementation_repair_clears_only_the_operational_error(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
+    request_path.write_text(json.dumps(_request()), encoding="utf-8")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["pending_evaluation_request"] = {
+        "implementation_error": {
+            "causal_path": "robot_learning/scenario/environment.py",
+            "error": "AttributeError",
+            "request_fingerprint": repository.file_fingerprint(request_path),
+        },
+        "implementation_repair_attempts": 0,
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    assert run_experiment.record_implementation_repair_attempt() == 0
+    assert run_experiment.complete_implementation_repair() == 0
+
+    pending = json.loads(state_path.read_text(encoding="utf-8"))[
+        "pending_evaluation_request"
+    ]
+    assert "implementation_error" not in pending
+    assert pending["implementation_repair_attempts"] == 1
+
+
+def test_legacy_operational_failures_are_removed_from_measurement_results():
+    active_round = {
+        "results": {
+            "research_evaluations": [
+                {"candidate": "working", "status": "failed"},
+                {"candidate": "reference", "status": "reused"},
+            ],
+            "task_reference_evaluations": [
+                {"candidate": "working", "status": "failed"}
+            ],
+        }
+    }
+
+    assert run_experiment._remove_operational_failures(active_round)
+    assert active_round["results"]["research_evaluations"] == [
+        {"candidate": "reference", "status": "reused"}
+    ]
+    assert active_round["results"]["task_reference_evaluations"] == []
+
+
+def test_pending_preparation_adopts_harness_head_without_restoring_science(
+    monkeypatch, tmp_path
+):
+    state_path, request_path, _, _ = _configure(monkeypatch, tmp_path)
+    scenario_path = tmp_path / "robot_learning" / "scenario" / "environment.py"
+    scenario_path.parent.mkdir(parents=True)
+    scenario_path.write_text("RESEARCHER_CHANGE = True\n", encoding="utf-8")
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["pending_scientific_parent"] = "old-head"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    def adopt_harness_head(current):
+        current["pending_scientific_parent"] = "new-harness-head"
+        return "new-harness-head"
+
+    def validate_delta(current):
+        assert current["pending_scientific_parent"] == "new-harness-head"
+        return ["robot_learning/scenario/environment.py"]
+
+    monkeypatch.setattr(
+        "research.run_experiment.reanchor_phase_parent", adopt_harness_head
+    )
+    monkeypatch.setattr(
+        "research.run_experiment.validate_research_delta", validate_delta
+    )
+    monkeypatch.setattr(
+        "research.runner_execution.evaluate_artifact", _evaluator([])
+    )
+    request_path.write_text(json.dumps(_request()), encoding="utf-8")
+
+    assert run_experiment.execute_pending_evaluations() == 0
+    assert scenario_path.read_text(encoding="utf-8") == "RESEARCHER_CHANGE = True\n"
 
 
 def test_preparation_measurement_preflight_accepts_a_request_and_rejects_a_conflict(

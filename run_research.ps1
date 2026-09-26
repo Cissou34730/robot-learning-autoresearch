@@ -183,6 +183,74 @@ function Invoke-HypothesisAnchor {
     return 0
 }
 
+function Invoke-PreparationMeasurement {
+    while ($true) {
+        $script:researchState = Get-Content "research\research_state.json" -Raw |
+            ConvertFrom-Json
+        $pending = $script:researchState.pending_evaluation_request
+        if (-not $pending) {
+            throw "There is no pending preparation measurement to execute."
+        }
+        $repair = $pending.implementation_error
+        if ($repair) {
+            $attempts = [int]$pending.implementation_repair_attempts
+            if ($attempts -ge 2) {
+                throw (
+                    "The Researcher used both implementation repair attempts. " +
+                    "The accepted measurement remains pending for maintainer review."
+                )
+            }
+            $piSession = $script:researchState.principal_investigator_session
+            if (-not $piSession -or -not $piSession.id) {
+                throw "The campaign has no persisted principal-investigator session identity."
+            }
+            $repairAttempt = $attempts + 1
+            $repairPrompt = @(
+                "Current phase: implementation compatibility repair, attempt $repairAttempt of 2."
+                "The accepted preparation measurement did not execute because Researcher-owned code raised the runtime error below."
+                "This produced no scientific evidence and does not challenge the relevance, question, or design of the accepted measurement."
+                "Continue the same investigation and correct only the implementation compatibility problem in Researcher-owned code."
+                "Do not modify research/evaluation_request.json; the accepted request is frozen and will be retried unchanged."
+                "Read AGENTS.md for the exact native MuJoCo, Gymnasium, and Stable-Baselines3 versions available in this repository."
+                "Runtime error from $($repair.causal_path): $($repair.error)"
+                "Do not execute training or evaluation and do not invoke research/run_experiment.py; the launcher validates the repair and retries the measurement."
+            ) -join " "
+            Invoke-ResearcherSession -Prompt $repairPrompt `
+                -Phase "principal investigator" -Experiment 0 `
+                -SessionId $piSession.id -Continue
+            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                return 130
+            }
+            $runnerExitCode = Invoke-Runner -Arguments @(
+                "--record-implementation-repair-attempt"
+            )
+            if (Test-StopAfterOperation $runnerExitCode "research runner") {
+                return 130
+            }
+            if ($runnerExitCode -ne 0) {
+                throw "Could not record the completed implementation repair attempt."
+            }
+            if (-not (Test-ImplementationRepair)) {
+                Write-Status (
+                    "=== Implementation repair invalid; resuming the same " +
+                    "session once more ==="
+                ) Yellow
+                continue
+            }
+            $script:researchState = Get-Content "research\research_state.json" -Raw |
+                ConvertFrom-Json
+        }
+        $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            return 130
+        }
+        if ($runnerExitCode -eq 3) {
+            continue
+        }
+        return $runnerExitCode
+    }
+}
+
 function Test-StopAfterOperation {
     param(
         [AllowNull()][Nullable[int]]$ExitCode,
@@ -595,6 +663,21 @@ function Test-AnalysisDeliverable {
     return $true
 }
 
+function Test-ImplementationRepair {
+    $validationOutput = @(
+        uv run python research/run_experiment.py --complete-implementation-repair 2>&1
+    )
+    $validationExitCode = $LASTEXITCODE
+    $script:ImplementationRepairFeedback = (
+        $validationOutput | ForEach-Object { $_.ToString().Trim() }
+    ) -join " "
+    if ($validationExitCode -ne 0) {
+        Write-Host $script:ImplementationRepairFeedback
+        return $false
+    }
+    return $true
+}
+
 # The phases below observe the same facts: what the process did,
 # whether the deliverable exists, and whether the protected validator accepts it.
 function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
@@ -931,10 +1014,7 @@ if ($ResearcherBackend -eq "opencode") {
             # preparation after execution; it never enters the legacy
             # evaluation-design phase.
             Write-Status "=== Resuming the researcher's preparation measurement ==="
-            $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
-            if (Test-StopAfterOperation $runnerExitCode "research runner") {
-                break
-            }
+            $runnerExitCode = Invoke-PreparationMeasurement
             if ($runnerExitCode -eq 130) {
                 Write-Status "=== Preparation measurement paused; completed measurements were saved ===" Yellow
                 break
@@ -1358,10 +1438,7 @@ The final output should be a compact but substantive **Scientific model of the r
         # A saved-lineage measurement is executed before any proposal, then the
         # phase reopens with its results available for the parent decision.
         Write-Status "=== Executing the researcher's saved-lineage measurement request ==="
-        $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
-        if (Test-StopAfterOperation $runnerExitCode "research runner") {
-            break
-        }
+        $runnerExitCode = Invoke-PreparationMeasurement
         if ($runnerExitCode -eq 130) {
             Write-Status "=== Preparation measurement paused; completed measurements were saved ===" Yellow
             break

@@ -6,6 +6,7 @@ separate phase, and evaluation design remains only for schema-v3 compatibility.
 """
 
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,7 @@ from research import (
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+AGENTS = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 
 
 def test_evaluation_design_is_only_the_legacy_compatibility_path():
@@ -28,6 +30,12 @@ def test_evaluation_design_is_only_the_legacy_compatibility_path():
     )
     assert analysis_branch in SCRIPT
     assert "if ($null -ne $researchState.pending_evaluation_request)" in SCRIPT
+
+
+def test_researcher_context_names_the_exact_native_learning_stack():
+    for distribution in ("mujoco", "gymnasium", "stable-baselines3"):
+        assert f"`{distribution}=={version(distribution)}`" in AGENTS
+    assert "not legacy `mujoco-py`" in AGENTS
 
 
 def test_scientific_model_phase_precedes_baseline_and_does_not_repeat():
@@ -84,6 +92,20 @@ def test_measurement_rounds_resume_the_originating_researcher_session():
         '-Phase "principal investigator" -Experiment 0 '
         "-SessionId $piSession.id -Continue" in SCRIPT
     )
+
+
+def test_preparation_runtime_errors_resume_the_same_pi_session_without_evidence():
+    repair = SCRIPT.split("function Invoke-PreparationMeasurement", 1)[1].split(
+        "function Test-StopAfterOperation", 1
+    )[0]
+    assert '-Phase "principal investigator" -Experiment 0' in repair
+    assert "-SessionId $piSession.id -Continue" in repair
+    assert "This produced no scientific evidence" in repair
+    assert "Do not modify research/evaluation_request.json" in repair
+    assert "--record-implementation-repair-attempt" in repair
+    assert "Test-ImplementationRepair" in repair
+    assert "$attempts -ge 2" in repair
+    assert SCRIPT.count("Invoke-PreparationMeasurement") == 3
 
 
 def test_principal_investigator_session_is_campaign_persistent():
