@@ -4,49 +4,50 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 2925/3000 across fifteen distinct research panels,
-including 196/200 on the latest panel. Experiments 2--9 did not establish a
-reliable improvement over the working lineage. Experiment 9 directly measured
-the targeted-exposure recipe: checkpoint-90112 matched the parent at 196/200,
-and the final checkpoint fell to 194/200.
+98% solution. It achieved 3118/3200 across sixteen distinct research panels,
+including 193/200 on the latest panel. Experiments 2--9 did not establish a
+reliable replacement for the working lineage. The completed preparation
+measurement shows a meaningful but still provisional distinction: the saved
+temporal-slew lineage achieved 195/200, while both working and action-headroom
+lineages achieved 193/200.
 
-**Lessons and limits:** On the fresh experiment-9 panel, checkpoint-90112
-shared all four parent failures and produced no paired win. The final
-checkpoint shared those four failures and added two more, including one target
-outside the oversampled sector. All six final-checkpoint failures switched the
-nearest inverse-kinematic branch and remained saturated for roughly 497--499
-control steps, but branch switching occurred in about 55% of all episodes and
-the telemetry therefore remains associative rather than causal. The targeted
-distribution changed neither the recurring failure identities nor the
-failure-stage pattern, and its training-success proxy did not predict a task
-improvement. Together with the headroom, slew, and representation controls,
-the evidence weakens saturation removal, fixed command slew, targeted exposure,
-and simple observation augmentation as sufficient explanations. Experiment 9
-does not rule out a configuration-dependent transition/conditioning
-mechanism, nor does any development panel establish the official objective.
+**Lessons and limits:** On the fresh experiment-10 panel, temporal slew rescued
+two working failures with no paired losses, while headroom reproduced every
+working failure despite reducing measured saturation from roughly 498 steps per
+failure to zero. The slew failures still shared five of the parent's seven
+failure identities, and its successful episodes were slower (mean 122.43 versus
+111.52 control steps). Its successful trajectories also occupied a lower
+Jacobian-determinant regime, so poor conditioning alone is not a sufficient
+explanation of failure. These observations are associative: one fresh panel
+cannot separate a repeatable slew-induced trajectory change from panel
+variation, and the slower path may trade responsiveness for stabilization.
+Together with experiments 6 and 9, the evidence rejects saturation removal,
+targeted exposure, and the tested fixed slew recipe as established sufficient
+solutions, but it leaves open whether further adaptation under the slew
+regime can preserve its apparent rescue. No development panel establishes the
+official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: a
 branch-transition policy error, poor local conditioning, insufficient
-stabilization, or an interaction among them. It remains unresolved whether
-the parent lacks a suitable control representation for this transition or
-whether the learned trajectory can be changed without sacrificing broad
-reach-and-hold behavior. It is also unresolved whether the modest rescues seen
-under headroom or slew control are repeatable policy effects or panel-specific
-variation.
+stabilization, or an interaction among them. It remains unresolved whether a
+slew-limited trajectory can change the transition enough to rescue failures
+without exchanging them for slow or newly unstable behavior. It is also
+unresolved whether continued learning under that regime improves the rescued
+sector or merely preserves a panel-specific advantage.
 
-**Active inquiry:** The provisional inquiry is whether the recurring failures
-come from a policy-controlled branch/conditioning transition whose behavior can
-be distinguished from saturation and command-rate effects while preserving
-broad task behavior. Experiment 9 ends the narrower targeted-exposure test:
-matching failure identities at the proxy-peak checkpoint and added failures at
-the final checkpoint provide no support for exposure alone. A disjoint paired
-measurement of the saved headroom and slew alternatives, with branch,
-conditioning, entry-velocity, and applied-action telemetry, is the next
-discriminating evidence. Repeatable shared-failure rescue without broad
-regression would justify selecting that lineage for further development;
-unchanged failure identities or exchanged failures would redirect the inquiry
-away from these fixed physical-control mappings.
+**Active inquiry:** The provisional inquiry is whether continued adaptation of
+the saved temporal-slew policy can turn its two-rescue, zero-loss result into a
+repeatable complete-task improvement while retaining broad reach-and-hold
+behavior. This matters because the headroom control shows that removing
+saturation is not sufficient, whereas the slew lineage changes the trajectory
+through the poorly conditioned sector without broad regression. A continuation
+is justified only as a test of that trajectory hypothesis, not as evidence that
+slew is causal. A later paired panel showing no rescue, new losses, persistent
+slowdown without task gain, or unchanged failure identities would end this
+branch of the inquiry and redirect or close the campaign; repeatable rescue
+without broad regression would justify considering the lineage for further
+development.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
