@@ -5,67 +5,47 @@
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
 98% solution. It achieved 2143/2200 across eleven distinct research panels.
-Experiments 2--5 did not establish a reliable improvement: radius expansion,
-reward shaping, periodic branch-error features, and action headroom either
-preserved the failure sector or caused broad regression. Experiment 6's
-slew-limited final checkpoint reached 195/200 on its single panel versus
-194/200 for the parent, but the difference was one paired rescue and not a
-reliable change to the recurring failure set. The completed preparation panel
-raised the parent to 197/200, while both the saved slew and headroom controls
-achieved 196/200, so neither control is a defensible improvement.
+Experiments 2--6 did not establish a reliable improvement over the working
+lineage. On the fresh 30000--30199 panel, the parent achieved 197/200, while
+the saved slew and action-headroom controls each achieved 196/200. The
+experiment-7 targeted-coverage challengers were not measured, so none has
+evidence that warrants replacing the parent.
 
-**Lessons and limits:** The five parent failures at episodes 29013, 29073,
-29086, 29120, and 29142 were shared by the final slew-limited checkpoint; the
-early checkpoint shared those failures and added episode 29002, while the
-final checkpoint rescued only episode 29077. Successful episodes took a mean
-of 111.93 steps for the parent, 122.02 for the early checkpoint, and 120.92
-for the final checkpoint, with maxima of 122, 220, and 249 steps respectively.
-All measured failures truncated at 500 steps, and these artifacts do not expose
-entry or hold telemetry, so the measurements cannot identify whether the
-shared failures are branch, conditioning, or stabilization failures. The slew
-limiter therefore weakens rather than supports a general transient-control
-explanation: it changes command timing and can preserve broad success, but it
-does not reliably change the failure sector and imposes an approach delay.
-On the fresh 30000--30199 panel, the parent failed only at seeds 30030, 30045,
-and 30090; the slew policy shared those three failures and added seed 30184,
-while headroom shared seed 30030 and converted the other three into brief
-incomplete holds. Every failure crossed the nearest-IK-branch boundary and
-reached a low Jacobian determinant, but successful trajectories also switched
-branches in roughly half of episodes, so neither telemetry is sufficient to
-identify the cause. The parent saturated for 499 steps on each no-entry
-failure; headroom removed saturation without rescuing the targets, and slew
-reduced saturation but added a slow incomplete hold. These paired observations
-weaken saturation and fixed command slew as sufficient explanations while
-supporting a configuration-dependent interaction between target exposure,
-branch transition, and local stabilization. Development panels remain
-non-official, and the parent has not established the human objective on the
-final benchmark.
+**Lessons and limits:** The parent failed at seeds 30030, 30045, and 30090.
+The slew control shared those failures and added 30184, while the headroom
+control shared 30030 and turned the other three into incomplete holds. All four
+control failures switched branches and entered low-Jacobian regions, but
+successful trajectories also switched branches in roughly half of episodes, so
+neither observation identifies a cause. The parent saturated for 499 steps on
+each no-entry failure. Headroom removed saturation without rescuing those
+targets, and slew reduced saturation but produced a slow incomplete hold.
+These paired controls weaken saturation and fixed command slew as sufficient
+explanations, but they do not distinguish branch transition, conditioning, and
+stabilization. The direct effect of experiment 7's targeted exposure remains
+unmeasured; training-log proxy values are not task-success evidence. All
+results are development measurements, and the parent has not established the
+human objective on the final benchmark.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: branch
 transition, poor local conditioning, insufficient stabilization, or an
-interaction among them. It remains unresolved whether a policy can alter that
-failure sector without sacrificing approach time, and whether a richer
-behavioral measurement can distinguish target entry, settling, and hold
-failure rather than relying on the terminal episode outcome. It is also
-unresolved whether targeted exposure to the joint target geometry can change
-the failure identity without narrowing broad-task competence.
+interaction among them. It remains unresolved whether targeted exposure can
+change the failure identity without sacrificing broad competence, and whether
+entry, settling, and hold-stage measurements can separate these mechanisms
+without relying on terminal success alone.
 
-**Active inquiry:** The combined headroom and slew experiments make actuator
-clipping and command smoothness insufficient explanations for the recurring
-failures: removing measured saturation did not remove them, and limiting
-command changes preserved the shared failures while delaying successful
-acquisition. The working scientific question is therefore whether
-configuration- or branch-dependent conditioning limits local stabilization in
-the negative-angle sector and whether the learner needs more direct experience
-of that sector across the official radius range. A transfer trained with
-targeted sector exposure is useful because it tests the data-coverage
-explanation without changing the observation, action map, reward, or task
-mechanics. Rescue of the shared hard targets with preserved broad completion
-would support that explanation; unchanged failures or broad regression would
-redirect the inquiry toward controller representation or local stabilization.
-The parent remains below the human objective, so this preparation does not
-justify terminal assessment.
+**Active inquiry:** The current evidence makes actuator clipping and command
+smoothness insufficient explanations: removing measured saturation did not
+rescue the shared targets, and limiting command changes preserved them while
+delaying acquisition. The provisional question is whether branch-dependent
+conditioning and local stabilization, rather than target exposure alone, limit
+completion in the negative-angle sector. Evidence that a measured
+target-coverage policy rescues the shared targets with preserved broad
+completion would reopen the data-coverage explanation; unchanged identities
+with stage-specific conditioning differences would redirect it toward
+controller representation or stabilization. This inquiry remains unresolved,
+but the unmeasured experiment-7 candidates do not justify retaining a changed
+recipe or requesting the irreversible final assessment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -340,3 +320,46 @@ working policy and no official objective attainment is claimed.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-6-working-200ep-seed29000-1755b1c50cef.json`;
 `robot_learning/scenario/policy_io.py`;
 `robot_learning/scenario/evaluation.py`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 7
+
+**Result:** Targeted sampling of the observed negative-angle sector did not
+produce a measured challenger that could displace the working lineage. The
+working parent remains selected at 197/200 on the fresh development panel, and
+the saved slew and headroom controls each scored 196/200.
+
+**Observed behavior:** The parent failed at seeds 30030, 30045, and 30090.
+The slew control shared those failures and added seed 30184; its failures had
+490, 490, 45, and 10 saturated steps respectively, with seed 30184 reaching
+only 71 held steps and suffering 14 hold interruptions. The headroom control
+shared seed 30030 and failed at the other three seeds after zero saturation
+steps; its maximum held steps on those failures were 0, 3, 2, and 1. The
+failure trajectories crossed branch boundaries and reached low Jacobian
+determinants, while branch switching also occurred in 90 of 197 successful
+parent episodes. Experiment 7 produced 24 unmeasured candidates, so these
+measurements characterize the parent and controls rather than directly
+measuring the targeted-coverage policy.
+
+**Hypothesis assessment:** The hypothesis that targeted exposure would rescue
+the recurring sector while preserving broad reach-and-hold behavior is
+inconclusive for the direct intervention because no experiment-7 candidate was
+measured. The paired control evidence nevertheless weakens the narrower claim
+that the failure is sufficiently explained by saturation or fixed command
+slew: headroom removed saturation without rescuing the shared targets, and
+slew preserved them while adding an incomplete hold. No available evidence
+supports changing the working lineage, and the mechanism remains unresolved.
+
+**Interpretation:** The failure is most consistent with a configuration-
+dependent interaction among branch transition, local conditioning, and
+stabilization, but the telemetry establishes association rather than cause.
+Closing on the working recipe preserves the only lineage with broad,
+repeatedly measured support; it does not claim that targeted coverage or the
+underlying mechanism has been definitively ruled out. The development evidence
+does not justify requesting the final benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-7/inventory.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-7-working-200ep-seed30000-1796db8c3035.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-7-e6-temporal-slew-120832-200ep-seed30000-1796db8c3035.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-7-e5-action-headroom-105472-200ep-seed30000-1796db8c3035.json`.
