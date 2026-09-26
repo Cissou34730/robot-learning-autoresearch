@@ -102,6 +102,9 @@ def test_preparation_runtime_errors_resume_the_same_pi_session_without_evidence(
     assert "-SessionId $piSession.id -Continue" in repair
     assert "This produced no scientific evidence" in repair
     assert "Do not modify research/evaluation_request.json" in repair
+    assert "the launcher does not diagnose the cause" in repair
+    assert "compatibility repair" not in repair
+    assert "compatibility problem" not in repair
     assert "--record-implementation-repair-attempt" in repair
     assert "Test-ImplementationRepair" in repair
     assert "$attempts -ge 2" in repair

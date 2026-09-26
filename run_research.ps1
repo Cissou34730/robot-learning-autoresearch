@@ -206,12 +206,12 @@ function Invoke-PreparationMeasurement {
             }
             $repairAttempt = $attempts + 1
             $repairPrompt = @(
-                "Current phase: implementation compatibility repair, attempt $repairAttempt of 2."
+                "Current phase: implementation repair, attempt $repairAttempt of 2."
                 "The accepted preparation measurement did not execute because Researcher-owned code raised the runtime error below."
                 "This produced no scientific evidence and does not challenge the relevance, question, or design of the accepted measurement."
-                "Continue the same investigation and correct only the implementation compatibility problem in Researcher-owned code."
+                "Continue the same investigation. Diagnose the runtime failure from the code, repository context, and traceback, then correct only its implementation cause in Researcher-owned code."
                 "Do not modify research/evaluation_request.json; the accepted request is frozen and will be retried unchanged."
-                "Read AGENTS.md for the exact native MuJoCo, Gymnasium, and Stable-Baselines3 versions available in this repository."
+                "Use AGENTS.md and the other repository context as factual constraints; the launcher does not diagnose the cause of the failure."
                 "Runtime error from $($repair.causal_path): $($repair.error)"
                 "Do not execute training or evaluation and do not invoke research/run_experiment.py; the launcher validates the repair and retries the measurement."
             ) -join " "
