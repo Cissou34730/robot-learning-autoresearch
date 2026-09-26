@@ -13,6 +13,7 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
+import mujoco
 import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
@@ -55,6 +56,12 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        first_entry_tip_speed_cm_s: float | None = None
+        first_entry_radial_speed_cm_s: float | None = None
+        first_entry_tangential_speed_cm_s: float | None = None
+        max_tip_speed_cm_s = 0.0
+        max_joint_speed_rad_s = 0.0
+        max_post_entry_distance_cm: float | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,6 +69,22 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            target_error = env.data.site("end_effector").xpos - target_position
+            velocity = np.zeros(6, dtype=np.float64)
+            mujoco.mj_objectVelocity(
+                env.model,
+                env.data,
+                mujoco.mjtObj.mjOBJ_SITE,
+                env.model.site("end_effector").id,
+                velocity,
+                0,
+            )
+            tip_velocity = velocity[3:6]
+            tip_speed_cm_s = 100.0 * float(np.linalg.norm(tip_velocity))
+            max_tip_speed_cm_s = max(max_tip_speed_cm_s, tip_speed_cm_s)
+            max_joint_speed_rad_s = max(
+                max_joint_speed_rad_s, float(np.linalg.norm(env.data.qvel))
+            )
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -69,8 +92,30 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    error_norm = float(np.linalg.norm(target_error))
+                    if error_norm > 0.0:
+                        toward_target = -float(
+                            np.dot(tip_velocity, target_error / error_norm)
+                        )
+                        radial_velocity_cm_s = 100.0 * toward_target
+                    else:
+                        radial_velocity_cm_s = 0.0
+                    tangential_velocity = tip_velocity + (
+                        toward_target * target_error / error_norm
+                        if error_norm > 0.0
+                        else 0.0
+                    )
+                    first_entry_tip_speed_cm_s = tip_speed_cm_s
+                    first_entry_radial_speed_cm_s = radial_velocity_cm_s
+                    first_entry_tangential_speed_cm_s = (
+                        100.0 * float(np.linalg.norm(tangential_velocity))
+                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
+            if first_reach_step is not None:
+                max_post_entry_distance_cm = max(
+                    max_post_entry_distance_cm or 0.0, distance_cm
+                )
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -103,6 +148,14 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "first_entry_tip_speed_cm_s": first_entry_tip_speed_cm_s,
+                "first_entry_radial_speed_cm_s": first_entry_radial_speed_cm_s,
+                "first_entry_tangential_speed_cm_s": (
+                    first_entry_tangential_speed_cm_s
+                ),
+                "max_tip_speed_cm_s": max_tip_speed_cm_s,
+                "max_joint_speed_rad_s": max_joint_speed_rad_s,
+                "max_post_entry_distance_cm": max_post_entry_distance_cm,
             }
         )
         if progress_callback is not None:
