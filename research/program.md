@@ -114,7 +114,9 @@ The phase order is:
    Researcher compares the best available continuation with the alternatives and
    chooses exactly one of a next experiment, a saved-lineage measurement,
    terminal assessment of the frozen best-known model, or the conclusion that no
-   further experiment is warranted.
+   further experiment is warranted. A terminal choice made while capacity
+   remains is provisional and is only executed once a fresh session confirms it
+   or replaces it.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -166,6 +168,16 @@ A conclusion resolves no science, so it requires a clean scientific surface: any
 researcher-owned change must be reverted or resolved first. When the experiment
 budget is exhausted, only a conclusion may be prepared; a further training
 experiment is rejected.
+
+A terminal choice prepared while experiment capacity remains is provisional. It
+does not run the benchmark or end the campaign. The Runner opens one fresh
+session that may confirm the fingerprint-bound decision or replace it with any
+action already legal in preparation, including a next experiment or a
+saved-lineage measurement. Confirmation executes the recorded decision;
+replacement discards it. No alternative, portfolio, changed recipe or mandatory
+experiment is required. The decision is final, without a confirmation session,
+when the experiment budget is exhausted and no further experiment may be
+prepared.
 
 ## Post-training analysis
 
@@ -306,10 +318,15 @@ running another is itself a reason to stop.
 
 Request the official benchmark from the campaign action-selection phase
 (experiment preparation) after a closure, targeting the frozen best-known model.
-Requesting it ends the campaign after either verdict:
-`goal_reached` or `goal_not_reached`, and that decision is irreversible. Do not
-plan further work conditional on benchmark failure. Only this benchmark declares
-the official result. The verdict reports the result; it is not designed to
+A terminal choice made while experiment capacity remains is provisional: the
+Runner withholds it and opens one fresh session that may confirm the
+fingerprint-bound decision or replace it with any action already legal in
+preparation. Confirmation executes the request and the campaign ends after either
+verdict, `goal_reached` or `goal_not_reached`, and that decision is irreversible;
+replacement discards the provisional decision. When the experiment budget is
+exhausted no further experiment may be prepared, so the terminal decision is
+final without a confirmation session. Do not plan further work conditional on
+benchmark failure. Only this benchmark declares the official result. The verdict reports the result; it is not designed to
 diagnose a policy and carries no diagnostic detail, so plan your development
 evidence so that it, and not the verdict, tells you what you need to know. Both
 verdicts are legitimate campaign outcomes: `goal_not_reached` on a well-evidenced

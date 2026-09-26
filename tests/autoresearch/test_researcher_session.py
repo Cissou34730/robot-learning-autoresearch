@@ -231,8 +231,8 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     assert boundary is not None
 
     # Continuation is an argument to the one invocation path, never a second branch.
-    assert LOOP.count("Invoke-ResearcherSession -Prompt") == 8
-    assert LOOP.count("-Continue") == 4
+    assert LOOP.count("Invoke-ResearcherSession -Prompt") == 10
+    assert LOOP.count("-Continue") == 5
 
 
 def test_the_launcher_offers_both_runtimes_and_still_defaults_to_copilot():
@@ -278,11 +278,12 @@ def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
 
 
 def test_each_phase_reports_its_session_before_deciding_to_retry():
-    assert LOOP.count("Write-ResearcherSessionStatus") == 8
+    assert LOOP.count("Write-ResearcherSessionStatus") == 10
     for status, retry in (
         ("$proposalStatus", "=== Research proposal missing or invalid"),
         ("$evaluationStatus", "=== Evaluation request missing or invalid"),
         ("$lineageStatus", "=== Lineage deliverable invalid"),
+        ("$confirmationStatus", "=== Confirmation deliverable missing or invalid"),
     ):
         assert LOOP.index(f"Write-ResearcherSessionStatus {status}") < LOOP.index(retry)
 

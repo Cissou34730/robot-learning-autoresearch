@@ -711,6 +711,7 @@ def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
         "pending_closure_operation": None,
         "pending_final_benchmark": None,
         "pending_campaign_conclusion": None,
+        "provisional_campaign_conclusion": None,
         "campaign_conclusion": None,
         "preparation_conclusion_only": None,
         "terminal_campaign_status": None,

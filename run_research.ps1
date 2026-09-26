@@ -1022,6 +1022,84 @@ if ($ResearcherBackend -eq "opencode") {
         continue
     }
 
+    $provisionalDecision = $researchState.provisional_campaign_conclusion
+    if ($researchState.schema_version -eq 4 -and $null -ne $provisionalDecision) {
+        # A terminal decision recorded while experiment capacity remains is
+        # provisional. A fresh session must confirm the fingerprint-bound
+        # decision or replace it with any legal preparation action; the campaign
+        # has not ended and no benchmark has run.
+        Write-Status "=== Provisional terminal decision '$($provisionalDecision.action)'; opening a fresh confirmation session ===" -Color Magenta -Label researcher
+        $runnerExitCode = Invoke-Runner -Arguments @("--begin-hypothesis")
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -ne 0) {
+            throw "Could not anchor the terminal decision confirmation phase."
+        }
+        Update-ResearchBrief
+        $provisionalNextExperiment = [Math]::Max(
+            [int]$researchState.last_allocated_experiment,
+            [int]$researchState.last_experiment
+        ) + 1
+        $decisionHash = $provisionalDecision.decision_hash
+        $confirmationPrompt = @(
+            "Current phase: confirm or replace the provisional terminal decision."
+            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "A previous session recorded a provisional '$($provisionalDecision.action)' terminal decision with decision hash $decisionHash. It has not been executed and the campaign has not ended."
+            "Do exactly one of two things. Confirm it by writing research/proposal.json containing only campaign_conclusion_confirmation with decision_hash set to the hash shown in the brief; this executes the stored terminal decision and ends the campaign. Or replace it by writing any legal preparation deliverable - a training proposal for experiment $provisionalNextExperiment, a saved-lineage research/evaluation_request.json, or a different campaign_conclusion - and the provisional decision is discarded."
+            "The final scientific choice is entirely yours; no experiment, alternative, or changed recipe is required."
+            "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the accepted deliverable."
+        ) -join " "
+        Invoke-ResearcherSession -Prompt $confirmationPrompt -Phase "terminal decision confirmation" -Experiment $provisionalNextExperiment
+        if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+            break
+        }
+        $confirmationStatus = Get-ProposalSessionStatus "terminal decision confirmation" 1
+        Write-ResearcherSessionStatus $confirmationStatus
+        Update-ResearchBrief
+        Save-ResearchMemory
+        if (-not $confirmationStatus.Complete) {
+            $confirmationProblem = $confirmationStatus.Reason
+            Write-Status "=== Confirmation deliverable missing or invalid; retrying the same phase once ===" Yellow
+            $confirmationRetryPrompt = @(
+                "Current phase: confirm or replace the provisional terminal decision. The previous deliverable failed validation: $confirmationProblem. Do not exit without a corrected deliverable."
+                "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json (or research/evaluation_request.json), preserving any valid researcher-owned edits."
+                "Expected deliverable: research/proposal.json containing only campaign_conclusion_confirmation with the recorded decision_hash, or any legal preparation deliverable that replaces the provisional decision."
+                "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
+            ) -join " "
+            Invoke-ResearcherSession -Prompt $confirmationRetryPrompt -Phase "terminal decision confirmation" -Experiment $provisionalNextExperiment -Continue
+            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+                break CampaignLoop
+            }
+            $confirmationStatus = Get-ProposalSessionStatus "terminal decision confirmation" 2
+            Write-ResearcherSessionStatus $confirmationStatus
+            Update-ResearchBrief
+            Save-ResearchMemory
+            if (-not $confirmationStatus.Complete) {
+                throw "Researcher ended twice without a valid terminal decision confirmation or replacement. Last validation error: $($confirmationStatus.Reason)"
+            }
+        }
+        if (Test-Path "research\evaluation_request.json") {
+            $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
+        }
+        else {
+            $runnerExitCode = Invoke-Runner
+        }
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -eq 130) {
+            Write-Status "=== Confirmation session execution paused; progress remains saved ===" Yellow
+            break
+        }
+        if ($runnerExitCode -ne 0) {
+            throw "Runner execution of the accepted terminal decision deliverable failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
+        }
+        Update-ResearchBrief
+        Write-Status "=== Terminal decision resolved ===" Green
+        continue
+    }
+
     $allocatedExperiment = [Math]::Max(
         [int]$researchState.last_allocated_experiment,
         [int]$researchState.last_experiment
@@ -1080,7 +1158,7 @@ if ($ResearcherBackend -eq "opencode") {
                 ""
             }
             else {
-                "Terminal assessment of the standing best-known model is available, is irreversible, and ends the campaign."
+                "Terminal assessment of the standing best-known model is available. While experiment capacity remains, a campaign conclusion is recorded provisionally and a fresh session must confirm it or replace it before the campaign ends; only the executed assessment is irreversible."
             })
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         $(if ($budgetReached) {

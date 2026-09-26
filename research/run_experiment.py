@@ -446,7 +446,7 @@ def check_proposal() -> int:
             validate_training_proposal_delta(proposal, state)
         elif contract == "lineage":
             validate_research_delta(state)
-        elif contract == "conclusion":
+        elif contract in {"conclusion", "confirmation"}:
             validate_campaign_conclusion_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
@@ -1315,6 +1315,11 @@ def execute_pending_evaluations() -> int:
             "partial_task_reference_evaluations": reference_executed,
         }
         state["pending_evaluation_request"] = None
+        # A preparation measurement from the terminal-confirmation session
+        # replaces the provisional decision, so the campaign continues normally.
+        if state.get("provisional_campaign_conclusion") is not None:
+            state["provisional_campaign_conclusion"] = None
+            state["campaign_conclusion"] = None
         state["last_verdict"] = "preparation measurement complete"
     elif more_evidence:
         pending["evaluation_plan"] = None
@@ -1636,6 +1641,89 @@ def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
 # --- campaign conclusion ---------------------------------------------------
 
 
+def conclusion_driver_record(operation: dict) -> dict:
+    """The persisted campaign-conclusion record for one terminal action."""
+    action = operation["action"]
+    continuation_comparison = operation.get("continuation_comparison")
+    if action == "request_final_benchmark":
+        return {
+            "action": action,
+            "terminal_expectation": operation.get("terminal_expectation"),
+            "continuation_comparison": continuation_comparison,
+        }
+    return {
+        "action": action,
+        "reason": operation["reason"],
+        "continuation_comparison": continuation_comparison,
+    }
+
+
+def provisional_campaign_conclusion_record(plan: dict, state: dict) -> dict:
+    """Freeze a terminal decision pending confirmation from a fresh session.
+
+    The record carries the normalized decision, the best-known lineage it bound
+    (when it requests the official assessment) and the decision hash the fresh
+    session must resubmit. It is a decision, never an experiment record.
+    """
+    action = plan["action"]
+    best_known = (
+        state.get("best_known_lineage")
+        if action == "request_final_benchmark"
+        else None
+    )
+    if not isinstance(best_known, dict):
+        best_known = None
+    lineage_fingerprint = (
+        str(best_known.get("fingerprint") or "") if best_known else None
+    )
+    return {
+        "action": action,
+        "reason": plan["reason"],
+        "terminal_expectation": plan.get("terminal_expectation"),
+        "continuation_comparison": plan.get("continuation_comparison"),
+        "campaign_conclusion": plan["campaign_conclusion"],
+        "best_known": copy.deepcopy(best_known),
+        "lineage_fingerprint": lineage_fingerprint,
+        "decision_hash": protocol.campaign_conclusion_decision_hash(
+            {
+                "action": action,
+                "reason": plan["reason"],
+                "terminal_expectation": plan.get("terminal_expectation"),
+                "continuation_comparison": plan.get("continuation_comparison"),
+            },
+            lineage_fingerprint,
+        ),
+    }
+
+
+def apply_provisional_campaign_conclusion(plan: dict, state: dict) -> None:
+    """Withhold a terminal decision until a fresh session confirms or replaces it.
+
+    The decision is persisted as a provisional record and released from its
+    preparation anchor, but no terminal status is written and no benchmark runs:
+    a fresh session must confirm the fingerprint-bound decision or replace it
+    with any legal preparation action.
+    """
+    record = provisional_campaign_conclusion_record(plan, state)
+    state["provisional_campaign_conclusion"] = record
+    # The campaign conclusion is recorded only when the decision is executed;
+    # until then it is provisional, so `campaign_conclusion` stays unset.
+    state["campaign_conclusion"] = None
+    # A clean conclusion releases the preparation anchor for both outcomes.
+    state["pending_scientific_parent"] = None
+    state["preparation_conclusion_only"] = None
+    state["last_verdict"] = (
+        "researcher recorded a provisional terminal decision awaiting confirmation"
+    )
+    repository.write_state(state)
+    console.announce(
+        "\n[runner] Provisional terminal decision recorded "
+        f"({record['action']}); the campaign has not ended. A fresh session must "
+        "confirm it with decision hash "
+        f"{record['decision_hash']} or replace it with a legal preparation action.\n"
+    )
+
+
 def apply_campaign_conclusion(operation: dict, state: dict) -> None:
     """Record the decision without yet publishing a terminal campaign status.
 
@@ -1647,19 +1735,9 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
     """
     action = operation["action"]
     terminal_expectation = operation.get("terminal_expectation")
-    continuation_comparison = operation.get("continuation_comparison")
-    if action == "request_final_benchmark":
-        state["campaign_conclusion"] = {
-            "action": action,
-            "terminal_expectation": terminal_expectation,
-            "continuation_comparison": continuation_comparison,
-        }
-    else:
-        state["campaign_conclusion"] = {
-            "action": action,
-            "reason": operation["reason"],
-            "continuation_comparison": continuation_comparison,
-        }
+    state["campaign_conclusion"] = conclusion_driver_record(operation)
+    # The terminal decision supersedes any provisional record that staged it.
+    state["provisional_campaign_conclusion"] = None
     # A clean conclusion releases the preparation anchor for both outcomes.
     state["pending_scientific_parent"] = None
     state["preparation_conclusion_only"] = None
@@ -1735,18 +1813,53 @@ def complete_campaign_conclusion(state: dict) -> None:
             raise
 
 
+def _stage_terminal_conclusion(plan: dict, state: dict) -> None:
+    """Persist the durable terminal publication the completion step will apply."""
+    state["pending_campaign_conclusion"] = {
+        "action": plan["action"],
+        "reason": plan["reason"],
+        "terminal_expectation": plan.get("terminal_expectation"),
+        "continuation_comparison": plan.get("continuation_comparison"),
+        "progress": "planned",
+    }
+    repository.write_state(state)
+
+
 def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
-    if not isinstance(state.get("pending_campaign_conclusion"), dict):
-        plan = protocol.plan_campaign_conclusion(proposal, state)
-        state["pending_campaign_conclusion"] = {
-            "action": plan["action"],
-            "reason": plan["reason"],
-            "terminal_expectation": plan.get("terminal_expectation"),
-            "continuation_comparison": plan.get("continuation_comparison"),
-            "progress": "planned",
-        }
-        repository.write_state(state)
+    if isinstance(state.get("pending_campaign_conclusion"), dict):
+        complete_campaign_conclusion(state)
+        paths.PROPOSAL_PATH.unlink(missing_ok=True)
+        return 0
+    plan = protocol.plan_campaign_conclusion(proposal, state)
+    if (
+        state.get("preparation_conclusion_only")
+        or state.get("provisional_campaign_conclusion") is not None
+    ):
+        # The budget is exhausted, so no experiment or measurement could replace
+        # the decision; or a fresh confirmation session is replacing its own
+        # provisional decision, which is the final pass. Both execute now.
+        _stage_terminal_conclusion(plan, state)
+        complete_campaign_conclusion(state)
+    else:
+        # Capacity remains: persist the decision provisionally and withhold it
+        # until a fresh session confirms or replaces it.
+        apply_provisional_campaign_conclusion(plan, state)
+    paths.PROPOSAL_PATH.unlink(missing_ok=True)
+    return 0
+
+
+def resolve_campaign_conclusion_confirmation(proposal: dict, raw_state: dict) -> int:
+    """Execute the persisted provisional decision after a fresh-session confirm."""
+    state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    provisional = protocol.validate_campaign_conclusion_confirmation(proposal, state)
+    plan = {
+        "action": provisional["action"],
+        "reason": provisional["reason"],
+        "terminal_expectation": provisional.get("terminal_expectation"),
+        "continuation_comparison": provisional.get("continuation_comparison"),
+    }
+    _stage_terminal_conclusion(plan, state)
     complete_campaign_conclusion(state)
     paths.PROPOSAL_PATH.unlink(missing_ok=True)
     return 0
@@ -1945,6 +2058,11 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         allow_unmeasured=True,
         allow_missing_artifact=fresh_baseline,
     )
+    # A training proposal submitted from the terminal-confirmation session
+    # replaces the provisional decision, so the campaign continues normally.
+    if state.get("provisional_campaign_conclusion") is not None:
+        state["provisional_campaign_conclusion"] = None
+        state["campaign_conclusion"] = None
     # Extract campaign ID early for use throughout the function
     campaign_id = repository.current_campaign_id(state)
 
@@ -2586,6 +2704,9 @@ def main() -> int:
         reanchor_phase_parent(raw_state)
         validate_research_delta(raw_state)
         return resolve_pending_lineage(proposal, raw_state)
+    if proposal_contract == "confirmation":
+        validate_campaign_conclusion_delta(raw_state)
+        return resolve_campaign_conclusion_confirmation(proposal, raw_state)
     if proposal_contract == "conclusion":
         validate_campaign_conclusion_delta(raw_state)
         return resolve_campaign_conclusion(proposal, raw_state)

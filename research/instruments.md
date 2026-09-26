@@ -375,6 +375,52 @@ record, an experiment-index row or an intervention count. A `campaign_conclusion
 is accepted only while no measurement, analysis, closure or official assessment
 is pending; each pending phase requires its own deliverable.
 
+A `campaign_conclusion` prepared while experiment capacity remains is
+**provisional**. It does not run the official benchmark, does not end the
+campaign, and is persisted with a decision hash bound to the decision and, for
+`request_final_benchmark`, to the frozen best-known fingerprint. The Runner then
+opens one fresh session. That session may do exactly one of two things:
+
+- confirm the provisional decision; or
+- replace it with any action already legal in preparation, including a new
+  experiment, a saved-lineage measurement, or a different `campaign_conclusion`.
+
+No alternative, portfolio, changed recipe or mandatory experiment is required,
+and the final scientific choice remains entirely with the Researcher. When the
+experiment budget is exhausted no further experiment may be prepared, so the
+conclusion is final immediately and no confirmation session is opened.
+
+### Confirm or replace a provisional conclusion
+
+**Phase:** Terminal decision confirmation, opened by the Runner after a
+provisional `campaign_conclusion`.
+
+To confirm, write `research/proposal.json` with exactly:
+
+```json
+{
+  "campaign_conclusion_confirmation": {
+    "decision_hash": "<decision hash shown in research/brief.md>"
+  }
+}
+```
+
+The Runner validates the phase state, the provisional record's continued
+existence, the exact decision hash and, for `request_final_benchmark`, that the
+bound best-known fingerprint still matches the current best-known lineage. A
+missing provisional record, a stale hash, a changed best-known lineage, or a
+pending closure is rejected; there is no silent resolution. On success the stored
+decision is executed exactly as written: `request_final_benchmark` runs the
+official assessment once and `no_further_experiment` ends the campaign.
+
+To replace it, submit the deliverable of the action you choose instead — a
+preparation `research/proposal.json`, a saved-lineage
+`research/evaluation_request.json`, or another `campaign_conclusion` — and the
+provisional decision is discarded. A replacement `campaign_conclusion` submitted
+from this fresh session is this decision's final pass and executes immediately,
+without a second confirmation. A replacement measurement or experiment returns
+the campaign to its normal preparation lifecycle.
+
 A conclusion resolves no science, so it is accepted only while the researcher's
 scientific surface matches the preparation anchor. Revert or resolve any
 outstanding researcher-owned change first; unlike a training proposal or a lineage
@@ -582,11 +628,13 @@ experiment closure.
 Terminal assessment is a `campaign_conclusion` in `research/proposal.json`, never
 a closure decision. Set `action` to `request_final_benchmark`, give
 `terminal_expectation`, and record the required `continuation_comparison`; the
-contract is in "Conclude the campaign" above.
+contract is in "Conclude the campaign" above. While experiment capacity remains
+the request is provisional and is not executed until a fresh session confirms
+the fingerprint-bound decision or replaces it.
 
-When the request is accepted, the Runner emits a confirmation card and the brief
-records a **Pending terminal assessment** section naming the frozen `best_known`
-lineage — its candidate, artifact, origin experiment, accumulated training steps,
+When the confirmed request is executed, the Runner emits a confirmation card and
+the brief records a **Pending terminal assessment** section naming the frozen
+`best_known` lineage — its candidate, artifact, origin experiment, accumulated training steps,
 scientific commit and recorded measurements — together with the expected verdict
 and the terminal reason. The expected verdict is also shown with the completed
 official report, so the claimed verdict can be read against the measured one.

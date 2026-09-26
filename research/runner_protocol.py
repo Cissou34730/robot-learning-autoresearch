@@ -865,6 +865,15 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
                 "previous_result_decision"
             )
         return "lineage"
+    if "campaign_conclusion_confirmation" in proposal:
+        if not isinstance(state.get("provisional_campaign_conclusion"), dict):
+            raise ValueError("there is no provisional terminal decision to confirm")
+        if set(proposal) != {"campaign_conclusion_confirmation"}:
+            raise ValueError(
+                "a campaign conclusion confirmation must contain only "
+                "campaign_conclusion_confirmation"
+            )
+        return "confirmation"
     if "campaign_conclusion" in proposal:
         if state.get("pending_closure_operation") is not None:
             raise ValueError(
@@ -896,6 +905,8 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     contract = validate_proposal_phase(proposal, raw_state)
     if contract == "conclusion":
         plan_campaign_conclusion(proposal, raw_state)
+    elif contract == "confirmation":
+        validate_campaign_conclusion_confirmation(proposal, raw_state)
     elif contract == "lineage":
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
@@ -999,6 +1010,33 @@ def validate_continuation_comparison(value: object) -> dict:
     )
 
 
+def campaign_conclusion_decision_hash(
+    conclusion: dict, lineage_fingerprint: str | None
+) -> str:
+    """Bind a terminal decision to its normalized content and target lineage.
+
+    A terminal decision recorded while experiment capacity remains is provisional
+    and is confirmed from a fresh session by this hash. The exact recorded
+    decision and the best-known artifact it targets cannot change between the two
+    passes without a new proposal.
+    """
+    normalized = {
+        "action": conclusion.get("action"),
+        "reason": conclusion.get("reason"),
+        "terminal_expectation": conclusion.get("terminal_expectation"),
+        "continuation_comparison": conclusion.get("continuation_comparison"),
+    }
+    canonical = json.dumps(
+        {
+            "campaign_conclusion": normalized,
+            "lineage_fingerprint": lineage_fingerprint or "",
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     """Validate a preparation-phase decision that ends without a new experiment.
 
@@ -1016,6 +1054,11 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     still owes a proposal. Concluding remains available without spending the
     round, after an experiment, and whenever no further experiment may be
     prepared at all.
+
+    A conclusion prepared while experiment capacity remains is provisional: it is
+    persisted with a decision hash but not executed until a fresh confirmation
+    session confirms or replaces it. The plan therefore also exposes the bound
+    best-known fingerprint and the decision hash.
     """
     if state.get("schema_version") != 4:
         raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
@@ -1080,6 +1123,17 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
             raise ValueError(
                 "the designated best-known model already received an official benchmark"
             )
+    normalized = {
+        "action": action,
+        "reason": reason,
+        "terminal_expectation": terminal_expectation,
+        "continuation_comparison": continuation_comparison,
+    }
+    lineage_fingerprint = (
+        str(best_known.get("fingerprint") or "")
+        if action == "request_final_benchmark"
+        else None
+    )
     return {
         "action": action,
         "reason": reason,
@@ -1087,7 +1141,73 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
         "continuation_comparison": continuation_comparison,
         "campaign_conclusion": conclusion,
         "best_known": best_known if action == "request_final_benchmark" else None,
+        "lineage_fingerprint": lineage_fingerprint,
+        "decision_hash": campaign_conclusion_decision_hash(
+            normalized, lineage_fingerprint
+        ),
     }
+
+
+def validate_campaign_conclusion_confirmation(proposal: dict, state: dict) -> dict:
+    """Confirm the persisted provisional terminal decision from a fresh session.
+
+    A terminal decision prepared while experiment capacity remained is withheld
+    until a fresh session confirms it. The confirmation carries only the decision
+    hash the Runner recorded; the Runner re-checks that the provisional record
+    still exists and that the best-known lineage it bound is still current. A
+    changed lineage, a missing provisional record, or a stale hash is rejected
+    rather than silently resolved.
+    """
+    if state.get("schema_version") != 4:
+        raise ValueError("campaign conclusion confirmation requires a version-4 campaign")
+    if not isinstance(proposal, dict):
+        raise TypeError("proposal.json must contain a JSON object")
+    if set(proposal) != {"campaign_conclusion_confirmation"}:
+        raise ValueError(
+            "a campaign conclusion confirmation must contain only "
+            "campaign_conclusion_confirmation"
+        )
+    confirmation = proposal["campaign_conclusion_confirmation"]
+    if not isinstance(confirmation, dict):
+        raise TypeError("campaign_conclusion_confirmation must be an object")
+    extra = set(confirmation) - {"decision_hash"}
+    if extra:
+        raise ValueError(
+            "unsupported campaign_conclusion_confirmation fields: "
+            f"{sorted(extra)}"
+        )
+    decision_hash = str(confirmation.get("decision_hash", "")).strip()
+    if not decision_hash:
+        raise ValueError(
+            "campaign_conclusion_confirmation requires the decision_hash recorded "
+            "for the provisional terminal decision"
+        )
+    provisional = state.get("provisional_campaign_conclusion")
+    if not isinstance(provisional, dict):
+        raise TypeError("there is no provisional terminal decision to confirm")
+    if state.get("pending_closure_operation") is not None:
+        raise ValueError(
+            "a campaign conclusion is not accepted while a closure operation is pending"
+        )
+    recorded = str(provisional.get("decision_hash", "")).strip()
+    if not recorded or recorded != decision_hash:
+        raise ValueError(
+            "campaign_conclusion_confirmation decision_hash does not match the "
+            "provisional terminal decision; read the current hash from "
+            "research/brief.md and resubmit it"
+        )
+    fingerprint = str(provisional.get("lineage_fingerprint") or "").strip()
+    if fingerprint:
+        best_known = state.get("best_known_lineage")
+        if not isinstance(best_known, dict) or str(
+            best_known.get("fingerprint") or ""
+        ) != fingerprint:
+            raise ValueError(
+                "the best-known lineage changed since the provisional terminal "
+                "decision; confirm is no longer valid and the decision must be "
+                "replaced"
+            )
+    return provisional
 
 
 # --- evaluation requests ---------------------------------------------------

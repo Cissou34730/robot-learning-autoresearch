@@ -18,6 +18,7 @@ from research.run_experiment import (
     begin_hypothesis_phase,
     check_proposal,
     resolve_campaign_conclusion,
+    resolve_campaign_conclusion_confirmation,
 )
 from research.runner_protocol import (
     plan_campaign_conclusion,
@@ -150,11 +151,10 @@ def test_preparation_accepts_a_final_benchmark_conclusion(monkeypatch, tmp_path)
     )
 
 
-def test_requesting_the_final_benchmark_stages_the_best_known_model(
+def test_requesting_the_final_benchmark_is_provisional_with_capacity(
     monkeypatch, tmp_path
 ):
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
-    _stub_publication(monkeypatch)
     proposal_path.write_text(
         json.dumps(_conclusion("request_final_benchmark")), encoding="utf-8"
     )
@@ -164,25 +164,53 @@ def test_requesting_the_final_benchmark_stages_the_best_known_model(
     )
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    pending = persisted["pending_final_benchmark"]
-    assert pending["selected"] == "best_known"
-    assert pending["artifact"] == "archive/best-known"
-    assert pending["fingerprint"] == persisted["best_known_lineage"]["fingerprint"]
-    assert persisted["best_known_lineage"] == pending["best_known"]
-    assert persisted["campaign_conclusion"]["action"] == "request_final_benchmark"
+    # A terminal decision made while capacity remains is withheld, not executed.
     assert persisted["terminal_campaign_status"] is None
+    assert persisted["pending_final_benchmark"] is None
+    assert persisted["pending_campaign_conclusion"] is None
+    provisional = persisted["provisional_campaign_conclusion"]
+    assert provisional["action"] == "request_final_benchmark"
+    assert provisional["best_known"] == persisted["best_known_lineage"]
+    assert provisional["lineage_fingerprint"] == persisted["best_known_lineage"][
+        "fingerprint"
+    ]
+    assert provisional["decision_hash"]
+    # The conclusion is not a recorded decision until it is confirmed.
+    assert persisted["campaign_conclusion"] is None
     # A clean conclusion releases the preparation anchor and the budget flag.
     assert persisted["pending_scientific_parent"] is None
     assert persisted["preparation_conclusion_only"] is None
-    assert persisted["pending_campaign_conclusion"] is None
     assert proposal_path.exists() is False
 
 
-def test_no_further_experiment_ends_the_campaign_without_an_experiment_row(
-    monkeypatch, tmp_path
-):
+def test_confirming_executes_the_provisional_final_benchmark(monkeypatch, tmp_path):
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
     _stub_publication(monkeypatch)
+    proposal_path.write_text(
+        json.dumps(_conclusion("request_final_benchmark")), encoding="utf-8"
+    )
+    resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state)
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    decision_hash = persisted["provisional_campaign_conclusion"]["decision_hash"]
+    confirmation = {
+        "campaign_conclusion_confirmation": {"decision_hash": decision_hash}
+    }
+    proposal_path.write_text(json.dumps(confirmation), encoding="utf-8")
+
+    assert resolve_campaign_conclusion_confirmation(confirmation, state) == 0
+
+    resolved = json.loads(state_path.read_text(encoding="utf-8"))
+    pending = resolved["pending_final_benchmark"]
+    assert pending["selected"] == "best_known"
+    assert pending["artifact"] == "archive/best-known"
+    assert pending["fingerprint"] == resolved["best_known_lineage"]["fingerprint"]
+    assert resolved["provisional_campaign_conclusion"] is None
+    assert resolved["terminal_campaign_status"] is None
+    assert proposal_path.exists() is False
+
+
+def test_no_further_experiment_is_provisional_until_confirmed(monkeypatch, tmp_path):
+    state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
     results_path = tmp_path / "research" / "results.jsonl"
     results_path.write_text("", encoding="utf-8")
     proposal_path.write_text(
@@ -192,25 +220,98 @@ def test_no_further_experiment_ends_the_campaign_without_an_experiment_row(
     assert resolve_campaign_conclusion(_conclusion("no_further_experiment"), state) == 0
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert persisted["terminal_campaign_status"] == "no_further_experiment"
-    assert persisted["campaign_conclusion"] == {
-        "action": "no_further_experiment",
-        "reason": "The evidence supports this decision.",
-        "continuation_comparison": {
-            "form": "no_useful_continuation",
-            "reason": "No scientifically useful continuation can be formulated.",
-        },
-    }
+    assert persisted["terminal_campaign_status"] is None
+    assert persisted["provisional_campaign_conclusion"]["action"] == (
+        "no_further_experiment"
+    )
+    assert persisted["campaign_conclusion"] is None
     assert persisted["pending_scientific_parent"] is None
     # A decision, never an experiment-history row.
     assert results_path.read_text(encoding="utf-8") == ""
+
+    # Confirmation ends the campaign without an experiment row.
+    _stub_publication(monkeypatch)
+    decision_hash = persisted["provisional_campaign_conclusion"]["decision_hash"]
+    confirmation = {
+        "campaign_conclusion_confirmation": {"decision_hash": decision_hash}
+    }
+    assert resolve_campaign_conclusion_confirmation(confirmation, state) == 0
+    resolved = json.loads(state_path.read_text(encoding="utf-8"))
+    assert resolved["terminal_campaign_status"] == "no_further_experiment"
+    assert resolved["provisional_campaign_conclusion"] is None
+    assert resolved["pending_campaign_conclusion"] is None
+    assert results_path.read_text(encoding="utf-8") == ""
     # The phase is over: no new proposal is accepted.
     with pytest.raises(ValueError, match="terminal"):
-        validate_proposal_against_state(_conclusion("no_further_experiment"), persisted)
+        validate_proposal_against_state(_conclusion("no_further_experiment"), resolved)
 
 
-def test_no_further_conclusion_publication_is_retry_safe(monkeypatch, tmp_path):
+def test_confirmation_rejects_a_stale_decision_hash(monkeypatch, tmp_path):
+    _, proposal_path, state = _configure(monkeypatch, tmp_path)
+    proposal_path.write_text(
+        json.dumps(_conclusion("no_further_experiment")), encoding="utf-8"
+    )
+    resolve_campaign_conclusion(_conclusion("no_further_experiment"), state)
+
+    confirmation = {
+        "campaign_conclusion_confirmation": {"decision_hash": "0" * 64}
+    }
+    with pytest.raises(ValueError, match="decision_hash does not match"):
+        resolve_campaign_conclusion_confirmation(confirmation, state)
+
+
+def test_brief_states_the_provisional_decision_and_its_hash(monkeypatch, tmp_path):
+    from research import build_research_brief as brief
+
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
+    proposal_path.write_text(
+        json.dumps(_conclusion("no_further_experiment")), encoding="utf-8"
+    )
+    resolve_campaign_conclusion(_conclusion("no_further_experiment"), state)
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+
+    rendered = "\n".join(brief._v4_provisional_conclusion_section(persisted, []))
+
+    assert "## Provisional terminal decision" in rendered
+    assert persisted["provisional_campaign_conclusion"]["decision_hash"] in rendered
+    assert "campaign_conclusion_confirmation" in rendered
+
+    phase = "\n".join(
+        brief._v4_phase_section(
+            persisted, None, None, "none", None, "campaign", "base"
+        )
+    )
+    assert "terminal decision confirmation" in phase
+    assert "campaign_conclusion_confirmation" in phase
+
+
+def test_confirmation_rejects_a_changed_best_known_lineage(monkeypatch, tmp_path):
+    _, proposal_path, state = _configure(monkeypatch, tmp_path)
+    proposal_path.write_text(
+        json.dumps(_conclusion("request_final_benchmark")), encoding="utf-8"
+    )
+    resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state)
+    state_path = tmp_path / "research" / "research_state.json"
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    decision_hash = persisted["provisional_campaign_conclusion"]["decision_hash"]
+    # The bound lineage is repointed after the provisional decision was recorded.
+    persisted["best_known_lineage"]["fingerprint"] = "changed"
+    state_path.write_text(json.dumps(persisted), encoding="utf-8")
+
+    confirmation = {
+        "campaign_conclusion_confirmation": {"decision_hash": decision_hash}
+    }
+    with pytest.raises(ValueError, match="best-known lineage changed"):
+        resolve_campaign_conclusion_confirmation(confirmation, state)
+
+
+def test_budget_reached_executes_a_conclusion_without_a_confirmation_session(
+    monkeypatch, tmp_path
+):
+    """When no experiment may be prepared, the terminal decision is final."""
+    state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
+    state["preparation_conclusion_only"] = True
+    state_path.write_text(json.dumps(state), encoding="utf-8")
     proposal_path.write_text(
         json.dumps(_conclusion("no_further_experiment")), encoding="utf-8"
     )
