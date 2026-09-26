@@ -18,7 +18,6 @@ from research.run_experiment import (
     begin_hypothesis_phase,
     check_proposal,
     resolve_campaign_conclusion,
-    resolve_campaign_conclusion_confirmation,
 )
 from research.runner_protocol import (
     plan_campaign_conclusion,
@@ -88,6 +87,7 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, dict]:
         "pending_closure_operation": None,
         "pending_scientific_parent": "abc123",
         "preparation_conclusion_only": None,
+        "first_terminal_proposal": None,
         "official_benchmark_artifact": None,
         "terminal_campaign_status": None,
     }
@@ -95,8 +95,12 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, dict]:
     return state_path, proposal_path, state
 
 
-def _continuation(reason: str = "No useful alternative was available.") -> dict:
-    return {"form": "no_useful_continuation", "reason": reason}
+def _comparison(
+    action: str = "Train another policy from the working lineage.",
+    evidence: str = "It would measure whether the residual failures persist.",
+    reason: str = "Terminal assessment has greater expected decision value now.",
+) -> dict:
+    return {"action": action, "evidence": evidence, "reason": reason}
 
 
 def _conclusion(action: str, reason: str = "The evidence supports this decision."):
@@ -108,18 +112,14 @@ def _conclusion(action: str, reason: str = "The evidence supports this decision.
                     "expected_verdict": "goal_reached",
                     "reason": reason,
                 },
-                "continuation_comparison": _continuation(
-                    "No scientifically useful continuation can be formulated."
-                ),
+                "best_nonterminal_action_comparison": _comparison(),
             }
         }
     return {
         "campaign_conclusion": {
             "action": action,
             "reason": reason,
-            "continuation_comparison": _continuation(
-                "No scientifically useful continuation can be formulated."
-            ),
+            "best_nonterminal_action_comparison": _comparison(),
         }
     }
 
@@ -151,7 +151,7 @@ def test_preparation_accepts_a_final_benchmark_conclusion(monkeypatch, tmp_path)
     )
 
 
-def test_requesting_the_final_benchmark_is_provisional_with_capacity(
+def test_requesting_the_final_benchmark_is_retained_as_a_first_pass(
     monkeypatch, tmp_path
 ):
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
@@ -164,52 +164,51 @@ def test_requesting_the_final_benchmark_is_provisional_with_capacity(
     )
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    # A terminal decision made while capacity remains is withheld, not executed.
+    # A terminal proposal made while capacity remains is retained, not executed.
     assert persisted["terminal_campaign_status"] is None
     assert persisted["pending_final_benchmark"] is None
     assert persisted["pending_campaign_conclusion"] is None
-    provisional = persisted["provisional_campaign_conclusion"]
-    assert provisional["action"] == "request_final_benchmark"
-    assert provisional["best_known"] == persisted["best_known_lineage"]
-    assert provisional["lineage_fingerprint"] == persisted["best_known_lineage"][
-        "fingerprint"
-    ]
-    assert provisional["decision_hash"]
-    # The conclusion is not a recorded decision until it is confirmed.
+    retained = persisted["first_terminal_proposal"]
+    assert retained["action"] == "request_final_benchmark"
+    assert retained["best_known"] == persisted["best_known_lineage"]
+    assert (
+        retained["lineage_fingerprint"]
+        == persisted["best_known_lineage"]["fingerprint"]
+    )
+    # The hash-confirmation path is gone: the retained proposal carries no hash.
+    assert "decision_hash" not in retained
+    # The conclusion is not a recorded decision until the second pass executes.
     assert persisted["campaign_conclusion"] is None
-    # A clean conclusion releases the preparation anchor and the budget flag.
-    assert persisted["pending_scientific_parent"] is None
+    # The pre-decision scientific state is preserved for the independent pass.
+    assert persisted["pending_scientific_parent"] == "abc123"
     assert persisted["preparation_conclusion_only"] is None
     assert proposal_path.exists() is False
 
 
-def test_confirming_executes_the_provisional_final_benchmark(monkeypatch, tmp_path):
+def test_the_second_pass_executes_the_final_benchmark(monkeypatch, tmp_path):
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
     _stub_publication(monkeypatch)
     proposal_path.write_text(
         json.dumps(_conclusion("request_final_benchmark")), encoding="utf-8"
     )
     resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state)
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    decision_hash = persisted["provisional_campaign_conclusion"]["decision_hash"]
-    confirmation = {
-        "campaign_conclusion_confirmation": {"decision_hash": decision_hash}
-    }
-    proposal_path.write_text(json.dumps(confirmation), encoding="utf-8")
 
-    assert resolve_campaign_conclusion_confirmation(confirmation, state) == 0
+    # The second, independent action-selection pass proposes the terminal action.
+    assert (
+        resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state) == 0
+    )
 
     resolved = json.loads(state_path.read_text(encoding="utf-8"))
     pending = resolved["pending_final_benchmark"]
     assert pending["selected"] == "best_known"
     assert pending["artifact"] == "archive/best-known"
     assert pending["fingerprint"] == resolved["best_known_lineage"]["fingerprint"]
-    assert resolved["provisional_campaign_conclusion"] is None
+    assert resolved["first_terminal_proposal"] is None
     assert resolved["terminal_campaign_status"] is None
     assert proposal_path.exists() is False
 
 
-def test_no_further_experiment_is_provisional_until_confirmed(monkeypatch, tmp_path):
+def test_no_further_experiment_is_retained_until_the_second_pass(monkeypatch, tmp_path):
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
     results_path = tmp_path / "research" / "results.jsonl"
     results_path.write_text("", encoding="utf-8")
@@ -221,24 +220,18 @@ def test_no_further_experiment_is_provisional_until_confirmed(monkeypatch, tmp_p
 
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     assert persisted["terminal_campaign_status"] is None
-    assert persisted["provisional_campaign_conclusion"]["action"] == (
-        "no_further_experiment"
-    )
+    assert persisted["first_terminal_proposal"]["action"] == "no_further_experiment"
     assert persisted["campaign_conclusion"] is None
-    assert persisted["pending_scientific_parent"] is None
+    assert persisted["pending_scientific_parent"] == "abc123"
     # A decision, never an experiment-history row.
     assert results_path.read_text(encoding="utf-8") == ""
 
-    # Confirmation ends the campaign without an experiment row.
+    # The second pass executes the terminal decision without an experiment row.
     _stub_publication(monkeypatch)
-    decision_hash = persisted["provisional_campaign_conclusion"]["decision_hash"]
-    confirmation = {
-        "campaign_conclusion_confirmation": {"decision_hash": decision_hash}
-    }
-    assert resolve_campaign_conclusion_confirmation(confirmation, state) == 0
+    assert resolve_campaign_conclusion(_conclusion("no_further_experiment"), state) == 0
     resolved = json.loads(state_path.read_text(encoding="utf-8"))
     assert resolved["terminal_campaign_status"] == "no_further_experiment"
-    assert resolved["provisional_campaign_conclusion"] is None
+    assert resolved["first_terminal_proposal"] is None
     assert resolved["pending_campaign_conclusion"] is None
     assert results_path.read_text(encoding="utf-8") == ""
     # The phase is over: no new proposal is accepted.
@@ -246,21 +239,7 @@ def test_no_further_experiment_is_provisional_until_confirmed(monkeypatch, tmp_p
         validate_proposal_against_state(_conclusion("no_further_experiment"), resolved)
 
 
-def test_confirmation_rejects_a_stale_decision_hash(monkeypatch, tmp_path):
-    _, proposal_path, state = _configure(monkeypatch, tmp_path)
-    proposal_path.write_text(
-        json.dumps(_conclusion("no_further_experiment")), encoding="utf-8"
-    )
-    resolve_campaign_conclusion(_conclusion("no_further_experiment"), state)
-
-    confirmation = {
-        "campaign_conclusion_confirmation": {"decision_hash": "0" * 64}
-    }
-    with pytest.raises(ValueError, match="decision_hash does not match"):
-        resolve_campaign_conclusion_confirmation(confirmation, state)
-
-
-def test_brief_states_the_provisional_decision_and_its_hash(monkeypatch, tmp_path):
+def test_the_brief_does_not_expose_the_retained_first_pass(monkeypatch, tmp_path):
     from research import build_research_brief as brief
 
     state_path, proposal_path, state = _configure(monkeypatch, tmp_path)
@@ -270,39 +249,21 @@ def test_brief_states_the_provisional_decision_and_its_hash(monkeypatch, tmp_pat
     resolve_campaign_conclusion(_conclusion("no_further_experiment"), state)
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
 
-    rendered = "\n".join(brief._v4_provisional_conclusion_section(persisted, []))
-
-    assert "## Provisional terminal decision" in rendered
-    assert persisted["provisional_campaign_conclusion"]["decision_hash"] in rendered
-    assert "campaign_conclusion_confirmation" in rendered
-
     phase = "\n".join(
-        brief._v4_phase_section(
-            persisted, None, None, "none", None, "campaign", "base"
-        )
+        brief._v4_phase_section(persisted, None, None, "none", None, "campaign", "base")
     )
-    assert "terminal decision confirmation" in phase
-    assert "campaign_conclusion_confirmation" in phase
+    # The second pass sees a normal preparation phase, never the first decision.
+    assert "Current phase: experiment preparation" in phase
+    assert "confirmation" not in phase
+    assert "no_further_experiment" not in phase
+    assert not hasattr(brief, "_v4_provisional_conclusion_section")
 
 
-def test_confirmation_rejects_a_changed_best_known_lineage(monkeypatch, tmp_path):
-    _, proposal_path, state = _configure(monkeypatch, tmp_path)
-    proposal_path.write_text(
-        json.dumps(_conclusion("request_final_benchmark")), encoding="utf-8"
-    )
-    resolve_campaign_conclusion(_conclusion("request_final_benchmark"), state)
-    state_path = tmp_path / "research" / "research_state.json"
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    decision_hash = persisted["provisional_campaign_conclusion"]["decision_hash"]
-    # The bound lineage is repointed after the provisional decision was recorded.
-    persisted["best_known_lineage"]["fingerprint"] = "changed"
-    state_path.write_text(json.dumps(persisted), encoding="utf-8")
-
-    confirmation = {
-        "campaign_conclusion_confirmation": {"decision_hash": decision_hash}
-    }
-    with pytest.raises(ValueError, match="best-known lineage changed"):
-        resolve_campaign_conclusion_confirmation(confirmation, state)
+def test_a_continuing_action_clears_the_retained_first_pass():
+    source = (ROOT / "research" / "run_experiment.py").read_text(encoding="utf-8")
+    # A training proposal, a preparation measurement and an executed conclusion
+    # each clear the retained first-pass decision.
+    assert source.count('state["first_terminal_proposal"] = None') >= 3
 
 
 def test_budget_reached_executes_a_conclusion_without_a_confirmation_session(
@@ -352,39 +313,54 @@ def test_final_benchmark_conclusion_requires_a_designated_best_known(
         plan_campaign_conclusion(_conclusion("request_final_benchmark"), state)
 
 
-def test_terminal_choice_requires_a_continuation_comparison(monkeypatch, tmp_path):
+def test_terminal_choice_requires_a_best_nonterminal_action_comparison(
+    monkeypatch, tmp_path
+):
     _, _, state = _configure(monkeypatch, tmp_path)
 
     for action in ("request_final_benchmark", "no_further_experiment"):
         proposal = _conclusion(action)
-        del proposal["campaign_conclusion"]["continuation_comparison"]
-        with pytest.raises((TypeError, ValueError), match="continuation_comparison"):
+        del proposal["campaign_conclusion"]["best_nonterminal_action_comparison"]
+        with pytest.raises(
+            (TypeError, ValueError), match="best_nonterminal_action_comparison"
+        ):
             plan_campaign_conclusion(proposal, state)
 
-    proposal = _conclusion("no_further_experiment")
-    proposal["campaign_conclusion"]["continuation_comparison"] = {"form": "stop"}
-    with pytest.raises(ValueError, match="form must be"):
-        plan_campaign_conclusion(proposal, state)
 
-
-def test_continuation_comparison_accepts_both_recorded_forms(monkeypatch, tmp_path):
+def test_best_nonterminal_action_comparison_requires_three_parts(monkeypatch, tmp_path):
     _, _, state = _configure(monkeypatch, tmp_path)
 
-    for comparison in (
-        {
-            "form": "feasible_continuation",
-            "continuation": "Train another policy from the working lineage.",
-            "reason": "Assessment has greater expected decision value now.",
-        },
-        {
-            "form": "no_useful_continuation",
-            "reason": "No scientifically useful continuation can be formulated.",
-        },
+    for incomplete in (
+        {"action": "Train another policy.", "evidence": "It would measure X."},
+        {"action": "Train another policy.", "reason": "Termination is better."},
+        {"evidence": "It would measure X.", "reason": "Termination is better."},
+        {"action": "Train another policy.", "evidence": "  ", "reason": "Better."},
     ):
         proposal = _conclusion("no_further_experiment")
-        proposal["campaign_conclusion"]["continuation_comparison"] = comparison
+        proposal["campaign_conclusion"]["best_nonterminal_action_comparison"] = (
+            incomplete
+        )
+        with pytest.raises((TypeError, ValueError), match="non-empty"):
+            plan_campaign_conclusion(proposal, state)
+
+
+def test_best_nonterminal_action_comparison_records_any_legal_action(
+    monkeypatch, tmp_path
+):
+    _, _, state = _configure(monkeypatch, tmp_path)
+
+    for action in (
+        "Train another policy from the working lineage.",
+        "Replicate the last run to characterize variance.",
+        "Measure the best-known lineage on a disjoint saved-lineage panel.",
+    ):
+        comparison = _comparison(action=action)
+        proposal = _conclusion("no_further_experiment")
+        proposal["campaign_conclusion"]["best_nonterminal_action_comparison"] = (
+            comparison
+        )
         plan = plan_campaign_conclusion(proposal, state)
-        assert plan["continuation_comparison"] == comparison
+        assert plan["best_nonterminal_action_comparison"] == comparison
 
 
 def test_campaign_conclusion_requires_a_known_action_and_reason(monkeypatch, tmp_path):
@@ -589,3 +565,23 @@ def test_preparation_prompt_and_contract_document_the_two_exits():
     assert "campaign_conclusion" in INSTRUMENTS
     assert "no_further_experiment" in INSTRUMENTS
     assert "campaign_conclusion" in PROGRAM
+
+
+def test_launcher_opens_an_independent_second_pass_without_the_first_decision():
+    # A first-pass terminal proposal is retained privately and a second normal
+    # action-selection pass runs; there is no confirmation hash or decision hash.
+    assert "first_terminal_proposal" in LOOP
+    assert "second action-selection pass" in LOOP
+    assert "campaign_conclusion_confirmation" not in LOOP
+    assert "decision_hash" not in LOOP
+    assert "provisional" not in LOOP
+
+
+def test_contract_names_the_neutral_best_nonterminal_action_comparison():
+    # The operational schema lives in instruments.md; program.md keeps the
+    # durable stopping semantics and never names the retired field.
+    assert "best_nonterminal_action_comparison" in INSTRUMENTS
+    assert "continuation_comparison" not in INSTRUMENTS
+    assert "continuation_comparison" not in PROGRAM
+    assert "best feasible" in PROGRAM
+    assert "greater expected decision value" in PROGRAM

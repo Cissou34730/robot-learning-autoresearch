@@ -283,7 +283,7 @@ def test_each_phase_reports_its_session_before_deciding_to_retry():
         ("$proposalStatus", "=== Research proposal missing or invalid"),
         ("$evaluationStatus", "=== Evaluation request missing or invalid"),
         ("$lineageStatus", "=== Lineage deliverable invalid"),
-        ("$confirmationStatus", "=== Confirmation deliverable missing or invalid"),
+        ("$secondPassStatus", "=== Second-pass deliverable missing or invalid"),
     ):
         assert LOOP.index(f"Write-ResearcherSessionStatus {status}") < LOOP.index(retry)
 

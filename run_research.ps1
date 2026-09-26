@@ -1022,61 +1022,66 @@ if ($ResearcherBackend -eq "opencode") {
         continue
     }
 
-    $provisionalDecision = $researchState.provisional_campaign_conclusion
-    if ($researchState.schema_version -eq 4 -and $null -ne $provisionalDecision) {
-        # A terminal decision recorded while experiment capacity remains is
-        # provisional. A fresh session must confirm the fingerprint-bound
-        # decision or replace it with any legal preparation action; the campaign
-        # has not ended and no benchmark has run.
-        Write-Status "=== Provisional terminal decision '$($provisionalDecision.action)'; opening a fresh confirmation session ===" -Color Magenta -Label researcher
+    $firstTerminalProposal = $researchState.first_terminal_proposal
+    if ($researchState.schema_version -eq 4 -and $null -ne $firstTerminalProposal) {
+        # A terminal decision recorded while experiment capacity remains is a
+        # first-pass proposal retained privately for audit. The Runner restores
+        # the same pre-decision scientific state and opens a second, independent
+        # action-selection session that receives only the campaign evidence and
+        # remaining capacity, never the first action, rationale, or a hash.
+        Write-Status "=== First-pass terminal proposal retained; opening the second action-selection pass ===" -Color Magenta -Label researcher
         $runnerExitCode = Invoke-Runner -Arguments @("--begin-hypothesis")
         if (Test-StopAfterOperation $runnerExitCode "research runner") {
             break
         }
         if ($runnerExitCode -ne 0) {
-            throw "Could not anchor the terminal decision confirmation phase."
+            throw "Could not anchor the second action-selection pass."
         }
         Update-ResearchBrief
-        $provisionalNextExperiment = [Math]::Max(
+        $nextExperiment = [Math]::Max(
             [int]$researchState.last_allocated_experiment,
             [int]$researchState.last_experiment
         ) + 1
-        $decisionHash = $provisionalDecision.decision_hash
-        $confirmationPrompt = @(
-            "Current phase: confirm or replace the provisional terminal decision."
+        $secondPassPrompt = @(
+            "Current phase: second action-selection pass."
             "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
-            "A previous session recorded a provisional '$($provisionalDecision.action)' terminal decision with decision hash $decisionHash. It has not been executed and the campaign has not ended."
-            "Do exactly one of two things. Confirm it by writing research/proposal.json containing only campaign_conclusion_confirmation with decision_hash set to the hash shown in the brief; this executes the stored terminal decision and ends the campaign. Or replace it by writing any legal preparation deliverable - a training proposal for experiment $provisionalNextExperiment, a saved-lineage research/evaluation_request.json, or a different campaign_conclusion - and the provisional decision is discarded."
-            "The final scientific choice is entirely yours; no experiment, alternative, or changed recipe is required."
-            "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the accepted deliverable."
+            "Select the next action for the campaign from the evidence and the remaining experiment capacity, and author the full deliverable yourself."
+            "Available preparation outcomes: continuation, training with fresh or transfer initialization, and replication; requesting the official final assessment of the standing best-known model; concluding that no further experiment is warranted; or, before any of these, a measurement round on saved lineages. A measurement round on saved lineages commits this phase to proposing an experiment: after it, concluding is no longer accepted here."
+            "If you propose training, state the question or hypothesis, the evidence motivating it, the observation that would change the next decision, and the parent and initialization the question calls for."
+            "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
+            "Code or configuration edits are required only when the selected operation calls for them."
+            "Expected deliverable: one research/proposal.json for experiment $nextExperiment that either proposes the selected operation or records a campaign conclusion, using the contract in research/instruments.md, plus any edits called for by the selected operation. Alternatively, write research/evaluation_request.json to measure saved lineages before deciding; the request may name only saved lineages (working, best_known, or a retained ID); candidates of a not-yet-run experiment are not available."
+            "Do not exit after analysis or diagnosis: this phase is incomplete until one of the legal preparation deliverables has been written. A campaign conclusion is written through research/proposal.json and is recorded as a decision, never as an experiment."
+            "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal or accepted measurement request."
         ) -join " "
-        Invoke-ResearcherSession -Prompt $confirmationPrompt -Phase "terminal decision confirmation" -Experiment $provisionalNextExperiment
+        Invoke-ResearcherSession -Prompt $secondPassPrompt -Phase "second action-selection pass" -Experiment $nextExperiment
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
             break
         }
-        $confirmationStatus = Get-ProposalSessionStatus "terminal decision confirmation" 1
-        Write-ResearcherSessionStatus $confirmationStatus
+        $secondPassStatus = Get-ProposalSessionStatus "second action-selection pass" 1
+        Write-ResearcherSessionStatus $secondPassStatus
         Update-ResearchBrief
         Save-ResearchMemory
-        if (-not $confirmationStatus.Complete) {
-            $confirmationProblem = $confirmationStatus.Reason
-            Write-Status "=== Confirmation deliverable missing or invalid; retrying the same phase once ===" Yellow
-            $confirmationRetryPrompt = @(
-                "Current phase: confirm or replace the provisional terminal decision. The previous deliverable failed validation: $confirmationProblem. Do not exit without a corrected deliverable."
-                "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json (or research/evaluation_request.json), preserving any valid researcher-owned edits."
-                "Expected deliverable: research/proposal.json containing only campaign_conclusion_confirmation with the recorded decision_hash, or any legal preparation deliverable that replaces the provisional decision."
+        if (-not $secondPassStatus.Complete) {
+            $secondPassProblem = $secondPassStatus.Reason
+            Write-Status "=== Second-pass deliverable missing or invalid; retrying the same phase once ===" Yellow
+            $secondPassRetryPrompt = @(
+                "Current phase: second action-selection pass. The previous deliverable failed validation: $secondPassProblem. Do not exit without a corrected deliverable."
+                "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json for experiment $nextExperiment, or the invalid or missing saved-lineage research/evaluation_request.json, preserving valid researcher-owned edits that belong to this unfinished experiment."
+                "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
+                "Expected deliverable: a corrected research/proposal.json for experiment $nextExperiment, or a corrected saved-lineage research/evaluation_request.json."
                 "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $confirmationRetryPrompt -Phase "terminal decision confirmation" -Experiment $provisionalNextExperiment -Continue
+            Invoke-ResearcherSession -Prompt $secondPassRetryPrompt -Phase "second action-selection pass" -Experiment $nextExperiment -Continue
             if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
                 break CampaignLoop
             }
-            $confirmationStatus = Get-ProposalSessionStatus "terminal decision confirmation" 2
-            Write-ResearcherSessionStatus $confirmationStatus
+            $secondPassStatus = Get-ProposalSessionStatus "second action-selection pass" 2
+            Write-ResearcherSessionStatus $secondPassStatus
             Update-ResearchBrief
             Save-ResearchMemory
-            if (-not $confirmationStatus.Complete) {
-                throw "Researcher ended twice without a valid terminal decision confirmation or replacement. Last validation error: $($confirmationStatus.Reason)"
+            if (-not $secondPassStatus.Complete) {
+                throw "Researcher ended twice without a valid second-pass action-selection deliverable. Last validation error: $($secondPassStatus.Reason)"
             }
         }
         if (Test-Path "research\evaluation_request.json") {
@@ -1089,14 +1094,14 @@ if ($ResearcherBackend -eq "opencode") {
             break
         }
         if ($runnerExitCode -eq 130) {
-            Write-Status "=== Confirmation session execution paused; progress remains saved ===" Yellow
+            Write-Status "=== Second action-selection pass execution paused; progress remains saved ===" Yellow
             break
         }
         if ($runnerExitCode -ne 0) {
-            throw "Runner execution of the accepted terminal decision deliverable failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
+            throw "Runner execution of the accepted second-pass deliverable failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
         }
         Update-ResearchBrief
-        Write-Status "=== Terminal decision resolved ===" Green
+        Write-Status "=== Second action-selection pass complete ===" Green
         continue
     }
 
@@ -1158,7 +1163,7 @@ if ($ResearcherBackend -eq "opencode") {
                 ""
             }
             else {
-                "Terminal assessment of the standing best-known model is available. While experiment capacity remains, a campaign conclusion is recorded provisionally and a fresh session must confirm it or replace it before the campaign ends; only the executed assessment is irreversible."
+                "Terminal assessment of the standing best-known model is available. While experiment capacity remains, a campaign conclusion is a first-pass proposal: it is not executed until a second, independent action-selection pass selects the next action, and that second pass may instead choose an experiment or a saved-lineage measurement."
             })
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         $(if ($budgetReached) {

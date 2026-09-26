@@ -115,8 +115,9 @@ The phase order is:
    chooses exactly one of a next experiment, a saved-lineage measurement,
    terminal assessment of the frozen best-known model, or the conclusion that no
    further experiment is warranted. A terminal choice made while capacity
-   remains is provisional and is only executed once a fresh session confirms it
-   or replaces it.
+   remains is a first-pass proposal: the Runner retains it privately and opens a
+   second, independent action-selection pass that executes a second terminal
+   choice or replaces the first with an experiment or measurement.
 
 A Researcher session operates within its current phase and required deliverable.
 That operational boundary does not prescribe the scientific decision. Request
@@ -157,10 +158,13 @@ continuation before choosing. Preparation need not propose an experiment. It may
 instead request the official final assessment of the standing best-known model,
 or record that no further experiment is warranted. Each is written as a
 `campaign_conclusion` in `research/proposal.json` and is recorded as a decision,
-never as an experiment. A terminal choice must record either one concrete
-feasible continuation and why the terminal choice has greater expected decision
-value, or an evidence-grounded statement that no scientifically useful
-continuation can be formulated; the Runner validates only that structural record.
+never as an experiment. A terminal choice must record the best feasible
+nonterminal action currently visible — training, replication, a saved-lineage
+measurement, or another legal research action — the evidence or uncertainty that
+action would address, and why the terminal choice has greater expected decision
+value. The Runner validates only that structural record; it never ranks the
+named action or judges its scientific merit, and it imposes no changed recipe,
+no experiment targeting residual failures and no minimum experiment count.
 Requesting the assessment submits the designated best-known model for the
 terminal verdict; concluding that no further experiment is warranted ends the
 campaign without one. Neither has to be reached through an intermediate closure.
@@ -169,15 +173,16 @@ researcher-owned change must be reverted or resolved first. When the experiment
 budget is exhausted, only a conclusion may be prepared; a further training
 experiment is rejected.
 
-A terminal choice prepared while experiment capacity remains is provisional. It
-does not run the benchmark or end the campaign. The Runner opens one fresh
-session that may confirm the fingerprint-bound decision or replace it with any
-action already legal in preparation, including a next experiment or a
-saved-lineage measurement. Confirmation executes the recorded decision;
-replacement discards it. No alternative, portfolio, changed recipe or mandatory
-experiment is required. The decision is final, without a confirmation session,
-when the experiment budget is exhausted and no further experiment may be
-prepared.
+A terminal choice prepared while experiment capacity remains is a first-pass
+proposal. It does not run the benchmark or end the campaign. The Runner retains
+it privately for audit, keeps the same pre-decision scientific state, and opens a
+second, independent action-selection pass. That pass receives the campaign
+evidence and remaining capacity but not the first action, its rationale, or any
+hash, and must author a full action-selection deliverable. A second terminal
+choice executes; any experiment or measurement proposal replaces the first
+decision. No alternative, portfolio, changed recipe or mandatory experiment is
+required. The decision is final, without a second pass, when the experiment
+budget is exhausted and no further experiment may be prepared.
 
 ## Post-training analysis
 
@@ -308,10 +313,9 @@ objective remains. Request the terminal assessment when adjudicating the frozen
 best-known model is the highest-value remaining campaign action, whether the
 expected verdict is `goal_reached`, `goal_not_reached`, or `uncertain`. State the
 expected verdict, the evidence, the uncertainty, and the reason for accepting
-terminality. A terminal choice is comparative: record either one concrete
-feasible continuation and why terminal assessment has greater expected decision
-value, or an evidence-grounded statement that no scientifically useful
-continuation can be formulated.
+terminality. A terminal choice is comparative: record the best feasible
+nonterminal action currently visible, the evidence or uncertainty that action
+would address, and why terminal assessment has greater expected decision value.
 
 The official benchmark is a verdict you claim, not an instrument you consult. Do
 not request it in order to find out how the model performs, to settle an
@@ -334,14 +338,14 @@ running another is itself a reason to stop.
 
 Request the official benchmark from the campaign action-selection phase
 (experiment preparation) after a closure, targeting the frozen best-known model.
-A terminal choice made while experiment capacity remains is provisional: the
-Runner withholds it and opens one fresh session that may confirm the
-fingerprint-bound decision or replace it with any action already legal in
-preparation. Confirmation executes the request and the campaign ends after either
+A terminal choice made while experiment capacity remains is a first-pass
+proposal: the Runner retains it privately and opens a second, independent
+action-selection pass that must author a full action-selection deliverable. A
+second terminal choice executes the request and the campaign ends after either
 verdict, `goal_reached` or `goal_not_reached`, and that decision is irreversible;
-replacement discards the provisional decision. When the experiment budget is
-exhausted no further experiment may be prepared, so the terminal decision is
-final without a confirmation session. Do not plan further work conditional on
+an experiment or saved-lineage measurement replaces the first decision. When the
+experiment budget is exhausted no further experiment may be prepared, so the
+terminal decision is final without a second pass. Do not plan further work conditional on
 benchmark failure. Only this benchmark declares the official result. The verdict reports the result; it is not designed to
 diagnose a policy and carries no diagnostic detail, so plan your development
 evidence so that it, and not the verdict, tells you what you need to know. Both

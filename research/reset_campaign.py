@@ -353,7 +353,7 @@ def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
         "pending_closure_operation",
         "pending_scientific_parent",
         "pending_final_benchmark",
-        "provisional_campaign_conclusion",
+        "first_terminal_proposal",
         "terminal_campaign_status",
         "official_metrics",
     )

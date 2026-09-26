@@ -1429,8 +1429,6 @@ def _v4_phase_section(
     campaign_base_commit: str | None,
 ) -> list[str]:
     """The campaign header: where the campaign is and what it expects next."""
-    provisional = state.get("provisional_campaign_conclusion")
-    provisional_pending = isinstance(provisional, dict) and not terminal
     phase = (
         "post-training analysis"
         if isinstance(pending, dict)
@@ -1440,22 +1438,14 @@ def _v4_phase_section(
         phase = "official assessment"
     if terminal:
         phase = "terminal official assessment"
-    if provisional_pending:
-        phase = "terminal decision confirmation"
     conclusion_only = bool(state.get("preparation_conclusion_only")) and not (
-        terminal or isinstance(pending, dict) or provisional_pending
+        terminal or isinstance(pending, dict)
     )
     if terminal:
         deliverables = "none; the campaign is complete"
     elif isinstance(pending, dict):
         deliverables = (
             "`research/evaluation_request.json` or closure `research/proposal.json`"
-        )
-    elif provisional_pending:
-        deliverables = (
-            "`research/proposal.json` containing only "
-            "`campaign_conclusion_confirmation` to confirm the provisional decision, "
-            "or any legal preparation deliverable to replace it"
         )
     elif conclusion_only:
         deliverables = (
@@ -1976,71 +1966,6 @@ def _v4_terminal_assessment_section(
                 "failure of the research process, and the campaign's scientific "
                 "record survives the verdict intact. There is no reversal and no "
                 "second verdict."
-            ),
-        ]
-    )
-    return lines
-
-
-def _v4_provisional_conclusion_section(
-    state: dict, results: list[dict] | None = None
-) -> list[str]:
-    """The withheld terminal decision a fresh session must confirm or replace."""
-    provisional = state.get("provisional_campaign_conclusion")
-    if not isinstance(provisional, dict):
-        return []
-    action = _recorded_value(provisional.get("action"))
-    decision_hash = _recorded_value(provisional.get("decision_hash"))
-    lines = [
-        "",
-        "## Provisional terminal decision",
-        "",
-        (
-            "A terminal decision was recorded while experiment capacity remains. "
-            "It is provisional: no benchmark has run and the campaign has not "
-            "ended. A fresh session must confirm the decision hash below or "
-            "replace it with any legal preparation action."
-        ),
-        f"- Action: {action}",
-        f"- Decision hash: {decision_hash}",
-    ]
-    comparison = provisional.get("continuation_comparison")
-    if isinstance(comparison, dict):
-        lines.append(
-            f"- Continuation comparison: {_recorded_value(comparison.get('form'))}"
-        )
-        if comparison.get("continuation"):
-            lines.append(
-                "  - Feasible continuation: "
-                f"{_recorded_value(comparison.get('continuation'))}"
-            )
-        lines.append(f"  - Reason: {_recorded_value(comparison.get('reason'))}")
-    expectation = provisional.get("terminal_expectation")
-    if isinstance(expectation, dict):
-        lines.append(
-            f"- Expected verdict: {_recorded_value(expectation.get('expected_verdict'))}"
-        )
-        lines.append(
-            f"  - Terminal reason: {_recorded_value(expectation.get('reason'))}"
-        )
-    lineage = provisional.get("best_known")
-    if isinstance(lineage, dict):
-        lines.append(
-            "- Bound best-known lineage (confirmation is rejected if it changes):"
-        )
-        lines.extend(
-            _authoritative_lineage_lines(
-                "best_known", lineage, _fingerprint_panel_ledger(results or [])
-            )
-        )
-    lines.extend(
-        [
-            "",
-            (
-                "To confirm: write `research/proposal.json` containing only "
-                "`campaign_conclusion_confirmation` with `decision_hash` set to "
-                f"`{decision_hash}`. To replace: write any legal preparation "
-                "deliverable and the provisional decision is discarded."
             ),
         ]
     )
@@ -2968,8 +2893,6 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_reusable_lineages_section(state))
     lines.extend(_v4_best_known_section(state))
-
-    lines.extend(_v4_provisional_conclusion_section(state, results))
 
     lines.extend(_v4_terminal_assessment_section(state, results))
 

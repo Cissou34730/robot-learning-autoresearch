@@ -377,10 +377,10 @@ containing only a `campaign_conclusion` object:
       "expected_verdict": "<goal_reached | goal_not_reached | uncertain>",
       "reason": "<non-empty evidence-and-uncertainty rationale>"
     },
-    "continuation_comparison": {
-      "form": "feasible_continuation",
-      "continuation": "<one concrete feasible continuation>",
-      "reason": "<why the terminal choice has greater expected decision value>"
+    "best_nonterminal_action_comparison": {
+      "action": "<best feasible nonterminal action currently visible>",
+      "evidence": "<the evidence or uncertainty that action would address>",
+      "reason": "<why terminal assessment has greater expected decision value>"
     }
   }
 }
@@ -391,23 +391,25 @@ containing only a `campaign_conclusion` object:
   "campaign_conclusion": {
     "action": "no_further_experiment",
     "reason": "<non-empty reason for the decision>",
-    "continuation_comparison": {
-      "form": "no_useful_continuation",
-      "reason": "<evidence-grounded statement that no scientifically useful continuation can be formulated>"
+    "best_nonterminal_action_comparison": {
+      "action": "<best feasible nonterminal action currently visible>",
+      "evidence": "<the evidence or uncertainty that action would address>",
+      "reason": "<why terminal assessment has greater expected decision value>"
     }
   }
 }
 ```
 
-Every terminal choice carries a required `continuation_comparison` object that
-records either a `feasible_continuation` — one concrete feasible continuation
-plus the reason the terminal choice has greater expected decision value — or a
-`no_useful_continuation` with an evidence-grounded statement that no
-scientifically useful continuation can be formulated. The first form needs
-`continuation` and `reason`; the second needs only `reason`. The Runner validates
-only the structure, the referenced artifact identity, the remaining experiment
-capacity, and the legal operation type; it does not judge whether the
-continuation is scientifically good or whether stopping is justified.
+Every terminal choice carries a required `best_nonterminal_action_comparison`
+object that identifies the best feasible nonterminal action the Researcher
+currently sees — which may be training, replication, a saved-lineage measurement,
+or another legal research action — states the evidence or uncertainty that action
+would address, and explains why terminal assessment has greater expected decision
+value. All three fields are non-empty. The Runner validates only the structure,
+the referenced artifact identity, the remaining experiment capacity, and the
+legal operation type; it does not rank the named action or judge its scientific
+merit, and it does not require a changed recipe, an experiment targeting residual
+failures, or any minimum experiment count.
 
 `request_final_benchmark` submits the standing `best_known` lineage for the
 official final assessment. It requires a designated best-known model: the
@@ -421,51 +423,36 @@ record, an experiment-index row or an intervention count. A `campaign_conclusion
 is accepted only while no measurement, analysis, closure or official assessment
 is pending; each pending phase requires its own deliverable.
 
-A `campaign_conclusion` prepared while experiment capacity remains is
-**provisional**. It does not run the official benchmark, does not end the
-campaign, and is persisted with a decision hash bound to the decision and, for
-`request_final_benchmark`, to the frozen best-known fingerprint. The Runner then
-opens one fresh session. That session may do exactly one of two things:
+A `campaign_conclusion` prepared while experiment capacity remains is a
+**first-pass terminal proposal**. It does not run the official benchmark, does
+not end the campaign, and is retained privately by the Runner for audit. The
+Runner keeps the same pre-decision scientific state and opens a second,
+independent action-selection session. That session receives the campaign
+evidence and remaining capacity but not the first action, its rationale, or any
+hash. It must author a full legal action-selection deliverable. A second
+terminal proposal executes as the final pass; any experiment or measurement
+proposal replaces the first decision. No alternative, portfolio, changed recipe
+or mandatory experiment is required, and the final scientific choice remains
+entirely with the Researcher. When the experiment budget is exhausted no further
+experiment may be prepared, so the conclusion is final immediately and no
+second-pass session is opened.
 
-- confirm the provisional decision; or
-- replace it with any action already legal in preparation, including a new
-  experiment, a saved-lineage measurement, or a different `campaign_conclusion`.
+### Second-pass action selection
 
-No alternative, portfolio, changed recipe or mandatory experiment is required,
-and the final scientific choice remains entirely with the Researcher. When the
-experiment budget is exhausted no further experiment may be prepared, so the
-conclusion is final immediately and no confirmation session is opened.
+**Phase:** Action selection, opened by the Runner after a first-pass terminal
+proposal recorded while experiment capacity remains.
 
-### Confirm or replace a provisional conclusion
+The first-pass proposal is retained privately for audit and is never surfaced.
+The Researcher receives the campaign evidence and remaining capacity and authors
+the same normal action-selection deliverable as any preparation phase: a training
+proposal, a saved-lineage `research/evaluation_request.json`, or a
+`campaign_conclusion`, using the contracts in this file.
 
-**Phase:** Terminal decision confirmation, opened by the Runner after a
-provisional `campaign_conclusion`.
-
-To confirm, write `research/proposal.json` with exactly:
-
-```json
-{
-  "campaign_conclusion_confirmation": {
-    "decision_hash": "<decision hash shown in research/brief.md>"
-  }
-}
-```
-
-The Runner validates the phase state, the provisional record's continued
-existence, the exact decision hash and, for `request_final_benchmark`, that the
-bound best-known fingerprint still matches the current best-known lineage. A
-missing provisional record, a stale hash, a changed best-known lineage, or a
-pending closure is rejected; there is no silent resolution. On success the stored
-decision is executed exactly as written: `request_final_benchmark` runs the
-official assessment once and `no_further_experiment` ends the campaign.
-
-To replace it, submit the deliverable of the action you choose instead — a
-preparation `research/proposal.json`, a saved-lineage
-`research/evaluation_request.json`, or another `campaign_conclusion` — and the
-provisional decision is discarded. A replacement `campaign_conclusion` submitted
-from this fresh session is this decision's final pass and executes immediately,
-without a second confirmation. A replacement measurement or experiment returns
-the campaign to its normal preparation lifecycle.
+A terminal `campaign_conclusion` submitted from this second pass executes as the
+final pass: `request_final_benchmark` runs the official assessment once and
+`no_further_experiment` ends the campaign. A training or saved-lineage measurement
+proposal replaces the retained first-pass decision and returns the campaign to
+its normal preparation lifecycle.
 
 A conclusion resolves no science, so it is accepted only while the researcher's
 scientific surface matches the preparation anchor. Revert or resolve any
@@ -684,12 +671,13 @@ experiment closure.
 
 Terminal assessment is a `campaign_conclusion` in `research/proposal.json`, never
 a closure decision. Set `action` to `request_final_benchmark`, give
-`terminal_expectation`, and record the required `continuation_comparison`; the
-contract is in "Conclude the campaign" above. While experiment capacity remains
-the request is provisional and is not executed until a fresh session confirms
-the fingerprint-bound decision or replaces it.
+`terminal_expectation`, and record the required
+`best_nonterminal_action_comparison`; the contract is in "Conclude the campaign"
+above. While experiment capacity remains the request is a first-pass proposal: it
+is retained privately and is not executed until a second, independent
+action-selection pass proposes a terminal decision.
 
-When the confirmed request is executed, the Runner emits a confirmation card and
+When the executed request is applied, the Runner emits a confirmation card and
 the brief records a **Pending terminal assessment** section naming the frozen
 `best_known` lineage — its candidate, artifact, origin experiment, accumulated training steps,
 scientific commit and recorded measurements — together with the expected verdict
