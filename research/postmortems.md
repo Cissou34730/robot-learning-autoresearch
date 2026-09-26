@@ -4,22 +4,27 @@
 
 **Current synthesis:** PPO learned useful reach-and-hold behavior but remains
 below the 98% human objective. Full 6-20 cm target-radius transfer produced
-the strongest lineage, checkpoint-105472, with 464/480 (96.67%) pooled
-successes across three disjoint research panels; its same-panel parent
-control achieved 304/320 (95.00%). The later reduced-learning-rate
-continuation scored 144/160, 145/160, and 148/160, while the saved parent
-scored 157/160 on that new panel.
+the strongest lineage, checkpoint-105472, with 621/640 (97.03%) pooled
+successes across four disjoint research panels; its same-panel parent
+control achieved 304/320 (95.00%) on the first two panels. The later
+reduced-learning-rate continuation scored 144/160, 145/160, and 148/160,
+while the saved parent scored 157/160 on that new panel. A fresh
+full-radius replication reached only 114/160 (71.25%) at its best measured
+checkpoint, versus 157/160 for the saved parent on the same panel.
 
 **Lessons and limits:** Full-radius training is supported as a modest
 improvement, not as a solution. The reduced-rate continuation was worse than
 its parent at every measured checkpoint, so that tested optimization change
-did not improve retention. Training reward and training success do not
-reliably rank policies, development panels do not establish the official
-result, and detailed failures include both missed reaches and interrupted
-holds.
+did not improve retention. training reward and training success do not reliably rank policies,
+development panels do not establish the official result, and detailed
+failures include both missed reaches and interrupted holds. The replication
+also shows substantial fresh-initialization variability, so the strong
+transferred lineage is not reliably reproduced by the tested recipe and seed.
 
-**Open questions:** The official benchmark result remains unknown, as does
-the amount of fresh-initialization variability under the full-radius recipe.
+**Open questions:** The official benchmark result remains unknown, and the
+cause of the fresh-initialization variability remains unresolved. Further
+training is an ordinary next experiment after this closure, not part of this
+experiment-4 decision.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
@@ -142,3 +147,43 @@ and the scientific recipe should revert to the parent recipe. The parent’s
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-checkpoint-105472-160ep-seed4840-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-checkpoint-120832-160ep-seed4840-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-best_known-160ep-seed4840-f48545f83637.json`
+
+## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 4
+
+**Result:** The fresh full-radius replication did not produce a reusable
+challenger. The existing checkpoint-105472 lineage remains both working and
+best-known, and the unchanged full-radius recipe is retained.
+
+**Observed behavior:** On the new disjoint research panel at episodes
+5000-5159, the fresh candidates achieved 104/160 (65.00%) at checkpoint-105472,
+110/160 (68.75%) at checkpoint-110592, and 114/160 (71.25%) at
+checkpoint-120832. The saved best-known policy achieved 157/160 (98.125%) on
+the same panel and won 54, 48, and 44 of the discordant paired episodes against
+those candidates, respectively. The fresh run therefore remained far below the
+existing lineage at every measured checkpoint. The best-known panel is
+disjoint from the panels used to select that lineage (4520-4839 and 4840-4999)
+and provides independent development evidence, but it is not the official
+200-episode assessment.
+
+**Hypothesis assessment:** Contradicted under the tested fresh initialization,
+training seed, checkpoints, and research panel. The unchanged full-radius
+recipe did not reproduce the useful behavior of experiment 2 in this run and
+did not produce a policy approaching the 98% objective. This does not disprove
+the recipe under other random seeds or explain the source of the large
+fresh-initialization variance.
+
+**Interpretation:** The experiment provides evidence that the strong transferred
+lineage is not reliably reproduced from scratch by this tested recipe and
+seed. It does not justify replacing the existing best-known policy with any
+experiment-4 candidate. Across the available disjoint panels, the saved
+best-known policy is the strongest measured development artifact, while its
+official-task status remains unresolved because only the final benchmark can
+declare the objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-4/inventory.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-checkpoint-105472-160ep-seed5000-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-checkpoint-110592-160ep-seed5000-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-checkpoint-120832-160ep-seed5000-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-best_known-160ep-seed5000-f48545f83637.json`.
