@@ -2,28 +2,19 @@
 
 ## dba19098-4f5e-4745-8212-dc17e14d5d84 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned a strong reach-and-hold
-policy late in training. Checkpoint-100352 is the leading candidate: it achieved
-196/200 (98.00%) on the disjoint research panel and 98.00% on the permanently
-reused task-reference panel. The disjoint panel is the independent evidence for
-this selection; the task-reference score is not independent confirmation.
-Checkpoint-120832 is a close alternative at 194/200 (97.00%) on the same
-disjoint panel. Neither development measurement is the official result.
+**Current synthesis:** The unchanged PPO baseline produced a strong late-training
+policy. Checkpoint-100352 is the best-supported model, with 196/200 successes
+on the disjoint research panel; checkpoint-120832 is a close alternative at
+194/200. The fixed task-reference result is also 98%, but is not independent
+confirmation, and neither development result is official.
 
-**Lessons and limits:** Training proxies identify the useful late-training
-region but do not rank the final policies reliably: 100352 and 120832 both
-scored 94.375% on the first research panel despite different proxy values.
-The selected policy usually reaches the target quickly and completes the
-100-step hold, but the disjoint-panel failures include both failure to reach and
-hold interruptions. The current evidence supports preserving the 100352
-checkpoint and retaining 120832 as a reusable control, while the official
-200-episode assessment remains necessary to determine whether the human
-objective is met.
+**Lessons and limits:** Training proxies locate a useful late-training region but
+do not reliably rank its checkpoints. The selected policy's remaining failures
+include both missed reaches and interrupted holds, so the development evidence
+supports the model selection without explaining all residual failures.
 
-**Open questions:** Whether checkpoint-100352 reaches at least 196 successes on
-the official frozen panel remains unknown. The residual failures' dependence on
-target geometry and whether additional training improves or degrades the
-late-training policy are also unresolved.
+**Open questions:** The frozen official panel outcome for checkpoint-100352 and
+the dependence of residual failures on target geometry remain unknown.
 
 ## dba19098-4f5e-4745-8212-dc17e14d5d84 / Experiment 1
 
