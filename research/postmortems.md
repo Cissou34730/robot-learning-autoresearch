@@ -2,29 +2,25 @@
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Scientific strategy
 
-**Current synthesis:** PPO learned useful reach-and-hold behavior but remains
-below the 98% human objective. Full 6-20 cm target-radius transfer produced
-the strongest lineage, checkpoint-105472, with 621/640 (97.03%) pooled
-successes across four disjoint research panels; its same-panel parent
-control achieved 304/320 (95.00%) on the first two panels. The later
-reduced-learning-rate continuation scored 144/160, 145/160, and 148/160,
-while the saved parent scored 157/160 on that new panel. A fresh
-full-radius replication reached only 114/160 (71.25%) at its best measured
-checkpoint, versus 157/160 for the saved parent on the same panel.
+**Current synthesis:** PPO learned strong but sub-target reach-and-hold
+behavior. The transferred full-radius lineage remains best-known at 621/640
+(97.03%) across four disjoint research panels, including 157/160 on the latest
+panel. Fresh full-radius training reached only 114/160, while reduced-rate
+continuation reached at most 148/160 against 157/160 for its saved parent.
+Detailed failures include both missed reaches and interrupted holds.
 
-**Lessons and limits:** Full-radius training is supported as a modest
-improvement, not as a solution. The reduced-rate continuation was worse than
-its parent at every measured checkpoint, so that tested optimization change
-did not improve retention. training reward and training success do not reliably rank policies,
-development panels do not establish the official result, and detailed
-failures include both missed reaches and interrupted holds. The replication
-also shows substantial fresh-initialization variability, so the strong
-transferred lineage is not reliably reproduced by the tested recipe and seed.
+**Lessons and limits:** Full-radius target sampling produced a modest
+improvement, not a solution. The tested reduced-rate continuation degraded the
+parent, and fresh initialization was highly variable. Training proxies do not
+reliably rank policies, and research panels cannot establish the official
+196/200 result. The existing reward permits losing accumulated hold progress
+without forfeiture, so its relationship to the interrupted-hold failures is
+not yet tested.
 
-**Open questions:** The official benchmark result remains unknown, and the
-cause of the fresh-initialization variability remains unresolved. Further
-training is an ordinary next experiment after this closure, not part of this
-experiment-4 decision.
+**Open questions:** Whether the best-known policy meets the official objective
+remains unknown. It is also unresolved whether making hold interruption costly
+can reduce residual hold failures without damaging the learned reach behavior,
+and how much of the fresh-initialization variance is irreducible.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
