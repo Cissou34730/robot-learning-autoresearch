@@ -4,12 +4,12 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 2337/2400 across twelve distinct research panels.
-Experiments 2--7 did not establish a reliable improvement over the working
-lineage. On the fresh 31000--31199 panel, the parent and headroom control each
-achieved 194/200, while the slew control achieved 195/200. The experiment-7
-targeted-coverage challengers remain unmeasured, so none has evidence that
-warrants replacing the parent.
+98% solution. It achieved 2535/2600 across thirteen distinct research panels,
+including 198/200 on the experiment-8 comparison panel. Experiments 2--8 did
+not establish a reliable improvement over the working lineage. Experiment 8's
+fresh 15-value representation instead caused a broad regression: its measured
+reward-peak and final checkpoints achieved 110/200 and 109/200, respectively,
+against 198/200 for the parent.
 
 **Lessons and limits:** On the fresh 31000--31199 panel, the working policy
 failed six episodes and the headroom control failed the same six; the slew
@@ -23,31 +23,38 @@ failure. Slew reduced entry velocity and action variation but still failed to
 enter tolerance on the five shared targets. These paired observations weaken
 saturation, fixed command slew, and entry/hold speed as sufficient explanations;
 they support a configuration-dependent transition/conditioning interaction,
-while the telemetry remains associative rather than causal. The direct effect
-of experiment 7's targeted exposure remains unmeasured, and all results are
-development measurements rather than the official objective.
+while the telemetry remains associative rather than causal. Experiment 8 is a
+decisive negative result for the tested fresh observation recipe: both
+checkpoints failed broadly, commonly never entered tolerance, and frequently
+remained saturated for hundreds of steps; late training did not restore
+behavior. The paired result rejects the claim that these four explicit
+dynamics features are a safe or sufficient information remedy. Because the
+observation dimension, feature scaling/interactions, and fresh optimization
+trajectory changed together, it does not identify which feature or learning
+effect caused the regression. All results remain development measurements
+rather than the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: a
 branch-transition policy error, poor local conditioning, insufficient
 stabilization, or an interaction among them. It remains unresolved whether
-explicit endpoint-velocity and conditioning information can change the failure
-identity without sacrificing broad competence, and whether targeted exposure
-has any direct benefit independent of representation.
+targeted exposure has any direct benefit independent of representation, and
+which observation or optimization design could expose useful dynamics without
+destabilizing the learned controller.
 
 **Active inquiry:** The current evidence makes actuator clipping and command
 smoothness insufficient explanations: headroom removed saturation without
-rescuing the shared targets, and slew reduced command and entry speeds while
-leaving five shared no-entry failures. The provisional question is whether
-making endpoint velocity and local Jacobian conditioning explicit lets a
-controller manage the branch-transition/near-singular regime that the current
-policy handles unreliably. A fresh policy with only these four derived
-observation values will be compared with the saved working lineage on
-disjoint panels; rescue of the shared sector with preserved broad completion
-would support an information/representation limitation, while broad regression
-or unchanged failure identities would redirect the inquiry away from this
-representation. The unmeasured experiment-7 intervention remains a separate
-data-coverage question and is not treated as evidence for this decision.
+rescuing the shared targets, slew reduced command and entry speeds while
+leaving five shared no-entry failures, and experiment 8's velocity/Jacobian
+features produced a broad fresh-training collapse. The provisional question
+is whether the remaining failure is a configuration-dependent
+branch-transition and stabilization problem that must be addressed without
+changing the parent's robust observation contract. Evidence that a future
+intervention preserves the parent's broad completion while rescuing shared
+failures would support further work; broad regression or unchanged failure
+identities would redirect the inquiry. The unmeasured experiment-7
+intervention remains a separate data-coverage question and is not treated as
+evidence for this decision.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -365,3 +372,42 @@ does not justify requesting the final benchmark.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-7-working-200ep-seed30000-1796db8c3035.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-7-e6-temporal-slew-120832-200ep-seed30000-1796db8c3035.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-7-e5-action-headroom-105472-200ep-seed30000-1796db8c3035.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 8
+
+**Result:** The fresh 15-value observation with endpoint velocity and signed
+and absolute Jacobian determinants caused a severe complete-task regression.
+The reward-peak checkpoint achieved 110/200 (55.0%) and the final checkpoint
+achieved 109/200 (54.5%) on episodes 32000--32199, while the paired working
+lineage achieved 198/200 (99.0%). The working policy won all 88 and 89
+discordant episodes against the two checkpoints.
+
+**Observed behavior:** The regression was broad rather than confined to the
+previous negative-angle sector. Many challenger failures never entered
+tolerance and showed hundreds of saturated control steps; the artifacts also
+contain interrupted-hold failures. The final checkpoint did not improve on
+the reward-peak checkpoint despite higher training success and later training.
+The parent retained its broad reach-and-hold behavior on the identical panel.
+
+**Hypothesis assessment:** The hypothesis that explicit endpoint velocity and
+local conditioning information would help manage the branch-transition and
+near-singular regime while preserving broad behavior is contradicted on this
+paired panel. The large within-panel regression and zero challenger wins
+reject this fresh observation recipe as a useful intervention for the
+objective. The result does not isolate the causal contribution of any one
+appended feature, feature scaling or interaction, or fresh-training
+optimization variance.
+
+**Interpretation:** Supplying physically meaningful dynamics quantities is not
+by itself sufficient; the learned policy must use them with a representation
+and optimization contract that preserves the parent's established behavior.
+The active inquiry should move away from this augmentation and retain the
+parent's observation contract as the defensible baseline. The two measured
+checkpoints are retained as negative controls for future representation
+analysis, not as policy alternatives or evidence of objective attainment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-8-checkpoint-115712-200ep-seed32000-389c4f131ee0.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-8-checkpoint-120832-200ep-seed32000-389c4f131ee0.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-8-working-200ep-seed32000-389c4f131ee0.json`.
