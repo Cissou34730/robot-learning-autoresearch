@@ -508,6 +508,41 @@ def test_legacy_operational_failures_are_removed_from_measurement_results():
     assert active_round["results"]["task_reference_evaluations"] == []
 
 
+def test_completed_paired_artifact_must_match_the_accepted_plan(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    artifact = tmp_path / "actual.json"
+    artifact.write_text("{}", encoding="utf-8")
+    plan = [
+        {
+            "candidate": "working",
+            "reference": "reference",
+            "panels": [
+                {
+                    "evaluation_semantics": "repaired",
+                    "candidate_episodes": 2,
+                    "candidate_seed": 10,
+                    "reference_episodes": 2,
+                    "reference_seed": 10,
+                    "candidate_artifacts": ["stale.json"],
+                    "candidate_artifact_fingerprints": {},
+                    "reference_artifacts": ["reference.json"],
+                    "reference_artifact_fingerprints": {},
+                }
+            ],
+        }
+    ]
+
+    with pytest.raises(RuntimeError, match="accepted artifact path"):
+        run_experiment._seal_paired_evidence_artifact(
+            plan,
+            artifact,
+            candidate="working",
+            episodes=2,
+            seed=10,
+            semantics="repaired",
+        )
+
+
 def test_pending_preparation_adopts_harness_head_without_restoring_science(
     monkeypatch, tmp_path
 ):

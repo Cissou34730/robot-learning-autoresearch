@@ -2945,6 +2945,148 @@ def _resolved_paired_evidence_plan(
     return plan
 
 
+def _fully_frozen_paired_panel(panel: dict) -> bool:
+    for side in ("candidate", "reference"):
+        artifacts = panel.get(f"{side}_artifacts")
+        fingerprints = panel.get(f"{side}_artifact_fingerprints")
+        if not isinstance(artifacts, list) or not artifacts:
+            return False
+        if not isinstance(fingerprints, dict) or any(
+            path not in fingerprints for path in artifacts
+        ):
+            return False
+    return True
+
+
+def refresh_repaired_paired_evidence_plan(
+    request: dict,
+    pending: dict,
+    state: dict,
+    requested: list[dict],
+    resolved_models: dict[str, dict],
+    evidence_plan: list[dict],
+) -> list[dict]:
+    """Rebind only provisional panels after repaired evaluation semantics change."""
+    current_semantics = evaluation_semantics_fingerprint()
+    stale = any(
+        not _fully_frozen_paired_panel(panel)
+        and panel.get("evaluation_semantics") != current_semantics
+        for comparison in evidence_plan
+        for panel in comparison.get("panels", [])
+    )
+    if not stale:
+        return evidence_plan
+
+    campaign_id = repository.current_campaign_id(state)
+    experiment = int(pending["experiment"])
+    expected_paths = {
+        (
+            measurement["candidate"],
+            int(measurement["episodes"]),
+            int(measurement["seed"]),
+        ): repository.repo_relative_path(
+            paths.campaign_evaluation_dir(campaign_id)
+            / evaluation_artifact_name(
+                experiment,
+                measurement["candidate"],
+                measurement["episodes"],
+                measurement["seed"],
+                current_semantics,
+                campaign_id=campaign_id,
+            )
+        )
+        for measurement in requested
+    }
+    refreshed = _resolved_paired_evidence_plan(
+        request, pending, state, requested, resolved_models
+    )
+    refreshed_by_identity = {
+        (comparison["candidate"], comparison["reference"]): comparison
+        for comparison in refreshed
+    }
+    rebound_plan: list[dict] = []
+    for comparison in evidence_plan:
+        identity = (comparison["candidate"], comparison["reference"])
+        replacement = refreshed_by_identity.get(identity)
+        if replacement is None:
+            raise ValueError(
+                "implementation repair left an accepted paired comparison "
+                f"without executable evidence: {identity[0]!r} vs {identity[1]!r}"
+            )
+        for key in ("candidate_model_fingerprint", "reference_model_fingerprint"):
+            if comparison.get(key) != replacement.get(key):
+                raise ValueError(
+                    "implementation repair changed a paired comparison model identity"
+                )
+        panels: list[dict] = []
+        replacement_panels = replacement.get("panels", [])
+        for panel in comparison.get("panels", []):
+            if _fully_frozen_paired_panel(panel):
+                panels.append(copy.deepcopy(panel))
+                continue
+            matched = next(
+                (
+                    candidate
+                    for candidate in replacement_panels
+                    if candidate.get("instrument") == panel.get("instrument")
+                    and candidate.get("seed") == panel.get("seed")
+                    and candidate.get("candidate_episodes")
+                    == panel.get("candidate_episodes")
+                    and candidate.get("candidate_seed") == panel.get("candidate_seed")
+                    and candidate.get("reference_episodes")
+                    == panel.get("reference_episodes")
+                    and candidate.get("reference_seed")
+                    == panel.get("reference_seed")
+                    and candidate.get("evaluation_semantics") == current_semantics
+                ),
+                None,
+            )
+            if matched is None:
+                raise ValueError(
+                    "implementation repair changed evaluation semantics, but the "
+                    "accepted request cannot recreate both sides of paired panel "
+                    f"seed {panel.get('seed')}"
+                )
+            candidate_path = expected_paths.get(
+                (
+                    identity[0],
+                    int(panel.get("candidate_episodes", -1)),
+                    int(panel.get("candidate_seed", -1)),
+                )
+            )
+            reference_path = expected_paths.get(
+                (
+                    identity[1],
+                    int(panel.get("reference_episodes", -1)),
+                    int(panel.get("reference_seed", -1)),
+                )
+            )
+            if (
+                candidate_path not in matched.get("candidate_artifacts", [])
+                or reference_path not in matched.get("reference_artifacts", [])
+            ):
+                raise ValueError(
+                    "implementation repair changed evaluation semantics, but the "
+                    "accepted request does not measure both sides of paired panel "
+                    f"seed {panel.get('seed')}"
+                )
+            rebound_panel = copy.deepcopy(matched)
+            for side, path in (
+                ("candidate", candidate_path),
+                ("reference", reference_path),
+            ):
+                fingerprints = matched.get(f"{side}_artifact_fingerprints", {})
+                rebound_panel[f"{side}_artifacts"] = [path]
+                rebound_panel[f"{side}_artifact_fingerprints"] = (
+                    {path: fingerprints[path]} if path in fingerprints else {}
+                )
+            panels.append(rebound_panel)
+        rebound = copy.deepcopy(comparison)
+        rebound["panels"] = panels
+        rebound_plan.append(rebound)
+    return rebound_plan
+
+
 def _validated_designation_evidence(
     paths: set[str],
     *,

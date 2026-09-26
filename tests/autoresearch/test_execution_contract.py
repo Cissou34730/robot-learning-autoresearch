@@ -180,6 +180,86 @@ def _write_evaluation(path: Path, outcomes: list[tuple[int, bool]]) -> None:
     )
 
 
+def test_repair_rebinds_only_the_provisional_paired_panel(monkeypatch):
+    historical = {
+        "instrument": "research_evaluation",
+        "episodes": 2,
+        "seed": 10,
+        "evaluation_semantics": "historical",
+        "candidate_episodes": 2,
+        "candidate_seed": 10,
+        "reference_episodes": 2,
+        "reference_seed": 10,
+        "candidate_artifacts": ["historical-candidate.json"],
+        "candidate_artifact_fingerprints": {"historical-candidate.json": "a"},
+        "reference_artifacts": ["historical-reference.json"],
+        "reference_artifact_fingerprints": {"historical-reference.json": "b"},
+    }
+    stale = {
+        "instrument": "research_evaluation",
+        "episodes": 2,
+        "seed": 20,
+        "evaluation_semantics": "before-repair",
+        "candidate_episodes": 2,
+        "candidate_seed": 20,
+        "reference_episodes": 2,
+        "reference_seed": 20,
+        "candidate_artifacts": ["stale-candidate.json"],
+        "candidate_artifact_fingerprints": {},
+        "reference_artifacts": ["stale-reference.json"],
+        "reference_artifact_fingerprints": {},
+    }
+    repaired_candidate = (
+        "research/evaluations/campaign/"
+        "evaluation-campaign-experiment-2-candidate-2ep-seed20-after-repair.json"
+    )
+    repaired_reference = (
+        "research/evaluations/campaign/"
+        "evaluation-campaign-experiment-2-working-2ep-seed20-after-repair.json"
+    )
+    repaired = {
+        **stale,
+        "evaluation_semantics": "after-repair",
+        "candidate_artifacts": [repaired_candidate],
+        "candidate_artifact_fingerprints": {repaired_candidate: "c"},
+        "reference_artifacts": [repaired_reference],
+        "reference_artifact_fingerprints": {repaired_reference: "d"},
+    }
+    comparison = {
+        "candidate": "candidate",
+        "reference": "working",
+        "candidate_model_fingerprint": "candidate-fingerprint",
+        "reference_model_fingerprint": "working-fingerprint",
+    }
+    accepted = [{**comparison, "panels": [historical, stale]}]
+    refreshed = [{**comparison, "panels": [historical, repaired]}]
+    monkeypatch.setattr(
+        protocol,
+        "evaluation_semantics_fingerprint",
+        lambda: "after-repair",
+    )
+    monkeypatch.setattr(
+        protocol,
+        "_resolved_paired_evidence_plan",
+        lambda *args: refreshed,
+    )
+
+    result = protocol.refresh_repaired_paired_evidence_plan(
+        {},
+        {"experiment": 2},
+        {"campaign": {"id": "campaign"}},
+        [
+            {"candidate": "candidate", "episodes": 2, "seed": 20},
+            {"candidate": "working", "episodes": 2, "seed": 20},
+        ],
+        {},
+        accepted,
+    )
+
+    assert result[0]["panels"] == [historical, repaired]
+    assert accepted[0]["panels"] == [historical, stale]
+
+
 def test_compact_measurement_restores_outcomes_and_recorded_semantics(
     monkeypatch, tmp_path
 ):

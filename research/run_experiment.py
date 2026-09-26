@@ -815,16 +815,39 @@ def check_lineage_evidence(experiment: int) -> int:
 # --- evaluation phase ------------------------------------------------------
 
 
-def _seal_paired_evidence_artifact(evidence_plan: list[dict], path: Path) -> None:
+def _seal_paired_evidence_artifact(
+    evidence_plan: list[dict],
+    path: Path,
+    *,
+    candidate: str,
+    episodes: int,
+    seed: int,
+    semantics: str,
+) -> None:
     canonical_path = repository.repo_relative_path(path)
     fingerprint = repository.file_fingerprint(path)
+    expected = False
+    matched = False
     for comparison in evidence_plan:
         for panel in comparison.get("panels", []):
             for side in ("candidate", "reference"):
+                if (
+                    comparison.get(side) == candidate
+                    and int(panel.get(f"{side}_episodes", -1)) == episodes
+                    and int(panel.get(f"{side}_seed", -1)) == seed
+                    and panel.get("evaluation_semantics") == semantics
+                ):
+                    expected = True
                 if canonical_path in panel.get(f"{side}_artifacts", []):
                     panel.setdefault(f"{side}_artifact_fingerprints", {})[
                         canonical_path
                     ] = fingerprint
+                    matched = True
+    if expected and not matched:
+        raise RuntimeError(
+            "completed paired evidence did not match its accepted artifact path: "
+            f"{canonical_path}"
+        )
 
 
 def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> dict:
@@ -1052,6 +1075,19 @@ def execute_pending_evaluations() -> int:
         if not isinstance(frozen_evidence, list):
             raise ValueError("accepted measurement plan has no frozen evidence plan")
         evidence_plan = frozen_evidence
+        if int(pending.get("implementation_repair_attempts", 0)) > 0:
+            refreshed_evidence = protocol.refresh_repaired_paired_evidence_plan(
+                request,
+                pending,
+                state,
+                requested,
+                resolved_models,
+                evidence_plan,
+            )
+            if refreshed_evidence != evidence_plan:
+                evidence_plan = refreshed_evidence
+                pending["evaluation_evidence_plan"] = evidence_plan
+                repository.write_state(state)
     else:
         evidence_plan = protocol.validate_paired_comparison_plan(
             request,
@@ -1213,7 +1249,14 @@ def execute_pending_evaluations() -> int:
                     )
                 raise
             if is_v4:
-                _seal_paired_evidence_artifact(evidence_plan, output_path)
+                _seal_paired_evidence_artifact(
+                    evidence_plan,
+                    output_path,
+                    candidate=name,
+                    episodes=episodes,
+                    seed=seed,
+                    semantics=semantics,
+                )
             # The artifact keeps the detail, including whatever researcher-owned
             # evidence the scenario emitted; state keeps only a reference to it.
             clean_metrics = repository.measurement_record(metrics)
