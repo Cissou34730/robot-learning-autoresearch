@@ -3,59 +3,59 @@
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO baseline remains below the 98% objective
-in pooled development evidence: the working lineage achieved 465/480 successes
-(96.875%) across three distinct research panels. The action-effort intervention
+in pooled development evidence: the working lineage achieved 623/640 successes
+(97.3%) across four distinct research panels. The action-effort intervention
 did not improve complete success, and experiment 3's full-radius intervention
-also did not improve it: the training-success peak, final checkpoint, and
-working lineage each scored 155/160 on the new panel, with zero discordant
-episodes in either paired comparison. The working lineage is the strongest
-available policy and is the best-known designation selected at closure. The
-remaining failures are concentrated in a negative-angle sector, but span both
-short and long radii and include both no-entry and hold-loss outcomes. Radius
-coverage alone is therefore not a sufficient explanation for the persistent
-failures. The evaluator has now been instrumented to retain post-control
-trajectories for the next saved-lineage measurement.
+also did not improve it. The working lineage is the strongest available policy
+and is the best-known designation selected at closure. The new trajectory panel
+scored working at 158/160 and experiment-1-final at 157/160. Their failures
+entered the same open IK branch and had a well-conditioned Jacobian after the
+initial escape, but remained at saturated, rapidly reversing actions instead of
+settling. The evidence now favors a sampled-control stabilization bottleneck
+over a persistent branch or reachability failure, while retaining
+representation as a possible source of the bad commands.
 
 **Lessons and limits:** The action-cost change did not remove the shared
 16.37 cm, -142.2 degree no-entry trajectory, which used saturated action on 499
 of 500 steps, and it caused broad late-training regression. Full-radius
-training likewise did not remove the five shared experiment-3 failures:
-three never entered tolerance and two entered for only 1-2 control steps before
-losing the hold. The failures occurred at radii from 9.37 to 16.76 cm and
-angles from -125.3 to -145.4 degrees, so they are not confined to the
-previously unsupported short-radius interval. These are paired deterministic
-observations on one new panel, not population estimates, and the evaluator
-does not expose joint/action trajectories. The pooled development result
-remains below the objective, so no official assessment is justified. The new
-instrumentation changes what the next measurement can observe but supplies no
-evidence until that measurement is executed.
+training likewise did not remove the five shared experiment-3 failures. On the
+7000 panel, working's two failures saturated 496 and 499 control steps and
+entered tolerance for only one step; experiment-1-final shared those failures
+and added one positive-angle episode with 37 held steps before exit. All
+failure trajectories reached the open branch with Jacobian condition numbers
+near 1.3-4.6 at entry or termination, rather than remaining near the initial
+condition number of 78.4. Successful trajectories also used saturated effort
+during approach, so saturation itself is not sufficient; persistence and
+alternation after arrival are the discriminating observations. The completed
+artifacts' path-length field is invalid because of a state-view aliasing bug in
+the first instrumentation version; the evaluator is corrected before the next
+experiment. These are paired deterministic observations, not population
+estimates, and pooled development evidence remains below the objective, so no
+official assessment is justified.
 
 **Competing explanations:** Training-distribution mismatch is weakened as a
 sufficient cause because exposing the policy to 6-20 cm targets did not change
-the paired failure set, although it could still interact with another defect.
-A target-conditioned observation-to-action representation failure remains
-plausible in the negative-angle or wraparound sector. Initial-singularity
-escape and inverse-kinematic branch selection remain plausible because the
-same target geometry can require different joint postures and transient
-motions. Sampled-control and braking pathology remains plausible because two
-failures entered tolerance but could not sustain it. The current evidence
-cannot separate these explanations: the evaluator summarizes distance and
-hold stages but does not replay actions, joint states, branch choice, or
-Jacobian conditioning.
+the paired failure set. Initial-singularity escape and fixed IK branch
+selection are weakened as primary causes because failures and successes both
+escape the singular posture and converge to the open branch with comparable
+conditioning. Sampled-control and braking pathology is strengthened because
+the failures alternate near-maximum commands after tolerance entry while
+successful episodes release saturation and complete the hold. A
+target-conditioned representation failure remains live as an upstream cause
+that could generate those commands in a sector, and the positive-angle added
+failure prevents treating the negative-angle sector as necessary. The new
+trajectory evidence does not establish whether the policy or the physical
+command bandwidth is the dominant source.
 
-**Decision frontier:** Determine whether the persistent negative-angle failures
-are caused primarily by target-conditioned representation, singularity escape
-and branch selection, or sampled braking and hold dynamics. Discriminating
-evidence must pair matched successes and failures while recording complete
-joint-state and action trajectories, branch residuals or posture identity,
-Jacobian conditioning, effort saturation, and tolerance-entry velocity. A
-sector-specific reach failure with consistent posture or branch divergence
-would support a kinematic or representation mechanism; entry followed by
-high-velocity exits without such divergence would redirect toward sampled
-stabilization. Until that evidence exists, the current policy is useful as a
-reference but not a demonstrated solution. The next measurement must use the
-new trajectory evidence on a fresh panel, comparing the selected working lineage
-with the retained late-training alternative before any intervention is chosen.
+**Decision frontier:** Determine whether reducing the effective temporal
+authority of the learned command converts persistent saturated reversals into
+stable holds without sacrificing the fast approach behavior that succeeds on
+most targets. Evidence supporting the control-bandwidth explanation would be
+paired improvement in complete success, fewer post-entry exits, lower
+post-entry saturation, and preserved entry coverage; failure without those
+changes would redirect toward target-conditioned representation or reward
+credit assignment. The current policy remains a useful reference but not a
+demonstrated solution.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
