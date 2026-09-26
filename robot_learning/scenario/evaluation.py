@@ -13,14 +13,104 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
+import mujoco
 import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
 from robot_learning.policy_runtime import load_runtime
+from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
+# Near-ties are reported as ambiguous rather than counted as branch switches.
+BRANCH_AMBIGUITY_RAD = 0.05
+
+
+def _wrap_to_pi(angle: float) -> float:
+    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+
+def _branch_errors(target_position: np.ndarray, joint_positions: np.ndarray) -> np.ndarray:
+    target_x = float(target_position[0])
+    target_y = float(target_position[1])
+    cos_elbow = (
+        target_x**2
+        + target_y**2
+        - UPPER_ARM_LENGTH**2
+        - FOREARM_LENGTH**2
+    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
+
+    def shoulder_for_elbow(elbow: float) -> float:
+        return float(
+            np.arctan2(target_y, target_x)
+            - np.arctan2(
+                FOREARM_LENGTH * np.sin(elbow),
+                UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+            )
+        )
+
+    branches = (
+        (shoulder_for_elbow(elbow_open), elbow_open),
+        (shoulder_for_elbow(-elbow_open), -elbow_open),
+    )
+    return np.asarray(
+        [
+            np.linalg.norm(
+                [
+                    _wrap_to_pi(shoulder - float(joint_positions[0])),
+                    _wrap_to_pi(elbow - float(joint_positions[1])),
+                ]
+            )
+            for shoulder, elbow in branches
+        ],
+        dtype=np.float64,
+    )
+
+
+def _kinematic_snapshot(
+    env,
+    target_position: np.ndarray,
+    site_id: int,
+) -> dict:
+    joint_positions = np.asarray(env.data.qpos[:2], dtype=np.float64).copy()
+    joint_velocities = np.asarray(env.data.qvel[:2], dtype=np.float64).copy()
+    jacobian_position = np.zeros((3, env.model.nv), dtype=np.float64)
+    jacobian_rotation = np.zeros((3, env.model.nv), dtype=np.float64)
+    mujoco.mj_jacSite(
+        env.model,
+        env.data,
+        jacobian_position,
+        jacobian_rotation,
+        site_id,
+    )
+    singular_values = np.linalg.svd(
+        jacobian_position[:2, :2], compute_uv=False
+    )
+    smallest_singular_value = float(singular_values[-1])
+    condition = (
+        float(singular_values[0] / smallest_singular_value)
+        if smallest_singular_value > 1e-12
+        else None
+    )
+    errors = _branch_errors(target_position, joint_positions)
+    branch_index = int(np.argmin(errors))
+    branch_margin = float(abs(errors[0] - errors[1]))
+    branch = (
+        "ambiguous"
+        if branch_margin < BRANCH_AMBIGUITY_RAD
+        else ("open" if branch_index == 0 else "folded")
+    )
+    return {
+        "joint_positions_rad": joint_positions.tolist(),
+        "joint_velocities_rad_s": joint_velocities.tolist(),
+        "branch": branch,
+        "branch_errors_rad": errors.tolist(),
+        "branch_margin_rad": branch_margin,
+        "jacobian_smallest_singular_value_m_per_rad": smallest_singular_value,
+        "jacobian_condition": condition,
+    }
 
 
 def evaluate_research_model(
@@ -36,13 +126,25 @@ def evaluate_research_model(
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
+    site_id = mujoco.mj_name2id(
+        env.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+    )
+    control_dt = float(env.model.opt.timestep * env.frame_skip)
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
+    trajectory_diagnostics: list[dict] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         runtime.reset()
         target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
+        initial_snapshot = _kinematic_snapshot(env, target_position, site_id)
+        previous_end_effector = env.data.site("end_effector").xpos.copy()
+        last_unambiguous_branch = (
+            None
+            if initial_snapshot["branch"] == "ambiguous"
+            else initial_snapshot["branch"]
+        )
         reward_total = 0.0
         steps = 0
         success = False
@@ -55,6 +157,28 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        path_length_cm = 0.0
+        max_cartesian_speed_cm_s = 0.0
+        max_joint_speed_rad_s = float(
+            np.max(np.abs(initial_snapshot["joint_velocities_rad_s"]))
+        )
+        max_action_abs = 0.0
+        saturated_action_steps = 0
+        min_jacobian_singular_value = float(
+            initial_snapshot["jacobian_smallest_singular_value_m_per_rad"]
+        )
+        max_jacobian_condition = (
+            initial_snapshot["jacobian_condition"] or 0.0
+        )
+        singular_jacobian_steps = int(
+            initial_snapshot["jacobian_condition"] is None
+        )
+        branch_switches = 0
+        ambiguous_branch_steps = int(initial_snapshot["branch"] == "ambiguous")
+        entry_snapshot: dict | None = None
+        entry_action: list[float] | None = None
+        entry_cartesian_speed_cm_s: float | None = None
+        final_snapshot = initial_snapshot
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -74,6 +198,49 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
+            applied_action = np.asarray(env.data.ctrl, dtype=np.float64).copy()
+            max_action_abs = max(max_action_abs, float(np.max(np.abs(applied_action))))
+            if np.any(np.isclose(np.abs(applied_action), 1.0, atol=1e-8)):
+                saturated_action_steps += 1
+
+            end_effector = env.data.site("end_effector").xpos.copy()
+            displacement = float(np.linalg.norm(end_effector - previous_end_effector))
+            cartesian_speed_cm_s = 100.0 * displacement / control_dt
+            path_length_cm += 100.0 * displacement
+            max_cartesian_speed_cm_s = max(
+                max_cartesian_speed_cm_s, cartesian_speed_cm_s
+            )
+            previous_end_effector = end_effector
+
+            snapshot = _kinematic_snapshot(env, target_position, site_id)
+            final_snapshot = snapshot
+            max_joint_speed_rad_s = max(
+                max_joint_speed_rad_s,
+                float(np.max(np.abs(snapshot["joint_velocities_rad_s"]))),
+            )
+            min_jacobian_singular_value = min(
+                min_jacobian_singular_value,
+                snapshot["jacobian_smallest_singular_value_m_per_rad"],
+            )
+            if snapshot["jacobian_condition"] is not None:
+                max_jacobian_condition = max(
+                    max_jacobian_condition, snapshot["jacobian_condition"]
+                )
+            else:
+                singular_jacobian_steps += 1
+            if snapshot["branch"] == "ambiguous":
+                ambiguous_branch_steps += 1
+            else:
+                if (
+                    last_unambiguous_branch is not None
+                    and snapshot["branch"] != last_unambiguous_branch
+                ):
+                    branch_switches += 1
+                last_unambiguous_branch = snapshot["branch"]
+            if held_steps > 0 and entry_snapshot is None:
+                entry_snapshot = snapshot
+                entry_action = applied_action.tolist()
+                entry_cartesian_speed_cm_s = cartesian_speed_cm_s
 
         episode_results.append(
             {
@@ -105,6 +272,56 @@ def evaluate_research_model(
                 "hold_interruptions": hold_interruptions,
             }
         )
+        trajectory_diagnostics.append(
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "entry_joint_positions_rad": (
+                    entry_snapshot["joint_positions_rad"]
+                    if entry_snapshot is not None
+                    else None
+                ),
+                "entry_joint_velocities_rad_s": (
+                    entry_snapshot["joint_velocities_rad_s"]
+                    if entry_snapshot is not None
+                    else None
+                ),
+                "entry_branch": (
+                    entry_snapshot["branch"] if entry_snapshot is not None else None
+                ),
+                "entry_branch_errors_rad": (
+                    entry_snapshot["branch_errors_rad"]
+                    if entry_snapshot is not None
+                    else None
+                ),
+                "entry_jacobian_condition": (
+                    entry_snapshot["jacobian_condition"]
+                    if entry_snapshot is not None
+                    else None
+                ),
+                "entry_jacobian_smallest_singular_value_m_per_rad": (
+                    entry_snapshot["jacobian_smallest_singular_value_m_per_rad"]
+                    if entry_snapshot is not None
+                    else None
+                ),
+                "entry_action": entry_action,
+                "entry_cartesian_speed_cm_s": entry_cartesian_speed_cm_s,
+                "final_branch": final_snapshot["branch"],
+                "final_jacobian_condition": final_snapshot["jacobian_condition"],
+                "path_length_cm": path_length_cm,
+                "max_cartesian_speed_cm_s": max_cartesian_speed_cm_s,
+                "max_joint_speed_rad_s": max_joint_speed_rad_s,
+                "max_action_abs": max_action_abs,
+                "saturated_action_steps": saturated_action_steps,
+                "min_jacobian_singular_value_m_per_rad": (
+                    min_jacobian_singular_value
+                ),
+                "max_jacobian_condition": max_jacobian_condition,
+                "singular_jacobian_steps": singular_jacobian_steps,
+                "branch_switches": branch_switches,
+                "ambiguous_branch_steps": ambiguous_branch_steps,
+            }
+        )
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
@@ -121,7 +338,17 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "trajectory_diagnostics": trajectory_diagnostics,
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "speed": "cm_per_s",
+                "joint_position": "rad",
+                "joint_velocity": "rad_per_s",
+                "jacobian_singular_value": "m_per_rad",
+            },
+            "instrumentation_version": 1,
+            "branch_ambiguity_threshold_rad": BRANCH_AMBIGUITY_RAD,
         },
     }
 
