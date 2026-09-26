@@ -17,7 +17,6 @@ from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
 )
 from robot_learning.training.checkpoint import export_runtime
-from robot_learning.training.checkpoint_coordinates import canonical_coordinates
 from robot_learning.training.research_config import load_experiment_config
 
 # The current learning method. Replacing it is a normal research change.
@@ -38,10 +37,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", type=Path, default=None)
     parser.add_argument("--continue-timesteps", action="store_true")
     parser.add_argument("--target-timesteps", type=int, default=None)
-    parser.add_argument("--experiment", type=int, default=None)
-    parser.add_argument("--parent-accumulated-steps", type=int, default=0)
-    parser.add_argument("--parent-lineage", default="")
-    parser.add_argument("--parent-fingerprint", default=None)
     parser.add_argument("--n-envs", type=int, default=None)
     parser.add_argument("--view", action="store_true")
     parser.add_argument("--speed", type=float, default=1.0)
@@ -164,11 +159,6 @@ def main() -> None:
             model.save(args.output_dir / "last_model")
         venv.save(str(args.output_dir / "last_vecnormalize.pkl"))
         checkpoint_callback.save_terminal_checkpoint()
-        parent_coordinates = {
-            "parent_accumulated_steps": max(int(args.parent_accumulated_steps), 0),
-            "parent_lineage": args.parent_lineage,
-            "parent_fingerprint": args.parent_fingerprint,
-        }
         artifact = {
             "schema_version": 1,
             "algorithm": ALGORITHM_NAME,
@@ -178,11 +168,6 @@ def main() -> None:
             "completed": not interrupted,
             "resumed_from": str(args.resume) if args.resume else None,
             "effective_config": effective_config,
-            **canonical_coordinates(
-                args.experiment,
-                int(model.num_timesteps),
-                **parent_coordinates,
-            ),
         }
         (args.output_dir / "artifact.json").write_text(
             json.dumps(artifact, indent=2, default=str) + "\n",
@@ -219,16 +204,10 @@ def main() -> None:
                 "training_success": training_metrics["success_rate"],
                 "ep_rew_mean": training_metrics["ep_rew_mean"],
             }
-            candidate_coordinates = canonical_coordinates(
-                args.experiment,
-                steps,
-                **parent_coordinates,
-            )
             candidate_artifact = {
                 **artifact,
                 "timesteps": steps,
                 "completed": True,
-                **candidate_coordinates,
                 **candidate_metrics,
             }
             (candidate_dir / "artifact.json").write_text(
@@ -240,7 +219,6 @@ def main() -> None:
                     "name": f"checkpoint-{steps}",
                     "timesteps": steps,
                     "path": candidate_dir.relative_to(args.output_dir).as_posix(),
-                    **candidate_coordinates,
                     **candidate_metrics,
                 }
             )
