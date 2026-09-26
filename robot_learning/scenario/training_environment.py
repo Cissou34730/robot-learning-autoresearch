@@ -1,4 +1,4 @@
-"""Training-only environment construction for the target-coverage intervention.
+"""Training-only environment construction for the baseline recipe.
 
 Only the target distribution the policy trains on lives here. Task mechanics,
 success semantics and evaluation behavior stay in
@@ -11,9 +11,7 @@ import gymnasium as gym
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-# Match the official radius support so short-radius configurations are learned
-# rather than left entirely to extrapolation at evaluation time.
-TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 def make_training_env() -> gym.Env:
