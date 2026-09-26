@@ -42,12 +42,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        capture_step_diagnostics: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.capture_step_diagnostics = capture_step_diagnostics
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -71,6 +73,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self.last_step_diagnostics: dict[str, Any] | None = None
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -117,6 +120,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self.last_step_diagnostics = None
         return self._observation(), {}
 
     def step(
@@ -128,8 +132,38 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
+        substep_distances: list[float] = []
+        substep_tip_speeds: list[float] = []
+        end_effector_id = self.model.site("end_effector").id
+        tip_velocity = np.empty(6, dtype=np.float64)
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            if self.capture_step_diagnostics:
+                substep_distances.append(self._distance_to_target())
+                mujoco.mj_objectVelocity(
+                    self.model,
+                    self.data,
+                    mujoco.mjtObj.mjOBJ_SITE,
+                    end_effector_id,
+                    tip_velocity,
+                    0,
+                )
+                substep_tip_speeds.append(
+                    float(np.linalg.norm(tip_velocity[3:6]))
+                )
+
+        if self.capture_step_diagnostics:
+            self.last_step_diagnostics = {
+                "min_substep_distance": min(substep_distances),
+                "max_substep_distance": max(substep_distances),
+                "max_substep_tip_speed": max(substep_tip_speeds),
+                "final_tip_speed": substep_tip_speeds[-1],
+                "internal_tolerance_hit": any(
+                    distance <= self.success_threshold
+                    for distance in substep_distances
+                ),
+                "applied_action": action.copy(),
+            }
 
         distance = self._distance_to_target()
 
@@ -168,10 +202,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
-def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
+def make_evaluation_env(
+    *, policy_runtime=None, capture_step_diagnostics: bool = False
+) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
     env = TwoJointArmReachEnv(
-        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
+        target_radius_range=TARGET_RADIUS_RANGE,
+        policy_runtime=policy_runtime,
+        capture_step_diagnostics=capture_step_diagnostics,
     )
     if policy_runtime is not None:
         env.observation_space = policy_runtime.observation_space
