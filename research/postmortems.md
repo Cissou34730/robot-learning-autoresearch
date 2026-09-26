@@ -11,7 +11,8 @@ neither intervention produced a paired win over the parent. Experiment 5's
 two action-headroom checkpoints each achieved 391/400 on two fresh panels,
 versus 390/400 for the parent on those same panels. The gain was one rescued
 episode on the first panel and zero on the second, while the recurring failure
-identities remained.
+identities remained. The next test changes command temporal smoothness while
+preserving command authority, observations, reward, and target coverage.
 
 **Lessons and limits:** Radius expansion did not remove the shared
 negative-angle failure identities, and reward changes regressed complete task
@@ -25,16 +26,18 @@ The one-episode pooled gain is not reproduced on the second panel, and the
 Saturation is therefore a marker or contributor at most, not an established
 sufficient cause. Adding sine/cosine encodings to the wrapped branch errors
 caused severe broad degradation in a fresh policy, rejecting that tested recipe
-without proving that all observation changes are unhelpful. Development panels
-remain non-official, and the parent has not established the human objective on
-the final benchmark.
+without proving that all observation changes are unhelpful. No existing result
+tests whether limiting rapid command changes can preserve approach authority
+while reducing transient instability. Development panels remain non-official,
+and the parent has not established the human objective on the final benchmark.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: branch
 transition, poor local conditioning, insufficient stabilization, or an
 interaction among them. It is also unresolved whether a policy can preserve
 the parent's broad approach and hold behavior while changing only that
-failure-sector behavior.
+failure-sector behavior, and whether command-rate limiting helps or merely
+delays target acquisition.
 
 **Active inquiry:** The persistent failure sector is more consistent with a
 configuration- or branch-dependent control limitation than with actuator
@@ -44,6 +47,12 @@ Evidence that changes the failure identities while preserving complete
 reach-and-hold behavior would support a conditioning or branch-transition
 explanation; repeated shared failures under such controls would require
 revising that interpretation rather than treating saturation as causal.
+Experiment 6 tests the narrower temporal-control distinction by continuing the
+working lineage with a per-episode normalized-action slew limiter. Fewer shared
+failures or interrupted holds, with preserved broad approach and target
+acquisition, would support a transient-control contribution; unchanged
+failures or broad delay-related regressions would redirect the inquiry toward
+branch selection or configuration conditioning rather than command smoothing.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
