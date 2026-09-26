@@ -106,7 +106,7 @@
       "form": "feasible_continuation",
       "reason": "This continuation could test whether more training improves the residual failures, but the later checkpoint-120832 declined to 194/200 on the disjoint panel and the campaign has no evidence that unchanged continuation will improve the selected policy. Terminal assessment has greater expected decision value because it directly adjudicates the already threshold-level best-known model rather than producing another development-only result."
     },
-    "progress": "planned",
+    "progress": "committed",
     "reason": "Checkpoint-100352 achieved 196/200 (98.00%) on the disjoint research panel and 98.00% on the fixed task-reference panel, which makes goal attainment plausible but not established. The official frozen 200-episode assessment is the only measurement that can determine the human objective, and the development panels leave uncertainty because the selected policy is exactly at the threshold and still has both missed-reach and interrupted-hold failures.",
     "terminal_expectation": {
       "expected_verdict": "uncertain",
