@@ -190,6 +190,16 @@ limit on interpretation. Use `supported`, `partially supported`, `weakened`,
 signals as well as limitations. An unmeasured checkpoint remains unmeasured, not
 a failed policy.
 
+Each non-baseline experiment carries one frozen question ledger built from the
+proposal's hypothesis or scientific question, its expected observation and its
+cited motivation; the brief shows that question and expected observation before
+the candidate metrics. Each measurement request states whether it addresses the
+expected observation or is deliberately exploratory, and both are legal.
+Completed rounds stay linked to the ledger. If unexpected evidence makes the
+frozen question inadequate, revise it through the request with the revising
+reason and the evidence that motivated the change; the earlier question is kept
+as provenance.
+
 Decide whether to request measurements before resolving lineage. A measurement
 may discover or refine a question, characterize unfamiliar behavior, compare
 policies, test an explanation, or examine learning dynamics across checkpoints.
@@ -231,6 +241,12 @@ without requiring a complete explanation of the outcome. Append the experiment
 entry to `research/postmortems.md`, separating observations from interpretations
 and citing inspected artifacts, then write the lineage-only
 `research/proposal.json`. Closure without new measurements is valid.
+
+Closure records a disposition of the experiment's frozen expected observation:
+`supported`, `weakened`, `contradicted`, `unresolved`, or `not tested`, with the
+cited evidence. The disposition addresses the intervention's expectation, not
+the policy. It stays separate from saved-policy usefulness, best-known
+designation and objective-level success, and it does not determine any of them.
 
 Choose a working policy and whether to keep, revert, or restore the complete
 scientific recipe. Retain reusable alternatives when justified; unretained model

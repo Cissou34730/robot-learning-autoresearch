@@ -1227,9 +1227,7 @@ def _current_lineages_and_recipes_lines(
             identity = _lineage_fact_identity(lineage)
             canonical = canonical_by_identity.get(identity) if identity else None
             if canonical is None:
-                lines.extend(
-                    _authoritative_lineage_lines(identifier, lineage, ledger)
-                )
+                lines.extend(_authoritative_lineage_lines(identifier, lineage, ledger))
                 if identity is not None:
                     canonical_by_identity[identity] = (identifier, lineage)
             else:
@@ -1966,8 +1964,7 @@ def _v4_terminal_assessment_section(
         )
     )
     lines.append(
-        "  - Expected verdict: "
-        f"{_recorded_value(expectation.get('expected_verdict'))}"
+        f"  - Expected verdict: {_recorded_value(expectation.get('expected_verdict'))}"
     )
     lines.append(f"  - Terminal reason: {_recorded_value(expectation.get('reason'))}")
     lines.extend(
@@ -2798,6 +2795,62 @@ def _v4_pending_lineage_transaction_section() -> list[str]:
     ]
 
 
+def _question_ledger_view(result: dict | None) -> dict:
+    """The frozen experiment question ledger, with a historical fallback.
+
+    New results carry ``question_ledger``; records written before the ledger
+    existed fall back to the frozen hypothesis or scientific question and the
+    expected observation, so the brief reads the same for both.
+    """
+    result = result or {}
+    ledger = result.get("question_ledger")
+    if isinstance(ledger, dict):
+        return ledger
+    question = result.get("hypothesis")
+    if not isinstance(question, str) or not question.strip():
+        question = result.get("scientific_question")
+    reasoning = result.get("reasoning")
+    expected_observation = ""
+    if isinstance(reasoning, dict):
+        expected = reasoning.get("expected_observation")
+        if isinstance(expected, str):
+            expected_observation = expected
+    return {
+        "question": question if isinstance(question, str) else "",
+        "expected_observation": expected_observation,
+        "revisions": [],
+        "disposition": None,
+    }
+
+
+def _question_ledger_lines(view: dict) -> list[str]:
+    """The frozen question and expected observation, before candidate metrics."""
+    question = str(view.get("question") or "").strip() or "not recorded"
+    expected = str(view.get("expected_observation") or "").strip() or "not recorded"
+    lines = [
+        f"- Experiment question (frozen): {question}",
+        f"- Expected observation (frozen): {expected}",
+    ]
+    revisions = view.get("revisions")
+    if isinstance(revisions, list):
+        for revision in revisions:
+            if not isinstance(revision, dict):
+                continue
+            lines.append(
+                "- Question revised: "
+                f"{str(revision.get('question', '')).strip()} "
+                f"(reason: {str(revision.get('reason', '')).strip()})"
+            )
+    disposition = view.get("disposition")
+    if isinstance(disposition, dict):
+        lines.append(
+            "- Expected observation disposition: "
+            f"{str(disposition.get('disposition', '')).strip()} - "
+            f"{str(disposition.get('evidence', '')).strip()}"
+        )
+    return lines
+
+
 def _render_v4_research_brief(
     state: dict,
     results: list[dict],
@@ -2856,6 +2909,7 @@ def _render_v4_research_brief(
                 else "- Raw training logs: unmeasured",
             ]
         )
+        lines.extend(_question_ledger_lines(_question_ledger_view(result)))
         if result.get("recipe_basis"):
             lines.append(f"- Recipe basis: {_recipe_basis(result)}")
         if unmeasured:
@@ -2878,6 +2932,7 @@ def _render_v4_research_brief(
         selected_lineage = (latest.get("closure_decision") or {}).get(
             "continue_from", "unmeasured"
         )
+        lines.extend(_question_ledger_lines(_question_ledger_view(latest)))
         lines.extend(
             [
                 f"- Operation: {operation_description(latest) or latest.get('kind', '-')}",

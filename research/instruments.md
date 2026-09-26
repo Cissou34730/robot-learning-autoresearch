@@ -87,6 +87,14 @@ Write `research/evaluation_request.json`:
   "experiment": "<current experiment integer; must be omitted during preparation>",
   "question": "<non-empty scientific question>",
   "reason": "<non-empty reason>",
+  "addresses": "<expected_observation | exploratory; required during post-training analysis>",
+  "question_revision": {
+    "question": "<replacement experiment question>",
+    "reason": "<why the frozen question is revised>",
+    "evidence": [
+      {"source": "<existing repository-relative file>", "observation": "<what was observed there>"}
+    ]
+  },
   "measurements": [
     {
       "instrument": "<research_evaluation | task_reference>",
@@ -114,6 +122,21 @@ Every measurement requires its own non-empty `selection` stating why measuring
 that model is useful. Measurements of the same model may have different
 selections. The Runner checks that `selection` is present, not whether its
 reasoning is sound.
+
+`addresses` is required for a post-training analysis request and omitted during
+preparation. It states whether the request addresses the experiment's frozen
+expected observation (`expected_observation`) or is deliberately exploratory
+(`exploratory`). Both values are legal and the Runner records the address on the
+completed round; it does not require an exploratory request to justify itself
+against the frozen question.
+
+`question_revision` is optional and only legal in a post-training analysis
+request. When the experiment's frozen question no longer fits the evidence, it
+replaces that question on the experiment's question ledger and appends the
+revision, reason and evidence to the ledger's revision history. All three fields
+must be non-empty, and the evidence array must contain at least one
+source/observation pair. The ledger keeps every earlier question, so a revision
+preserves provenance rather than rewriting history.
 
 `omitted_alternative` is optional. When present it names an available model left
 outside the entire request; the Runner checks only that the identifier is
@@ -182,6 +205,29 @@ training analysis for an analysis request, experiment preparation for a saved-
 lineage preparation request. New requests do not use `need_more_evidence`;
 closing is a separate closure proposal in the same phase. Legacy accepted
 requests that contain it remain recoverable.
+
+## Experiment question ledger
+
+Each non-baseline experiment carries one persistent question ledger, created
+from the proposal's hypothesis or scientific question, its expected observation
+and its cited motivation, and frozen and persisted when training is accepted.
+The ledger is identified by a fingerprint of the proposal and experiment; the
+Runner validates that identity and the presence of the Researcher's fields but
+never judges the evidence or conclusion.
+
+The brief shows the frozen experiment question and expected observation before
+the candidate metrics. Measurement rounds record whether they address the
+expected observation or are exploratory and the ledger identity they belong to,
+so the completed round's artifact references stay linked to the experiment's
+original question. The Runner does not select covariates or compute
+hypothesis-specific conclusions.
+
+A measurement request may revise the frozen question through `question_revision`
+(see "Request measurements"); the ledger keeps the earlier question and the
+revision's reason and evidence. Closure records a Researcher-authored
+disposition of the expected observation in the experiment postmortem (see
+"Record the postmortem"); the disposition is attached to the ledger without
+affecting policy usefulness, best-known designation or objective-level success.
 
 ## Request training
 
@@ -474,6 +520,8 @@ Append to `research/postmortems.md`:
 
 **Hypothesis assessment:** <compare the original prediction with what was observed; state whether the hypothesis is supported, partially supported, weakened, contradicted, or inconclusive, and the limits of that conclusion>
 
+**Expected observation disposition:** <one of `supported`, `weakened`, `contradicted`, `unresolved`, or `not tested`, followed by ` - ` and the cited evidence from this experiment>
+
 **Interpretation:** <scientific interpretation>
 
 **Evidence inspected:** <artifact paths from this experiment>
@@ -490,6 +538,15 @@ and conclusion belong to the Researcher; the Runner checks only that it is
 present. This assessment does not determine saved-policy usefulness, recipe,
 lineage, retention, or the decision to request the official benchmark. Fresh
 baselines are exempt, and historical entries remain readable.
+
+New non-baseline closures also require `Expected observation disposition`: one
+enumerated label followed by ` - ` and the cited evidence, for example
+`supported - 199 of 200 episodes held`. The Runner validates that the label is
+enumerated and that evidence is present; it does not judge the evidence or the
+disposition. The field is compared against the experiment's frozen expected
+observation and attached to its question ledger. It does not determine
+saved-policy usefulness, recipe, lineage, retention, or the decision to request
+the official benchmark. Fresh baselines are exempt.
 
 ## Resolve lineage
 

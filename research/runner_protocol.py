@@ -143,6 +143,20 @@ GENERATED_DIRECTORY_NAMES = {"__pycache__"}
 # The one line a lineage decision must carry to name the evidence it relied on.
 EVIDENCE_ATTESTATION_LABEL = "Evidence inspected"
 HYPOTHESIS_ASSESSMENT_LABEL = "Hypothesis assessment"
+# The Researcher-authored closure verdict on the experiment's expected
+# observation: one enumerated disposition label plus the cited evidence.
+EXPECTED_OBSERVATION_DISPOSITION_LABEL = "Expected observation disposition"
+EXPECTED_OBSERVATION_DISPOSITIONS = (
+    "supported",
+    "weakened",
+    "contradicted",
+    "unresolved",
+    "not tested",
+)
+# A post-training analysis measurement request states whether it addresses the
+# experiment's expected observation or is deliberately exploratory. Both are
+# legal; the address is provenance, not a gate on the science.
+EVALUATION_REQUEST_ADDRESSES = ("expected_observation", "exploratory")
 # The researcher names the model; the panel behind this key is human-owned.
 # `purpose` is not part of the accepted schema: a new request carrying it is
 # rejected as unsupported, while historical records that contain it stay
@@ -977,8 +991,7 @@ def validate_continuation_comparison(value: object) -> dict:
         extra = set(value) - {"form", "continuation", "reason"}
         if extra:
             raise ValueError(
-                "unsupported continuation_comparison fields: "
-                f"{sorted(extra)}"
+                f"unsupported continuation_comparison fields: {sorted(extra)}"
             )
         continuation = str(value.get("continuation", "")).strip()
         if not continuation:
@@ -994,8 +1007,7 @@ def validate_continuation_comparison(value: object) -> dict:
         extra = set(value) - {"form", "reason"}
         if extra:
             raise ValueError(
-                "unsupported continuation_comparison fields: "
-                f"{sorted(extra)}"
+                f"unsupported continuation_comparison fields: {sorted(extra)}"
             )
         reason = str(value.get("reason", "")).strip()
         if not reason:
@@ -1097,9 +1109,7 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
             "continuation_comparison",
         }
         if extra:
-            raise ValueError(
-                f"unsupported campaign_conclusion fields: {sorted(extra)}"
-            )
+            raise ValueError(f"unsupported campaign_conclusion fields: {sorted(extra)}")
         terminal_expectation = validate_terminal_expectation(
             conclusion.get("terminal_expectation")
         )
@@ -1107,9 +1117,7 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     else:
         extra = set(conclusion) - {"action", "reason", "continuation_comparison"}
         if extra:
-            raise ValueError(
-                f"unsupported campaign_conclusion fields: {sorted(extra)}"
-            )
+            raise ValueError(f"unsupported campaign_conclusion fields: {sorted(extra)}")
         reason = str(conclusion.get("reason", "")).strip()
         if not reason:
             raise ValueError("campaign_conclusion requires a non-empty reason")
@@ -1159,7 +1167,9 @@ def validate_campaign_conclusion_confirmation(proposal: dict, state: dict) -> di
     rather than silently resolved.
     """
     if state.get("schema_version") != 4:
-        raise ValueError("campaign conclusion confirmation requires a version-4 campaign")
+        raise ValueError(
+            "campaign conclusion confirmation requires a version-4 campaign"
+        )
     if not isinstance(proposal, dict):
         raise TypeError("proposal.json must contain a JSON object")
     if set(proposal) != {"campaign_conclusion_confirmation"}:
@@ -1173,8 +1183,7 @@ def validate_campaign_conclusion_confirmation(proposal: dict, state: dict) -> di
     extra = set(confirmation) - {"decision_hash"}
     if extra:
         raise ValueError(
-            "unsupported campaign_conclusion_confirmation fields: "
-            f"{sorted(extra)}"
+            f"unsupported campaign_conclusion_confirmation fields: {sorted(extra)}"
         )
     decision_hash = str(confirmation.get("decision_hash", "")).strip()
     if not decision_hash:
@@ -1199,9 +1208,10 @@ def validate_campaign_conclusion_confirmation(proposal: dict, state: dict) -> di
     fingerprint = str(provisional.get("lineage_fingerprint") or "").strip()
     if fingerprint:
         best_known = state.get("best_known_lineage")
-        if not isinstance(best_known, dict) or str(
-            best_known.get("fingerprint") or ""
-        ) != fingerprint:
+        if (
+            not isinstance(best_known, dict)
+            or str(best_known.get("fingerprint") or "") != fingerprint
+        ):
             raise ValueError(
                 "the best-known lineage changed since the provisional terminal "
                 "decision; confirm is no longer valid and the decision must be "
@@ -1248,12 +1258,33 @@ def validate_evaluation_request(
     *,
     allow_legacy_need_more_evidence: bool = False,
     saved_lineage_ids: set[str] | None = None,
+    require_experiment_address: bool = False,
 ) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
         value = request.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"evaluation request requires a non-empty {field}")
+    # A post-training analysis request states whether it addresses the
+    # experiment's frozen expected observation or is exploratory. Both are legal;
+    # the address is provenance the ledger keeps, never a scientific gate.
+    addresses = request.get("addresses")
+    if addresses is not None and addresses not in EVALUATION_REQUEST_ADDRESSES:
+        raise ValueError(
+            "evaluation request addresses must be expected_observation or exploratory"
+        )
+    if require_experiment_address and addresses is None:
+        raise ValueError(
+            "a post-training analysis measurement request requires addresses set to "
+            "expected_observation or exploratory"
+        )
+    revision = request.get("question_revision")
+    if revision is not None:
+        if not require_experiment_address:
+            raise ValueError(
+                "question_revision is only valid for a post-training analysis request"
+            )
+        validate_question_revision(revision)
     for field in ("evaluations", "task_reference_evaluations"):
         if field in request:
             raise ValueError(
@@ -1617,12 +1648,14 @@ def planned_measurements(
     *,
     allow_legacy_need_more_evidence: bool = False,
     saved_lineage_ids: set[str] | None = None,
+    require_experiment_address: bool = False,
 ) -> tuple[list[dict], list[dict]]:
     """Resolve all typed measurements before either evaluator starts."""
     validate_evaluation_request(
         request,
         allow_legacy_need_more_evidence=allow_legacy_need_more_evidence,
         saved_lineage_ids=saved_lineage_ids,
+        require_experiment_address=require_experiment_address,
     )
     requested_names = {
         str(spec["candidate"]).strip() for spec in requested_measurements(request)
@@ -1999,6 +2032,144 @@ def postmortem_field(section: str, label: str) -> str | None:
     return value or None
 
 
+# --- experiment question ledger --------------------------------------------
+
+
+def question_ledger(proposal: dict, experiment: int, ledger_id: str) -> dict:
+    """The experiment's frozen question, expected observation and motivation.
+
+    The ledger is derived once from the proposal before training and then
+    persisted exactly as the proposal reasoning is frozen. It carries no
+    interpretation: revisions, completed measurement links and the closure
+    disposition are appended to this same identity over the experiment life.
+    """
+    question = proposal.get("hypothesis")
+    if not isinstance(question, str) or not question.strip():
+        question = proposal.get("scientific_question")
+    reasoning = proposal.get("reasoning")
+    expected_observation = ""
+    motivation: list[dict] = []
+    if isinstance(reasoning, dict):
+        expected = reasoning.get("expected_observation")
+        if isinstance(expected, str):
+            expected_observation = expected.strip()
+        evidence = reasoning.get("evidence")
+        if isinstance(evidence, list):
+            motivation = [dict(entry) for entry in evidence if isinstance(entry, dict)]
+    return {
+        "ledger_id": str(ledger_id),
+        "experiment": int(experiment),
+        "question": question.strip() if isinstance(question, str) else "",
+        "expected_observation": expected_observation,
+        "motivation": motivation,
+        "revisions": [],
+        "disposition": None,
+    }
+
+
+def validate_question_revision(revision: object) -> dict:
+    """Require the exact shape of a provenance-preserving question revision."""
+    if not isinstance(revision, dict):
+        raise TypeError("question_revision must be an object")
+    if set(revision) != {"question", "reason", "evidence"}:
+        raise ValueError(
+            "question_revision requires exactly question, reason and evidence"
+        )
+    question = revision.get("question")
+    reason = revision.get("reason")
+    if not isinstance(question, str) or not question.strip():
+        raise ValueError("question_revision requires a non-empty question")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValueError("question_revision requires a non-empty reason")
+    evidence = revision.get("evidence")
+    if not isinstance(evidence, list) or not evidence:
+        raise ValueError("question_revision requires at least one evidence entry")
+    normalized: list[dict] = []
+    for entry in evidence:
+        if not isinstance(entry, dict) or set(entry) != {"source", "observation"}:
+            raise ValueError(
+                "question_revision evidence requires source and observation"
+            )
+        source = entry.get("source")
+        observation = entry.get("observation")
+        if (
+            not isinstance(source, str)
+            or not source.strip()
+            or not isinstance(observation, str)
+            or not observation.strip()
+        ):
+            raise ValueError(
+                "question_revision evidence requires non-empty source and observation"
+            )
+        normalized.append(
+            {"source": source.strip(), "observation": observation.strip()}
+        )
+    return {
+        "question": question.strip(),
+        "reason": reason.strip(),
+        "evidence": normalized,
+    }
+
+
+def apply_question_revision(ledger: dict, revision: object) -> dict:
+    """Replace the ledger question and record the revision with its provenance."""
+    if not isinstance(ledger, dict):
+        raise TypeError("question ledger must be an object")
+    validated = validate_question_revision(revision)
+    ledger["question"] = validated["question"]
+    revisions = ledger.setdefault("revisions", [])
+    if not isinstance(revisions, list):
+        raise TypeError("question ledger revisions must be a list")
+    revisions.append(
+        {
+            "question": validated["question"],
+            "reason": validated["reason"],
+            "evidence": validated["evidence"],
+        }
+    )
+    return ledger
+
+
+_DISPOSITION_LABELS = ", ".join(EXPECTED_OBSERVATION_DISPOSITIONS)
+
+
+def parse_expected_observation_disposition(value: str) -> dict:
+    """Split an enumerated disposition label from its cited evidence."""
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(
+            f"{EXPECTED_OBSERVATION_DISPOSITION_LABEL} requires a non-empty value"
+        )
+    label, separator, evidence = value.strip().partition(" - ")
+    label = label.strip()
+    evidence = evidence.strip()
+    if label not in EXPECTED_OBSERVATION_DISPOSITIONS:
+        raise ValueError(
+            f"{EXPECTED_OBSERVATION_DISPOSITION_LABEL} must be one of "
+            f"{_DISPOSITION_LABELS} followed by ' - <cited evidence>'"
+        )
+    if not separator or not evidence:
+        raise ValueError(
+            f"{EXPECTED_OBSERVATION_DISPOSITION_LABEL} requires cited evidence "
+            "after ' - '"
+        )
+    return {"disposition": label, "evidence": evidence}
+
+
+def expected_observation_disposition(
+    experiment: int,
+    *,
+    campaign_id: str | None = None,
+) -> dict | None:
+    """The recorded closure disposition for one experiment, if present."""
+    section = postmortem_section(experiment, campaign_id)
+    if not section.strip():
+        return None
+    value = postmortem_field(section, EXPECTED_OBSERVATION_DISPOSITION_LABEL)
+    if value is None:
+        return None
+    return parse_expected_observation_disposition(value)
+
+
 def validate_postmortem_evidence(
     experiment: int,
     measured: list[str],
@@ -2006,6 +2177,7 @@ def validate_postmortem_evidence(
     campaign_id: str | None = None,
     pending: dict | None = None,
     require_hypothesis_assessment: bool = False,
+    require_disposition: bool = False,
 ) -> str | None:
     """Require the experiment postmortem and return its hypothesis assessment."""
     section = postmortem_section(experiment, campaign_id)
@@ -2022,6 +2194,14 @@ def validate_postmortem_evidence(
             f"the experiment {experiment} postmortem needs a non-empty "
             f"'{HYPOTHESIS_ASSESSMENT_LABEL}:' field"
         )
+    if require_disposition:
+        value = postmortem_field(section, EXPECTED_OBSERVATION_DISPOSITION_LABEL)
+        if value is None:
+            raise ValueError(
+                f"the experiment {experiment} postmortem needs a non-empty "
+                f"'{EXPECTED_OBSERVATION_DISPOSITION_LABEL}:' field"
+            )
+        parse_expected_observation_disposition(value)
     return assessment
 
 
@@ -2603,7 +2783,9 @@ def lineage_transaction_changes_roles(preview: dict) -> bool:
         section = preview.get(role)
         if not isinstance(section, dict):
             continue
-        if _role_identity(section.get("old")) != _role_identity(section.get("proposed")):
+        if _role_identity(section.get("old")) != _role_identity(
+            section.get("proposed")
+        ):
             return True
     return bool(preview.get("retained_additions") or preview.get("retained_removals"))
 
@@ -3414,6 +3596,7 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
             campaign_id=repository.current_campaign_id(state),
             pending=pending,
             require_hypothesis_assessment=not bool(pending.get("baseline")),
+            require_disposition=not bool(pending.get("baseline")),
         )
     allowed = {
         "experiment",
@@ -3681,9 +3864,10 @@ def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
         },
     }
     transaction_hash = lineage_transaction_hash(preview)
-    confirmation_required = lineage_transaction_changes_roles(
-        preview
-    ) and decision.get("confirm_transaction") != transaction_hash
+    confirmation_required = (
+        lineage_transaction_changes_roles(preview)
+        and decision.get("confirm_transaction") != transaction_hash
+    )
     display_decision = {
         "experiment": int(pending["experiment"]),
         "continue_from": working_name,

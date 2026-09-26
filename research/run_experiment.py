@@ -555,7 +555,9 @@ def check_analysis_deliverable() -> int:
                 raise ValueError("evaluation request references the wrong experiment")
             saved_lineage_ids = protocol.saved_lineage_identifiers(state)
             protocol.validate_evaluation_request(
-                request, saved_lineage_ids=saved_lineage_ids
+                request,
+                saved_lineage_ids=saved_lineage_ids,
+                require_experiment_address=True,
             )
             protocol.validate_panel_independence(
                 request,
@@ -564,7 +566,10 @@ def check_analysis_deliverable() -> int:
             )
             available = protocol.available_evaluation_candidates(pending, state)
             requested, _ = protocol.planned_measurements(
-                request, available, saved_lineage_ids=saved_lineage_ids
+                request,
+                available,
+                saved_lineage_ids=saved_lineage_ids,
+                require_experiment_address=True,
             )
             resolved_models = protocol.resolved_measurement_models(request, available)
             protocol.validate_paired_comparison_plan(
@@ -692,14 +697,22 @@ def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> di
 
     The round keeps the request's question, reason and per-measurement
     selections so the order and purpose of successive requests survive closure
-    and can be recovered after an interruption.
+    and can be recovered after an interruption. It also records whether the
+    round addresses the experiment's expected observation or is exploratory, and
+    the frozen question-ledger identity it belongs to, so the completed round's
+    artifact references stay linked to the experiment's original question.
     """
     rounds = pending.setdefault("evaluation_rounds", [])
+    result = pending.get("result")
+    ledger = result.get("question_ledger") if isinstance(result, dict) else None
+    ledger_id = ledger.get("ledger_id") if isinstance(ledger, dict) else None
     record = {
         "round": len(rounds) + 1,
         "experiment": int(experiment),
         "question": str(request.get("question", "")),
         "reason": str(request.get("reason", "")),
+        "addresses": request.get("addresses"),
+        "ledger_id": ledger_id,
         "measurements": [
             dict(entry)
             for entry in request.get("measurements") or []
@@ -823,10 +836,12 @@ def execute_pending_evaluations() -> int:
     saved_lineage_ids = protocol.saved_lineage_identifiers(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        analysis_request = is_v4 and not preparation
         protocol.validate_evaluation_request(
             request,
             allow_legacy_need_more_evidence=not is_v4,
             saved_lineage_ids=saved_lineage_ids,
+            require_experiment_address=analysis_request,
         )
         if is_v4:
             protocol.validate_panel_independence(
@@ -868,6 +883,7 @@ def execute_pending_evaluations() -> int:
             )
         ),
         saved_lineage_ids=saved_lineage_ids,
+        require_experiment_address=is_v4 and not preparation,
     )
     resolved_models = (
         protocol.resolved_measurement_models(request, available) if is_v4 else {}
@@ -900,6 +916,16 @@ def execute_pending_evaluations() -> int:
         )
     active_round: dict | None = None
     if paths.EVALUATION_REQUEST_PATH.exists() and not accepted_v4_plan:
+        if is_v4 and not preparation:
+            revision = request.get("question_revision")
+            if revision is not None:
+                result = pending.get("result")
+                ledger = (
+                    result.get("question_ledger") if isinstance(result, dict) else None
+                )
+                if not isinstance(ledger, dict):
+                    raise ValueError("there is no experiment question ledger to revise")
+                protocol.apply_question_revision(ledger, revision)
         pending["evaluation_plan"] = request
         if is_v4:
             pending["evaluation_plan_models"] = resolved_models
@@ -1554,6 +1580,14 @@ def apply_pending_v4_closure(state: dict) -> bool:
         )
         if plan.get("hypothesis_assessment") is not None:
             result["hypothesis_assessment"] = plan["hypothesis_assessment"]
+        ledger = result.get("question_ledger")
+        if isinstance(ledger, dict):
+            disposition = protocol.expected_observation_disposition(
+                int(pending["experiment"]),
+                campaign_id=repository.current_campaign_id(state),
+            )
+            if disposition is not None:
+                ledger["disposition"] = disposition
         repository.upsert_result(result)
         state["pending_analysis"] = None
     else:
@@ -1667,9 +1701,7 @@ def provisional_campaign_conclusion_record(plan: dict, state: dict) -> dict:
     """
     action = plan["action"]
     best_known = (
-        state.get("best_known_lineage")
-        if action == "request_final_benchmark"
-        else None
+        state.get("best_known_lineage") if action == "request_final_benchmark" else None
     )
     if not isinstance(best_known, dict):
         best_known = None
@@ -2134,6 +2166,16 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             campaign_id,
         )
     result["proposal_snapshot"] = copy.deepcopy(proposal)
+    # Freeze the experiment's question, expected observation and cited motivation
+    # as one persistent ledger, identified by the proposal itself, before any
+    # training or measurement can revise what the experiment was intended to test.
+    result["question_ledger"] = protocol.question_ledger(
+        proposal,
+        index,
+        _canonical_fingerprint(
+            {"campaign_id": campaign_id, "experiment": index, "proposal": proposal}
+        ),
+    )
     try:
         existing_operation = state.get("pending_training_operation")
         if isinstance(existing_operation, dict):
