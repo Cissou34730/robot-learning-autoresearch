@@ -8,13 +8,22 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 11
+JOINT_LIMIT_RADIANS = np.deg2rad(170.0)
+OBSERVATION_SIZE = 13
+
+
+def wrap_to_pi(angle: float) -> float:
+    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+
+def branch_limit_margin(shoulder: float, elbow: float) -> float:
+    """Return the normalized signed margin of an IK branch to joint limits."""
+    shoulder_margin = JOINT_LIMIT_RADIANS - abs(wrap_to_pi(shoulder))
+    elbow_margin = JOINT_LIMIT_RADIANS - abs(wrap_to_pi(elbow))
+    return float(min(shoulder_margin, elbow_margin) / JOINT_LIMIT_RADIANS)
 
 
 def reach_observation(data) -> np.ndarray:
-    def wrap_to_pi(angle: float) -> float:
-        return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
-
     def shoulder_for_elbow(elbow: float) -> float:
         return float(
             np.arctan2(target_y, target_x)
@@ -44,6 +53,10 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
+            ],
+            [
+                branch_limit_margin(shoulder_open, elbow_open),
+                branch_limit_margin(shoulder_folded, elbow_folded),
             ],
         ]
     ).astype(np.float32)
