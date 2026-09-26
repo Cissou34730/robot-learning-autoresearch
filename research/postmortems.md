@@ -53,7 +53,16 @@ episodes, including broad no-entry outcomes and failures outside that sector.
 The paired replication comparisons were 0 versus 102 discordant wins against
 each mature lineage. These observations separate the mature narrow failure
 sector from the replication's broad collapse, but the current evaluator did
-not record enough physical control telemetry to identify its mechanism.
+not record event-level physical telemetry to identify its mechanism. The
+subsequent telemetry panel measured 195/200 for working, 194/200 for temporal
+slew, and 108/200 for the replication. Every mature failure had a branch
+proximity transition and a branch margin below 0.2, but branch transitions also
+occurred in 65/195 working successes and 74/194 temporal-slew successes.
+Working failures all had more than 400 saturated steps, whereas only two of six
+temporal-slew failures did; this makes saturation an inconsistent signature
+across mature policies rather than a common cause. The replication remained
+broadly impaired, with 92 failures and no corresponding mature-like
+concentration.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
@@ -72,9 +81,9 @@ remaining failures from the broad optimization or representation failure seen
 in fresh experiment 11. This matters because improving the narrow failure
 sector is useful only if the learned controller preserves complete
 reach-and-hold behavior across the full target distribution. The inquiry would
-be redirected by paired physical telemetry that separates branch proximity,
-Jacobian conditioning, approach speed, saturation, and hold instability in the
-mature failures from the broad replication failures. It would end only by a
+be redirected by event-level evidence showing whether branch switches occur
+near tolerance, under poor local conditioning, or with a distinct velocity and
+action signature in failures versus successful switches. It would end only by a
 policy that reliably reaches the 196/200 objective under the official
 assessment; the current measurements establish neither.
 
@@ -247,7 +256,10 @@ next step, but leaves configuration-dependent control, branch-transition
 dynamics, conditioning, and saturation as competing explanations. Retaining
 the two measured challengers preserves a sharply negative representation
 control for later mechanism comparisons without treating it as a viable
-training parent.
+training parent. It remains unknown whether the branch transition itself is
+destabilizing, whether it is only a marker of a near-singular path, and whether
+the mature policies' different saturation patterns reflect distinct routes to
+the same failure.
 
 **Evidence inspected:** `research/brief.md`;
 `research/research_state.json`;
