@@ -2,11 +2,11 @@
 
 ## ec8a0728-5e76-46b3-b705-73b0aa542d7b / Scientific strategy
 
-**Current synthesis:** The baseline learned the reach-and-hold behavior substantially, but the best disjoint research-panel result is 94.5%, below the human objective of 98%. The training-success peak at checkpoint-100352 was the strongest measured candidate, while the late-transition and final checkpoints were close but not better. The fixed task-reference results are consistent with useful behavior but are reused development evidence, not independent confirmation or an official result.
+**Current synthesis:** The baseline learned most of the reach-and-hold behavior, but the strongest disjoint development result is 94.5%, below the 98% objective. Checkpoint-100352 is the best available policy, while nearby late-run checkpoints are comparable rather than clearly superior. The protected reference result is useful development evidence but is reused and not an official assessment.
 
-**Lessons and limits:** Late training proxies identified a useful region but did not establish objective-level performance: checkpoint-100352 achieved 189/200 on episodes 4400-4599, checkpoint-95232 achieved 188/200, and checkpoint-120832 achieved 187/200. The first research panel also measured checkpoint-95232 at 151/160 and checkpoint-120832 at 151/160, but those selections cannot be treated as independent confirmation. The evidence supports preserving the late-run policies while leaving a material performance gap unresolved.
+**Lessons and limits:** The disjoint panel measured checkpoint-100352 at 189/200, checkpoint-95232 at 188/200, and checkpoint-120832 at 187/200; earlier measurements of the latter two were on reused episodes. The reference panel measured checkpoint-120832 at 97%, with failures concentrated toward inner targets, but that panel cannot establish independent or official performance. The evidence leaves both target-coverage effects and residual hold/reach failures uncertain.
 
-**Open questions:** The cause of the remaining failures and the intervention needed to close the gap to 98% remain unresolved. Further training or a changed learning recipe should be evaluated as a later experiment rather than inferred from these development measurements.
+**Open questions:** It remains unresolved whether exposure to the full official target-radius range improves inner-target robustness without degrading outer-target behavior, and whether that can close the remaining gap to 98%.
 
 ## ec8a0728-5e76-46b3-b705-73b0aa542d7b / Experiment 1
 
