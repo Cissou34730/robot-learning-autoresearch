@@ -2,27 +2,26 @@
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Scientific strategy
 
-**Current synthesis:** The fresh PPO baseline learned useful reach-and-hold
-behavior but remains below the 98% human objective. Continuing checkpoint-95232
-with full 6-20 cm target-radius training produced checkpoint-105472 at 307/320
-(95.94%) across two disjoint research panels, versus 304/320 (95.00%) for the
-same-panel parent control. The candidate's 98.125% first-panel result was used
-to select it and is not independent confirmation; its disjoint confirmation was
-93.75%, with a paired advantage of 3 wins over 320 episodes.
+**Current synthesis:** PPO learned useful reach-and-hold behavior but remains
+below the 98% human objective. Full 6-20 cm target-radius transfer produced
+checkpoint-105472 at 307/320 (95.94%) across two disjoint research panels,
+versus 304/320 (95.00%) for the same-panel parent control. Its 98.125%
+selection-panel result was not independent confirmation; the disjoint panel
+was 93.75%.
 
-**Lessons and limits:** Expanding radius coverage is partially supported as a
-useful intervention, but the gain is modest and no development measurement
-establishes the 98% objective. The final full-range checkpoint measured 153/160
-on the first panel, so later training did not clearly preserve the best
-behavior. Training reward and training success remain unreliable policy
-rankings, and the fixed task-reference panel is reused development evidence
-rather than independent confirmation. The selected full-range candidate is the
-best measured current representative, but its official result is unknown.
+**Lessons and limits:** Full-radius training is supported as a modest
+improvement, not as a solution. The selected checkpoint outperformed the
+parent, while the later checkpoint-120832 fell to 153/160 on the first panel,
+so optimization was not monotonic. Training reward and training success do not
+reliably rank policies, the task-reference panel is reused development
+evidence, and the official result remains unknown. Detailed failures include
+both episodes that never entered the hold and occasional long hold
+interruptions.
 
-**Open questions:** Whether the modest full-range improvement persists on the
-official 200-episode panel and whether further training can reduce the
-remaining failures are unresolved. The residual failure distribution and the
-official benchmark result for the selected policy are also unknown.
+**Open questions:** Whether the selected policy can retain or improve its
+measured peak under gentler continued optimization remains unresolved. The
+official benchmark result and the relative contribution of reach versus hold
+failures also remain unknown.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
