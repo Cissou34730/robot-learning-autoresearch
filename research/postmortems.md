@@ -13,7 +13,8 @@ available policy and is the best-known designation selected at closure. The
 remaining failures are concentrated in a negative-angle sector, but span both
 short and long radii and include both no-entry and hold-loss outcomes. Radius
 coverage alone is therefore not a sufficient explanation for the persistent
-failures.
+failures. The evaluator has now been instrumented to retain post-control
+trajectories for the next saved-lineage measurement.
 
 **Lessons and limits:** The action-cost change did not remove the shared
 16.37 cm, -142.2 degree no-entry trajectory, which used saturated action on 499
@@ -25,7 +26,9 @@ angles from -125.3 to -145.4 degrees, so they are not confined to the
 previously unsupported short-radius interval. These are paired deterministic
 observations on one new panel, not population estimates, and the evaluator
 does not expose joint/action trajectories. The pooled development result
-remains below the objective, so no official assessment is justified.
+remains below the objective, so no official assessment is justified. The new
+instrumentation changes what the next measurement can observe but supplies no
+evidence until that measurement is executed.
 
 **Competing explanations:** Training-distribution mismatch is weakened as a
 sufficient cause because exposing the policy to 6-20 cm targets did not change
@@ -50,7 +53,9 @@ sector-specific reach failure with consistent posture or branch divergence
 would support a kinematic or representation mechanism; entry followed by
 high-velocity exits without such divergence would redirect toward sampled
 stabilization. Until that evidence exists, the current policy is useful as a
-reference but not a demonstrated solution.
+reference but not a demonstrated solution. The next measurement must use the
+new trajectory evidence on a fresh panel, comparing the selected working lineage
+with the retained late-training alternative before any intervention is chosen.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
