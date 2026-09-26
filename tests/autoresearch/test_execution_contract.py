@@ -2223,6 +2223,49 @@ def test_proposal_preflight_rejects_training_without_an_anchored_parent(
     assert state_path.read_bytes() == original_state
 
 
+def test_begin_hypothesis_restores_a_lost_anchor_without_replacing_the_inquiry(
+    monkeypatch, tmp_path
+):
+    from research import run_experiment
+
+    state_path = tmp_path / "research_state.json"
+    proposal_path = tmp_path / "proposal.json"
+    state = repository.empty_v4_campaign_state(
+        campaign={
+            "id": "campaign",
+            "started_at": "now",
+            "base_commit": "base",
+        },
+        last_verdict="closed experiment",
+    )
+    state["active_inquiry"] = {"id": 3, "status": "active"}
+    state["campaign_inquiry_counters"]["campaign"] = 3
+    state["last_allocated_inquiry"] = 3
+    state["principal_investigator_session"] = {
+        "id": "pi-session",
+        "campaign_id": "campaign",
+        "role": "principal_investigator",
+        "status": "started",
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    proposal_path.write_text(json.dumps(_training_proposal()), encoding="utf-8")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr(
+        "research.runner_repository.reanchor_scientific_parent",
+        lambda current: current.update(pending_scientific_parent="new-head")
+        or "new-head",
+    )
+
+    assert run_experiment.begin_hypothesis_phase() == 0
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["pending_scientific_parent"] == "new-head"
+    assert persisted["active_inquiry"] == {"id": 3, "status": "active"}
+    assert persisted["principal_investigator_session"]["id"] == "pi-session"
+    assert json.loads(proposal_path.read_text(encoding="utf-8")) == _training_proposal()
+
+
 def test_proposal_preflight_rejects_protected_scenario_initializer_without_execution(
     monkeypatch, tmp_path, capsys, scientific_memory
 ):

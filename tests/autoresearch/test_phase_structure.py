@@ -105,6 +105,41 @@ def test_principal_investigator_session_is_campaign_persistent():
     )
 
 
+def test_principal_investigator_deliverables_restore_the_phase_anchor_before_validation():
+    phase = SCRIPT.split(
+        'Write-Status "=== Principal investigator advancing the active inquiry ==="',
+        1,
+    )[1]
+    first_session = phase.index(
+        "Invoke-ResearcherSession -Prompt $researchPrompt "
+        '-Phase "principal investigator"'
+    )
+    first_reanchor = phase.index(
+        "Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached",
+        first_session,
+    )
+    first_validation = phase.index(
+        'Get-ProposalSessionStatus "principal investigator" 1',
+        first_session,
+    )
+    retry_session = phase.index(
+        "Invoke-ResearcherSession -Prompt $retryPrompt "
+        '-Phase "principal investigator"',
+        first_validation,
+    )
+    retry_reanchor = phase.index(
+        "Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached",
+        retry_session,
+    )
+    retry_validation = phase.index(
+        'Get-ProposalSessionStatus "principal investigator" 2',
+        retry_session,
+    )
+
+    assert first_session < first_reanchor < first_validation
+    assert retry_session < retry_reanchor < retry_validation
+
+
 def test_principal_investigator_identity_is_allocated_once():
     state = {
         "campaign": {

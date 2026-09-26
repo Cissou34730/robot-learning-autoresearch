@@ -233,6 +233,23 @@ function Invoke-Runner {
         -ArgumentList $runnerArguments -Operation "research runner"
 }
 
+function Invoke-HypothesisAnchor {
+    param([switch]$ConclusionOnly)
+
+    $arguments = @("--begin-hypothesis")
+    if ($ConclusionOnly) {
+        $arguments += "--conclusion-only"
+    }
+    $exitCode = Invoke-Runner -Arguments $arguments
+    if (Test-StopAfterOperation $exitCode "research runner") {
+        return 130
+    }
+    if ($exitCode -ne 0) {
+        throw "Could not establish the scientific parent of the next experiment."
+    }
+    return 0
+}
+
 function Test-StopAfterOperation {
     param(
         [AllowNull()][Nullable[int]]$ExitCode,
@@ -1248,17 +1265,9 @@ The final output should be a compact but substantive **Scientific model of the r
 
     # Anchor the rollback baseline before the researcher can change or commit
     # science. An unfinished experiment keeps the anchor it already established.
-    if ($budgetReached) {
-        $runnerExitCode = Invoke-Runner -Arguments @("--begin-hypothesis", "--conclusion-only")
-    }
-    else {
-        $runnerExitCode = Invoke-Runner -Arguments @("--begin-hypothesis")
-    }
-    if (Test-StopAfterOperation $runnerExitCode "research runner") {
+    $runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached
+    if ($runnerExitCode -eq 130) {
         break
-    }
-    if ($runnerExitCode -ne 0) {
-        throw "Could not establish the scientific parent of the next experiment."
     }
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
 
@@ -1343,6 +1352,10 @@ The final output should be a compact but substantive **Scientific model of the r
     if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
         break
     }
+    $runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached
+    if ($runnerExitCode -eq 130) {
+        break
+    }
 
     $resultCountAfter = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     if ($resultCountAfter -gt $resultCountBefore) {
@@ -1377,6 +1390,10 @@ The final output should be a compact but substantive **Scientific model of the r
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "principal investigator" -Experiment 0 -SessionId $piSession.id -Continue
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
+            break CampaignLoop
+        }
+        $runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached
+        if ($runnerExitCode -eq 130) {
             break CampaignLoop
         }
 
