@@ -12,7 +12,10 @@ checkpoints achieved only 33/200, while the saved temporal-slew parent achieved
 196/200 on the identical disjoint panel. On the subsequent fresh panel,
 working and the saved temporal-slew parent both achieved 194/200; the temporal
 slew parent then achieved 194/200 on the protected panel versus 196/200 for
-working.
+working. Experiment 11's fresh unchanged-PPO replication did not escape this
+uncertain near-objective regime: its best measured checkpoint achieved 106/200
+on the new research panel and 105/200 on the protected panel, and later
+checkpoints fell to 83/200 and 80/200 on the research panel.
 
 **Lessons and limits:** Each experiment-10 continuation checkpoint lost 163
 paired episodes to the saved temporal-slew parent and won none; the two
@@ -31,31 +34,37 @@ solutions. The fresh paired round found the same six failure identities for
 both working and temporal slew, but temporal slew changed three working
 incomplete-hold outcomes into no-entry outcomes; its pooled five-versus-one
 paired edge is not reproduced as a fresh-panel success advantage. No development
-panel establishes the official objective.
+panel establishes the official objective. Experiment 11 is a stronger negative
+result for learning-trajectory variance: the three measured replication
+checkpoints scored 53.0%, 41.5%, and 40.0% on one disjoint research panel and
+52.5%, 41.0%, and 42.0% on the protected panel. The early checkpoint beat the
+two later checkpoints by 24--1 and 26--0 discordant paired outcomes, while the
+later pair differed only 8--5. All research-panel failures truncated at 500
+steps, but the available replication artifacts do not identify whether the
+broad collapse is caused by branch selection, conditioning, stabilization,
+optimization, or an interaction among them.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
 a branch-transition policy error, poor local conditioning, insufficient
 stabilization, or an interaction among them. It remains unresolved whether the
 saved temporal-slew parent's pooled paired edge is useful beyond its original
-trajectory. More importantly, the campaign has not tested whether a fresh run
-of the unchanged baseline recipe can escape the same failure basin; all
-near-objective policies so far come from a small number of learning
-trajectories. The available evidence also does not establish which
-intervention can improve the failure sector without degrading broad
-reach-and-hold behavior.
+trajectory, or whether the broad fresh-replication collapse shares a physical
+mechanism with the narrow failures of the working policy. The available
+evidence still does not establish which intervention can improve the failure
+sector without degrading broad reach-and-hold behavior, nor why the
+training-success proxy can rise while complete-task success falls.
 
-**Active inquiry:** The temporal-slew continuation branch is closed because
-paired evidence showed catastrophic broad regression, and its saved parent did
-not outperform working on either complete fresh-panel success or the protected
-panel. The next discriminating question is whether unchanged PPO training
-itself can produce a different mature failure set or a policy at the 196/200
-threshold. A fresh replication that reaches the threshold with changed
-failure identities would justify retaining that lineage for protected
-confirmation; a near-97% result with the same negative-angle basin would
-strengthen the case that the baseline recipe has a stable limitation and that
-future intervention must target a measured mechanism. The current evidence
-still does not identify the physical cause.
+**Active inquiry:** The campaign now needs to distinguish the stable,
+configuration-dependent control interaction underlying the working policy's
+remaining failures from the broad optimization or representation failure seen
+in fresh experiment 11. This matters because improving the narrow failure
+sector is useful only if the learned controller preserves complete
+reach-and-hold behavior across the full target distribution. The inquiry would
+be redirected by stage-resolved evidence that isolates a causal branch,
+conditioning, approach, or hold mechanism, and ended only by a policy that
+reliably reaches the 196/200 objective under the official assessment; the
+current measurements establish neither.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -498,3 +507,54 @@ question. No official objective attainment is claimed.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-10-checkpoint-115712-200ep-seed36000-9db8746df90e.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-10-checkpoint-120832-200ep-seed36000-9db8746df90e.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-10-e6-temporal-slew-120832-200ep-seed36000-9db8746df90e.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 11
+
+**Result:** A fresh replication of the unchanged PPO recipe did not escape the
+near-objective basin and instead produced a broad regression. The
+100352-step checkpoint achieved 106/200 (53.0%) on research episodes
+38000--38199 and 105/200 (52.5%) on the protected task-reference panel.
+The 110592-step and 120832-step checkpoints achieved 83/200 and 80/200 on the
+research panel, and 82/200 and 84/200 on the protected panel. The established
+working lineage remains selected and best-known; no experiment-11 checkpoint
+displaces it.
+
+**Observed behavior:** The checkpoints were compared on identical research
+episodes. The 100352-step checkpoint beat 110592 by 24--1 discordant outcomes
+and beat 120832 by 26--0; the two later checkpoints differed by 8--5. Every
+research-panel failure truncated at the 500-step episode limit. Complete-task
+success therefore degraded substantially with continued training even though
+the training-success proxy rose from 0.48 at 100352 steps to 0.64 at the two
+later checkpoints. The protected-panel outcomes reproduce the broad
+regression, while the available artifacts do not provide enough stage-resolved
+telemetry to attribute it to a single physical mechanism.
+
+**Hypothesis assessment:** The hypothesis that unchanged PPO learning
+trajectory variance could produce a mature policy at or above 196/200 is
+contradicted for this fresh seed and measured checkpoints. The result weakens
+learning-process variance as a sufficient escape from the current limitation,
+but it does not prove that every unchanged-PPO run shares this collapse or
+identify whether optimization, policy representation, branch transition,
+conditioning, or stabilization caused it. The result also does not establish
+that later training universally degrades complete behavior; that conclusion is
+limited to this trajectory.
+
+**Interpretation:** The fresh replication is a useful negative control rather
+than a candidate policy. Its broad failure and late degradation show that the
+training proxy is not a reliable substitute for complete reach-and-hold
+measurement. Restoring the working recipe preserves the only repeatedly
+supported broad behavior while leaving the physical cause unresolved. The
+100352-step and 120832-step replication checkpoints are retained as early and
+late controls for future mechanism comparisons; no official objective
+attainment is claimed.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-11/inventory.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-100352-200ep-seed38000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-110592-200ep-seed38000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-120832-200ep-seed38000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-100352-task-reference-v1.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-110592-task-reference-v1.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-120832-task-reference-v1.json`.
