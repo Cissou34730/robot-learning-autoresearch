@@ -15,6 +15,7 @@ import time
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
+from robot_learning.training.checkpoint_coordinates import coordinates_from_record
 
 # Detailed evidence belongs to the evaluation artifact, not to the compact
 # history or the protocol state.
@@ -1564,11 +1565,13 @@ def archive_candidates(
         name = contender["name"]
         artifact = destination / name
         copy_artifact(contender["path"], artifact)
+        coordinates = coordinates_from_record(contender, experiment=index)
         archived.append(
             {
                 "name": name,
                 "artifact": repo_relative_path(artifact),
                 "timesteps": int(contender["timesteps"]),
+                **coordinates,
                 "training_success": contender.get("training_success"),
                 "ep_rew_mean": contender.get("ep_rew_mean"),
                 "evaluations": [],

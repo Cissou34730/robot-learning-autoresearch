@@ -24,6 +24,7 @@ from research.runner_repository import (
     compact_measurement_summary,
     evaluation_semantics_domain,
 )
+from robot_learning.training.checkpoint_coordinates import coordinates_from_record
 from robot_learning.training.progress import parse_training_records
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -549,6 +550,30 @@ def _candidate_steps(candidate: dict) -> str:
     return "-" if timesteps is None else f"{int(timesteps):,}"
 
 
+def _candidate_coordinates(candidate: dict) -> dict:
+    """The candidate's canonical coordinate, translated from legacy fields."""
+    return coordinates_from_record(candidate)
+
+
+def _candidate_identifier(candidate: dict) -> str:
+    coordinates = _candidate_coordinates(candidate)
+    return str(coordinates.get("identifier") or candidate.get("name", "-"))
+
+
+def _candidate_label(candidate: dict) -> str:
+    """The canonical checkpoint identity, with the legacy name as a reference."""
+    identifier = _candidate_identifier(candidate)
+    name = candidate.get("name")
+    if name and str(name) != identifier:
+        return f"`{identifier}` (`{name}`)"
+    return f"`{identifier}`"
+
+
+def _coordinate_value(candidate: dict, key: str) -> str:
+    value = _candidate_coordinates(candidate).get(key)
+    return "-" if value is None else f"{int(value):,}"
+
+
 def _steps_value(candidate: dict) -> int | None:
     value = candidate.get("timesteps")
     try:
@@ -873,11 +898,11 @@ def _checkpoint_inventory_lines(
         ),
         "",
         (
-            "| Candidate | Steps | Training success | Training reward | "
-            "Measurements | Run position | Success location and shape | "
-            "Reward location and shape | Weights if no role |"
+            "| Candidate | Run steps | Accumulated steps | Training success | "
+            "Training reward | Measurements | Run position | Success location and "
+            "shape | Reward location and shape | Weights if no role |"
         ),
-        "|---|---:|---:|---:|---:|---:|---|---|---|",
+        "|---|---:|---:|---:|---:|---:|---:|---|---|---|",
     ]
     series = _raw_training_series(campaign_id, experiment)
     discriminators = _candidate_discriminator_cells(candidates, series)
@@ -886,7 +911,9 @@ def _checkpoint_inventory_lines(
             id(candidate), ("-", "raw log unavailable", "raw log unavailable")
         )
         lines.append(
-            f"| `{candidate.get('name', '-')}` | {_candidate_steps(candidate)} | "
+            f"| {_candidate_label(candidate)} | "
+            f"{_coordinate_value(candidate, 'run_steps')} | "
+            f"{_coordinate_value(candidate, 'accumulated_steps')} | "
             f"{_candidate_metric(candidate, 'training_success')} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
             f"{len(candidate.get('evaluations') or [])} | "
@@ -1122,11 +1149,22 @@ def _authoritative_lineage_lines(
         else "not recorded"
     )
     parameters = lineage.get("parameters")
+    coordinates = _candidate_coordinates(lineage)
+    run_steps = coordinates.get("run_steps")
+    accumulated_steps = coordinates.get("accumulated_steps")
     return [
         f"- `{identifier}`",
+        f"  - Checkpoint: {_recorded_value(coordinates.get('identifier'))}",
         f"  - Candidate: {_recorded_value(lineage.get('candidate'))}",
         f"  - Origin experiment: {_recorded_value(lineage.get('origin_experiment'))}",
-        f"  - Accumulated training steps: {_recorded_value(lineage.get('training_steps'))}",
+        "  - Run steps: "
+        + (f"{int(run_steps):,}" if run_steps is not None else "not recorded"),
+        "  - Accumulated steps: "
+        + (
+            f"{int(accumulated_steps):,}"
+            if accumulated_steps is not None
+            else _recorded_value(lineage.get("training_steps"))
+        ),
         f"  - Artifact: {_recorded_path(lineage.get('artifact'))}",
         f"  - Model fingerprint: {_recorded_value(lineage.get('fingerprint'))}",
         f"  - Scientific commit: {_recorded_value(lineage.get('scientific_commit'))}",
@@ -2979,8 +3017,11 @@ def render_research_brief() -> str:
             ),
             f"Available candidates ({len(pending_evaluation['candidates'])}):",
             "",
-            "| Candidate | Steps | Training success | Training reward | Artifact |",
-            "|---|---:|---:|---:|---|",
+            (
+                "| Checkpoint | Candidate | Run steps | Accumulated steps | "
+                "Training success | Training reward | Artifact |"
+            ),
+            "|---|---|---:|---:|---:|---:|---|",
         ]
         for candidate in candidate_display_order(
             pending_evaluation["candidates"],
@@ -2988,7 +3029,9 @@ def render_research_brief() -> str:
             experiment=pending_evaluation.get("experiment"),
         ):
             evaluation_lines.append(
-                f"| `{candidate['name']}` | {int(candidate['timesteps']):,} | "
+                f"| `{_candidate_identifier(candidate)}` | `{candidate['name']}` | "
+                f"{_coordinate_value(candidate, 'run_steps')} | "
+                f"{_coordinate_value(candidate, 'accumulated_steps')} | "
                 f"{_candidate_metric(candidate, 'training_success')} | "
                 f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
                 f"{_existing_artifact_reference(candidate.get('artifact'), kind='checkpoint')} |"

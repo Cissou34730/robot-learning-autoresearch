@@ -13,6 +13,10 @@ from pathlib import Path
 from research import runner_console as console
 from research import runner_paths as paths
 from research import runner_repository as repository
+from robot_learning.training.checkpoint_coordinates import (
+    canonical_coordinates,
+    coordinates_from_record,
+)
 
 # Human-owned for the duration of this research problem: the enforcement
 # mechanism, every file that can declare the objective reached, the human-owned
@@ -517,6 +521,34 @@ def lineage_role(state: dict, identifier: str) -> dict | None:
             "evaluation_artifacts": state.get("accepted_evaluations", []),
         }
     return None
+
+
+def source_checkpoint_coordinates(source: dict, pending: dict) -> dict:
+    """The canonical coordinates of a current candidate or saved lineage.
+
+    A current candidate's accumulated steps are its parent's accumulated steps
+    plus its own run; a saved lineage already carries its coordinates (or is
+    translated from the legacy naming).
+    """
+    if not source.get("_current_candidate"):
+        return coordinates_from_record(source)
+    checkpoint_steps = int(source.get("timesteps", source.get("training_steps", 0)))
+    parent_lineage = pending.get("training_parent_lineage")
+    return canonical_coordinates(
+        int(pending["experiment"]),
+        checkpoint_steps,
+        parent_accumulated_steps=(
+            int(pending.get("parent_training_steps", 0))
+            if pending.get("initialization") == "transfer"
+            else 0
+        ),
+        parent_lineage=lineage_identity(parent_lineage),
+        parent_fingerprint=(
+            parent_lineage.get("fingerprint")
+            if isinstance(parent_lineage, dict)
+            else None
+        ),
+    )
 
 
 def training_parent(
@@ -1558,10 +1590,12 @@ def planned_measurements(
                     f"omitted_alternative {omitted_alternative!r} is also measured "
                     "in this request"
                 )
+        identifier = available[name].get("identifier")
         if spec["instrument"] == "research_evaluation":
             evaluations.append(
                 {
                     "candidate": name,
+                    "identifier": identifier,
                     "episodes": spec["episodes"],
                     "seed": spec["seed"],
                     "selection": spec["selection"].strip(),
@@ -1575,6 +1609,7 @@ def planned_measurements(
             references.append(
                 {
                     "candidate": name,
+                    "identifier": identifier,
                     "selection": spec["selection"].strip(),
                     "omitted_alternative": omitted_alternative,
                     "label": spec.get(
@@ -1612,6 +1647,7 @@ def resolved_measurement_models(request: dict, available: dict) -> dict[str, dic
         resolved[name] = {
             "artifact": repository.repo_relative_path(artifact),
             "fingerprint": repository.artifact_fingerprint(artifact),
+            **coordinates_from_record(contender),
         }
     return resolved
 
@@ -1740,12 +1776,19 @@ def evaluation_artifact_name(
     seed: int,
     semantics: str,
     campaign_id: str | None = None,
+    identifier: str | None = None,
 ) -> str:
     """One stable file per measured panel, so repeated rounds never collide.
 
     When campaign_id is provided, includes it in the filename to isolate
-    artifacts per campaign.
+    artifacts per campaign. When the model's canonical coordinate identifier is
+    known, the filename carries that representation as its primary label; a
+    legacy model without coordinates keeps the older candidate-named file.
     """
+    if identifier:
+        label = re.sub(r"[^A-Za-z0-9._-]+", "-", identifier).strip("-") or "candidate"
+        prefix = f"evaluation-{campaign_id}-" if campaign_id else "evaluation-"
+        return f"{prefix}{label}-{episodes}ep-seed{seed}-{semantics}.json"
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
     if campaign_id:
         return (
@@ -1759,13 +1802,22 @@ def evaluation_artifact_name(
 
 
 def task_reference_artifact_name(
-    experiment: int, candidate: str, panel: str, campaign_id: str | None = None
+    experiment: int,
+    candidate: str,
+    panel: str,
+    campaign_id: str | None = None,
+    identifier: str | None = None,
 ) -> str:
     """Task-reference identity is the model and the human-owned panel, nothing else.
 
     When campaign_id is provided, includes it in the filename to isolate
-    artifacts per campaign.
+    artifacts per campaign. The model is named by its canonical coordinate
+    identifier when one is known.
     """
+    if identifier:
+        label = re.sub(r"[^A-Za-z0-9._-]+", "-", identifier).strip("-") or "candidate"
+        prefix = f"task-reference-{campaign_id}-" if campaign_id else "task-reference-"
+        return f"{prefix}{label}-{panel}.json"
     label = re.sub(r"[^A-Za-z0-9._-]+", "-", candidate).strip("-") or "candidate"
     if campaign_id:
         return (
@@ -2185,7 +2237,10 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
     extra = set(decision) - allowed
     if extra:
         raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
-    sources = {item["name"]: item for item in pending["candidates"]}
+    sources = {
+        item["name"]: {**item, "_current_candidate": True}
+        for item in pending["candidates"]
+    }
     if pending.get("champion_available"):
         sources["champion"] = {
             "name": "champion",
@@ -2278,6 +2333,7 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
         repository.require_complete_artifact(
             source_artifact, f"retained lineage {identifier!r}"
         )
+        coordinates = source_checkpoint_coordinates(source, pending)
         campaign_id = repository.current_campaign_id(state)
         destination = paths.campaign_retained_root(campaign_id) / identifier
         if destination.exists():
@@ -2296,7 +2352,9 @@ def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
                     "candidate": candidate_name,
                     "reason": retention_reason,
                     "parameters": source.get("parameters", pending["parameters"]),
-                    "training_steps": int(source["timesteps"]),
+                    "training_steps": coordinates.get("accumulated_steps")
+                    or int(source.get("timesteps", source.get("training_steps", 0))),
+                    **coordinates,
                     "evaluation_artifacts": repository.evaluation_artifact_paths(
                         source.get("evaluations")
                     ),
@@ -2614,6 +2672,7 @@ def _lineage_role_snapshot(lineage: object, selector: object = None) -> dict | N
     """The immutable identity facts the transaction preview exposes for a role."""
     if not isinstance(lineage, dict):
         return None
+    coordinates = coordinates_from_record(lineage)
     return {
         "source": (
             str(selector.get("source")) if isinstance(selector, dict) else "recorded"
@@ -2627,7 +2686,10 @@ def _lineage_role_snapshot(lineage: object, selector: object = None) -> dict | N
         "fingerprint": lineage.get("fingerprint"),
         "origin_experiment": lineage.get("origin_experiment"),
         "candidate": lineage.get("candidate"),
-        "training_steps": lineage.get("training_steps"),
+        "training_steps": coordinates.get("accumulated_steps")
+        if coordinates.get("accumulated_steps") is not None
+        else lineage.get("training_steps"),
+        **coordinates,
         "parameters": lineage.get("parameters"),
         "scientific_commit": lineage.get("scientific_commit"),
         "evidence": sorted(lineage.get("evaluation_artifacts") or []),
@@ -2878,11 +2940,10 @@ def _v4_lineage_record(
 ) -> dict:
     current = bool(source.get("_current_candidate"))
     checkpoint_steps = int(source.get("timesteps", source.get("training_steps", 0)))
-    steps = (
-        int(pending.get("parent_training_steps", 0)) + checkpoint_steps
-        if current and pending.get("initialization") == "transfer"
-        else checkpoint_steps
-    )
+    coordinates = source_checkpoint_coordinates(source, pending)
+    steps = coordinates.get("accumulated_steps")
+    if steps is None:
+        steps = checkpoint_steps
     fingerprint = repository.artifact_fingerprint(artifact)
     return {
         "artifact": repository.repo_relative_path(artifact),
@@ -2899,6 +2960,7 @@ def _v4_lineage_record(
         "scientific_commit": source.get("scientific_commit")
         or pending.get("scientific_commit"),
         "training_steps": steps,
+        **coordinates,
         "evaluation_artifacts": repository.evaluation_artifact_paths(
             source.get("evaluations")
         )
@@ -3199,6 +3261,7 @@ def _resolved_paired_evidence_plan(
             measurement["seed"],
             semantics,
             campaign_id=campaign_id,
+            identifier=resolved_models[name].get("identifier"),
         )
         canonical_path = repository.repo_relative_path(path)
         planned_record = {

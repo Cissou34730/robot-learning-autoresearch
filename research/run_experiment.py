@@ -1038,6 +1038,11 @@ def execute_pending_evaluations() -> int:
                             candidate=name,
                             seed=seed,
                         ),
+                        **(
+                            {"identifier": contender.get("identifier")}
+                            if contender.get("identifier")
+                            else {}
+                        ),
                     }
                     if original is not None:
                         resolution.update(
@@ -1051,7 +1056,13 @@ def execute_pending_evaluations() -> int:
             eval_dir = paths.campaign_evaluation_dir(campaign_id)
             eval_dir.mkdir(parents=True, exist_ok=True)
             output_path = eval_dir / protocol.evaluation_artifact_name(
-                experiment, name, episodes, seed, semantics, campaign_id=campaign_id
+                experiment,
+                name,
+                episodes,
+                seed,
+                semantics,
+                campaign_id=campaign_id,
+                identifier=contender.get("identifier"),
             )
             try:
                 metrics = execution.evaluate_artifact(
@@ -1108,6 +1119,11 @@ def execute_pending_evaluations() -> int:
                         if is_v4
                         else {}
                     ),
+                    **(
+                        {"identifier": contender.get("identifier")}
+                        if contender.get("identifier")
+                        else {}
+                    ),
                 }
             )
             completed_keys.add(key)
@@ -1161,6 +1177,11 @@ def execute_pending_evaluations() -> int:
                             candidate=name,
                             panel=panel["panel"],
                         ),
+                        **(
+                            {"identifier": contender.get("identifier")}
+                            if contender.get("identifier")
+                            else {}
+                        ),
                     }
                     if original is not None:
                         resolution.update(dict(original))
@@ -1172,7 +1193,11 @@ def execute_pending_evaluations() -> int:
             eval_dir = paths.campaign_evaluation_dir(campaign_id)
             eval_dir.mkdir(parents=True, exist_ok=True)
             output_path = eval_dir / protocol.task_reference_artifact_name(
-                experiment, name, panel["panel"], campaign_id=campaign_id
+                experiment,
+                name,
+                panel["panel"],
+                campaign_id=campaign_id,
+                identifier=contender.get("identifier"),
             )
             try:
                 metrics = execution.evaluate_artifact(
@@ -2194,6 +2219,10 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         parent_training_steps = (
             int(parent["training_steps"]) if parent is not None else 0
         )
+        parent_lineage_identity = (
+            protocol.lineage_identity(parent) if parent is not None else ""
+        )
+        parent_fingerprint = parent.get("fingerprint") if parent is not None else None
         recipe_restored = (
             isinstance(operation, dict) and operation.get("recipe_restore") is not None
         )
@@ -2446,6 +2475,10 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                         ),
                         continue_timesteps=True,
                         target_timesteps=effective_timesteps,
+                        experiment=index,
+                        parent_accumulated_steps=int(parent_training_steps),
+                        parent_lineage=parent_lineage_identity,
+                        parent_fingerprint=parent_fingerprint,
                     )
         else:
             created_candidate_dirs.append(candidate_dir)
@@ -2456,6 +2489,10 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
                 resume,
                 active_training_log(),
                 label="baseline training" if baseline else "candidate training",
+                experiment=index,
+                parent_accumulated_steps=int(parent_training_steps),
+                parent_lineage=parent_lineage_identity,
+                parent_fingerprint=parent_fingerprint,
             )
         if operation is not None and not completed_candidate_available:
             operation["progress"] = "training_completed"

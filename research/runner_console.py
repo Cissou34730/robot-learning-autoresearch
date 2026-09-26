@@ -8,6 +8,8 @@ import sys
 import time
 from datetime import datetime
 
+from robot_learning.training.checkpoint_coordinates import coordinates_from_record
+
 _RESET = "\033[0m"
 _DIM = "\033[90m"
 _CYAN = "\033[1;96m"
@@ -246,14 +248,22 @@ def render_training_summary_card(
         [
             "",
             "Candidates",
-            "  Candidate | Steps | Training reward | Training success",
-            "  --- | ---: | ---: | ---:",
+            (
+                "  Candidate | Run steps | Accumulated steps | Training reward | "
+                "Training success"
+            ),
+            "  --- | ---: | ---: | ---: | ---:",
         ]
     )
     for candidate in sorted(candidates, key=lambda item: int(item["timesteps"])):
         training_success = scenario_progress_metric(candidate) or "success unavailable"
+        run_steps = candidate.get("run_steps", candidate.get("timesteps"))
+        accumulated_steps = candidate.get(
+            "accumulated_steps", candidate.get("timesteps")
+        )
         lines.append(
-            f"  {candidate['name']} | {int(candidate['timesteps']):,} | "
+            f"  {candidate.get('identifier') or candidate['name']} | "
+            f"{int(run_steps):,} | {int(accumulated_steps):,} | "
             f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
             f"{training_success.removeprefix('success ')}"
         )
@@ -498,13 +508,24 @@ def render_final_benchmark_card(
             if isinstance(evidence, list) and evidence
             else "not recorded"
         )
+        coordinates = coordinates_from_record(lineage)
+        run_steps = coordinates.get("run_steps")
+        accumulated_steps = coordinates.get("accumulated_steps")
         lines.extend(
             [
                 "",
                 "Frozen model",
+                f"  Checkpoint  : {coordinates.get('identifier') or 'not recorded'}",
                 f"  Candidate   : {lineage.get('candidate', 'not recorded')}",
                 f"  Origin exp  : {lineage.get('origin_experiment', 'not recorded')}",
-                f"  Train steps : {lineage.get('training_steps', 'not recorded')}",
+                "  Run steps   : "
+                + (f"{run_steps:,}" if run_steps is not None else "not recorded"),
+                "  Accumulated : "
+                + (
+                    f"{accumulated_steps:,}"
+                    if accumulated_steps is not None
+                    else "not recorded"
+                ),
                 f"  Commit      : {lineage.get('scientific_commit') or 'not recorded'}",
                 f"  Measurements: {measurements}",
             ]

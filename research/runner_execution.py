@@ -21,6 +21,7 @@ from pathlib import Path
 from research import runner_console as console
 from research import runner_paths as paths
 from research import runner_repository as repository
+from robot_learning.training.checkpoint_coordinates import coordinates_from_record
 from robot_learning.training.research_config import (
     RESEARCH_EVALUATION_EPISODES,
     RESEARCH_EVALUATION_SEED,
@@ -282,6 +283,10 @@ def train_candidate(
     label: str = "candidate training",
     continue_timesteps: bool = False,
     target_timesteps: int | None = None,
+    experiment: int | None = None,
+    parent_accumulated_steps: int = 0,
+    parent_lineage: str = "",
+    parent_fingerprint: str | None = None,
 ) -> float:
     from robot_learning.training.progress import latest_training_record
 
@@ -295,7 +300,15 @@ def train_candidate(
         str(seed),
         "--output-dir",
         str(output_dir),
+        "--parent-accumulated-steps",
+        str(parent_accumulated_steps),
+        "--parent-lineage",
+        parent_lineage,
     ]
+    if experiment is not None:
+        command.extend(["--experiment", str(experiment)])
+    if parent_fingerprint:
+        command.extend(["--parent-fingerprint", parent_fingerprint])
     if resume is not None:
         command.extend(["--resume", str(resume)])
     if continue_timesteps:
@@ -439,7 +452,17 @@ def candidate_directories(candidate_dir: Path) -> list[dict]:
                 raise RuntimeError(
                     f"candidate is incomplete: {candidate['path'] / filename}"
                 )
-    return candidates
+    return [with_checkpoint_coordinates(candidate) for candidate in candidates]
+
+
+def with_checkpoint_coordinates(candidate: dict) -> dict:
+    """Attach the canonical coordinate fields to a candidate description.
+
+    Explicit coordinate fields are preserved; a legacy description that only
+    carries ``timesteps`` is translated in place, without rewriting its file.
+    """
+    coordinates = coordinates_from_record(candidate)
+    return {**candidate, **coordinates}
 
 
 def copy_candidate_outputs(source: Path, destination: Path) -> None:
