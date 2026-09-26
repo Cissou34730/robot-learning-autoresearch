@@ -4,55 +4,46 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 2535/2600 across thirteen distinct research panels,
-including 198/200 on the experiment-8 comparison panel. Experiments 2--8 did
-not establish a reliable improvement over the working lineage. Experiment 8's
-fresh 15-value representation instead caused a broad regression: its measured
-reward-peak and final checkpoints achieved 110/200 and 109/200, respectively,
-against 198/200 for the parent.
+98% solution. It achieved 2729/2800 across fourteen distinct research panels,
+including 194/200 on the latest panel. Experiments 2--8 did not establish a
+reliable improvement over the working lineage. The latest paired telemetry
+round found 194/200 for the parent and 195/200 for both the headroom and slew
+controls; both controls rescued only the same parent failure and shared the
+other five.
 
-**Lessons and limits:** On the fresh 31000--31199 panel, the working policy
-failed six episodes and the headroom control failed the same six; the slew
-control failed five of those six and rescued one. Every failure switched the
-nearest inverse-kinematic branch and reached a very small Jacobian determinant,
-but branch switching also occurred in about 46% of successful episodes, so it
-is not sufficient as a causal explanation. Working failures were almost
-entirely no-entry failures with roughly 499 saturated steps and high action
-variation. Headroom removed saturation entirely without rescuing any shared
-failure. Slew reduced entry velocity and action variation but still failed to
-enter tolerance on the five shared targets. These paired observations weaken
-saturation, fixed command slew, and entry/hold speed as sufficient explanations;
-they support a configuration-dependent transition/conditioning interaction,
-while the telemetry remains associative rather than causal. Experiment 8 is a
-decisive negative result for the tested fresh observation recipe: both
-checkpoints failed broadly, commonly never entered tolerance, and frequently
-remained saturated for hundreds of steps; late training did not restore
-behavior. The paired result rejects the claim that these four explicit
-dynamics features are a safe or sufficient information remedy. Because the
-observation dimension, feature scaling/interactions, and fresh optimization
-trajectory changed together, it does not identify which feature or learning
-effect caused the regression. All results remain development measurements
-rather than the official objective.
+**Lessons and limits:** Every latest-panel failure switched the nearest
+inverse-kinematic branch and reached a small Jacobian determinant, but branch
+switching also occurred in about 51% of successful parent episodes, so it is
+not sufficient as a causal explanation. Parent failures remained saturated for
+about 499 steps, yet headroom produced zero saturated steps and shared all
+five recurring failures. Slew reduced command variation and entry speed, but
+its five failures never entered tolerance and were the same five. These paired
+observations weaken saturation removal, fixed command slew, and entry or hold
+speed as sufficient explanations; they support a configuration-dependent
+transition/conditioning interaction while remaining associative rather than
+causal. Experiment 8 remains a decisive negative result for the tested fresh
+15-value observation recipe. The direct targeted-exposure intervention from
+experiment 7 was never measured, so its effect remains unknown. All results
+remain development measurements rather than the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: a
 branch-transition policy error, poor local conditioning, insufficient
 stabilization, or an interaction among them. It remains unresolved whether
-targeted exposure has any direct benefit independent of representation, and
-which observation or optimization design could expose useful dynamics without
-destabilizing the learned controller.
+concentrated exposure to this transition sector can change the learned
+trajectory without sacrificing the rest of the target distribution, and which
+policy representation can do so without repeating experiment 8's regression.
 
-**Active inquiry:** The provisional question is whether the recurring failures
-are caused primarily by branch-transition geometry, local Jacobian conditioning,
-or stabilization after the transition, while preserving the parent's robust
-11-value observation contract. A fresh paired telemetry panel of the parent,
-the headroom control, and the slew control will test whether their failure
-identities and complete-task outcomes separate consistently by branch switches,
-conditioning, entry and hold speed, or applied-command behavior. A stable
-behavioral rescue with a corresponding diagnostic separation would support
-continued intervention; unchanged failure identities or broad regression would
-redirect or end this inquiry. The unmeasured experiment-7 intervention remains
-a separate data-coverage question and is not treated as evidence here.
+**Active inquiry:** The provisional inquiry is whether targeted training
+exposure can alter the policy's branch-transition and near-singular
+trajectories while preserving the parent's robust 11-value observation
+contract and broad reach-and-hold behavior. This matters because the latest
+controls changed physical command behavior without rescuing the shared target
+identities, while experiment 7's direct targeted-coverage policy was never
+measured. A fresh paired evaluation would support the inquiry only if the
+transferred policy rescues shared failures without broad regression and its
+telemetry changes consistently with that rescue; unchanged shared failures,
+new broad failures, or a proxy-only improvement would redirect or end it.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
