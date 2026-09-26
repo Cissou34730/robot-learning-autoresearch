@@ -8,10 +8,11 @@ competence but remains a near-objective policy rather than an established
 the latest disjoint panel reached 194/200. The temporal-slew and
 targeted-exposure saved lineages also reached 194/200 on that panel; targeted
 exposure reproduced all six working failures, while temporal slew changed one
-failure in each direction without a net gain. No challenger has established a
-reliable replacement. Experiment 12 directly tested local velocity damping:
-its reward-peak checkpoint achieved 178/200 and its final checkpoint 146/200,
-versus 197/200 for the working reference on the same panel.
+failure in each direction without a net gain. Experiment 13's bounded
+transpose-Jacobian residual did not produce a replacement: its measured
+checkpoints achieved 188/200, 188/200, and 186/200 on a new panel. The parent
+remains the strongest established lineage, but no policy has established the
+official objective.
 
 **Lessons and limits:** Experiments 5, 6, 7, 9, and 10 reject saturation
 removal, fixed slew, targeted exposure, and the tested continuation recipes as
@@ -19,35 +20,32 @@ established sufficient solutions, without isolating their individual causal
 interactions. Experiment 11 remains a broad negative control for learning
 trajectory variance. Experiment 12 rejects the specific distance-gated damping
 recipe as a useful path toward the objective: the peak and final candidates
-lost 19 and 51 paired episodes to working and won none. Damping changed the
-late control signature but added broad no-entry and interrupted-hold failures.
-The latest measurement strengthens the failure-set evidence: the working and
-targeted-exposure policies fail on the same six targets, all in the recurring
-negative-angle sector, while the slower slew policy does not improve the total.
-These observations identify neither a sufficient controller nor a causal
-single mechanism. The evidence is development evidence only; no panel
-establishes the official objective.
+lost 19 and 51 paired episodes to working and won none. Experiment 13 weakens
+the action-path Jacobian hypothesis: the early and proxy-peak checkpoints were
+indistinguishable at 94%, the final checkpoint fell to 93%, and their paired
+comparisons showed no stable late-checkpoint advantage. The diagnostics still
+show recurring negative-angle no-entry and interrupted-hold failures, with
+no-entry counts increasing from 7 to 8 to 11 across the three checkpoints.
+These observations reject this residual recipe as a useful intervention but
+do not identify whether conditioning, branch behavior, stabilization, or
+their interaction is causal. All evidence remains development-only.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
 poor local conditioning, branch-dependent policy behavior, insufficient
 stabilization, or an interaction among them. It remains unresolved why
-training-success proxies can rise while complete-task success falls, and
-whether a geometry-aware command prior can rescue the narrow sector without
-changing the observation representation or sacrificing broad approach and
-sustained hold.
+training-success proxies can rise while complete-task success falls, and which
+measurement can distinguish these explanations without sacrificing broad
+approach and sustained hold.
 
-**Active inquiry:** Test whether local Cartesian error becomes more controllable
-when a bounded Jacobian-transpose residual is injected in the action path,
-while retaining the proven 11-value observation and complete-task reward. The
-latest panel shows that changing target exposure does not change the failure
-set, and that command slew changes failure identities without improving their
-count; the prior Jacobian-feature experiment changed representation rather
-than command geometry and regressed broadly. A useful result would rescue
-recurring-sector episodes without broad no-entry or hold losses; a broad
-regression would redirect the inquiry away from this control-path mechanism.
-The inquiry ends only after a frozen policy reliably reaches at least 196/200
-on the official assessment.
+**Active inquiry:** Determine whether the recurring failure sector is caused by
+configuration-dependent conditioning, branch transitions, local stabilization,
+or their interaction. The target-exposure, command-slew, damping, and bounded
+Jacobian-residual results do not show a reliable rescue, so the inquiry no
+longer favors an action-path residual. Future evidence must distinguish
+failure mechanism from checkpoint selection effects while preserving the
+complete reach-and-hold criterion; a frozen policy must still reach at least
+196/200 on the official assessment before the objective is claimed.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -593,7 +591,7 @@ mechanism comparison without treating either as a candidate for the objective.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-12-checkpoint-120832-200ep-seed41000-0576372df066.json`;
 `research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-12/inventory.json`.
 
-## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 13 preparation
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Preparation for Experiment 13
 
 **Decision:** Prepare a transfer experiment from `working` with a bounded
 Jacobian-transpose residual in the action path. The 11-value observation,
@@ -617,3 +615,44 @@ working lineage tests whether this low-amplitude geometric prior can alter the
 recurring approach/entry behavior without discarding established broad
 competence. The result will be judged by paired complete-task success and
 failure-stage telemetry, not by training proxies.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 13
+
+**Result:** The bounded transpose-Jacobian action residual did not produce a
+viable replacement for the working lineage. On episodes 43000--43199, the
+100352-step and 105472-step checkpoints each achieved 188/200, while the
+120832-step checkpoint achieved 186/200. The working lineage remains selected
+and best-known; the changed recipe is reverted and no experiment-13 candidate
+is retained.
+
+**Observed behavior:** The early and proxy-peak checkpoints were nearly tied,
+with one discordant win each. The early checkpoint beat the final checkpoint
+4--2 in discordant outcomes, and the proxy-peak beat it 3--1. The failures
+remained concentrated in the known negative-angle sector and included both
+no-entry and interrupted-hold events. No-entry/interrupted-hold counts were
+7/5, 8/4, and 11/3 for the early, proxy-peak, and final checkpoints
+respectively. Continued adaptation therefore replaced some interrupted holds
+with additional no-entry failures rather than improving complete-task success.
+
+**Hypothesis assessment:** The hypothesis that a bounded transpose-Jacobian
+residual would improve local Cartesian controllability while preserving broad
+reach-and-hold behavior is contradicted as a policy-level intervention. The
+near-tie between the first two checkpoints and the lower final result provide
+no stable geometric-control benefit. This conclusion is limited to the tested
+residual, action placement, transferred parent, and training trajectory; it
+does not prove that all geometry-aware control or stabilization methods are
+ineffective, nor does it identify the causal source of the recurring sector.
+
+**Interpretation:** The action-path residual did not resolve the distinction
+between poor conditioning, branch-dependent behavior, and stabilization. Its
+failure across checkpoints makes further measurement of this experiment
+unlikely to change the lineage decision. Restoring the parent's complete
+scientific recipe preserves the strongest accumulated evidence without
+claiming official objective attainment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/scientific_model.md`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-13-checkpoint-100352-200ep-seed43000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-13-checkpoint-105472-200ep-seed43000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-13-checkpoint-120832-200ep-seed43000-48e4acc98c39.json`.
