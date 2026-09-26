@@ -3,26 +3,25 @@
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Scientific strategy
 
 **Current synthesis:** PPO learned strong but sub-target reach-and-hold
-behavior. The transferred full-radius lineage remains best-known at 621/640
-(97.03%) across four disjoint research panels, while the tested hold-forfeit
-continuation tied it at 311/320 (97.19%) across two newer panels. Fresh
-full-radius training reached only 114/160, and reduced-rate continuation
+behavior. The transferred full-radius lineage remains best-known at 932/960
+(97.08%) across six disjoint research panels; the tested hold-forfeit
+continuation reached 311/320 (97.19%) and tied its parent in paired wins.
+Fresh full-radius training reached only 114/160, and reduced-rate continuation
 reached at most 148/160 against 157/160 for its saved parent. Detailed
 failures include both missed reaches and interrupted holds.
 
 **Lessons and limits:** Full-radius target sampling produced a modest
 improvement, not a solution. The tested reduced-rate continuation degraded the
 parent, fresh initialization was highly variable, and full hold-progress
-forfeiture did not show a reproducible advantage over the parent. Training
-proxies do not reliably rank policies, and research panels cannot establish
-the official 196/200 result. The reward intervention's null paired result is
-limited to this transferred run and does not rule out other hold-specific
-designs.
+forfeiture did not show a reproducible advantage. Training proxies do not
+reliably rank policies, and development panels cannot establish the official
+196/200 result. The null reward result is limited to this transferred
+intervention and does not rule out other designs.
 
-**Open questions:** Whether the best-known policy meets the official objective
-remains unknown. The relative contribution of reach and hold failures, and
-whether another scientifically distinct intervention can improve them without
-damaging learned behavior, remain unresolved.
+**Open questions:** Whether the frozen best-known policy reaches at least
+196/200 on the official panel remains unknown. The relative contribution of
+reach and hold failures, and whether another intervention could improve them
+without damaging learned behavior, also remain unresolved.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
