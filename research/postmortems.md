@@ -4,23 +4,25 @@
 
 **Current synthesis:** PPO learned strong but sub-target reach-and-hold
 behavior. The transferred full-radius lineage remains best-known at 621/640
-(97.03%) across four disjoint research panels, including 157/160 on the latest
-panel. Fresh full-radius training reached only 114/160, while reduced-rate
-continuation reached at most 148/160 against 157/160 for its saved parent.
-Detailed failures include both missed reaches and interrupted holds.
+(97.03%) across four disjoint research panels, while the tested hold-forfeit
+continuation tied it at 311/320 (97.19%) across two newer panels. Fresh
+full-radius training reached only 114/160, and reduced-rate continuation
+reached at most 148/160 against 157/160 for its saved parent. Detailed
+failures include both missed reaches and interrupted holds.
 
 **Lessons and limits:** Full-radius target sampling produced a modest
 improvement, not a solution. The tested reduced-rate continuation degraded the
-parent, and fresh initialization was highly variable. Training proxies do not
-reliably rank policies, and research panels cannot establish the official
-196/200 result. The existing reward permits losing accumulated hold progress
-without forfeiture, so its relationship to the interrupted-hold failures is
-not yet tested.
+parent, fresh initialization was highly variable, and full hold-progress
+forfeiture did not show a reproducible advantage over the parent. Training
+proxies do not reliably rank policies, and research panels cannot establish
+the official 196/200 result. The reward intervention's null paired result is
+limited to this transferred run and does not rule out other hold-specific
+designs.
 
 **Open questions:** Whether the best-known policy meets the official objective
-remains unknown. It is also unresolved whether making hold interruption costly
-can reduce residual hold failures without damaging the learned reach behavior,
-and how much of the fresh-initialization variance is irreducible.
+remains unknown. The relative contribution of reach and hold failures, and
+whether another scientifically distinct intervention can improve them without
+damaging learned behavior, remain unresolved.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
@@ -183,3 +185,42 @@ declare the objective.
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-checkpoint-110592-160ep-seed5000-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-checkpoint-120832-160ep-seed5000-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-4-best_known-160ep-seed5000-f48545f83637.json`.
+
+## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 5
+
+**Result:** Full forfeiture of accumulated hold progress did not produce a
+reusable challenger. The existing checkpoint-105472 lineage remains both
+working and best-known, and the parent reward recipe is restored.
+
+**Observed behavior:** The final experiment-5 checkpoint-120832 achieved
+157/160 (98.125%) on episodes 5160-5319 versus 156/160 (97.5%) for
+best-known, but achieved 154/160 (96.25%) on the disjoint episodes 5320-5479
+versus 155/160 (96.875%) for best-known. The pooled comparison tied at
+311/320 (97.1875%) with 2 candidate wins and 2 control wins. Diagnostics still
+showed both missed reaches and interrupted holds.
+
+**Hypothesis assessment:** Weakened under the tested transferred run and
+HOLD_EXIT_FORFEIT_FRACTION=1.0 intervention. The first-panel one-episode
+advantage was not independently reproduced: the second panel favored the
+control by one success, and the pooled paired comparison was tied. The
+measurements therefore do not establish that forfeiting hold progress reduces
+residual hold failures or improves reach-and-hold success. This conclusion is
+limited to this intervention, continuation, and measured checkpoints; it does
+not rule out other reward designs or hold-specific interventions.
+
+**Interpretation:** The intervention is not supported as a replacement for the
+best-known policy. Preserve checkpoint-105472 for the next campaign decision
+and revert the changed reward recipe. The 97.03% pooled development result
+for best-known remains strong but is below the 196/200 human objective, and
+development panels cannot provide the official verdict.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-5/inventory.json`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-5/checkpoint-120832/artifact.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-5-checkpoint-120832-160ep-seed5160-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-5-checkpoint-120832-160ep-seed5320-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-5-best_known-160ep-seed5160-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-5-best_known-160ep-seed5320-f48545f83637.json`;
+`robot_learning/scenario/reward.py`.
