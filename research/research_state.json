@@ -2,17 +2,17 @@
   "active_inquiry": null,
   "best_known_lineage": null,
   "campaign": {
-    "base_commit": "0a9751c9907594b90758da1a44a9824daa5e7a45",
-    "id": "be05da21-fc64-4d05-9efe-63f64235c3ab",
+    "base_commit": "475faff014c966a03b2ee8d5d780b58c79014ead",
+    "id": "1a939de2-8d9d-42c0-a475-dc59a9a5e55c",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-26T12:08:52.662100+00:00"
+    "started_at": "2026-09-26T12:38:55.362501+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "be05da21-fc64-4d05-9efe-63f64235c3ab": 0
+    "1a939de2-8d9d-42c0-a475-dc59a9a5e55c": 0
   },
   "campaign_inquiry_counters": {
-    "be05da21-fc64-4d05-9efe-63f64235c3ab": 0
+    "1a939de2-8d9d-42c0-a475-dc59a9a5e55c": 0
   },
   "campaign_lab": null,
   "inquiry_lineage": null,
