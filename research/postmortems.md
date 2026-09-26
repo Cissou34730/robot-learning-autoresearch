@@ -4,55 +4,49 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 1752/1800 across nine distinct research panels.
-The reward intervention produced 176/200 and 186/200 challengers, and the
-periodic-observation intervention produced 41/200 and 53/200 challengers;
-neither intervention produced a paired win over the parent. Experiment 5's
-two action-headroom checkpoints each achieved 391/400 on two fresh panels,
-versus 390/400 for the parent on those same panels. The gain was one rescued
-episode on the first panel and zero on the second, while the recurring failure
-identities remained. The next test changes command temporal smoothness while
-preserving command authority, observations, reward, and target coverage.
+98% solution. It achieved 1946/2000 across ten distinct research panels.
+Experiments 2--5 did not establish a reliable improvement: radius expansion,
+reward shaping, periodic branch-error features, and action headroom either
+preserved the failure sector or caused broad regression. Experiment 6's
+slew-limited final checkpoint reached 195/200 on its single panel versus
+194/200 for the parent, but the difference was one paired rescue and not a
+reliable change to the recurring failure set.
 
-**Lessons and limits:** Radius expansion did not remove the shared
-negative-angle failure identities, and reward changes regressed complete task
-behavior. The corrected experiment-5 evaluator shows that the 0.9 map removes
-physical command saturation, but the five failures on episodes 28000-28199
-are shared by the parent and both headroom checkpoints. The candidates also
-have slightly lower minimum Jacobian determinants and later entry on average,
-so the absence of saturation does not make the trajectories recoverable.
-The one-episode pooled gain is not reproduced on the second panel, and the
-100352- and 105472-step candidates add no distinguishable task outcome.
-Saturation is therefore a marker or contributor at most, not an established
-sufficient cause. Adding sine/cosine encodings to the wrapped branch errors
-caused severe broad degradation in a fresh policy, rejecting that tested recipe
-without proving that all observation changes are unhelpful. No existing result
-tests whether limiting rapid command changes can preserve approach authority
-while reducing transient instability. Development panels remain non-official,
-and the parent has not established the human objective on the final benchmark.
+**Lessons and limits:** The five parent failures at episodes 29013, 29073,
+29086, 29120, and 29142 were shared by the final slew-limited checkpoint; the
+early checkpoint shared those failures and added episode 29002, while the
+final checkpoint rescued only episode 29077. Successful episodes took a mean
+of 111.93 steps for the parent, 122.02 for the early checkpoint, and 120.92
+for the final checkpoint, with maxima of 122, 220, and 249 steps respectively.
+All measured failures truncated at 500 steps, and these artifacts do not expose
+entry or hold telemetry, so the measurements cannot identify whether the
+shared failures are branch, conditioning, or stabilization failures. The slew
+limiter therefore weakens rather than supports a general transient-control
+explanation: it changes command timing and can preserve broad success, but it
+does not reliably change the failure sector and imposes an approach delay.
+Development panels remain non-official, and the parent has not established
+the human objective on the final benchmark.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: branch
 transition, poor local conditioning, insufficient stabilization, or an
-interaction among them. It is also unresolved whether a policy can preserve
-the parent's broad approach and hold behavior while changing only that
-failure-sector behavior, and whether command-rate limiting helps or merely
-delays target acquisition.
+interaction among them. It remains unresolved whether a policy can alter that
+failure sector without sacrificing approach time, and whether a richer
+behavioral measurement can distinguish target entry, settling, and hold
+failure rather than relying on the terminal episode outcome.
 
-**Active inquiry:** The persistent failure sector is more consistent with a
-configuration- or branch-dependent control limitation than with actuator
-clipping alone: eliminating measured physical saturation did not remove the
-shared failures, and continued headroom training added no further benefit.
-Evidence that changes the failure identities while preserving complete
-reach-and-hold behavior would support a conditioning or branch-transition
-explanation; repeated shared failures under such controls would require
-revising that interpretation rather than treating saturation as causal.
-Experiment 6 tests the narrower temporal-control distinction by continuing the
-working lineage with a per-episode normalized-action slew limiter. Fewer shared
-failures or interrupted holds, with preserved broad approach and target
-acquisition, would support a transient-control contribution; unchanged
-failures or broad delay-related regressions would redirect the inquiry toward
-branch selection or configuration conditioning rather than command smoothing.
+**Active inquiry:** The combined headroom and slew experiments make actuator
+clipping and command smoothness insufficient explanations for the recurring
+failures: removing measured saturation did not remove them, and limiting
+command changes preserved the shared failures while delaying successful
+acquisition. The working scientific question is therefore whether
+configuration- or branch-dependent conditioning limits local stabilization in
+the negative-angle sector. Evidence that changes those identities without
+slowing broad reach-and-hold behavior would support that interpretation;
+repeated shared failures with direct branch and conditioning telemetry would
+redirect it toward another controller or observation limitation. The parent
+remains below the human objective, so this closure does not justify terminal
+assessment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -279,5 +273,51 @@ controlled alternatives for later comparisons.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-checkpoint-100352-200ep-seed28000-238ccfe3776f.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-checkpoint-105472-200ep-seed28000-238ccfe3776f.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-5-working-200ep-seed28000-238ccfe3776f.json`;
+`robot_learning/scenario/policy_io.py`;
+`robot_learning/scenario/evaluation.py`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 6
+
+**Result:** The per-episode normalized-action slew limiter did not produce a
+reliable complete-task improvement. On episodes 29000--29199, the parent
+achieved 194/200, the 100352-step checkpoint achieved 193/200, and the
+120832-step checkpoint achieved 195/200. The parent remains the working and
+best-known lineage, the experiment-6 recipe is reverted, and the final
+checkpoint is retained as a measured temporal-control alternative.
+
+**Observed behavior:** The early checkpoint failed on episodes 29002, 29013,
+29073, 29077, 29086, 29120, and 29142, while the parent failed on 29013,
+29073, 29077, 29086, 29120, and 29142. The final checkpoint failed on 29013,
+29073, 29086, 29120, and 29142. Thus the early checkpoint had no paired wins
+and one paired loss, while the final checkpoint had one paired win (29077) and
+no paired losses. Every failure truncated at 500 steps. Among successful
+episodes, mean completion was 111.93 steps for the parent, 122.02 for the
+early checkpoint, and 120.92 for the final checkpoint; the respective maximum
+completion times were 122, 220, and 249 steps.
+
+**Hypothesis assessment:** The hypothesis that limiting rapid command changes
+would reduce persistent failures or interrupted holds while preserving broad
+reach-and-hold behavior is weakened. Late adaptation changed one failure
+identity and preserved a near-parent success rate on this panel, but five
+failures remained shared and successful episodes were substantially slower.
+The early checkpoint was worse and added a failure. Because this is one
+development panel and the artifacts contain no entry or hold-stage telemetry,
+the evidence does not prove that transient dynamics never contribute; it does
+reject this fixed slew-limiter recipe as a sufficient or reliable solution.
+
+**Interpretation:** Temporal smoothing trades command responsiveness for no
+robust recovery of the recurring failure sector. Together with experiment 5,
+the result redirects attention from saturation and command-rate limiting toward
+configuration- or branch-dependent conditioning and local stabilization. The
+final checkpoint is worth retaining as a controlled alternative because it
+rescued one paired episode without broad collapse, but it is not a defensible
+working policy and no official objective attainment is claimed.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-6/inventory.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-6-checkpoint-100352-200ep-seed29000-1755b1c50cef.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-6-checkpoint-120832-200ep-seed29000-1755b1c50cef.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-6-working-200ep-seed29000-1755b1c50cef.json`;
 `robot_learning/scenario/policy_io.py`;
 `robot_learning/scenario/evaluation.py`.
