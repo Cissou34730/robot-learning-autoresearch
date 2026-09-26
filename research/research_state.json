@@ -51,7 +51,18 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-26T03:01:05.470015+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "continuation_comparison": {
+      "continuation": "Continue the working lineage checkpoint-105472 with the unchanged full 6-20 cm training recipe.",
+      "form": "feasible_continuation",
+      "reason": "This continuation is feasible, but experiment 2 already showed that full-range transfer preserves rather than improves the parent on the available disjoint panel, with all measured checkpoints tied. A further training run therefore has speculative improvement value, while terminal assessment directly resolves the only remaining objective-level question for the frozen policy."
+    },
+    "terminal_expectation": {
+      "expected_verdict": "goal_reached",
+      "reason": "The standing best-known checkpoint-105472 achieved 199/200 (99.5%) on the disjoint seed-5000 development panel, above the 98% objective threshold, and the unchanged parent and two other experiment-2 checkpoints matched it with zero paired discordances. This is strong but non-official evidence, so the official 200-episode assessment is needed to determine the human objective; the shared single failure and its residual reach-or-hold cause remain uncertain."
+    }
+  },
   "campaign_experiment_counters": {
     "ec8a0728-5e76-46b3-b705-73b0aa542d7b": 2
   },
@@ -68,15 +79,82 @@
     "experiment": 2,
     "reason": "Checkpoint-105472 achieved 199/200 (99.5%) on the new disjoint research panel, exceeding the 98% objective threshold. It tied the other measured experiment-2 checkpoints and the unchanged parent, so this selection uses the highest training-success checkpoint as the practical working policy without claiming a behavioral ranking."
   },
-  "last_verdict": "researcher selected checkpoint-105472 as working",
+  "last_verdict": "researcher requested the official final benchmark",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "continuation_comparison": {
+      "continuation": "Continue the working lineage checkpoint-105472 with the unchanged full 6-20 cm training recipe.",
+      "form": "feasible_continuation",
+      "reason": "This continuation is feasible, but experiment 2 already showed that full-range transfer preserves rather than improves the parent on the available disjoint panel, with all measured checkpoints tied. A further training run therefore has speculative improvement value, while terminal assessment directly resolves the only remaining objective-level question for the frozen policy."
+    },
+    "progress": "planned",
+    "reason": "The standing best-known checkpoint-105472 achieved 199/200 (99.5%) on the disjoint seed-5000 development panel, above the 98% objective threshold, and the unchanged parent and two other experiment-2 checkpoints matched it with zero paired discordances. This is strong but non-official evidence, so the official 200-episode assessment is needed to determine the human objective; the shared single failure and its residual reach-or-hold cause remain uncertain.",
+    "terminal_expectation": {
+      "expected_verdict": "goal_reached",
+      "reason": "The standing best-known checkpoint-105472 achieved 199/200 (99.5%) on the disjoint seed-5000 development panel, above the 98% objective threshold, and the unchanged parent and two other experiment-2 checkpoints matched it with zero paired discordances. This is strong but non-official evidence, so the official 200-episode assessment is needed to determine the human objective; the shared single failure and its residual reach-or-hold cause remain uncertain."
+    }
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
+  "pending_final_benchmark": {
+    "artifact": "research/checkpoints/retained/ec8a0728-5e76-46b3-b705-73b0aa542d7b/e2-ca3d05779-e7294d2e43524802de5669fa14b1b52fb7fcfa9fbd645fc6d1dec080440099d5",
+    "best_known": {
+      "artifact": "research/checkpoints/retained/ec8a0728-5e76-46b3-b705-73b0aa542d7b/e2-ca3d05779-e7294d2e43524802de5669fa14b1b52fb7fcfa9fbd645fc6d1dec080440099d5",
+      "candidate": "checkpoint-105472",
+      "designation_ordinal": 2,
+      "evaluation_artifacts": [
+        "research/evaluations/ec8a0728-5e76-46b3-b705-73b0aa542d7b/evaluation-ec8a0728-5e76-46b3-b705-73b0aa542d7b-experiment-2-checkpoint-105472-200ep-seed5000-f48545f83637.json"
+      ],
+      "fingerprint": "e7294d2e43524802de5669fa14b1b52fb7fcfa9fbd645fc6d1dec080440099d5",
+      "origin_experiment": 2,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "The selected policy achieved 199/200 (99.5%) on an independent development panel, exceeding the 98% threshold, and has the highest training success in experiment 2. The evidence supports best-known policy status while remaining distinct from an official final assessment.",
+      "scientific_commit": "4f0e676550b8d97b8e0af76ad1bab8ab1f183240",
+      "selected_panels": [
+        {
+          "episodes": 200,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 5000
+        }
+      ],
+      "training_steps": 205824
+    },
+    "experiment": 2,
+    "fingerprint": "e7294d2e43524802de5669fa14b1b52fb7fcfa9fbd645fc6d1dec080440099d5",
+    "selected": "best_known",
+    "terminal_expectation": {
+      "expected_verdict": "goal_reached",
+      "reason": "The standing best-known checkpoint-105472 achieved 199/200 (99.5%) on the disjoint seed-5000 development panel, above the 98% objective threshold, and the unchanged parent and two other experiment-2 checkpoints matched it with zero paired discordances. This is strong but non-official evidence, so the official 200-episode assessment is needed to determine the human objective; the shared single failure and its residual reach-or-hold cause remain uncertain."
+    }
+  },
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "d86585c778d576372c4c3d86695cb24e4c091671",
