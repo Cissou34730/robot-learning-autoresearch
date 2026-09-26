@@ -64,28 +64,52 @@ across mature policies rather than a common cause. The replication remained
 broadly impaired, with 92 failures and no corresponding mature-like
 concentration.
 
+The event-level refinement changes the interpretation of the branch result.
+Switches occurred at control step 4.0 for working and 4.5 for temporal slew,
+with distances of 19.9 cm and 21.1 cm respectively, well before tolerance;
+all five working failures and all six temporal-slew failures switched, but so
+did 65 and 74 successful episodes. The switch is therefore an early branch
+label transient, not a demonstrated failure event. The late near-target
+telemetry is more discriminating: working failures spent 484.4 of their 500
+steps within 5 cm and 483.8 of those steps saturated, versus 102.7 and 100.8
+for successful episodes. Temporal-slew failures also spent 480.0 near-target
+steps, but saturated for 213.2, while its successful episodes averaged 107.3
+near-target steps and 0.2 saturated steps. The replication had a separate
+broad failure regime: 43 of 92 failures reached the near-target region and
+then remained there for 489.5 steps with 487.3 saturated steps, while the
+remaining failures did not reach that region. These data support local
+stabilization as the next test, but do not prove that saturation is the cause.
+
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
 a branch-transition policy error, poor local conditioning, insufficient
-stabilization, or an interaction among them. It remains unresolved whether the
+stabilization, or an interaction among them. The branch-transition hypothesis
+is weakened because the transitions precede the approach by roughly 20 cm. It
+remains unresolved whether the
 saved temporal-slew parent's pooled paired edge is useful beyond its original
 trajectory, or whether the broad fresh-replication collapse shares a physical
 mechanism with the narrow failures of the working policy. The available
 evidence still does not establish which intervention can improve the failure
 sector without degrading broad reach-and-hold behavior, nor why the
-training-success proxy can rise while complete-task success falls.
+training-success proxy can rise while complete-task success falls. In
+particular, headroom removed saturation without rescuing shared failures, so
+the next intervention must test damping of residual joint velocity near the
+target rather than merely reduce torque authority globally.
 
 **Active inquiry:** The campaign now needs to distinguish the stable,
 configuration-dependent control interaction underlying the working policy's
 remaining failures from the broad optimization or representation failure seen
 in fresh experiment 11. This matters because improving the narrow failure
 sector is useful only if the learned controller preserves complete
-reach-and-hold behavior across the full target distribution. The inquiry would
-be redirected by event-level evidence showing whether branch switches occur
-near tolerance, under poor local conditioning, or with a distinct velocity and
-action signature in failures versus successful switches. It would end only by a
-policy that reliably reaches the 196/200 objective under the official
-assessment; the current measurements establish neither.
+reach-and-hold behavior across the full target distribution. The event question
+is now answered negatively: branch switches are early and common rather than
+near-tolerance failure events. The active test is whether a distance-gated
+joint-velocity damping term reduces the late near-target saturated lock-up
+while preserving the parent's broad approach behavior. A broad regression,
+unchanged shared failures, or no reduction in near-target lock-up would reject
+this control intervention. The inquiry would end only by a policy that
+reliably reaches the 196/200 objective under the official assessment; the
+current measurements establish neither.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
