@@ -4,25 +4,22 @@
 
 **Current synthesis:** PPO learned useful reach-and-hold behavior but remains
 below the 98% human objective. Full 6-20 cm target-radius transfer produced
-checkpoint-105472 at 307/320 (95.94%) across two disjoint research panels,
-versus 304/320 (95.00%) for the same-panel parent control. A later reduced
-learning-rate continuation did not preserve that result: its measured
-checkpoints scored 144/160, 145/160, and 148/160, while the saved parent
-scored 157/160 on the new disjoint panel.
+the strongest lineage, checkpoint-105472, with 464/480 (96.67%) pooled
+successes across three disjoint research panels; its same-panel parent
+control achieved 304/320 (95.00%). The later reduced-learning-rate
+continuation scored 144/160, 145/160, and 148/160, while the saved parent
+scored 157/160 on that new panel.
 
 **Lessons and limits:** Full-radius training is supported as a modest
-improvement, not as a solution. The selected checkpoint outperformed the
-parent, but the reduced-rate continuation was substantially worse than its
-parent on every measured checkpoint and none of its 12 discordant episodes
-was a challenger win. Training reward and training success do not reliably
-rank policies, the task-reference panel is reused development evidence, and
-the official result remains unknown. Detailed failures include both episodes
-that never entered the hold and occasional long hold interruptions.
+improvement, not as a solution. The reduced-rate continuation was worse than
+its parent at every measured checkpoint, so that tested optimization change
+did not improve retention. Training reward and training success do not
+reliably rank policies, development panels do not establish the official
+result, and detailed failures include both missed reaches and interrupted
+holds.
 
-**Open questions:** The official benchmark result and the relative contribution
-of reach versus hold failures remain unknown. The tested reduced-rate
-continuation does not justify further use of that recipe, though other
-interventions remain scientifically possible after closure.
+**Open questions:** The official benchmark result remains unknown, as does
+the amount of fresh-initialization variability under the full-radius recipe.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
