@@ -188,10 +188,7 @@ function Invoke-PreparationMeasurement {
         $script:researchState = Get-Content "research\research_state.json" -Raw |
             ConvertFrom-Json
         $pending = $script:researchState.pending_evaluation_request
-        if (-not $pending) {
-            throw "There is no pending preparation measurement to execute."
-        }
-        $repair = $pending.implementation_error
+        $repair = if ($pending) { $pending.implementation_error } else { $null }
         if ($repair) {
             $attempts = [int]$pending.implementation_repair_attempts
             if ($attempts -ge 2) {

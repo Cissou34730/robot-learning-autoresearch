@@ -98,6 +98,8 @@ def test_preparation_runtime_errors_resume_the_same_pi_session_without_evidence(
     repair = SCRIPT.split("function Invoke-PreparationMeasurement", 1)[1].split(
         "function Test-StopAfterOperation", 1
     )[0]
+    assert "There is no pending preparation measurement to execute." not in repair
+    assert "$repair = if ($pending)" in repair
     assert '-Phase "principal investigator" -Experiment 0' in repair
     assert "-SessionId $piSession.id -Continue" in repair
     assert "This produced no scientific evidence" in repair

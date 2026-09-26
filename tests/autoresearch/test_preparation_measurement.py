@@ -254,6 +254,12 @@ def test_preparation_measurement_returns_to_preparation(monkeypatch, tmp_path):
     )
     request_path.write_text(json.dumps(_request()), encoding="utf-8")
     results_path = tmp_path / "research" / "results.jsonl"
+    assert (
+        json.loads(state_path.read_text(encoding="utf-8"))[
+            "pending_evaluation_request"
+        ]
+        is None
+    )
 
     assert run_experiment.execute_pending_evaluations() == 0
 
