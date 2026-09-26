@@ -76,7 +76,10 @@ mapping state for each environment and apply the saved mapping exactly once.
 The Runner and evaluators use each artifact's contract, not the current model's
 observation layout. Task mechanics and success measurement remain shared.
 
-During experiment preparation, the Researcher may modify any researcher-owned scientific code or configuration permitted by `AGENTS.md`.
+During inquiry preparation, the Researcher may modify any researcher-owned
+scientific code or configuration permitted by `AGENTS.md`. Durable analysis and
+diagnostic tools belong in `research/lab/`; the Runner publishes that laboratory
+separately from the policy/training recipe.
 
 Tests are human-owned under `AGENTS.md`. The Runner rejects test paths in a
 Researcher proposal.
@@ -89,17 +92,16 @@ next experiment.
 
 ## Request measurements
 
-**Phase:** Post-training analysis or experiment preparation.
+**Phase:** Post-training analysis or inquiry preparation.
 
 During analysis, use this request for the current experiment's candidates or
 eligible saved lineages, initially or in an optional refinement round while
-closing the current trained experiment. During experiment preparation, a request
+closing the current trained experiment. During inquiry preparation, a request
 may measure only eligible saved lineages (`working`, `best_known`, or a retained
 ID); it may not name the candidates of an experiment that has not run, because
 those do not exist yet, and it must omit the `experiment` field. A completed
-preparation round returns to preparation and is recorded under the upcoming
-experiment. Researcher-owned instrumentation may be changed before submitting
-the request.
+preparation round returns to the same active inquiry. Researcher-owned
+instrumentation may be changed before submitting the request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
 `measurements` selects the instruments and models to run. `paired_comparisons`
@@ -195,14 +197,36 @@ deterministic episode are rejected. Pooled comparison uses success only;
 per-episode `reward_total` is not comparable across a reward change.
 
 Each completed measurement round returns to the phase that requested it: post-
-training analysis for an analysis request, experiment preparation for a saved-
-lineage preparation request. New requests do not use `need_more_evidence`;
+training analysis for an analysis request, inquiry preparation for a saved-
+lineage request. New requests do not use `need_more_evidence`;
 closing is a separate closure proposal in the same phase. Legacy accepted
 requests that contain it remain recoverable.
 
+## Close an inquiry
+
+**Phase:** Inquiry preparation.
+
+An inquiry may close from preparation evidence without training, official
+assessment, or campaign termination. Write:
+
+```json
+{
+  "inquiry_decision": {
+    "action": "close",
+    "outcome": "<non-empty scientific outcome>"
+  }
+}
+```
+
+The Runner records the inquiry, its measurement rounds, related experiment
+identities, causal research map and campaign-laboratory provenance in
+`research/results.jsonl`, then regenerates `research/EXPERIMENTS.md`. A new
+inquiry is allocated when preparation resumes. Recovery upserts the same inquiry
+identity and never allocates an experiment.
+
 ## Request training
 
-**Phase:** Experiment preparation.
+**Phase:** Inquiry preparation.
 
 Configure researcher-owned code and `research/current_params.json` as needed,
 then write one `research/proposal.json`. The common required fields are `kind`,
@@ -283,9 +307,10 @@ required. The Runner does not judge their scientific merit. Replication does
 not claim an intervention and is exempt.
 
 The campaign's Scientific strategy section must exist before submission. The
-Runner validates its four labels and snapshots the section with `reasoning` in
-the experiment record. Existing historical records without these fields remain
-readable.
+Runner validates its four causal-map labels and snapshots the section with
+`reasoning` in the experiment record. The Runner also records the active inquiry
+identity and campaign-laboratory provenance. Legacy sections using `Direction`,
+`Open questions`, and `Active inquiry` remain readable.
 
 An eligible `training_parent` must be exposed by the brief as `working`,
 `best_known`, or a retained lineage ID. Continuing a lineage and changing the
@@ -322,7 +347,7 @@ the transferred learning trajectory.
 
 ## Conclude the campaign
 
-**Phase:** Experiment preparation.
+**Phase:** Inquiry preparation.
 
 Preparation may end without a new experiment. Write `research/proposal.json`
 containing only a `campaign_conclusion` object:
@@ -368,7 +393,7 @@ than inherited as a published terminal state.
 **Phase:** Experiment closure.
 
 In the same file, maintain one revisable section for the active campaign. It can
-also be edited during experiment preparation. Revise the existing section in
+also be edited during inquiry preparation. Revise the existing section in
 place rather than appending another section with the same campaign heading.
 The exact heading and labels are:
 
@@ -379,19 +404,16 @@ The exact heading and labels are:
 
 **Lessons and limits:** <supported or weakened findings, source references, scope, and limitations>
 
-**Open questions:** <unranked behavioral or scientific distinctions not yet resolved, without candidate implementations or a next action>
+**Competing explanations:** <live causal alternatives and the limits of each>
 
-**Active inquiry:** <the provisional scientific question or line of reasoning being carried forward, why it matters to the human objective, and what evidence would redirect or end it>
+**Decision frontier:** <the unresolved distinction and evidence that would discriminate or redirect it, without naming a candidate implementation>
 ```
 
-All four labeled entries must contain text and may span multiple lines. Their
-scientific meaning is defined in `research/program.md`. The entries are
-fallible working memory. `Active inquiry` preserves continuity without requiring
-an implementation or outranking the human objective. The Runner checks the
-section's structure, associates the active campaign section with the proposal,
-and displays it in the brief. It does not author scientific content.
-The legacy `Direction` label remains readable as a synthesis, and historical
-experiment entries and strategy sections remain readable.
+All four labeled entries must contain text and may span multiple lines. Their scientific meaning is defined in `research/program.md`. The entries are
+fallible working memory. The Runner checks the section's structure, associates
+the active campaign section with the proposal, and displays it in the brief. It
+does not author scientific content. Legacy `Direction`, `Open questions`, and
+`Active inquiry` labels remain readable.
 
 Append to `research/postmortems.md`:
 
@@ -485,9 +507,9 @@ explicit rather than a bare flag. Omit `terminal_reason` when a final benchmark 
 not requested.
 
 `experiment` is an integer. `continue_from` and both `reason` values are
-non-empty strings. The compatible field name `code.action` controls the complete
-researcher-owned scientific recipe: researcher-owned source and
-`research/current_params.json`. `keep` keeps the experiment's complete
+non-empty strings. The compatible field name `code.action` controls the policy/training scientific
+recipe: researcher-owned runtime source and `research/current_params.json`.
+Campaign laboratory files under `research/lab/` are excluded. `keep` keeps the experiment's complete
 scientific recipe; `revert` restores the scientific parent's complete recipe;
 and `restore` restores the complete recipe associated with the explicitly named
 eligible lineage. For `restore`, `code.lineage` is required; for `keep` and

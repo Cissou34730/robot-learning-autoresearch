@@ -66,63 +66,64 @@ paired comparison, not independent confirmation. The task-reference panel is
 permanently reused development evidence.
 
 Maintain the campaign's **Scientific strategy** in
-`research/postmortems.md`. It is the persistent working memory that lets a new
-session continue rather than restart the investigation:
+`research/postmortems.md` as a causal research map:
 
 - **Current synthesis** records the present working scientific understanding.
 - **Lessons and limits** records supporting and contradictory evidence and the
   boundaries of current claims.
-- **Open questions** preserves unresolved distinctions without implying that
-  every question deserves an experiment.
-- **Active inquiry** records the provisional question or line of reasoning
-  currently being carried forward, why it matters to the human objective, and
-  what evidence would redirect or end it.
+- **Competing explanations** preserves live causal alternatives and their
+  limits.
+- **Decision frontier** records the unresolved distinction and the evidence
+  that would discriminate or redirect it. It is not a candidate implementation.
 
-The human objective outranks this memory. The active inquiry is not an
-implementation prescription, backlog or obligation: revise, replace or abandon
-it when evidence warrants. Preserve historical experiment entries; revise the
-single current strategy section as understanding changes.
+The human objective outranks this memory. The map is not a backlog or
+implementation prescription. Preserve historical experiment and inquiry
+records; revise the single current strategy section as understanding changes.
 
 ## Lifecycle
 
 1. At campaign start, create `research/scientific_model.md` from the protected
    robot and task implementation before campaign evidence exists.
 2. The Runner trains the unchanged baseline as experiment 1.
-3. Post-training analysis may request one or more measurement rounds or close
+3. The campaign PI opens and advances durable scientific inquiries. An inquiry
+   may use repeated preparation measurements, close with a recorded outcome, or
+   request training.
+4. Post-training analysis may request one or more measurement rounds or close
    the experiment.
-4. Closure resolves the working lineage, scientific recipe, retention and
+5. Closure resolves the working lineage, scientific recipe, retention and
    optional best-known designation.
-5. Experiment preparation may request measurements on saved lineages, prepare a
-   training or replication experiment, request the official benchmark, or
-   conclude that no further experiment is warranted.
-6. Accepted experiments return to training, analysis and closure.
+6. Inquiry preparation may request measurements on saved lineages, close the
+   active inquiry without training, prepare training or replication, request
+   the official benchmark, or conclude that no further work is warranted.
+7. Accepted experiments return to training, analysis and closure. Inquiry and
+   experiment identities are independent.
 
-A measurement round returns to the same scientific phase. During one launcher
-run, the same Researcher session receives the result and continues the
-investigation. If the launcher is restarted, the brief, artifacts and Scientific
-strategy provide durable recovery.
+A measurement round returns to the same scientific phase. The campaign-level PI
+session owns inquiry and experiment preparation across launcher restarts.
+Post-training analysis, evaluation and closure sessions remain separate, with
+same-session continuation for their measurement rounds.
 
 Exact request schemas, artifact rules and phase deliverables are defined in
 `research/instruments.md`.
 
 ## Scientific phases
 
-### Experiment preparation
+### Inquiry and experiment preparation
 
-Begin from the human objective, current evidence and the carried active inquiry.
-Continue that inquiry, revise it, or abandon it according to scientific
-judgment. Choose the operation that best advances the campaign; no operation is
-the default.
+Begin from the human objective, current evidence and causal research map. Choose
+the operation that best advances the active inquiry; no operation is the
+default.
 
 Preparation may produce:
 
 - `research/evaluation_request.json` for a measurement on saved lineages;
+- `research/proposal.json` closing the active inquiry with a durable outcome;
 - `research/proposal.json` for training or replication;
 - `research/proposal.json` requesting the terminal official assessment; or
 - `research/proposal.json` concluding that no further experiment is warranted.
 
-Update the Scientific strategy so the reason for the current direction survives
-the session. The phase ends only when a valid deliverable is accepted.
+Update the causal research map so the current distinctions survive the session.
+Closing an inquiry continues the campaign and allocates no experiment.
 
 ### Post-training analysis
 

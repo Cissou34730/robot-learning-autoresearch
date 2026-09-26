@@ -8,6 +8,8 @@ so the registry is checked directly.
 import re
 from pathlib import Path
 
+import pytest
+
 from research import runner_protocol as protocol
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,6 +37,80 @@ def test_a_missing_declared_path_is_reported(monkeypatch):
 def test_retired_compatibility_shims_are_gone():
     for relative in RETIRED_SHIMS:
         assert not (ROOT / relative).exists(), relative
+
+
+def test_campaign_lab_is_owned_but_not_part_of_recipe_identity():
+    path = "research/lab/diagnose.py"
+    assert protocol.is_researcher_owned(path)
+    assert protocol.is_campaign_lab(path)
+    from research import runner_repository as repository
+
+    assert repository.scientific_change_paths([path]) == []
+    assert repository.researcher_change_paths([path]) == [path]
+
+
+def test_campaign_lab_publication_has_separate_provenance(monkeypatch, tmp_path):
+    from research import runner_repository as repository
+
+    lab = tmp_path / "research" / "lab"
+    lab.mkdir(parents=True)
+    (lab / "diagnose.py").write_text("VALUE = 1\n", encoding="utf-8")
+    state = {"campaign_lab": None}
+    committed = []
+    validated = []
+    written = []
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        repository,
+        "status_paths",
+        lambda scope: ["research/lab/diagnose.py"],
+    )
+    monkeypatch.setattr(
+        repository,
+        "commit_paths",
+        lambda message, scope: committed.append((message, scope)) or True,
+    )
+    monkeypatch.setattr(
+        "research.runner_execution.validate_changed_sources",
+        lambda scope: validated.append(scope),
+    )
+    monkeypatch.setattr(repository, "git", lambda *args: "lab-commit\n")
+    monkeypatch.setattr(repository, "write_state", lambda value: written.append(value))
+
+    provenance = repository.publish_campaign_laboratory(state)
+
+    assert validated == [["research/lab/diagnose.py"]]
+    assert committed == [
+        ("camp: update campaign laboratory", ["research/lab/diagnose.py"])
+    ]
+    assert provenance["commit"] == "lab-commit"
+    assert provenance["manifest"][0]["path"] == "research/lab/diagnose.py"
+    assert written[-1]["campaign_lab"]["fingerprint"] == provenance["fingerprint"]
+
+
+def test_campaign_lab_is_validated_before_it_is_committed(monkeypatch, tmp_path):
+    from research import runner_repository as repository
+
+    lab = tmp_path / "research" / "lab"
+    lab.mkdir(parents=True)
+    (lab / "broken.py").write_text("def broken(:\n", encoding="utf-8")
+    committed = []
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr(
+        repository,
+        "status_paths",
+        lambda scope: ["research/lab/broken.py"],
+    )
+    monkeypatch.setattr(
+        repository,
+        "commit_paths",
+        lambda message, scope: committed.append((message, scope)) or True,
+    )
+
+    with pytest.raises(RuntimeError, match="invalid Python syntax"):
+        repository.publish_campaign_laboratory({"campaign_lab": None})
+
+    assert committed == []
 
 
 def test_every_documented_human_owned_path_is_enforced():

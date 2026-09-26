@@ -1041,6 +1041,21 @@ def test_a_retry_resumes_that_same_session_and_never_an_implicit_one():
     assert client.created == []
 
 
+def test_a_missing_persisted_session_fails_without_creating_a_replacement():
+    class MissingSessionClient(FakeClient):
+        async def resume_session(self, session_id, **kwargs):
+            self.resumed.append((session_id, kwargs))
+            raise LookupError("missing")
+
+    client = MissingSessionClient()
+    args = adapter.parse_args(["p", "--session-id", "campaign-pi", "--resume"])
+
+    with pytest.raises(RuntimeError, match="refusing to create a replacement"):
+        asyncio.run(adapter.open_session(client, args, {}))
+
+    assert client.created == []
+
+
 def install_fake_sdk(monkeypatch, client):
     module = types.ModuleType("copilot")
     module.CopilotClient = lambda **kwargs: client

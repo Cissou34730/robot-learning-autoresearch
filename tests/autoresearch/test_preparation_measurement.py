@@ -64,6 +64,9 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, Path, dict]:
         "research.runner_paths.EVALUATION_DIR", research / "evaluations"
     )
     monkeypatch.setattr(
+        "research.runner_paths.POSTMORTEM_PATH", research / "postmortems.md"
+    )
+    monkeypatch.setattr(
         "research.run_experiment.validate_research_delta", lambda state: []
     )
     monkeypatch.setattr(
@@ -86,12 +89,28 @@ def _configure(monkeypatch, tmp_path: Path) -> tuple[Path, Path, Path, dict]:
         "pending_final_benchmark": None,
         "pending_campaign_conclusion": None,
         "campaign_experiment_counters": {"campaign": 3},
+        "campaign_inquiry_counters": {"campaign": 1},
+        "last_allocated_inquiry": 1,
+        "last_inquiry": 0,
+        "active_inquiry": {"id": 1, "status": "active"},
+        "pending_inquiry_operation": None,
+        "principal_investigator_session": None,
+        "campaign_lab": None,
         "preparation_conclusion_only": None,
         "preparation_measurement": None,
         "official_benchmark_artifact": None,
         "terminal_campaign_status": None,
     }
     state_path.write_text(json.dumps(state), encoding="utf-8")
+    (research / "postmortems.md").write_text(
+        "## campaign / Scientific strategy\n\n"
+        "**Current synthesis:** Current evidence is mixed.\n\n"
+        "**Lessons and limits:** The available panel is limited.\n\n"
+        "**Competing explanations:** Control and optimization remain plausible.\n\n"
+        "**Decision frontier:** Whether their predicted behavior differs on the "
+        "measured panel.\n",
+        encoding="utf-8",
+    )
     return state_path, request_path, proposal_path, state
 
 
@@ -143,6 +162,7 @@ def test_preparation_request_resolves_to_a_lineage_only_context(monkeypatch, tmp
     assert context["candidates"] == []
     assert context["champion_available"] is False
     assert context["experiment"] == 4
+    assert context["inquiry_id"] == 1
     assert context["evaluation_rounds"] == []
     # Forecasting an identity does not consume it.
     assert state["campaign_experiment_counters"]["campaign"] == 3
@@ -202,6 +222,26 @@ def test_preparation_measurement_context_is_non_mutating(monkeypatch, tmp_path):
     assert state == before
 
 
+def test_preparation_measurement_context_adopts_a_legacy_null_inquiry(
+    monkeypatch, tmp_path
+):
+    _, _, _, state = _configure(monkeypatch, tmp_path)
+    state["preparation_measurement"] = {
+        "experiment": 4,
+        "inquiry_id": None,
+        "rounds": [{"round": 1, "experiment": 4, "status": "completed"}],
+        "partial_evaluations": [],
+        "partial_task_reference_evaluations": [],
+    }
+
+    context = preparation_measurement_context(state)
+
+    assert context["inquiry_id"] == 1
+    assert context["evaluation_rounds"] == [
+        {"round": 1, "experiment": 4, "status": "completed"}
+    ]
+
+
 # --- execution -------------------------------------------------------------
 
 
@@ -224,6 +264,7 @@ def test_preparation_measurement_returns_to_preparation(monkeypatch, tmp_path):
     assert persisted["last_verdict"] == "preparation measurement complete"
     ledger = persisted["preparation_measurement"]
     assert ledger["experiment"] == 4
+    assert ledger["inquiry_id"] == 1
     assert [record["round"] for record in ledger["rounds"]] == [1]
     assert ledger["rounds"][0]["status"] == "completed"
     assert [
@@ -330,12 +371,13 @@ def test_training_transfers_the_preparation_ledger_into_analysis():
     state = {
         "preparation_measurement": {
             "experiment": 4,
+            "inquiry_id": 2,
             "rounds": [{"round": 1, "results": {}}],
             "partial_evaluations": [{"candidate": "working"}],
             "partial_task_reference_evaluations": [],
         }
     }
-    result: dict = {}
+    result: dict = {"inquiry_id": 2}
     pending: dict = {}
 
     run_experiment.transfer_preparation_measurements(state, result, pending, 4)
@@ -347,15 +389,165 @@ def test_training_transfers_the_preparation_ledger_into_analysis():
 
 
 def test_training_leaves_a_ledger_for_another_experiment_untouched():
-    state = {"preparation_measurement": {"experiment": 5, "rounds": []}}
-    result: dict = {}
+    state = {
+        "preparation_measurement": {
+            "experiment": 5,
+            "inquiry_id": 3,
+            "rounds": [],
+        }
+    }
+    result: dict = {"inquiry_id": 2}
     pending: dict = {}
 
     run_experiment.transfer_preparation_measurements(state, result, pending, 4)
 
-    assert result == {}
+    assert result == {"inquiry_id": 2}
     assert pending == {}
-    assert state["preparation_measurement"] == {"experiment": 5, "rounds": []}
+    assert state["preparation_measurement"] == {
+        "experiment": 5,
+        "inquiry_id": 3,
+        "rounds": [],
+    }
+
+
+def test_measurement_only_inquiry_closes_without_allocating_an_experiment(
+    monkeypatch, tmp_path
+):
+    state_path, _, proposal_path, state = _configure(monkeypatch, tmp_path)
+    state["preparation_measurement"] = {
+        "experiment": 4,
+        "inquiry_id": 1,
+        "rounds": [{"round": 1, "status": "completed"}],
+        "partial_evaluations": [],
+        "partial_task_reference_evaluations": [],
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "inquiry_decision": {
+                    "action": "close",
+                    "outcome": "The measured behavior rules out the current explanation.",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+
+    assert (
+        run_experiment.resolve_inquiry_decision(
+            json.loads(proposal_path.read_text(encoding="utf-8"))
+        )
+        == 0
+    )
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["active_inquiry"] is None
+    assert persisted["last_inquiry"] == 1
+    assert persisted["last_experiment"] == 3
+    assert persisted["last_allocated_experiment"] == 3
+    history = [
+        json.loads(line)
+        for line in (tmp_path / "research" / "results.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert history[0]["record_type"] == "inquiry"
+    assert history[0]["inquiry_id"] == 1
+    assert history[0]["measurement_rounds"][0]["round"] == 1
+    assert "Inquiry outcomes" in (tmp_path / "research" / "EXPERIMENTS.md").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_inquiry_recovery_does_not_duplicate_history(monkeypatch, tmp_path):
+    state_path, _, proposal_path, state = _configure(monkeypatch, tmp_path)
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "inquiry_decision": {
+                    "action": "close",
+                    "outcome": "A bounded inquiry outcome.",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    state["pending_inquiry_operation"] = {
+        "action": "close",
+        "outcome": "A bounded inquiry outcome.",
+        "inquiry_id": 1,
+        "progress": "planned",
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    calls = 0
+
+    def publish_once(message):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise RuntimeError("interrupted publication")
+
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", publish_once)
+    with pytest.raises(RuntimeError, match="interrupted"):
+        run_experiment.complete_inquiry_decision(repository.read_state())
+
+    run_experiment.complete_inquiry_decision(repository.read_state())
+    history = repository.history_records()
+    assert (
+        len([record for record in history if record.get("record_type") == "inquiry"])
+        == 1
+    )
+    assert not proposal_path.exists()
+
+
+def test_legacy_preparation_ledger_is_adopted_by_active_inquiry(
+    monkeypatch, tmp_path
+):
+    state_path, proposal_path, _, state = _configure(monkeypatch, tmp_path)
+    legacy_round = {
+        "round": 1,
+        "experiment": 4,
+        "status": "completed",
+        "results": {"research_evaluations": []},
+    }
+    state["preparation_measurement"] = {
+        "experiment": 4,
+        "rounds": [legacy_round],
+        "partial_evaluations": [{"candidate": "working"}],
+        "partial_task_reference_evaluations": [],
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    proposal_path.write_text(
+        json.dumps(
+            {
+                "inquiry_decision": {
+                    "action": "close",
+                    "outcome": "The legacy evidence resolved this inquiry.",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+
+    assert (
+        run_experiment.resolve_inquiry_decision(
+            json.loads(proposal_path.read_text(encoding="utf-8"))
+        )
+        == 0
+    )
+
+    record = next(
+        item
+        for item in repository.history_records()
+        if item.get("record_type") == "inquiry"
+    )
+    assert record["measurement_rounds"] == [legacy_round]
+    assert record["preparation_evaluations"] == [{"candidate": "working"}]
 
 
 def _brief_state() -> dict:
@@ -422,7 +614,7 @@ def test_preparation_rounds_render_for_the_upcoming_experiment():
         )
     )
 
-    assert "Preparation measurement rounds for the upcoming experiment" in rendered
+    assert "Preparation measurement rounds for the active inquiry" in rendered
     assert "working" in rendered
     assert "success 90.00%" in rendered
     # The upcoming experiment's round is never shown as the previous one's.

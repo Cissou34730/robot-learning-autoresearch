@@ -59,7 +59,7 @@ from research.runner_repository import (
 )
 
 
-def test_research_memory_requires_an_active_inquiry(monkeypatch, tmp_path):
+def test_research_memory_requires_a_decision_frontier(monkeypatch, tmp_path):
     evidence = tmp_path / "evidence.txt"
     evidence.write_text("Observed behavior.", encoding="utf-8")
     postmortems = tmp_path / "postmortems.md"
@@ -67,7 +67,7 @@ def test_research_memory_requires_an_active_inquiry(monkeypatch, tmp_path):
         "## campaign / Scientific strategy\n\n"
         "**Current synthesis:** A current explanation.\n\n"
         "**Lessons and limits:** One observation with limited scope.\n\n"
-        "**Open questions:** Which mechanism explains it?\n",
+        "**Competing explanations:** Which mechanism explains it?\n",
         encoding="utf-8",
     )
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
@@ -81,32 +81,52 @@ def test_research_memory_requires_an_active_inquiry(monkeypatch, tmp_path):
     }
     state = {"campaign": {"id": "campaign"}}
 
-    with pytest.raises(ValueError, match="Active inquiry"):
+    with pytest.raises(ValueError, match="Decision frontier"):
         protocol.validate_research_memory(proposal, state)
 
     postmortems.write_text(
         postmortems.read_text(encoding="utf-8")
-        + "\n**Active inquiry:** Test what evidence would distinguish the mechanisms.\n",
+        + "\n**Decision frontier:** Which observation would distinguish the mechanisms?\n",
         encoding="utf-8",
     )
     protocol.validate_research_memory(proposal, state)
 
 
-def test_brief_keeps_active_inquiry_subordinate_to_the_human_objective():
+def test_brief_renders_the_causal_research_map():
     section = "\n".join(
         brief._v4_synthesis_section(
             "## campaign / Scientific strategy\n\n"
             "**Current synthesis:** A current explanation.\n\n"
             "**Lessons and limits:** One observation with limited scope.\n\n"
-            "**Open questions:** Which mechanism explains it?\n\n"
-            "**Active inquiry:** Test what evidence distinguishes the mechanisms.\n",
+            "**Competing explanations:** Two mechanisms remain plausible.\n\n"
+            "**Decision frontier:** Which observation distinguishes the mechanisms?\n",
             "campaign",
         )
     )
 
-    assert "provisional active inquiry" in section
-    assert "The human objective outranks it" in section
-    assert "redirect or end the inquiry" in section
+    assert "Causal research map" in section
+    assert "competing explanations" in section
+    assert "not an implementation agenda" in section
+
+
+def test_legacy_strategy_labels_remain_readable(monkeypatch, tmp_path):
+    source = tmp_path / "evidence.txt"
+    source.write_text("evidence", encoding="utf-8")
+    memory = tmp_path / "postmortems.md"
+    memory.write_text(
+        "## campaign / Scientific strategy\n\n"
+        "**Direction:** A synthesis.\n\n"
+        "**Lessons and limits:** Limited evidence.\n\n"
+        "**Open questions:** Two causes remain.\n\n"
+        "**Active inquiry:** Evidence that would distinguish them.\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", memory)
+    protocol.validate_research_memory(
+        {"reasoning": {"evidence": [{"source": "evidence.txt"}]}},
+        {"campaign": {"id": "campaign"}},
+    )
 
 
 def _paired_evidence_plan(candidate_paths: list[str], reference_paths: list[str]):
@@ -1711,7 +1731,9 @@ def test_model_reasoning_is_optional_but_validated_when_provided(kind):
         validate_training_proposal(proposal, baseline=False)
 
     proposal["reasoning"]["scientific_model"] = {}
-    with pytest.raises(ValueError, match="reasoning.scientific_model must not be empty"):
+    with pytest.raises(
+        ValueError, match="reasoning.scientific_model must not be empty"
+    ):
         validate_training_proposal(proposal, baseline=False)
 
     proposal["reasoning"]["scientific_model"] = {"connection": " "}
@@ -1736,7 +1758,9 @@ def test_policy_intervention_requires_a_behavioral_path_and_comparison(kind):
         proposal.pop("change")
 
     intervention = proposal["reasoning"].pop("policy_intervention")
-    with pytest.raises(TypeError, match="reasoning.policy_intervention must be an object"):
+    with pytest.raises(
+        TypeError, match="reasoning.policy_intervention must be an object"
+    ):
         validate_training_proposal(proposal, baseline=False)
 
     for field in ("behavioral_path", "behavioral_test"):

@@ -110,7 +110,7 @@ def display_order(
         candidates,
         key=lambda candidate: (
             hashlib.sha256(
-                f"{scope}|{_candidate_identity(candidate)}".encode("utf-8")
+                f"{scope}|{_candidate_identity(candidate)}".encode()
             ).hexdigest(),
             _candidate_identity(candidate),
         ),
@@ -194,8 +194,13 @@ def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
     if not campaign_id and history:
         campaign_id = history[-1].get("campaign_id")
     latest = {}
+    inquiries = []
     for row in history:
-        if row.get("campaign_id") == campaign_id:
+        if row.get("campaign_id") != campaign_id:
+            continue
+        if row.get("record_type") == "inquiry":
+            inquiries.append(row)
+        else:
             latest[row["index"]] = row
     rows = [latest[n] for n in sorted(latest)]
     current_state = state if state.get("campaign", {}).get("id") == campaign_id else {}
@@ -206,6 +211,7 @@ def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
         "id": campaign_id or "legacy",
         "state": current_state,
         "rows": rows,
+        "inquiries": inquiries,
         "usage": usage,
     }
 
@@ -345,6 +351,7 @@ def preparation_row(state: dict, rows: list[dict]) -> dict | None:
 
 def comparison_metrics(campaign: dict) -> dict:
     rows, usage = campaign["rows"], campaign["usage"]
+    inquiries = campaign.get("inquiries") or []
     state = campaign.get("state") or {}
     initializations = Counter(
         f"{r.get('kind', NA)}/{r.get('initialization', NA)}" for r in rows
@@ -356,6 +363,7 @@ def comparison_metrics(campaign: dict) -> dict:
         if candidate.startswith(("checkpoint-", "candidate-"))
     )
     evidence = [m for r in rows for m in measurements(r)]
+    evidence += [m for inquiry in inquiries for m in measurements(inquiry)]
     preparation = preparation_row(state, rows)
     if preparation is not None:
         evidence += measurements(preparation)
@@ -396,6 +404,7 @@ def comparison_metrics(campaign: dict) -> dict:
         derived_usage.append(values)
     return {
         "Recorded experiments": str(len(rows)),
+        "Closed inquiries": str(len(inquiries)),
         # The baseline is automatic and always fresh, so it is excluded. This
         # counts the discretionary restarts from zero, which is the quantity
         # that separated the converging campaigns from the stalled ones.

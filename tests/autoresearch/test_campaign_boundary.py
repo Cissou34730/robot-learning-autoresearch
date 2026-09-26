@@ -48,6 +48,26 @@ class TestCampaignIdentifierAccess:
 
         assert runner_repository.current_campaign_id(state) is None
 
+    def test_inquiry_identity_is_independent_from_experiment_identity(self):
+        state = {
+            "campaign": {
+                "id": "campaign",
+                "started_at": "now",
+                "base_commit": "base",
+            },
+            "campaign_experiment_counters": {"campaign": 7},
+            "campaign_inquiry_counters": {"campaign": 2},
+            "last_allocated_experiment": 7,
+            "last_experiment": 7,
+            "active_inquiry": None,
+        }
+
+        inquiry = runner_protocol.ensure_active_inquiry(state)
+
+        assert inquiry["id"] == 3
+        assert state["campaign_experiment_counters"]["campaign"] == 7
+        assert state["last_allocated_experiment"] == 7
+
 
 class TestCampaignArtifactPaths:
     """Filesystem paths should be organized by campaign."""
@@ -133,6 +153,21 @@ class TestResultRecordCampaignAttribution:
             assert len(filtered) == 0
         finally:
             runner_repository.result_records = original_records
+
+    def test_inquiry_records_do_not_allocate_or_appear_as_experiments(
+        self, monkeypatch, tmp_path
+    ):
+        results = tmp_path / "results.jsonl"
+        results.write_text(
+            '{"record_type":"experiment","campaign_id":"c","index":1}\n'
+            '{"record_type":"inquiry","campaign_id":"c","inquiry_id":1}\n',
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(runner_paths, "RESULTS_PATH", results)
+
+        assert len(runner_repository.history_records()) == 2
+        assert [record["index"] for record in runner_repository.result_records()] == [1]
+        assert runner_repository.latest_recorded_experiment() == 1
 
 
 class TestArchiveCandidatesWithCampaign:

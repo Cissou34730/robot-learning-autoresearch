@@ -76,11 +76,13 @@ human-only maintenance operation, never a Researcher experiment command.
 - `research/runner_*.py` - Runner protocol, execution, persistence, paths and
   console implementation.
 - `research/current_params.json` - active runtime configuration overrides.
-- `research/results.jsonl` - authoritative experiment history.
+- `research/results.jsonl` - authoritative experiment and inquiry history.
 - `research/EXPERIMENTS.md` - generated human-readable history.
 - `research/brief.md` - generated current Researcher context.
 - `research/scientific_model.md` - campaign-start Researcher model of the robot
   and task, frozen after the preliminary phase and regenerated on fresh reset.
+- `research/lab/` - campaign-scoped Researcher laboratory tools and analyses,
+  published independently from policy/training recipes and removed by reset.
 - `research/evaluations/` - durable detailed development measurements.
 - `research/checkpoints/accepted/` and `research/checkpoints/retained/` - readable
   legacy archive locations and durable reusable policy lineages. Version-4
@@ -132,6 +134,7 @@ path takes precedence over any researcher-owned prefix.
 - `robot_learning/train.py`, `robot_learning/evaluate.py`,
   `robot_learning/play.py`;
 - `research/current_params.json`;
+- `research/lab/`;
 - the preliminary phase deliverable `research/scientific_model.md` (only before
   baseline training); the later phase deliverables `research/proposal.json`,
   `research/evaluation_request.json` and `research/postmortems.md`. During v4
@@ -148,9 +151,11 @@ create, modify or maintain test files, and any path under `tests/` in its delta
 is rejected as a path it does not own: it must drop those paths from the
 proposal rather than edit or restore them.
 
-Scientific analysis, diagnostics and temporary tooling must be created within a
-researcher-owned code prefix. They are ordinary experiment code: they travel
-with its code lineage and validation, and are not an ignored scratch surface.
+Durable campaign analysis and diagnostic tooling belongs under `research/lab/`.
+The Runner publishes it with a separate manifest, fingerprint and commit. It is
+not policy/training recipe identity, is never reverted or restored by lineage
+decisions, and is removed by campaign reset. Scientific runtime changes remain
+in the scenario/training surface and travel with policy recipe lineage.
 
 ## Validation
 
@@ -187,7 +192,8 @@ Automated campaign commits use the `camp: ` subject prefix. Ordinary code,
 harness and documentation commits must not use that prefix.
 
 `research/results.jsonl` is written before `research/EXPERIMENTS.md` is
-regenerated atomically. Validation-only commands do not reconcile or mutate the
+regenerated atomically. It contains both experiment records and measurement-only
+inquiry outcomes. Validation-only commands do not reconcile or mutate the
 derived view. Researcher-owned scientific code travels in the experiment's
 `code_changes` and Git lineage; tests never do, because the Researcher does not
 own them.

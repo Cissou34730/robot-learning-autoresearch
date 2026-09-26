@@ -3,9 +3,31 @@
 This file records the structural choices made with the human about the
 simulation, learning setup, reward, researcher freedom, and experiment
 selection protocol. It records both active decisions and the choices they
-superseded. It does not instruct the autonomous researcher and does not replace
+superseded. It does not instruct the Researcher and does not replace
 `research/program.md`, `research/scenario.md`, `research/instruments.md` or
 `research/current_params.json`.
+
+## 2026-09-26 - Inquiry lifecycle, causal map, persistent PI and campaign lab
+
+- **Inquiry identity:** Campaign inquiries have counters and durable identities
+  independent of experiment allocation. Training records carry inquiry
+  provenance, while an inquiry may close from preparation evidence without
+  training, official assessment or campaign termination.
+- **Inquiry closure:** The minimal `inquiry_decision` transition records one
+  outcome. Recovery upserts that inquiry identity, so restart cannot duplicate
+  its history or consume an experiment number.
+- **Causal research map:** Scientific strategy uses Current synthesis, Lessons
+  and limits, Competing explanations and Decision frontier. The frontier states
+  the unresolved distinction and discriminating evidence, not an implementation
+  plan. Legacy strategy labels remain readable.
+- **Principal-investigator continuity:** One campaign-scoped persisted session
+  owns inquiry and experiment-preparation decisions across launcher restarts.
+  It has explicit allocated/started state; a failed resume never creates a
+  replacement. Post-training and local phase sessions remain separate.
+- **Campaign laboratory:** `research/lab/` is a narrow Researcher-owned surface
+  with its own commit, manifest and fingerprint. It is excluded from scientific
+  recipe identity and keep/revert/restore operations, survives failed policy
+  interventions, and is removed by campaign reset.
 
 ## 2026-09-22 - The terminal assessment is a verdict, not an instrument
 

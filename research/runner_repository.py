@@ -12,6 +12,7 @@ import shutil
 import signal
 import subprocess
 import time
+import uuid
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
@@ -180,8 +181,25 @@ def is_runner_owned(path: str) -> bool:
 
 
 def scientific_change_paths(changed: list[str]) -> list[str]:
-    """The researcher intervention alone: campaign memory is not a change to it."""
+    """Policy/training recipe changes, excluding campaign memory and lab tools."""
+    from research import runner_protocol as protocol
+
+    return [
+        path
+        for path in changed
+        if not is_runner_owned(path) and not protocol.is_campaign_lab(path)
+    ]
+
+
+def researcher_change_paths(changed: list[str]) -> list[str]:
+    """All Researcher changes, including campaign laboratory tooling."""
     return [path for path in changed if not is_runner_owned(path)]
+
+
+def campaign_lab_change_paths(changed: list[str]) -> list[str]:
+    from research import runner_protocol as protocol
+
+    return [path for path in changed if protocol.is_campaign_lab(path)]
 
 
 def assert_research_surface() -> list[str]:
@@ -210,6 +228,13 @@ def scientific_delta(parent: str) -> list[str]:
     """
     committed = committed_change_paths(parent) if parent else []
     return scientific_change_paths(
+        list(dict.fromkeys([*committed, *status_paths((".",))]))
+    )
+
+
+def researcher_delta(parent: str) -> list[str]:
+    committed = committed_change_paths(parent) if parent else []
+    return researcher_change_paths(
         list(dict.fromkeys([*committed, *status_paths((".",))]))
     )
 
@@ -296,6 +321,61 @@ def publish_scientific_recipe(experiment: int, scope: list[str]) -> str:
     ):
         push_head()
     return git("rev-parse", "HEAD").strip()
+
+
+def campaign_lab_manifest() -> list[dict]:
+    """Fingerprint every tracked or untracked file in the campaign laboratory."""
+    tracked = [
+        line.strip()
+        for line in git("ls-files", "--", "research/lab").splitlines()
+        if line.strip()
+    ]
+    changed = campaign_lab_change_paths(status_paths(("research/lab",)))
+    manifest: list[dict] = []
+    for relative in sorted({*tracked, *changed}):
+        path = resolve_repo_path(relative)
+        if path.is_file():
+            manifest.append({"path": relative, "fingerprint": file_fingerprint(path)})
+    return manifest
+
+
+def publish_campaign_laboratory(state: dict) -> dict | None:
+    """Publish lab changes separately and persist their campaign provenance."""
+    changed = campaign_lab_change_paths(status_paths(("research/lab",)))
+    if changed:
+        from research import runner_execution as execution
+
+        execution.validate_changed_sources(changed)
+        commit_paths(campaign_commit_message("update campaign laboratory"), changed)
+    manifest = campaign_lab_manifest()
+    if not manifest:
+        if state.get("campaign_lab") is not None:
+            state["campaign_lab"] = None
+            write_state(state)
+        return None
+    fingerprint = hashlib.sha256(
+        json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    existing = state.get("campaign_lab")
+    if (
+        not changed
+        and isinstance(existing, dict)
+        and existing.get("fingerprint") == fingerprint
+    ):
+        return existing
+    commit = git("log", "-1", "--format=%H", "--", "research/lab").strip()
+    if not commit:
+        commit = git("rev-parse", "HEAD").strip()
+    if not changed:
+        push_head()
+    provenance = {
+        "commit": commit,
+        "manifest": manifest,
+        "fingerprint": fingerprint,
+    }
+    state["campaign_lab"] = provenance
+    write_state(state)
+    return provenance
 
 
 def commit_runner_memory(message: str) -> bool:
@@ -552,6 +632,56 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
         campaign.get(field) for field in ("id", "started_at", "base_commit")
     ):
         raise RuntimeError("research state is missing a valid campaign identity")
+    campaign_id = str(campaign["id"])
+    state.setdefault(
+        "campaign_inquiry_counters",
+        {
+            campaign_id: max(
+                int(state.get("last_allocated_inquiry") or 0),
+                int(state.get("last_inquiry") or 0),
+            )
+        },
+    )
+    state.setdefault("last_allocated_inquiry", 0)
+    state.setdefault("last_inquiry", 0)
+    state.setdefault("active_inquiry", None)
+    state.setdefault("pending_inquiry_operation", None)
+    state.setdefault("principal_investigator_session", None)
+    state.setdefault("campaign_lab", None)
+    inquiry_counters = state["campaign_inquiry_counters"]
+    if not isinstance(inquiry_counters, dict):
+        raise TypeError("campaign_inquiry_counters must be an object")
+    inquiry_counter = inquiry_counters.setdefault(
+        campaign_id,
+        max(
+            int(state.get("last_allocated_inquiry") or 0),
+            int(state.get("last_inquiry") or 0),
+        ),
+    )
+    if (
+        not isinstance(inquiry_counter, int)
+        or isinstance(inquiry_counter, bool)
+        or inquiry_counter < 0
+    ):
+        raise ValueError("campaign inquiry counter must be a non-negative integer")
+    active_inquiry = state["active_inquiry"]
+    if active_inquiry is not None and (
+        not isinstance(active_inquiry, dict)
+        or active_inquiry.get("status") != "active"
+        or not isinstance(active_inquiry.get("id"), int)
+        or isinstance(active_inquiry.get("id"), bool)
+        or int(active_inquiry["id"]) < 1
+    ):
+        raise ValueError("active_inquiry must identify one active inquiry")
+    pi_session = state["principal_investigator_session"]
+    if pi_session is not None and (
+        not isinstance(pi_session, dict)
+        or pi_session.get("campaign_id") != campaign_id
+        or pi_session.get("role") != "principal_investigator"
+        or pi_session.get("status") not in {"allocated", "started"}
+        or not str(pi_session.get("id") or "").strip()
+    ):
+        raise ValueError("principal_investigator_session is invalid")
     legacy_aliases = sorted(key for key in state if key.startswith("accepted_"))
     if legacy_aliases:
         raise RuntimeError(
@@ -678,9 +808,16 @@ def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
         "best_known_lineage": None,
         "campaign": copy.deepcopy(campaign),
         "campaign_experiment_counters": {campaign_id: 0},
+        "campaign_inquiry_counters": {campaign_id: 0},
         "retained_lineages": [],
         "last_experiment": 0,
         "last_allocated_experiment": 0,
+        "last_allocated_inquiry": 0,
+        "last_inquiry": 0,
+        "active_inquiry": None,
+        "pending_inquiry_operation": None,
+        "principal_investigator_session": None,
+        "campaign_lab": None,
         "pending_scientific_parent": None,
         "pending_training_operation": None,
         "pending_analysis": None,
@@ -969,6 +1106,40 @@ def current_campaign_base_commit(state: dict) -> str | None:
     return str(base_commit) if base_commit else None
 
 
+def ensure_principal_investigator_session(state: dict) -> dict:
+    """Allocate the campaign PI identity once; never infer a replacement."""
+    campaign_id = current_campaign_id(state)
+    if not campaign_id:
+        raise ValueError("a principal-investigator session requires a campaign")
+    session = state.get("principal_investigator_session")
+    if isinstance(session, dict):
+        if session.get("campaign_id") != campaign_id:
+            raise ValueError(
+                "principal-investigator session belongs to another campaign"
+            )
+        if session.get("status") not in {"allocated", "started"}:
+            raise ValueError("principal-investigator session has invalid status")
+        if not str(session.get("id") or "").strip():
+            raise ValueError("principal-investigator session has no identity")
+        return session
+    session = {
+        "id": str(uuid.uuid4()),
+        "campaign_id": campaign_id,
+        "role": "principal_investigator",
+        "status": "allocated",
+    }
+    state["principal_investigator_session"] = session
+    return session
+
+
+def mark_principal_investigator_session_started(state: dict) -> dict:
+    session = ensure_principal_investigator_session(state)
+    if session["status"] == "allocated":
+        session["status"] = "started"
+        write_state(state)
+    return session
+
+
 # --- campaign history ------------------------------------------------------
 
 
@@ -1150,8 +1321,8 @@ def compact_result_record(result: dict) -> dict:
     return record
 
 
-def result_records() -> list[dict]:
-    """The authoritative experiment history, oldest first."""
+def history_records() -> list[dict]:
+    """The authoritative campaign history, oldest first."""
     if not paths.RESULTS_PATH.exists():
         return []
     return [
@@ -1161,11 +1332,29 @@ def result_records() -> list[dict]:
     ]
 
 
+def result_records() -> list[dict]:
+    """The authoritative experiment history, excluding inquiry-only records."""
+    return [
+        record
+        for record in history_records()
+        if record.get("record_type", "experiment") == "experiment"
+    ]
+
+
 def result_records_for_campaign(campaign_id: str) -> list[dict]:
     """Filter result records to a specific campaign, ordered oldest first."""
     return [
         record
         for record in result_records()
+        if record.get("campaign_id") == campaign_id
+    ]
+
+
+def history_records_for_campaign(campaign_id: str) -> list[dict]:
+    """Filter all experiment and inquiry records to one campaign."""
+    return [
+        record
+        for record in history_records()
         if record.get("campaign_id") == campaign_id
     ]
 
@@ -1275,9 +1464,33 @@ def experiment_log_row(record: dict) -> str:
 
 
 def render_experiment_log(records: list[dict]) -> str:
-    return EXPERIMENT_LOG_HEADER + "".join(
-        experiment_log_row(record) + "\n" for record in records
+    experiments = [
+        record
+        for record in records
+        if record.get("record_type", "experiment") == "experiment"
+    ]
+    inquiries = [record for record in records if record.get("record_type") == "inquiry"]
+    rendered = EXPERIMENT_LOG_HEADER + "".join(
+        experiment_log_row(record) + "\n" for record in experiments
     )
+    if inquiries:
+        rendered += (
+            "\n## Inquiry outcomes\n\n"
+            "| Inquiry | Outcome | Experiments | Measurement rounds |\n"
+            "|---:|---|---|---:|\n"
+        )
+        for record in inquiries:
+            outcome = " ".join(
+                str(record.get("outcome", "-")).replace("|", "/").split()
+            )
+            experiments_text = (
+                ", ".join(str(index) for index in record.get("experiments", [])) or "-"
+            )
+            rendered += (
+                f"| {record['inquiry_id']} | {outcome} | {experiments_text} | "
+                f"{len(record.get('measurement_rounds') or [])} |\n"
+            )
+    return rendered
 
 
 def regenerate_experiment_log() -> None:
@@ -1286,7 +1499,7 @@ def regenerate_experiment_log() -> None:
     Written atomically so an interruption leaves either the previous derived
     view or the current one, never a partial second history.
     """
-    atomic_write_text(paths.LOG_PATH, render_experiment_log(result_records()))
+    atomic_write_text(paths.LOG_PATH, render_experiment_log(history_records()))
 
 
 def synchronize_experiment_log() -> None:
@@ -1294,7 +1507,7 @@ def synchronize_experiment_log() -> None:
     if not paths.LOG_PATH.exists():
         regenerate_experiment_log()
         return
-    expected = render_experiment_log(result_records())
+    expected = render_experiment_log(history_records())
     if paths.LOG_PATH.read_text(encoding="utf-8") != expected:
         atomic_write_text(paths.LOG_PATH, expected)
 
@@ -1308,6 +1521,36 @@ def append_result(result: dict) -> None:
     regenerate_experiment_log()
 
 
+def upsert_inquiry_result(result: dict) -> None:
+    record = compact_result_record(result)
+    record["record_type"] = "inquiry"
+    record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
+    campaign_id = record.get("campaign_id")
+    inquiry_id = record.get("inquiry_id")
+    if not campaign_id or not isinstance(inquiry_id, int):
+        raise ValueError("an inquiry record needs campaign_id and integer inquiry_id")
+    updated: list[dict] = []
+    replaced = False
+    for existing in history_records():
+        if (
+            existing.get("record_type") == "inquiry"
+            and existing.get("campaign_id") == campaign_id
+            and existing.get("inquiry_id") == inquiry_id
+        ):
+            if not replaced:
+                updated.append(record)
+                replaced = True
+            continue
+        updated.append(existing)
+    if not replaced:
+        updated.append(record)
+    atomic_write_text(
+        paths.RESULTS_PATH,
+        "".join(json.dumps(item, sort_keys=True) + "\n" for item in updated),
+    )
+    regenerate_experiment_log()
+
+
 def upsert_result(result: dict) -> None:
     """Atomically replace one schema-v4 experiment record and rebuild its view."""
     record = compact_result_record(result)
@@ -1316,12 +1559,13 @@ def upsert_result(result: dict) -> None:
     index = record.get("index")
     if not campaign_id or not isinstance(index, int):
         raise ValueError("a schema-v4 result needs campaign_id and integer index")
-    records = result_records()
+    records = history_records()
     replaced = False
     updated: list[dict] = []
     for existing in records:
         if (
-            existing.get("campaign_id") == campaign_id
+            existing.get("record_type", "experiment") == "experiment"
+            and existing.get("campaign_id") == campaign_id
             and existing.get("index") == index
         ):
             if not replaced:

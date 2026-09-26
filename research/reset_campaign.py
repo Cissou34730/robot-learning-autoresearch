@@ -40,6 +40,7 @@ EPHEMERAL_PATHS = (
     "models/candidates",
 )
 CAMPAIGN_PATHS = (
+    "research/lab",
     "research/EXPERIMENTS.md",
     "research/results.jsonl",
     "research/postmortems.md",
@@ -96,15 +97,14 @@ def reset_backup_root() -> Path:
         ).strip()
     ).resolve()
     administrative_roots = {
-        Path(
-            str(git("rev-parse", "--path-format=absolute", option)).strip()
-        ).resolve()
+        Path(str(git("rev-parse", "--path-format=absolute", option)).strip()).resolve()
         for option in ("--git-dir", "--git-common-dir")
     }
-    if backup.name != "research-reset-backups" or backup.parent not in administrative_roots:
-        raise RuntimeError(
-            f"Git resolved an unsafe reset-maintenance path: {backup}"
-        )
+    if (
+        backup.name != "research-reset-backups"
+        or backup.parent not in administrative_roots
+    ):
+        raise RuntimeError(f"Git resolved an unsafe reset-maintenance path: {backup}")
     return backup
 
 
@@ -223,7 +223,9 @@ def clean_campaign_changes(*, recipe_ref: str | None = None) -> None:
             + ", ".join(unrelated)
         )
     if changed:
-        git("restore", "--source=HEAD", "--staged", "--worktree", "--", *sorted(changed))
+        git(
+            "restore", "--source=HEAD", "--staged", "--worktree", "--", *sorted(changed)
+        )
     if str(git("ls-files", "--others", "--exclude-standard", "-z")):
         git("clean", "-fd", "--")
 
@@ -384,6 +386,9 @@ def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
     working = state.get("working_lineage")
     best = state.get("best_known_lineage")
     pending_fields = (
+        "active_inquiry",
+        "pending_inquiry_operation",
+        "preparation_measurement",
         "pending_analysis",
         "pending_training_operation",
         "pending_evaluation_request",
@@ -554,9 +559,10 @@ def publish_reset_changes(
     if forced:
         git("add", "-f", "--", *forced)
         stageable.extend(forced)
-    if not stageable or not str(
-        git("diff", "--cached", "--name-only", "--", *stageable)
-    ).strip():
+    if (
+        not stageable
+        or not str(git("diff", "--cached", "--name-only", "--", *stageable)).strip()
+    ):
         return None
     git(
         "commit",
@@ -566,9 +572,7 @@ def publish_reset_changes(
         *stageable,
     )
     commit = str(git("rev-parse", "HEAD")).strip()
-    operation["commits"].append(
-        {"purpose": purpose, "commit": commit, "pushed": False}
-    )
+    operation["commits"].append({"purpose": purpose, "commit": commit, "pushed": False})
     update_operation(backup, operation, f"{purpose}_committed")
     repository.push_head()
     operation["commits"][-1]["pushed"] = True
@@ -578,8 +582,7 @@ def publish_reset_changes(
 
 def path_is_covered(relative: str, targets: list[str]) -> bool:
     return any(
-        relative == target or relative.startswith(f"{target}/")
-        for target in targets
+        relative == target or relative.startswith(f"{target}/") for target in targets
     )
 
 
@@ -590,9 +593,7 @@ def validate_recovery_operation(operation_path: str) -> tuple[Path, dict]:
         candidate = candidate / "operation.json"
     candidate = candidate.resolve()
     if candidate.name != "operation.json" or candidate.parent.parent != backup_root:
-        raise ValueError(
-            f"recovery operation must be directly below {backup_root}"
-        )
+        raise ValueError(f"recovery operation must be directly below {backup_root}")
     try:
         operation = json.loads(candidate.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
@@ -645,33 +646,24 @@ def validate_recovery_operation(operation_path: str) -> tuple[Path, dict]:
             if backup_path.exists():
                 raise ValueError(f"unexpected backup content for {entry['path']}")
             continue
-        if (
-            entry.get("kind") not in {"file", "directory"}
-            or not backup_path.exists()
-        ):
+        if entry.get("kind") not in {"file", "directory"} or not backup_path.exists():
             raise ValueError(f"reset backup is incomplete for {entry['path']}")
         if path_fingerprint(backup_path) != entry.get("fingerprint"):
-            raise ValueError(
-                f"reset backup fingerprint mismatch for {entry['path']}"
-            )
+            raise ValueError(f"reset backup fingerprint mismatch for {entry['path']}")
     return candidate, operation
 
 
 def changed_worktree_paths() -> set[str]:
     changed = set(str(git("diff", "--name-only")).splitlines())
     changed.update(str(git("diff", "--cached", "--name-only")).splitlines())
-    changed.update(
-        str(git("ls-files", "--others", "--exclude-standard")).splitlines()
-    )
+    changed.update(str(git("ls-files", "--others", "--exclude-standard")).splitlines())
     return {path for path in changed if path}
 
 
 def restore_backup_files(operation_path: Path, operation: dict) -> None:
     targets = operation["targeted_paths"]
     unrelated = sorted(
-        path
-        for path in changed_worktree_paths()
-        if not path_is_covered(path, targets)
+        path for path in changed_worktree_paths() if not path_is_covered(path, targets)
     )
     if unrelated:
         raise RuntimeError(
@@ -910,6 +902,13 @@ def reset_baseline(
 ) -> tuple[str, str, Path]:
     source = resolve_commit(reference, "BaselineRef")
     state, records, restore = verify_baseline_source(source)
+    state["principal_investigator_session"] = None
+    state["active_inquiry"] = None
+    state["pending_inquiry_operation"] = None
+    state["campaign_lab"] = None
+    state["campaign_inquiry_counters"] = {str(state["campaign"]["id"]): 0}
+    state["last_allocated_inquiry"] = 0
+    state["last_inquiry"] = 0
     recipe_plan = scientific_plan(str(state["working_lineage"]["scientific_commit"]))
     external_logs = baseline_log_source(source, state, training_log_source)
     targets = sorted({*CAMPAIGN_PATHS, *restore, *plan_paths(recipe_plan)})
@@ -922,6 +921,11 @@ def reset_baseline(
         repository.apply_code_lineage_decision(recipe_plan)
         validate_restored_recipe()
         apply_restore(source, restore)
+        repository.write_state(state)
+        repository.atomic_write_text(
+            paths.RESULTS_PATH,
+            "".join(json.dumps(record, sort_keys=True) + "\n" for record in records),
+        )
         campaign_id = str(state["campaign"]["id"])
         tracked_logs = [
             path
@@ -979,7 +983,12 @@ def main() -> int:
     args = parse_args()
     try:
         if args.recover:
-            if args.recipe_ref or args.baseline_ref or args.training_log_source or args.clean:
+            if (
+                args.recipe_ref
+                or args.baseline_ref
+                or args.training_log_source
+                or args.clean
+            ):
                 raise ValueError("recovery accepts --recover only, without --clean")
             backup, commit, _ = recover_reset(args.recover)
             print("=== Research reset recovered ===")

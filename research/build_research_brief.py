@@ -1656,32 +1656,35 @@ def _aggregate_task_evidence_lines(state: dict, records: list[dict]) -> list[str
 
 
 def _v4_evidence_section(
-    state: dict, pending: dict | None, results: list[dict]
+    state: dict,
+    pending: dict | None,
+    results: list[dict],
+    inquiries: list[dict] | None = None,
 ) -> list[str]:
     """Aggregate fingerprint-bound development evidence."""
     return [
         "",
         "## Development evidence index",
         "",
-        *_v4_evidence_lines(state, pending, results),
+        *_v4_evidence_lines(state, pending, [*results, *(inquiries or [])]),
         *_aggregate_task_evidence_lines(
-            state, _evidence_records(state, results, pending)
+            state, _evidence_records(state, results, pending, inquiries)
         ),
     ]
 
 
 def _v4_synthesis_section(postmortems: str, campaign_id: str | None) -> list[str]:
-    """The Researcher-authored, revisable scientific synthesis."""
+    """The Researcher-authored, revisable causal research map."""
     strategy = scientific_strategy_section(postmortems, campaign_id)
     lines = [
         "",
-        "## Provisional scientific synthesis",
+        "## Causal research map",
         "",
         (
-            "Researcher-authored working memory of the campaign: its current "
-            "synthesis, lessons and limits, open questions, and provisional "
-            "active inquiry. The human objective outranks it, and evidence may "
-            "redirect or end the inquiry:"
+            "Researcher-authored working memory of the campaign: current "
+            "synthesis, lessons and limits, competing explanations, and the "
+            "decision frontier. The frontier states the unresolved distinction "
+            "and discriminating evidence; it is not an implementation agenda:"
         ),
         "",
     ]
@@ -1881,12 +1884,16 @@ def _preparation_ledger_record(
 
 
 def _evidence_records(
-    state: dict, results: list[dict], pending: dict | None
+    state: dict,
+    results: list[dict],
+    pending: dict | None,
+    inquiries: list[dict] | None = None,
 ) -> list[dict]:
     """Every record that carries measurements, experiments and preparation alike."""
     records = _cost_records(state, results, pending)
     ledger_record = _preparation_ledger_record(state, records)
-    return [*records, ledger_record] if ledger_record else list(records)
+    evidence = [*records, *(inquiries or [])]
+    return [*evidence, ledger_record] if ledger_record else evidence
 
 
 def _fresh_restart_line(records: list[dict]) -> str:
@@ -1920,7 +1927,10 @@ def _fresh_restart_line(records: list[dict]) -> str:
 
 
 def _v4_activity_record_section(
-    state: dict, results: list[dict], pending: dict | None
+    state: dict,
+    results: list[dict],
+    pending: dict | None,
+    inquiries: list[dict] | None = None,
 ) -> list[str]:
     """Factual campaign activity in non-overlapping units.
 
@@ -1934,7 +1944,7 @@ def _v4_activity_record_section(
     only the ones a training experiment persisted.
     """
     records = _cost_records(state, results, pending)
-    evidence_records = _evidence_records(state, results, pending)
+    evidence_records = _evidence_records(state, results, pending, inquiries)
     replications = sorted(
         int(record["index"])
         for record in records
@@ -2280,13 +2290,19 @@ def _v4_measurement_rounds_section(
         }
     else:
         ledger = preparation_ledger(state)
-        if ledger is not None and int(ledger.get("experiment", -1)) != (
-            upcoming_experiment_index(state)
-        ):
-            ledger = None
         if ledger is not None:
-            # The upcoming experiment's preparation rounds belong to it, never
-            # to the previous completed experiment.
+            active = state.get("active_inquiry")
+            ledger_inquiry = ledger.get("inquiry_id")
+            active_inquiry = active.get("id") if isinstance(active, dict) else None
+            if (ledger_inquiry is not None and ledger_inquiry != active_inquiry) or (
+                ledger_inquiry is None
+                and int(ledger.get("experiment", -1))
+                != upcoming_experiment_index(state)
+            ):
+                ledger = None
+        if ledger is not None:
+            # Preparation rounds belong to the active inquiry, never to the
+            # previous completed experiment.
             source = {
                 "experiment": int(ledger.get("experiment", 0)),
                 "evaluation_rounds": list(ledger.get("rounds") or []),
@@ -2322,7 +2338,7 @@ def _v4_measurement_rounds_section(
     )
     if preparation_source:
         heading = (
-            "Preparation measurement rounds for the upcoming experiment, in the "
+            "Preparation measurement rounds for the active inquiry, in the "
             "order they were requested. Questions, results and artifact "
             "references are retained; the recorded rationale for each past "
             "decision is kept below as a de-templated retrospective note, not as "
@@ -2532,6 +2548,7 @@ def _v4_official_section(state: dict, terminal) -> list[str]:
 def _render_v4_research_brief(
     state: dict,
     results: list[dict],
+    inquiries: list[dict],
     postmortems: str,
     campaign_id: str | None,
     campaign_base_commit: str | None,
@@ -2559,6 +2576,40 @@ def _render_v4_research_brief(
         campaign_id,
         campaign_base_commit,
     )
+    active_inquiry = state.get("active_inquiry")
+    pi_session = state.get("principal_investigator_session")
+    lab = state.get("campaign_lab")
+    lines.extend(
+        [
+            "",
+            "## Inquiry continuity",
+            "",
+            (
+                f"- Active inquiry: {active_inquiry.get('id')}."
+                if isinstance(active_inquiry, dict)
+                else "- Active inquiry: none."
+            ),
+            f"- Closed inquiries: {len(inquiries)}.",
+            (
+                f"- Principal-investigator session: `{pi_session.get('id')}` "
+                f"({pi_session.get('status')})."
+                if isinstance(pi_session, dict)
+                else "- Principal-investigator session: not allocated."
+            ),
+            (
+                f"- Campaign laboratory: commit `{lab.get('commit')}`, "
+                f"fingerprint `{lab.get('fingerprint')}`."
+                if isinstance(lab, dict)
+                else "- Campaign laboratory: none."
+            ),
+        ]
+    )
+    if inquiries:
+        lines.extend(["", "### Closed inquiry outcomes", ""])
+        for inquiry in inquiries[-5:]:
+            lines.append(
+                f"- Inquiry {inquiry.get('inquiry_id')}: {inquiry.get('outcome', '-')}"
+            )
 
     lines.extend(["", "## Latest experiment", ""])
     if isinstance(pending, dict):
@@ -2628,11 +2679,11 @@ def _render_v4_research_brief(
 
     lines.extend(_v4_experiment_index_section(results, pending))
 
-    lines.extend(_v4_evidence_section(state, pending, results))
+    lines.extend(_v4_evidence_section(state, pending, results, inquiries))
 
     lines.extend(_v4_measurement_rounds_section(state, results, pending))
 
-    lines.extend(_v4_activity_record_section(state, results, pending))
+    lines.extend(_v4_activity_record_section(state, results, pending, inquiries))
 
     lines.extend(_v4_synthesis_section(postmortems, campaign_id))
 
@@ -2686,14 +2737,29 @@ def render_research_brief() -> str:
         ]
         # Filter by campaign if available
         if campaign_id:
-            results = [r for r in all_results if r.get("campaign_id") == campaign_id]
+            campaign_records = [
+                r for r in all_results if r.get("campaign_id") == campaign_id
+            ]
         else:
-            results = all_results
+            campaign_records = all_results
+        results = [
+            record
+            for record in campaign_records
+            if record.get("record_type", "experiment") == "experiment"
+        ]
+        inquiries = [
+            record
+            for record in campaign_records
+            if record.get("record_type") == "inquiry"
+        ]
+    else:
+        inquiries = []
 
     if state.get("schema_version") == 4:
         return _render_v4_research_brief(
             state,
             results,
+            inquiries,
             postmortems,
             campaign_id,
             campaign_base_commit,
@@ -2868,13 +2934,12 @@ def render_research_brief() -> str:
                 "terminology are defined in `research/scenario.md`."
             ),
             "",
-            "## Provisional scientific synthesis",
+            "## Causal research map",
             "",
             (
-                "Researcher-authored working memory of the campaign: its current "
-                "synthesis, lessons and limits, open questions, and provisional "
-                "active inquiry. The human objective outranks it, and evidence may "
-                "redirect or end the inquiry:"
+                "Researcher-authored working memory of the campaign: current "
+                "synthesis, lessons and limits, competing explanations, and the "
+                "decision frontier:"
             ),
             "",
             "\n".join(strategy.splitlines()[1:]).strip()
@@ -3068,9 +3133,9 @@ def render_research_brief() -> str:
             ),
             (
                 "- Keep historical observations and decisions intact. Revise the "
-                "Scientific strategy as evidence changes so its Active inquiry "
-                "preserves continuity without becoming an authority over the human "
-                "objective."
+                "Scientific strategy as evidence changes so its decision frontier "
+                "preserves the unresolved causal distinction without becoming an "
+                "implementation agenda."
             ),
         ]
     )

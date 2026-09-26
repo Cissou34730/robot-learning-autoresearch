@@ -99,6 +99,10 @@ RESEARCHER_OWNED_PREFIXES = (
     "robot_learning/scenario/",
     "robot_learning/training/",
 )
+# Campaign laboratory tooling is Researcher-owned, but it is not part of a
+# policy's scientific recipe. It is published independently and never follows
+# keep/revert/restore lineage decisions.
+CAMPAIGN_LAB_PREFIXES = ("research/lab/",)
 RESEARCHER_OWNED_PATHS = {
     "robot_learning/evaluate.py",
     "robot_learning/play.py",
@@ -215,8 +219,17 @@ def is_researcher_owned(path: str) -> bool:
         return False
     if relative.startswith(PROTECTED_TEST_PREFIXES):
         return False
-    return relative in RESEARCHER_OWNED_PATHS or relative.startswith(
-        RESEARCHER_OWNED_PREFIXES
+    return (
+        relative in RESEARCHER_OWNED_PATHS
+        or relative.startswith(RESEARCHER_OWNED_PREFIXES)
+        or relative.startswith(CAMPAIGN_LAB_PREFIXES)
+    )
+
+
+def is_campaign_lab(path: str) -> bool:
+    relative = path.replace("\\", "/")
+    return not is_protected_source(relative) and relative.startswith(
+        CAMPAIGN_LAB_PREFIXES
     )
 
 
@@ -346,6 +359,37 @@ def resumed_experiment_index(
         if match:
             index = max(index, int(match.group(1)))
     return index
+
+
+def allocated_inquiry_index(state: dict, campaign_id: str | None = None) -> int:
+    """Highest inquiry identity allocated independently of experiments."""
+    if campaign_id is None:
+        return max(
+            int(state.get("last_allocated_inquiry") or 0),
+            int(state.get("last_inquiry") or 0),
+        )
+    return int((state.get("campaign_inquiry_counters") or {}).get(campaign_id, 0))
+
+
+def ensure_active_inquiry(state: dict) -> dict:
+    """Return the active inquiry, allocating one durable identity if needed."""
+    active = state.get("active_inquiry")
+    if isinstance(active, dict):
+        inquiry_id = active.get("id")
+        if isinstance(inquiry_id, int) and not isinstance(inquiry_id, bool):
+            return active
+        raise ValueError("active inquiry state is invalid")
+    if active is not None:
+        raise ValueError("active inquiry state is invalid")
+    campaign_id = repository.current_campaign_id(state)
+    if not campaign_id:
+        raise ValueError("an inquiry requires an active campaign")
+    inquiry_id = allocated_inquiry_index(state, campaign_id) + 1
+    state.setdefault("campaign_inquiry_counters", {})[campaign_id] = inquiry_id
+    state["last_allocated_inquiry"] = inquiry_id
+    active = {"id": inquiry_id, "status": "active"}
+    state["active_inquiry"] = active
+    return active
 
 
 # --- experiment shape ------------------------------------------------------
@@ -655,23 +699,41 @@ def validate_research_memory(proposal: dict, state: dict) -> None:
         raise ValueError(
             "postmortems.md needs the current campaign's Scientific strategy section"
         )
-    synthesis = re.search(
-        r"^\*\*(?:Current synthesis|Direction):\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
+    scientific_strategy_registers(section)
+
+
+def _strategy_entry(section: str, *labels: str) -> str:
+    alternatives = "|".join(re.escape(label) for label in labels)
+    match = re.search(
+        rf"^\*\*(?:{alternatives}):\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
         section,
         flags=re.MULTILINE | re.DOTALL,
     )
-    if not synthesis or not synthesis.group(1).strip():
-        raise ValueError(
-            "scientific strategy needs a non-empty 'Current synthesis' entry"
-        )
-    for label in ("Lessons and limits", "Open questions", "Active inquiry"):
-        match = re.search(
-            rf"^\*\*{re.escape(label)}:\*\*[ \t]*(.*?)(?=^\*\*|\Z)",
-            section,
-            flags=re.MULTILINE | re.DOTALL,
-        )
-        if not match or not match.group(1).strip():
+    return match.group(1).strip() if match else ""
+
+
+def scientific_strategy_registers(section: str) -> dict[str, str]:
+    """Return the causal research map, accepting the previous labels on read."""
+    registers = {
+        "current_synthesis": _strategy_entry(section, "Current synthesis", "Direction"),
+        "lessons_and_limits": _strategy_entry(section, "Lessons and limits"),
+        "competing_explanations": _strategy_entry(
+            section, "Competing explanations", "Open questions"
+        ),
+        "decision_frontier": _strategy_entry(
+            section, "Decision frontier", "Active inquiry"
+        ),
+    }
+    labels = {
+        "current_synthesis": "Current synthesis",
+        "lessons_and_limits": "Lessons and limits",
+        "competing_explanations": "Competing explanations",
+        "decision_frontier": "Decision frontier",
+    }
+    for key, label in labels.items():
+        if not registers[key]:
             raise ValueError(f"scientific strategy needs a non-empty '{label}' entry")
+    return registers
 
 
 # The Researcher owns science, not tests. Any test path in a proposal is a path
@@ -856,6 +918,10 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
         return "training"
     if state.get("terminal_campaign_status") is not None:
         raise ValueError("the campaign has received its terminal official assessment")
+    if state.get("pending_inquiry_operation") is not None:
+        raise ValueError(
+            "an inquiry closure is pending; resume it before submitting a proposal"
+        )
     if state.get("pending_final_benchmark") is not None:
         raise ValueError(
             "the final benchmark is pending; no research proposal is accepted"
@@ -879,6 +945,10 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
                 "previous_result_decision"
             )
         return "lineage"
+    if "inquiry_decision" in proposal:
+        if set(proposal) != {"inquiry_decision"}:
+            raise ValueError("an inquiry decision must contain only inquiry_decision")
+        return "inquiry"
     if "campaign_conclusion" in proposal:
         if state.get("pending_closure_operation") is not None:
             raise ValueError(
@@ -910,6 +980,8 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     contract = validate_proposal_phase(proposal, raw_state)
     if contract == "conclusion":
         plan_campaign_conclusion(proposal, raw_state)
+    elif contract == "inquiry":
+        plan_inquiry_decision(proposal, raw_state)
     elif contract == "lineage":
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
@@ -929,6 +1001,58 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
     if contract == "training" and not proposal.get("baseline"):
         validate_research_memory(proposal, raw_state)
     return contract
+
+
+def plan_inquiry_decision(proposal: dict, state: dict) -> dict:
+    """Validate the minimal non-terminal transition that closes an inquiry."""
+    if state.get("schema_version") != 4:
+        raise ValueError("inquiry_decision is only valid in a version-4 campaign")
+    if state.get("preparation_conclusion_only"):
+        raise ValueError(
+            "the experiment budget is exhausted; only a campaign conclusion may "
+            "be prepared"
+        )
+    active = state.get("active_inquiry")
+    if not isinstance(active, dict):
+        raise TypeError("there is no active inquiry to close")
+    if any(
+        state.get(field) is not None
+        for field in (
+            "pending_analysis",
+            "pending_evaluation_request",
+            "pending_researcher_decision",
+            "pending_closure_operation",
+            "pending_final_benchmark",
+            "pending_campaign_conclusion",
+        )
+    ):
+        raise ValueError("the current pending operation must be resolved first")
+    decision = proposal.get("inquiry_decision")
+    if not isinstance(decision, dict):
+        raise TypeError("inquiry_decision must be an object")
+    if set(decision) != {"action", "outcome"}:
+        raise ValueError("inquiry_decision requires exactly action and outcome")
+    if decision.get("action") != "close":
+        raise ValueError("inquiry_decision action must be close")
+    outcome = str(decision.get("outcome", "")).strip()
+    if not outcome:
+        raise ValueError("inquiry_decision outcome must be non-empty")
+    section = scientific_strategy_section(
+        paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
+        if paths.POSTMORTEM_PATH.exists()
+        else "",
+        repository.current_campaign_id(state),
+    )
+    if not section:
+        raise ValueError(
+            "postmortems.md needs the current campaign's Scientific strategy section"
+        )
+    scientific_strategy_registers(section)
+    return {
+        "action": "close",
+        "outcome": outcome,
+        "inquiry_id": int(active["id"]),
+    }
 
 
 def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
@@ -1143,7 +1267,9 @@ def recorded_research_panels(
     """Panels already recorded for this campaign's research evaluations."""
     campaign_id = repository.current_campaign_id(state)
     sources = (
-        list(repository.result_records_for_campaign(campaign_id)) if campaign_id else []
+        list(repository.history_records_for_campaign(campaign_id))
+        if campaign_id
+        else []
     )
     if isinstance(pending, dict):
         sources.append(pending)
@@ -1251,10 +1377,11 @@ def upcoming_experiment_index(state: dict) -> int:
 
 
 def preparation_ledger(state: dict) -> dict | None:
-    """The accumulated preparation ledger for the forecast experiment, if any.
+    """The accumulated preparation ledger for the active inquiry, if any.
 
-    The ledger is scoped to exactly one upcoming experiment. A ledger for any
-    other experiment is stale and never reused.
+    Legacy ledgers may only carry a forecast experiment. New ledgers carry an
+    inquiry identity so repeated rounds remain associated even when no training
+    experiment is ever allocated.
     """
     ledger = state.get("preparation_measurement")
     if not isinstance(ledger, dict):
@@ -1303,16 +1430,37 @@ def preparation_measurement_context(state: dict) -> dict:
     the eligible saved lineages. The context carries the upcoming experiment
     identity so artifact names and recorded rounds stay under it, and an empty
     candidate list so a not-yet-run experiment's candidates cannot be named. The
-    accumulated ledger for the same upcoming experiment seeds the round numbers
-    and partial ledger so a repeated panel is reused rather than re-executed, but
-    only while every recorded model still matches its current lineage.
+    accumulated ledger for the same inquiry seeds the round numbers and partial
+    ledger so a repeated panel is reused rather than re-executed, but only while
+    every recorded model still matches its current lineage.
     """
     experiment = upcoming_experiment_index(state)
+    active = state.get("active_inquiry")
+    inquiry_id = (
+        int(active["id"])
+        if isinstance(active, dict) and isinstance(active.get("id"), int)
+        else allocated_inquiry_index(state, repository.current_campaign_id(state)) + 1
+    )
     ledger = preparation_ledger(state)
     rounds: list[dict] = []
     partials: list[dict] = []
     references: list[dict] = []
-    if ledger is not None and int(ledger.get("experiment", -1)) == experiment:
+    ledger_inquiry = -1
+    if ledger is not None:
+        recorded_inquiry = ledger.get("inquiry_id")
+        if recorded_inquiry is None:
+            recorded_experiment = ledger.get("experiment")
+            if (
+                isinstance(recorded_experiment, int)
+                and not isinstance(recorded_experiment, bool)
+                and recorded_experiment == experiment
+            ):
+                ledger_inquiry = inquiry_id
+        elif isinstance(recorded_inquiry, int) and not isinstance(
+            recorded_inquiry, bool
+        ):
+            ledger_inquiry = recorded_inquiry
+    if ledger is not None and ledger_inquiry == inquiry_id:
         fingerprints = _current_lineage_fingerprints(state)
         recorded_partials = list(ledger.get("partial_evaluations") or [])
         recorded_references = list(
@@ -1327,6 +1475,7 @@ def preparation_measurement_context(state: dict) -> dict:
             references = recorded_references
     return {
         "experiment": experiment,
+        "inquiry_id": inquiry_id,
         "candidates": [],
         "champion_available": False,
         "parameters": {},
@@ -1513,6 +1662,8 @@ def validate_preparation_evaluation_request(
         raise ValueError("a closure operation is pending; no measurement is accepted")
     if state.get("pending_final_benchmark") is not None:
         raise ValueError("the final benchmark is pending; no measurement is accepted")
+    if state.get("pending_inquiry_operation") is not None:
+        raise ValueError("an inquiry closure is pending; no measurement is accepted")
     if state.get("preparation_conclusion_only"):
         raise ValueError(
             "the experiment budget is exhausted; only a campaign conclusion may "
@@ -2307,7 +2458,7 @@ def _development_evidence_catalog(pending: dict, state: dict) -> dict[str, dict]
 
     campaign_id = repository.current_campaign_id(state)
     sources = [
-        *repository.result_records_for_campaign(campaign_id),
+        *repository.history_records_for_campaign(campaign_id),
         pending,
     ]
     for source in sources:

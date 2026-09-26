@@ -360,7 +360,8 @@ def fresh_baseline_scientific_parent(state: dict) -> str:
 def validate_research_delta(raw_state: dict) -> list[str]:
     """Reject changes outside the researcher-owned scientific surface."""
     code_changes = anchored_scientific_delta(raw_state)
-    protocol.validate_research_delta_ownership(code_changes)
+    lab_changes = repository.campaign_lab_change_paths(repository.status_paths((".",)))
+    protocol.validate_research_delta_ownership([*code_changes, *lab_changes])
     return code_changes
 
 
@@ -371,7 +372,7 @@ def validate_campaign_conclusion_delta(raw_state: dict) -> None:
     reverts or restores it. A conclusion has no such operation, so it is legal
     only while the scientific surface still matches the preparation anchor.
     """
-    if anchored_scientific_delta(raw_state):
+    if validate_research_delta(raw_state):
         raise ValueError(
             "a campaign conclusion cannot accept unresolved scientific changes; "
             "revert or resolve them before concluding the campaign"
@@ -410,10 +411,18 @@ def begin_hypothesis_phase(conclusion_only: bool = False) -> int:
     """
     state = repository.read_state()
     parent = repository.reanchor_scientific_parent(state)
+    inquiry = (
+        state.get("active_inquiry")
+        if conclusion_only
+        else protocol.ensure_active_inquiry(state)
+    )
+    session = repository.ensure_principal_investigator_session(state)
     state["preparation_conclusion_only"] = True if conclusion_only else None
     repository.write_state(state)
     console.announce(
-        f"[runner] scientific parent of the next experiment: {parent[:12]}"
+        f"[runner] scientific parent: {parent[:12]}; "
+        f"inquiry: {inquiry.get('id') if isinstance(inquiry, dict) else 'none'}; "
+        f"PI session: {session['id']}"
     )
     return 0
 
@@ -446,7 +455,7 @@ def check_proposal() -> int:
             validate_training_proposal_delta(proposal, state)
         elif contract == "lineage":
             validate_research_delta(state)
-        elif contract == "conclusion":
+        elif contract in {"inquiry", "conclusion"}:
             validate_campaign_conclusion_delta(state)
     except PROPOSAL_ERRORS as error:
         print(f"PROPOSAL_INVALID: {error}")
@@ -704,6 +713,11 @@ def _begin_evaluation_round(pending: dict, experiment: int, request: dict) -> di
     record = {
         "round": len(rounds) + 1,
         "experiment": int(experiment),
+        **(
+            {"inquiry_id": int(pending["inquiry_id"])}
+            if pending.get("inquiry_id") is not None
+            else {}
+        ),
         "question": str(request.get("question", "")),
         "reason": str(request.get("reason", "")),
         "measurements": [
@@ -808,6 +822,7 @@ def execute_pending_evaluations() -> int:
 
     state = repository.read_state()
     reanchor_phase_parent(state)
+    repository.publish_campaign_laboratory(state)
     campaign_id = repository.current_campaign_id(state)
     is_v4 = state.get("schema_version") == 4
     preparation = False
@@ -825,6 +840,21 @@ def execute_pending_evaluations() -> int:
         pending = state.get("pending_evaluation_request")
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
+    if preparation:
+        active_inquiry = protocol.ensure_active_inquiry(state)
+        pending_inquiry = pending.get("inquiry_id")
+        if pending_inquiry is None:
+            pending["inquiry_id"] = int(active_inquiry["id"])
+            state["pending_evaluation_request"] = pending
+            repository.write_state(state)
+        elif (
+            not isinstance(pending_inquiry, int)
+            or isinstance(pending_inquiry, bool)
+            or pending_inquiry != int(active_inquiry["id"])
+        ):
+            raise ValueError(
+                "the preparation measurement belongs to another scientific inquiry"
+            )
     validate_research_delta(state)
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
@@ -1309,6 +1339,8 @@ def execute_pending_evaluations() -> int:
         pending["partial_task_reference_evaluations"] = reference_executed
         state["preparation_measurement"] = {
             "experiment": experiment,
+            "inquiry_id": pending.get("inquiry_id"),
+            "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
             "rounds": [
                 dict(round_record)
                 for round_record in (pending.get("evaluation_rounds") or [])
@@ -1654,6 +1686,7 @@ def publish_v4_closure_completion(state: dict) -> None:
 
 def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    repository.publish_campaign_laboratory(state)
     apply_previous_result_decision(proposal, state)
     repository.commit_lineage_decision(
         int(
@@ -1769,6 +1802,7 @@ def complete_campaign_conclusion(state: dict) -> None:
 
 def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    repository.publish_campaign_laboratory(state)
     if not isinstance(state.get("pending_campaign_conclusion"), dict):
         plan = protocol.plan_campaign_conclusion(proposal, state)
         state["pending_campaign_conclusion"] = {
@@ -1779,6 +1813,131 @@ def resolve_campaign_conclusion(proposal: dict, raw_state: dict) -> int:
         repository.write_state(state)
     complete_campaign_conclusion(state)
     paths.PROPOSAL_PATH.unlink(missing_ok=True)
+    return 0
+
+
+def _inquiry_measurement_rounds(state: dict, inquiry_id: int) -> list[dict]:
+    rounds: list[dict] = []
+    for record in repository.result_records_for_campaign(
+        str(repository.current_campaign_id(state))
+    ):
+        if int(record.get("inquiry_id", -1)) != inquiry_id:
+            continue
+        rounds.extend(
+            dict(item)
+            for item in record.get("preparation_evaluation_rounds") or []
+            if isinstance(item, dict)
+        )
+        rounds.extend(
+            dict(item)
+            for item in record.get("evaluation_rounds") or []
+            if isinstance(item, dict)
+        )
+    ledger = state.get("preparation_measurement")
+    if isinstance(ledger, dict) and _preparation_ledger_matches_inquiry(
+        state, ledger, inquiry_id
+    ):
+        rounds.extend(
+            dict(item) for item in ledger.get("rounds") or [] if isinstance(item, dict)
+        )
+    return rounds
+
+
+def _preparation_ledger_matches_inquiry(
+    state: dict, ledger: dict, inquiry_id: int
+) -> bool:
+    recorded_inquiry = ledger.get("inquiry_id")
+    if recorded_inquiry is None:
+        recorded_experiment = ledger.get("experiment")
+        return (
+            isinstance(recorded_experiment, int)
+            and not isinstance(recorded_experiment, bool)
+            and recorded_experiment == protocol.upcoming_experiment_index(state)
+        )
+    return (
+        isinstance(recorded_inquiry, int)
+        and not isinstance(recorded_inquiry, bool)
+        and recorded_inquiry == inquiry_id
+    )
+
+
+def complete_inquiry_decision(state: dict) -> None:
+    operation = state.get("pending_inquiry_operation")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending inquiry closure")
+    progress = operation.get("progress")
+    if progress not in {"planned", "recorded", "durable"}:
+        raise ValueError(f"unknown inquiry closure progress: {progress!r}")
+    inquiry_id = int(operation["inquiry_id"])
+    if progress == "planned":
+        ledger = state.get("preparation_measurement")
+        inquiry_ledger = (
+            ledger
+            if isinstance(ledger, dict)
+            and _preparation_ledger_matches_inquiry(state, ledger, inquiry_id)
+            else {}
+        )
+        experiment_indices = [
+            int(record["index"])
+            for record in repository.result_records_for_campaign(
+                str(repository.current_campaign_id(state))
+            )
+            if int(record.get("inquiry_id", -1)) == inquiry_id
+        ]
+        strategy = protocol.scientific_strategy_section(
+            paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
+            if paths.POSTMORTEM_PATH.exists()
+            else "",
+            repository.current_campaign_id(state),
+        )
+        repository.upsert_inquiry_result(
+            {
+                "schema_version": 1,
+                "record_type": "inquiry",
+                "campaign_id": repository.current_campaign_id(state),
+                "inquiry_id": inquiry_id,
+                "status": "closed",
+                "outcome": operation["outcome"],
+                "experiments": experiment_indices,
+                "measurement_rounds": _inquiry_measurement_rounds(state, inquiry_id),
+                "preparation_evaluations": list(
+                    inquiry_ledger.get("partial_evaluations") or []
+                ),
+                "preparation_task_reference_evaluations": list(
+                    inquiry_ledger.get("partial_task_reference_evaluations") or []
+                ),
+                "scientific_strategy": strategy,
+                "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
+            }
+        )
+        state["last_inquiry"] = inquiry_id
+        state["active_inquiry"] = None
+        state["preparation_measurement"] = None
+        state["pending_scientific_parent"] = None
+        state["last_verdict"] = f"inquiry {inquiry_id} closed"
+        operation["progress"] = "recorded"
+        repository.write_state(state)
+        progress = "recorded"
+    if progress == "recorded":
+        _publish_runner_memory(f"close inquiry {inquiry_id}")
+        operation["progress"] = "durable"
+        repository.write_state(state)
+        progress = "durable"
+    if progress == "durable":
+        paths.PROPOSAL_PATH.unlink(missing_ok=True)
+        state["pending_inquiry_operation"] = None
+        repository.write_state(state)
+        _publish_runner_memory(f"clear inquiry {inquiry_id} closure")
+
+
+def resolve_inquiry_decision(proposal: dict) -> int:
+    state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    repository.publish_campaign_laboratory(state)
+    if not isinstance(state.get("pending_inquiry_operation"), dict):
+        plan = protocol.plan_inquiry_decision(proposal, state)
+        state["pending_inquiry_operation"] = {**plan, "progress": "planned"}
+        repository.write_state(state)
+    complete_inquiry_decision(state)
     return 0
 
 
@@ -1913,7 +2072,14 @@ def transfer_preparation_measurements(
     mistaken for a measurement of any other experiment.
     """
     ledger = state.get("preparation_measurement")
-    if not isinstance(ledger, dict) or int(ledger.get("experiment", -1)) != index:
+    inquiry_id = result.get("inquiry_id")
+    if not isinstance(ledger, dict):
+        return
+    ledger_inquiry = ledger.get("inquiry_id")
+    if inquiry_id is not None and ledger_inquiry is not None:
+        if int(ledger_inquiry) != int(inquiry_id):
+            return
+    elif int(ledger.get("experiment", -1)) != index:
         return
     result["preparation_evaluation_rounds"] = [
         dict(record) for record in (ledger.get("rounds") or [])
@@ -1976,6 +2142,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     )
     # Extract campaign ID early for use throughout the function
     campaign_id = repository.current_campaign_id(state)
+    repository.publish_campaign_laboratory(state)
+    active_inquiry = state.get("active_inquiry")
+    inquiry_id = int(active_inquiry["id"]) if isinstance(active_inquiry, dict) else None
 
     # A preserved proposal is the same experiment: recovery and restart reuse
     # the identity the interrupted run allocated instead of consuming a new one.
@@ -2017,6 +2186,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
 
     result: dict[str, Any] = {
         "schema_version": 1,
+        "record_type": "experiment",
         "index": index,
         "campaign_id": campaign_id,
         "change": change,
@@ -2028,6 +2198,10 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "status": "error",
         "verdict": "error",
     }
+    if inquiry_id is not None:
+        result["inquiry_id"] = inquiry_id
+    if state.get("campaign_lab") is not None:
+        result["campaign_lab"] = copy.deepcopy(state["campaign_lab"])
     if researcher_change and researcher_change != change:
         result["researcher_change"] = researcher_change
     if investigation_is_question:
@@ -2045,6 +2219,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             campaign_id,
         )
     result["proposal_snapshot"] = copy.deepcopy(proposal)
+    if inquiry_id is not None:
+        result["proposal_snapshot"]["inquiry_id"] = inquiry_id
     try:
         existing_operation = state.get("pending_training_operation")
         if isinstance(existing_operation, dict):
@@ -2379,6 +2555,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
 
         pending = {
             "experiment": index,
+            **({"inquiry_id": inquiry_id} if inquiry_id is not None else {}),
             "candidates": archived_candidates,
             "champion_available": not fresh_baseline,
             "parameters": effective_config,
@@ -2525,6 +2702,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--begin-hypothesis", action="store_true")
     parser.add_argument("--conclusion-only", action="store_true")
     parser.add_argument("--migrate-research-state", action="store_true")
+    parser.add_argument(
+        "--mark-principal-investigator-session-started", action="store_true"
+    )
     return parser.parse_args()
 
 
@@ -2536,6 +2716,11 @@ def main() -> int:
         return 0
     if args.begin_hypothesis:
         return begin_hypothesis_phase(conclusion_only=args.conclusion_only)
+    if args.mark_principal_investigator_session_started:
+        state = repository.read_state()
+        session = repository.mark_principal_investigator_session_started(state)
+        print(f"PRINCIPAL_INVESTIGATOR_SESSION_STARTED: {session['id']}")
+        return 0
     if args.check_proposal:
         return check_proposal()
     if getattr(args, "check_preparation_deliverable", False):
@@ -2561,6 +2746,12 @@ def main() -> int:
         return status
     if args.evaluate_pending:
         return execute_pending_evaluations()
+    if isinstance(repository.read_state().get("pending_inquiry_operation"), dict):
+        state = repository.load_state(
+            allow_unmeasured=True, allow_missing_artifact=True
+        )
+        complete_inquiry_decision(state)
+        return 0
     if isinstance(repository.read_state().get("pending_campaign_conclusion"), dict):
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
@@ -2601,6 +2792,9 @@ def main() -> int:
     if proposal_contract == "conclusion":
         validate_campaign_conclusion_delta(raw_state)
         return resolve_campaign_conclusion(proposal, raw_state)
+    if proposal_contract == "inquiry":
+        validate_campaign_conclusion_delta(raw_state)
+        return resolve_inquiry_decision(proposal)
     try:
         return run_training_experiment(proposal, args)
     except KeyboardInterrupt:
