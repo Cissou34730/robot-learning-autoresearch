@@ -13,7 +13,6 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
-import mujoco
 import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
@@ -44,10 +43,6 @@ def evaluate_research_model(
         obs, _ = env.reset(seed=seed + episode)
         runtime.reset()
         target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
-        previous_endpoint = np.asarray(
-            env.data.site("end_effector").xpos, dtype=np.float64
-        ).copy()
-        control_dt = env.model.opt.timestep * env.frame_skip
         reward_total = 0.0
         steps = 0
         success = False
@@ -60,64 +55,20 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        entry_endpoint_speed_cm_s: float | None = None
-        entry_jacobian_abs_det: float | None = None
-        entry_open_branch_error_rad: float | None = None
-        entry_folded_branch_error_rad: float | None = None
-        min_jacobian_abs_det = float("inf")
-        max_endpoint_speed_cm_s = 0.0
-        max_hold_endpoint_speed_cm_s = 0.0
-        action_saturation_steps = 0
         while not (terminated or truncated):
             action = runtime.predict(obs)
-            applied_action = np.clip(
-                np.asarray(action, dtype=np.float64),
-                env.action_space.low,
-                env.action_space.high,
-            )
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            endpoint = np.asarray(
-                env.data.site("end_effector").xpos, dtype=np.float64
-            )
-            endpoint_speed_cm_s = (
-                100.0 * float(np.linalg.norm(endpoint - previous_endpoint)) / control_dt
-            )
-            previous_endpoint = endpoint.copy()
-            jacobian_position = np.zeros((3, env.model.nv), dtype=np.float64)
-            jacobian_rotation = np.zeros((3, env.model.nv), dtype=np.float64)
-            mujoco.mj_jacSite(
-                env.model,
-                env.data,
-                jacobian_position,
-                jacobian_rotation,
-                env.model.site("end_effector").id,
-            )
-            jacobian_abs_det = abs(
-                float(np.linalg.det(jacobian_position[:2, :2]))
-            )
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            min_jacobian_abs_det = min(min_jacobian_abs_det, jacobian_abs_det)
-            max_endpoint_speed_cm_s = max(max_endpoint_speed_cm_s, endpoint_speed_cm_s)
-            if held_steps > 0:
-                max_hold_endpoint_speed_cm_s = max(
-                    max_hold_endpoint_speed_cm_s, endpoint_speed_cm_s
-                )
-            if np.any(np.abs(applied_action) >= 1.0 - 1e-6):
-                action_saturation_steps += 1
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    entry_endpoint_speed_cm_s = endpoint_speed_cm_s
-                    entry_jacobian_abs_det = jacobian_abs_det
-                    entry_open_branch_error_rad = float(np.linalg.norm(obs[7:9]))
-                    entry_folded_branch_error_rad = float(np.linalg.norm(obs[9:11]))
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -152,14 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "entry_endpoint_speed_cm_s": entry_endpoint_speed_cm_s,
-                "entry_jacobian_abs_det": entry_jacobian_abs_det,
-                "entry_open_branch_error_rad": entry_open_branch_error_rad,
-                "entry_folded_branch_error_rad": entry_folded_branch_error_rad,
-                "min_jacobian_abs_det": min_jacobian_abs_det,
-                "max_endpoint_speed_cm_s": max_endpoint_speed_cm_s,
-                "max_hold_endpoint_speed_cm_s": max_hold_endpoint_speed_cm_s,
-                "action_saturation_steps": action_saturation_steps,
             }
         )
         if progress_callback is not None:
@@ -167,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -178,13 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {
-                "distance": "cm",
-                "time": "control_steps",
-                "speed": "cm_per_second",
-                "jacobian_determinant": "meter_squared_per_radian_squared",
-                "angle": "radians",
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 
