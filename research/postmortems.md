@@ -2,27 +2,23 @@
 
 ## 3e3387d5-4eae-4e5e-a34b-c8dfa83788e5 / Scientific strategy
 
-**Current synthesis:** The PPO baseline remains the strongest saved policy:
-checkpoint-100352 achieved 391/400 (97.75%) across two disjoint research
-panels, while the experiment-2 radius-coverage transfer checkpoints each
-achieved 191/200 (95.5%) on a fresh panel, exactly matching the independently
-measured baseline control. The official objective remains unresolved.
+**Current synthesis:** PPO checkpoint-100352 remains the strongest saved policy,
+with 391/400 (97.75%) across two disjoint research panels. On the latest
+disjoint panel it and all three measured full-radius transfer checkpoints
+scored 191/200 (95.5%), so the policy is consistently near threshold in
+development measurements but its official result is unresolved.
 
-**Lessons and limits:** Checkpoint-100352 outperformed the measured earlier and
-later checkpoints, but its residual research-panel failures are genuine task
-failures, including episodes that never reached tolerance. Expanding training
-from 14-20 cm to the full 6-20 cm range did not improve the measured outcome:
-the baseline and all three measured transfer checkpoints had identical
-success by radius bin (58/60 at 6-10 cm, 56/56 at 10-14 cm, 56/59 at
-14-18 cm, and 21/25 at 18-20 cm). This is evidence against this intervention
-under the tested transfer run, not proof that every radius-focused method is
-ineffective. Development measurements do not replace the fixed 200-episode
-official assessment.
+**Lessons and limits:** The selected policy outperformed the measured earlier
+and later baseline checkpoints. Expanding training from 14-20 cm to the full
+6-20 cm range produced no aggregate, radius-bin, or paired improvement in one
+transfer run; the matched outcomes were 58/60 at 6-10 cm, 56/56 at 10-14 cm,
+56/59 at 14-18 cm, and 21/25 at 18-20 cm. This weakens that intervention without
+establishing that every radius-focused method is ineffective. Development
+measurements do not substitute for the fixed official panel.
 
-**Open questions:** The evidence does not establish the official verdict or
-identify a method that removes the remaining failures. The radius-specific
-failure pattern remains unresolved beyond this matched-panel result, and the
-official benchmark is still required for the standing best-known policy.
+**Open questions:** The official 200-episode verdict and the cause of the
+remaining task failures are unresolved. The evidence also does not establish
+whether an untested intervention could improve the standing policy.
 
 ## 3e3387d5-4eae-4e5e-a34b-c8dfa83788e5 / Experiment 1
 
