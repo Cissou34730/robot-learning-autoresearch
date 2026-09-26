@@ -98,7 +98,7 @@
       "form": "feasible_continuation",
       "reason": "This continuation could investigate whether the selected checkpoint's residual failures improve with additional training, but it would not resolve the official objective and the existing disjoint evidence already supports submitting the frozen best-known policy. The official 200-episode assessment has greater expected decision value because it is the only measurement that can establish the human-defined result."
     },
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-100352 achieved 394/400 successes (98.5%) across two disjoint research-evaluation panels and exceeded the 392/400 retained final-checkpoint alternative. This supports expecting at least 196/200 on the official panel, while the expectation remains uncertain because all evidence uses researcher-owned semantics and no official or task-reference panel has been measured.",
     "terminal_expectation": {
       "expected_verdict": "goal_reached",
