@@ -9,7 +9,9 @@ Experiments 2--9 did not establish a reliable replacement for the working
 lineage. The experiment-10 continuation did not preserve the saved
 temporal-slew policy's apparent advantage: both measured continuation
 checkpoints achieved only 33/200, while the saved temporal-slew parent achieved
-196/200 on the identical disjoint panel.
+196/200 on the identical disjoint panel. The parent has not yet been compared
+with working on a fresh panel under the restored stable recipe or on the
+protected task-reference panel.
 
 **Lessons and limits:** Each experiment-10 continuation checkpoint lost 163
 paired episodes to the saved temporal-slew parent and won none; the two
@@ -38,14 +40,13 @@ reach-and-hold behavior.
 
 **Active inquiry:** The temporal-slew continuation branch is closed because
 paired evidence showed catastrophic broad regression rather than repeatable
-task-level improvement. The carried inquiry is now whether the
-configuration-dependent reach-and-hold failure can be explained and improved
-without sacrificing the working lineage's broad behavior and without confusing
-researcher-owned recipe effects with protected task performance. Evidence of a
-task-level gain with no broad paired losses would reopen a mechanism line;
-another broad regression or failure to distinguish mechanism from recipe would
-redirect or end that line. The current closure restores the working recipe and
-does not claim that the physical cause has been identified.
+task-level improvement. Before another intervention, measure the saved
+temporal-slew parent against working on a fresh research panel and the
+protected task-reference panel. A repeatable paired gain without broad losses
+would justify preserving that policy mechanism while investigating the
+configuration-dependent failure sector; failure to reproduce the gain would
+redirect or end the temporal-slew line. The current evidence does not identify
+the physical cause.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
