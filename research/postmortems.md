@@ -4,13 +4,15 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 1946/2000 across ten distinct research panels.
+98% solution. It achieved 2143/2200 across eleven distinct research panels.
 Experiments 2--5 did not establish a reliable improvement: radius expansion,
 reward shaping, periodic branch-error features, and action headroom either
 preserved the failure sector or caused broad regression. Experiment 6's
 slew-limited final checkpoint reached 195/200 on its single panel versus
 194/200 for the parent, but the difference was one paired rescue and not a
-reliable change to the recurring failure set.
+reliable change to the recurring failure set. The completed preparation panel
+raised the parent to 197/200, while both the saved slew and headroom controls
+achieved 196/200, so neither control is a defensible improvement.
 
 **Lessons and limits:** The five parent failures at episodes 29013, 29073,
 29086, 29120, and 29142 were shared by the final slew-limited checkpoint; the
@@ -24,8 +26,20 @@ shared failures are branch, conditioning, or stabilization failures. The slew
 limiter therefore weakens rather than supports a general transient-control
 explanation: it changes command timing and can preserve broad success, but it
 does not reliably change the failure sector and imposes an approach delay.
-Development panels remain non-official, and the parent has not established
-the human objective on the final benchmark.
+On the fresh 30000--30199 panel, the parent failed only at seeds 30030, 30045,
+and 30090; the slew policy shared those three failures and added seed 30184,
+while headroom shared seed 30030 and converted the other three into brief
+incomplete holds. Every failure crossed the nearest-IK-branch boundary and
+reached a low Jacobian determinant, but successful trajectories also switched
+branches in roughly half of episodes, so neither telemetry is sufficient to
+identify the cause. The parent saturated for 499 steps on each no-entry
+failure; headroom removed saturation without rescuing the targets, and slew
+reduced saturation but added a slow incomplete hold. These paired observations
+weaken saturation and fixed command slew as sufficient explanations while
+supporting a configuration-dependent interaction between target exposure,
+branch transition, and local stabilization. Development panels remain
+non-official, and the parent has not established the human objective on the
+final benchmark.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: branch
@@ -33,7 +47,9 @@ transition, poor local conditioning, insufficient stabilization, or an
 interaction among them. It remains unresolved whether a policy can alter that
 failure sector without sacrificing approach time, and whether a richer
 behavioral measurement can distinguish target entry, settling, and hold
-failure rather than relying on the terminal episode outcome.
+failure rather than relying on the terminal episode outcome. It is also
+unresolved whether targeted exposure to the joint target geometry can change
+the failure identity without narrowing broad-task competence.
 
 **Active inquiry:** The combined headroom and slew experiments make actuator
 clipping and command smoothness insufficient explanations for the recurring
@@ -41,12 +57,15 @@ failures: removing measured saturation did not remove them, and limiting
 command changes preserved the shared failures while delaying successful
 acquisition. The working scientific question is therefore whether
 configuration- or branch-dependent conditioning limits local stabilization in
-the negative-angle sector. Evidence that changes those identities without
-slowing broad reach-and-hold behavior would support that interpretation;
-repeated shared failures with direct branch and conditioning telemetry would
-redirect it toward another controller or observation limitation. The parent
-remains below the human objective, so this closure does not justify terminal
-assessment.
+the negative-angle sector and whether the learner needs more direct experience
+of that sector across the official radius range. A transfer trained with
+targeted sector exposure is useful because it tests the data-coverage
+explanation without changing the observation, action map, reward, or task
+mechanics. Rescue of the shared hard targets with preserved broad completion
+would support that explanation; unchanged failures or broad regression would
+redirect the inquiry toward controller representation or local stabilization.
+The parent remains below the human objective, so this preparation does not
+justify terminal assessment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
