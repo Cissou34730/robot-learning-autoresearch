@@ -39,13 +39,15 @@ smoothness insufficient explanations: removing measured saturation did not
 rescue the shared targets, and limiting command changes preserved them while
 delaying acquisition. The provisional question is whether branch-dependent
 conditioning and local stabilization, rather than target exposure alone, limit
-completion in the negative-angle sector. Evidence that a measured
-target-coverage policy rescues the shared targets with preserved broad
+completion in the negative-angle sector. A fresh paired measurement of the
+working policy and retained headroom and slew controls will compare branch
+transitions, Jacobian conditioning, entry velocity, hold velocity, saturation,
+and action variation on the same episodes. Rescue with preserved broad
 completion would reopen the data-coverage explanation; unchanged identities
-with stage-specific conditioning differences would redirect it toward
-controller representation or stabilization. This inquiry remains unresolved,
-but the unmeasured experiment-7 candidates do not justify retaining a changed
-recipe or requesting the irreversible final assessment.
+with stage-specific conditioning differences would redirect it toward controller
+representation or stabilization. The inquiry ends or changes only when those
+measurements fail to distinguish the mechanisms or support a more direct
+intervention.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
