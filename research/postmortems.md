@@ -4,13 +4,13 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 4094/4200 across the distinct research panels now
-indexed in the brief, while the latest disjoint panel reached 197/200. No
-challenger has established a reliable replacement. The experiment-10
-continuation did not preserve the saved temporal-slew policy's apparent
-advantage, and experiment 11's fresh unchanged-PPO replication instead
-collapsed broadly. Experiment 12 directly tested local velocity damping: its
-reward-peak checkpoint achieved 178/200 and its final checkpoint 146/200,
+98% solution. It achieved 4288/4400 across 22 distinct research panels, while
+the latest disjoint panel reached 194/200. The temporal-slew and
+targeted-exposure saved lineages also reached 194/200 on that panel; targeted
+exposure reproduced all six working failures, while temporal slew changed one
+failure in each direction without a net gain. No challenger has established a
+reliable replacement. Experiment 12 directly tested local velocity damping:
+its reward-peak checkpoint achieved 178/200 and its final checkpoint 146/200,
 versus 197/200 for the working reference on the same panel.
 
 **Lessons and limits:** Experiments 5, 6, 7, 9, and 10 reject saturation
@@ -19,35 +19,35 @@ established sufficient solutions, without isolating their individual causal
 interactions. Experiment 11 remains a broad negative control for learning
 trajectory variance. Experiment 12 rejects the specific distance-gated damping
 recipe as a useful path toward the objective: the peak and final candidates
-lost 19 and 51 paired episodes to working and won none. The three recurring
-working failures remained failures for both damping checkpoints. Damping did
-reduce near-target saturated steps in some failed trajectories (working
-failures averaged 484; peak and final damping failures averaged 376 and 442),
-but it did not preserve approach and hold: the damping candidates added broad
-no-entry and interrupted-hold failures, and the final checkpoint degraded
-further. Thus late saturation is a discriminating correlate of some failures,
-not a sufficient causal lever. The evidence is development evidence only; no
-panel establishes the official objective.
+lost 19 and 51 paired episodes to working and won none. Damping changed the
+late control signature but added broad no-entry and interrupted-hold failures.
+The latest measurement strengthens the failure-set evidence: the working and
+targeted-exposure policies fail on the same six targets, all in the recurring
+negative-angle sector, while the slower slew policy does not improve the total.
+These observations identify neither a sufficient controller nor a causal
+single mechanism. The evidence is development evidence only; no panel
+establishes the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
 poor local conditioning, branch-dependent policy behavior, insufficient
 stabilization, or an interaction among them. It remains unresolved why
-training-success proxies can rise while complete-task success falls, whether
-the temporal-slew lineage's isolated paired edge has any value beyond its
-trajectory, and whether any controller change can rescue the narrow sector
-without sacrificing broad approach and sustained hold.
+training-success proxies can rise while complete-task success falls, and
+whether a geometry-aware command prior can rescue the narrow sector without
+changing the observation representation or sacrificing broad approach and
+sustained hold.
 
-**Active inquiry:** The remaining scientific problem is to identify the
-configuration-dependent control interaction that defeats a mature policy in a
-narrow target sector while preserving complete reach-and-hold behavior
-elsewhere. Branch switches are early and common, and local damping can reduce
-late saturated lock-up without rescuing the task; neither is a sufficient
-explanation. This matters because the human objective requires broad success,
-not merely a better failure-stage signature. The inquiry would be redirected
-by evidence that isolates a mechanism while preserving the working policy's
-broad behavior, and it would end only after a frozen policy reliably reaches
-at least 196/200 on the official assessment.
+**Active inquiry:** Test whether local Cartesian error becomes more controllable
+when a bounded Jacobian-transpose residual is injected in the action path,
+while retaining the proven 11-value observation and complete-task reward. The
+latest panel shows that changing target exposure does not change the failure
+set, and that command slew changes failure identities without improving their
+count; the prior Jacobian-feature experiment changed representation rather
+than command geometry and regressed broadly. A useful result would rescue
+recurring-sector episodes without broad no-entry or hold losses; a broad
+regression would redirect the inquiry away from this control-path mechanism.
+The inquiry ends only after a frozen policy reliably reaches at least 196/200
+on the official assessment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -592,3 +592,28 @@ mechanism comparison without treating either as a candidate for the objective.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-12-checkpoint-55296-200ep-seed41000-0576372df066.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-12-checkpoint-120832-200ep-seed41000-0576372df066.json`;
 `research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-12/inventory.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 13 preparation
+
+**Decision:** Prepare a transfer experiment from `working` with a bounded
+Jacobian-transpose residual in the action path. The 11-value observation,
+reward, target distribution, and PPO settings remain unchanged.
+
+**Evidence and interpretation:** On the new episodes 42000--42199 panel,
+working, the saved temporal-slew lineage, and the saved targeted-exposure
+lineage each achieved 194/200. Targeted exposure reproduced all six working
+failures, while temporal slew produced one paired rescue and one paired loss.
+This weakens explanations based on target frequency or fixed command rate as
+sufficient solutions. The persistent negative-angle sector and the prior
+failure signatures leave local Cartesian-to-joint conditioning as a live
+control-path hypothesis. Experiment 8's explicit velocity and Jacobian
+observation augmentation is not a test of this hypothesis because it changed
+the learned representation and caused broad regression.
+
+**Test:** The current `PolicyIO` retains the latest joint state and endpoint
+error, computes the instantaneous planar endpoint Jacobian, and adds a small
+bounded transpose-Jacobian correction to the policy torque. Continuing the
+working lineage tests whether this low-amplitude geometric prior can alter the
+recurring approach/entry behavior without discarding established broad
+competence. The result will be judged by paired complete-task success and
+failure-stage telemetry, not by training proxies.
