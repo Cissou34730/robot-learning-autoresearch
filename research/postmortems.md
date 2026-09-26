@@ -4,14 +4,15 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 3118/3200 across sixteen distinct research panels.
+98% solution. It achieved 3312/3400 across seventeen distinct research panels.
 Experiments 2--9 did not establish a reliable replacement for the working
 lineage. The experiment-10 continuation did not preserve the saved
 temporal-slew policy's apparent advantage: both measured continuation
 checkpoints achieved only 33/200, while the saved temporal-slew parent achieved
-196/200 on the identical disjoint panel. The parent has not yet been compared
-with working on a fresh panel under the restored stable recipe or on the
-protected task-reference panel.
+196/200 on the identical disjoint panel. On the subsequent fresh panel,
+working and the saved temporal-slew parent both achieved 194/200; the temporal
+slew parent then achieved 194/200 on the protected panel versus 196/200 for
+working.
 
 **Lessons and limits:** Each experiment-10 continuation checkpoint lost 163
 paired episodes to the saved temporal-slew parent and won none; the two
@@ -26,27 +27,35 @@ learning, the changed researcher-owned environment/evaluation implementation,
 the temporal-slew interaction, or their combination. Together with experiments
 5, 6, 7, and 9, the evidence rejects saturation removal, fixed slew,
 targeted exposure, and this continuation recipe as established sufficient
-solutions. No development panel establishes the official objective.
+solutions. The fresh paired round found the same six failure identities for
+both working and temporal slew, but temporal slew changed three working
+incomplete-hold outcomes into no-entry outcomes; its pooled five-versus-one
+paired edge is not reproduced as a fresh-panel success advantage. No development
+panel establishes the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
 a branch-transition policy error, poor local conditioning, insufficient
 stabilization, or an interaction among them. It remains unresolved whether the
-saved temporal-slew parent's isolated rescue is repeatable under a stable
-recipe, and whether the experiment-10 collapse reflects learning dynamics or a
-recipe/evaluator interaction. The available evidence also does not establish
-which intervention can improve the failure sector without degrading broad
+saved temporal-slew parent's pooled paired edge is useful beyond its original
+trajectory. More importantly, the campaign has not tested whether a fresh run
+of the unchanged baseline recipe can escape the same failure basin; all
+near-objective policies so far come from a small number of learning
+trajectories. The available evidence also does not establish which
+intervention can improve the failure sector without degrading broad
 reach-and-hold behavior.
 
 **Active inquiry:** The temporal-slew continuation branch is closed because
-paired evidence showed catastrophic broad regression rather than repeatable
-task-level improvement. Before another intervention, measure the saved
-temporal-slew parent against working on a fresh research panel and the
-protected task-reference panel. A repeatable paired gain without broad losses
-would justify preserving that policy mechanism while investigating the
-configuration-dependent failure sector; failure to reproduce the gain would
-redirect or end the temporal-slew line. The current evidence does not identify
-the physical cause.
+paired evidence showed catastrophic broad regression, and its saved parent did
+not outperform working on either complete fresh-panel success or the protected
+panel. The next discriminating question is whether unchanged PPO training
+itself can produce a different mature failure set or a policy at the 196/200
+threshold. A fresh replication that reaches the threshold with changed
+failure identities would justify retaining that lineage for protected
+confirmation; a near-97% result with the same negative-angle basin would
+strengthen the case that the baseline recipe has a stable limitation and that
+future intervention must target a measured mechanism. The current evidence
+still does not identify the physical cause.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
