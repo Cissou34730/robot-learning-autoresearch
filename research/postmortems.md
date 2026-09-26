@@ -4,112 +4,50 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 3507/3600 across eighteen distinct research panels.
-Experiments 2--9 did not establish a reliable replacement for the working
-lineage. The experiment-10 continuation did not preserve the saved
-temporal-slew policy's apparent advantage: both measured continuation
-checkpoints achieved only 33/200, while the saved temporal-slew parent achieved
-196/200 on the identical disjoint panel. On the subsequent fresh panel,
-working and the saved temporal-slew parent both achieved 194/200; the temporal
-slew parent then achieved 194/200 on the protected panel versus 196/200 for
-working. Experiment 11's fresh unchanged-PPO replication did not escape this
-uncertain near-objective regime: its best measured checkpoint achieved 106/200
-on the new research panel and 105/200 on the protected panel, and later
-checkpoints fell to 83/200 and 80/200 on the research panel.
-The experiment-12 preparation panel reproduced 195/200 for both working and
-the saved temporal-slew lineage, while the retained replication checkpoint
-achieved 93/200.
+98% solution. It achieved 4094/4200 across the distinct research panels now
+indexed in the brief, while the latest disjoint panel reached 197/200. No
+challenger has established a reliable replacement. The experiment-10
+continuation did not preserve the saved temporal-slew policy's apparent
+advantage, and experiment 11's fresh unchanged-PPO replication instead
+collapsed broadly. Experiment 12 directly tested local velocity damping: its
+reward-peak checkpoint achieved 178/200 and its final checkpoint 146/200,
+versus 197/200 for the working reference on the same panel.
 
-**Lessons and limits:** Each experiment-10 continuation checkpoint lost 163
-paired episodes to the saved temporal-slew parent and won none; the two
-continuation checkpoints tied at 14 versus 14 discordant wins. Their failures
-were broad, with extensive no-entry outcomes and near-continuous saturation,
-alongside incomplete holds, rather than a confined change in the known
-negative-angle sector. The saved parent retained ordinary reach-and-hold
-behavior on the same episodes. This contradicts the hypothesis that continued
-adaptation under the slew regime would preserve its rescue without broad
-regression. It does not identify whether the collapse arose from continued
-learning, the changed researcher-owned environment/evaluation implementation,
-the temporal-slew interaction, or their combination. Together with experiments
-5, 6, 7, and 9, the evidence rejects saturation removal, fixed slew,
-targeted exposure, and this continuation recipe as established sufficient
-solutions. The fresh paired round found the same six failure identities for
-both working and temporal slew, but temporal slew changed three working
-incomplete-hold outcomes into no-entry outcomes; its pooled five-versus-one
-paired edge is not reproduced as a fresh-panel success advantage. No development
-panel establishes the official objective. Experiment 11 is a stronger negative
-result for learning-trajectory variance: the three measured replication
-checkpoints scored 53.0%, 41.5%, and 40.0% on one disjoint research panel and
-52.5%, 41.0%, and 42.0% on the protected panel. The early checkpoint beat the
-two later checkpoints by 24--1 and 26--0 discordant paired outcomes, while the
-later pair differed only 8--5. All research-panel failures truncated at 500
-steps, but the available replication artifacts do not identify whether the
-broad collapse is caused by branch selection, conditioning, stabilization,
-optimization, or an interaction among them.
-On the new experiment-12 panel, the two mature lineages failed on the same five
-negative-angle targets. Working briefly entered tolerance on three of those
-episodes, whereas temporal slew entered none; the replication failed on 107
-episodes, including broad no-entry outcomes and failures outside that sector.
-The paired replication comparisons were 0 versus 102 discordant wins against
-each mature lineage. These observations separate the mature narrow failure
-sector from the replication's broad collapse, but the current evaluator did
-not record event-level physical telemetry to identify its mechanism. The
-subsequent telemetry panel measured 195/200 for working, 194/200 for temporal
-slew, and 108/200 for the replication. Every mature failure had a branch
-proximity transition and a branch margin below 0.2, but branch transitions also
-occurred in 65/195 working successes and 74/194 temporal-slew successes.
-Working failures all had more than 400 saturated steps, whereas only two of six
-temporal-slew failures did; this makes saturation an inconsistent signature
-across mature policies rather than a common cause. The replication remained
-broadly impaired, with 92 failures and no corresponding mature-like
-concentration.
-
-The event-level refinement changes the interpretation of the branch result.
-Switches occurred at control step 4.0 for working and 4.5 for temporal slew,
-with distances of 19.9 cm and 21.1 cm respectively, well before tolerance;
-all five working failures and all six temporal-slew failures switched, but so
-did 65 and 74 successful episodes. The switch is therefore an early branch
-label transient, not a demonstrated failure event. The late near-target
-telemetry is more discriminating: working failures spent 484.4 of their 500
-steps within 5 cm and 483.8 of those steps saturated, versus 102.7 and 100.8
-for successful episodes. Temporal-slew failures also spent 480.0 near-target
-steps, but saturated for 213.2, while its successful episodes averaged 107.3
-near-target steps and 0.2 saturated steps. The replication had a separate
-broad failure regime: 43 of 92 failures reached the near-target region and
-then remained there for 489.5 steps with 487.3 saturated steps, while the
-remaining failures did not reach that region. These data support local
-stabilization as the next test, but do not prove that saturation is the cause.
+**Lessons and limits:** Experiments 5, 6, 7, 9, and 10 reject saturation
+removal, fixed slew, targeted exposure, and the tested continuation recipes as
+established sufficient solutions, without isolating their individual causal
+interactions. Experiment 11 remains a broad negative control for learning
+trajectory variance. Experiment 12 rejects the specific distance-gated damping
+recipe as a useful path toward the objective: the peak and final candidates
+lost 19 and 51 paired episodes to working and won none. The three recurring
+working failures remained failures for both damping checkpoints. Damping did
+reduce near-target saturated steps in some failed trajectories (working
+failures averaged 484; peak and final damping failures averaged 376 and 442),
+but it did not preserve approach and hold: the damping candidates added broad
+no-entry and interrupted-hold failures, and the final checkpoint degraded
+further. Thus late saturation is a discriminating correlate of some failures,
+not a sufficient causal lever. The evidence is development evidence only; no
+panel establishes the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
-a branch-transition policy error, poor local conditioning, insufficient
-stabilization, or an interaction among them. The branch-transition hypothesis
-is weakened because the transitions precede the approach by roughly 20 cm. It
-remains unresolved whether the
-saved temporal-slew parent's pooled paired edge is useful beyond its original
-trajectory, or whether the broad fresh-replication collapse shares a physical
-mechanism with the narrow failures of the working policy. The available
-evidence still does not establish which intervention can improve the failure
-sector without degrading broad reach-and-hold behavior, nor why the
-training-success proxy can rise while complete-task success falls. In
-particular, headroom removed saturation without rescuing shared failures, so
-the next intervention must test damping of residual joint velocity near the
-target rather than merely reduce torque authority globally.
+poor local conditioning, branch-dependent policy behavior, insufficient
+stabilization, or an interaction among them. It remains unresolved why
+training-success proxies can rise while complete-task success falls, whether
+the temporal-slew lineage's isolated paired edge has any value beyond its
+trajectory, and whether any controller change can rescue the narrow sector
+without sacrificing broad approach and sustained hold.
 
-**Active inquiry:** The campaign now needs to distinguish the stable,
-configuration-dependent control interaction underlying the working policy's
-remaining failures from the broad optimization or representation failure seen
-in fresh experiment 11. This matters because improving the narrow failure
-sector is useful only if the learned controller preserves complete
-reach-and-hold behavior across the full target distribution. The event question
-is now answered negatively: branch switches are early and common rather than
-near-tolerance failure events. The active test is whether a distance-gated
-joint-velocity damping term reduces the late near-target saturated lock-up
-while preserving the parent's broad approach behavior. A broad regression,
-unchanged shared failures, or no reduction in near-target lock-up would reject
-this control intervention. The inquiry would end only by a policy that
-reliably reaches the 196/200 objective under the official assessment; the
-current measurements establish neither.
+**Active inquiry:** The remaining scientific problem is to identify the
+configuration-dependent control interaction that defeats a mature policy in a
+narrow target sector while preserving complete reach-and-hold behavior
+elsewhere. Branch switches are early and common, and local damping can reduce
+late saturated lock-up without rescuing the task; neither is a sufficient
+explanation. This matters because the human objective requires broad success,
+not merely a better failure-stage signature. The inquiry would be redirected
+by evidence that isolates a mechanism while preserving the working policy's
+broad behavior, and it would end only after a frozen policy reliably reaches
+at least 196/200 on the official assessment.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -606,3 +544,51 @@ attainment is claimed.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-100352-task-reference-v1.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-110592-task-reference-v1.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/task-reference-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-11-checkpoint-120832-task-reference-v1.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 12
+
+**Result:** Distance-gated joint-velocity damping did not produce a viable
+replacement for the working lineage. On the new episodes 41000--41199 panel,
+the working reference achieved 197/200, the 55296-step damping checkpoint
+achieved 178/200, and the final 120832-step checkpoint achieved 146/200. The
+working lineage remains selected and best-known; the damping recipe is
+reverted. Both measured damping checkpoints are retained as negative controls.
+
+**Observed behavior:** Both damping checkpoints lost every discordant paired
+episode to working: 19 losses for checkpoint-55296 and 51 for
+checkpoint-120832, with no paired wins. Each retained the three parent
+failures at episodes 78, 171, and 182, while adding failures across many
+target angles. The peak checkpoint added 19 failures and the final checkpoint
+added 51; many were no-entry failures, with the remainder including brief
+entries and incomplete holds. On failed episodes, near-target saturated steps
+averaged 484 for working, 376 for checkpoint-55296, and 442 for
+checkpoint-120832. The damping therefore changed the late control signature
+without restoring complete task behavior. Continued adaptation worsened both
+the complete-task result and the breadth of the failure set.
+
+**Hypothesis assessment:** The hypothesis that distance-gated damping would
+reduce late near-target lock-up while preserving broad reach-and-hold behavior
+is contradicted as a policy-level intervention. It is partially supported only
+for the narrower physical signature: damping reduced near-target saturation in
+some failed trajectories. That signature change is not evidence of causality,
+because the shared failures persisted and broad approach and hold behavior
+regressed substantially. The conclusion is limited to this damping magnitude,
+gate, transferred training trajectory, and one disjoint 200-episode panel; it
+does not prove that all velocity feedback or all local stabilization methods
+are ineffective.
+
+**Interpretation:** The working failures are not solved by subtracting
+velocity-proportional command near the target. Near-target saturation is
+associated with failure but can be reduced while introducing earlier
+reachability or policy-control errors. The final checkpoint's degradation also
+reinforces that the training proxy and continued adaptation are not reliable
+selection criteria. Restoring the parent's complete scientific recipe is the
+defensible lineage decision; retaining both checkpoints preserves the direct
+mechanism comparison without treating either as a candidate for the objective.
+
+**Evidence inspected:** `research/brief.md`;
+`research/scientific_model.md`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-12-working-200ep-seed41000-0576372df066.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-12-checkpoint-55296-200ep-seed41000-0576372df066.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-12-checkpoint-120832-200ep-seed41000-0576372df066.json`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-12/inventory.json`.
