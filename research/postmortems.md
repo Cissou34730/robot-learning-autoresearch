@@ -4,51 +4,50 @@
 
 **Current synthesis:** The unchanged PPO baseline remains below the 98% objective
 in pooled development evidence: the working lineage achieved 310/320 successes
-(96.875%) across two distinct research panels, while the retained 120832-step
-alternative achieved 309/320 (96.5625%). On the new disjoint panel, working
-scored 159/160 and the alternative 158/160, with the only discordant episode
-favoring working. The new evidence makes working the stronger transfer parent,
-but the favorable 99.375% panel does not establish official readiness. The
-alternative inverse-kinematic explanation is weakened: every episode that
-entered tolerance in the new panel used the open branch, and no entrant was
-classified as branch-ambiguous. The remaining failures are control-trajectory
-failures rather than evidence that the target is unreachable.
+(96.875%) across two distinct research panels. Increasing the action-effort
+coefficient from 0.01 to 0.05 did not improve complete success: the early
+experiment-2 checkpoint scored 158/160 against working's 159/160, the
+parent-horizon candidate scored 151/160, and the later checkpoints scored
+149/160 and 148/160. Continued training under the changed recipe therefore
+produced a clear regression on the measured panel, and the working lineage
+remains the strongest available transfer parent and best-known policy. The
+action-cost result rejects this intervention as a useful explanation or
+selection rule, but does not show that effort and sampled actuation are
+irrelevant to the remaining failures.
 
-**Lessons and limits:** The new instrumentation distinguishes two failure modes.
-Both lineages failed on seed 5099 at radius 16.37 cm and angle -142.2 degrees;
-the episode never entered tolerance, stayed on the open branch at termination,
-and used saturated action on 499 of 500 control steps. The working lineage had
-no other failure on the new panel. The retained alternative additionally failed
-seed 5013 at radius 16.38 cm and angle 100.5 degrees: it entered at step 8,
-held for at most 5 steps, interrupted the hold 244 times, and entered at
-144.3 cm/s while using saturated action on all 500 steps. Successful entrants
-also use open-branch motion and moderate Jacobian condition numbers, so the
-current evidence does not isolate conditioning as the cause. The two-panel
-aggregate remains below the objective and the old panel's nine shared failures
-lack trajectory instrumentation, so the prevalence of the saturation pathology
-and the extent of late-training regression remain uncertain.
+**Lessons and limits:** All nine failures of the measured experiment-2
+checkpoint-100352 candidate, like the failures of the other experiment-2
+candidates, were no-entry failures; none supplied evidence of improved hold
+regulation. The parent-horizon candidate lost all eight discordant episodes to
+working on the paired panel. The shared seed 5099 failure remains a 16.37 cm,
+-142.2 degree target with no tolerance entry and saturated action on 499 of 500
+steps for working. Experiment-2 failures also include several short-radius and
+negative-angle targets, but the reused 160-episode panel does not establish
+population frequencies or prove that the changed coefficient caused each
+failure. The pooled development result remains below the objective, so no
+official assessment is justified.
 
-**Competing explanations:** The leading explanation is an effort/sampled-control
-pathology: the policy can remain at maximum effort instead of transitioning from
-approach to braking, producing either a no-entry orbit or a high-speed,
-interrupted hold. A second explanation is target-geometry dependence around the
-16.4 cm radius, but one shared new-panel target is insufficient to establish a
-region rather than a deterministic episode-specific failure. A third explanation
-is late-training degradation of hold regulation, supported by the alternative's
-additional seed-5013 failure but not by a statistically strong policy comparison.
-Branch selection and severe entry conditioning are currently weaker explanations,
-not eliminated ones, because the diagnostics summarize rather than replay full
-trajectories.
+**Competing explanations:** A real effort/sampled-control pathology remains
+plausible because the shared no-entry trajectory is nearly fully saturated, but
+the coefficient change neither removed it nor preserved broad success. Target
+geometry or observation-to-action representation may govern the expanded
+negative-angle and short-radius no-entry set. Late-training policy degradation
+is supported by the 93.125%, 92.5%, and 94.375% candidate results, although the
+experiment does not separate ordinary optimization drift from reward-shaping
+effects. Branch selection and Jacobian conditioning remain weaker explanations:
+measured entrants predominantly use the open branch, and the summarized
+diagnostics do not provide enough replay detail to eliminate
+configuration-dependent dynamics.
 
-**Decision frontier:** Determine whether reducing the reward incentive for
-sustained high effort converts the shared no-entry and high-speed hold failures
-into controlled reach-and-hold behavior without degrading the broad success
-distribution. The discriminating evidence is a transfer policy's paired task
-success against working plus trajectory diagnostics: fewer near-horizon
-saturation episodes, lower entry speed for hold-loss cases, and preserved
-open-branch reach should support the effort-regulation explanation; unchanged
-failures or new no-entry cases would redirect the inquiry toward target-specific
-geometry or representation rather than further action-cost tuning.
+**Decision frontier:** Distinguish target-conditioned reach/control
+representation failures from transient effort and braking failures. Evidence
+that the same geometry strata improve with reduced saturation and preserved
+entry/hold behavior would support a control explanation; persistent no-entry
+failures despite controlled effort, especially across the negative-angle and
+short-radius strata, would redirect the inquiry toward target encoding,
+initial-singularity escape, or branch-conditioned reach representation. The
+discrimination requires paired success and trajectory evidence rather than
+another unmeasured training proxy.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
@@ -98,3 +97,49 @@ cause of the remaining failures.
 `research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/task-reference-c65e9e59-7084-4415-87b6-9ff242544054-experiment-1-checkpoint-86016-task-reference-v1.json`;
 `research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/task-reference-c65e9e59-7084-4415-87b6-9ff242544054-experiment-1-checkpoint-100352-task-reference-v1.json`;
 `research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/task-reference-c65e9e59-7084-4415-87b6-9ff242544054-experiment-1-checkpoint-120832-task-reference-v1.json`
+
+## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 2
+
+**Result:** The action-effort intervention did not improve the learned task.
+Checkpoint-35840 reached 158/160 successes (98.75%), checkpoint-100352 reached
+151/160 (94.375%), checkpoint-75776 reached 149/160 (93.125%), and
+checkpoint-120832 reached 148/160 (92.5%). On the paired 5000-5159 panel,
+working beat these candidates by 1, 8, 10, and 11 discordant episodes,
+respectively.
+
+**Observed behavior:** The measured parent-horizon candidate had nine
+no-entry failures, including the shared 5099 target at radius 16.37 cm and
+angle -142.2 degrees; working had one failure on that panel. The other
+experiment-2 candidates likewise failed by not entering tolerance, with no
+measured hold-loss improvement. The later failures included short-radius and
+negative-angle targets, showing broader reach degradation rather than a
+selective hold-stability improvement. The shared panel was reused for paired
+comparison and does not provide independent population estimates.
+
+**Hypothesis assessment:** The hypothesis is contradicted as a policy-selection
+intervention and weakened as a causal explanation. Raising the action cost did
+not remove the diagnostic saturation failure, did not produce measured
+hold-regulation gains, and was followed by substantial late-training
+regression. The parent-horizon result confirms that the candidate identity
+ambiguity was not hiding a competitive intervention policy. The evidence does
+not establish that action cost caused every failure.
+
+**Interpretation:** The failures remain coupled reach-and-control failures, not
+evidence of unreachable targets. The intervention is closed and the parent
+recipe is restored to preserve attribution. Working/checkpoint-100352 remains
+both working and best known at 310/320 pooled research-panel successes
+(96.875%), below the 98% objective; no final benchmark is requested. Future
+inquiry should discriminate target-conditioned representation and initial
+singularity escape from sampled braking dynamics using paired trajectory
+evidence, rather than increasing this action penalty again.
+
+**Evidence inspected:** `research/brief.md`;
+`research/results.jsonl`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-2-working-160ep-seed5000-a6f00af22b57.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-2-checkpoint-35840-160ep-seed5000-a6f00af22b57.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-2-checkpoint-75776-160ep-seed5000-a6f00af22b57.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-2-checkpoint-120832-160ep-seed5000-a6f00af22b57.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-2-checkpoint-100352-160ep-seed5000-a6f00af22b57.json`;
+`robot_learning/scenario/reward.py`;
+`research/scenario.md`;
+`research/scientific_model.md`.
