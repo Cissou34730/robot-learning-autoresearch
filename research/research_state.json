@@ -82,7 +82,18 @@
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
     "started_at": "2026-09-26T00:49:26.561132+00:00"
   },
-  "campaign_conclusion": null,
+  "campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "continuation_comparison": {
+      "continuation": "Transfer from best_known and test a new hold-specific reward design that penalizes sustained distance outside tolerance rather than forfeiting all accumulated hold progress.",
+      "form": "feasible_continuation",
+      "reason": "This is feasible and targets the remaining interrupted-hold failures, but the prior hold-forfeit reward intervention tied its parent, reduced-rate continuation degraded it, and no available intervention has shown a reliable path from roughly 97% to the objective. The official assessment of a near-objective frozen policy has greater decision value than another speculative training run because it resolves the human-defined outcome directly."
+    },
+    "terminal_expectation": {
+      "expected_verdict": "uncertain",
+      "reason": "The frozen best-known policy achieved 932/960 (97.08%) across six disjoint research panels, including 155/160 and 156/160 on the two latest panels, so it is close to but below the 98% development target. The official 200-episode panel is distinct and development measurements cannot determine whether it will reach the required 196 successes."
+    }
+  },
   "campaign_experiment_counters": {
     "0d669090-7528-4cb1-a91e-dec56695ce02": 5
   },
@@ -99,15 +110,113 @@
     "experiment": 5,
     "reason": "The experiment-5 final checkpoint tied best_known in the pooled paired comparison across two disjoint panels at 311/320 successes, with 2 candidate wins and 2 control wins. The second panel favored best_known, and the diagnostics still showed both missed reaches and interrupted holds, so the existing working lineage remains the strongest defensible policy."
   },
-  "last_verdict": "researcher selected working as working",
+  "last_verdict": "researcher requested the official final benchmark",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": null,
+  "pending_campaign_conclusion": {
+    "action": "request_final_benchmark",
+    "continuation_comparison": {
+      "continuation": "Transfer from best_known and test a new hold-specific reward design that penalizes sustained distance outside tolerance rather than forfeiting all accumulated hold progress.",
+      "form": "feasible_continuation",
+      "reason": "This is feasible and targets the remaining interrupted-hold failures, but the prior hold-forfeit reward intervention tied its parent, reduced-rate continuation degraded it, and no available intervention has shown a reliable path from roughly 97% to the objective. The official assessment of a near-objective frozen policy has greater decision value than another speculative training run because it resolves the human-defined outcome directly."
+    },
+    "progress": "planned",
+    "reason": "The frozen best-known policy achieved 932/960 (97.08%) across six disjoint research panels, including 155/160 and 156/160 on the two latest panels, so it is close to but below the 98% development target. The official 200-episode panel is distinct and development measurements cannot determine whether it will reach the required 196 successes.",
+    "terminal_expectation": {
+      "expected_verdict": "uncertain",
+      "reason": "The frozen best-known policy achieved 932/960 (97.08%) across six disjoint research panels, including 155/160 and 156/160 on the two latest panels, so it is close to but below the 98% development target. The official 200-episode panel is distinct and development measurements cannot determine whether it will reach the required 196 successes."
+    }
+  },
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": null,
+  "pending_final_benchmark": {
+    "artifact": "research/checkpoints/retained/0d669090-7528-4cb1-a91e-dec56695ce02/e2-ca3d05779-ef7388827932d87c3ff6cb68983021be8bee4140a49fa0417b9690e7687aa47b",
+    "best_known": {
+      "artifact": "research/checkpoints/retained/0d669090-7528-4cb1-a91e-dec56695ce02/e2-ca3d05779-ef7388827932d87c3ff6cb68983021be8bee4140a49fa0417b9690e7687aa47b",
+      "candidate": "checkpoint-105472",
+      "designation_ordinal": 2,
+      "evaluation_artifacts": [
+        "research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-checkpoint-105472-160ep-seed4520-f48545f83637.json",
+        "research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-checkpoint-105472-160ep-seed4680-f48545f83637.json"
+      ],
+      "fingerprint": "ef7388827932d87c3ff6cb68983021be8bee4140a49fa0417b9690e7687aa47b",
+      "origin_experiment": 2,
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "reason": "Designate checkpoint-105472 as best-known because its disjoint experiment-2 evidence is the strongest current measured result and modestly exceeds the parent control; the selection-panel result is not treated as independent confirmation.",
+      "scientific_commit": "9439dd0de911148344b3018cfb2491cd315db038",
+      "selected_panels": [
+        {
+          "episodes": 160,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 4520
+        },
+        {
+          "episodes": 160,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 4680
+        },
+        {
+          "episodes": 160,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 4840
+        },
+        {
+          "episodes": 160,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 5000
+        },
+        {
+          "episodes": 160,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 5160
+        },
+        {
+          "episodes": 160,
+          "evaluation_semantics": "f48545f83637",
+          "instrument": "research_evaluation",
+          "seed": 5320
+        }
+      ],
+      "training_steps": 200704
+    },
+    "experiment": 5,
+    "fingerprint": "ef7388827932d87c3ff6cb68983021be8bee4140a49fa0417b9690e7687aa47b",
+    "selected": "best_known",
+    "terminal_expectation": {
+      "expected_verdict": "uncertain",
+      "reason": "The frozen best-known policy achieved 932/960 (97.08%) across six disjoint research panels, including 155/160 and 156/160 on the two latest panels, so it is close to but below the 98% development target. The official 200-episode panel is distinct and development measurements cannot determine whether it will reach the required 196 successes."
+    }
+  },
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "ef36ffb90c0987f796ee6198ea516f4df5cfb63b",
