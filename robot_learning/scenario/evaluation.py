@@ -55,6 +55,9 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        action_saturation_steps = 0
+        action_delta_norm_sum = 0.0
+        max_action_delta_norm = 0.0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -65,6 +68,13 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            applied_action = np.asarray(info["applied_action"], dtype=np.float64)
+            action_delta = np.asarray(info["action_delta"], dtype=np.float64)
+            if np.any(np.isclose(np.abs(applied_action), 1.0)):
+                action_saturation_steps += 1
+            action_delta_norm = float(np.linalg.norm(action_delta))
+            action_delta_norm_sum += action_delta_norm
+            max_action_delta_norm = max(max_action_delta_norm, action_delta_norm)
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
@@ -103,6 +113,11 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "action_saturation_steps": action_saturation_steps,
+                "mean_action_delta_norm": (
+                    action_delta_norm_sum / steps if steps else 0.0
+                ),
+                "max_action_delta_norm": max_action_delta_norm,
             }
         )
         if progress_callback is not None:
