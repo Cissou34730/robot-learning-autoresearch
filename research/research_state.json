@@ -115,20 +115,7 @@
   "official_benchmark_verdict": null,
   "official_metrics": null,
   "pending_analysis": null,
-  "pending_campaign_conclusion": {
-    "action": "request_final_benchmark",
-    "continuation_comparison": {
-      "continuation": "Transfer from best_known and test a new hold-specific reward design that penalizes sustained distance outside tolerance rather than forfeiting all accumulated hold progress.",
-      "form": "feasible_continuation",
-      "reason": "This is feasible and targets the remaining interrupted-hold failures, but the prior hold-forfeit reward intervention tied its parent, reduced-rate continuation degraded it, and no available intervention has shown a reliable path from roughly 97% to the objective. The official assessment of a near-objective frozen policy has greater decision value than another speculative training run because it resolves the human-defined outcome directly."
-    },
-    "progress": "committed",
-    "reason": "The frozen best-known policy achieved 932/960 (97.08%) across six disjoint research panels, including 155/160 and 156/160 on the two latest panels, so it is close to but below the 98% development target. The official 200-episode panel is distinct and development measurements cannot determine whether it will reach the required 196 successes.",
-    "terminal_expectation": {
-      "expected_verdict": "uncertain",
-      "reason": "The frozen best-known policy achieved 932/960 (97.08%) across six disjoint research panels, including 155/160 and 156/160 on the two latest panels, so it is close to but below the 98% development target. The official 200-episode panel is distinct and development measurements cannot determine whether it will reach the required 196 successes."
-    }
-  },
+  "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": {
