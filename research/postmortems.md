@@ -3,59 +3,53 @@
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO baseline remains below the 98% objective
-in pooled development evidence: the working lineage achieved 623/640 successes
-(97.3%) across four distinct research panels. The action-effort intervention
-did not improve complete success, and experiment 3's full-radius intervention
-also did not improve it. The working lineage is the strongest available policy
-and is the best-known designation selected at closure. The new trajectory panel
-scored working at 158/160 and experiment-1-final at 157/160. Their failures
-entered the same open IK branch and had a well-conditioned Jacobian after the
-initial escape, but remained at saturated, rapidly reversing actions instead of
-settling. The evidence now favors a sampled-control stabilization bottleneck
-over a persistent branch or reachability failure, while retaining
-representation as a possible source of the bad commands.
+in pooled development evidence, and working remains the strongest available
+policy and best-known lineage. The trajectory evidence still favors a
+sampled-control stabilization bottleneck over a persistent reachability or
+branch failure: unsuccessful baseline episodes reached the open branch with
+reasonable conditioning but did not settle. Experiment 4 tested whether a
+stateful policy-side action low-pass would address that bottleneck. On the
+compatible 7000-7159 panel, working scored 158/160, the early low-pass
+checkpoint also scored 158/160, and the final low-pass checkpoint scored
+152/160. Thus the intervention produced no demonstrated complete-task gain and
+was harmful after continued training, while target-conditioned command
+generation remains a live upstream source of the instability.
 
-**Lessons and limits:** The action-cost change did not remove the shared
-16.37 cm, -142.2 degree no-entry trajectory, which used saturated action on 499
-of 500 steps, and it caused broad late-training regression. Full-radius
-training likewise did not remove the five shared experiment-3 failures. On the
-7000 panel, working's two failures saturated 496 and 499 control steps and
-entered tolerance for only one step; experiment-1-final shared those failures
-and added one positive-angle episode with 37 held steps before exit. All
-failure trajectories reached the open branch with Jacobian condition numbers
-near 1.3-4.6 at entry or termination, rather than remaining near the initial
-condition number of 78.4. Successful trajectories also used saturated effort
-during approach, so saturation itself is not sufficient; persistence and
-alternation after arrival are the discriminating observations. The completed
-artifacts' path-length field is invalid because of a state-view aliasing bug in
-the first instrumentation version; the evaluator is corrected before the next
-experiment. These are paired deterministic observations, not population
-estimates, and pooled development evidence remains below the objective, so no
-official assessment is justified.
+**Lessons and limits:** The action-effort and full-radius interventions already
+failed to improve their paired complete-task outcomes. Experiment 4 adds a
+direct negative result for reducing policy command bandwidth: the early
+checkpoint had zero discordant wins over working, and the final checkpoint had
+six working wins and no candidate wins. The early candidate's two failures
+matched working's failure seeds but recorded no tolerance entry, whereas
+working briefly entered and then lost the hold; the final candidate added six
+failures and also did not enter tolerance. This is consistent with smoothing
+altering approach behavior rather than reliably fixing stabilization. The
+7000-7159 panel was reused for deterministic pairing, so these results are not
+independent population confirmation. The observed trajectory instrumentation
+also does not isolate whether the learned command, the physical sampled
+actuation, or credit assignment is primary. Development evidence remains below
+the objective, so no official assessment is justified.
 
-**Competing explanations:** Training-distribution mismatch is weakened as a
-sufficient cause because exposing the policy to 6-20 cm targets did not change
-the paired failure set. Initial-singularity escape and fixed IK branch
-selection are weakened as primary causes because failures and successes both
-escape the singular posture and converge to the open branch with comparable
-conditioning. Sampled-control and braking pathology is strengthened because
-the failures alternate near-maximum commands after tolerance entry while
-successful episodes release saturation and complete the hold. A
-target-conditioned representation failure remains live as an upstream cause
-that could generate those commands in a sector, and the positive-angle added
-failure prevents treating the negative-angle sector as necessary. The new
-trajectory evidence does not establish whether the policy or the physical
-command bandwidth is the dominant source.
+**Competing explanations:** Training-radius mismatch is weakened as a sufficient
+cause because full-radius exposure did not change the persistent failure set.
+Initial-singularity escape and fixed branch selection are weakened as primary
+causes because failures and successes both escaped the initial posture and
+reached the open branch with comparable conditioning. A sampled-control or
+braking pathology remains physically plausible, but experiment 4 weakens the
+narrow claim that policy-side temporal smoothing alone is the decisive lever:
+the intervention did not improve the paired outcome and later reduced entry
+coverage. Target-conditioned representation and reward credit assignment remain
+live explanations for commands that are inappropriate in a target sector.
+The evidence cannot distinguish those learned-command causes from plant-level
+discrete-time effects.
 
-**Decision frontier:** Determine whether reducing the effective temporal
-authority of the learned command converts persistent saturated reversals into
-stable holds without sacrificing the fast approach behavior that succeeds on
-most targets. Evidence supporting the control-bandwidth explanation would be
-paired improvement in complete success, fewer post-entry exits, lower
-post-entry saturation, and preserved entry coverage; failure without those
-changes would redirect toward target-conditioned representation or reward
-credit assignment. The current policy remains a useful reference but not a
-demonstrated solution.
+**Decision frontier:** Resolve whether the persistent failures are driven
+primarily by target-conditioned command generation and credit assignment or by
+the plant's sampled actuation and braking dynamics. Discriminating evidence
+would require matched complete-task and trajectory comparisons that separately
+measure entry coverage, entry speed, post-entry exits, saturation and sustained
+hold, while preserving the successful approach regime. Until that distinction is
+resolved, working is a reference policy rather than a demonstrated solution.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
@@ -195,3 +189,50 @@ justified at 96.875% development success.
 `research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-3-checkpoint-105472-160ep-seed6000-48e4acc98c39.json`;
 `research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-3-checkpoint-120832-160ep-seed6000-48e4acc98c39.json`;
 `robot_learning/scenario/training_environment.py`.
+
+## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 4
+
+**Result:** The stateful action low-pass intervention did not improve complete
+reach-and-hold success. On the compatible 160-episode panel, working and the
+early checkpoint-35840 both achieved 158/160, with no discordant candidate wins.
+The final checkpoint-120832 fell to 152/160, with six discordant episodes
+favoring working. The intervention is therefore closed and the parent recipe is
+restored.
+
+**Observed behavior:** The early candidate and working shared the same two
+failure seeds, 7030 and 7155, but the candidate failures recorded no tolerance
+entry while working briefly entered and held for only one step before exiting.
+The final candidate retained those two failures and added six more
+no-entry failures. The candidate outcomes did not show the predicted reduction
+in complete-task failures or a reliable conversion of unstable approaches into
+sustained holds. All three measurements used the same 7000-7159 panel and
+matching evaluator semantics; the panel was reused for paired comparison and
+is not independent population evidence.
+
+**Hypothesis assessment:** The hypothesis that reducing effective command
+temporal authority would suppress saturated reversals, preserve approach
+coverage and improve the complete hold is contradicted as a policy-selection
+intervention on this panel. The early tie supplies no evidence of improvement,
+and the final regression with six working wins shows that continued learning
+under the intervention can degrade the coupled reach-and-hold behavior. The
+result weakens, but does not eliminate, sampled-control stabilization as a
+physical explanation: one policy-side smoothing coefficient cannot separate
+learned command generation from the plant's sampled dynamics or establish
+generalization beyond the reused panel.
+
+**Interpretation:** The low-pass filter changed the learned policy's effective
+approach dynamics without producing a measurable hold benefit, so retaining it
+would discard attribution without evidence of progress. The failure pattern
+keeps target-conditioned representation and reward credit assignment live as
+upstream explanations for inappropriate commands, while the original
+sampled-braking mechanism remains plausible at the plant level. Working is
+retained as the best-known reference, but its sub-98% development evidence does
+not justify an official benchmark.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-4-working-160ep-seed7000-6f1bf1ee9f02.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-4-checkpoint-35840-160ep-seed7000-6f1bf1ee9f02.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-4-checkpoint-120832-160ep-seed7000-6f1bf1ee9f02.json`;
+`robot_learning/scenario/policy_io.py`;
+`robot_learning/scenario/evaluation.py`.
