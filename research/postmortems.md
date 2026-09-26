@@ -4,50 +4,48 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 3118/3200 across sixteen distinct research panels,
-including 193/200 on the latest panel. Experiments 2--9 did not establish a
-reliable replacement for the working lineage. The completed preparation
-measurement shows a meaningful but still provisional distinction: the saved
-temporal-slew lineage achieved 195/200, while both working and action-headroom
-lineages achieved 193/200.
+98% solution. It achieved 3118/3200 across sixteen distinct research panels.
+Experiments 2--9 did not establish a reliable replacement for the working
+lineage. The experiment-10 continuation did not preserve the saved
+temporal-slew policy's apparent advantage: both measured continuation
+checkpoints achieved only 33/200, while the saved temporal-slew parent achieved
+196/200 on the identical disjoint panel.
 
-**Lessons and limits:** On the fresh experiment-10 panel, temporal slew rescued
-two working failures with no paired losses, while headroom reproduced every
-working failure despite reducing measured saturation from roughly 498 steps per
-failure to zero. The slew failures still shared five of the parent's seven
-failure identities, and its successful episodes were slower (mean 122.43 versus
-111.52 control steps). Its successful trajectories also occupied a lower
-Jacobian-determinant regime, so poor conditioning alone is not a sufficient
-explanation of failure. These observations are associative: one fresh panel
-cannot separate a repeatable slew-induced trajectory change from panel
-variation, and the slower path may trade responsiveness for stabilization.
-Together with experiments 6 and 9, the evidence rejects saturation removal,
-targeted exposure, and the tested fixed slew recipe as established sufficient
-solutions, but it leaves open whether further adaptation under the slew
-regime can preserve its apparent rescue. No development panel establishes the
-official objective.
+**Lessons and limits:** Each experiment-10 continuation checkpoint lost 163
+paired episodes to the saved temporal-slew parent and won none; the two
+continuation checkpoints tied at 14 versus 14 discordant wins. Their failures
+were broad, with extensive no-entry outcomes and near-continuous saturation,
+alongside incomplete holds, rather than a confined change in the known
+negative-angle sector. The saved parent retained ordinary reach-and-hold
+behavior on the same episodes. This contradicts the hypothesis that continued
+adaptation under the slew regime would preserve its rescue without broad
+regression. It does not identify whether the collapse arose from continued
+learning, the changed researcher-owned environment/evaluation implementation,
+the temporal-slew interaction, or their combination. Together with experiments
+5, 6, 7, and 9, the evidence rejects saturation removal, fixed slew,
+targeted exposure, and this continuation recipe as established sufficient
+solutions. No development panel establishes the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
-repeatable negative-angle failures despite unchanged task mechanics: a
-branch-transition policy error, poor local conditioning, insufficient
-stabilization, or an interaction among them. It remains unresolved whether a
-slew-limited trajectory can change the transition enough to rescue failures
-without exchanging them for slow or newly unstable behavior. It is also
-unresolved whether continued learning under that regime improves the rescued
-sector or merely preserves a panel-specific advantage.
+repeatable negative-angle failures despite unchanged protected task mechanics:
+a branch-transition policy error, poor local conditioning, insufficient
+stabilization, or an interaction among them. It remains unresolved whether the
+saved temporal-slew parent's isolated rescue is repeatable under a stable
+recipe, and whether the experiment-10 collapse reflects learning dynamics or a
+recipe/evaluator interaction. The available evidence also does not establish
+which intervention can improve the failure sector without degrading broad
+reach-and-hold behavior.
 
-**Active inquiry:** The provisional inquiry is whether continued adaptation of
-the saved temporal-slew policy can turn its two-rescue, zero-loss result into a
-repeatable complete-task improvement while retaining broad reach-and-hold
-behavior. This matters because the headroom control shows that removing
-saturation is not sufficient, whereas the slew lineage changes the trajectory
-through the poorly conditioned sector without broad regression. A continuation
-is justified only as a test of that trajectory hypothesis, not as evidence that
-slew is causal. A later paired panel showing no rescue, new losses, persistent
-slowdown without task gain, or unchanged failure identities would end this
-branch of the inquiry and redirect or close the campaign; repeatable rescue
-without broad regression would justify considering the lineage for further
-development.
+**Active inquiry:** The temporal-slew continuation branch is closed because
+paired evidence showed catastrophic broad regression rather than repeatable
+task-level improvement. The carried inquiry is now whether the
+configuration-dependent reach-and-hold failure can be explained and improved
+without sacrificing the working lineage's broad behavior and without confusing
+researcher-owned recipe effects with protected task performance. Evidence of a
+task-level gain with no broad paired losses would reopen a mechanism line;
+another broad regression or failure to distinguish mechanism from recipe would
+redirect or end that line. The current closure restores the working recipe and
+does not claim that the physical cause has been identified.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -449,3 +447,44 @@ human objective has been reached.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-9-working-200ep-seed34000-bb54672c3d8e.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-9-checkpoint-90112-200ep-seed34000-bb54672c3d8e.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-9-checkpoint-120832-200ep-seed34000-bb54672c3d8e.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 10
+
+**Result:** Continued adaptation of the saved temporal-slew lineage produced a
+severe complete-task regression. Both measured continuation checkpoints
+achieved 33/200 (16.5%) on episodes 36000--36199, while the saved temporal-slew
+parent achieved 196/200 (98.0%) on the same panel. The working lineage remains
+the selected working and best-known policy; the experiment-10 recipe is
+reverted. Both measured checkpoints are retained as negative controls.
+
+**Observed behavior:** Each continuation checkpoint lost 163 paired episodes
+to the saved parent and won none. The two continuation checkpoints had equal
+success counts and 14 versus 14 discordant wins. Their failures were broad:
+many never entered tolerance, and failed trajectories commonly remained
+near-continuously saturated, with additional incomplete holds. The saved parent
+completed the same panel with normal reach-and-hold behavior. These diagnostics
+describe the collapse but do not establish its cause.
+
+**Hypothesis assessment:** The hypothesis that continued adaptation under the
+temporal-slew regime would preserve the apparent two-rescue, zero-loss result
+while improving the recurring failure sector is contradicted on this disjoint
+paired panel. The large regression rejects this continuation recipe as a useful
+path toward the objective. Because experiment 10 changed researcher-owned
+environment/evaluation code while continuing an already modified control
+regime, the result does not isolate continued-learning dynamics from
+implementation interaction or establish that temporal slew itself caused the
+collapse.
+
+**Interpretation:** The apparent temporal-slew rescue was not robust to
+continued adaptation. The scientifically defensible action is to restore the
+working recipe and preserve the established working/best-known designation,
+while retaining the two measured checkpoints only as auditable negative
+controls for the unresolved conditioning, branch-transition, and stabilization
+question. No official objective attainment is claimed.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-10/inventory.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-10-checkpoint-115712-200ep-seed36000-9db8746df90e.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-10-checkpoint-120832-200ep-seed36000-9db8746df90e.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-10-e6-temporal-slew-120832-200ep-seed36000-9db8746df90e.json`.
