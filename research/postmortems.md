@@ -4,47 +4,40 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 4288/4400 across 22 distinct research panels, while
-the latest disjoint panel reached 194/200. The temporal-slew and
-targeted-exposure saved lineages also reached 194/200 on that panel; targeted
-exposure reproduced all six working failures, while temporal slew changed one
-failure in each direction without a net gain. Experiment 13's bounded
-transpose-Jacobian residual did not produce a replacement: its measured
-checkpoints achieved 188/200, 188/200, and 186/200 on a new panel. The parent
-remains the strongest established lineage, but no policy has established the
-official objective.
+98% solution. On the fresh preparation panel it achieved 194/200, exactly
+matching the temporal-slew and targeted-exposure saved lineages. All three
+policies failed on the same six target seeds, so neither alternative provides
+a reproducible task-level rescue. The parent remains the strongest established
+lineage, but no policy has established the official objective.
 
-**Lessons and limits:** Experiments 5, 6, 7, 9, and 10 reject saturation
-removal, fixed slew, targeted exposure, and the tested continuation recipes as
-established sufficient solutions, without isolating their individual causal
-interactions. Experiment 11 remains a broad negative control for learning
-trajectory variance. Experiment 12 rejects the specific distance-gated damping
-recipe as a useful path toward the objective: the peak and final candidates
-lost 19 and 51 paired episodes to working and won none. Experiment 13 weakens
-the action-path Jacobian hypothesis: the early and proxy-peak checkpoints were
-indistinguishable at 94%, the final checkpoint fell to 93%, and their paired
-comparisons showed no stable late-checkpoint advantage. The diagnostics still
-show recurring negative-angle no-entry and interrupted-hold failures, with
-no-entry counts increasing from 7 to 8 to 11 across the three checkpoints.
-These observations reject this residual recipe as a useful intervention but
-do not identify whether conditioning, branch behavior, stabilization, or
-their interaction is causal. All evidence remains development-only.
+**Lessons and limits:** Experiments 5, 6, 7, 9, 10, and 13 reject the tested
+saturation, slew, targeted-exposure, continuation, and action-residual recipes
+as sufficient solutions. Experiment 12 rejects the specific distance-gated
+damping recipe. On the fresh panel, the common failures lie between about
+-130 and -151 degrees: working and targeted exposure enter tolerance briefly
+before losing the hold, while temporal slew does not enter tolerance on those
+same targets. The target geometry has one IK branch outside the shoulder joint
+limits and one admissible folded branch on each of these failures. This
+supports branch admissibility as a concrete representation weakness, but the
+outcomes do not prove that branch selection is the sole cause; conditioning
+and stabilization may still interact with it. All evidence remains
+development-only.
 
-**Open questions:** Which configuration-dependent mechanism creates the
-repeatable negative-angle failures despite unchanged protected task mechanics:
-poor local conditioning, branch-dependent policy behavior, insufficient
-stabilization, or an interaction among them. It remains unresolved why
-training-success proxies can rise while complete-task success falls, and which
-measurement can distinguish these explanations without sacrificing broad
-approach and sustained hold.
+**Open questions:** Whether explicitly exposing signed joint-limit margins for
+both IK branches lets a learned controller select the admissible branch and
+preserve local stabilization across the negative-angle sector; whether the
+remaining failures are caused by conditioning or branch transitions after
+that information is available; and whether the broad reach-and-hold behavior
+survives the changed representation.
 
-**Active inquiry:** Determine whether the recurring failure sector is caused by
-configuration-dependent conditioning, branch transitions, local stabilization,
-or their interaction. The target-exposure, command-slew, damping, and bounded
-Jacobian-residual results do not show a reliable rescue, so the inquiry no
-longer favors an action-path residual. Future evidence must distinguish
-failure mechanism from checkpoint selection effects while preserving the
-complete reach-and-hold criterion; a frozen policy must still reach at least
+**Active inquiry:** Test whether the recurring sector is primarily a
+branch-admissibility and representation problem: each shared failure has an
+inadmissible open branch but an admissible folded branch, while changing
+temporal slew or target exposure leaves the failure identities unchanged.
+A fresh policy with signed normalized joint-limit margins for both branches
+should improve branch selection without changing task mechanics. Evidence
+would redirect this inquiry if it fails to reduce the shared sector or causes
+broad approach/hold regression; a frozen policy must still reach at least
 196/200 on the official assessment before the objective is claimed.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
