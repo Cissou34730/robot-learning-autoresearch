@@ -3,50 +3,54 @@
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Scientific strategy
 
 **Current synthesis:** The unchanged PPO baseline remains below the 98% objective
-in pooled development evidence: the working lineage achieved 310/320 successes
-(96.875%) across two distinct research panels. The action-effort intervention
-did not improve complete success: its early checkpoint scored 158/160 against
-working's 159/160, its parent-horizon candidate scored 151/160, and later
-checkpoints scored 149/160 and 148/160. The working lineage remains the
-strongest transfer parent and best-known policy. The failure set is instead
-strongly target-conditioned: the baseline trains only on 14-20 cm radii, while
-the official distribution spans 6-20 cm, and experiment-2 no-entry failures
-clustered at 7-12 cm with angles near +/-140 to 180 degrees. The next
-intervention tests whether this coverage gap, rather than action-cost weighting,
-causes the persistent reach failures.
+in pooled development evidence: the working lineage achieved 465/480 successes
+(96.875%) across three distinct research panels. The action-effort intervention
+did not improve complete success, and experiment 3's full-radius intervention
+also did not improve it: the training-success peak, final checkpoint, and
+working lineage each scored 155/160 on the new panel, with zero discordant
+episodes in either paired comparison. The working lineage is the strongest
+available policy and is the best-known designation selected at closure. The
+remaining failures are concentrated in a negative-angle sector, but span both
+short and long radii and include both no-entry and hold-loss outcomes. Radius
+coverage alone is therefore not a sufficient explanation for the persistent
+failures.
 
 **Lessons and limits:** The action-cost change did not remove the shared
 16.37 cm, -142.2 degree no-entry trajectory, which used saturated action on 499
-of 500 steps, and it caused broad late-training regression. This weakens effort
-regularization as the primary lever but does not prove effort irrelevant. The
-experiment-2 failures were all no-entry cases at the measured checkpoints,
-including repeated short-radius targets: 7.16-10.98 cm failures near negative
-or wraparound angles, with additional 12.11 cm failures near -142 to -157
-degrees. This aligns with the training range excluding all radii below 14 cm,
-but the panel is reused for the candidates and does not estimate population
-frequencies. The pooled development result remains below the objective, so no
-official assessment is justified.
+of 500 steps, and it caused broad late-training regression. Full-radius
+training likewise did not remove the five shared experiment-3 failures:
+three never entered tolerance and two entered for only 1-2 control steps before
+losing the hold. The failures occurred at radii from 9.37 to 16.76 cm and
+angles from -125.3 to -145.4 degrees, so they are not confined to the
+previously unsupported short-radius interval. These are paired deterministic
+observations on one new panel, not population estimates, and the evaluator
+does not expose joint/action trajectories. The pooled development result
+remains below the objective, so no official assessment is justified.
 
-**Competing explanations:** The leading explanation is training-distribution
-mismatch: the policy must extrapolate from 14-20 cm training targets to the
-6-14 cm portion of the official task, where inverse-kinematic posture and
-initial-singularity escape differ materially. A second explanation is a
-target-conditioned observation-to-action representation failure, especially in
-negative-angle and wraparound sectors, which full-radius coverage may or may
-not repair. A third explanation is transient effort/sampled-control pathology,
-because the shared 16.37 cm failure is nearly fully saturated, but changing the
-action penalty did not improve it. Branch selection and Jacobian conditioning
-remain unresolved because the summarized diagnostics do not replay complete
-trajectories.
+**Competing explanations:** Training-distribution mismatch is weakened as a
+sufficient cause because exposing the policy to 6-20 cm targets did not change
+the paired failure set, although it could still interact with another defect.
+A target-conditioned observation-to-action representation failure remains
+plausible in the negative-angle or wraparound sector. Initial-singularity
+escape and inverse-kinematic branch selection remain plausible because the
+same target geometry can require different joint postures and transient
+motions. Sampled-control and braking pathology remains plausible because two
+failures entered tolerance but could not sustain it. The current evidence
+cannot separate these explanations: the evaluator summarizes distance and
+hold stages but does not replay actions, joint states, branch choice, or
+Jacobian conditioning.
 
-**Decision frontier:** Test whether exposing the learner to the complete official
-radius distribution improves short-radius and negative-angle reach while
-preserving the established broad behavior. Paired success and trajectory
-evidence against working should show fewer no-entry failures in the 6-14 cm
-strata without a compensating loss at 14-20 cm; improvement would support
-coverage mismatch, while unchanged sector failures would redirect the inquiry
-toward target encoding, initial-singularity escape, or branch-conditioned
-representation.
+**Decision frontier:** Determine whether the persistent negative-angle failures
+are caused primarily by target-conditioned representation, singularity escape
+and branch selection, or sampled braking and hold dynamics. Discriminating
+evidence must pair matched successes and failures while recording complete
+joint-state and action trajectories, branch residuals or posture identity,
+Jacobian conditioning, effort saturation, and tolerance-entry velocity. A
+sector-specific reach failure with consistent posture or branch divergence
+would support a kinematic or representation mechanism; entry followed by
+high-velocity exits without such divergence would redirect toward sampled
+stabilization. Until that evidence exists, the current policy is useful as a
+reference but not a demonstrated solution.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
@@ -142,3 +146,47 @@ evidence, rather than increasing this action penalty again.
 `robot_learning/scenario/reward.py`;
 `research/scenario.md`;
 `research/scientific_model.md`.
+
+## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 3
+
+**Result:** Expanding the training target-radius range from 14-20 cm to the
+full 6-20 cm interval did not improve complete-task behavior. The measured
+training-success peak and final checkpoint each achieved 155/160 (96.875%) on
+episodes 6000-6159, matching working. Both paired comparisons had zero
+discordant wins. Closure restores the parent's recipe and selects working as
+both working and best-known.
+
+**Observed behavior:** The three measured policies shared the same five failing
+episode seeds: 6057 (15.80 cm, -140.6 degrees), 6065 (10.35 cm, -129.9
+degrees), 6072 (9.37 cm, -125.3 degrees), 6100 (16.76 cm, -145.4 degrees),
+and 6155 (14.75 cm, -140.9 degrees). Seeds 6057, 6072, and 6100 never
+entered tolerance. Seeds 6065 and 6155 entered tolerance briefly but reached
+only 1 held step before interruption. The shared set spans both the previously
+unsupported short-radius regime and the trained long-radius regime.
+
+**Hypothesis assessment:** The hypothesis that full-radius exposure would
+reduce short-radius and negative-angle no-entry failures while preserving broad
+behavior is weakened and, as a policy-selection intervention on this panel,
+contradicted. It produced no paired success gain, no failure-set change, and
+no evidence of a selective short-radius benefit. The result does not prove
+that target coverage is irrelevant outside this panel or that representation,
+branch choice, or sampled dynamics is the sole cause; it shows that coverage
+expansion alone did not resolve the observed mechanism.
+
+**Interpretation:** The persistent sector-specific failure across all three
+policies indicates that the causal bottleneck is not explained by radius
+support alone. The mixture of no-entry and hold-loss outcomes is consistent
+with a coupled approach and stabilization problem, but the summarized
+diagnostics cannot identify whether target encoding, escape from the initial
+singularity, inverse-kinematic branch selection, or sampled braking dominates.
+Because the intervention supplied no complete-task improvement and the working
+lineage has the strongest pooled evidence, retaining the changed recipe would
+discard attribution without a demonstrated benefit. No official benchmark is
+justified at 96.875% development success.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-3-working-160ep-seed6000-48e4acc98c39.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-3-checkpoint-105472-160ep-seed6000-48e4acc98c39.json`;
+`research/evaluations/c65e9e59-7084-4415-87b6-9ff242544054/evaluation-c65e9e59-7084-4415-87b6-9ff242544054-experiment-3-checkpoint-120832-160ep-seed6000-48e4acc98c39.json`;
+`robot_learning/scenario/training_environment.py`.
