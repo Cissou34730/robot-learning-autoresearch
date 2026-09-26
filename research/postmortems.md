@@ -2,51 +2,53 @@
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned substantial reach-and-hold
-behavior but has not established the 98% objective. Checkpoint 100352 is the
-strongest measured lineage: it achieved 151/160 successes (94.375%) on the
-research panel and 196/200 (98.0%) on the fixed task-reference panel. The final
-checkpoint 120832 tied it on the research panel but achieved 194/200 (97.0%) on
-the task-reference panel. The reward maximum at checkpoint 86016 was not the
-behavioral maximum. The repeated research failures of 100352 and 120832 occur
-on the same nine episode seeds, while the reference failures of 100352 all lie
-at short target radii and negative target angles. This supports a persistent
-target-geometry or configuration-dependent weakness, but does not identify its
-mechanism.
+**Current synthesis:** The unchanged PPO baseline remains below the 98% objective
+in pooled development evidence: the working lineage achieved 310/320 successes
+(96.875%) across two distinct research panels, while the retained 120832-step
+alternative achieved 309/320 (96.5625%). On the new disjoint panel, working
+scored 159/160 and the alternative 158/160, with the only discordant episode
+favoring working. The new evidence makes working the stronger transfer parent,
+but the favorable 99.375% panel does not establish official readiness. The
+alternative inverse-kinematic explanation is weakened: every episode that
+entered tolerance in the new panel used the open branch, and no entrant was
+classified as branch-ambiguous. The remaining failures are control-trajectory
+failures rather than evidence that the target is unreachable.
 
-**Lessons and limits:** Complete task success, rather than training reward or
-training success, discriminated the late checkpoints. The paired research panel
-found 100352 and 120832 identical on all 160 episodes; it found two wins for
-100352 over 86016 and none in the reverse direction. On the fixed reference
-panel, 100352 exceeded 86016 by four percentage points and exceeded 120832 by
-one point. These are development measurements, not the official result, and
-the research and reference panels each provide only one panel. The research
-panel remains below the objective, and the exact 98% reference result is not
-independent confirmation. The available measurements do not include joint
-posture, Jacobian conditioning, action saturation, or branch identity, so they
-cannot establish whether the failures arise from kinematics, sampled control,
-stabilization, or policy configuration.
+**Lessons and limits:** The new instrumentation distinguishes two failure modes.
+Both lineages failed on seed 5099 at radius 16.37 cm and angle -142.2 degrees;
+the episode never entered tolerance, stayed on the open branch at termination,
+and used saturated action on 499 of 500 control steps. The working lineage had
+no other failure on the new panel. The retained alternative additionally failed
+seed 5013 at radius 16.38 cm and angle 100.5 degrees: it entered at step 8,
+held for at most 5 steps, interrupted the hold 244 times, and entered at
+144.3 cm/s while using saturated action on all 500 steps. Successful entrants
+also use open-branch motion and moderate Jacobian condition numbers, so the
+current evidence does not isolate conditioning as the cause. The two-panel
+aggregate remains below the objective and the old panel's nine shared failures
+lack trajectory instrumentation, so the prevalence of the saturation pathology
+and the extent of late-training regression remain uncertain.
 
-**Competing explanations:** The leading explanation is a target-sector
-dependence involving the arm's alternative inverse-kinematic configurations and
-the difficult approach from the straight initial posture; the concentration of
-reference failures near 6-10 cm and approximately -116 to -128 degrees is
-consistent with this, but is not proof. A second explanation is a controller
-transient or hold-stability weakness that happens to appear in that sector,
-including residual velocity or discrete-time overshoot. A third explanation is
-panel composition: the fixed reference panel shows a stronger result than the
-research panel, and one panel per instrument cannot separate a systematic
-failure region from finite-sample variation. The current evidence cannot rank
-these alternatives causally.
+**Competing explanations:** The leading explanation is an effort/sampled-control
+pathology: the policy can remain at maximum effort instead of transitioning from
+approach to braking, producing either a no-entry orbit or a high-speed,
+interrupted hold. A second explanation is target-geometry dependence around the
+16.4 cm radius, but one shared new-panel target is insufficient to establish a
+region rather than a deterministic episode-specific failure. A third explanation
+is late-training degradation of hold regulation, supported by the alternative's
+additional seed-5013 failure but not by a statistically strong policy comparison.
+Branch selection and severe entry conditioning are currently weaker explanations,
+not eliminated ones, because the diagnostics summarize rather than replay full
+trajectories.
 
-**Decision frontier:** Determine whether the persistent negative-angle and
-short-radius failures are a reproducible configuration/conditioning problem or
-panel-specific variation, and whether the small difference between 100352 and
-120832 reflects real late-training regression. Discriminating evidence would
-be disjoint-panel episode outcomes joined to target radius and angle with
-trajectory-level joint posture, branch residual, Jacobian, velocity, and
-action/hold measurements; it should distinguish failures that never enter the
-tolerance disk from entries that lose the uninterrupted hold.
+**Decision frontier:** Determine whether reducing the reward incentive for
+sustained high effort converts the shared no-entry and high-speed hold failures
+into controlled reach-and-hold behavior without degrading the broad success
+distribution. The discriminating evidence is a transfer policy's paired task
+success against working plus trajectory diagnostics: fewer near-horizon
+saturation episodes, lower entry speed for hold-loss cases, and preserved
+open-branch reach should support the effort-regulation explanation; unchanged
+failures or new no-entry cases would redirect the inquiry toward target-specific
+geometry or representation rather than further action-cost tuning.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
