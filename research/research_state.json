@@ -94,84 +94,35 @@
     "experiment": 1,
     "reason": "Checkpoint-100352 is the strongest measured candidate: it achieved 196/200 on the disjoint research panel, while the fixed task-reference panel also returned 98% but is not independent evidence. It is therefore the best available working policy and the appropriate model for the next campaign decision."
   },
-  "last_verdict": "researcher requested the official final benchmark",
-  "official_benchmark_model": null,
-  "official_benchmark_verdict": null,
-  "official_metrics": null,
+  "last_verdict": "official benchmark did not reach the goal",
+  "official_benchmark_artifact": "f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
+  "official_benchmark_expectation": {
+    "expected_verdict": "uncertain",
+    "reason": "Checkpoint-100352 achieved 196/200 (98.00%) on the disjoint research panel and 98.00% on the fixed task-reference panel, which makes goal attainment plausible but not established. The official frozen 200-episode assessment is the only measurement that can determine the human objective, and the development panels leave uncertainty because the selected policy is exactly at the threshold and still has both missed-reach and interrupted-hold failures."
+  },
+  "official_benchmark_model": {
+    "artifact": "research/checkpoints/retained/dba19098-4f5e-4745-8212-dc17e14d5d84/e1-cada55eb5-f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
+    "fingerprint": "f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
+    "selected": "best_known"
+  },
+  "official_benchmark_verdict": "goal_not_reached",
+  "official_metrics": {
+    "episodes": 200,
+    "final_distance_cm": {
+      "mean": 0.366294668791641,
+      "median": 0.31898383051878665,
+      "worst": 2.2435044003034936
+    },
+    "goal_reached": false,
+    "schema_version": 1,
+    "seed": 1000,
+    "success_percent": 97.0
+  },
   "pending_analysis": null,
   "pending_campaign_conclusion": null,
   "pending_closure_operation": null,
   "pending_evaluation_request": null,
-  "pending_final_benchmark": {
-    "artifact": "research/checkpoints/retained/dba19098-4f5e-4745-8212-dc17e14d5d84/e1-cada55eb5-f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
-    "best_known": {
-      "artifact": "research/checkpoints/retained/dba19098-4f5e-4745-8212-dc17e14d5d84/e1-cada55eb5-f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
-      "candidate": "checkpoint-100352",
-      "designation_ordinal": 1,
-      "evaluation_artifacts": [
-        "research/evaluations/dba19098-4f5e-4745-8212-dc17e14d5d84/evaluation-dba19098-4f5e-4745-8212-dc17e14d5d84-experiment-1-checkpoint-100352-160ep-seed4200-f48545f83637.json",
-        "research/evaluations/dba19098-4f5e-4745-8212-dc17e14d5d84/evaluation-dba19098-4f5e-4745-8212-dc17e14d5d84-experiment-1-checkpoint-100352-200ep-seed5200-f48545f83637.json",
-        "research/evaluations/dba19098-4f5e-4745-8212-dc17e14d5d84/task-reference-dba19098-4f5e-4745-8212-dc17e14d5d84-experiment-1-checkpoint-100352-task-reference-v1.json"
-      ],
-      "fingerprint": "f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "The 100352-step checkpoint has the highest disjoint-panel result, 196/200 (98.00%), and is marginally ahead of checkpoint-120832 in the paired research evidence.",
-      "scientific_commit": "b1db5592f6c0aee3b18adf2b96c892b374b50cc7",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 4200
-        },
-        {
-          "episodes": 200,
-          "evaluation_semantics": "f48545f83637",
-          "instrument": "research_evaluation",
-          "seed": 5200
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 100352
-    },
-    "experiment": 1,
-    "fingerprint": "f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
-    "selected": "best_known",
-    "terminal_expectation": {
-      "expected_verdict": "uncertain",
-      "reason": "Checkpoint-100352 achieved 196/200 (98.00%) on the disjoint research panel and 98.00% on the fixed task-reference panel, which makes goal attainment plausible but not established. The official frozen 200-episode assessment is the only measurement that can determine the human objective, and the development panels leave uncertainty because the selected policy is exactly at the threshold and still has both missed-reach and interrupted-hold failures."
-    }
-  },
+  "pending_final_benchmark": null,
   "pending_researcher_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "b1db5592f6c0aee3b18adf2b96c892b374b50cc7",
@@ -245,7 +196,7 @@
     }
   ],
   "schema_version": 4,
-  "terminal_campaign_status": null,
+  "terminal_campaign_status": "goal_not_reached",
   "working_lineage": {
     "artifact": "research/checkpoints/retained/dba19098-4f5e-4745-8212-dc17e14d5d84/e1-cada55eb5-f638a85aef0b67fd1b24c2c5d17c80295e1e6f564455d3c8acf38bd975504c13",
     "candidate": "checkpoint-100352",
