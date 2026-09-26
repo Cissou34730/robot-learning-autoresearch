@@ -42,19 +42,17 @@ targeted exposure has any direct benefit independent of representation, and
 which observation or optimization design could expose useful dynamics without
 destabilizing the learned controller.
 
-**Active inquiry:** The current evidence makes actuator clipping and command
-smoothness insufficient explanations: headroom removed saturation without
-rescuing the shared targets, slew reduced command and entry speeds while
-leaving five shared no-entry failures, and experiment 8's velocity/Jacobian
-features produced a broad fresh-training collapse. The provisional question
-is whether the remaining failure is a configuration-dependent
-branch-transition and stabilization problem that must be addressed without
-changing the parent's robust observation contract. Evidence that a future
-intervention preserves the parent's broad completion while rescuing shared
-failures would support further work; broad regression or unchanged failure
-identities would redirect the inquiry. The unmeasured experiment-7
-intervention remains a separate data-coverage question and is not treated as
-evidence for this decision.
+**Active inquiry:** The provisional question is whether the recurring failures
+are caused primarily by branch-transition geometry, local Jacobian conditioning,
+or stabilization after the transition, while preserving the parent's robust
+11-value observation contract. A fresh paired telemetry panel of the parent,
+the headroom control, and the slew control will test whether their failure
+identities and complete-task outcomes separate consistently by branch switches,
+conditioning, entry and hold speed, or applied-command behavior. A stable
+behavioral rescue with a corresponding diagnostic separation would support
+continued intervention; unchanged failure identities or broad regression would
+redirect or end this inquiry. The unmeasured experiment-7 intervention remains
+a separate data-coverage question and is not treated as evidence here.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
