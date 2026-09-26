@@ -3,42 +3,44 @@
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Scientific strategy
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
-competence but remains a near-objective policy rather than an established
-98% solution. On the fresh preparation panel it achieved 194/200, exactly
-matching the temporal-slew and targeted-exposure saved lineages. All three
-policies failed on the same six target seeds, so neither alternative provides
-a reproducible task-level rescue. The parent remains the strongest established
-lineage, but no policy has established the official objective.
+competence but remains an incompletely established 98% solution. It achieved
+197/200 on the latest disjoint development panel, while its aggregate
+development evidence is 4679/4800 (97.5%) and therefore does not establish the
+official objective. Experiment 14's two mature branch-margin candidates scored
+128/200 and 130/200 on the same panel, so the added representation produced a
+broad regression rather than a rescue.
 
-**Lessons and limits:** Experiments 5, 6, 7, 9, 10, and 13 reject the tested
-saturation, slew, targeted-exposure, continuation, and action-residual recipes
-as sufficient solutions. Experiment 12 rejects the specific distance-gated
-damping recipe. On the fresh panel, the common failures lie between about
--130 and -151 degrees: working and targeted exposure enter tolerance briefly
-before losing the hold, while temporal slew does not enter tolerance on those
-same targets. The target geometry has one IK branch outside the shoulder joint
-limits and one admissible folded branch on each of these failures. This
-supports branch admissibility as a concrete representation weakness, but the
-outcomes do not prove that branch selection is the sole cause; conditioning
-and stabilization may still interact with it. All evidence remains
-development-only.
+**Lessons and limits:** Experiments 5, 6, 7, 9, 10, 13, and 14 reject the
+tested saturation, slew, targeted-exposure, continuation, action-residual, and
+signed branch-margin recipes as sufficient solutions. Experiment 12 rejects
+the specific distance-gated damping recipe. The recurring negative-angle
+sector remains visible in the working policy, but experiment 14 shows that
+adding branch-limit margins did not selectively affect that sector: the two
+challengers failed broadly, with 72 and 70 no-completion episodes versus 3 for
+working on episodes 45000--45199. On shared diagnostic episodes, the
+challengers often never entered tolerance at all, whereas working either
+completed the hold or had a localized negative-angle entry/hold failure. This
+contradicts the tested representation recipe, but cannot distinguish feature
+semantics or scaling from fresh-training optimization and policy-control
+interactions. All evidence remains development-only.
 
-**Open questions:** Whether explicitly exposing signed joint-limit margins for
-both IK branches lets a learned controller select the admissible branch and
-preserve local stabilization across the negative-angle sector; whether the
-remaining failures are caused by conditioning or branch transitions after
-that information is available; and whether the broad reach-and-hold behavior
-survives the changed representation.
+**Open questions:** Whether the recurring negative-angle failures arise from
+branch-conditioned control, Jacobian conditioning, stabilization, or another
+interaction; whether the severe experiment-14 regression is due to feature
+semantics, feature scaling, optimization, or their interaction; and whether
+the working policy's latest 197/200 result persists across additional
+independent panels.
 
-**Active inquiry:** Test whether the recurring sector is primarily a
-branch-admissibility and representation problem: each shared failure has an
-inadmissible open branch but an admissible folded branch, while changing
-temporal slew or target exposure leaves the failure identities unchanged.
-A fresh policy with signed normalized joint-limit margins for both branches
-should improve branch selection without changing task mechanics. Evidence
-would redirect this inquiry if it fails to reduce the shared sector or causes
-broad approach/hold regression; a frozen policy must still reach at least
-196/200 on the official assessment before the objective is claimed.
+**Active inquiry:** The branch-admissibility hypothesis is weakened as a
+direct representation intervention: the signed normalized margins caused
+catastrophic broad regression in both measured mature checkpoints instead of
+reducing the recurring sector. The remaining scientific question is whether
+that result reflects the particular feature construction and learning
+trajectory or shows that branch information is not the limiting mechanism;
+future evidence would redirect this inquiry by isolating those alternatives
+without sacrificing complete reach-and-hold behavior. A frozen policy must
+still reach at least 196/200 on the official assessment before the objective is
+claimed.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -649,3 +651,51 @@ claiming official objective attainment.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-13-checkpoint-100352-200ep-seed43000-48e4acc98c39.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-13-checkpoint-105472-200ep-seed43000-48e4acc98c39.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-13-checkpoint-120832-200ep-seed43000-48e4acc98c39.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 14
+
+**Result:** The signed normalized joint-limit-margin representation was not a
+viable replacement for the working lineage. On the disjoint episodes
+45000--45199 panel, the working policy achieved 197/200, while the
+100352-step and 120832-step experiment-14 candidates achieved 128/200 and
+130/200. The working lineage remains selected and best-known; the experiment
+14 recipe is reverted and no experiment-14 candidate is retained.
+
+**Observed behavior:** The paired comparisons recorded zero candidate wins
+against 69 working wins for checkpoint-100352 and zero candidate wins against
+67 working wins for checkpoint-120832. The candidates failed 72 and 70
+episodes, respectively, compared with 3 for working. Their failures were
+broad rather than confined to the hypothesized negative-angle sector. For
+example, on shared episode seed 45001 the candidates never entered tolerance
+and stayed 18.72 cm and 18.52 cm from the target at their closest, while
+working completed a 100-step hold. On shared negative-angle episodes 45049
+and 45081, the candidates also never entered tolerance, whereas working
+entered and then interrupted a one-step hold. The final candidate's two
+additional successes did not change this failure pattern.
+
+**Hypothesis assessment:** The hypothesis that signed normalized joint-limit
+margins for both inverse-kinematic branches would improve branch selection
+while preserving broad reach-and-hold behavior is contradicted as a policy
+intervention. Both measured mature checkpoints suffered a large complete-task
+regression and did not selectively rescue the recurring sector. This
+conclusion is limited to the specified two features, their scaling and
+placement, fresh PPO training, the two measured checkpoints, and one
+disjoint development panel; it does not prove that all branch-aware
+representations are ineffective or identify whether feature construction,
+optimization, or control interaction caused the regression.
+
+**Interpretation:** Exposing branch-limit margins did not turn the geometric
+interpretation into a usable learned policy and is not evidence that branch
+admissibility is the sole limiting mechanism. The broad no-entry failures
+indicate that the representation change disrupted the learned reach policy
+before the proposed branch-selection benefit could be evaluated cleanly.
+Restoring the parent's complete scientific recipe preserves the strongest
+available behavior without claiming official objective attainment.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/scientific_model.md`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-14/inventory.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-14-working-200ep-seed45000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-14-checkpoint-100352-200ep-seed45000-48e4acc98c39.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-14-checkpoint-120832-200ep-seed45000-48e4acc98c39.json`.
