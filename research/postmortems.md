@@ -13,7 +13,9 @@ compatible 7000-7159 panel, working scored 158/160, the early low-pass
 checkpoint also scored 158/160, and the final low-pass checkpoint scored
 152/160. Thus the intervention produced no demonstrated complete-task gain and
 was harmful after continued training, while target-conditioned command
-generation remains a live upstream source of the instability.
+generation remains a live upstream source of the instability. The next test
+keeps command timing and observation identity unchanged and supplies reward
+credit specifically against Cartesian speed inside the settling band.
 
 **Lessons and limits:** The action-effort and full-radius interventions already
 failed to improve their paired complete-task outcomes. Experiment 4 adds a
@@ -28,7 +30,10 @@ altering approach behavior rather than reliably fixing stabilization. The
 independent population confirmation. The observed trajectory instrumentation
 also does not isolate whether the learned command, the physical sampled
 actuation, or credit assignment is primary. Development evidence remains below
-the objective, so no official assessment is justified.
+the objective, so no official assessment is justified. The existing global
+action-cost test is not a test of settling speed: it penalized effort
+everywhere, including approach, while the remaining failure signature is
+specifically high speed near the tolerance boundary.
 
 **Competing explanations:** Training-radius mismatch is weakened as a sufficient
 cause because full-radius exposure did not change the persistent failure set.
@@ -40,8 +45,10 @@ narrow claim that policy-side temporal smoothing alone is the decisive lever:
 the intervention did not improve the paired outcome and later reduced entry
 coverage. Target-conditioned representation and reward credit assignment remain
 live explanations for commands that are inappropriate in a target sector.
-The evidence cannot distinguish those learned-command causes from plant-level
-discrete-time effects.
+The new reward test asks whether the learned controller can be taught the
+missing local settling objective without changing the plant or command
+bandwidth; it does not by itself separate learned-command causes from
+plant-level discrete-time effects.
 
 **Decision frontier:** Resolve whether the persistent failures are driven
 primarily by target-conditioned command generation and credit assignment or by
@@ -49,7 +56,9 @@ the plant's sampled actuation and braking dynamics. Discriminating evidence
 would require matched complete-task and trajectory comparisons that separately
 measure entry coverage, entry speed, post-entry exits, saturation and sustained
 hold, while preserving the successful approach regime. Until that distinction is
-resolved, working is a reference policy rather than a demonstrated solution.
+resolved, working is a reference policy rather than a demonstrated solution. The
+next decision tests whether local velocity-aware credit changes the failure
+class without imposing a global action filter.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
