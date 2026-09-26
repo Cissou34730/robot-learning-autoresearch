@@ -4,7 +4,7 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 3312/3400 across seventeen distinct research panels.
+98% solution. It achieved 3507/3600 across eighteen distinct research panels.
 Experiments 2--9 did not establish a reliable replacement for the working
 lineage. The experiment-10 continuation did not preserve the saved
 temporal-slew policy's apparent advantage: both measured continuation
@@ -16,6 +16,9 @@ working. Experiment 11's fresh unchanged-PPO replication did not escape this
 uncertain near-objective regime: its best measured checkpoint achieved 106/200
 on the new research panel and 105/200 on the protected panel, and later
 checkpoints fell to 83/200 and 80/200 on the research panel.
+The experiment-12 preparation panel reproduced 195/200 for both working and
+the saved temporal-slew lineage, while the retained replication checkpoint
+achieved 93/200.
 
 **Lessons and limits:** Each experiment-10 continuation checkpoint lost 163
 paired episodes to the saved temporal-slew parent and won none; the two
@@ -43,6 +46,14 @@ later pair differed only 8--5. All research-panel failures truncated at 500
 steps, but the available replication artifacts do not identify whether the
 broad collapse is caused by branch selection, conditioning, stabilization,
 optimization, or an interaction among them.
+On the new experiment-12 panel, the two mature lineages failed on the same five
+negative-angle targets. Working briefly entered tolerance on three of those
+episodes, whereas temporal slew entered none; the replication failed on 107
+episodes, including broad no-entry outcomes and failures outside that sector.
+The paired replication comparisons were 0 versus 102 discordant wins against
+each mature lineage. These observations separate the mature narrow failure
+sector from the replication's broad collapse, but the current evaluator did
+not record enough physical control telemetry to identify its mechanism.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged protected task mechanics:
@@ -61,10 +72,11 @@ remaining failures from the broad optimization or representation failure seen
 in fresh experiment 11. This matters because improving the narrow failure
 sector is useful only if the learned controller preserves complete
 reach-and-hold behavior across the full target distribution. The inquiry would
-be redirected by stage-resolved evidence that isolates a causal branch,
-conditioning, approach, or hold mechanism, and ended only by a policy that
-reliably reaches the 196/200 objective under the official assessment; the
-current measurements establish neither.
+be redirected by paired physical telemetry that separates branch proximity,
+Jacobian conditioning, approach speed, saturation, and hold instability in the
+mature failures from the broad replication failures. It would end only by a
+policy that reliably reaches the 196/200 objective under the official
+assessment; the current measurements establish neither.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
