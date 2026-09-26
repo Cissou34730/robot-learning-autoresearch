@@ -82,7 +82,7 @@ def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path
         {"training_parent": "best_known"}, state, "transfer"
     )
     inquiry_parent = protocol.training_parent(
-        {"training_parent": "inquiry"}, state, "transfer"
+        {"training_parent": "developing_method"}, state, "transfer"
     )
     retained_parent = protocol.training_parent(
         {"training_parent": "alternative"}, state, "transfer"
@@ -90,7 +90,7 @@ def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path
 
     assert working_parent == ("working", working, 120_000)
     assert best_parent == ("best_known", best_known, 80_000)
-    assert inquiry_parent == ("inquiry", inquiry, 70_000)
+    assert inquiry_parent == ("developing_method", inquiry, 70_000)
     assert retained_parent == ("alternative", retained, 60_000)
     assert working.joinpath("model.zip").read_bytes() == b"working"
     assert best_known.joinpath("model.zip").read_bytes() == b"best-known"
@@ -216,12 +216,12 @@ def test_v4_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path
         "checkpoint-40k",
         "working",
         "best_known",
-        "inquiry",
+        "developing_method",
         "alternative",
     }
     assert available["working"]["artifact"] == working.name
     assert available["best_known"]["artifact"] == best_known.name
-    assert available["inquiry"]["artifact"] == inquiry.name
+    assert available["developing_method"]["artifact"] == inquiry.name
     assert available["alternative"]["artifact"] == retained.name
 
 
@@ -364,7 +364,7 @@ def test_v4_inquiry_lineage_advances_without_promoting_working(monkeypatch, tmp_
                 "experiment": 2,
                 "continue_from": "working",
                 "reason": "Keep the established control unchanged.",
-                "experimental_lineage": {
+                "developing_method": {
                     "candidate": "checkpoint-5000",
                     "reason": "Advance the inquiry despite lower current performance.",
                 },
@@ -400,10 +400,10 @@ def test_v4_inquiry_lineage_is_an_independent_training_parent(monkeypatch, tmp_p
     }
 
     parent = protocol.training_parent(
-        {"training_parent": "inquiry"}, state, "transfer"
+        {"training_parent": "developing_method"}, state, "transfer"
     )
 
-    assert parent == ("inquiry", experimental, 45_000)
+    assert parent == ("developing_method", experimental, 45_000)
     assert experimental in repository.role_and_retention_artifacts(state)
 
 

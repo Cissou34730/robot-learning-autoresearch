@@ -66,7 +66,11 @@ def test_runner_marks_an_early_training_interrupt_for_restart(monkeypatch, tmp_p
         lambda: Namespace(
             migrate_research_state=False,
             begin_hypothesis=False,
+            conclusion_only=False,
+            mark_principal_investigator_session_started=False,
             check_proposal=False,
+            check_preparation_deliverable=False,
+            check_scientific_model_deliverable=False,
             check_evaluation_request=False,
             check_analysis_deliverable=False,
             check_lineage_evidence=None,
@@ -105,10 +109,6 @@ def test_launcher_supervises_children_and_stops_before_phase_validation():
     assert 'Environment["ROBOT_RESEARCH_STOP_REQUEST"]' in source
     assert "WaitForExit(100)" in source
     assert "StopTimeoutSeconds = 180" in source
-    assert source.count(
-        'Test-StopAfterOperation $script:ResearcherExitCode "researcher session"'
-    ) == source.count("Invoke-ResearcherSession -Prompt")
-
     cursor = 0
     while True:
         invocation = source.find("Invoke-ResearcherSession -Prompt", cursor)
@@ -121,3 +121,12 @@ def test_launcher_supervises_children_and_stops_before_phase_validation():
         validation = source.find("Get-", invocation)
         assert invocation < stop_check < validation
         cursor = stop_check + 1
+
+
+def test_launcher_does_not_consume_native_console_interrupts():
+    source = (Path(__file__).resolve().parents[2] / "run_research.ps1").read_text(
+        encoding="utf-8"
+    )
+
+    assert "SetConsoleCtrlHandler" not in source
+    assert "RobotResearchConsoleInterrupt" not in source

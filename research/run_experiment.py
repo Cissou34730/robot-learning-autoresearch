@@ -1590,7 +1590,7 @@ def apply_pending_v4_closure(state: dict) -> bool:
         "continue_from": plan["working_name"],
         "reason": plan["decision"]["reason"],
         "best_known": plan["best_known_name"],
-        "experimental_lineage": plan.get("inquiry_lineage_name"),
+        "developing_method": plan.get("inquiry_lineage_name"),
         "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
         "code_parent_commit": pending.get("code_parent_commit"),
     }
@@ -1883,8 +1883,8 @@ def complete_inquiry_decision(state: dict) -> None:
         raise ValueError(f"unknown inquiry closure progress: {progress!r}")
     inquiry_id = int(operation["inquiry_id"])
     if progress == "planned":
-        experimental = operation.get("experimental_lineage")
-        disposition = operation.get("experimental_lineage_disposition")
+        developing = operation.get("developing_method")
+        disposition = operation.get("developing_method_disposition")
         ledger = state.get("preparation_measurement")
         inquiry_ledger = (
             ledger
@@ -1923,14 +1923,14 @@ def complete_inquiry_decision(state: dict) -> None:
                 ),
                 "scientific_strategy": strategy,
                 "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
-                "experimental_lineage": copy.deepcopy(
-                    experimental
+                "developing_method": copy.deepcopy(
+                    developing
                 ),
-                "experimental_lineage_disposition": copy.deepcopy(disposition),
+                "developing_method_disposition": copy.deepcopy(disposition),
             }
         )
-        if isinstance(experimental, dict) and isinstance(disposition, dict):
-            selected = copy.deepcopy(experimental)
+        if isinstance(developing, dict) and isinstance(disposition, dict):
+            selected = copy.deepcopy(developing)
             selected.pop("inquiry_id", None)
             selected["reason"] = str(disposition["reason"]).strip()
             action = disposition["action"]
@@ -1950,9 +1950,9 @@ def complete_inquiry_decision(state: dict) -> None:
         repository.write_state(state)
         progress = "recorded"
     if progress == "recorded":
-        experimental = operation.get("experimental_lineage")
-        if isinstance(experimental, dict) and experimental.get("artifact"):
-            artifact = repository.resolve_repo_path(experimental["artifact"])
+        developing = operation.get("developing_method")
+        if isinstance(developing, dict) and developing.get("artifact"):
+            artifact = repository.resolve_repo_path(developing["artifact"])
             if artifact not in repository.role_and_retention_artifacts(state):
                 repository.remove_heavyweight_artifacts(artifact)
         operation["progress"] = "lineage_released"

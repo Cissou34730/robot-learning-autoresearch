@@ -413,12 +413,12 @@ def render_decision_card(plan: dict) -> str:
             "Best-known model",
             plan.get("best_known_name") or "unchanged",
             "",
-            "Inquiry experimental lineage",
+            "Developing method for the active inquiry",
             (
                 plan.get("inquiry_lineage_name")
                 or (
                     "released"
-                    if "experimental_lineage" in plan["decision"]
+                    if "developing_method" in plan["decision"]
                     else "unchanged"
                 )
             ),

@@ -99,11 +99,12 @@ next experiment.
 During analysis, use this request for the current experiment's candidates or
 eligible saved lineages, initially or in an optional refinement round while
 closing the current trained experiment. During inquiry preparation, a request
-may measure only eligible saved lineages (`working`, `best_known`, `inquiry`, or
-a retained ID); it may not name the candidates of an experiment that has not
-run, because those do not exist yet, and it must omit the `experiment` field. A
-completed preparation round returns to the same active inquiry. Researcher-owned
-instrumentation may be changed before submitting the request.
+may measure only eligible saved lineages (`working`, `best_known`,
+`developing_method`, or a retained ID); it may not name the candidates of an
+experiment that has not run, because those do not exist yet, and it must omit
+the `experiment` field. A completed preparation round returns to the same active
+inquiry. Researcher-owned instrumentation may be changed before submitting the
+request.
 
 `question` and `reason` are non-empty strings describing the request as a whole.
 `measurements` selects the instruments and models to run. `paired_comparisons`
@@ -216,7 +217,7 @@ assessment, or campaign termination. Write:
   "inquiry_decision": {
     "action": "close",
     "outcome": "<non-empty scientific outcome>",
-    "experimental_lineage": {
+    "developing_method": {
       "action": "<promote | retain | abandon>",
       "id": "<stable identifier; retain only>",
       "reason": "<non-empty scientific reason>"
@@ -225,11 +226,13 @@ assessment, or campaign termination. Write:
 }
 ```
 
-Omit `experimental_lineage` when the inquiry has no experimental lineage. When
-one exists, its disposition is mandatory: `promote` makes it the working
-lineage, `retain` preserves it under the supplied stable ID, and `abandon`
-releases it. Promotion does not automatically designate it `best_known`; that
-remains an evidence-backed experiment-closure decision.
+`developing_method` identifies the policy and complete recipe currently
+associated with the inquiry, independently of the working and best-known roles.
+Omit it when the inquiry has no developing method. When one exists, its
+disposition is mandatory: `promote` makes it the working lineage, `retain`
+preserves it under the supplied stable ID, and `abandon` releases it. Promotion
+does not automatically designate it `best_known`; that remains an
+evidence-backed experiment-closure decision.
 
 The Runner records the inquiry, its measurement rounds, related experiment
 identities, causal research map and campaign-laboratory provenance in
@@ -279,11 +282,10 @@ for an open question.
 `reasoning.policy_intervention` is required for `training` and `continuation`,
 including parameter-only changes and unchanged continuations; omit it for
 `replication`, which tests learning-process variance without an intervention.
-For confirmatory work, provide `behavioral_path`. For exploratory work whose
-behavioral path is genuinely unknown, provide `exploratory_uncertainty` instead
-and state what the experiment is intended to reveal. Both forms require
-`behavioral_test`; uncertainty is permitted in the intervention, not hidden in
-the conclusions.
+Use `behavioral_path` when the proposal makes a behavioral prediction. Use
+`open_behavior_question` when it does not, stating the behavior or failure
+structure the run will examine. Both forms require `behavioral_test`; neither
+form is preferred by the Runner.
 `reasoning.scientific_model` is optional for every kind of proposal. Include it
 when relevant. If included, it must be a non-empty object of non-empty
 statements; the previous `observation`, `connection`,
@@ -320,8 +322,8 @@ automatic baseline.
 
 For `training` and `continuation`, `policy_intervention` requires a non-empty
 `behavioral_test` and either a non-empty `behavioral_path` or a non-empty
-`exploratory_uncertainty`. The latter makes an honestly exploratory
-transformation legal without inventing a confident mechanism in advance.
+`open_behavior_question`. They are alternative descriptions of the proposal's
+knowledge before training.
 Previously used `failure_scope` and `lever_choice` statements remain accepted
 but are not required. The Runner does not judge their scientific merit.
 Replication does not claim an intervention and is exempt.
@@ -333,9 +335,9 @@ identity and campaign-laboratory provenance. Legacy sections using `Direction`,
 `Open questions`, and `Active inquiry` remain readable.
 
 An eligible `training_parent` must be exposed by the brief as `working`,
-`best_known`, `inquiry`, or a retained lineage ID. The `inquiry` role is the
-active inquiry's experimental lineage. It can advance across experiments while
-`working` and `best_known` remain unchanged. Continuing a lineage and changing
+`best_known`, `developing_method`, or a retained lineage ID.
+`developing_method` is the policy and complete recipe associated with the active
+inquiry. Continuing it does not promote it. Continuing a lineage and changing
 the recipe are independent choices. A `training` proposal with
 `initialization: "transfer"` sets `extends_lineage: true` to continue that
 lineage while training the current worktree science and `params`; its record
@@ -347,11 +349,11 @@ extended lineage and records that the parent's recipe was restored.
 
 ### Training-parent eligibility and retention
 
-`training_parent` may name only `working`, `best_known`, `inquiry`, or a retained
-lineage. Those roles preserve the complete inference artifact and the recipe
-needed to resume training. Raw candidate checkpoints are not eligible. The
-`inquiry` role belongs only to the active inquiry and is released when that
-inquiry closes unless the same artifact also has another lineage role. At
+`training_parent` may name only `working`, `best_known`, `developing_method`, or
+a retained lineage. Those roles preserve the complete inference artifact and
+the recipe needed to resume training. Raw candidate checkpoints are not
+eligible. `developing_method` belongs only to the active inquiry and is released
+when that inquiry closes unless the same artifact also has another lineage role. At
 closure, unselected and unretained candidate weights are removed; retention is
 the only way to keep such a candidate after its inquiry closes, and has no
 budget.
@@ -481,15 +483,15 @@ Write a lineage-only `research/proposal.json`:
     "code": {
       "action": "<keep | revert | restore>",
       "reason": "<non-empty reason>",
-      "lineage": "<working | best_known | retained lineage ID; restore only>"
+      "lineage": "<working | best_known | developing_method | retained lineage ID; restore only>"
     },
     "best_known": {
       "candidate": "<available model ID>",
       "reason": "<non-empty designation reason>"
     },
-    "experimental_lineage": {
+    "developing_method": {
       "candidate": "<available model ID>",
-      "reason": "<why this model should carry the active inquiry forward>"
+      "reason": "<why this candidate is assigned to or removed from the inquiry's developing-method role>"
     },
     "retain": [
       {
@@ -507,15 +509,15 @@ Write a lineage-only `research/proposal.json`:
 }
 ```
 
-`best_known`, `experimental_lineage`, `retain`, `remove_retained`, and
+`best_known`, `developing_method`, `retain`, `remove_retained`, and
 `request_final_benchmark` are optional. Omitted `best_known` preserves the
 existing best-known lineage; it does not promote `continue_from`. Omitted
-`experimental_lineage` preserves the active inquiry's existing experimental
-lineage. Set `experimental_lineage` to `null` to release that role explicitly.
-This request selects the working model, may independently advance the inquiry's
-experimental model, chooses the scientific recipe action, and manages retained
-lineages. Unretained model artifacts are removed; their recorded history and
-measurements remain.
+`developing_method` preserves the policy and recipe currently associated with
+the active inquiry. Set `developing_method` to `null` to release that role.
+This request selects the working model and, independently, may assign a
+different candidate to the developing-method role. It also chooses the
+scientific recipe action and manages retained lineages. Unretained model
+artifacts are removed; their recorded history and measurements remain.
 
 If `best_known` names the current best-known model, the designation is accepted
 idempotently. If it names another available model, the Runner resolves that
@@ -547,9 +549,9 @@ and `restore` restores the complete recipe associated with the explicitly named
 eligible lineage. For `restore`, `code.lineage` is required; for `keep` and
 `revert`, omit `code.lineage`. The exact currently valid parent and restore
 identifiers are listed in `research/brief.md`. `best_known` and a non-null
-`experimental_lineage` each require exactly a candidate string and reason
-string. Their candidate must be an available model identifier. The experimental
-lineage requires no best-known promotion and is recorded with the active inquiry
+`developing_method` each require exactly a candidate string and reason string.
+Their candidate must be an available model identifier. A developing method
+requires no best-known promotion and is recorded with the active inquiry
 identity. When a new best-known model is selected, the Runner resolves its recorded
 measurements and stores those paths in the lineage. `retain` is an array of
 candidate/id/reason objects, `remove_retained` is an array of unique retained IDs,

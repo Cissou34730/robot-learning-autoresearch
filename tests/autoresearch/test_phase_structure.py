@@ -191,6 +191,29 @@ def test_principal_investigator_persona_reaches_every_researcher_phase():
     assert "autonomous robotics research engineer" not in SCRIPT
 
 
+def test_research_funnel_guidance_is_injected_at_decision_points():
+    analysis = SCRIPT.split("$analysisPrompt = @(", 1)[1].split(") -join", 1)[0]
+    analysis_retry = SCRIPT.split("$analysisRetryPrompt = @(", 1)[1].split(
+        ") -join", 1
+    )[0]
+    decision = SCRIPT.split("$decisionPrompt = @(", 1)[1].split(") -join", 1)[0]
+    decision_retry = SCRIPT.split("$decisionRetryPrompt = @(", 1)[1].split(
+        ") -join", 1
+    )[0]
+    preparation = SCRIPT.split("$researchPrompt = @(", 1)[1].split(") -join", 1)[0]
+    preparation_retry = SCRIPT.split("$retryPrompt = @(", 1)[1].split(
+        ") -join", 1
+    )[0]
+
+    for prompt in (analysis, analysis_retry, decision, decision_retry, preparation):
+        assert "$developingMethodGuidance" in prompt
+    for prompt in (preparation, preparation_retry):
+        assert "$openBehaviorQuestionGuidance" in prompt
+        assert "$laboratoryReuseGuidance" in prompt
+    assert "$laboratoryReuseGuidance" in analysis
+    assert "$laboratoryReuseGuidance" in decision
+
+
 @pytest.mark.parametrize(
     "content,valid", [(None, False), (" \n", False), ("facts\n", True)]
 )

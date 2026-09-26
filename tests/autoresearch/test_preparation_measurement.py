@@ -3,7 +3,7 @@
 Preparation is where the next experiment, its parent and its initialization are
 chosen, yet measurement used to be available only during post-training analysis.
 A preparation-phase ``research/evaluation_request.json`` may now measure saved
-lineages (``working``, ``best_known``, ``inquiry`` or a retained ID); it may not name the
+lineages (``working``, ``best_known``, ``developing_method`` or a retained ID); it may not name the
 candidates of an experiment that has not run, and it must omit the ``experiment``
 field. The completed round returns to preparation, scoped to the upcoming
 experiment, and is carried into that experiment's analysis when it starts.
@@ -481,7 +481,7 @@ def test_closing_inquiry_releases_its_unpromoted_experimental_lineage(
                 "inquiry_decision": {
                     "action": "close",
                     "outcome": "The experimental branch no longer warrants continuation.",
-                    "experimental_lineage": {
+                    "developing_method": {
                         "action": "abandon",
                         "reason": "Its evidence does not justify preserving the branch.",
                     },
@@ -509,7 +509,7 @@ def test_closing_inquiry_releases_its_unpromoted_experimental_lineage(
         for item in repository.history_records()
         if item.get("record_type") == "inquiry"
     )
-    assert inquiry["experimental_lineage"]["candidate"] == "checkpoint"
+    assert inquiry["developing_method"]["candidate"] == "checkpoint"
 
 
 @pytest.mark.parametrize("action", ["promote", "retain"])
@@ -537,7 +537,7 @@ def test_closing_inquiry_can_preserve_its_experimental_lineage(
                 "inquiry_decision": {
                     "action": "close",
                     "outcome": "The inquiry reached a bounded conclusion.",
-                    "experimental_lineage": disposition,
+                    "developing_method": disposition,
                 }
             }
         ),
@@ -761,7 +761,7 @@ def test_brief_leads_with_inquiry_lineage_and_surfaces_laboratory_outputs():
     assert rendered.index("## Causal research map") < rendered.index(
         "## Inquiry continuity"
     )
-    assert rendered.index("### Inquiry experimental lineage") < rendered.index(
+    assert rendered.index("### Developing method for this inquiry") < rendered.index(
         "## Latest experiment"
     )
     assert rendered.index("## Development evidence index") < rendered.index(

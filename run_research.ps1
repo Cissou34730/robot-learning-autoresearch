@@ -28,78 +28,7 @@ param(
 
 Set-Location $PSScriptRoot
 
-# Windows delivers Ctrl-C to every process sharing the console. Consume the
-# first launcher event for cooperative shutdown; later events reach PowerShell.
-if (-not ([System.Management.Automation.PSTypeName]'RobotResearchConsoleInterruptV2').Type) {
-    Add-Type -TypeDefinition @'
-using System;
-using System.Runtime.InteropServices;
-using System.Threading;
-
-public static class RobotResearchConsoleInterruptV2
-{
-    private const uint CtrlCEvent = 0;
-    private static readonly HandlerRoutine Handler = Handle;
-    private static int installed;
-    private static int interruptCount;
-
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private delegate bool HandlerRoutine(uint controlType);
-
-    [DllImport("Kernel32", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetConsoleCtrlHandler(
-        HandlerRoutine handler,
-        [MarshalAs(UnmanagedType.Bool)] bool add
-    );
-
-    private static bool Handle(uint controlType)
-    {
-        if (controlType != CtrlCEvent)
-        {
-            return false;
-        }
-        return Interlocked.Increment(ref interruptCount) == 1;
-    }
-
-    public static bool Install()
-    {
-        Interlocked.Exchange(ref interruptCount, 0);
-        if (Interlocked.CompareExchange(ref installed, 1, 0) != 0)
-        {
-            return true;
-        }
-        if (SetConsoleCtrlHandler(Handler, true))
-        {
-            return true;
-        }
-        Interlocked.Exchange(ref installed, 0);
-        return false;
-    }
-
-    public static bool IsRequested()
-    {
-        return Interlocked.CompareExchange(ref interruptCount, 0, 0) != 0;
-    }
-
-    public static bool IsEscalated()
-    {
-        return Interlocked.CompareExchange(ref interruptCount, 0, 0) > 1;
-    }
-
-    public static void Uninstall()
-    {
-        if (Interlocked.Exchange(ref installed, 0) != 0)
-        {
-            SetConsoleCtrlHandler(Handler, false);
-        }
-    }
-}
-'@
-}
-
 $script:CampaignExitCode = 0
-$script:ImmediateEscalationExitCode = 125
 $script:CampaignStopRequested = $false
 $script:StopDeadlineExceeded = $false
 $script:StopDeadline = $null
@@ -138,6 +67,18 @@ $researcherPersonaGuidance = @(
 $scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu."
 $researchFreedomGuidance = "Everything in the researcher-owned surface is fully yours. Nothing there is sacred, preferred, required to remain recognizable, or exempt from replacement. You may inspect, create, rewrite, combine, or remove any researcher-owned scientific implementation or tool; existing files and module structure carry no scientific authority."
 $scientificMemoryGuidance = "Maintain the Scientific strategy as a causal research map with four durable registers: current synthesis, lessons and limits, competing explanations, and the decision frontier. The frontier records the unresolved distinction and evidence that would discriminate or redirect it, not a candidate implementation."
+$developingMethodGuidance = @(
+    "The Runner exposes two independent closure decisions: continue_from selects the working policy, while developing_method optionally preserves a candidate and its complete recipe for another experiment in the same inquiry."
+    "A later proposal may name training_parent developing_method. Selecting, preserving, replacing, or releasing that role is a scientific decision; the prompt assigns no preference among those outcomes."
+) -join " "
+$openBehaviorQuestionGuidance = @(
+    "For reasoning.policy_intervention, use behavioral_path when the proposal makes a behavioral prediction, or open_behavior_question when it does not."
+    "In either case, behavioral_test states how the claimed path or open question will be examined. Neither form is preferred."
+) -join " "
+$laboratoryReuseGuidance = @(
+    "The brief lists published research/lab files as available campaign artifacts."
+    "Using an existing laboratory file, creating a new one, or using no laboratory artifact is a scientific choice."
+) -join " "
 $script:ResumeAnalysisSession = $false
 
 function Request-CampaignStop([string]$message) {
@@ -163,9 +104,6 @@ function Test-CampaignStopRequested {
     ) {
         return Request-CampaignStop "External stop requested"
     }
-    if ([RobotResearchConsoleInterruptV2]::IsRequested()) {
-        return Request-CampaignStop "Console interrupt requested"
-    }
     return $false
 }
 
@@ -175,11 +113,6 @@ function Invoke-CooperativeProcess {
         [Parameter(Mandatory)][string[]]$ArgumentList,
         [Parameter(Mandatory)][string]$Operation
     )
-
-    if ([RobotResearchConsoleInterruptV2]::IsRequested()) {
-        [void](Request-CampaignStop "Console interrupt requested")
-        return 130
-    }
 
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $FilePath
@@ -750,8 +683,6 @@ function Get-ScientificModelSessionStatus([int]$attempt) {
         -Present $present -Valid $valid -Reason $reason
 }
 
-[void][RobotResearchConsoleInterruptV2]::Install()
-
 try {
 if ($ResearcherBackend -eq "opencode") {
     $openCodeServer = Start-OpenCodeCampaignServer
@@ -924,13 +855,15 @@ if ($ResearcherBackend -eq "opencode") {
             $scientificModelUseGuidance
             $researchFreedomGuidance
             $scientificMemoryGuidance
+            $developingMethodGuidance
+            $laboratoryReuseGuidance
             $(if ($resumeAnalysisSession) {
                     "The measurement you requested is complete. Continue the same investigation from its results and your existing session context."
                 }
                 else {
                     "Assess the trained policies and evidence against the human objective and the campaign's active inquiry."
                 })
-            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known."
+            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json. At closure resolve the independent working and developing_method fields, code action, retention, optional best-known designation, and any final-assessment request."
             "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
@@ -952,6 +885,7 @@ if ($ResearcherBackend -eq "opencode") {
             $analysisRetryPrompt = @(
                 "Current phase: post-training analysis for experiment $analysisExperiment. The previous deliverable failed validation: $analysisProblem."
                 "The same Researcher session context remains available. Correct only the invalid or missing deliverable: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json."
+                $developingMethodGuidance
                 "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
@@ -1208,8 +1142,10 @@ The final output should be a compact but substantive **Scientific model of the r
             $researcherPersonaGuidance
             $scientificModelUseGuidance
             $scientificMemoryGuidance
+            $developingMethodGuidance
+            $laboratoryReuseGuidance
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "Close the experiment from the available evidence. Resolve the recipe action, working lineage, retention, optional best-known designation, and whether to request the official benchmark as separate decisions."
+            "Close the experiment from the available evidence. Resolve independently: working, developing_method, the recipe remaining in the worktree, retained alternatives, optional best-known designation, and any official-benchmark request. The availability of each choice does not imply that it should change."
             "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving development uncertainty."
             "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
             "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
@@ -1227,6 +1163,7 @@ The final output should be a compact but substantive **Scientific model of the r
             $decisionRetryPrompt = @(
                 "Current phase: close experiment $pendingExperiment and resolve its lineage and scientific recipe. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
                 "The same Researcher session context remains available. Correct only the invalid or missing experiment entry in research/postmortems.md and lineage-only research/proposal.json."
+                $developingMethodGuidance
                 "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
             ) -join " "
@@ -1302,6 +1239,9 @@ The final output should be a compact but substantive **Scientific model of the r
         $scientificModelUseGuidance
         $scientificMemoryGuidance
         $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
+        $(if ($budgetReached) { "" } else { $developingMethodGuidance })
+        $(if ($budgetReached) { "" } else { $openBehaviorQuestionGuidance })
+        $(if ($budgetReached) { "" } else { $laboratoryReuseGuidance })
         $(if ($budgetReached) {
                 "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
             }
@@ -1319,13 +1259,13 @@ The final output should be a compact but substantive **Scientific model of the r
                 "Expected deliverable: research/proposal.json containing only a campaign_conclusion, using the contract in research/instruments.md."
             }
             else {
-                "Expected deliverable: either research/evaluation_request.json to measure saved lineages, or research/proposal.json containing an inquiry closure, a training or replication proposal, or a campaign conclusion, using the contracts in research/instruments.md. Include only edits called for by the selected operation. A completed measurement round returns to this same inquiry. A preparation request may name only saved lineages (working, best_known, or a retained ID); candidates of a not-yet-run experiment are not available."
+                "Expected deliverable: either research/evaluation_request.json to measure saved lineages, or research/proposal.json containing an inquiry closure, a training or replication proposal, or a campaign conclusion, using the contracts in research/instruments.md. Include only edits called for by the selected operation. A completed measurement round returns to this same inquiry. A preparation request may name only saved lineages (working, best_known, developing_method, or a retained ID); candidates of a not-yet-run experiment are not available."
             })
         $(if ($budgetReached) {
                 "The phase is incomplete until the campaign conclusion has been written. A campaign conclusion is recorded as a decision, never as an experiment."
             }
             else {
-                "The phase is complete when one legal inquiry deliverable has been written. Closing an inquiry records a durable scientific outcome and starts no experiment; it does not end the campaign."
+                "The phase is complete when one legal inquiry deliverable has been written. Closing an inquiry records a durable scientific outcome and starts no experiment; it does not end the campaign. If the brief shows a developing_method, the closure must explicitly promote it to working, retain it under an ID, or abandon it."
             })
         $(if ($budgetReached) {
                 "Do not start training or evaluation, or write a lineage decision; the launcher validates and executes the proposal."
@@ -1383,6 +1323,9 @@ The final output should be a compact but substantive **Scientific model of the r
                 else {
                     "Current phase: conduct the active inquiry. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
                     "The same principal-investigator session remains available. Correct only the invalid or missing research/proposal.json or research/evaluation_request.json, preserving valid researcher-owned edits."
+                    $developingMethodGuidance
+                    $openBehaviorQuestionGuidance
+                    $laboratoryReuseGuidance
                     "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                     "Expected deliverable: a corrected inquiry closure, training/replication proposal, campaign conclusion, or saved-lineage research/evaluation_request.json."
                     "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
@@ -1457,41 +1400,17 @@ catch {
         $script:CampaignExitCode = 124
         Write-Error $_
     }
-    elseif ([RobotResearchConsoleInterruptV2]::IsRequested()) {
-        [void](Request-CampaignStop "Console interrupt requested")
-        $script:CampaignExitCode = 130
-    }
     else {
         throw
     }
 }
 finally {
-    $reportedImmediateEscalation = [RobotResearchConsoleInterruptV2]::IsEscalated()
-    if ($reportedImmediateEscalation) {
-        [Console]::Error.WriteLine(
-            "Additional console interrupt requested; escalating immediately."
-        )
-    }
     try {
         Stop-OpenCodeCampaignServer
     }
     finally {
-        try {
-            $loopMutex.ReleaseMutex()
-            $loopMutex.Dispose()
-        }
-        finally {
-            $immediateEscalation = [RobotResearchConsoleInterruptV2]::IsEscalated()
-            if ($immediateEscalation -and -not $reportedImmediateEscalation) {
-                [Console]::Error.WriteLine(
-                    "Additional console interrupt requested; escalating immediately."
-                )
-            }
-            [RobotResearchConsoleInterruptV2]::Uninstall()
-            if ($immediateEscalation) {
-                [Environment]::Exit($script:ImmediateEscalationExitCode)
-            }
-        }
+        $loopMutex.ReleaseMutex()
+        $loopMutex.Dispose()
     }
 }
 if ($script:CampaignExitCode -ne 0) {

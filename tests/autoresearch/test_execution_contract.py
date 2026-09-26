@@ -1778,7 +1778,7 @@ def test_policy_intervention_accepts_confirmatory_or_exploratory_reasoning(kind)
     }
     with pytest.raises(
         ValueError,
-        match="requires behavioral_path or exploratory_uncertainty",
+        match="requires behavioral_path or open_behavior_question",
     ):
         validate_training_proposal(proposal, baseline=False)
 
@@ -1788,7 +1788,7 @@ def test_policy_intervention_accepts_confirmatory_or_exploratory_reasoning(kind)
     validate_training_proposal(proposal, baseline=False)
 
     proposal["reasoning"]["policy_intervention"] = {
-        "exploratory_uncertainty": (
+        "open_behavior_question": (
             "The transformed method may expose a different learning regime; "
             "its behavioral path is intentionally not assumed."
         ),

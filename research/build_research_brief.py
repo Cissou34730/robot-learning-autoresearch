@@ -1106,7 +1106,7 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         identifier for identifier, _ in lineages
     ]
     if isinstance(state.get("inquiry_lineage"), dict):
-        identifiers.insert(0, "inquiry")
+        identifiers.insert(0, "developing_method")
     lines = [
         "## Current lineages and scientific recipes",
         "",
@@ -1118,9 +1118,10 @@ def _current_lineages_and_recipes_lines(state: dict, current_params: dict) -> li
         ),
         (
             "These are the only models the Runner can verify and restore as a "
-            "parent. The `inquiry` role is an experimental lineage owned by the "
-            "active inquiry; it may advance without replacing `working` or "
-            "`best_known`. A new identifier is created only by a closure that "
+            "parent. `developing_method` preserves a policy and complete recipe "
+            "for the active inquiry independently of `working` and `best_known`; "
+            "the roles impose no score ordering. A new identifier is created only "
+            "by a closure that "
             "assigns one of those roles or retains a candidate with an ID; the "
             "complete inference artifact, matching fingerprint, scientific commit "
             "and effective parameters are recorded at that moment. Candidates "
@@ -1564,10 +1565,10 @@ def _v4_experiment_index_section(
 def _lineage_names_by_fingerprint(state: dict) -> dict[str, list[str]]:
     """Every saved-lineage identifier that currently resolves to each artifact."""
     names: dict[str, list[str]] = {}
-    for identifier in ("working", "best_known", "inquiry"):
+    for identifier in ("working", "best_known", "developing_method"):
         field = (
             "inquiry_lineage"
-            if identifier == "inquiry"
+            if identifier == "developing_method"
             else f"{identifier}_lineage"
         )
         lineage = state.get(field)
@@ -2218,9 +2219,9 @@ def _closure_selected_labels(record: dict) -> set[str]:
     best = closure.get("best_known")
     if isinstance(best, dict) and best.get("candidate") is not None:
         selected.add(str(best["candidate"]))
-    experimental = closure.get("experimental_lineage")
-    if isinstance(experimental, dict) and experimental.get("candidate") is not None:
-        selected.add(str(experimental["candidate"]))
+    developing = closure.get("developing_method")
+    if isinstance(developing, dict) and developing.get("candidate") is not None:
+        selected.add(str(developing["candidate"]))
     for retained in closure.get("retain") or []:
         if isinstance(retained, dict) and retained.get("candidate") is not None:
             selected.add(str(retained["candidate"]))
@@ -2626,19 +2627,21 @@ def _render_v4_research_brief(
         ]
     )
     if isinstance(inquiry_lineage, dict):
-        lines.extend(["", "### Inquiry experimental lineage", ""])
-        lines.extend(_authoritative_lineage_lines("inquiry", inquiry_lineage))
+        lines.extend(["", "### Developing method for this inquiry", ""])
+        lines.extend(
+            _authoritative_lineage_lines("developing_method", inquiry_lineage)
+        )
         lines.append(
-            "This lineage may advance without replacing the working or "
-            "best-known policy."
+            "This saved policy and recipe belongs to the active inquiry. Selecting "
+            "it as a parent does not promote it to working or best-known."
         )
     else:
         lines.extend(
             [
                 "",
-                "### Inquiry experimental lineage",
+                "### Developing method for this inquiry",
                 "",
-                "No experimental lineage is currently assigned to this inquiry.",
+                "No developing method is currently assigned to this inquiry.",
             ]
         )
     if inquiries:
@@ -2654,9 +2657,8 @@ def _render_v4_research_brief(
                 "## Campaign laboratory",
                 "",
                 (
-                    "Published tools and outputs from `research/lab/`. Reuse these "
-                    "artifacts when an analysis recurs instead of reconstructing it "
-                    "ad hoc:"
+                    "Published tools and outputs from `research/lab/`. They are "
+                    "available to the current phase but are not required inputs:"
                 ),
                 "",
             ]
