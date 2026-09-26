@@ -4,50 +4,49 @@
 
 **Current synthesis:** The unchanged PPO baseline remains below the 98% objective
 in pooled development evidence: the working lineage achieved 310/320 successes
-(96.875%) across two distinct research panels. Increasing the action-effort
-coefficient from 0.01 to 0.05 did not improve complete success: the early
-experiment-2 checkpoint scored 158/160 against working's 159/160, the
-parent-horizon candidate scored 151/160, and the later checkpoints scored
-149/160 and 148/160. Continued training under the changed recipe therefore
-produced a clear regression on the measured panel, and the working lineage
-remains the strongest available transfer parent and best-known policy. The
-action-cost result rejects this intervention as a useful explanation or
-selection rule, but does not show that effort and sampled actuation are
-irrelevant to the remaining failures.
+(96.875%) across two distinct research panels. The action-effort intervention
+did not improve complete success: its early checkpoint scored 158/160 against
+working's 159/160, its parent-horizon candidate scored 151/160, and later
+checkpoints scored 149/160 and 148/160. The working lineage remains the
+strongest transfer parent and best-known policy. The failure set is instead
+strongly target-conditioned: the baseline trains only on 14-20 cm radii, while
+the official distribution spans 6-20 cm, and experiment-2 no-entry failures
+clustered at 7-12 cm with angles near +/-140 to 180 degrees. The next
+intervention tests whether this coverage gap, rather than action-cost weighting,
+causes the persistent reach failures.
 
-**Lessons and limits:** All nine failures of the measured experiment-2
-checkpoint-100352 candidate, like the failures of the other experiment-2
-candidates, were no-entry failures; none supplied evidence of improved hold
-regulation. The parent-horizon candidate lost all eight discordant episodes to
-working on the paired panel. The shared seed 5099 failure remains a 16.37 cm,
--142.2 degree target with no tolerance entry and saturated action on 499 of 500
-steps for working. Experiment-2 failures also include several short-radius and
-negative-angle targets, but the reused 160-episode panel does not establish
-population frequencies or prove that the changed coefficient caused each
-failure. The pooled development result remains below the objective, so no
+**Lessons and limits:** The action-cost change did not remove the shared
+16.37 cm, -142.2 degree no-entry trajectory, which used saturated action on 499
+of 500 steps, and it caused broad late-training regression. This weakens effort
+regularization as the primary lever but does not prove effort irrelevant. The
+experiment-2 failures were all no-entry cases at the measured checkpoints,
+including repeated short-radius targets: 7.16-10.98 cm failures near negative
+or wraparound angles, with additional 12.11 cm failures near -142 to -157
+degrees. This aligns with the training range excluding all radii below 14 cm,
+but the panel is reused for the candidates and does not estimate population
+frequencies. The pooled development result remains below the objective, so no
 official assessment is justified.
 
-**Competing explanations:** A real effort/sampled-control pathology remains
-plausible because the shared no-entry trajectory is nearly fully saturated, but
-the coefficient change neither removed it nor preserved broad success. Target
-geometry or observation-to-action representation may govern the expanded
-negative-angle and short-radius no-entry set. Late-training policy degradation
-is supported by the 93.125%, 92.5%, and 94.375% candidate results, although the
-experiment does not separate ordinary optimization drift from reward-shaping
-effects. Branch selection and Jacobian conditioning remain weaker explanations:
-measured entrants predominantly use the open branch, and the summarized
-diagnostics do not provide enough replay detail to eliminate
-configuration-dependent dynamics.
+**Competing explanations:** The leading explanation is training-distribution
+mismatch: the policy must extrapolate from 14-20 cm training targets to the
+6-14 cm portion of the official task, where inverse-kinematic posture and
+initial-singularity escape differ materially. A second explanation is a
+target-conditioned observation-to-action representation failure, especially in
+negative-angle and wraparound sectors, which full-radius coverage may or may
+not repair. A third explanation is transient effort/sampled-control pathology,
+because the shared 16.37 cm failure is nearly fully saturated, but changing the
+action penalty did not improve it. Branch selection and Jacobian conditioning
+remain unresolved because the summarized diagnostics do not replay complete
+trajectories.
 
-**Decision frontier:** Distinguish target-conditioned reach/control
-representation failures from transient effort and braking failures. Evidence
-that the same geometry strata improve with reduced saturation and preserved
-entry/hold behavior would support a control explanation; persistent no-entry
-failures despite controlled effort, especially across the negative-angle and
-short-radius strata, would redirect the inquiry toward target encoding,
-initial-singularity escape, or branch-conditioned reach representation. The
-discrimination requires paired success and trajectory evidence rather than
-another unmeasured training proxy.
+**Decision frontier:** Test whether exposing the learner to the complete official
+radius distribution improves short-radius and negative-angle reach while
+preserving the established broad behavior. Paired success and trajectory
+evidence against working should show fewer no-entry failures in the 6-14 cm
+strata without a compensating loss at 14-20 cm; improvement would support
+coverage mismatch, while unchanged sector failures would redirect the inquiry
+toward target encoding, initial-singularity escape, or branch-conditioned
+representation.
 
 ## c65e9e59-7084-4415-87b6-9ff242544054 / Experiment 1
 
