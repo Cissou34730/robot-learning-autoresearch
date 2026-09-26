@@ -107,7 +107,7 @@
       "evidence": "The remaining uncertainty is the cause of checkpoint-100352's failures: diagnostics show both failures that never reach tolerance and failures that lose the hold. The tested target-coverage and partial hold-progress forfeiture interventions underperformed their paired parent, and the fresh baseline replication produced 57/160 and 80/160 versus 159/160 for the working lineage.",
       "reason": "A final transfer experiment could test another intervention, but no currently evidenced route offers a credible expected improvement over the well-characterized 96.5% best-known policy. The official benchmark has greater decision value now because it is the only assessment that can adjudicate the 98% objective, and development evidence is already extensive."
     },
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-100352 achieved 772/800 successes (96.5%) across five disjoint research panels, below the 196/200 success requirement, although it reached 159/160 on the latest paired panel. The fixed task-reference result is reused development evidence, and the held-out official 200-episode result remains unknown; the expected terminal verdict is therefore goal_not_reached with meaningful uncertainty about panel-to-panel variation.",
     "terminal_expectation": {
       "expected_verdict": "goal_not_reached",
