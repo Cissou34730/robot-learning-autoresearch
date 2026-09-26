@@ -1,3 +1,23 @@
 # Research postmortems
 
-No experiments recorded.
+## 6cd67bed-b2eb-410a-86fc-0bbb962ec1c1 / Scientific strategy
+
+**Current synthesis:** The baseline learned a policy with strong measured reach-and-hold performance late in training. `checkpoint-100352` is the leading candidate: it achieved 199/200 on episodes 10000-10199 and 195/200 on the disjoint episodes 20000-20199, for 394/400 pooled success (98.5%). The final checkpoint, `checkpoint-120832`, achieved 197/200 and 195/200 on those panels (98.0% pooled), so the earlier checkpoint is the better-supported working and best-known policy. Development evidence supports readiness for the next campaign decision, but it does not replace the official 200-episode assessment.
+
+**Lessons and limits:** Training proxies identified a useful late-training region but were not sufficient for selection: `checkpoint-86016` measured 190/200, while the two later candidates were materially better. The 100352 selection panel was not independent confirmation; the disjoint 20000-20199 panel supplied that confirmation and showed a modest regression from the first panel. All measurements used the researcher-owned `research_evaluation` semantics, with no task-reference panel and no official result, so generalization to the fixed human-owned assessment remains uncertain. Evidence: `research/research_state.json`, `research/results.jsonl`, and the five artifacts under `research/evaluations/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/`.
+
+**Open questions:** Whether the frozen `checkpoint-100352` reaches at least 196/200 on the official panel remains unresolved. Residual failures and whether further training improves or degrades this checkpoint are also unresolved; those questions belong to a later campaign action after closure.
+
+## 6cd67bed-b2eb-410a-86fc-0bbb962ec1c1 / Experiment 1
+
+**Result:** The baseline produced a strong late-training policy. `checkpoint-100352` is selected as both working and best known; `checkpoint-120832` is retained as a measured late-training alternative.
+
+**Observed behavior:** Training success rose from 0 at early checkpoints to 0.42 at 86016 steps and 0.97 at 100352 steps, then remained high but fluctuated through 120832 steps. On the first research panel, checkpoints 86016, 100352, and 120832 scored 190/200, 199/200, and 197/200. On the disjoint second panel, checkpoints 100352 and 120832 each scored 195/200. The paired comparison over their 400 distinct episodes favored 100352 by 2 discordant wins to 0. These are development measurements, not the official result.
+
+**Hypothesis assessment:** The baseline established that the unchanged PPO recipe can learn a policy near the human objective, with the strongest measured behavior at an intermediate late-training checkpoint rather than the final checkpoint. This conclusion is supported for the tested research-evaluation semantics, but the single disjoint confirmation panel and absence of task-reference measurements limit confidence about the official panel.
+
+**Expected observation disposition:** not tested - this automatic baseline had no non-baseline expected observation; the measured late-training evidence is recorded above.
+
+**Interpretation:** Preserve the unchanged scientific recipe and the independently confirmed late-training peak. The pooled 98.5% research-evaluation result is encouraging but leaves six failures across 400 episodes and does not establish the required 196/200 official result. Retaining the final checkpoint preserves a concrete alternative for future comparison or continuation without treating it as the best policy.
+
+**Evidence inspected:** `research/brief.md`; `research/research_state.json`; `research/checkpoints/challengers/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/experiment-1/inventory.json`; `research/evaluations/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/evaluation-6cd67bed-b2eb-410a-86fc-0bbb962ec1c1-experiment-1-checkpoint-86016-200ep-seed10000-f48545f83637.json`; `research/evaluations/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/evaluation-6cd67bed-b2eb-410a-86fc-0bbb962ec1c1-experiment-1-checkpoint-100352-200ep-seed10000-f48545f83637.json`; `research/evaluations/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/evaluation-6cd67bed-b2eb-410a-86fc-0bbb962ec1c1-experiment-1-checkpoint-100352-200ep-seed20000-f48545f83637.json`; `research/evaluations/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/evaluation-6cd67bed-b2eb-410a-86fc-0bbb962ec1c1-experiment-1-checkpoint-120832-200ep-seed10000-f48545f83637.json`; `research/evaluations/6cd67bed-b2eb-410a-86fc-0bbb962ec1c1/evaluation-6cd67bed-b2eb-410a-86fc-0bbb962ec1c1-experiment-1-checkpoint-120832-200ep-seed20000-f48545f83637.json`.
