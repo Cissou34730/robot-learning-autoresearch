@@ -3,21 +3,26 @@
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Scientific strategy
 
 **Current synthesis:** The fresh PPO baseline learned useful reach-and-hold
-behavior but remains below the 98% human objective: checkpoint-95232 achieved
-301/320 (94.06%) on pooled disjoint research panels, while checkpoint-120832
-achieved 300/320 (93.75%). The fixed task-reference panel scored them at 96%
-and 97%, respectively, but its reuse prevents independent confirmation.
+behavior but remains below the 98% human objective. Continuing checkpoint-95232
+with full 6-20 cm target-radius training produced checkpoint-105472 at 307/320
+(95.94%) across two disjoint research panels, versus 304/320 (95.00%) for the
+same-panel parent control. The candidate's 98.125% first-panel result was used
+to select it and is not independent confirmation; its disjoint confirmation was
+93.75%, with a paired advantage of 3 wins over 320 episodes.
 
-**Lessons and limits:** The baseline trains only on 14-20 cm targets although
-the official task spans 6-20 cm. Training reward and training success also do
-not rank final policies reliably: checkpoint-86016 had the highest training
-reward but weaker measured behavior. The current development evidence therefore
-supports the selected working lineage without establishing the official result
-or isolating the cause of its residual failures.
+**Lessons and limits:** Expanding radius coverage is partially supported as a
+useful intervention, but the gain is modest and no development measurement
+establishes the 98% objective. The final full-range checkpoint measured 153/160
+on the first panel, so later training did not clearly preserve the best
+behavior. Training reward and training success remain unreliable policy
+rankings, and the fixed task-reference panel is reused development evidence
+rather than independent confirmation. The selected full-range candidate is the
+best measured current representative, but its official result is unknown.
 
-**Open questions:** Whether exposing training to the full official radius range
-can improve generalization beyond the baseline plateau remains unresolved. The
-official benchmark result for the selected policy is also unknown.
+**Open questions:** Whether the modest full-range improvement persists on the
+official 200-episode panel and whether further training can reduce the
+remaining failures are unresolved. The residual failure distribution and the
+official benchmark result for the selected policy are also unknown.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
@@ -61,3 +66,43 @@ baseline.
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-1-checkpoint-120832-160ep-seed4360-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/task-reference-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-1-checkpoint-95232-task-reference-v1.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/task-reference-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-1-checkpoint-120832-task-reference-v1.json`
+
+## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 2
+
+**Result:** Full official-radius training partially improved measured behavior.
+Checkpoint-105472 is selected as the working and best-known lineage; the
+full-range recipe is kept, and the prior baseline working lineage is retained
+as a comparator.
+
+**Observed behavior:** Checkpoint-105472 achieved 157/160 (98.125%) on the
+selection panel and 150/160 (93.75%) on the disjoint confirmation panel. The
+pre-intervention working control achieved 155/160 (96.875%) and 149/160
+(93.125%) on those same panels. The pooled candidate result was 307/320
+(95.9375%) versus 304/320 (95.0%) for the control, with 4 candidate wins and
+1 control win among 5 discordant paired episodes. The final checkpoint-120832
+achieved 153/160 (95.625%) on the first panel. No measured result establishes
+the 98% official objective.
+
+**Hypothesis assessment:** Partially supported. Full 6-20 cm target-radius
+training produced a small, consistent paired improvement over the parent
+across the two disjoint experiment-2 panels, and the second panel confirms that
+the selected candidate is not supported only by its first-panel score.
+However, the confirmation score was 93.75%, the aggregate remains below 98%,
+and this evidence cannot establish official-task success or isolate which
+target radii account for the change.
+
+**Interpretation:** The intervention is useful enough to preserve as the
+current recipe and checkpoint-105472 is the strongest measured current
+representative. The result is an incremental improvement rather than a
+solution to the human objective. Retaining the prior checkpoint-95232 lineage
+preserves a clean baseline-policy comparator for future work; the reused
+task-reference scores do not provide independent confirmation.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-2/inventory.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-checkpoint-105472-160ep-seed4520-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-checkpoint-105472-160ep-seed4680-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-working-160ep-seed4520-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-working-160ep-seed4680-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-checkpoint-120832-160ep-seed4520-f48545f83637.json`
