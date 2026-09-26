@@ -5,23 +5,24 @@
 **Current synthesis:** PPO learned useful reach-and-hold behavior but remains
 below the 98% human objective. Full 6-20 cm target-radius transfer produced
 checkpoint-105472 at 307/320 (95.94%) across two disjoint research panels,
-versus 304/320 (95.00%) for the same-panel parent control. Its 98.125%
-selection-panel result was not independent confirmation; the disjoint panel
-was 93.75%.
+versus 304/320 (95.00%) for the same-panel parent control. A later reduced
+learning-rate continuation did not preserve that result: its measured
+checkpoints scored 144/160, 145/160, and 148/160, while the saved parent
+scored 157/160 on the new disjoint panel.
 
 **Lessons and limits:** Full-radius training is supported as a modest
 improvement, not as a solution. The selected checkpoint outperformed the
-parent, while the later checkpoint-120832 fell to 153/160 on the first panel,
-so optimization was not monotonic. Training reward and training success do not
-reliably rank policies, the task-reference panel is reused development
-evidence, and the official result remains unknown. Detailed failures include
-both episodes that never entered the hold and occasional long hold
-interruptions.
+parent, but the reduced-rate continuation was substantially worse than its
+parent on every measured checkpoint and none of its 12 discordant episodes
+was a challenger win. Training reward and training success do not reliably
+rank policies, the task-reference panel is reused development evidence, and
+the official result remains unknown. Detailed failures include both episodes
+that never entered the hold and occasional long hold interruptions.
 
-**Open questions:** Whether the selected policy can retain or improve its
-measured peak under gentler continued optimization remains unresolved. The
-official benchmark result and the relative contribution of reach versus hold
-failures also remain unknown.
+**Open questions:** The official benchmark result and the relative contribution
+of reach versus hold failures remain unknown. The tested reduced-rate
+continuation does not justify further use of that recipe, though other
+interventions remain scientifically possible after closure.
 
 ## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 1
 
@@ -105,3 +106,42 @@ task-reference scores do not provide independent confirmation.
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-working-160ep-seed4520-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-working-160ep-seed4680-f48545f83637.json`;
 `research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-2-checkpoint-120832-160ep-seed4520-f48545f83637.json`
+
+## 0d669090-7528-4cb1-a91e-dec56695ce02 / Experiment 3
+
+**Result:** Reduced-learning-rate continuation did not produce a reusable
+challenger. The existing best-known checkpoint-105472 remains both working
+and best-known, and the parent recipe is restored.
+
+**Observed behavior:** On the disjoint research panel at episodes 4840-4999,
+checkpoint-100352 achieved 144/160 (90.00%), checkpoint-105472 achieved
+145/160 (90.625%), and checkpoint-120832 achieved 148/160 (92.50%). The
+best-known parent achieved 157/160 (98.125%) on the same panel. Each challenger
+lost every discordant paired episode: 13, 12, and 9 parent wins respectively.
+The measured candidates remained below the 98% threshold and the saved parent;
+these development results do not establish the official 200-episode result.
+
+**Hypothesis assessment:** Contradicted under the tested continuation. Lowering
+the PPO learning rate did not preserve the prior 105472-step behavioral peak
+and did not improve generalization on the disjoint panel. The conclusion is
+limited to this transferred run, learning-rate change, and measured
+checkpoints; it does not disprove other ways of improving optimization
+stability.
+
+**Interpretation:** The disjoint control provides independent development
+evidence that the prior best-known lineage is preferable to all three measured
+challengers. The continuation should be closed without retaining a challenger,
+and the scientific recipe should revert to the parent recipe. The parent’s
+98.125% score is strong development evidence but is not the official result.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/results.jsonl`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-3/inventory.json`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-3/checkpoint-100352/artifact.json`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-3/checkpoint-105472/artifact.json`;
+`research/checkpoints/challengers/0d669090-7528-4cb1-a91e-dec56695ce02/experiment-3/checkpoint-120832/artifact.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-checkpoint-100352-160ep-seed4840-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-checkpoint-105472-160ep-seed4840-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-checkpoint-120832-160ep-seed4840-f48545f83637.json`;
+`research/evaluations/0d669090-7528-4cb1-a91e-dec56695ce02/evaluation-0d669090-7528-4cb1-a91e-dec56695ce02-experiment-3-best_known-160ep-seed4840-f48545f83637.json`
