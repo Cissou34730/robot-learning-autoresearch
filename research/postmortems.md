@@ -4,46 +4,45 @@
 
 **Current synthesis:** The learned parent has substantial reach-and-hold
 competence but remains a near-objective policy rather than an established
-98% solution. It achieved 2729/2800 across fourteen distinct research panels,
-including 194/200 on the latest panel. Experiments 2--8 did not establish a
-reliable improvement over the working lineage. The latest paired telemetry
-round found 194/200 for the parent and 195/200 for both the headroom and slew
-controls; both controls rescued only the same parent failure and shared the
-other five.
+98% solution. It achieved 2925/3000 across fifteen distinct research panels,
+including 196/200 on the latest panel. Experiments 2--9 did not establish a
+reliable improvement over the working lineage. Experiment 9 directly measured
+the targeted-exposure recipe: checkpoint-90112 matched the parent at 196/200,
+and the final checkpoint fell to 194/200.
 
-**Lessons and limits:** Every latest-panel failure switched the nearest
-inverse-kinematic branch and reached a small Jacobian determinant, but branch
-switching also occurred in about 51% of successful parent episodes, so it is
-not sufficient as a causal explanation. Parent failures remained saturated for
-about 499 steps, yet headroom produced zero saturated steps and shared all
-five recurring failures. Slew reduced command variation and entry speed, but
-its five failures never entered tolerance and were the same five. These paired
-observations weaken saturation removal, fixed command slew, and entry or hold
-speed as sufficient explanations; they support a configuration-dependent
-transition/conditioning interaction while remaining associative rather than
-causal. Experiment 8 remains a decisive negative result for the tested fresh
-15-value observation recipe. The direct targeted-exposure intervention from
-experiment 7 was never measured, so its effect remains unknown. All results
-remain development measurements rather than the official objective.
+**Lessons and limits:** On the fresh experiment-9 panel, checkpoint-90112
+shared all four parent failures and produced no paired win. The final
+checkpoint shared those four failures and added two more, including one target
+outside the oversampled sector. All six final-checkpoint failures switched the
+nearest inverse-kinematic branch and remained saturated for roughly 497--499
+control steps, but branch switching occurred in about 55% of all episodes and
+the telemetry therefore remains associative rather than causal. The targeted
+distribution changed neither the recurring failure identities nor the
+failure-stage pattern, and its training-success proxy did not predict a task
+improvement. Together with the headroom, slew, and representation controls,
+the evidence weakens saturation removal, fixed command slew, targeted exposure,
+and simple observation augmentation as sufficient explanations. Experiment 9
+does not rule out a configuration-dependent transition/conditioning
+mechanism, nor does any development panel establish the official objective.
 
 **Open questions:** Which configuration-dependent mechanism creates the
 repeatable negative-angle failures despite unchanged task mechanics: a
 branch-transition policy error, poor local conditioning, insufficient
 stabilization, or an interaction among them. It remains unresolved whether
-concentrated exposure to this transition sector can change the learned
-trajectory without sacrificing the rest of the target distribution, and which
-policy representation can do so without repeating experiment 8's regression.
+the parent lacks a suitable control representation for this transition or
+whether the learned trajectory can be changed without sacrificing broad
+reach-and-hold behavior.
 
-**Active inquiry:** The provisional inquiry is whether targeted training
-exposure can alter the policy's branch-transition and near-singular
-trajectories while preserving the parent's robust 11-value observation
-contract and broad reach-and-hold behavior. This matters because the latest
-controls changed physical command behavior without rescuing the shared target
-identities, while experiment 7's direct targeted-coverage policy was never
-measured. A fresh paired evaluation would support the inquiry only if the
-transferred policy rescues shared failures without broad regression and its
-telemetry changes consistently with that rescue; unchanged shared failures,
-new broad failures, or a proxy-only improvement would redirect or end it.
+**Active inquiry:** The provisional inquiry is whether the recurring failures
+come from a policy-controlled branch/conditioning transition that can be
+altered while preserving the parent's robust 11-value observation contract and
+broad task behavior. Experiment 9 ends the narrower targeted-exposure test:
+matching failure identities at the proxy-peak checkpoint and added failures at
+the final checkpoint provide no support for exposure alone. The inquiry would
+be redirected by paired evidence showing a repeatable rescue of the shared
+target situations with no broad regression, and ended if subsequent
+task-level comparisons continue to show unchanged failures or trade them for
+new broad failures.
 
 ## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 1
 
@@ -400,3 +399,48 @@ analysis, not as policy alternatives or evidence of objective attainment.
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-8-checkpoint-115712-200ep-seed32000-389c4f131ee0.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-8-checkpoint-120832-200ep-seed32000-389c4f131ee0.json`;
 `research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-8-working-200ep-seed32000-389c4f131ee0.json`.
+
+## 9f1de290-24cf-4a97-8dab-6026ac343493 / Experiment 9
+
+**Result:** Concentrating 70% of training targets in the recurring negative-angle
+sector did not produce a measured policy that could displace the working
+lineage. On the fresh episodes 34000--34199 panel, the parent and
+checkpoint-90112 each achieved 196/200, while checkpoint-120832 achieved
+194/200. The parent remains working and best-known; the experiment-9 recipe is
+reverted, and both measured challengers are retained as controlled alternatives.
+
+**Observed behavior:** Checkpoint-90112 and the parent failed on exactly
+episodes 34039, 34099, 34108, and 34190, so the challenger had zero paired
+wins. Checkpoint-120832 shared those four failures and added episodes 34022 and
+34036, with no paired wins. The shared failures had target angles from about
+-128 to -139 degrees; the two additional final-checkpoint failures were about
+-111 and -122 degrees. The failure diagnostics consistently recorded a branch
+switch and approximately 497--499 saturated control steps, with either no
+tolerance entry or only one to four held steps. These patterns did not change
+the fact that branch switching was also common in successful episodes.
+
+**Hypothesis assessment:** The hypothesis that targeted exposure would rescue
+the recurring sector while preserving broad reach-and-hold behavior is
+contradicted for the measured checkpoints. The proxy-peak challenger matched,
+rather than rescued, every parent failure, and the final checkpoint degraded
+by adding two failures. This conclusion is limited to the transferred
+experiment-9 trajectory and one fresh development panel: it rejects the
+tested exposure recipe as a useful sufficient intervention, but it does not
+identify the causal contribution of branch transition, conditioning,
+saturation, or stabilization.
+
+**Interpretation:** Direct task evidence is more informative than the
+experiment-9 training proxy: neither the apparent proxy peak nor continued
+training changed the failure set in the beneficial direction. The unchanged
+shared failures after targeted exposure support carrying forward a
+configuration-dependent control interaction as an unresolved inquiry rather
+than treating target frequency as its explanation. Restoring the parent recipe
+preserves the strongest repeatedly measured behavior without claiming that the
+human objective has been reached.
+
+**Evidence inspected:** `research/brief.md`;
+`research/research_state.json`;
+`research/checkpoints/challengers/9f1de290-24cf-4a97-8dab-6026ac343493/experiment-9/inventory.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-9-working-200ep-seed34000-bb54672c3d8e.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-9-checkpoint-90112-200ep-seed34000-bb54672c3d8e.json`;
+`research/evaluations/9f1de290-24cf-4a97-8dab-6026ac343493/evaluation-9f1de290-24cf-4a97-8dab-6026ac343493-experiment-9-checkpoint-120832-200ep-seed34000-bb54672c3d8e.json`.
