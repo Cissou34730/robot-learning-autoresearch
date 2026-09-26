@@ -91,7 +91,7 @@
       "form": "feasible_continuation",
       "reason": "This continuation is feasible, but experiment 2 already showed that full-range transfer preserves rather than improves the parent on the available disjoint panel, with all measured checkpoints tied. A further training run therefore has speculative improvement value, while terminal assessment directly resolves the only remaining objective-level question for the frozen policy."
     },
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-105472 achieved 199/200 (99.5%) on the disjoint seed-5000 development panel, above the 98% objective threshold, and the unchanged parent and two other experiment-2 checkpoints matched it with zero paired discordances. This is strong but non-official evidence, so the official 200-episode assessment is needed to determine the human objective; the shared single failure and its residual reach-or-hold cause remain uncertain.",
     "terminal_expectation": {
       "expected_verdict": "goal_reached",
