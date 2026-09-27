@@ -22860,7 +22860,7 @@
         "training_steps": 100352
       }
     },
-    "progress": "decision_recorded"
+    "progress": "cleanup_complete"
   },
   "pending_scientific_commit": {
     "code_parent_commit": "011378ae07efb204406a4c61d487a3890728e2d1",
