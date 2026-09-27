@@ -113,7 +113,7 @@
       "evidence": "The campaign has one fresh baseline run and one unsuccessful transfer intervention. The incumbent has broad but variable development performance, ranging from 194/200 to 199/200 across disjoint research panels, while the residual failures have not been isolated to an actionable mechanism.",
       "reason": "A fresh replication could characterize learning variance or produce another candidate, but it would not answer whether the already selected best-known checkpoint meets the human objective and has no evidence-backed intervention advantage over the incumbent. Requesting the official assessment directly resolves the campaign's primary unresolved decision without using the benchmark as a diagnostic instrument."
     },
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-100352 achieved 393/400 pooled successes across two disjoint research panels, but only 194/200 on the later disjoint panel. This places the policy near the 98% objective while leaving meaningful finite-panel uncertainty. The lower-learning-rate transfer produced no stronger measured checkpoint and degraded to 190/200 at its endpoint, so the official assessment is now the highest-value way to determine the objective-level result.",
     "terminal_expectation": {
       "expected_verdict": "uncertain",
