@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when trajectory-resolved measurements either identify a reproducible dominant failure mechanism and support a bounded method direction, or show that the failures are not reproducible or sufficiently concentrated to discriminate among the explanations. Record the evidence limits and close with the resulting method outcome, including no method if the inquiry is not actionable.",
+    "id": 1,
+    "question": "Are the baseline policy's rare failures caused primarily by target-geometry-dependent failure to reach a feasible settled configuration, or by endpoint instability and hold control after tolerance entry, and which mechanism should guide the next policy method?",
+    "reframes": [],
+    "scope": "Study the retained working and best-known checkpoint-100352 under the protected official task dynamics. Use the fixed task-reference-v1 evidence and, if needed, non-overlapping research-evaluation panels to resolve the distinction with trajectory-level endpoint distance, tolerance entry, hold length, boundary crossings, joint and endpoint velocity, actions or implied torque, saturation, and target geometry or inverse-kinematic branch and limit features. Preserve all protected task and benchmark contracts and treat reward as learning-dynamics evidence rather than the objective.",
+    "session_id": "f093be16-cf7f-4306-9a2f-15097184f5fe",
+    "status": "active"
+  },
   "active_method": null,
   "best_known_designation_counter": 1,
   "best_known_lineage": {
@@ -59,12 +67,18 @@
     "a4e64322-8d31-4479-9b0f-c04211eaf8b4": 1
   },
   "campaign_inquiry_counters": {
-    "a4e64322-8d31-4479-9b0f-c04211eaf8b4": 0
+    "a4e64322-8d31-4479-9b0f-c04211eaf8b4": 1
   },
   "campaign_lab": null,
-  "inquiry_session": null,
+  "inquiry_session": {
+    "campaign_id": "a4e64322-8d31-4479-9b0f-c04211eaf8b4",
+    "id": "f093be16-cf7f-4306-9a2f-15097184f5fe",
+    "inquiry_id": 1,
+    "role": "principal_investigator",
+    "status": "started"
+  },
   "last_allocated_experiment": 1,
-  "last_allocated_inquiry": 0,
+  "last_allocated_inquiry": 1,
   "last_experiment": 1,
   "last_inquiry": 0,
   "last_lineage_decision": {
@@ -80,7 +94,7 @@
     "operation": "baseline",
     "working": "checkpoint-100352"
   },
-  "last_verdict": "baseline selected",
+  "last_verdict": "inquiry 1 opened",
   "official_benchmark_artifact": null,
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
@@ -90,14 +104,22 @@
   "pending_campaign_conclusion": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
-  "pending_inquiry_operation": null,
+  "pending_inquiry_operation": {
+    "action": "open",
+    "closure_condition": "Close when trajectory-resolved measurements either identify a reproducible dominant failure mechanism and support a bounded method direction, or show that the failures are not reproducible or sufficiently concentrated to discriminate among the explanations. Record the evidence limits and close with the resulting method outcome, including no method if the inquiry is not actionable.",
+    "inquiry_id": 1,
+    "progress": "artifacts_released",
+    "question": "Are the baseline policy's rare failures caused primarily by target-geometry-dependent failure to reach a feasible settled configuration, or by endpoint instability and hold control after tolerance entry, and which mechanism should guide the next policy method?",
+    "scope": "Study the retained working and best-known checkpoint-100352 under the protected official task dynamics. Use the fixed task-reference-v1 evidence and, if needed, non-overlapping research-evaluation panels to resolve the distinction with trajectory-level endpoint distance, tolerance entry, hold length, boundary crossings, joint and endpoint velocity, actions or implied torque, saturation, and target geometry or inverse-kinematic branch and limit features. Preserve all protected task and benchmark contracts and treat reward as learning-dynamics evidence rather than the objective.",
+    "session_id": "f093be16-cf7f-4306-9a2f-15097184f5fe"
+  },
   "pending_method_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "79302c227fcfb61db91fbbcf991dc7ab70453100",
     "experiment": 1,
     "scientific_commit": "312cbd377334b9f5af73f37b6aee790d6b23de04"
   },
-  "pending_scientific_parent": null,
+  "pending_scientific_parent": "e4d34f6fe7b93989d862cec1c6476682fbdd6a45",
   "pending_training_operation": null,
   "preparation_measurement": null,
   "retained_lineages": [],
