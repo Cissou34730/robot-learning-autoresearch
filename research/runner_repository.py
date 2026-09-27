@@ -15,7 +15,11 @@ import time
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
-from robot_learning.checkpoint_coordinates import coordinates_from_record
+from robot_learning.checkpoint_coordinates import (
+    COORDINATE_FIELDS,
+    canonical_identifier,
+    coordinates_from_record,
+)
 
 # Detailed evidence belongs to the evaluation artifact, not to the compact
 # history or the protocol state.
@@ -438,6 +442,99 @@ LINEAGE_RECORD_FIELDS = {
 # on, so repeated measurement on those episodes can be recognized as
 # selection-contaminated rather than independent confirmation (issue #57).
 LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
+# Canonical checkpoint coordinates. A record written under the lineage-aware
+# model carries the whole set; a record written before it lacks them and is
+# translated from the legacy naming instead of being rejected. Both are accepted,
+# and a record that is wrong under the canonical model is still refused.
+LINEAGE_RECORD_COORDINATE_FIELDS = frozenset(COORDINATE_FIELDS)
+_COORDINATE_INTEGER_FIELDS = (
+    "run_steps",
+    "parent_accumulated_steps",
+    "accumulated_steps",
+)
+
+
+def _canonicalize_lineage_coordinates(lineage: dict) -> None:
+    """Translate and validate one lineage record's checkpoint coordinates.
+
+    A record under the new model carries explicit coordinate fields; their types
+    and the ``accumulated_steps == parent_accumulated_steps + run_steps``
+    invariant, the identifier shape and the ``training_steps`` alias are checked.
+    A record written before the model has no coordinate fields and is translated
+    with ``coordinates_from_record`` so it stays readable.
+    """
+    present = {field for field in LINEAGE_RECORD_COORDINATE_FIELDS if field in lineage}
+    for field in present:
+        value = lineage[field]
+        if field in _COORDINATE_INTEGER_FIELDS:
+            if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+                raise TypeError(
+                    f"lineage record {field} must be a non-negative integer"
+                )
+        elif field == "identifier":
+            if value is not None and (not isinstance(value, str) or not value.strip()):
+                raise TypeError(
+                    "lineage record identifier must be a non-empty string or null"
+                )
+        elif field == "parent_lineage":
+            if not isinstance(value, str):
+                raise TypeError("lineage record parent_lineage must be a string")
+        elif (
+            field == "parent_fingerprint"
+            and value is not None
+            and not isinstance(value, str)
+        ):
+            raise TypeError(
+                "lineage record parent_fingerprint must be a string or null"
+            )
+
+    run_steps = lineage.get("run_steps")
+    parent_steps = lineage.get("parent_accumulated_steps")
+    accumulated = lineage.get("accumulated_steps")
+    known = (
+        isinstance(run_steps, int)
+        and not isinstance(run_steps, bool)
+        and isinstance(parent_steps, int)
+        and not isinstance(parent_steps, bool)
+        and isinstance(accumulated, int)
+        and not isinstance(accumulated, bool)
+    )
+    if known and accumulated != parent_steps + run_steps:
+        raise ValueError(
+            "lineage record accumulated_steps must equal parent_accumulated_steps "
+            "plus run_steps"
+        )
+    identifier = lineage.get("identifier")
+    experiment = lineage.get("origin_experiment")
+    if (
+        isinstance(identifier, str)
+        and identifier.strip()
+        and isinstance(experiment, int)
+        and not isinstance(experiment, bool)
+        and isinstance(run_steps, int)
+        and not isinstance(run_steps, bool)
+        and identifier != canonical_identifier(experiment, run_steps)
+    ):
+        raise ValueError(
+            "lineage record identifier must match its origin experiment and run steps"
+        )
+    training_steps = lineage.get("training_steps")
+    if (
+        isinstance(training_steps, int)
+        and not isinstance(training_steps, bool)
+        and isinstance(accumulated, int)
+        and not isinstance(accumulated, bool)
+        and training_steps != accumulated
+    ):
+        raise ValueError("lineage record training_steps must equal accumulated_steps")
+    coordinates = coordinates_from_record(lineage)
+    for field in COORDINATE_FIELDS:
+        if field in lineage:
+            continue
+        value = coordinates[field]
+        if value is None or (field == "parent_lineage" and not value):
+            continue
+        lineage[field] = value
 
 
 def _canonicalize_selected_panel(panel: object) -> dict:
@@ -514,6 +611,7 @@ def canonicalize_lineage_record(lineage: dict) -> None:
         set(lineage)
         - LINEAGE_RECORD_FIELDS
         - LINEAGE_RECORD_OPTIONAL_FIELDS
+        - LINEAGE_RECORD_COORDINATE_FIELDS
         - {"id", "campaign_id"}
     )
     if missing or extra:
@@ -537,6 +635,7 @@ def canonicalize_lineage_record(lineage: dict) -> None:
         raise ValueError(
             "lineage record experiment and training steps must be positive"
         )
+    _canonicalize_lineage_coordinates(lineage)
     if "designation_ordinal" in lineage:
         ordinal = lineage["designation_ordinal"]
         if not isinstance(ordinal, int) or isinstance(ordinal, bool):
