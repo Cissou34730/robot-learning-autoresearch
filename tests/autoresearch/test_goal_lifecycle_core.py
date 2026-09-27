@@ -439,6 +439,66 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     assert persisted["scientific_session"]["id"] == session["id"]
 
 
+def test_identical_raw_measurement_after_completion_allocates_next_operation(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Repeat one bounded diagnostic.")
+    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("def main():\n    return None\n", encoding="utf-8")
+    artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    request = {
+        "measurement": {
+            "description": "Run the same diagnostic again.",
+            "rationale": "Each invocation is a distinct PI request.",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "research.lab.diagnostic",
+                    "args": ["--output", str(artifact)],
+                    "artifact": repository.repo_relative_path(artifact),
+                }
+            ],
+        }
+    }
+    executions: list[int] = []
+
+    def run_module(_module, *_args):
+        executions.append(len(executions) + 1)
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text(
+            json.dumps({"observation": executions[-1]}), encoding="utf-8"
+        )
+
+    monkeypatch.setattr(execution, "run_module", run_module)
+    monkeypatch.setattr(
+        repository,
+        "publish_campaign_laboratory",
+        lambda _operation_id: {
+            "commit": "c" * 40,
+            "manifest": [],
+            "fingerprint": "f",
+        },
+    )
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
+
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    assert run_experiment.main() == 0
+    assert not paths.OPERATION_REQUEST_PATH.exists()
+
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    assert run_experiment.main() == 0
+
+    persisted = repository.read_state()
+    assert executions == [1, 2]
+    assert [event["id"] for event in persisted["operation_events"]] == ["M1", "M2"]
+    assert persisted["scientific_session"]["operation_ids"] == ["M1", "M2"]
+    assert persisted["counters"]["measurement"] == 2
+    assert not paths.OPERATION_REQUEST_PATH.exists()
+
+
 def test_python_module_publishes_changed_non_lab_science_before_execution(
     monkeypatch, tmp_path
 ):
@@ -729,6 +789,12 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
         }
     }
     first = run_experiment.accept_operation(request, state)
+    assert json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")) == {
+        run_experiment.ACCEPTED_REQUEST_KEY: {
+            "schema_version": run_experiment.ACCEPTED_REQUEST_VERSION,
+            "operation_id": "T1",
+        }
+    }
     source.write_text("reward = 2\n", encoding="utf-8")
     with pytest.raises(run_experiment.FrozenOperationMismatch, match="changed"):
         run_experiment.execute_pending_operation()
@@ -751,6 +817,12 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
     second = run_experiment.reaccept_pending_operation()
     assert second["id"] == "T2"
     assert second["supersedes"] == first["id"]
+    assert json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")) == {
+        run_experiment.ACCEPTED_REQUEST_KEY: {
+            "schema_version": run_experiment.ACCEPTED_REQUEST_VERSION,
+            "operation_id": "T2",
+        }
+    }
     assert second["data"]["scientific_manifest"][0]["fingerprint"] == (
         repository.file_fingerprint(source)
     )

@@ -345,6 +345,12 @@ def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_eve
     interrupted = repository.read_state()
     assert interrupted["pending_operation"] is None
     assert paths.OPERATION_REQUEST_PATH.is_file()
+    assert json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")) == {
+        run_experiment.ACCEPTED_REQUEST_KEY: {
+            "schema_version": run_experiment.ACCEPTED_REQUEST_VERSION,
+            "operation_id": "E1",
+        }
+    }
     assert executions["count"] == 1
 
     monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
@@ -420,6 +426,12 @@ def test_finalization_push_crash_retries_only_publication_without_duplicate_even
     interrupted = repository.read_state()
     assert interrupted["pending_operation"] is None
     assert paths.OPERATION_REQUEST_PATH.is_file()
+    assert json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")) == {
+        run_experiment.ACCEPTED_REQUEST_KEY: {
+            "schema_version": run_experiment.ACCEPTED_REQUEST_VERSION,
+            "operation_id": "E1",
+        }
+    }
     assert executions["count"] == 1
 
     monkeypatch.setattr(sys, "argv", ["run_experiment.py"])

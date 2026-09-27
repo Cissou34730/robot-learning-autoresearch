@@ -28,6 +28,8 @@ PROPOSAL_ERRORS = (
     TypeError,
     ValueError,
 )
+ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
+ACCEPTED_REQUEST_VERSION = 1
 
 
 class FrozenOperationMismatch(ValueError):
@@ -43,6 +45,48 @@ def _canonical_fingerprint(value: Any) -> str:
         value, ensure_ascii=True, separators=(",", ":"), sort_keys=True
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _accepted_request_handoff(operation_id: str) -> dict:
+    return {
+        ACCEPTED_REQUEST_KEY: {
+            "schema_version": ACCEPTED_REQUEST_VERSION,
+            "operation_id": operation_id,
+        }
+    }
+
+
+def _accepted_request_id(value: object) -> str | None:
+    if not isinstance(value, dict) or set(value) != {ACCEPTED_REQUEST_KEY}:
+        return None
+    accepted = value[ACCEPTED_REQUEST_KEY]
+    if (
+        not isinstance(accepted, dict)
+        or set(accepted) != {"schema_version", "operation_id"}
+        or accepted["schema_version"] != ACCEPTED_REQUEST_VERSION
+        or not isinstance(accepted["operation_id"], str)
+        or not accepted["operation_id"].strip()
+    ):
+        return None
+    return accepted["operation_id"]
+
+
+def _write_accepted_request_handoff(pending: dict) -> None:
+    repository.atomic_write_json(
+        paths.OPERATION_REQUEST_PATH,
+        _accepted_request_handoff(str(pending["id"])),
+    )
+
+
+def _consume_accepted_request_handoff(operation_id: str) -> bool:
+    try:
+        handoff = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return False
+    if _accepted_request_id(handoff) != operation_id:
+        return False
+    paths.OPERATION_REQUEST_PATH.unlink(missing_ok=True)
+    return True
 
 
 def _scientific_manifest(relative_paths: list[str]) -> list[dict]:
@@ -280,6 +324,7 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
             or existing["request"] != request
         ):
             raise FrozenOperationMismatch("operation request changed after acceptance")
+        _write_accepted_request_handoff(existing)
         return existing
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
@@ -297,6 +342,7 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
     }
     state["pending_operation"] = pending
     repository.write_state(state)
+    _write_accepted_request_handoff(pending)
     return pending
 
 
@@ -338,6 +384,7 @@ def reaccept_pending_operation(state: dict | None = None) -> dict:
     )
     state["pending_operation"] = pending
     repository.write_state(state)
+    _write_accepted_request_handoff(pending)
     if not repository.commit_runner_memory(
         f"supersede {previous['id']} with {identifier}"
     ):
@@ -423,15 +470,15 @@ def _finalize_operation(state: dict, pending: dict) -> None:
         state["pending_operation"] = pending
         repository.write_state(state)
         raise
-    paths.OPERATION_REQUEST_PATH.unlink(missing_ok=True)
+    _consume_accepted_request_handoff(str(pending["id"]))
 
 
-def _matching_completed_pending(state: dict, request: dict) -> dict | None:
+def _matching_completed_pending(state: dict, operation_id: str) -> dict | None:
     pending = state.get("pending_operation")
     if (
         isinstance(pending, dict)
         and pending.get("progress") == "completed"
-        and pending.get("request") == request
+        and pending.get("id") == operation_id
     ):
         return pending
     return None
@@ -444,11 +491,17 @@ def _recover_interrupted_finalization(state: dict) -> str | None:
     ):
         return None
     try:
-        request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        handoff = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    operation_id = _accepted_request_id(handoff)
+    if operation_id is None:
+        return None
+    try:
         committed = repository.read_committed_state("HEAD")
     except (OSError, UnicodeError, json.JSONDecodeError, RuntimeError, ValueError):
         return None
-    pending = _matching_completed_pending(committed, request)
+    pending = _matching_completed_pending(committed, operation_id)
     if pending is not None:
         state["pending_operation"] = copy.deepcopy(pending)
         repository.write_state(state)
@@ -461,14 +514,15 @@ def _recover_interrupted_finalization(state: dict) -> str | None:
         previous = repository.read_committed_state("HEAD^")
     except (json.JSONDecodeError, RuntimeError, ValueError):
         return None
-    pending = _matching_completed_pending(previous, request)
+    pending = _matching_completed_pending(previous, operation_id)
     if pending is None or subject != repository.campaign_commit_message(
         f"finalize {pending['id']}"
     ):
         return None
     repository.push_head()
-    paths.OPERATION_REQUEST_PATH.unlink(missing_ok=True)
-    return "published"
+    if _consume_accepted_request_handoff(operation_id):
+        return "published"
+    return None
 
 
 def _execute_inquiry(state: dict, pending: dict) -> int:
@@ -1213,6 +1267,7 @@ def execute_pending_operation() -> int:
     request = pending["request"]
     if _canonical_fingerprint(request) != pending["request_fingerprint"]:
         raise FrozenOperationMismatch("accepted operation request changed")
+    _write_accepted_request_handoff(pending)
     if pending["progress"] == "completed":
         _finalize_operation(state, pending)
         return 0
