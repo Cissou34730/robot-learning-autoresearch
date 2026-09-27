@@ -104,15 +104,7 @@
   "pending_campaign_conclusion": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
-  "pending_inquiry_operation": {
-    "action": "open",
-    "closure_condition": "Close when trajectory-resolved measurements either identify a reproducible dominant failure mechanism and support a bounded method direction, or show that the failures are not reproducible or sufficiently concentrated to discriminate among the explanations. Record the evidence limits and close with the resulting method outcome, including no method if the inquiry is not actionable.",
-    "inquiry_id": 1,
-    "progress": "artifacts_released",
-    "question": "Are the baseline policy's rare failures caused primarily by target-geometry-dependent failure to reach a feasible settled configuration, or by endpoint instability and hold control after tolerance entry, and which mechanism should guide the next policy method?",
-    "scope": "Study the retained working and best-known checkpoint-100352 under the protected official task dynamics. Use the fixed task-reference-v1 evidence and, if needed, non-overlapping research-evaluation panels to resolve the distinction with trajectory-level endpoint distance, tolerance entry, hold length, boundary crossings, joint and endpoint velocity, actions or implied torque, saturation, and target geometry or inverse-kinematic branch and limit features. Preserve all protected task and benchmark contracts and treat reward as learning-dynamics evidence rather than the objective.",
-    "session_id": "f093be16-cf7f-4306-9a2f-15097184f5fe"
-  },
+  "pending_inquiry_operation": null,
   "pending_method_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "79302c227fcfb61db91fbbcf991dc7ab70453100",
