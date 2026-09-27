@@ -21,6 +21,7 @@ from pathlib import Path
 from research import runner_console as console
 from research import runner_paths as paths
 from research import runner_repository as repository
+from robot_learning.checkpoint_coordinates import coordinates_from_record
 from robot_learning.training.research_config import (
     RESEARCH_EVALUATION_EPISODES,
     RESEARCH_EVALUATION_SEED,
@@ -439,7 +440,17 @@ def candidate_directories(candidate_dir: Path) -> list[dict]:
                 raise RuntimeError(
                     f"candidate is incomplete: {candidate['path'] / filename}"
                 )
-    return candidates
+    return [with_checkpoint_coordinates(candidate) for candidate in candidates]
+
+
+def with_checkpoint_coordinates(candidate: dict) -> dict:
+    """Attach the canonical coordinate fields to a candidate description.
+
+    Explicit coordinate fields are preserved; a legacy description that only
+    carries ``timesteps`` is translated in place, without rewriting its file.
+    """
+    coordinates = coordinates_from_record(candidate)
+    return {**candidate, **coordinates}
 
 
 def copy_candidate_outputs(source: Path, destination: Path) -> None:
