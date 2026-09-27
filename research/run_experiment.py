@@ -410,11 +410,65 @@ def _complete_operation(
             f"complete {pending['id']} {pending['kind']}"
         ):
             repository.push_head()
-    paths.OPERATION_REQUEST_PATH.unlink(missing_ok=True)
+    _finalize_operation(state, pending)
+
+
+def _finalize_operation(state: dict, pending: dict) -> None:
     state["pending_operation"] = None
     repository.write_state(state)
-    if not repository.commit_runner_memory(f"finalize {pending['id']}"):
-        repository.push_head()
+    try:
+        if not repository.commit_runner_memory(f"finalize {pending['id']}"):
+            repository.push_head()
+    except Exception:
+        state["pending_operation"] = pending
+        repository.write_state(state)
+        raise
+    paths.OPERATION_REQUEST_PATH.unlink(missing_ok=True)
+
+
+def _matching_completed_pending(state: dict, request: dict) -> dict | None:
+    pending = state.get("pending_operation")
+    if (
+        isinstance(pending, dict)
+        and pending.get("progress") == "completed"
+        and pending.get("request") == request
+    ):
+        return pending
+    return None
+
+
+def _recover_interrupted_finalization(state: dict) -> str | None:
+    if (
+        state["pending_operation"] is not None
+        or not paths.OPERATION_REQUEST_PATH.is_file()
+    ):
+        return None
+    try:
+        request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        committed = repository.read_committed_state("HEAD")
+    except (OSError, UnicodeError, json.JSONDecodeError, RuntimeError, ValueError):
+        return None
+    pending = _matching_completed_pending(committed, request)
+    if pending is not None:
+        state["pending_operation"] = copy.deepcopy(pending)
+        repository.write_state(state)
+        return "retry"
+    subject = repository.git("log", "-1", "--format=%s", "HEAD").strip()
+    prefix = repository.campaign_commit_message("finalize ")
+    if not subject.startswith(prefix):
+        return None
+    try:
+        previous = repository.read_committed_state("HEAD^")
+    except (json.JSONDecodeError, RuntimeError, ValueError):
+        return None
+    pending = _matching_completed_pending(previous, request)
+    if pending is None or subject != repository.campaign_commit_message(
+        f"finalize {pending['id']}"
+    ):
+        return None
+    repository.push_head()
+    paths.OPERATION_REQUEST_PATH.unlink(missing_ok=True)
+    return "published"
 
 
 def _execute_inquiry(state: dict, pending: dict) -> int:
@@ -1159,6 +1213,9 @@ def execute_pending_operation() -> int:
     request = pending["request"]
     if _canonical_fingerprint(request) != pending["request_fingerprint"]:
         raise FrozenOperationMismatch("accepted operation request changed")
+    if pending["progress"] == "completed":
+        _finalize_operation(state, pending)
+        return 0
     kind = pending["kind"]
     try:
         if kind == "measurement":
@@ -1263,6 +1320,11 @@ def main() -> int:
         return check_operation()
     repository.synchronize_operation_log()
     state = repository.load_state(allow_missing_artifact=True)
+    finalization = _recover_interrupted_finalization(state)
+    if finalization == "published":
+        return 0
+    if finalization == "retry":
+        state = repository.load_state(allow_missing_artifact=True)
     if isinstance(state["pending_operation"], dict):
         if state["pending_operation"]["failure"] is not None:
             print(

@@ -1668,6 +1668,12 @@ def read_state() -> dict:
     return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
 
 
+def read_committed_state(revision: str) -> dict:
+    state = json.loads(git("show", f"{revision}:research/research_state.json"))
+    validate_research_state(state, allow_missing_artifact=True)
+    return state
+
+
 def load_state(*, allow_missing_artifact: bool = False) -> dict:
     if not paths.STATE_PATH.exists():
         raise RuntimeError("research state is missing; refusing to run")

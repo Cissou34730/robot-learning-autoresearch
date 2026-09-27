@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import copy
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -290,6 +292,146 @@ def test_completed_result_retries_memory_publication_without_reacceptance(
     assert [event["id"] for event in repository.history_records()] == ["E1"]
     assert not paths.OPERATION_REQUEST_PATH.exists()
     assert calls == ["complete E1 inquiry", "finalize E1"]
+
+
+def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_event(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    request = {
+        "inquiry": {
+            "action": "open",
+            "question": "Question",
+            "goal_connection": "Connection",
+            "closure_condition": "Closure",
+            "rationale": "Rationale",
+        }
+    }
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    committed: dict[str, dict] = {}
+    calls: list[str] = []
+    executions = {"count": 0}
+
+    class SimulatedCrash(BaseException):
+        pass
+
+    original_execute = run_experiment._execute_inquiry
+
+    def execute(current, pending):
+        executions["count"] += 1
+        return original_execute(current, pending)
+
+    def commit(message):
+        calls.append(message)
+        if message == "complete E1 inquiry":
+            committed["HEAD"] = copy.deepcopy(repository.read_state())
+            return True
+        if calls.count("finalize E1") == 1:
+            raise SimulatedCrash
+        committed["HEAD"] = copy.deepcopy(repository.read_state())
+        return True
+
+    monkeypatch.setattr(run_experiment, "_execute_inquiry", execute)
+    monkeypatch.setattr(repository, "commit_runner_memory", commit)
+    monkeypatch.setattr(
+        repository,
+        "read_committed_state",
+        lambda revision: copy.deepcopy(committed[revision]),
+    )
+    run_experiment.accept_operation(request, state)
+    with pytest.raises(SimulatedCrash):
+        run_experiment.execute_pending_operation()
+
+    interrupted = repository.read_state()
+    assert interrupted["pending_operation"] is None
+    assert paths.OPERATION_REQUEST_PATH.is_file()
+    assert executions["count"] == 1
+
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
+    assert run_experiment.main() == 0
+    completed = repository.read_state()
+    assert completed["pending_operation"] is None
+    assert not paths.OPERATION_REQUEST_PATH.exists()
+    assert executions["count"] == 1
+    assert [event["id"] for event in completed["operation_events"]] == ["E1"]
+    assert [event["id"] for event in repository.history_records()] == ["E1"]
+    assert calls == ["complete E1 inquiry", "finalize E1", "finalize E1"]
+
+
+def test_finalization_push_crash_retries_only_publication_without_duplicate_event(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    request = {
+        "inquiry": {
+            "action": "open",
+            "question": "Question",
+            "goal_connection": "Connection",
+            "closure_condition": "Closure",
+            "rationale": "Rationale",
+        }
+    }
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    committed: dict[str, dict] = {}
+    calls: list[str] = []
+    executions = {"count": 0}
+    pushes = {"count": 0}
+
+    class SimulatedCrash(BaseException):
+        pass
+
+    original_execute = run_experiment._execute_inquiry
+
+    def execute(current, pending):
+        executions["count"] += 1
+        return original_execute(current, pending)
+
+    def commit(message):
+        calls.append(message)
+        if message == "complete E1 inquiry":
+            committed["HEAD"] = copy.deepcopy(repository.read_state())
+            return True
+        committed["HEAD^"] = committed["HEAD"]
+        committed["HEAD"] = copy.deepcopy(repository.read_state())
+        raise SimulatedCrash
+
+    def git(*args):
+        if args == ("log", "-1", "--format=%s", "HEAD"):
+            return "camp: finalize E1\n"
+        return "a" * 40 + "\n"
+
+    monkeypatch.setattr(run_experiment, "_execute_inquiry", execute)
+    monkeypatch.setattr(repository, "commit_runner_memory", commit)
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(
+        repository,
+        "read_committed_state",
+        lambda revision: copy.deepcopy(committed[revision]),
+    )
+    monkeypatch.setattr(
+        repository,
+        "push_head",
+        lambda: pushes.__setitem__("count", pushes["count"] + 1),
+    )
+    run_experiment.accept_operation(request, state)
+    with pytest.raises(SimulatedCrash):
+        run_experiment.execute_pending_operation()
+
+    interrupted = repository.read_state()
+    assert interrupted["pending_operation"] is None
+    assert paths.OPERATION_REQUEST_PATH.is_file()
+    assert executions["count"] == 1
+
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
+    assert run_experiment.main() == 0
+    completed = repository.read_state()
+    assert completed["pending_operation"] is None
+    assert not paths.OPERATION_REQUEST_PATH.exists()
+    assert executions["count"] == 1
+    assert [event["id"] for event in completed["operation_events"]] == ["E1"]
+    assert [event["id"] for event in repository.history_records()] == ["E1"]
+    assert calls == ["complete E1 inquiry", "finalize E1"]
+    assert pushes["count"] == 1
 
 
 def test_completion_publishes_memory_and_consumes_the_request(monkeypatch, tmp_path):
