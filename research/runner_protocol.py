@@ -436,7 +436,7 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
         planned.append(
             {
                 **entry,
-                "candidate": candidate_name,
+                "candidate": candidate["id"],
                 "candidate_id": candidate["id"],
                 "artifact": candidate["artifact"],
                 "model_fingerprint": candidate["fingerprint"],
@@ -446,60 +446,61 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
     return planned
 
 
-def _research_panel(entry: dict) -> tuple[int, int] | None:
-    if entry.get("instrument") != "research_evaluation":
-        return None
-    seed = entry.get("seed")
-    episodes = entry.get("episodes")
-    if isinstance(seed, bool) or not isinstance(seed, int):
-        return None
-    if isinstance(episodes, bool) or not isinstance(episodes, int):
-        return None
-    return seed, episodes
-
-
-def _panels_overlap(left: tuple[int, int], right: tuple[int, int]) -> bool:
-    return max(left[0], right[0]) < min(left[0] + left[1], right[0] + right[1])
-
-
-def recorded_research_panels(state: dict) -> list[tuple[int, int]]:
-    panels: list[tuple[int, int]] = []
-    for event in state.get("operation_events", []):
-        if event.get("kind") != "measurement":
-            continue
-        for entry in event.get("request", {}).get("measurements", []):
-            panel = _research_panel(entry)
-            if panel is not None:
-                panels.append(panel)
-    return panels
+def planned_paired_comparisons(
+    request: dict, state: dict, measurements: list[dict]
+) -> list[dict]:
+    research_measurements: dict[str, list[dict]] = {}
+    for entry in measurements:
+        if entry["instrument"] == "research_evaluation":
+            research_measurements.setdefault(entry["candidate_id"], []).append(entry)
+    planned: list[dict] = []
+    for comparison in request.get("paired_comparisons", []):
+        candidate = resolve_candidate(state, str(comparison["candidate"]))
+        reference = resolve_candidate(state, str(comparison["reference"]))
+        for role, resolved in (("candidate", candidate), ("reference", reference)):
+            if resolved["id"] not in research_measurements:
+                raise ValueError(
+                    f"paired comparison {role} {resolved['id']!r} must have a "
+                    "planned research_evaluation measurement"
+                )
+        shared_panel = any(
+            max(int(left["seed"]), int(right["seed"]))
+            < min(
+                int(left["seed"]) + int(left["episodes"]),
+                int(right["seed"]) + int(right["episodes"]),
+            )
+            for left in research_measurements[candidate["id"]]
+            for right in research_measurements[reference["id"]]
+        )
+        if not shared_panel:
+            raise ValueError(
+                "paired comparison candidates have no shared planned episodes"
+            )
+        planned.append(
+            {
+                "candidate": candidate["id"],
+                "reference": reference["id"],
+                "candidate_model_fingerprint": candidate["fingerprint"],
+                "reference_model_fingerprint": reference["fingerprint"],
+            }
+        )
+    return planned
 
 
 def validate_panel_independence(
     request: dict,
-    prior_panels: list[tuple[int, int]] | None = None,
     *,
     protected_overlap=None,
 ) -> None:
-    seen: list[tuple[int, int]] = []
     for entry in requested_measurements(request):
-        panel = _research_panel(entry)
-        if panel is None:
+        if entry.get("instrument") != "research_evaluation":
             continue
-        if protected_overlap is not None and protected_overlap(*panel):
+        if protected_overlap is not None and protected_overlap(
+            int(entry["seed"]), int(entry["episodes"])
+        ):
             raise ValueError(
                 "research evaluation panel overlaps protected benchmark evidence"
             )
-        for other in seen:
-            if panel != other and _panels_overlap(panel, other):
-                raise ValueError(
-                    "research evaluation panels partially overlap within the request"
-                )
-        for other in prior_panels or []:
-            if panel != other and _panels_overlap(panel, other):
-                raise ValueError(
-                    "research evaluation panel partially overlaps prior evidence"
-                )
-        seen.append(panel)
 
 
 def plan_inquiry_operation(request: dict, state: dict) -> dict:
@@ -651,15 +652,7 @@ def plan_model_role(request: dict, state: dict) -> dict:
     return plan
 
 
-def plan_recipe_restore(request: dict, state: dict) -> dict:
-    session = require_active_session(state)
-    if set(request) != {"candidate", "reason"}:
-        raise ValueError("restore_recipe requires exactly candidate and reason")
-    candidate = resolve_candidate(
-        state, _nonempty(request, "candidate", "restore candidate")
-    )
-    _nonempty(request, "reason", "restore reason")
-    commit = candidate["scientific_commit"]
+def plan_recipe_paths(commit: str) -> dict:
     repository.require_resolvable_commit(commit)
     changed = [
         path
@@ -674,37 +667,26 @@ def plan_recipe_restore(request: dict, state: dict) -> dict:
         else:
             remove_created.append(relative)
     return {
-        "candidate_id": candidate["id"],
         "parent": commit,
-        "parameters": candidate["parameters"],
         "restore": restore,
         "remove_created": remove_created,
-        "session_id": session["id"],
     }
 
 
-def plan_lineage_restore(lineage: dict) -> dict:
-    """Build the mechanical restore plan for a recorded scientific commit."""
-    commit = str(lineage.get("scientific_commit") or "").strip()
-    if not commit:
-        raise ValueError("restore lineage has no scientific_commit provenance")
-    repository.require_resolvable_commit(commit)
-    changed = [
-        path
-        for path in repository.scientific_delta(commit)
-        if is_researcher_owned(path) or path.replace("\\", "/") in PARAMETER_ONLY_PATHS
-    ]
-    restore: list[str] = []
-    remove_created: list[Path] = []
-    for relative in changed:
-        if repository.tracked_at_commit(commit, relative):
-            restore.append(relative)
-        else:
-            remove_created.append(repository.resolve_repo_path(relative))
+def plan_recipe_restore(request: dict, state: dict) -> dict:
+    session = require_active_session(state)
+    if set(request) != {"candidate", "reason"}:
+        raise ValueError("restore_recipe requires exactly candidate and reason")
+    candidate = resolve_candidate(
+        state, _nonempty(request, "candidate", "restore candidate")
+    )
+    _nonempty(request, "reason", "restore reason")
+    plan = plan_recipe_paths(candidate["scientific_commit"])
     return {
-        "parent": commit,
-        "restore": restore,
-        "remove_created": remove_created,
+        **plan,
+        "candidate_id": candidate["id"],
+        "parameters": candidate["parameters"],
+        "session_id": session["id"],
     }
 
 
@@ -777,7 +759,8 @@ def validate_operation_request(operation: dict, state: dict) -> str:
         resolved_training_parent(request, state)
     elif kind == "measurement":
         validate_measurement_request(request)
-        planned_measurements(request, state)
+        measurements = planned_measurements(request, state)
+        planned_paired_comparisons(request, state, measurements)
     elif kind == "inquiry":
         plan_inquiry_operation(request, state)
     elif kind == "checkpoint":

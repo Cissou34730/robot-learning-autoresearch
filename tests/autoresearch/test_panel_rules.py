@@ -1,10 +1,4 @@
-"""Research-evaluation panel independence and removal of the stopping machinery.
-
-A panel is the half-open interval ``[seed, seed + episodes)``. An identical panel
-may be reused deliberately, a disjoint panel is always allowed, and partial
-overlap is rejected; overlaps with the protected benchmark episodes are
-rejected. The separate terminal-validation protocol no longer exists.
-"""
+"""Protected-panel boundaries and removal of the stopping machinery."""
 
 import ast
 from pathlib import Path
@@ -42,7 +36,7 @@ def test_official_panel_overlap_is_rejected():
     protocol.validate_measurement_request(request)
     with pytest.raises(ValueError, match="protected benchmark evidence"):
         protocol.validate_panel_independence(
-            request, [], protected_overlap=research_panel_overlaps_protected
+            request, protected_overlap=research_panel_overlaps_protected
         )
 
 
@@ -65,33 +59,13 @@ def test_generic_runner_does_not_read_the_protected_panel():
             assert not node.module.startswith("robot_learning.scenario"), node.module
 
 
-def test_partial_overlap_with_a_prior_research_panel_is_rejected():
-    with pytest.raises(ValueError, match="prior evidence"):
-        protocol.validate_panel_independence(_request([(100, 200)]), [(150, 200)])
-
-
-def test_exact_panel_reuse_is_accepted():
-    protocol.validate_panel_independence(_request([(100, 200)]), [(100, 200)])
-
-
-def test_disjoint_panels_are_accepted():
-    protocol.validate_panel_independence(_request([(100, 200)]), [(500, 200)])
-
-
-def test_several_candidates_on_one_identical_panel_are_accepted():
-    protocol.validate_panel_independence(
-        _request([(100, 200), (100, 200), (100, 200)]), []
-    )
-
-
-def test_partial_overlap_within_one_request_is_rejected():
-    with pytest.raises(ValueError, match="within the request"):
-        protocol.validate_panel_independence(_request([(100, 200), (150, 200)]), [])
+def test_development_panel_overlap_is_not_runner_policy():
+    protocol.validate_panel_independence(_request([(100, 200), (150, 200)]))
 
 
 def test_task_reference_panel_is_not_checked():
     protocol.validate_panel_independence(
-        _request([(0, 0)], instrument="task_reference"), [(100, 200)]
+        _request([(0, 0)], instrument="task_reference")
     )
 
 

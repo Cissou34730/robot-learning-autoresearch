@@ -22,6 +22,7 @@ from robot_learning.training import research_config
 
 PROPOSAL_ERRORS = (
     json.JSONDecodeError,
+    KeyError,
     OSError,
     RuntimeError,
     TypeError,
@@ -92,6 +93,63 @@ def _protected_panel_overlap():
     return research_panel_overlaps_protected
 
 
+def _task_reference_contract() -> dict:
+    from robot_learning.scenario.task_reference import task_reference_panel
+
+    return task_reference_panel()
+
+
+def _python_module_paths(measurements: list[dict]) -> list[str]:
+    module_paths: list[str] = []
+    for spec in measurements:
+        if spec["instrument"] != "python_module":
+            continue
+        stem = spec["module"].replace(".", "/")
+        candidates = [f"{stem}.py", f"{stem}/__main__.py"]
+        relative = next(
+            (
+                repository.canonical_repo_path(candidate)
+                for candidate in candidates
+                if repository.resolve_repo_path(candidate).is_file()
+            ),
+            None,
+        )
+        if relative is None:
+            raise ValueError(
+                f"python_module source does not exist: {' or '.join(candidates)}"
+            )
+        module_paths.append(relative)
+    return sorted(set(module_paths))
+
+
+def _revalidate_frozen_science(data: dict, description: str) -> None:
+    _require_matching_manifest(
+        data["scientific_manifest"],
+        _current_scientific_manifest(data["code_parent_commit"]),
+        description,
+    )
+    if research_config.load_experiment_config() != data["effective_parameters"]:
+        raise FrozenOperationMismatch(
+            f"{description} configuration changed after the operation was accepted"
+        )
+
+
+def _revalidate_module_provenance(data: dict) -> None:
+    provenance = data.get("module_provenance")
+    if not isinstance(provenance, dict):
+        return
+    _revalidate_frozen_science(provenance, "python_module scientific surface")
+    _require_matching_manifest(
+        provenance["module_manifest"],
+        _scientific_manifest(list(provenance["module_paths"])),
+        "python_module source",
+    )
+    if repository.campaign_lab_manifest() != provenance["campaign_lab_manifest"]:
+        raise FrozenOperationMismatch(
+            "python_module campaign laboratory changed after the operation was accepted"
+        )
+
+
 def _transaction_data(kind: str, request: dict, state: dict) -> dict:
     session = protocol.require_active_session(state)
     if kind == "training":
@@ -120,15 +178,47 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
         }
     if kind == "measurement":
         measurement = request["measurement"]
+        planned = protocol.planned_measurements(measurement, state)
         protocol.validate_panel_independence(
             measurement,
-            protocol.recorded_research_panels(state),
             protected_overlap=_protected_panel_overlap(),
         )
+        module_paths = _python_module_paths(planned)
+        module_provenance = None
+        if module_paths:
+            parent_commit = str(session["scientific_parent_commit"])
+            repository.require_resolvable_commit(parent_commit)
+            changed = repository.scientific_delta(parent_commit)
+            protocol.validate_research_delta_ownership(changed)
+            module_provenance = {
+                "code_parent_commit": parent_commit,
+                "scientific_manifest": _current_scientific_manifest(parent_commit),
+                "effective_parameters": research_config.load_experiment_config(),
+                "module_paths": module_paths,
+                "module_manifest": _scientific_manifest(module_paths),
+                "campaign_lab_manifest": repository.campaign_lab_manifest(),
+                "campaign_lab_publication": None,
+            }
+        has_research_evaluation = any(
+            spec["instrument"] == "research_evaluation" for spec in planned
+        )
+        has_task_reference = any(
+            spec["instrument"] == "task_reference" for spec in planned
+        )
         return {
-            "measurements": protocol.planned_measurements(measurement, state),
-            "evaluation_semantics": protocol.evaluation_semantics_fingerprint(),
-            "tool_provenance": None,
+            "measurements": planned,
+            "paired_comparisons": protocol.planned_paired_comparisons(
+                measurement, state, planned
+            ),
+            "evaluation_semantics": (
+                protocol.evaluation_semantics_fingerprint()
+                if has_research_evaluation
+                else None
+            ),
+            "task_reference_contract": (
+                _task_reference_contract() if has_task_reference else None
+            ),
+            "module_provenance": module_provenance,
             "partial_results": [],
             "result": None,
             "last_error": None,
@@ -159,7 +249,14 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "publication": None,
         }
     if kind == "restore_recipe":
-        return {"plan": protocol.plan_recipe_restore(request["restore_recipe"], state)}
+        plan = protocol.plan_recipe_restore(request["restore_recipe"], state)
+        return {
+            "plan": plan,
+            "pre_restore_manifest": _scientific_manifest(
+                [*plan["restore"], *plan["remove_created"]]
+            ),
+            "last_error": None,
+        }
     return {
         "plan": protocol.plan_campaign_conclusion(request["campaign_conclusion"], state)
     }
@@ -188,6 +285,35 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
         "request_fingerprint": fingerprint,
         "progress": "accepted",
         "data": _transaction_data(kind, request, state),
+    }
+    state["pending_operation"] = pending
+    repository.write_state(state)
+    return pending
+
+
+def reaccept_pending_operation(state: dict | None = None) -> dict:
+    state = state or repository.load_state(allow_missing_artifact=True)
+    previous = state["pending_operation"]
+    if not isinstance(previous, dict):
+        raise TypeError("there is no pending Runner operation to reaccept")
+    if not str(previous["data"].get("last_error") or "").strip():
+        raise ValueError("only a failed Runner operation can be reaccepted")
+    request = copy.deepcopy(previous["request"])
+    state["pending_operation"] = None
+    kind = protocol.validate_operation_request(request, state)
+    identifier = protocol.allocate_operation_id(kind, state)
+    session = protocol.require_active_session(state)
+    data = _transaction_data(kind, request, state)
+    data["supersedes"] = previous["id"]
+    pending = {
+        "id": identifier,
+        "kind": kind,
+        "session_id": session["id"],
+        "inquiry_id": session["inquiry_id"],
+        "request": request,
+        "request_fingerprint": _canonical_fingerprint(request),
+        "progress": "accepted",
+        "data": data,
     }
     state["pending_operation"] = pending
     repository.write_state(state)
@@ -286,18 +412,9 @@ def _execute_inquiry(state: dict, pending: dict) -> int:
 
 def _execute_checkpoint(state: dict, pending: dict) -> int:
     data = pending["data"]
+    _revalidate_frozen_science(data, "scientific session surface")
     if data["scientific_commit"] is None:
-        _require_matching_manifest(
-            data["scientific_manifest"],
-            _current_scientific_manifest(data["code_parent_commit"]),
-            "scientific session surface",
-        )
         changed_paths = [entry["path"] for entry in data["scientific_manifest"]]
-        current_parameters = research_config.load_experiment_config()
-        if current_parameters != data["effective_parameters"]:
-            raise FrozenOperationMismatch(
-                "scientific session parameters changed after checkpoint acceptance"
-            )
         if changed_paths:
             execution.validate_changed_sources(changed_paths)
         data["scientific_commit"] = repository.publish_scientific_recipe(
@@ -370,14 +487,29 @@ def _execute_model_role(state: dict, pending: dict) -> int:
 
 def _execute_recipe_restore(state: dict, pending: dict) -> int:
     plan = pending["data"]["plan"]
+    live_plan = protocol.plan_recipe_restore(
+        pending["request"]["restore_recipe"], state
+    )
+    if live_plan != plan:
+        raise FrozenOperationMismatch(
+            "recipe restoration inputs changed after the operation was accepted"
+        )
+    _require_matching_manifest(
+        pending["data"]["pre_restore_manifest"],
+        _scientific_manifest([*plan["restore"], *plan["remove_created"]]),
+        "pre-restore scientific surface",
+    )
     pending["progress"] = "restoring"
     repository.write_state(state)
     repository.apply_recipe_restore(plan)
-    research_config.write_experiment_config(copy.deepcopy(plan["parameters"]))
     restored = research_config.load_experiment_config()
     if restored != plan["parameters"]:
         raise FrozenOperationMismatch(
             "restored training configuration differs from selected candidate"
+        )
+    if not repository.recipe_paths_match_commit(plan):
+        raise FrozenOperationMismatch(
+            "restored scientific surface differs from selected candidate"
         )
 
     def apply(current: dict, _result: dict) -> None:
@@ -435,22 +567,156 @@ def _measurement_result(
     }
 
 
-def execute_measurement(state: dict, pending: dict) -> int:
-    from robot_learning.scenario.task_reference import task_reference_panel
+def _expected_measurement_artifact(
+    state: dict,
+    pending: dict,
+    spec: dict,
+    *,
+    semantics: str | None,
+    task_reference_contract: dict | None,
+) -> str:
+    if spec["instrument"] == "python_module":
+        return spec["artifact"]
+    campaign_id = repository.current_campaign_id(state)
+    if spec["instrument"] == "research_evaluation":
+        return repository.repo_relative_path(
+            paths.campaign_evaluation_dir(campaign_id)
+            / protocol.evaluation_artifact_name(
+                pending["id"],
+                spec["candidate"],
+                int(spec["episodes"]),
+                int(spec["seed"]),
+                str(semantics),
+                campaign_id=campaign_id,
+            )
+        )
+    if not isinstance(task_reference_contract, dict):
+        raise FrozenOperationMismatch("accepted task-reference contract is missing")
+    return repository.repo_relative_path(
+        paths.campaign_evaluation_dir(campaign_id)
+        / protocol.task_reference_artifact_name(
+            pending["id"],
+            spec["candidate"],
+            str(task_reference_contract["panel"]),
+            campaign_id=campaign_id,
+        )
+    )
 
+
+def _validate_partial_measurement(
+    state: dict,
+    pending: dict,
+    spec: dict,
+    partial: dict,
+    *,
+    semantics: str | None,
+    task_reference_contract: dict | None,
+) -> dict:
+    if partial.get("instrument") != spec["instrument"]:
+        raise FrozenOperationMismatch("partial measurement instrument changed")
+    if partial.get("label") != spec["label"]:
+        raise FrozenOperationMismatch("partial measurement label changed")
+    metrics = partial.get("metrics")
+    if not isinstance(metrics, dict):
+        raise FrozenOperationMismatch("partial measurement record is missing")
+    expected_artifact = _expected_measurement_artifact(
+        state,
+        pending,
+        spec,
+        semantics=semantics,
+        task_reference_contract=task_reference_contract,
+    )
+    if metrics.get("evaluation_artifact") != expected_artifact:
+        raise FrozenOperationMismatch("partial measurement artifact changed")
+    try:
+        evidence = repository.measurement_evidence(metrics)
+    except (OSError, TypeError, ValueError) as error:
+        raise FrozenOperationMismatch(str(error)) from error
+    if spec["instrument"] == "python_module":
+        if (
+            partial.get("module") != spec["module"]
+            or partial.get("args") != spec["args"]
+        ):
+            raise FrozenOperationMismatch("partial python_module invocation changed")
+        return evidence
+    for field in ("candidate", "candidate_id"):
+        if partial.get(field) != spec[field]:
+            raise FrozenOperationMismatch(f"partial measurement {field} changed")
+    if metrics.get("model_fingerprint") != spec["model_fingerprint"]:
+        raise FrozenOperationMismatch("partial measurement model fingerprint changed")
+    if spec["instrument"] == "research_evaluation":
+        if metrics.get("evaluation_semantics") != semantics:
+            raise FrozenOperationMismatch(
+                "partial research evaluation semantics changed"
+            )
+        expected_panel = {
+            "episodes": int(spec["episodes"]),
+            "seed": int(spec["seed"]),
+        }
+    else:
+        if not isinstance(task_reference_contract, dict):
+            raise FrozenOperationMismatch("accepted task-reference contract is missing")
+        expected_panel = {
+            "episodes": int(task_reference_contract["episodes"]),
+            "seed": int(task_reference_contract["seed"]),
+            "panel": task_reference_contract["panel"],
+            "panel_version": task_reference_contract["panel_version"],
+        }
+    for field, expected in expected_panel.items():
+        if metrics.get(field) != expected or evidence.get(field) != expected:
+            raise FrozenOperationMismatch(
+                f"partial measurement {field} differs from its accepted contract"
+            )
+    return evidence
+
+
+def execute_measurement(state: dict, pending: dict) -> int:
     data = pending["data"]
     planned = data["measurements"]
     partials = data["partial_results"]
     campaign_id = repository.current_campaign_id(state)
-    semantics = str(data["evaluation_semantics"])
-    if protocol.evaluation_semantics_fingerprint() != semantics:
+    semantics = data["evaluation_semantics"]
+    if (
+        semantics is not None
+        and protocol.evaluation_semantics_fingerprint() != semantics
+    ):
         raise FrozenOperationMismatch(
             "measurement semantics changed after the operation was accepted"
         )
-    if data["tool_provenance"] is None:
-        data["tool_provenance"] = repository.publish_campaign_laboratory(pending["id"])
+    task_reference_contract = data["task_reference_contract"]
+    if (
+        task_reference_contract is not None
+        and _task_reference_contract() != task_reference_contract
+    ):
+        raise FrozenOperationMismatch(
+            "task-reference contract changed after the operation was accepted"
+        )
+    _revalidate_module_provenance(data)
+    module_provenance = data.get("module_provenance")
+    if (
+        isinstance(module_provenance, dict)
+        and module_provenance["campaign_lab_publication"] is None
+        and any(
+            spec["module"].startswith("research.lab.")
+            for spec in planned
+            if spec["instrument"] == "python_module"
+        )
+    ):
+        module_provenance["campaign_lab_publication"] = (
+            repository.publish_campaign_laboratory(pending["id"])
+        )
         repository.write_state(state)
-    panel = task_reference_panel()
+    if len(partials) > len(planned):
+        raise FrozenOperationMismatch("too many partial measurement results")
+    for index, partial in enumerate(partials):
+        _validate_partial_measurement(
+            state,
+            pending,
+            planned[index],
+            partial,
+            semantics=semantics,
+            task_reference_contract=task_reference_contract,
+        )
     try:
         for index, spec in enumerate(planned):
             if index < len(partials):
@@ -459,7 +725,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
                 output_path = repository.resolve_repo_path(spec["artifact"])
                 output_path.parent.mkdir(parents=True, exist_ok=True)
                 output_path.unlink(missing_ok=True)
-                stdout = execution.run_module(spec["module"], *spec["args"])
+                execution.run_module(spec["module"], *spec["args"])
                 if not output_path.is_file():
                     raise RuntimeError(
                         "python_module measurement produced no declared artifact"
@@ -470,19 +736,21 @@ def execute_measurement(state: dict, pending: dict) -> int:
                     raise ValueError(
                         "python_module measurement artifact must contain JSON"
                     ) from error
+                if not isinstance(metrics, dict):
+                    raise TypeError(
+                        "python_module measurement artifact must contain a JSON object"
+                    )
                 partials.append(
                     {
                         "instrument": "python_module",
                         "module": spec["module"],
                         "args": list(spec["args"]),
                         "label": spec["label"],
-                        "stdout": stdout,
                         "metrics": {
                             "evaluation_artifact": spec["artifact"],
                             "evaluation_artifact_fingerprint": (
                                 repository.file_fingerprint(output_path)
                             ),
-                            "data": metrics,
                         },
                     }
                 )
@@ -500,7 +768,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
                     spec["candidate"],
                     int(spec["episodes"]),
                     int(spec["seed"]),
-                    semantics,
+                    str(semantics),
                     campaign_id=campaign_id,
                 )
                 metrics = execution.evaluate_artifact(
@@ -511,26 +779,32 @@ def execute_measurement(state: dict, pending: dict) -> int:
                     output_path=output_path,
                 )
                 result = _measurement_result(
-                    spec, metrics, output_path, semantics=semantics
+                    spec, metrics, output_path, semantics=str(semantics)
                 )
             else:
+                if not isinstance(task_reference_contract, dict):
+                    raise FrozenOperationMismatch(
+                        "accepted task-reference contract is missing"
+                    )
                 output_path = output_dir / protocol.task_reference_artifact_name(
                     pending["id"],
                     spec["candidate"],
-                    panel["panel"],
+                    task_reference_contract["panel"],
                     campaign_id=campaign_id,
                 )
                 metrics = execution.evaluate_artifact(
                     artifact,
-                    int(panel["seed"]),
+                    int(task_reference_contract["seed"]),
                     label=spec["label"],
-                    episodes=int(panel["episodes"]),
+                    episodes=int(task_reference_contract["episodes"]),
                     output_path=output_path,
                     task_reference=True,
                 )
                 result = _measurement_result(spec, metrics, output_path, semantics=None)
-                result["metrics"]["panel"] = panel["panel"]
-                result["metrics"]["panel_version"] = panel["panel_version"]
+                result["metrics"]["panel"] = task_reference_contract["panel"]
+                result["metrics"]["panel_version"] = task_reference_contract[
+                    "panel_version"
+                ]
             partials.append(result)
             pending["progress"] = f"measured_{len(partials)}_of_{len(planned)}"
             repository.write_state(state)
@@ -544,21 +818,50 @@ def execute_measurement(state: dict, pending: dict) -> int:
         repository.write_state(state)
         raise
 
+    verified_evidence = [
+        _validate_partial_measurement(
+            state,
+            pending,
+            spec,
+            partial,
+            semantics=semantics,
+            task_reference_contract=task_reference_contract,
+        )
+        for spec, partial in zip(planned, partials, strict=True)
+    ]
     by_candidate: dict[str, list[dict]] = {}
+    for item, evidence in zip(partials, verified_evidence, strict=True):
+        if item["instrument"] != "research_evaluation":
+            continue
+        by_candidate.setdefault(item["candidate"], []).append(evidence)
+    comparisons = execution.requested_paired_comparisons(
+        {"paired_comparisons": data["paired_comparisons"]}, by_candidate
+    )
+    artifacts_by_candidate: dict[str, list[str]] = {}
     for item in partials:
         if item["instrument"] != "research_evaluation":
             continue
-        by_candidate.setdefault(item["candidate"], []).append(
-            repository.measurement_evidence(item["metrics"])
+        artifacts_by_candidate.setdefault(item["candidate"], []).append(
+            item["metrics"]["evaluation_artifact"]
         )
-    comparisons = execution.requested_paired_comparisons(
-        pending["request"]["measurement"], by_candidate
-    )
+    for comparison, frozen in zip(comparisons, data["paired_comparisons"], strict=True):
+        comparison.update(
+            candidate_model_fingerprint=frozen["candidate_model_fingerprint"],
+            reference_model_fingerprint=frozen["reference_model_fingerprint"],
+            source_artifacts=list(
+                dict.fromkeys(
+                    [
+                        *artifacts_by_candidate[frozen["candidate"]],
+                        *artifacts_by_candidate[frozen["reference"]],
+                    ]
+                )
+            ),
+        )
     result = {
         "status": "completed",
         "measurements": copy.deepcopy(partials),
         "paired_comparisons": comparisons,
-        "tool_provenance": copy.deepcopy(data["tool_provenance"]),
+        "tool_provenance": copy.deepcopy(module_provenance),
     }
 
     def apply(current: dict, _result: dict) -> None:
@@ -614,12 +917,8 @@ def execute_training(state: dict, pending: dict) -> int:
     campaign_id = repository.current_campaign_id(state)
     operation_id = pending["id"]
     manifest = data["scientific_manifest"]
+    _revalidate_frozen_science(data, "scientific surface")
     if data["scientific_commit"] is None:
-        _require_matching_manifest(
-            manifest,
-            _current_scientific_manifest(parent_commit),
-            "scientific surface",
-        )
         changed_paths = [entry["path"] for entry in manifest]
         if changed_paths:
             execution.validate_changed_sources(changed_paths)
@@ -627,11 +926,6 @@ def execute_training(state: dict, pending: dict) -> int:
         selected_tests = protocol.validation_test_paths(changed_paths)
         if selected_tests:
             execution.run_validation_suites(selected_tests)
-        current_parameters = research_config.load_experiment_config()
-        if current_parameters != data["effective_parameters"]:
-            raise FrozenOperationMismatch(
-                "training parameters changed after the operation was accepted"
-            )
         data["scientific_commit"] = repository.publish_scientific_recipe(
             operation_id, list(data["scientific_paths"])
         )
@@ -766,21 +1060,26 @@ def execute_pending_operation() -> int:
     if _canonical_fingerprint(request) != pending["request_fingerprint"]:
         raise FrozenOperationMismatch("accepted operation request changed")
     kind = pending["kind"]
-    if kind == "measurement":
-        return execute_measurement(state, pending)
-    if kind == "training":
-        return execute_training(state, pending)
-    if kind == "inquiry":
-        return _execute_inquiry(state, pending)
-    if kind == "checkpoint":
-        return _execute_checkpoint(state, pending)
-    if kind == "model_role":
-        return _execute_model_role(state, pending)
-    if kind == "restore_recipe":
-        return _execute_recipe_restore(state, pending)
-    if kind == "campaign_conclusion":
-        return _execute_campaign_conclusion(state, pending)
-    raise RuntimeError(f"unsupported pending operation kind: {kind}")
+    try:
+        if kind == "measurement":
+            return execute_measurement(state, pending)
+        if kind == "training":
+            return execute_training(state, pending)
+        if kind == "inquiry":
+            return _execute_inquiry(state, pending)
+        if kind == "checkpoint":
+            return _execute_checkpoint(state, pending)
+        if kind == "model_role":
+            return _execute_model_role(state, pending)
+        if kind == "restore_recipe":
+            return _execute_recipe_restore(state, pending)
+        if kind == "campaign_conclusion":
+            return _execute_campaign_conclusion(state, pending)
+        raise RuntimeError(f"unsupported pending operation kind: {kind}")
+    except Exception as error:
+        pending["data"]["last_error"] = str(error)[:500]
+        repository.write_state(state)
+        raise
 
 
 def check_operation() -> int:
@@ -818,6 +1117,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--session-objective")
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
     parser.add_argument("--mark-scientific-model-ready", action="store_true")
+    parser.add_argument("--reaccept-pending", action="store_true")
     return parser.parse_args()
 
 
@@ -829,9 +1129,21 @@ def main() -> int:
         if check_scientific_model_deliverable() != 0:
             return 1
         state = repository.load_state(allow_missing_artifact=True)
+        repository.commit_paths(
+            repository.campaign_commit_message("scientific model"),
+            ["research/scientific_model.md"],
+        )
         commit = repository.git("rev-parse", "HEAD").strip()
+        repository.require_path_at_commit(commit, "research/scientific_model.md")
         repository.mark_scientific_model_ready(state, commit)
         repository.write_state(state)
+        return 0
+    if args.reaccept_pending:
+        pending = reaccept_pending_operation()
+        print(
+            f"OPERATION_REACCEPTED: {pending['id']} supersedes "
+            f"{pending['data']['supersedes']}"
+        )
         return 0
     if args.start_session:
         if not args.session_objective:

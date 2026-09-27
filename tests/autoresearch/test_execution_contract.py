@@ -82,6 +82,46 @@ def test_frozen_training_surface_rejects_tampering(monkeypatch, tmp_path):
         run_experiment.execute_training(repository.read_state(), pending)
 
 
+def test_published_training_recipe_is_revalidated_before_retry(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("reward = 1\n", encoding="utf-8")
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda _parent: ["robot_learning/scenario/reward.py"],
+    )
+    pending = run_experiment.accept_operation(_training(), state)
+    pending["data"]["scientific_commit"] = "c" * 40
+    repository.write_state(state)
+    source.write_text("reward = 2\n", encoding="utf-8")
+
+    with pytest.raises(run_experiment.FrozenOperationMismatch, match="changed"):
+        run_experiment.execute_training(repository.read_state(), pending)
+
+
+def test_published_training_configuration_is_revalidated_before_retry(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    configuration = {"value": {"training": {"n_envs": 1}}}
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: configuration["value"],
+    )
+    pending = run_experiment.accept_operation(_training(), state)
+    pending["data"]["scientific_commit"] = "c" * 40
+    repository.write_state(state)
+    configuration["value"] = {"training": {"n_envs": 2}}
+
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch, match="configuration changed"
+    ):
+        run_experiment.execute_training(repository.read_state(), pending)
+
+
 def test_parameter_only_training_delta_is_frozen_without_source_mismatch(
     monkeypatch, tmp_path
 ):

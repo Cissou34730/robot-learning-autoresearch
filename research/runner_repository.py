@@ -275,6 +275,16 @@ def apply_recipe_restore(plan: dict) -> None:
         remove_created_path(resolve_repo_path(str(value)))
 
 
+def recipe_paths_match_commit(plan: dict) -> bool:
+    parent = str(plan["parent"])
+    restored = [str(path) for path in plan["restore"]]
+    if restored and git("diff", "--name-only", parent, "--", *restored).strip():
+        return False
+    return all(
+        not resolve_repo_path(str(path)).exists() for path in plan["remove_created"]
+    )
+
+
 def stage_existing_or_tracked(candidates: list[str]) -> list[str]:
     stageable = [
         path
@@ -312,6 +322,19 @@ def commit_paths(message: str, scope: list[str]) -> bool:
         return False
     commit_and_push(message, tuple(stageable))
     return True
+
+
+def require_path_at_commit(commit: str, relative: str) -> None:
+    path = canonical_repo_path(relative)
+    if not resolve_repo_path(path).is_file():
+        raise ValueError(f"committed path is missing from the worktree: {path}")
+    worktree_blob = git("hash-object", "--", path).strip()
+    try:
+        committed_blob = git("rev-parse", f"{commit}:{path}").strip()
+    except RuntimeError as error:
+        raise ValueError(f"commit {commit} does not contain {path}") from error
+    if committed_blob != worktree_blob:
+        raise ValueError(f"commit {commit} does not contain the current {path}")
 
 
 def publish_scientific_recipe(operation_id: str, scope: list[str]) -> str:
@@ -816,37 +839,34 @@ def mark_scientific_model_ready(state: dict, commit: str) -> None:
     }
 
 
-def evaluation_reference(evaluation: dict) -> dict:
-    reference = {
-        key: value
-        for key, value in evaluation.items()
-        if key not in {"episode_results", "research_evidence"}
-    }
-    artifact = reference.get("evaluation_artifact")
-    if artifact:
-        reference["evaluation_artifact"] = canonical_repo_path(str(artifact))
-    return reference
-
-
 def measurement_evidence(record: dict) -> dict:
-    if "episode_results" in record:
-        return record
-    artifact = resolve_repo_path(str(record["evaluation_artifact"]))
-    expected = record.get("evaluation_artifact_fingerprint")
-    if expected and file_fingerprint(artifact) != expected:
+    artifact_value = _nonempty(
+        record, "evaluation_artifact", "measurement evaluation_artifact"
+    )
+    expected = _nonempty(
+        record,
+        "evaluation_artifact_fingerprint",
+        "measurement evaluation_artifact_fingerprint",
+    )
+    artifact = resolve_repo_path(artifact_value)
+    if not artifact.is_file():
+        raise ValueError(f"measurement artifact is missing: {artifact_value}")
+    if file_fingerprint(artifact) != expected:
         raise ValueError("measurement artifact content changed after recording")
     evidence = json.loads(artifact.read_text(encoding="utf-8"))
+    if not isinstance(evidence, dict):
+        raise TypeError("measurement artifact must contain a JSON object")
     for field in ("episodes", "seed"):
-        if evidence.get(field) != record.get(field):
+        if field in record and evidence.get(field) != record[field]:
             raise ValueError(f"measurement artifact {field} differs from its record")
-    return {**evidence, **record}
+    return {**record, **evidence}
 
 
 def measurement_record(metrics: dict) -> dict:
     record = {
         key: value
         for key, value in metrics.items()
-        if key not in {"model", "research_evidence"}
+        if key not in {"episode_results", "model", "research_evidence"}
     }
     episode_results = metrics.get("episode_results")
     if isinstance(episode_results, list) and episode_results:

@@ -310,14 +310,11 @@ def preflight_targets(relative_paths: list[str]) -> None:
 
 
 def scientific_plan(commit: str) -> dict:
-    return protocol.plan_lineage_restore({"scientific_commit": commit})
+    return protocol.plan_recipe_paths(commit)
 
 
 def plan_paths(plan: dict) -> list[str]:
-    return [
-        *plan["restore"],
-        *(repository.repo_relative_path(path) for path in plan["remove_created"]),
-    ]
+    return [*plan["restore"], *plan["remove_created"]]
 
 
 def verify_task_compatibility(commit: str) -> None:
@@ -872,7 +869,7 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None, Path]:
     backup = create_backup(targets, operation)
     try:
         if plan:
-            repository.apply_code_lineage_decision(plan)
+            repository.apply_recipe_restore(plan)
             validate_restored_recipe()
             update_operation(backup, operation, "recipe_restored")
             publish_reset_changes(
@@ -922,7 +919,7 @@ def reset_baseline(
     try:
         for relative in CAMPAIGN_PATHS:
             remove_path(relative)
-        repository.apply_code_lineage_decision(recipe_plan)
+        repository.apply_recipe_restore(recipe_plan)
         validate_restored_recipe()
         apply_restore(source, restore)
         repository.write_state(state)

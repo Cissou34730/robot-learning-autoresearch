@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -33,6 +35,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
     monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(repository, "campaign_lab_manifest", list)
     monkeypatch.setattr(
         repository, "publish_scientific_recipe", lambda *_args: "a" * 40
     )
@@ -320,23 +323,28 @@ def test_measurement_has_independent_identity_and_returns_to_same_session(
     assert len(persisted["candidates"][candidate["id"]]["evaluation_artifacts"]) == 1
 
 
-def test_measurement_rejects_semantics_changes_after_acceptance(monkeypatch, tmp_path):
+def test_research_evaluation_rejects_semantics_changes_after_acceptance(
+    monkeypatch, tmp_path
+):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Run a PI-authored diagnostic.")
+    _start_session(state, "goal_review", "Measure a candidate.")
     evaluator = tmp_path / "robot_learning" / "scenario" / "evaluation.py"
     evaluator.parent.mkdir(parents=True)
     evaluator.write_text("version = 1\n", encoding="utf-8")
-    artifact = paths.campaign_evaluation_dir("campaign") / "custom-diagnostic.json"
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
     request = {
         "measurement": {
-            "description": "Run the current diagnostic implementation.",
+            "description": "Measure the candidate.",
             "rationale": "Its factual output informs the next decision.",
             "measurements": [
                 {
-                    "instrument": "python_module",
-                    "module": "robot_learning.scenario.diagnostic",
-                    "args": ["--output", str(artifact)],
-                    "artifact": repository.repo_relative_path(artifact),
+                    "instrument": "research_evaluation",
+                    "candidate": candidate["id"],
+                    "episodes": 2,
+                    "seed": 100,
                 }
             ],
         }
@@ -349,11 +357,46 @@ def test_measurement_rejects_semantics_changes_after_acceptance(monkeypatch, tmp
         run_experiment.execute_pending_operation()
 
 
+def test_python_module_uses_frozen_module_manifest_not_evaluation_semantics(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Run a PI-authored diagnostic.")
+    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("version = 1\n", encoding="utf-8")
+    artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    request = {
+        "measurement": {
+            "description": "Run the current diagnostic implementation.",
+            "rationale": "Its factual output informs the next decision.",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "research.lab.diagnostic",
+                    "args": ["--output", str(artifact)],
+                    "artifact": repository.repo_relative_path(artifact),
+                }
+            ],
+        }
+    }
+    pending = run_experiment.accept_operation(request, state)
+    assert pending["data"]["evaluation_semantics"] is None
+    module.write_text("version = 2\n", encoding="utf-8")
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch, match="python_module source changed"
+    ):
+        run_experiment.execute_pending_operation()
+
+
 def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
     session = _start_session(state, "goal_review", "Run a PI-authored diagnostic.")
+    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("def main():\n    return None\n", encoding="utf-8")
     artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
     request = {
         "measurement": {
@@ -386,9 +429,176 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     persisted = repository.read_state()
     event = persisted["operation_events"][-1]
     assert event["id"] == "M1"
-    assert event["result"]["measurements"][0]["metrics"]["data"] == {"observation": 3}
-    assert event["result"]["tool_provenance"]["commit"] == "c" * 40
+    metrics = event["result"]["measurements"][0]["metrics"]
+    assert "data" not in metrics
+    assert repository.measurement_evidence(metrics)["observation"] == 3
+    assert (
+        event["result"]["tool_provenance"]["campaign_lab_publication"]["commit"]
+        == "c" * 40
+    )
     assert persisted["scientific_session"]["id"] == session["id"]
+
+
+def test_comparisons_are_resolved_to_planned_canonical_candidates_at_acceptance(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Compare two measured candidates.")
+    first_artifact = _artifact(tmp_path / "archive" / "first", b"first")
+    second_artifact = _artifact(tmp_path / "archive" / "second", b"second")
+    first = _candidate("T1:checkpoint-10", first_artifact)
+    second = _candidate("T2:checkpoint-10", second_artifact)
+    state["candidates"] = {first["id"]: first, second["id"]: second}
+    state["model_roles"]["working"] = first["id"]
+    repository.write_state(state)
+    request = {
+        "measurement": {
+            "description": "Compare two candidates.",
+            "rationale": "The paired result informs the next decision.",
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": "working",
+                    "episodes": 2,
+                    "seed": 100,
+                },
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": second["id"],
+                    "episodes": 2,
+                    "seed": 100,
+                },
+            ],
+            "paired_comparisons": [{"candidate": second["id"], "reference": "working"}],
+        }
+    }
+    pending = run_experiment.accept_operation(request, state)
+    comparison = pending["data"]["paired_comparisons"][0]
+    assert comparison["candidate"] == second["id"]
+    assert comparison["reference"] == first["id"]
+    assert comparison["candidate_model_fingerprint"] == second["fingerprint"]
+    assert comparison["reference_model_fingerprint"] == first["fingerprint"]
+    invalid = json.loads(json.dumps(request))
+    invalid["measurement"]["paired_comparisons"][0]["candidate"] = "typo"
+    state = repository.read_state()
+    state["pending_operation"] = None
+    with pytest.raises(KeyError, match="unknown model candidate"):
+        run_experiment.accept_operation(invalid, state)
+
+
+@pytest.mark.parametrize("damage", ["corrupt", "remove"])
+def test_measurement_recovery_rejects_damaged_partial_artifact(
+    monkeypatch, tmp_path, damage
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Recover a partially completed measurement.")
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    request = {
+        "measurement": {
+            "description": "Measure two panels.",
+            "rationale": "Both panels are needed for the next decision.",
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": candidate["id"],
+                    "episodes": 2,
+                    "seed": 100,
+                },
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": candidate["id"],
+                    "episodes": 2,
+                    "seed": 200,
+                },
+            ],
+        }
+    }
+    run_experiment.accept_operation(request, state)
+    calls = {"count": 0}
+
+    def evaluate(
+        _artifact,
+        seed,
+        *,
+        label,
+        episodes,
+        output_path,
+        **_kwargs,
+    ):
+        del label
+        calls["count"] += 1
+        if calls["count"] == 2:
+            raise RuntimeError("injected second-panel failure")
+        metrics = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
+
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+    with pytest.raises(RuntimeError, match="second-panel failure"):
+        run_experiment.execute_pending_operation()
+    interrupted = repository.read_state()
+    partial = interrupted["pending_operation"]["data"]["partial_results"][0]
+    assert "episode_results" not in partial["metrics"]
+    partial_path = repository.resolve_repo_path(
+        partial["metrics"]["evaluation_artifact"]
+    )
+    if damage == "corrupt":
+        partial_path.write_text('{"corrupt": true}', encoding="utf-8")
+        expected = "content changed"
+    else:
+        partial_path.unlink()
+        expected = "is missing"
+    with pytest.raises(run_experiment.FrozenOperationMismatch, match=expected):
+        run_experiment.execute_pending_operation()
+    assert calls["count"] == 2
+
+
+def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Repair a failed training operation.")
+    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("reward = 1\n", encoding="utf-8")
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda _parent: ["robot_learning/scenario/reward.py"],
+    )
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
+    request = {
+        "training": {
+            "initialization": "fresh",
+            "seed": 7,
+            "steps": 10,
+            "description": "Train repaired scientific code.",
+            "rationale": "The repaired run informs the next decision.",
+        }
+    }
+    first = run_experiment.accept_operation(request, state)
+    source.write_text("reward = 2\n", encoding="utf-8")
+    with pytest.raises(run_experiment.FrozenOperationMismatch, match="changed"):
+        run_experiment.execute_pending_operation()
+    failed = repository.read_state()["pending_operation"]
+    assert failed["data"]["last_error"]
+    second = run_experiment.reaccept_pending_operation()
+    assert second["id"] == "T2"
+    assert second["data"]["supersedes"] == first["id"]
+    assert second["data"]["scientific_manifest"][0]["fingerprint"] == (
+        repository.file_fingerprint(source)
+    )
 
 
 def test_transfer_parent_is_explicit_and_frozen(monkeypatch, tmp_path):
@@ -474,9 +684,7 @@ def test_recipe_restoration_is_mechanical_and_does_not_change_roles(
     monkeypatch.setattr(repository, "scientific_delta", lambda _commit: [])
     run_experiment.accept_operation(request, state)
     monkeypatch.setattr(repository, "apply_recipe_restore", lambda _plan: None)
-    monkeypatch.setattr(
-        run_experiment.research_config, "write_experiment_config", lambda _value: None
-    )
+    monkeypatch.setattr(repository, "recipe_paths_match_commit", lambda _plan: True)
     monkeypatch.setattr(
         run_experiment.research_config,
         "load_experiment_config",
@@ -490,6 +698,157 @@ def test_recipe_restoration_is_mechanical_and_does_not_change_roles(
     )
     assert persisted["scientific_session"]["id"] == session["id"]
     assert persisted["model_roles"]["working"] is None
+
+
+def test_recipe_restoration_rejects_worktree_changes_after_acceptance(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Restore a selected recipe.")
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("reward = 1\n", encoding="utf-8")
+    changed = ["robot_learning/scenario/reward.py"]
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
+    monkeypatch.setattr(repository, "scientific_delta", lambda _commit: list(changed))
+    monkeypatch.setattr(repository, "tracked_at_commit", lambda _commit, _path: True)
+    request = {
+        "restore_recipe": {
+            "candidate": candidate["id"],
+            "reason": "Restore the candidate recipe exactly.",
+        }
+    }
+    run_experiment.accept_operation(request, state)
+    addition = tmp_path / "robot_learning" / "scenario" / "new_tool.py"
+    addition.write_text("new = True\n", encoding="utf-8")
+    changed.append("robot_learning/scenario/new_tool.py")
+    with pytest.raises(run_experiment.FrozenOperationMismatch, match="inputs changed"):
+        run_experiment.execute_pending_operation()
+
+
+def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    source = tmp_path / "robot_learning" / "scenario"
+    source.mkdir(parents=True)
+    edited = source / "edited.py"
+    deleted = source / "deleted.py"
+    edited.write_text("value = 1\n", encoding="utf-8")
+    deleted.write_text("present = True\n", encoding="utf-8")
+    subprocess.run(["git", "init", "--quiet"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Test User"], cwd=tmp_path, check=True
+    )
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "commit", "--quiet", "-m", "recipe"], cwd=tmp_path, check=True
+    )
+    commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout.strip()
+    edited.write_text("value = 2\n", encoding="utf-8")
+    deleted.unlink()
+    added = source / "added.py"
+    added.write_text("extra = True\n", encoding="utf-8")
+
+    plan = protocol.plan_recipe_paths(commit)
+    repository.apply_recipe_restore(plan)
+
+    assert repository.recipe_paths_match_commit(plan)
+    assert edited.read_text(encoding="utf-8") == "value = 1\n"
+    assert deleted.read_text(encoding="utf-8") == "present = True\n"
+    assert not added.exists()
+
+
+def test_task_reference_uses_frozen_protected_contract(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Measure the protected task reference.")
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    contract = {"panel": "reference", "panel_version": 1, "episodes": 2, "seed": 5}
+    monkeypatch.setattr(
+        run_experiment, "_task_reference_contract", lambda: dict(contract)
+    )
+    request = {
+        "measurement": {
+            "description": "Measure the protected reference.",
+            "rationale": "The result informs the next decision.",
+            "measurements": [
+                {"instrument": "task_reference", "candidate": candidate["id"]}
+            ],
+        }
+    }
+    pending = run_experiment.accept_operation(request, state)
+    assert pending["data"]["evaluation_semantics"] is None
+    contract["panel_version"] = 2
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch, match="contract changed"
+    ):
+        run_experiment.execute_pending_operation()
+
+
+def test_mark_scientific_model_ready_commits_exact_content(monkeypatch, tmp_path):
+    research = tmp_path / "research"
+    research.mkdir()
+    for name, value in {
+        "ROOT": tmp_path,
+        "RESEARCH_DIR": research,
+        "STATE_PATH": research / "research_state.json",
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "OPERATION_REQUEST_PATH": research / "operation_request.json",
+        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
+    }.items():
+        monkeypatch.setattr(paths, name, value)
+    subprocess.run(["git", "init", "--quiet"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Test User"], cwd=tmp_path, check=True
+    )
+    (tmp_path / "seed.txt").write_text("seed\n", encoding="utf-8")
+    subprocess.run(["git", "add", "seed.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "--quiet", "-m", "seed"], cwd=tmp_path, check=True)
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh campaign",
+    )
+    repository.write_state(state)
+    content = "exact scientific model\nwith two lines\n"
+    paths.SCIENTIFIC_MODEL_PATH.write_text(content, encoding="utf-8")
+    monkeypatch.setattr(repository, "push_head", lambda: None)
+    monkeypatch.setattr(
+        sys, "argv", ["run_experiment.py", "--mark-scientific-model-ready"]
+    )
+
+    assert run_experiment.main() == 0
+    persisted = repository.read_state()
+    commit = persisted["scientific_model"]["commit"]
+    committed = subprocess.run(
+        ["git", "show", f"{commit}:research/scientific_model.md"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
+    assert committed == content
 
 
 def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(

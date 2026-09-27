@@ -78,5 +78,5 @@ def test_explicit_official_panel_is_rejected():
     protocol.validate_measurement_request(request)
     with pytest.raises(ValueError, match="protected benchmark evidence"):
         protocol.validate_panel_independence(
-            request, [], protected_overlap=research_panel_overlaps_protected
+            request, protected_overlap=research_panel_overlaps_protected
         )
