@@ -8,7 +8,8 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 19
+OBSERVATION_SIZE = 23
+JOINT_LIMIT_RADIANS = np.deg2rad(170.0)
 
 
 def reach_observation(data) -> np.ndarray:
@@ -33,16 +34,25 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    end_effector = data.site("end_effector").xpos.copy()
-    branch_errors = np.asarray(
+    branch_targets = np.asarray(
         [
-            wrap_to_pi(shoulder_open - float(data.qpos[0])),
-            wrap_to_pi(elbow_open - float(data.qpos[1])),
-            wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-            wrap_to_pi(elbow_folded - float(data.qpos[1])),
+            [wrap_to_pi(shoulder_open), elbow_open],
+            [wrap_to_pi(shoulder_folded), elbow_folded],
         ],
         dtype=np.float64,
     )
+    end_effector = data.site("end_effector").xpos.copy()
+    current_joints = np.asarray(data.qpos[:2], dtype=np.float64)
+    branch_errors = np.asarray(
+        [
+            wrap_to_pi(target - current)
+            for target, current in zip(branch_targets.flat, np.tile(current_joints, 2))
+        ],
+        dtype=np.float64,
+    )
+    branch_limit_margins = (
+        JOINT_LIMIT_RADIANS - np.abs(branch_targets)
+    ).reshape(-1)
     return np.concatenate(
         [
             data.qpos,
@@ -51,5 +61,6 @@ def reach_observation(data) -> np.ndarray:
             branch_errors,
             np.sin(branch_errors),
             np.cos(branch_errors),
+            branch_limit_margins,
         ]
     ).astype(np.float32)
