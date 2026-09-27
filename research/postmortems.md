@@ -83,22 +83,20 @@ assessment after a subsequent campaign decision.
 
 ## f7e0bace-c0b5-4892-95a4-a1440c71de04 / Scientific strategy
 
-**Current synthesis:** The baseline PPO recipe produces a near-threshold
-reach-and-hold policy on development panels. The incumbent checkpoint-100352
-remains best known at 393/400 across the first two disjoint research panels
-and scored 194/200 on the later disjoint panel. The lower-rate transfer's
-checkpoint-100352 tied that fresh-panel result, but its endpoint fell to
-190/200, so the intervention did not improve the incumbent.
+**Current synthesis:** The PPO baseline learned a near-threshold
+reach-and-hold policy, with checkpoint-100352 remaining best known at 393/400
+pooled successes across two disjoint research panels and 194/200 on a later
+disjoint panel. Transfer with a 0.0001 learning rate tied the incumbent at its
+selected checkpoint and declined to 190/200 at the endpoint, so it did not
+improve the standing policy.
 
 **Lessons and limits:** Measured task success, rather than training proxies,
-distinguishes the late checkpoints and the reduced learning rate did not
-produce a stronger measured policy in this run. The finite research panels
-and reused task-reference panel support lineage comparison but do not
-establish official success. Residual failures include occasional full-episode
-misses and interrupted holds, but the current evidence does not isolate their
-cause.
+distinguishes the useful late checkpoints. The finite research panels and
+reused task-reference panel support development comparisons but cannot
+establish the official objective. Failures include both full-episode misses
+and interrupted holds, and their cause is not isolated by the current
+evidence.
 
-**Open questions:** Whether another scientific intervention can reduce the
-residual failure rate without damaging broad competence, and whether
-checkpoint-100352 reaches at least 98% on the official 200-episode panel,
-remain unresolved.
+**Open questions:** The official 200-episode result for checkpoint-100352 and
+the possibility of reducing residual failures without sacrificing broad
+competence remain unresolved.
