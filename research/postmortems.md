@@ -2,11 +2,11 @@
 
 ## bb00eecc-8011-4046-b8e7-823d3c432962 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline remains the strongest available lineage: checkpoint-100352 scored 194/200 on the earlier disjoint research panel and 196/200 on the new 4000-4199 panel. Continuing it with full-range 6-20 cm target training produced three measured checkpoints at 196/200, exactly matching the same-panel baseline control and repeating the same four failures. The fixed task-reference result was also 196/200, but all development measurements remain distinct from the official result.
+**Current synthesis:** Checkpoint-100352 remains the strongest available lineage, scoring 194/200 and 196/200 on two research panels and 196/200 on the task-reference panel. Full-range 6-20 cm continuation produced three checkpoints at 196/200, matching the same-panel control and repeating its four failures. These development measurements are distinct from the official result.
 
-**Lessons and limits:** Direct task measurements, not training proxies, distinguish the candidates. The full-range target intervention did not separate from the baseline on the new panel: checkpoints 100352, 105472, and 120832 all failed episode seeds 4030, 4040, 4049, and 4134, while the control failed those same episodes. This weakens the training-distribution explanation under the tested continuation, but finite panels do not establish why those residual failures occur and the new panel is now selection exposure for the retained lineage.
+**Lessons and limits:** Direct task measurements, not training proxies, distinguish the candidates. The tested target-distribution change did not separate from the baseline, weakening that explanation under this continuation. Finite development panels do not establish the cause of the recurring failures, and the latest panel is selection exposure for the retained lineage.
 
-**Open questions:** It remains unresolved whether a different intervention can remove the recurring residual failures without harming broader reach-and-hold behavior, and whether the post-100352 regression reflects ordinary continued-training variance or a broader optimization limitation.
+**Open questions:** Official performance remains unmeasured. It is also unresolved whether another intervention can remove the recurring failures without harming broader reach-and-hold behavior, or whether the post-100352 regression reflects training variance or an optimization limitation.
 
 ## bb00eecc-8011-4046-b8e7-823d3c432962 / Experiment 1
 
