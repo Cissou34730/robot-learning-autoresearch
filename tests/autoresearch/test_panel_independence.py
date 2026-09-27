@@ -64,21 +64,18 @@ def test_explicit_official_panel_is_rejected():
     )
 
     request = {
-        "experiment": 1,
-        "question": "question",
-        "reason": "reason",
+        "description": "Measure the requested development panel.",
+        "rationale": "The PI will interpret the factual result.",
         "measurements": [
             {
                 "instrument": "research_evaluation",
                 "candidate": "candidate",
                 "episodes": final_contract.EVALUATION_EPISODES,
                 "seed": final_contract.EVALUATION_SEED,
-                "selection": "explicitly choose the official episodes",
-                "omitted_alternative": None,
             }
         ],
     }
-    protocol.validate_evaluation_request(request)
+    protocol.validate_measurement_request(request)
     with pytest.raises(ValueError, match="protected benchmark evidence"):
         protocol.validate_panel_independence(
             request, [], protected_overlap=research_panel_overlaps_protected

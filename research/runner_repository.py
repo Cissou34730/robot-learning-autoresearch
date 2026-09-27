@@ -1,8 +1,6 @@
-"""Durable Runner persistence: campaign state, history, checkpoints and Git.
+"""Durable Runner persistence, Git operations, and artifact integrity."""
 
-Every operation here is explicit and path-scoped. Nothing in this module makes
-a protocol decision; it executes the ones the Runner already took.
-"""
+from __future__ import annotations
 
 import copy
 import hashlib
@@ -12,41 +10,99 @@ import shutil
 import signal
 import subprocess
 import time
-import uuid
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
 
-# Detailed evidence belongs to the evaluation artifact, not to the compact
-# history or the protocol state.
-DETAILED_EVIDENCE_FIELDS = ("episode_results", "research_evidence")
-# Transient Runner-owned control files: they carry a single phase handover and
-# are discarded, never accumulated. They are Git-ignored and are never history.
+STATE_SCHEMA_VERSION = 6
+DEFAULT_MAX_INQUIRIES = 15
+
 RUNNER_CONTROL_PATHS = {
-    "research/proposal.json",
-    "research/evaluation_request.json",
+    "research/operation_request.json",
     "research/RECOVERY_PENDING",
     "research/RESTART_PENDING",
 }
-# Durable Runner-owned campaign memory: the lifecycle state the Runner rewrites
-# mid-experiment -- including the identity it allocates before validation --
-# the campaign history, and the evidence and checkpoints operating the campaign
-# produces. Operating the campaign is never a researcher intervention, so these
-# leave the scientific change set and are committed on their own.
 RUNNER_MEMORY_PATHS = {
     "research/research_state.json",
     "research/results.jsonl",
     "research/EXPERIMENTS.md",
-    "research/postmortems.md",
-    "research/BASELINE_PENDING",
     "research/scientific_model.md",
 }
 RUNNER_MEMORY_PREFIXES = (
     "research/evaluations/",
-    "research/checkpoints/accepted/",
+    "research/checkpoints/candidates/",
     "research/checkpoints/retained/",
 )
-STATE_SCHEMA_VERSION = 5
+
+ARTIFACT_FILES = ("model.zip", "artifact.json")
+INFERENCE_ARTIFACT_FILES = (*ARTIFACT_FILES, "policy_runtime.pkl")
+OPTIONAL_ARTIFACT_FILES = (
+    "vecnormalize.pkl",
+    "replay_buffer.pkl",
+    "policy_runtime.pkl",
+)
+
+STATE_FIELDS = {
+    "schema_version",
+    "campaign",
+    "human_goal",
+    "scientific_model",
+    "active_inquiry",
+    "pi_checkpoint",
+    "scientific_session",
+    "counters",
+    "operation_events",
+    "pending_operation",
+    "model_roles",
+    "candidates",
+    "terminal_state",
+    "official_assessment",
+    "last_verdict",
+}
+CHECKPOINT_FIELDS = {
+    "session_id",
+    "inquiry_id",
+    "human_goal_connection",
+    "current_goal_gap",
+    "current_synthesis",
+    "evidence_references",
+    "decision_frontier",
+    "completed_operations",
+    "candidates_and_roles",
+    "next_direction_or_closure",
+    "cumulative_resource_use",
+    "scientific_commit",
+}
+CANDIDATE_FIELDS = {
+    "id",
+    "artifact",
+    "fingerprint",
+    "origin_operation",
+    "name",
+    "parameters",
+    "scientific_commit",
+    "training_steps",
+    "evaluation_artifacts",
+}
+EVENT_FIELDS = {
+    "id",
+    "kind",
+    "session_id",
+    "inquiry_id",
+    "request",
+    "result",
+    "completed_at",
+}
+PENDING_FIELDS = {
+    "id",
+    "kind",
+    "session_id",
+    "inquiry_id",
+    "request",
+    "request_fingerprint",
+    "progress",
+    "data",
+}
 
 
 def repo_relative_path(path: Path) -> str:
@@ -71,27 +127,6 @@ def resolve_repo_path(value: str) -> Path:
 
 def canonical_repo_path(value: str) -> str:
     return repo_relative_path(resolve_repo_path(value))
-
-
-ARTIFACT_FILES = ("model.zip", "artifact.json")
-INFERENCE_ARTIFACT_FILES = (*ARTIFACT_FILES, "policy_runtime.pkl")
-# Optional training-state files support recovery but never replace the
-# executable inference contract required by load_runtime().
-OPTIONAL_ARTIFACT_FILES = (
-    "vecnormalize.pkl",
-    "replay_buffer.pkl",
-    "policy_runtime.pkl",
-)
-EXPERIMENT_LOG_HEADER = (
-    "# Experiment log\n"
-    "\n"
-    "| # | Operation / parent | Intervention | Checkpoint / panel results | "
-    "Hypothesis assessment | Final decision |\n"
-    "|---:|---|---|---|---|---|\n"
-)
-
-
-# --- Git -------------------------------------------------------------------
 
 
 def git_process_group_options() -> dict:
@@ -147,7 +182,6 @@ def git(*args: str) -> str:
 
 
 def status_paths(scope: tuple[str, ...]) -> list[str]:
-    """Every path Git reports as changed, including both sides of a rename."""
     output = git(
         "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", *scope
     )
@@ -158,7 +192,6 @@ def status_paths(scope: tuple[str, ...]) -> list[str]:
         entry = fields[index]
         index += 1
         code, destination = entry[:2], entry[3:].strip()
-        # `-z` reverses rename/copy entries: the origin follows in its own field.
         if code[:1] in {"R", "C"} and index < len(fields):
             origin = fields[index].strip()
             index += 1
@@ -177,11 +210,11 @@ def is_runner_memory(path: str) -> bool:
 
 
 def is_runner_owned(path: str) -> bool:
-    return path.replace("\\", "/") in RUNNER_CONTROL_PATHS or is_runner_memory(path)
+    relative = path.replace("\\", "/")
+    return relative in RUNNER_CONTROL_PATHS or is_runner_memory(relative)
 
 
 def scientific_change_paths(changed: list[str]) -> list[str]:
-    """Policy/training recipe changes, excluding campaign memory and lab tools."""
     from research import runner_protocol as protocol
 
     return [
@@ -192,7 +225,6 @@ def scientific_change_paths(changed: list[str]) -> list[str]:
 
 
 def researcher_change_paths(changed: list[str]) -> list[str]:
-    """All Researcher changes, including campaign laboratory tooling."""
     return [path for path in changed if not is_runner_owned(path)]
 
 
@@ -202,61 +234,32 @@ def campaign_lab_change_paths(changed: list[str]) -> list[str]:
     return [path for path in changed if protocol.is_campaign_lab(path)]
 
 
-def assert_research_surface() -> list[str]:
-    return scientific_change_paths(status_paths((".",)))
-
-
-def changed_runner_memory() -> list[str]:
-    return [path for path in status_paths((".",)) if is_runner_memory(path)]
-
-
 def committed_change_paths(parent: str) -> list[str]:
-    """Paths changed by commits since `parent`.
-
-    Renames are reported as two independent sides so neither the vanished origin
-    nor the new destination can be lost, exactly as the worktree scan does.
-    """
     output = git("diff", "--name-only", "--no-renames", parent, "HEAD", "--")
     return [line.strip() for line in output.splitlines() if line.strip()]
 
 
 def scientific_delta(parent: str) -> list[str]:
-    """Every scientific path changed since the scientific parent.
-
-    Committing a file does not remove it from the experiment that changed it, so
-    the delta spans both the commits made since the parent and the working tree.
-    """
     committed = committed_change_paths(parent) if parent else []
     return scientific_change_paths(
         list(dict.fromkeys([*committed, *status_paths((".",))]))
     )
 
 
-def researcher_delta(parent: str) -> list[str]:
-    committed = committed_change_paths(parent) if parent else []
-    return researcher_change_paths(
-        list(dict.fromkeys([*committed, *status_paths((".",))]))
-    )
-
-
 def require_resolvable_commit(commit: str) -> None:
-    """A rollback baseline that no longer exists must fail, never silently no-op."""
     try:
         git("cat-file", "-e", f"{commit}^{{commit}}")
     except RuntimeError as error:
-        raise RuntimeError(
-            f"the scientific parent {commit} no longer resolves to a commit; "
-            "the code lineage decision cannot be applied safely"
-        ) from error
+        raise RuntimeError(f"scientific commit does not resolve: {commit}") from error
 
 
 def tracked_at_commit(commit: str, path: str) -> bool:
-    """Whether `path` existed at `commit`, deciding restore versus removal."""
     return bool(git("ls-tree", "-r", "--name-only", commit, "--", path).strip())
 
 
 def restore_paths(commit: str, restorable: list[str]) -> None:
-    git("restore", "--source", commit, "--", *restorable)
+    if restorable:
+        git("restore", "--source", commit, "--", *restorable)
 
 
 def remove_created_path(created: Path) -> None:
@@ -266,11 +269,10 @@ def remove_created_path(created: Path) -> None:
         created.unlink(missing_ok=True)
 
 
-def apply_code_lineage_decision(plan: dict) -> None:
-    if plan["restore"]:
-        restore_paths(plan["parent"], plan["restore"])
-    for created_path in plan["remove_created"]:
-        remove_created_path(created_path)
+def apply_recipe_restore(plan: dict) -> None:
+    restore_paths(str(plan["parent"]), list(plan["restore"]))
+    for value in plan["remove_created"]:
+        remove_created_path(resolve_repo_path(str(value)))
 
 
 def stage_existing_or_tracked(candidates: list[str]) -> list[str]:
@@ -289,8 +291,7 @@ def push_head() -> None:
         git("push", "origin", "HEAD")
     except RuntimeError as error:
         raise RuntimeError(
-            "local commits could not be pushed to origin; "
-            "the research loop stopped to avoid unpublished history"
+            "local commits could not be pushed to origin; refusing unpublished state"
         ) from error
 
 
@@ -304,7 +305,6 @@ def commit_and_push(message: str, scope: tuple[str, ...] = ()) -> None:
 
 
 def commit_paths(message: str, scope: list[str]) -> bool:
-    """Commit exactly these paths; every other worktree or index entry is left alone."""
     stageable = stage_existing_or_tracked(scope)
     if not stageable:
         return False
@@ -314,17 +314,15 @@ def commit_paths(message: str, scope: list[str]) -> bool:
     return True
 
 
-def publish_scientific_recipe(experiment: int, scope: list[str]) -> str:
-    """Publish an experiment's validated scientific recipe and return its revision."""
+def publish_scientific_recipe(operation_id: str, scope: list[str]) -> str:
     if not commit_paths(
-        campaign_commit_message(f"experiment {experiment} scientific recipe"), scope
+        campaign_commit_message(f"{operation_id} scientific recipe"), scope
     ):
         push_head()
     return git("rev-parse", "HEAD").strip()
 
 
 def campaign_lab_manifest() -> list[dict]:
-    """Fingerprint every tracked or untracked file in the campaign laboratory."""
     tracked = [
         line.strip()
         for line in git("ls-files", "--", "research/lab").splitlines()
@@ -339,87 +337,37 @@ def campaign_lab_manifest() -> list[dict]:
     return manifest
 
 
-def publish_campaign_laboratory(state: dict) -> dict | None:
-    """Publish lab changes separately and persist their campaign provenance."""
+def publish_campaign_laboratory(operation_id: str) -> dict | None:
+    """Publish PI-authored diagnostic tools independently from policy recipes."""
     changed = campaign_lab_change_paths(status_paths(("research/lab",)))
     if changed:
         from research import runner_execution as execution
 
         execution.validate_changed_sources(changed)
-        commit_paths(campaign_commit_message("update campaign laboratory"), changed)
+        commit_paths(
+            campaign_commit_message(f"{operation_id} measurement tools"), changed
+        )
     manifest = campaign_lab_manifest()
     if not manifest:
-        if state.get("campaign_lab") is not None:
-            state["campaign_lab"] = None
-            write_state(state)
         return None
-    fingerprint = hashlib.sha256(
-        json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
-    existing = state.get("campaign_lab")
-    if (
-        not changed
-        and isinstance(existing, dict)
-        and existing.get("fingerprint") == fingerprint
-    ):
-        return existing
     commit = git("log", "-1", "--format=%H", "--", "research/lab").strip()
     if not commit:
         commit = git("rev-parse", "HEAD").strip()
-    if not changed:
-        push_head()
-    provenance = {
+    return {
         "commit": commit,
         "manifest": manifest,
-        "fingerprint": fingerprint,
+        "fingerprint": hashlib.sha256(
+            json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
     }
-    state["campaign_lab"] = provenance
-    write_state(state)
-    return provenance
+
+
+def changed_runner_memory() -> list[str]:
+    return [path for path in status_paths((".",)) if is_runner_memory(path)]
 
 
 def commit_runner_memory(message: str) -> bool:
     return commit_paths(campaign_commit_message(message), changed_runner_memory())
-
-
-def commit_result(index: int, change: str) -> None:
-    """An invalid experiment is already finished, so its memory is durable now."""
-    commit_runner_memory(f"exp {index}: {change}")
-
-
-def commit_lineage_decision(
-    experiment: int,
-    selected: str,
-    *,
-    code_action: str = "keep",
-    state: dict | None = None,
-) -> None:
-    # Two owners, two commits: the surviving science first, then the campaign
-    # memory that must outlive it whatever the next lineage decision does.
-    reverted = code_action == "revert"
-    commit_paths(
-        campaign_commit_message(
-            f"experiment {experiment} code reverted to its scientific parent"
-            if reverted
-            else f"experiment {experiment} code retained for {selected}"
-        ),
-        assert_research_surface(),
-    )
-    if state is not None:
-        # Only durable science closes the lineage: until the commit above has
-        # been published, the rollback anchor must stay recoverable.
-        state["pending_scientific_parent"] = None
-        write_state(state)
-    if not commit_runner_memory(
-        f"select experiment {experiment} working lineage: {selected}"
-    ):
-        # A previous attempt may have committed this exact memory locally and
-        # failed only while pushing. Retrying must publish that commit before
-        # candidate cleanup can proceed.
-        push_head()
-
-
-# --- campaign state --------------------------------------------------------
 
 
 def _atomic_replace(temporary: Path, destination: Path) -> None:
@@ -434,6 +382,7 @@ def _atomic_replace(temporary: Path, destination: Path) -> None:
 
 
 def atomic_write_json(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
         json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -441,743 +390,450 @@ def atomic_write_json(path: Path, value: dict) -> None:
     _atomic_replace(temporary, path)
 
 
-def _canonicalize_evaluation_artifact(evaluation: dict) -> None:
-    artifact = evaluation.get("evaluation_artifact")
-    if artifact:
-        evaluation["evaluation_artifact"] = canonical_repo_path(str(artifact))
+def atomic_write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(text, encoding="utf-8")
+    _atomic_replace(temporary, path)
 
 
-def _canonicalize_candidate_artifacts(candidate: dict) -> None:
-    artifact = candidate.get("artifact")
-    if artifact:
-        candidate["artifact"] = canonical_repo_path(str(artifact))
-    for evaluation in candidate.get("evaluations") or []:
-        if isinstance(evaluation, dict):
-            _canonicalize_evaluation_artifact(evaluation)
-
-
-def _canonicalize_result_artifacts(result: dict) -> None:
-    for candidate in result.get("candidates") or []:
-        if isinstance(candidate, dict):
-            _canonicalize_candidate_artifacts(candidate)
-    for requested in result.get("requested_evaluations") or []:
-        if isinstance(requested, dict):
-            metrics = requested.get("metrics")
-            if isinstance(metrics, dict):
-                _canonicalize_evaluation_artifact(metrics)
-    for evaluation in result.get("task_reference_evaluations") or []:
-        if isinstance(evaluation, dict):
-            _canonicalize_evaluation_artifact(evaluation)
-    for round_record in result.get("evaluation_rounds") or []:
-        if not isinstance(round_record, dict):
-            continue
-        round_results = round_record.get("results")
-        if not isinstance(round_results, dict):
-            continue
-        for evaluation in round_results.get("research_evaluations") or []:
-            if isinstance(evaluation, dict):
-                _canonicalize_evaluation_artifact(evaluation)
-        for evaluation in round_results.get("task_reference_evaluations") or []:
-            if isinstance(evaluation, dict):
-                _canonicalize_evaluation_artifact(evaluation)
-
-
-LINEAGE_RECORD_FIELDS = {
-    "artifact",
-    "fingerprint",
-    "origin_experiment",
-    "candidate",
-    "parameters",
-    "scientific_commit",
-    "training_steps",
-    "evaluation_artifacts",
-    "reason",
-}
-# Optional lineage fields. `designation_ordinal` records the best-known tenure;
-# it is present on a designated best-known record and absent elsewhere.
-# `selected_panels` records the research-evaluation panels a lineage was selected
-# on, so repeated measurement on those episodes can be recognized as
-# selection-contaminated rather than independent confirmation (issue #57).
-LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
-
-
-def _canonicalize_selected_panel(panel: object) -> dict:
-    """Validate one recorded selection-panel identity."""
-    if not isinstance(panel, dict):
-        raise TypeError(
-            "lineage record selected_panels entries must be panel identity objects"
-        )
-    instrument = panel.get("instrument")
-    if instrument == "task_reference":
-        name = panel.get("panel")
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError(
-                "lineage record task_reference selected panel requires a panel name"
-            )
-        identity: dict = {"instrument": "task_reference", "panel": name}
-        for field in ("panel_version", "seed", "episodes"):
-            value = panel.get(field)
-            if value is None:
-                continue
-            if isinstance(value, bool) or not isinstance(value, int):
-                raise TypeError(
-                    f"lineage record selected panel {field} must be an integer"
-                )
-            identity[field] = value
-        return identity
-    if instrument == "research_evaluation":
-        seed = panel.get("seed")
-        episodes = panel.get("episodes")
-        if isinstance(seed, bool) or not isinstance(seed, int):
-            raise TypeError("lineage record selected panel seed must be an integer")
-        if isinstance(episodes, bool) or not isinstance(episodes, int):
-            raise TypeError("lineage record selected panel episodes must be an integer")
-        return {
-            "instrument": "research_evaluation",
-            "seed": seed,
-            "episodes": episodes,
-        }
-    raise ValueError(
-        "lineage record selected panel instrument must be research_evaluation or "
-        "task_reference"
-    )
-
-
-def canonicalize_lineage_record(lineage: dict) -> None:
-    """Validate and canonicalize one reusable policy record."""
-    if not isinstance(lineage, dict):
-        raise TypeError("lineage record must be an object")
-    missing = LINEAGE_RECORD_FIELDS - set(lineage)
-    extra = (
-        set(lineage)
-        - LINEAGE_RECORD_FIELDS
-        - LINEAGE_RECORD_OPTIONAL_FIELDS
-        - {"id", "campaign_id", "inquiry_id"}
-    )
-    if missing or extra:
-        raise ValueError(
-            "lineage record fields are invalid: "
-            f"missing={sorted(missing)}, extra={sorted(extra)}"
-        )
-    lineage["artifact"] = canonical_repo_path(str(lineage["artifact"]))
-    for field in ("fingerprint", "candidate", "reason"):
-        if not isinstance(lineage[field], str) or not lineage[field].strip():
-            raise ValueError(f"lineage record {field} must be a non-empty string")
-    scientific_commit = lineage["scientific_commit"]
-    if scientific_commit is not None and (
-        not isinstance(scientific_commit, str) or not scientific_commit.strip()
-    ):
-        raise ValueError("lineage record scientific_commit must be null or a commit")
-    for field in ("origin_experiment", "training_steps"):
-        if not isinstance(lineage[field], int) or isinstance(lineage[field], bool):
-            raise TypeError(f"lineage record {field} must be an integer")
-    if lineage["origin_experiment"] < 1 or lineage["training_steps"] < 0:
-        raise ValueError(
-            "lineage record experiment and training steps must be positive"
-        )
-    if "designation_ordinal" in lineage:
-        ordinal = lineage["designation_ordinal"]
-        if not isinstance(ordinal, int) or isinstance(ordinal, bool):
-            raise TypeError("lineage record designation_ordinal must be an integer")
-        if ordinal < 1:
-            raise ValueError("lineage record designation_ordinal must be positive")
-    if "selected_panels" in lineage:
-        panels = lineage["selected_panels"]
-        if not isinstance(panels, list):
-            raise TypeError("lineage record selected_panels must be a list")
-        normalized_panels = []
-        for panel in panels:
-            normalized_panels.append(_canonicalize_selected_panel(panel))
-        lineage["selected_panels"] = normalized_panels
-    if not isinstance(lineage["parameters"], dict):
-        raise TypeError("lineage record parameters must be an object")
-    evaluations = lineage["evaluation_artifacts"]
-    if not isinstance(evaluations, list) or not all(
-        isinstance(path, str) and path.strip() for path in evaluations
-    ):
-        raise ValueError("lineage record evaluation_artifacts must be a list of paths")
-    lineage["evaluation_artifacts"] = [
-        canonical_repo_path(path) for path in evaluations
-    ]
-
-
-def _require_nonempty_string(record: dict, field: str, description: str) -> str:
+def _nonempty(record: dict, field: str, description: str) -> str:
     value = record.get(field)
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{description} must be a non-empty string")
     return value.strip()
 
 
-def _validate_inquiry_session(state: dict, campaign_id: str) -> None:
-    session = state.get("inquiry_session")
-    if session is None:
-        return
-    if not isinstance(session, dict):
-        raise TypeError("inquiry_session must be an object or null")
-    if session.get("campaign_id") != campaign_id:
-        raise ValueError("inquiry_session belongs to another campaign")
-    if session.get("role") != "principal_investigator":
-        raise ValueError("inquiry_session role must be principal_investigator")
-    if session.get("status") not in {"allocated", "starting", "started"}:
-        raise ValueError("inquiry_session has invalid status")
-    _require_nonempty_string(session, "id", "inquiry_session id")
-    inquiry_id = session.get("inquiry_id")
-    if (
-        not isinstance(inquiry_id, int)
-        or isinstance(inquiry_id, bool)
-        or inquiry_id < 1
+def _positive_integer(
+    value: object, description: str, *, allow_zero: bool = False
+) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TypeError(f"{description} must be an integer")
+    minimum = 0 if allow_zero else 1
+    if value < minimum:
+        raise ValueError(f"{description} must be at least {minimum}")
+    return value
+
+
+def canonicalize_candidate(candidate: dict) -> None:
+    if not isinstance(candidate, dict) or set(candidate) != CANDIDATE_FIELDS:
+        raise ValueError(f"candidate requires exactly {sorted(CANDIDATE_FIELDS)}")
+    for field in ("id", "fingerprint", "origin_operation", "name"):
+        _nonempty(candidate, field, f"candidate {field}")
+    if not str(candidate["origin_operation"]).startswith("T"):
+        raise ValueError("candidate origin_operation must be a training operation")
+    candidate["artifact"] = canonical_repo_path(str(candidate["artifact"]))
+    if not isinstance(candidate["parameters"], dict):
+        raise TypeError("candidate parameters must be an object")
+    _nonempty(candidate, "scientific_commit", "candidate scientific_commit")
+    _positive_integer(
+        candidate["training_steps"], "candidate training_steps", allow_zero=True
+    )
+    artifacts = candidate["evaluation_artifacts"]
+    if not isinstance(artifacts, list) or not all(
+        isinstance(item, str) and item.strip() for item in artifacts
     ):
-        raise ValueError("inquiry_session inquiry_id must be a positive integer")
+        raise ValueError("candidate evaluation_artifacts must be a list of paths")
+    candidate["evaluation_artifacts"] = [
+        canonical_repo_path(item) for item in artifacts
+    ]
 
 
-def _validate_active_inquiry(state: dict) -> None:
-    active = state.get("active_inquiry")
+def _validate_checkpoint(checkpoint: object, event_ids: set[str]) -> None:
+    if checkpoint is None:
+        return
+    if not isinstance(checkpoint, dict) or set(checkpoint) != CHECKPOINT_FIELDS:
+        raise ValueError(f"pi_checkpoint requires exactly {sorted(CHECKPOINT_FIELDS)}")
+    _nonempty(checkpoint, "session_id", "pi_checkpoint session_id")
+    inquiry_id = checkpoint["inquiry_id"]
+    if inquiry_id is not None:
+        _nonempty({"value": inquiry_id}, "value", "pi_checkpoint inquiry_id")
+    for field in (
+        "human_goal_connection",
+        "current_goal_gap",
+        "current_synthesis",
+        "decision_frontier",
+        "candidates_and_roles",
+        "next_direction_or_closure",
+        "cumulative_resource_use",
+        "scientific_commit",
+    ):
+        _nonempty(checkpoint, field, f"pi_checkpoint {field}")
+    evidence = checkpoint["evidence_references"]
+    completed = checkpoint["completed_operations"]
+    if not isinstance(evidence, list) or not all(
+        isinstance(item, str) and item.strip() for item in evidence
+    ):
+        raise ValueError("pi_checkpoint evidence_references must be a list of strings")
+    if not isinstance(completed, list) or not all(
+        isinstance(item, str) and item in event_ids for item in completed
+    ):
+        raise ValueError(
+            "pi_checkpoint completed_operations must reference completed events"
+        )
+
+
+def _validate_active_inquiry(active: object) -> None:
     if active is None:
         return
-    if not isinstance(active, dict):
-        raise TypeError("active_inquiry must be an object or null")
     required = {
         "id",
         "question",
-        "scope",
+        "goal_connection",
         "closure_condition",
-        "status",
-        "session_id",
+        "rationale",
+        "opened_in_session",
         "reframes",
     }
-    if set(active) != required:
-        raise ValueError(
-            "active_inquiry requires exactly id, question, scope, "
-            "closure_condition, status, session_id, and reframes"
-        )
-    if (
-        not isinstance(active["id"], int)
-        or isinstance(active["id"], bool)
-        or active["id"] < 1
+    if not isinstance(active, dict) or set(active) != required:
+        raise ValueError(f"active_inquiry requires exactly {sorted(required)}")
+    if not str(active["id"]).startswith("I"):
+        raise ValueError("active_inquiry id must use an I# identity")
+    for field in (
+        "question",
+        "goal_connection",
+        "closure_condition",
+        "rationale",
+        "opened_in_session",
     ):
-        raise ValueError("active_inquiry id must be a positive integer")
-    for field in ("question", "scope", "closure_condition", "session_id"):
-        _require_nonempty_string(active, field, f"active_inquiry {field}")
-    if active["status"] != "active":
-        raise ValueError("active_inquiry status must be active")
+        _nonempty(active, field, f"active_inquiry {field}")
     if not isinstance(active["reframes"], list):
         raise TypeError("active_inquiry reframes must be a list")
     for reframe in active["reframes"]:
-        if not isinstance(reframe, dict):
-            raise TypeError("active_inquiry reframes entries must be objects")
-        for field in ("question", "scope", "closure_condition", "rationale"):
-            _require_nonempty_string(reframe, field, f"active_inquiry reframe {field}")
-    session = state.get("inquiry_session")
-    if not isinstance(session, dict):
-        raise TypeError("an active inquiry requires its inquiry_session")
-    if (
-        session.get("inquiry_id") != active["id"]
-        or session.get("id") != active["session_id"]
-    ):
-        raise ValueError("active_inquiry must own the current inquiry_session")
+        required_reframe = {
+            "question",
+            "goal_connection",
+            "closure_condition",
+            "rationale",
+            "session_id",
+        }
+        if not isinstance(reframe, dict) or set(reframe) != required_reframe:
+            raise ValueError(
+                f"inquiry reframe requires exactly {sorted(required_reframe)}"
+            )
+        for field in required_reframe:
+            _nonempty(reframe, field, f"inquiry reframe {field}")
 
 
-def _validate_active_method(state: dict) -> None:
-    method = state.get("active_method")
-    if method is None:
+def _validate_session(session: object, active_inquiry: object) -> None:
+    if session is None:
         return
-    if not isinstance(method, dict):
-        raise TypeError("active_method must be an object or null")
     required = {
         "id",
+        "kind",
+        "objective",
         "inquiry_id",
-        "scientific_question",
-        "rationale",
-        "lifecycle",
-        "base_scientific_commit",
-        "current_lineage",
-        "iterations",
-        "resolution",
+        "scientific_parent_commit",
+        "operation_ids",
     }
-    if set(method) != required:
-        raise ValueError(
-            "active_method requires exactly id, inquiry_id, scientific_question, "
-            "rationale, lifecycle, base_scientific_commit, current_lineage, "
-            "iterations, and resolution"
-        )
-    for field in (
-        "id",
-        "scientific_question",
-        "rationale",
-        "lifecycle",
-        "base_scientific_commit",
+    if not isinstance(session, dict) or set(session) != required:
+        raise ValueError(f"scientific_session requires exactly {sorted(required)}")
+    if not str(session["id"]).startswith("S"):
+        raise ValueError("scientific_session id must use an S# identity")
+    if session["kind"] not in {"goal_review", "inquiry"}:
+        raise ValueError("scientific_session kind must be goal_review or inquiry")
+    _nonempty(session, "objective", "scientific_session objective")
+    _nonempty(
+        session,
+        "scientific_parent_commit",
+        "scientific_session scientific_parent_commit",
+    )
+    operation_ids = session["operation_ids"]
+    if not isinstance(operation_ids, list) or not all(
+        isinstance(item, str) and item.strip() for item in operation_ids
     ):
-        _require_nonempty_string(method, field, f"active_method {field}")
-    if Path(str(method["id"])).name != method["id"] or method["id"] in {".", ".."}:
-        raise ValueError("active_method id must be file-name-safe")
-    active = state.get("active_inquiry")
-    if not isinstance(active, dict) or method.get("inquiry_id") != active.get("id"):
-        raise ValueError("active_method must belong to the active inquiry")
-    if method["lifecycle"] not in {
-        "concept",
-        "development",
-        "mature",
-        "promoted",
-        "retained",
-        "abandoned",
-    }:
-        raise ValueError("active_method has an unsupported lifecycle")
-    lineage = method["current_lineage"]
-    if lineage is not None:
-        canonicalize_lineage_record(lineage)
-    iterations = method["iterations"]
-    if not isinstance(iterations, list):
-        raise TypeError("active_method iterations must be a list")
-    for iteration in iterations:
-        if not isinstance(iteration, dict):
-            raise TypeError("active_method iteration entries must be objects")
-        experiment = iteration.get("experiment")
+        raise ValueError("scientific_session operation_ids must be a list of strings")
+    if session["kind"] == "goal_review":
+        if session["inquiry_id"] is not None:
+            raise ValueError("goal_review session cannot carry an inquiry_id")
+    else:
         if (
-            not isinstance(experiment, int)
-            or isinstance(experiment, bool)
-            or experiment < 1
+            isinstance(active_inquiry, dict)
+            and session["inquiry_id"] != active_inquiry["id"]
         ):
-            raise ValueError(
-                "active_method iteration experiment must be a positive integer"
-            )
-        _require_nonempty_string(iteration, "status", "active_method iteration status")
-    resolution = method["resolution"]
-    if resolution is not None:
-        if not isinstance(resolution, dict):
-            raise TypeError("active_method resolution must be an object or null")
-        required_resolution = {"action", "outcome", "reason", "inquiry_id"}
-        if not required_resolution.issubset(resolution):
-            raise ValueError(
-                "active_method resolution requires action, outcome, reason, and inquiry_id"
-            )
-        if resolution["action"] not in {"promote", "retain", "abandon"}:
-            raise ValueError("active_method resolution has an unsupported action")
-        for field in ("outcome", "reason"):
-            _require_nonempty_string(
-                resolution, field, f"active_method resolution {field}"
-            )
-        if resolution["inquiry_id"] != method["inquiry_id"]:
-            raise ValueError("active_method resolution belongs to another inquiry")
-    resolved_lifecycles = {"promoted", "retained", "abandoned"}
-    if method["lifecycle"] in resolved_lifecycles:
-        if not isinstance(resolution, dict):
-            raise ValueError("a resolved active_method requires its resolution record")
-        expected_action = {
-            "promoted": "promote",
-            "retained": "retain",
-            "abandoned": "abandon",
-        }[method["lifecycle"]]
-        if resolution["action"] != expected_action:
-            raise ValueError("active_method lifecycle must match its resolution action")
-    elif resolution is not None:
-        raise ValueError("an unresolved active_method cannot carry a resolution")
-    if method["lifecycle"] in {"mature", "promoted", "retained"} and lineage is None:
-        raise ValueError(
-            f"active_method lifecycle {method['lifecycle']} requires a current lineage"
-        )
-    if method["lifecycle"] == "abandoned" and lineage is not None:
-        raise ValueError("an abandoned active_method cannot retain its method lineage")
+            raise ValueError("inquiry session belongs to another inquiry")
 
 
 def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> None:
     if state.get("schema_version") != STATE_SCHEMA_VERSION:
         raise RuntimeError("unsupported research state schema")
-    required = {
-        "schema_version",
-        "campaign",
-        "campaign_experiment_counters",
-        "campaign_inquiry_counters",
-        "last_experiment",
-        "last_allocated_experiment",
-        "last_allocated_inquiry",
-        "last_inquiry",
-        "working_lineage",
-        "best_known_lineage",
-        "best_known_designation_counter",
-        "retained_lineages",
-        "active_inquiry",
-        "active_method",
-        "inquiry_session",
-        "pending_inquiry_operation",
-        "campaign_lab",
-        "pending_scientific_parent",
-        "pending_scientific_commit",
-        "pending_training_operation",
-        "pending_analysis",
-        "pending_evaluation_request",
-        "pending_baseline_decision",
-        "pending_method_decision",
-        "pending_final_benchmark",
-        "pending_campaign_conclusion",
-        "campaign_conclusion",
-        "terminal_campaign_status",
-        "last_lineage_decision",
-        "last_verdict",
-        "official_metrics",
-        "official_benchmark_artifact",
-        "official_benchmark_model",
-        "official_benchmark_verdict",
-        "preparation_measurement",
-    }
-    missing = required - set(state)
-    if missing:
-        raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
-    extra = set(state) - required
-    if extra:
+    missing = STATE_FIELDS - set(state)
+    extra = set(state) - STATE_FIELDS
+    if missing or extra:
         raise RuntimeError(
-            f"research state contains unsupported schema fields: {sorted(extra)}"
+            "research state fields are invalid: "
+            f"missing={sorted(missing)}, extra={sorted(extra)}"
         )
-    campaign = state.get("campaign")
-    if not isinstance(campaign, dict) or not all(
-        campaign.get(field) for field in ("id", "started_at", "base_commit")
-    ):
-        raise RuntimeError("research state is missing a valid campaign identity")
-    campaign_id = str(campaign["id"])
-    inquiry_counters = state["campaign_inquiry_counters"]
-    if not isinstance(inquiry_counters, dict):
-        raise TypeError("campaign_inquiry_counters must be an object")
-    if campaign_id not in inquiry_counters:
-        raise RuntimeError("campaign_inquiry_counters is missing the active campaign")
-    inquiry_counter = inquiry_counters[campaign_id]
-    if (
-        not isinstance(inquiry_counter, int)
-        or isinstance(inquiry_counter, bool)
-        or inquiry_counter < 0
-    ):
-        raise ValueError("campaign inquiry counter must be a non-negative integer")
-    _validate_inquiry_session(state, campaign_id)
-    _validate_active_inquiry(state)
-    _validate_active_method(state)
-    for role in ("working_lineage", "best_known_lineage"):
-        lineage = state.get(role)
-        if lineage is not None:
-            if "inquiry_id" in lineage:
-                raise ValueError(f"{role} cannot carry inquiry ownership")
-            canonicalize_lineage_record(lineage)
-    retained = state.get("retained_lineages", [])
-    if not isinstance(retained, list):
-        raise TypeError("retained_lineages must be a list")
-    identifiers: set[str] = set()
-    for lineage in retained:
-        if isinstance(lineage, dict) and "inquiry_id" in lineage:
-            raise ValueError("retained lineage cannot carry inquiry ownership")
-        canonicalize_lineage_record(lineage)
-        identifier = lineage.get("id")
-        if (
-            not isinstance(identifier, str)
-            or not identifier.strip()
-            or identifier in identifiers
+    campaign = state["campaign"]
+    if not isinstance(campaign, dict):
+        raise TypeError("campaign must be an object")
+    for field in ("id", "started_at", "base_commit"):
+        _nonempty(campaign, field, f"campaign {field}")
+    _positive_integer(campaign.get("max_inquiries"), "campaign max_inquiries")
+    human_goal = state["human_goal"]
+    if not isinstance(human_goal, dict) or set(human_goal) - {"source", "summary"}:
+        raise ValueError("human_goal supports only source and optional summary")
+    _nonempty(human_goal, "source", "human_goal source")
+    if "summary" in human_goal:
+        _nonempty(human_goal, "summary", "human_goal summary")
+    model = state["scientific_model"]
+    if not isinstance(model, dict) or set(model) != {"status", "path", "commit"}:
+        raise ValueError("scientific_model requires status, path, and commit")
+    if model["status"] not in {"pending", "ready"}:
+        raise ValueError("scientific_model status must be pending or ready")
+    _nonempty(model, "path", "scientific_model path")
+    if model["status"] == "ready":
+        _nonempty(model, "commit", "scientific_model commit")
+    elif model["commit"] is not None:
+        raise ValueError("pending scientific_model cannot carry a commit")
+
+    counters = state["counters"]
+    expected_counters = {"inquiry", "session", "measurement", "training", "event"}
+    if not isinstance(counters, dict) or set(counters) != expected_counters:
+        raise ValueError(f"counters requires exactly {sorted(expected_counters)}")
+    for field, value in counters.items():
+        _positive_integer(value, f"counter {field}", allow_zero=True)
+
+    events = state["operation_events"]
+    if not isinstance(events, list):
+        raise TypeError("operation_events must be a list")
+    event_ids: set[str] = set()
+    for event in events:
+        if not isinstance(event, dict) or set(event) != EVENT_FIELDS:
+            raise ValueError(f"operation event requires exactly {sorted(EVENT_FIELDS)}")
+        identifier = _nonempty(event, "id", "operation event id")
+        if identifier in event_ids:
+            raise ValueError("operation event IDs must be unique")
+        event_ids.add(identifier)
+        if event["kind"] not in {
+            "measurement",
+            "training",
+            "inquiry",
+            "checkpoint",
+            "model_role",
+            "restore_recipe",
+            "campaign_conclusion",
+        }:
+            raise ValueError("operation event has an unsupported kind")
+        _nonempty(event, "session_id", "operation event session_id")
+        if event["inquiry_id"] is not None:
+            _nonempty(
+                {"value": event["inquiry_id"]},
+                "value",
+                "operation event inquiry_id",
+            )
+        if not isinstance(event["request"], dict) or not isinstance(
+            event["result"], dict
         ):
-            raise RuntimeError("retained lineage IDs must be non-empty and unique")
-        identifiers.add(identifier)
-    if not allow_missing_artifact:
-        for role in ("working_lineage", "best_known_lineage"):
-            lineage = state.get(role)
-            if lineage is not None:
-                require_complete_inference_artifact(
-                    resolve_repo_path(lineage["artifact"]), role
-                )
-        active_method = state.get("active_method")
-        method_lineage = (
-            active_method.get("current_lineage")
-            if isinstance(active_method, dict)
-            else None
-        )
-        if isinstance(method_lineage, dict):
-            require_complete_inference_artifact(
-                resolve_repo_path(method_lineage["artifact"]),
-                "active_method current lineage",
+            raise TypeError("operation event request and result must be objects")
+        _nonempty(event, "completed_at", "operation event completed_at")
+
+    _validate_active_inquiry(state["active_inquiry"])
+    _validate_session(state["scientific_session"], state["active_inquiry"])
+    _validate_checkpoint(state["pi_checkpoint"], event_ids)
+
+    pending = state["pending_operation"]
+    if pending is not None:
+        if not isinstance(pending, dict) or set(pending) != PENDING_FIELDS:
+            raise ValueError(
+                f"pending_operation requires exactly {sorted(PENDING_FIELDS)}"
             )
-        for lineage in retained:
-            require_complete_inference_artifact(
-                resolve_repo_path(lineage["artifact"]),
-                f"retained lineage {lineage['id']!r}",
-            )
+        for field in ("id", "kind", "session_id", "request_fingerprint", "progress"):
+            _nonempty(pending, field, f"pending_operation {field}")
+        if pending["kind"] not in {
+            "measurement",
+            "training",
+            "inquiry",
+            "checkpoint",
+            "model_role",
+            "restore_recipe",
+            "campaign_conclusion",
+        }:
+            raise ValueError("pending_operation has an unsupported kind")
+        if not isinstance(pending["request"], dict) or not isinstance(
+            pending["data"], dict
+        ):
+            raise TypeError("pending_operation request and data must be objects")
+
+    candidates = state["candidates"]
+    if not isinstance(candidates, dict):
+        raise TypeError("candidates must be an object keyed by candidate ID")
+    for identifier, candidate in candidates.items():
+        canonicalize_candidate(candidate)
+        if identifier != candidate["id"]:
+            raise ValueError("candidate map key must equal candidate id")
+        if not allow_missing_artifact:
+            artifact = resolve_repo_path(candidate["artifact"])
+            require_complete_inference_artifact(artifact, f"candidate {identifier}")
+            if artifact_fingerprint(artifact) != candidate["fingerprint"]:
+                raise ValueError(f"candidate {identifier} fingerprint changed")
+
+    roles = state["model_roles"]
+    if not isinstance(roles, dict) or set(roles) != {
+        "working",
+        "best_known",
+        "retained",
+    }:
+        raise ValueError("model_roles requires working, best_known, and retained")
+    for role in ("working", "best_known"):
+        candidate_id = roles[role]
+        if candidate_id is not None and candidate_id not in candidates:
+            raise ValueError(f"model role {role} names an unknown candidate")
+    retained = roles["retained"]
+    if not isinstance(retained, dict):
+        raise TypeError("model_roles retained must be an object")
+    for label, candidate_id in retained.items():
+        if not isinstance(label, str) or not label.strip():
+            raise ValueError("retained role labels must be non-empty")
+        if candidate_id not in candidates:
+            raise ValueError(f"retained role {label!r} names an unknown candidate")
+
+    terminal = state["terminal_state"]
+    if terminal is not None:
+        if not isinstance(terminal, dict) or set(terminal) != {
+            "status",
+            "reason",
+            "model",
+        }:
+            raise ValueError("terminal_state requires status, reason, and model")
+        if terminal["status"] not in {
+            "official_assessment_requested",
+            "no_credible_route",
+        }:
+            raise ValueError("terminal_state status is unsupported")
+        _nonempty(terminal, "reason", "terminal_state reason")
+        if terminal["status"] == "official_assessment_requested":
+            if terminal["model"] not in candidates:
+                raise ValueError("terminal assessment names an unknown candidate")
+        elif terminal["model"] is not None:
+            raise ValueError("no_credible_route terminal state cannot name a model")
+    if state["official_assessment"] is not None and terminal is None:
+        raise ValueError("official_assessment requires a terminal campaign state")
 
 
 def write_state(state: dict) -> None:
-    """Persist state after canonicalizing its known repository references."""
     validate_research_state(state, allow_missing_artifact=True)
-    for lineage in state.get("retained_lineages") or []:
-        if not isinstance(lineage, dict):
-            continue
-        artifact = lineage.get("artifact")
-        if artifact:
-            lineage["artifact"] = canonical_repo_path(str(artifact))
-        if "evaluation_artifacts" in lineage:
-            lineage["evaluation_artifacts"] = [
-                canonical_repo_path(str(path))
-                for path in lineage.get("evaluation_artifacts") or []
-            ]
-    final_benchmark = state.get("pending_final_benchmark")
-    if isinstance(final_benchmark, dict) and final_benchmark.get("artifact"):
-        final_benchmark["artifact"] = canonical_repo_path(
-            str(final_benchmark["artifact"])
-        )
-    pending_evaluation = state.get("pending_evaluation_request")
-    if isinstance(pending_evaluation, dict):
-        for candidate in pending_evaluation.get("candidates") or []:
-            if isinstance(candidate, dict):
-                _canonicalize_candidate_artifacts(candidate)
-        for requested in pending_evaluation.get("partial_evaluations") or []:
-            if isinstance(requested, dict) and isinstance(
-                requested.get("metrics"), dict
-            ):
-                _canonicalize_evaluation_artifact(requested["metrics"])
-        for evaluation in (
-            pending_evaluation.get("partial_task_reference_evaluations") or []
-        ):
-            if isinstance(evaluation, dict):
-                _canonicalize_evaluation_artifact(evaluation)
-        result = pending_evaluation.get("result")
-        if isinstance(result, dict):
-            _canonicalize_result_artifacts(result)
-    pending_analysis = state.get("pending_analysis")
-    if isinstance(pending_analysis, dict):
-        for candidate in pending_analysis.get("candidates") or []:
-            if isinstance(candidate, dict):
-                _canonicalize_candidate_artifacts(candidate)
-        for requested in pending_analysis.get("partial_evaluations") or []:
-            if isinstance(requested, dict) and isinstance(
-                requested.get("metrics"), dict
-            ):
-                _canonicalize_evaluation_artifact(requested["metrics"])
-        for evaluation in (
-            pending_analysis.get("partial_task_reference_evaluations") or []
-        ):
-            if isinstance(evaluation, dict):
-                _canonicalize_evaluation_artifact(evaluation)
-        result = pending_analysis.get("result")
-        if isinstance(result, dict):
-            _canonicalize_result_artifacts(result)
     atomic_write_json(paths.STATE_PATH, state)
 
 
-def empty_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
-    """Build an empty inquiry-centered campaign without prior evidence."""
-    campaign_id = str(campaign.get("id") or "")
+def read_state() -> dict:
+    return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
+
+
+def load_state(*, allow_missing_artifact: bool = False) -> dict:
+    if not paths.STATE_PATH.exists():
+        raise RuntimeError("research state is missing; refusing to run")
+    state = read_state()
+    validate_research_state(state, allow_missing_artifact=allow_missing_artifact)
+    return state
+
+
+def empty_campaign_state(
+    *,
+    campaign: dict,
+    last_verdict: str,
+    human_goal: dict | None = None,
+) -> dict:
+    campaign_copy = copy.deepcopy(campaign)
+    campaign_id = str(campaign_copy.get("id") or "").strip()
     if not campaign_id:
         raise ValueError("fresh campaign state requires a campaign ID")
+    campaign_copy.setdefault("max_inquiries", DEFAULT_MAX_INQUIRIES)
     state = {
         "schema_version": STATE_SCHEMA_VERSION,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "campaign": copy.deepcopy(campaign),
-        "campaign_experiment_counters": {campaign_id: 0},
-        "campaign_inquiry_counters": {campaign_id: 0},
-        "retained_lineages": [],
-        "last_experiment": 0,
-        "last_allocated_experiment": 0,
-        "last_allocated_inquiry": 0,
-        "last_inquiry": 0,
+        "campaign": campaign_copy,
+        "human_goal": copy.deepcopy(human_goal or {"source": "research/scenario.md"}),
+        "scientific_model": {
+            "status": "pending",
+            "path": "research/scientific_model.md",
+            "commit": None,
+        },
         "active_inquiry": None,
-        "active_method": None,
-        "inquiry_session": None,
-        "pending_inquiry_operation": None,
-        "campaign_lab": None,
-        "pending_scientific_parent": None,
-        "pending_training_operation": None,
-        "pending_analysis": None,
-        "pending_evaluation_request": None,
-        "preparation_measurement": None,
-        "pending_baseline_decision": None,
-        "pending_method_decision": None,
-        "pending_final_benchmark": None,
-        "pending_campaign_conclusion": None,
-        "campaign_conclusion": None,
-        "terminal_campaign_status": None,
-        "last_lineage_decision": None,
+        "pi_checkpoint": None,
+        "scientific_session": None,
+        "counters": {
+            "inquiry": 0,
+            "session": 0,
+            "measurement": 0,
+            "training": 0,
+            "event": 0,
+        },
+        "operation_events": [],
+        "pending_operation": None,
+        "model_roles": {
+            "working": None,
+            "best_known": None,
+            "retained": {},
+        },
+        "candidates": {},
+        "terminal_state": None,
+        "official_assessment": None,
         "last_verdict": last_verdict,
-        "best_known_designation_counter": 0,
-        "official_metrics": None,
-        "official_benchmark_artifact": None,
-        "official_benchmark_model": None,
-        "official_benchmark_verdict": None,
-        "pending_scientific_commit": None,
     }
     validate_research_state(copy.deepcopy(state), allow_missing_artifact=True)
     return state
 
 
-def atomic_write_text(path: Path, text: str) -> None:
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(text, encoding="utf-8")
-    _atomic_replace(temporary, path)
+def current_campaign_id(state: dict) -> str:
+    return str(state["campaign"]["id"])
 
 
-def atomic_write_bytes(path: Path, content: bytes) -> None:
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_bytes(content)
-    _atomic_replace(temporary, path)
-
-
-def read_state() -> dict:
-    """The persisted lifecycle state exactly as written, without any contract check."""
-    return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
-
-
-def load_state(
-    *,
-    allow_unmeasured: bool = False,
-    allow_missing_artifact: bool = False,
-) -> dict:
-    if not paths.STATE_PATH.exists():
-        raise RuntimeError("research state is missing; refusing to run")
-    state = read_state()
-    validate_research_state(state, allow_missing_artifact=allow_missing_artifact)
-    if not allow_unmeasured and state.get("working_lineage") is None:
-        raise RuntimeError("campaign has no measured working lineage")
-    return state
-
-
-def anchor_scientific_parent(state: dict) -> str:
-    """The scientific state the currently unfinished research originates from.
-
-    Captured once and then preserved across researcher retries, launcher
-    restarts, training recovery, evaluation rounds and invalid experiments, so a
-    rejection returns to the last closed lineage rather than to whatever HEAD
-    happens to be when the runner next looks. Only a completed lineage decision
-    clears it.
-    """
-    parent = str(state.get("pending_scientific_parent") or "").strip()
-    if not parent:
-        parent = git("rev-parse", "HEAD").strip()
-    state["pending_scientific_parent"] = parent
-    return parent
-
-
-def git_work_tree_present() -> bool:
-    """Whether the runner's root is a Git work tree, so HEAD can be resolved.
-
-    Re-anchoring is a Git operation. A root without a work tree has no HEAD to
-    adopt, so the stored anchor stays the only available one.
-    """
-    return (paths.ROOT / ".git").exists()
-
-
-def reanchor_scientific_parent(state: dict) -> str:
-    """Move the scientific parent to HEAD at a phase boundary.
-
-    A phase reads its scientific delta relative to this parent. Anchoring it at
-    the current HEAD adopts every commit made since the previous anchor, so a
-    committed harness fix is judged as committed context instead of being
-    attributed to the researcher's working tree. Only what is still uncommitted
-    remains in the delta the ownership validator judges.
-    """
-    if not git_work_tree_present():
-        return str(state.get("pending_scientific_parent") or "").strip()
-    parent = git("rev-parse", "HEAD").strip()
-    state["pending_scientific_parent"] = parent
-    return parent
-
-
-def current_campaign_id(state: dict) -> str | None:
-    """Retrieve the active campaign ID from persisted state, or None if missing."""
-    campaign = state.get("campaign", {})
-    campaign_id = campaign.get("id")
-    return str(campaign_id) if campaign_id else None
-
-
-def current_campaign_base_commit(state: dict) -> str | None:
-    """Retrieve the campaign's base commit (pre-reset HEAD) for change attribution, or None if missing."""
-    campaign = state.get("campaign", {})
-    base_commit = campaign.get("base_commit")
-    return str(base_commit) if base_commit else None
-
-
-def ensure_inquiry_session(state: dict) -> dict:
-    """Allocate exactly one principal-investigator session for one inquiry."""
-    campaign_id = current_campaign_id(state)
-    if not campaign_id:
-        raise ValueError("an inquiry session requires a campaign")
-    session = state.get("inquiry_session")
-    if isinstance(session, dict):
-        if session.get("campaign_id") != campaign_id:
-            raise ValueError("inquiry session belongs to another campaign")
-        if session.get("status") not in {"allocated", "starting", "started"}:
-            raise ValueError("inquiry session has invalid status")
-        if not str(session.get("id") or "").strip():
-            raise ValueError("inquiry session has no identity")
-        return session
-    active = state.get("active_inquiry")
-    if isinstance(active, dict):
-        inquiry_id = int(active["id"])
-    else:
-        counters = state["campaign_inquiry_counters"]
-        inquiry_id = int(counters.get(campaign_id, 0)) + 1
-    if inquiry_id == 1:
-        working = state.get("working_lineage")
-        best = state.get("best_known_lineage")
-        baseline_identity = (
-            "artifact",
-            "fingerprint",
-            "origin_experiment",
-            "candidate",
-            "designation_ordinal",
-        )
-        if (
-            not isinstance(working, dict)
-            or not isinstance(best, dict)
-            or any(working.get(field) != best.get(field) for field in baseline_identity)
-            or int(working.get("origin_experiment", -1)) != 1
-            or int(working.get("designation_ordinal", -1)) != 1
-        ):
-            raise ValueError(
-                "the first inquiry requires working and best_known to name the "
-                "same initial baseline designation"
-            )
-    if not isinstance(active, dict):
-        counters[campaign_id] = inquiry_id
-        state["last_allocated_inquiry"] = inquiry_id
+def start_scientific_session(state: dict, *, kind: str, objective: str) -> dict:
+    if state["terminal_state"] is not None:
+        raise ValueError("a terminal campaign cannot start a scientific session")
+    if state["scientific_model"]["status"] != "ready":
+        raise ValueError("the scientific model must be ready before a PI session")
+    if state["scientific_session"] is not None:
+        raise ValueError("a scientific session is already active")
+    if kind not in {"goal_review", "inquiry"}:
+        raise ValueError("session kind must be goal_review or inquiry")
+    active = state["active_inquiry"]
+    if kind == "goal_review" and active is not None:
+        raise ValueError("goal review requires no active inquiry")
+    if kind == "inquiry" and active is None:
+        raise ValueError("an inquiry session requires an active inquiry")
+    if not isinstance(objective, str) or not objective.strip():
+        raise ValueError("scientific session objective must be non-empty")
+    state["counters"]["session"] += 1
     session = {
-        "id": str(uuid.uuid4()),
-        "campaign_id": campaign_id,
-        "inquiry_id": inquiry_id,
-        "role": "principal_investigator",
-        "status": "allocated",
+        "id": f"S{state['counters']['session']}",
+        "kind": kind,
+        "objective": objective.strip(),
+        "inquiry_id": active["id"] if isinstance(active, dict) else None,
+        "scientific_parent_commit": git("rev-parse", "HEAD").strip(),
+        "operation_ids": [],
     }
-    state["inquiry_session"] = session
+    state["scientific_session"] = session
     return session
 
 
-def mark_inquiry_session_started(state: dict) -> dict:
-    session = ensure_inquiry_session(state)
-    if session["status"] in {"allocated", "starting"}:
-        session["status"] = "started"
-        write_state(state)
-    return session
-
-
-def mark_inquiry_session_starting(state: dict) -> dict:
-    """Persist intent before the backend creates or resumes its session."""
-    session = ensure_inquiry_session(state)
-    if session["status"] == "allocated":
-        session["status"] = "starting"
-        write_state(state)
-    return session
-
-
-# --- campaign history ------------------------------------------------------
+def mark_scientific_model_ready(state: dict, commit: str) -> None:
+    require_resolvable_commit(commit)
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": commit,
+    }
 
 
 def evaluation_reference(evaluation: dict) -> dict:
-    """Everything except the detail the evaluation artifact already holds."""
     reference = {
         key: value
         for key, value in evaluation.items()
-        if key not in DETAILED_EVIDENCE_FIELDS
+        if key not in {"episode_results", "research_evidence"}
     }
-    _canonicalize_evaluation_artifact(reference)
+    artifact = reference.get("evaluation_artifact")
+    if artifact:
+        reference["evaluation_artifact"] = canonical_repo_path(str(artifact))
     return reference
 
 
 def measurement_evidence(record: dict) -> dict:
-    """Restore detailed outcomes for scientific accounting, keeping record identity."""
     if "episode_results" in record:
         return record
-    artifact = resolve_repo_path(record["evaluation_artifact"])
-    expected_fingerprint = record.get("evaluation_artifact_fingerprint")
-    if expected_fingerprint and file_fingerprint(artifact) != expected_fingerprint:
+    artifact = resolve_repo_path(str(record["evaluation_artifact"]))
+    expected = record.get("evaluation_artifact_fingerprint")
+    if expected and file_fingerprint(artifact) != expected:
         raise ValueError("measurement artifact content changed after recording")
     evidence = json.loads(artifact.read_text(encoding="utf-8"))
     for field in ("episodes", "seed"):
@@ -1187,17 +843,10 @@ def measurement_evidence(record: dict) -> dict:
 
 
 def measurement_record(metrics: dict) -> dict:
-    """State keeps the episode outcomes paired comparison needs, nothing more.
-
-    Researcher-defined evidence stays in the artifact so the protocol state
-    never becomes a second, opaque evidence store. The integer success count is
-    derived from the sealed episode outcomes and is authoritative: percentages
-    are presentation only.
-    """
     record = {
         key: value
         for key, value in metrics.items()
-        if key not in ("model", "research_evidence")
+        if key not in {"model", "research_evidence"}
     }
     episode_results = metrics.get("episode_results")
     if isinstance(episode_results, list) and episode_results:
@@ -1206,140 +855,10 @@ def measurement_record(metrics: dict) -> dict:
             for item in episode_results
             if isinstance(item, dict)
         )
-    elif metrics.get("successes") is not None:
-        record["successes"] = int(metrics["successes"])
-    _canonicalize_evaluation_artifact(record)
-    return record
-
-
-MEASUREMENT_LEDGER_KEYS = {
-    "research_evaluation": (
-        "requested_evaluations",
-        "partial_evaluations",
-        "preparation_evaluations",
-    ),
-    "task_reference": (
-        "task_reference_evaluations",
-        "partial_task_reference_evaluations",
-        "preparation_task_reference_evaluations",
-    ),
-}
-
-
-def campaign_coverage(records: list[dict]) -> dict:
-    """Campaign-level episode identity coverage, per instrument.
-
-    Deterministic episode identity does not depend on the model: research
-    evaluations are identified by ``(evaluation_semantics, episode_seed)`` and
-    task-reference measurements by ``(panel, episode_seed)``. Distinct coverage
-    counts each identity once across every model and round; executions count
-    every episode run. Repeated coverage is the difference, so the same panel
-    reused across models is reported as repetition rather than as new coverage.
-
-    Every persisted ledger of an instrument is counted, not only the executed
-    request. A preparation round consumes real episodes, so omitting it made the
-    brief understate both the coverage already spent and the intervals a new
-    panel must avoid.
-    """
-    buckets: dict[str, dict] = {
-        "research_evaluation": {"identities": set(), "executions": 0},
-        "task_reference": {"identities": set(), "executions": 0},
-    }
-    for record in records:
-        if not isinstance(record, dict):
-            continue
-        for key in MEASUREMENT_LEDGER_KEYS["research_evaluation"]:
-            for item in record.get(key) or []:
-                if not isinstance(item, dict):
-                    continue
-                metrics = item.get("metrics") or {}
-                bucket = buckets["research_evaluation"]
-                _add_episode_identities(
-                    bucket,
-                    instrument="research_evaluation",
-                    marker=str(
-                        item.get(
-                            "evaluation_semantics",
-                            metrics.get("evaluation_semantics", ""),
-                        )
-                    ),
-                    seed=int(item.get("seed", metrics.get("seed", 0)) or 0),
-                    episodes=int(item.get("episodes", metrics.get("episodes", 0)) or 0),
-                )
-        for key in MEASUREMENT_LEDGER_KEYS["task_reference"]:
-            for item in record.get(key) or []:
-                if not isinstance(item, dict):
-                    continue
-                metrics = item.get("metrics") or {}
-                _add_episode_identities(
-                    buckets["task_reference"],
-                    instrument="task_reference",
-                    marker=str(item.get("panel", metrics.get("panel", ""))),
-                    seed=int(item.get("seed", metrics.get("seed", 0)) or 0),
-                    episodes=int(item.get("episodes", metrics.get("episodes", 0)) or 0),
-                )
-    return {
-        name: {
-            "distinct_episodes": len(bucket["identities"]),
-            "episode_executions": bucket["executions"],
-            "repeated_episodes": bucket["executions"] - len(bucket["identities"]),
-        }
-        for name, bucket in buckets.items()
-    }
-
-
-def _add_episode_identities(
-    bucket: dict, *, instrument: str, marker: str, seed: int, episodes: int
-) -> None:
-    if episodes <= 0:
-        return
-    bucket["executions"] += episodes
-    identities = bucket["identities"]
-    for offset in range(episodes):
-        identities.add((instrument, marker, seed + offset))
-
-
-def compact_result_record(result: dict) -> dict:
-    """History keeps identity, score and artifact references, never the evidence."""
-    record = dict(result)
-    if "replication_of" in record:
-        try:
-            record["replication_of"] = int(record["replication_of"])
-        except (TypeError, ValueError):
-            pass
-    candidates = record.get("candidates")
-    if isinstance(candidates, list):
-        record["candidates"] = [
-            {
-                **candidate,
-                "evaluations": [
-                    evaluation_reference(item)
-                    for item in candidate.get("evaluations") or []
-                ],
-            }
-            if isinstance(candidate, dict)
-            else candidate
-            for candidate in candidates
-        ]
-    requested = record.get("requested_evaluations")
-    if isinstance(requested, list):
-        record["requested_evaluations"] = [
-            {**item, "metrics": evaluation_reference(item.get("metrics") or {})}
-            if isinstance(item, dict)
-            else item
-            for item in requested
-        ]
-    task_references = record.get("task_reference_evaluations")
-    if isinstance(task_references, list):
-        record["task_reference_evaluations"] = [
-            dict(item) if isinstance(item, dict) else item for item in task_references
-        ]
-    _canonicalize_result_artifacts(record)
     return record
 
 
 def history_records() -> list[dict]:
-    """The authoritative campaign history, oldest first."""
     if not paths.RESULTS_PATH.exists():
         return []
     return [
@@ -1349,251 +868,62 @@ def history_records() -> list[dict]:
     ]
 
 
-def result_records() -> list[dict]:
-    """The authoritative experiment history, excluding inquiry-only records."""
-    return [
-        record
-        for record in history_records()
-        if record.get("record_type", "experiment") == "experiment"
+def render_operation_log(records: list[dict]) -> str:
+    lines = [
+        "# Campaign operation log",
+        "",
+        "| Operation | Kind | Inquiry | Result |",
+        "|---|---|---|---|",
     ]
-
-
-def result_records_for_campaign(campaign_id: str) -> list[dict]:
-    """Filter result records to a specific campaign, ordered oldest first."""
-    return [
-        record
-        for record in result_records()
-        if record.get("campaign_id") == campaign_id
-    ]
-
-
-def history_records_for_campaign(campaign_id: str) -> list[dict]:
-    """Filter all experiment and inquiry records to one campaign."""
-    return [
-        record
-        for record in history_records()
-        if record.get("campaign_id") == campaign_id
-    ]
-
-
-def latest_recorded_experiment() -> int | None:
-    records = result_records()
-    return int(records[-1]["index"]) if records else None
-
-
-def compact_measurement_summary(record: dict) -> str:
-    """Summarize checkpoint coverage without repeating every checkpoint."""
-    candidates = [
-        candidate
-        for candidate in record.get("candidates") or []
-        if isinstance(candidate, dict)
-    ]
-    task_references = [
-        item
-        for item in record.get("task_reference_evaluations") or []
-        if isinstance(item, dict)
-    ]
-    task_reference_candidates = {
-        str(item.get("candidate", "checkpoint")) for item in task_references
-    }
-    measured = 0
-    groups: dict[tuple[str, str], int] = {}
-    for candidate in candidates:
-        evaluations = [
-            item
-            for item in candidate.get("evaluations") or []
-            if isinstance(item, dict)
-        ]
-        name = str(candidate.get("name", "checkpoint"))
-        if evaluations or name in task_reference_candidates:
-            measured += 1
-        for evaluation in evaluations:
-            instrument = str(evaluation.get("instrument", "research_evaluation"))
-            panel = str(evaluation.get("panel") or instrument)
-            groups[(instrument, panel)] = groups.get((instrument, panel), 0) + 1
-    for evaluation in task_references:
-        instrument = str(evaluation.get("instrument", "task_reference"))
-        panel = str(evaluation.get("panel") or instrument)
-        groups[(instrument, panel)] = groups.get((instrument, panel), 0) + 1
-    if not candidates and not groups:
-        return "unmeasured"
-    unmeasured = max(len(candidates) - measured, 0)
-    parts = [
-        f"{measured} measured checkpoint{'s' if measured != 1 else ''}",
-        f"{unmeasured} unmeasured checkpoint{'s' if unmeasured != 1 else ''}",
-    ]
-    parts.extend(
-        f"{instrument}/{panel}: {count} measurement{'s' if count != 1 else ''}"
-        for (instrument, panel), count in sorted(groups.items())
-    )
-    return "; ".join(parts)
-
-
-def experiment_log_row(record: dict) -> str:
-    from research.runner_protocol import operation_description
-
-    def cell(value: object) -> str:
-        return " ".join(str(value).replace("|", "/").split())
-
-    def intervention() -> str:
-        parameter_changes = record.get("parameter_changes") or []
-        if parameter_changes:
-            return "; ".join(
-                f"{item['path']}: {item.get('before')} -> {item.get('after')}"
-                for item in parameter_changes
-            )
-        code_changes = record.get("code_changes") or []
-        if code_changes:
-            return f"{operation_description(record) or '-'}; files: {', '.join(code_changes)}"
-        return operation_description(record) or "-"
-
-    measurements = compact_measurement_summary(record)
-
-    closure = record.get("method_decision") or record.get("baseline_decision") or {}
-    decisions = []
-    if closure.get("action"):
-        decisions.append(f"method {closure['action']}")
-    if closure.get("candidate"):
-        decisions.append(f"candidate {closure['candidate']}")
-    best_known = closure.get("best_known")
-    if isinstance(best_known, dict) and best_known.get("candidate"):
-        decisions.append(f"best known {best_known['candidate']}")
-    code = closure.get("code")
-    if isinstance(code, dict) and code.get("action"):
-        decisions.append(f"code {code['action']}")
-    if not decisions:
-        decisions.append(record.get("verdict", "-"))
-
-    operation = operation_description(record) or record.get("kind", "-")
-    parent = record.get("training_parent", "-")
-    return (
-        f"| {record['index']} | {cell(operation)} / parent {cell(parent)} | "
-        f"{cell(intervention())} | {cell(measurements)} | "
-        f"{cell(record.get('hypothesis_assessment', '-'))} | "
-        f"{cell('; '.join(str(item) for item in decisions))} |"
-    )
-
-
-def render_experiment_log(records: list[dict]) -> str:
-    experiments = [
-        record
-        for record in records
-        if record.get("record_type", "experiment") == "experiment"
-    ]
-    inquiries = [record for record in records if record.get("record_type") == "inquiry"]
-    rendered = EXPERIMENT_LOG_HEADER + "".join(
-        experiment_log_row(record) + "\n" for record in experiments
-    )
-    if inquiries:
-        rendered += (
-            "\n## Inquiry outcomes\n\n"
-            "| Inquiry | Outcome | Experiments | Measurement rounds |\n"
-            "|---:|---|---|---:|\n"
+    for record in records:
+        result = record.get("result") or {}
+        summary = str(
+            result.get("summary")
+            or result.get("status")
+            or result.get("outcome")
+            or "completed"
         )
-        for record in inquiries:
-            outcome = " ".join(
-                str(record.get("outcome", "-")).replace("|", "/").split()
-            )
-            experiments_text = (
-                ", ".join(str(index) for index in record.get("experiments", [])) or "-"
-            )
-            rendered += (
-                f"| {record['inquiry_id']} | {outcome} | {experiments_text} | "
-                f"{len(record.get('measurement_rounds') or [])} |\n"
-            )
-    return rendered
+        summary = " ".join(summary.replace("|", "/").split())
+        lines.append(
+            f"| {record.get('id', '-')} | {record.get('kind', '-')} | "
+            f"{record.get('inquiry_id') or '-'} | {summary} |"
+        )
+    return "\n".join(lines) + "\n"
 
 
-def regenerate_experiment_log() -> None:
-    """Rewrite the human-readable view from the authoritative history.
-
-    Written atomically so an interruption leaves either the previous derived
-    view or the current one, never a partial second history.
-    """
-    atomic_write_text(paths.LOG_PATH, render_experiment_log(history_records()))
+def regenerate_operation_log() -> None:
+    atomic_write_text(paths.LOG_PATH, render_operation_log(history_records()))
 
 
-def synchronize_experiment_log() -> None:
-    """Recover the derived view if a crash landed between append and regeneration."""
-    if not paths.LOG_PATH.exists():
-        regenerate_experiment_log()
-        return
-    expected = render_experiment_log(history_records())
-    if paths.LOG_PATH.read_text(encoding="utf-8") != expected:
+def synchronize_operation_log() -> None:
+    expected = render_operation_log(history_records())
+    if (
+        not paths.LOG_PATH.exists()
+        or paths.LOG_PATH.read_text(encoding="utf-8") != expected
+    ):
         atomic_write_text(paths.LOG_PATH, expected)
 
 
-def append_result(result: dict) -> None:
-    """Record one experiment in the authoritative history, then derive the view."""
-    record = compact_result_record(result)
-    record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
-    with paths.RESULTS_PATH.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, sort_keys=True) + "\n")
-    regenerate_experiment_log()
-
-
-def upsert_inquiry_result(result: dict) -> None:
-    record = compact_result_record(result)
-    record["record_type"] = "inquiry"
-    record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
-    campaign_id = record.get("campaign_id")
-    inquiry_id = record.get("inquiry_id")
-    if not campaign_id or not isinstance(inquiry_id, int):
-        raise ValueError("an inquiry record needs campaign_id and integer inquiry_id")
-    updated: list[dict] = []
-    replaced = False
-    for existing in history_records():
-        if (
-            existing.get("record_type") == "inquiry"
-            and existing.get("campaign_id") == campaign_id
-            and existing.get("inquiry_id") == inquiry_id
-        ):
-            if not replaced:
-                updated.append(record)
-                replaced = True
-            continue
-        updated.append(existing)
-    if not replaced:
-        updated.append(record)
-    atomic_write_text(
-        paths.RESULTS_PATH,
-        "".join(json.dumps(item, sort_keys=True) + "\n" for item in updated),
-    )
-    regenerate_experiment_log()
-
-
-def upsert_result(result: dict) -> None:
-    """Atomically replace one experiment record and rebuild its view."""
-    record = compact_result_record(result)
-    record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
-    campaign_id = record.get("campaign_id")
-    index = record.get("index")
-    if not campaign_id or not isinstance(index, int):
-        raise ValueError("an experiment result needs campaign_id and integer index")
+def upsert_operation_event(event: dict) -> None:
     records = history_records()
-    replaced = False
     updated: list[dict] = []
+    replaced = False
     for existing in records:
-        if (
-            existing.get("record_type", "experiment") == "experiment"
-            and existing.get("campaign_id") == campaign_id
-            and existing.get("index") == index
-        ):
+        if existing.get("campaign_id") == event.get("campaign_id") and existing.get(
+            "id"
+        ) == event.get("id"):
             if not replaced:
-                updated.append(record)
+                updated.append(copy.deepcopy(event))
                 replaced = True
             continue
         updated.append(existing)
     if not replaced:
-        updated.append(record)
+        updated.append(copy.deepcopy(event))
     atomic_write_text(
         paths.RESULTS_PATH,
         "".join(json.dumps(item, sort_keys=True) + "\n" for item in updated),
     )
-    regenerate_experiment_log()
-
-
-# --- checkpoints and artifacts ---------------------------------------------
+    regenerate_operation_log()
 
 
 def require_complete_artifact(artifact: Path, description: str) -> None:
@@ -1610,33 +940,26 @@ def require_complete_inference_artifact(artifact: Path, description: str) -> Non
 
 def artifact_fingerprint(artifact: Path) -> str:
     digest = hashlib.sha256()
-
     for filename in ARTIFACT_FILES:
         digest.update((artifact / filename).read_bytes())
-
     for filename in OPTIONAL_ARTIFACT_FILES:
         path = artifact / filename
         if path.is_file():
             digest.update(path.read_bytes())
-
     return digest.hexdigest()
 
 
 def file_fingerprint(path: Path) -> str:
-    """Return the immutable content identity of one evidence file."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def copy_artifact(source: Path, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
-
     for filename in ARTIFACT_FILES:
         shutil.copyfile(source / filename, destination / filename)
-
     for filename in OPTIONAL_ARTIFACT_FILES:
         source_file = source / filename
         destination_file = destination / filename
-
         if source_file.is_file():
             shutil.copyfile(source_file, destination_file)
         else:
@@ -1644,161 +967,84 @@ def copy_artifact(source: Path, destination: Path) -> None:
 
 
 def durable_artifact_destination(
-    *,
-    campaign_id: str | None,
-    origin_experiment: int,
-    candidate: str,
-    fingerprint: str,
+    *, campaign_id: str, origin_operation: str, candidate: str, fingerprint: str
 ) -> Path:
-    """Return the stable tracked archive location for one immutable artifact."""
     checkpoint = hashlib.sha256(candidate.encode("utf-8")).hexdigest()[:8]
     return paths.campaign_retained_root(campaign_id) / (
-        f"e{origin_experiment}-c{checkpoint}-{fingerprint}"
+        f"{origin_operation.lower()}-c{checkpoint}-{fingerprint}"
     )
 
 
-def validate_artifact_publication(publication: dict) -> None:
-    source = resolve_repo_path(str(publication["source"]))
-    destination = resolve_repo_path(str(publication["destination"]))
-    expected = str(publication["fingerprint"])
-    require_complete_inference_artifact(source, "lineage source")
-    if artifact_fingerprint(source) != expected:
-        raise ValueError(f"lineage source fingerprint changed: {source}")
-    if destination.exists():
-        require_complete_inference_artifact(destination, "durable lineage destination")
-        if artifact_fingerprint(destination) != expected:
-            raise ValueError(
-                f"durable lineage destination collides with a different artifact: "
-                f"{destination}"
-            )
-
-
 def publish_artifact(publication: dict) -> None:
-    """Publish one complete artifact without overwriting a different one."""
     source = resolve_repo_path(str(publication["source"]))
     destination = resolve_repo_path(str(publication["destination"]))
     expected = str(publication["fingerprint"])
+    require_complete_inference_artifact(source, "candidate source")
+    if artifact_fingerprint(source) != expected:
+        raise ValueError("candidate source fingerprint changed")
     if destination.exists():
-        require_complete_inference_artifact(destination, "durable lineage destination")
+        require_complete_inference_artifact(destination, "durable candidate")
         if artifact_fingerprint(destination) != expected:
-            raise ValueError(
-                "durable lineage destination collides with a different artifact: "
-                f"{destination}"
-            )
+            raise ValueError("durable candidate collides with a different artifact")
         return
-    validate_artifact_publication(publication)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(f".{destination.name}.tmp")
     try:
         if temporary.exists():
             shutil.rmtree(temporary)
         copy_artifact(source, temporary)
-        require_complete_inference_artifact(temporary, "staged durable lineage")
+        require_complete_inference_artifact(temporary, "staged durable candidate")
         if artifact_fingerprint(temporary) != expected:
-            raise ValueError("staged durable lineage fingerprint does not match")
-        if destination.exists():
-            validate_artifact_publication(publication)
-            return
+            raise ValueError("staged durable candidate fingerprint does not match")
         _atomic_replace(temporary, destination)
     finally:
         if temporary.exists():
             shutil.rmtree(temporary)
 
 
-def remove_heavyweight_artifacts(artifact: Path) -> None:
-    for filename in (
-        "model.zip",
-        "vecnormalize.pkl",
-        "replay_buffer.pkl",
-        "policy_runtime.pkl",
-    ):
-        (artifact / filename).unlink(missing_ok=True)
-
-
-def role_and_retention_artifacts(state: dict) -> set[Path]:
-    """Artifacts that cleanup must preserve even when labels are removed."""
-    active_method = state.get("active_method")
-    method_lineage = (
-        active_method.get("current_lineage")
-        if isinstance(active_method, dict)
-        else None
-    )
-    records = [
-        state.get("working_lineage"),
-        state.get("best_known_lineage"),
-        method_lineage,
-        *(state.get("retained_lineages") or []),
-    ]
-    return {
-        resolve_repo_path(record["artifact"])
-        for record in records
-        if isinstance(record, dict) and record.get("artifact")
-    }
-
-
-def evaluation_artifact_paths(evaluations: list[dict] | None) -> list[str]:
-    return [
-        canonical_repo_path(str(item["evaluation_artifact"]))
-        for item in evaluations or []
-        if item.get("evaluation_artifact")
-    ]
-
-
 def archive_candidates(
-    index: int,
+    operation_id: str,
     contenders: list[dict],
     config: dict,
-    campaign_id: str | None = None,
+    *,
+    campaign_id: str,
 ) -> list[dict]:
-    destination = paths.campaign_checkpoint_root(campaign_id) / f"experiment-{index}"
-    if destination.exists():
-        try:
-            archived = json.loads(
-                (destination / "inventory.json").read_text(encoding="utf-8")
-            )["candidates"]
-            archived_config = json.loads(
-                (destination / "parameters.json").read_text(encoding="utf-8")
+    destination = paths.campaign_checkpoint_root(campaign_id) / operation_id.lower()
+    inventory_path = destination / "inventory.json"
+    parameters_path = destination / "parameters.json"
+    if inventory_path.is_file() and parameters_path.is_file():
+        archived = json.loads(inventory_path.read_text(encoding="utf-8"))["candidates"]
+        if json.loads(parameters_path.read_text(encoding="utf-8")) != config:
+            raise ValueError("archived candidate configuration changed")
+        for item in archived:
+            artifact = resolve_repo_path(item["artifact"])
+            require_complete_inference_artifact(
+                artifact, f"archived candidate {item['name']!r}"
             )
-            expected = {
-                (str(item["name"]), int(item["timesteps"]))
-                for item in contenders
-                if item["kind"] == "candidate"
-            }
-            actual = {(str(item["name"]), int(item["timesteps"])) for item in archived}
-            if archived_config != config or actual != expected:
-                raise ValueError("archived candidate identity changed")
-            for item in archived:
-                require_complete_inference_artifact(
-                    resolve_repo_path(item["artifact"]),
-                    f"archived candidate {item['name']!r}",
-                )
-            return archived
-        except (KeyError, OSError, TypeError, ValueError):
-            shutil.rmtree(destination)
+            if artifact_fingerprint(artifact) != item["fingerprint"]:
+                raise ValueError("archived candidate fingerprint changed")
+        return archived
+    if destination.exists():
+        shutil.rmtree(destination)
     destination.mkdir(parents=True)
     archived: list[dict] = []
     for contender in contenders:
-        if contender["kind"] != "candidate":
-            continue
-        name = contender["name"]
+        name = str(contender["name"])
         artifact = destination / name
         copy_artifact(contender["path"], artifact)
         archived.append(
             {
                 "name": name,
                 "artifact": repo_relative_path(artifact),
+                "fingerprint": artifact_fingerprint(artifact),
                 "timesteps": int(contender["timesteps"]),
                 "training_success": contender.get("training_success"),
                 "ep_rew_mean": contender.get("ep_rew_mean"),
-                "evaluations": [],
             }
         )
-    atomic_write_json(destination / "parameters.json", config)
+    atomic_write_json(parameters_path, config)
     atomic_write_json(
-        destination / "inventory.json",
-        {
-            "schema_version": 1,
-            "candidates": archived,
-        },
+        inventory_path,
+        {"schema_version": 1, "operation": operation_id, "candidates": archived},
     )
     return archived

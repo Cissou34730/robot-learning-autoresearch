@@ -55,10 +55,8 @@ def test_campaign_lab_publication_has_separate_provenance(monkeypatch, tmp_path)
     lab = tmp_path / "research" / "lab"
     lab.mkdir(parents=True)
     (lab / "diagnose.py").write_text("VALUE = 1\n", encoding="utf-8")
-    state = {"campaign_lab": None}
     committed = []
     validated = []
-    written = []
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr(
         repository,
@@ -75,17 +73,13 @@ def test_campaign_lab_publication_has_separate_provenance(monkeypatch, tmp_path)
         lambda scope: validated.append(scope),
     )
     monkeypatch.setattr(repository, "git", lambda *args: "lab-commit\n")
-    monkeypatch.setattr(repository, "write_state", lambda value: written.append(value))
 
-    provenance = repository.publish_campaign_laboratory(state)
+    provenance = repository.publish_campaign_laboratory("M2")
 
     assert validated == [["research/lab/diagnose.py"]]
-    assert committed == [
-        ("camp: update campaign laboratory", ["research/lab/diagnose.py"])
-    ]
+    assert committed == [("camp: M2 measurement tools", ["research/lab/diagnose.py"])]
     assert provenance["commit"] == "lab-commit"
     assert provenance["manifest"][0]["path"] == "research/lab/diagnose.py"
-    assert written[-1]["campaign_lab"]["fingerprint"] == provenance["fingerprint"]
 
 
 def test_campaign_lab_is_validated_before_it_is_committed(monkeypatch, tmp_path):
@@ -108,7 +102,7 @@ def test_campaign_lab_is_validated_before_it_is_committed(monkeypatch, tmp_path)
     )
 
     with pytest.raises(RuntimeError, match="invalid Python syntax"):
-        repository.publish_campaign_laboratory({"campaign_lab": None})
+        repository.publish_campaign_laboratory("M2")
 
     assert committed == []
 

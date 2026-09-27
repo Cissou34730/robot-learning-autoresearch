@@ -18,24 +18,28 @@ from robot_learning.scenario.final_benchmark import research_panel_overlaps_prot
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _request(panels: list[tuple[int, int]], *, instrument: str = "research_evaluation") -> dict:
+def _request(
+    panels: list[tuple[int, int]], *, instrument: str = "research_evaluation"
+) -> dict:
     measurements = []
     for index, (seed, episodes) in enumerate(panels):
         entry: dict = {
             "instrument": instrument,
             "candidate": f"candidate-{index}",
-            "selection": "observed signal",
-            "omitted_alternative": None,
         }
         if instrument == "research_evaluation":
             entry.update({"seed": seed, "episodes": episodes})
         measurements.append(entry)
-    return {"experiment": 1, "question": "q", "reason": "r", "measurements": measurements}
+    return {
+        "description": "Measure a development panel.",
+        "rationale": "The PI will interpret the factual result.",
+        "measurements": measurements,
+    }
 
 
 def test_official_panel_overlap_is_rejected():
     request = _request([(final_contract.EVALUATION_SEED, 10)])
-    protocol.validate_evaluation_request(request)
+    protocol.validate_measurement_request(request)
     with pytest.raises(ValueError, match="protected benchmark evidence"):
         protocol.validate_panel_independence(
             request, [], protected_overlap=research_panel_overlaps_protected
@@ -62,7 +66,7 @@ def test_generic_runner_does_not_read_the_protected_panel():
 
 
 def test_partial_overlap_with_a_prior_research_panel_is_rejected():
-    with pytest.raises(ValueError, match="previously recorded research panel"):
+    with pytest.raises(ValueError, match="prior evidence"):
         protocol.validate_panel_independence(_request([(100, 200)]), [(150, 200)])
 
 
@@ -81,7 +85,7 @@ def test_several_candidates_on_one_identical_panel_are_accepted():
 
 
 def test_partial_overlap_within_one_request_is_rejected():
-    with pytest.raises(ValueError, match="within one request"):
+    with pytest.raises(ValueError, match="within the request"):
         protocol.validate_panel_independence(_request([(100, 200), (150, 200)]), [])
 
 
@@ -92,7 +96,7 @@ def test_task_reference_panel_is_not_checked():
 
 
 def test_request_without_purpose_is_accepted():
-    protocol.validate_evaluation_request(_request([(100, 200)]))
+    protocol.validate_measurement_request(_request([(100, 200)]))
 
 
 def test_terminal_validation_machinery_is_removed():
