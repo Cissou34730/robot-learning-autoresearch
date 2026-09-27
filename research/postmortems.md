@@ -2,11 +2,11 @@
 
 ## bb00eecc-8011-4046-b8e7-823d3c432962 / Scientific strategy
 
-**Current synthesis:** The unchanged PPO baseline learned reliable reach-and-hold behavior, but the best measured checkpoint remains just below the human objective. Checkpoint-100352 is the strongest available policy: it achieved 194/200 on the disjoint confirmation panel and 389/400 pooled across the two research panels. Continued training to checkpoint-120832 regressed the measured outcome, while checkpoint-95232 was slightly weaker but remains a useful lower-step alternative.
+**Current synthesis:** The unchanged PPO baseline learned reliable reach-and-hold behavior, with checkpoint-100352 the strongest available policy at 194/200 on the disjoint research panel and 389/400 pooled across both research panels. Its fixed task-reference result was 196/200, but this remains development evidence rather than an official result. The four task-reference failures were all inner-radius targets between 6.73 and 9.91 cm, while the training distribution sampled only 14-20 cm; continued training to checkpoint-120832 also regressed relative to checkpoint-100352.
 
-**Lessons and limits:** Direct task measurements, not training proxies, distinguish the candidates. Checkpoint-100352 was selected by earlier panels, so those scores are not independent confirmation; the disjoint 3000-3199 panel provides the relevant confirmation and still reports 194/200. The fixed task-reference result of 196/200 is development evidence only and does not establish the official objective. The baseline does not identify which residual failure modes limit performance or whether another recipe can exceed 98%.
+**Lessons and limits:** Direct task measurements, not training proxies, distinguish the candidates. The disjoint 3000-3199 panel confirms near-objective behavior, but no development measurement establishes the official objective. The inner-radius failure pattern is consistent with a training-distribution gap, not proof of its cause; the measured panels are finite and the selected policy has already been evaluated on them.
 
-**Open questions:** Whether a subsequent intervention can eliminate the remaining failures without reproducing the post-100352 regression remains unresolved. The retained 95232-step policy provides a measured alternative for future continuation or comparison.
+**Open questions:** It remains unresolved whether exposure to the full 6-20 cm target-radius range improves inner-target reach-and-hold reliability without degrading performance elsewhere. It is also unresolved whether the post-100352 regression reflects ordinary continued-training variance or a broader optimization limitation.
 
 ## bb00eecc-8011-4046-b8e7-823d3c432962 / Experiment 1
 
