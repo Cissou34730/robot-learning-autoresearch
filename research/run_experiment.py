@@ -171,10 +171,8 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "scientific_commit": None,
             "effective_parameters": research_config.load_experiment_config(),
             "candidate_dir": None,
-            "recovery_candidate": None,
             "archived_candidates": None,
             "result": None,
-            "last_error": None,
         }
     if kind == "measurement":
         measurement = request["measurement"]
@@ -221,10 +219,12 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "module_provenance": module_provenance,
             "partial_results": [],
             "result": None,
-            "last_error": None,
         }
     if kind == "inquiry":
-        return {"plan": protocol.plan_inquiry_operation(request["inquiry"], state)}
+        return {
+            "plan": protocol.plan_inquiry_operation(request["inquiry"], state),
+            "result": None,
+        }
     if kind == "checkpoint":
         parent_commit = str(session["scientific_parent_commit"])
         repository.require_resolvable_commit(parent_commit)
@@ -242,11 +242,13 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "scientific_paths": list(changed),
             "effective_parameters": research_config.load_experiment_config(),
             "scientific_commit": None,
+            "result": None,
         }
     if kind == "model_role":
         return {
             "plan": protocol.plan_model_role(request["model_role"], state),
             "publication": None,
+            "result": None,
         }
     if kind == "restore_recipe":
         plan = protocol.plan_recipe_restore(request["restore_recipe"], state)
@@ -255,10 +257,13 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "pre_restore_manifest": _scientific_manifest(
                 [*plan["restore"], *plan["remove_created"]]
             ),
-            "last_error": None,
+            "result": None,
         }
     return {
-        "plan": protocol.plan_campaign_conclusion(request["campaign_conclusion"], state)
+        "plan": protocol.plan_campaign_conclusion(
+            request["campaign_conclusion"], state
+        ),
+        "result": None,
     }
 
 
@@ -284,6 +289,8 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
         "request": copy.deepcopy(request),
         "request_fingerprint": fingerprint,
         "progress": "accepted",
+        "failure": None,
+        "supersedes": None,
         "data": _transaction_data(kind, request, state),
     }
     state["pending_operation"] = pending
@@ -296,7 +303,7 @@ def reaccept_pending_operation(state: dict | None = None) -> dict:
     previous = state["pending_operation"]
     if not isinstance(previous, dict):
         raise TypeError("there is no pending Runner operation to reaccept")
-    if not str(previous["data"].get("last_error") or "").strip():
+    if not str(previous.get("failure") or "").strip():
         raise ValueError("only a failed Runner operation can be reaccepted")
     request = copy.deepcopy(previous["request"])
     state["pending_operation"] = None
@@ -304,7 +311,6 @@ def reaccept_pending_operation(state: dict | None = None) -> dict:
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
     data = _transaction_data(kind, request, state)
-    data["supersedes"] = previous["id"]
     pending = {
         "id": identifier,
         "kind": kind,
@@ -313,14 +319,38 @@ def reaccept_pending_operation(state: dict | None = None) -> dict:
         "request": request,
         "request_fingerprint": _canonical_fingerprint(request),
         "progress": "accepted",
+        "failure": None,
+        "supersedes": previous["id"],
         "data": data,
     }
+    failed_event = _event_for(
+        state,
+        previous,
+        {"status": "failed", "error": previous["failure"]},
+        status="failed",
+        superseded_by=identifier,
+    )
+    repository.upsert_operation_event(failed_event)
+    state["operation_events"].append(
+        {key: value for key, value in failed_event.items() if key != "campaign_id"}
+    )
     state["pending_operation"] = pending
     repository.write_state(state)
+    if not repository.commit_runner_memory(
+        f"supersede {previous['id']} with {identifier}"
+    ):
+        repository.push_head()
     return pending
 
 
-def _event_for(state: dict, pending: dict, result: dict) -> dict:
+def _event_for(
+    state: dict,
+    pending: dict,
+    result: dict,
+    *,
+    status: str = "completed",
+    superseded_by: str | None = None,
+) -> dict:
     inquiry_id = pending["inquiry_id"]
     if pending["kind"] == "inquiry" and result.get("action") == "open":
         inquiry_id = result["inquiry_id"]
@@ -332,6 +362,10 @@ def _event_for(state: dict, pending: dict, result: dict) -> dict:
         "inquiry_id": inquiry_id,
         "request": copy.deepcopy(pending["request"][pending["kind"]]),
         "result": copy.deepcopy(result),
+        "status": status,
+        "error": pending.get("failure") if status == "failed" else None,
+        "supersedes": pending.get("supersedes"),
+        "superseded_by": superseded_by,
         "completed_at": _now(),
     }
 
@@ -814,7 +848,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
         )
         return 130
     except Exception as error:
-        data["last_error"] = str(error)[:500]
+        pending["failure"] = str(error)[:500]
         repository.write_state(state)
         raise
 
@@ -834,29 +868,64 @@ def execute_measurement(state: dict, pending: dict) -> int:
         if item["instrument"] != "research_evaluation":
             continue
         by_candidate.setdefault(item["candidate"], []).append(evidence)
-    comparisons = execution.requested_paired_comparisons(
-        {"paired_comparisons": data["paired_comparisons"]}, by_candidate
-    )
-    artifacts_by_candidate: dict[str, list[str]] = {}
-    for item in partials:
-        if item["instrument"] != "research_evaluation":
-            continue
-        artifacts_by_candidate.setdefault(item["candidate"], []).append(
-            item["metrics"]["evaluation_artifact"]
+    comparisons: list[dict] = []
+    for frozen in data["paired_comparisons"]:
+        shared_seeds = set(frozen["shared_episode_seeds"])
+
+        def contributing_evidence(
+            indexes: list[int], shared: set[int] = shared_seeds
+        ) -> list[dict]:
+            selected: list[dict] = []
+            for index in indexes:
+                evidence = copy.deepcopy(verified_evidence[index])
+                evidence["episode_results"] = [
+                    item
+                    for item in evidence["episode_results"]
+                    if int(item["episode_seed"]) in shared
+                ]
+                evidence["episodes"] = len(evidence["episode_results"])
+                if evidence["episodes"]:
+                    selected.append(evidence)
+            return selected
+
+        candidate_evidence = contributing_evidence(
+            frozen["candidate_measurement_indexes"]
         )
-    for comparison, frozen in zip(comparisons, data["paired_comparisons"], strict=True):
+        reference_evidence = contributing_evidence(
+            frozen["reference_measurement_indexes"]
+        )
+        comparison = execution.requested_paired_comparisons(
+            {
+                "paired_comparisons": [
+                    {
+                        "candidate": frozen["candidate"],
+                        "reference": frozen["reference"],
+                    }
+                ]
+            },
+            {
+                frozen["candidate"]: candidate_evidence,
+                frozen["reference"]: reference_evidence,
+            },
+        )[0]
+        contributing_indexes = list(
+            dict.fromkeys(
+                [
+                    *frozen["candidate_measurement_indexes"],
+                    *frozen["reference_measurement_indexes"],
+                ]
+            )
+        )
         comparison.update(
             candidate_model_fingerprint=frozen["candidate_model_fingerprint"],
             reference_model_fingerprint=frozen["reference_model_fingerprint"],
-            source_artifacts=list(
-                dict.fromkeys(
-                    [
-                        *artifacts_by_candidate[frozen["candidate"]],
-                        *artifacts_by_candidate[frozen["reference"]],
-                    ]
-                )
-            ),
+            shared_episode_seeds=list(frozen["shared_episode_seeds"]),
+            source_artifacts=[
+                partials[index]["metrics"]["evaluation_artifact"]
+                for index in contributing_indexes
+            ],
         )
+        comparisons.append(comparison)
     result = {
         "status": "completed",
         "measurements": copy.deepcopy(partials),
@@ -1002,7 +1071,7 @@ def execute_training(state: dict, pending: dict) -> int:
         )
         return 130
     except Exception as error:
-        data["last_error"] = str(error)[:500]
+        pending["failure"] = str(error)[:500]
         repository.write_state(state)
         raise
 
@@ -1077,7 +1146,7 @@ def execute_pending_operation() -> int:
             return _execute_campaign_conclusion(state, pending)
         raise RuntimeError(f"unsupported pending operation kind: {kind}")
     except Exception as error:
-        pending["data"]["last_error"] = str(error)[:500]
+        pending["failure"] = str(error)[:500]
         repository.write_state(state)
         raise
 
@@ -1129,6 +1198,7 @@ def main() -> int:
         if check_scientific_model_deliverable() != 0:
             return 1
         state = repository.load_state(allow_missing_artifact=True)
+        repository.require_scientific_model_publication_pending(state)
         repository.commit_paths(
             repository.campaign_commit_message("scientific model"),
             ["research/scientific_model.md"],
@@ -1137,12 +1207,14 @@ def main() -> int:
         repository.require_path_at_commit(commit, "research/scientific_model.md")
         repository.mark_scientific_model_ready(state, commit)
         repository.write_state(state)
+        if not repository.commit_runner_memory("publish scientific model"):
+            repository.push_head()
         return 0
     if args.reaccept_pending:
         pending = reaccept_pending_operation()
         print(
             f"OPERATION_REACCEPTED: {pending['id']} supersedes "
-            f"{pending['data']['supersedes']}"
+            f"{pending['supersedes']}"
         )
         return 0
     if args.start_session:

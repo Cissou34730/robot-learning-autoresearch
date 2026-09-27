@@ -478,12 +478,97 @@ def test_comparisons_are_resolved_to_planned_canonical_candidates_at_acceptance(
     assert comparison["reference"] == first["id"]
     assert comparison["candidate_model_fingerprint"] == second["fingerprint"]
     assert comparison["reference_model_fingerprint"] == first["fingerprint"]
+    assert comparison["shared_episode_seeds"] == [100, 101]
+    assert comparison["candidate_measurement_indexes"] == [1]
+    assert comparison["reference_measurement_indexes"] == [0]
     invalid = json.loads(json.dumps(request))
     invalid["measurement"]["paired_comparisons"][0]["candidate"] = "typo"
     state = repository.read_state()
     state["pending_operation"] = None
     with pytest.raises(KeyError, match="unknown model candidate"):
         run_experiment.accept_operation(invalid, state)
+
+
+def test_paired_comparison_uses_only_the_exact_frozen_shared_episodes(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Compare exact shared evidence.")
+    first = _candidate("T1:checkpoint-10", _artifact(tmp_path / "first", b"first"))
+    second = _candidate("T2:checkpoint-10", _artifact(tmp_path / "second", b"second"))
+    state["candidates"] = {first["id"]: first, second["id"]: second}
+    repository.write_state(state)
+    request = {
+        "measurement": {
+            "description": "Compare only deterministic shared episodes.",
+            "rationale": "The exact paired evidence informs the next decision.",
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": first["id"],
+                    "episodes": 3,
+                    "seed": 100,
+                },
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": second["id"],
+                    "episodes": 3,
+                    "seed": 101,
+                },
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": first["id"],
+                    "episodes": 2,
+                    "seed": 500,
+                },
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": second["id"],
+                    "episodes": 2,
+                    "seed": 600,
+                },
+            ],
+            "paired_comparisons": [
+                {"candidate": second["id"], "reference": first["id"]}
+            ],
+        }
+    }
+    pending = run_experiment.accept_operation(request, state)
+    frozen = pending["data"]["paired_comparisons"][0]
+    assert frozen["shared_episode_seeds"] == [101, 102]
+    assert frozen["candidate_measurement_indexes"] == [1]
+    assert frozen["reference_measurement_indexes"] == [0]
+
+    def evaluate(_artifact, seed, *, label, episodes, output_path, **_kwargs):
+        del label
+        metrics = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {
+                    "episode": index,
+                    "episode_seed": seed + index,
+                    "success": (seed + index) % 2 == 0,
+                }
+                for index in range(episodes)
+            ],
+        }
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
+
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+    assert run_experiment.execute_pending_operation() == 0
+    result = repository.read_state()["operation_events"][-1]["result"]
+    comparison = result["paired_comparisons"][0]
+    assert comparison["episodes"] == 2
+    assert comparison["shared_episode_seeds"] == [101, 102]
+    assert len(comparison["source_artifacts"]) == 2
+    all_artifacts = [
+        measurement["metrics"]["evaluation_artifact"]
+        for measurement in result["measurements"]
+    ]
+    assert comparison["source_artifacts"] == [all_artifacts[1], all_artifacts[0]]
 
 
 @pytest.mark.parametrize("damage", ["corrupt", "remove"])
@@ -592,13 +677,42 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
     with pytest.raises(run_experiment.FrozenOperationMismatch, match="changed"):
         run_experiment.execute_pending_operation()
     failed = repository.read_state()["pending_operation"]
-    assert failed["data"]["last_error"]
+    assert failed["failure"]
     second = run_experiment.reaccept_pending_operation()
     assert second["id"] == "T2"
-    assert second["data"]["supersedes"] == first["id"]
+    assert second["supersedes"] == first["id"]
     assert second["data"]["scientific_manifest"][0]["fingerprint"] == (
         repository.file_fingerprint(source)
     )
+    persisted = repository.read_state()
+    failed_event = persisted["operation_events"][0]
+    assert failed_event["id"] == first["id"]
+    assert failed_event["status"] == "failed"
+    assert failed_event["error"] == failed["failure"]
+    assert failed_event["superseded_by"] == second["id"]
+
+    run_experiment._complete_operation(
+        persisted,
+        {
+            "status": "completed",
+            "initialization": "fresh",
+            "parent": None,
+            "seed": 7,
+            "requested_steps": 10,
+            "completed_steps": 0,
+            "scientific_commit": "a" * 40,
+            "mechanical_provenance": {
+                "code_parent_commit": "a" * 40,
+                "changed_files": second["data"]["scientific_manifest"],
+            },
+            "candidates": [],
+            "learning_dynamics": [],
+        },
+    )
+    events = repository.read_state()["operation_events"]
+    assert [event["id"] for event in events] == ["T1", "T2"]
+    assert events[1]["status"] == "completed"
+    assert events[1]["supersedes"] == "T1"
 
 
 def test_transfer_parent_is_explicit_and_frozen(monkeypatch, tmp_path):
@@ -645,8 +759,21 @@ def test_model_roles_change_only_through_explicit_evidence_backed_operation(
             "kind": "measurement",
             "session_id": "S0",
             "inquiry_id": None,
-            "request": {},
-            "result": {"status": "completed"},
+            "request": {
+                "description": "Recorded evidence.",
+                "rationale": "Support an explicit role assignment.",
+                "measurements": [],
+            },
+            "result": {
+                "status": "completed",
+                "measurements": [],
+                "paired_comparisons": [],
+                "tool_provenance": None,
+            },
+            "status": "completed",
+            "error": None,
+            "supersedes": None,
+            "superseded_by": None,
             "completed_at": "now",
         }
     )
@@ -849,6 +976,21 @@ def test_mark_scientific_model_ready_commits_exact_content(monkeypatch, tmp_path
         encoding="utf-8",
     ).stdout
     assert committed == content
+    state_at_commit = subprocess.run(
+        ["git", "show", "HEAD:research/research_state.json"],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
+    assert json.loads(state_at_commit)["scientific_model"] == {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": commit,
+    }
+    with pytest.raises(ValueError, match="only once from pending"):
+        run_experiment.main()
 
 
 def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
@@ -878,8 +1020,64 @@ def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
     }
     with pytest.raises(ValueError, match="MaxInquiries"):
         protocol.validate_operation_request(opening, state)
-    with pytest.raises(TypeError, match="active scientific session"):
-        protocol.validate_operation_request(
-            {"campaign_conclusion": {"action": "no_credible_route", "reason": "Done."}},
-            {**state, "scientific_session": None},
-        )
+
+
+def test_schema_six_rejects_unknown_nested_control_fields(monkeypatch, tmp_path):
+    campaign_root = tmp_path / "campaign"
+    campaign_root.mkdir()
+    state = _configure(monkeypatch, campaign_root)
+    state["campaign"]["legacy"] = True
+    with pytest.raises(ValueError, match="campaign requires exactly"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+    pending_root = tmp_path / "pending"
+    pending_root.mkdir()
+    state = _configure(monkeypatch, pending_root)
+    _start_session(state, "goal_review", "Open a bounded inquiry.")
+    pending = run_experiment.accept_operation(
+        {
+            "inquiry": {
+                "action": "open",
+                "question": "Question",
+                "goal_connection": "Connection",
+                "closure_condition": "Closure",
+                "rationale": "Rationale",
+            }
+        },
+        state,
+    )
+    pending["data"]["legacy"] = True
+    with pytest.raises(ValueError, match="pending inquiry data requires exactly"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+    del pending["data"]["legacy"]
+    pending["progress"] = "legacy_progress"
+    with pytest.raises(ValueError, match="unsupported progress"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+    pending["progress"] = "accepted"
+    repository.write_state(state)
+    assert run_experiment.execute_pending_operation() == 0
+    completed = repository.read_state()
+    completed["operation_events"][0]["result"]["legacy"] = True
+    with pytest.raises(ValueError, match="completed inquiry result requires exactly"):
+        repository.validate_research_state(completed, allow_missing_artifact=True)
+
+    assessment_root = tmp_path / "assessment"
+    assessment_root.mkdir()
+    state = _configure(monkeypatch, assessment_root)
+    artifact = _artifact(assessment_root / "assessed")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    state["terminal_state"] = {
+        "status": "official_assessment_requested",
+        "reason": "Assess the selected model.",
+        "model": candidate["id"],
+    }
+    state["official_assessment"] = {
+        "status": "passed",
+        "model": candidate["id"],
+        "summary": "The protected goal was met.",
+        "completed_at": "now",
+        "legacy": True,
+    }
+    with pytest.raises(ValueError, match="official_assessment requires exactly"):
+        repository.validate_research_state(state, allow_missing_artifact=True)

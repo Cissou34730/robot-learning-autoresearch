@@ -6,6 +6,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -91,6 +92,10 @@ EVENT_FIELDS = {
     "inquiry_id",
     "request",
     "result",
+    "status",
+    "error",
+    "supersedes",
+    "superseded_by",
     "completed_at",
 }
 PENDING_FIELDS = {
@@ -101,7 +106,88 @@ PENDING_FIELDS = {
     "request",
     "request_fingerprint",
     "progress",
+    "failure",
+    "supersedes",
     "data",
+}
+CAMPAIGN_FIELDS = {
+    "id",
+    "started_at",
+    "base_commit",
+    "recipe_source_commit",
+    "max_inquiries",
+}
+OFFICIAL_ASSESSMENT_FIELDS = {"status", "model", "summary", "completed_at"}
+OPERATION_KINDS = {
+    "measurement",
+    "training",
+    "inquiry",
+    "checkpoint",
+    "model_role",
+    "restore_recipe",
+    "campaign_conclusion",
+}
+PENDING_DATA_FIELDS = {
+    "measurement": {
+        "measurements",
+        "paired_comparisons",
+        "evaluation_semantics",
+        "task_reference_contract",
+        "module_provenance",
+        "partial_results",
+        "result",
+    },
+    "training": {
+        "parent",
+        "code_parent_commit",
+        "scientific_manifest",
+        "scientific_paths",
+        "scientific_commit",
+        "effective_parameters",
+        "candidate_dir",
+        "archived_candidates",
+        "result",
+    },
+    "inquiry": {"plan", "result"},
+    "checkpoint": {
+        "plan",
+        "code_parent_commit",
+        "scientific_manifest",
+        "scientific_paths",
+        "effective_parameters",
+        "scientific_commit",
+        "result",
+    },
+    "model_role": {"plan", "publication", "result"},
+    "restore_recipe": {"plan", "pre_restore_manifest", "result"},
+    "campaign_conclusion": {"plan", "result"},
+}
+PENDING_PROGRESS = {
+    "measurement": {"accepted", "result_ready", "completed"},
+    "training": {
+        "accepted",
+        "recipe_published",
+        "training_dispatched",
+        "training_completed",
+        "candidates_archived",
+        "result_ready",
+        "completed",
+    },
+    "inquiry": {"accepted", "result_ready", "completed"},
+    "checkpoint": {
+        "accepted",
+        "checkpoint_recipe_published",
+        "result_ready",
+        "completed",
+    },
+    "model_role": {
+        "accepted",
+        "publishing_artifact",
+        "result_ready",
+        "completed",
+    },
+    "restore_recipe": {"accepted", "restoring", "result_ready", "completed"},
+    "campaign_conclusion": {"accepted", "result_ready", "completed"},
 }
 
 
@@ -577,6 +663,415 @@ def _validate_session(session: object, active_inquiry: object) -> None:
             raise ValueError("inquiry session belongs to another inquiry")
 
 
+def _require_exact_fields(value: object, fields: set[str], description: str) -> dict:
+    if not isinstance(value, dict) or set(value) != fields:
+        raise ValueError(f"{description} requires exactly {sorted(fields)}")
+    return value
+
+
+def _validate_operation_request_shape(kind: str, request: object) -> None:
+    if not isinstance(request, dict):
+        raise TypeError(f"{kind} request must be an object")
+    if kind == "training":
+        required = {"initialization", "seed", "steps", "description", "rationale"}
+        allowed = required | {"parent"}
+        if frozenset(request) not in {frozenset(required), frozenset(allowed)}:
+            raise ValueError("training request fields are invalid")
+        return
+    if kind == "measurement":
+        required = {"description", "rationale", "measurements"}
+        allowed = required | {"paired_comparisons"}
+        if frozenset(request) not in {frozenset(required), frozenset(allowed)}:
+            raise ValueError("measurement request fields are invalid")
+        measurements = request["measurements"]
+        if not isinstance(measurements, list):
+            raise TypeError("measurement request measurements must be a list")
+        entry_fields = {
+            "research_evaluation": {
+                "instrument",
+                "candidate",
+                "episodes",
+                "seed",
+                "label",
+            },
+            "task_reference": {"instrument", "candidate", "label"},
+            "python_module": {"instrument", "module", "args", "artifact", "label"},
+        }
+        for entry in measurements:
+            if not isinstance(entry, dict) or entry.get("instrument") not in entry_fields:
+                raise ValueError("measurement request has an invalid instrument")
+            fields = entry_fields[entry["instrument"]]
+            if frozenset(entry) not in {
+                frozenset(fields),
+                frozenset(fields - {"label"}),
+            }:
+                raise ValueError("measurement request entry fields are invalid")
+        comparisons = request.get("paired_comparisons", [])
+        if not isinstance(comparisons, list) or any(
+            not isinstance(item, dict)
+            or set(item) != {"candidate", "reference"}
+            for item in comparisons
+        ):
+            raise ValueError("paired comparison fields are invalid")
+        return
+    if kind == "inquiry":
+        action = request.get("action")
+        fields = (
+            {"action", "outcome", "reason"}
+            if action == "close"
+            else {
+                "action",
+                "question",
+                "goal_connection",
+                "closure_condition",
+                "rationale",
+            }
+        )
+    elif kind == "checkpoint":
+        fields = CHECKPOINT_FIELDS - {"session_id", "inquiry_id", "scientific_commit"}
+    elif kind == "model_role":
+        fields = {"action", "candidate", "reason", "evidence"}
+        if request.get("action") == "retain":
+            fields.add("label")
+    elif kind == "restore_recipe":
+        fields = {"candidate", "reason"}
+    else:
+        fields = {"action", "reason"}
+    _require_exact_fields(request, fields, f"{kind} request")
+
+
+def _validate_manifest(value: object, description: str) -> None:
+    if not isinstance(value, list):
+        raise TypeError(f"{description} must be a list")
+    for entry in value:
+        _require_exact_fields(
+            entry, {"path", "exists", "fingerprint"}, f"{description} entry"
+        )
+
+
+def _validate_pending_plan(kind: str, plan: object) -> None:
+    if kind == "inquiry":
+        if not isinstance(plan, dict):
+            raise TypeError("pending inquiry plan must be an object")
+        action = plan.get("action")
+        if action == "open":
+            _require_exact_fields(plan, {"action", "inquiry"}, "pending inquiry plan")
+            _require_exact_fields(
+                plan["inquiry"],
+                {
+                    "id",
+                    "question",
+                    "goal_connection",
+                    "closure_condition",
+                    "rationale",
+                    "opened_in_session",
+                    "reframes",
+                },
+                "pending inquiry",
+            )
+        elif action == "reframe":
+            _require_exact_fields(
+                plan,
+                {"action", "inquiry_id", "reframe"},
+                "pending inquiry plan",
+            )
+            _require_exact_fields(
+                plan["reframe"],
+                {
+                    "question",
+                    "goal_connection",
+                    "closure_condition",
+                    "rationale",
+                    "session_id",
+                },
+                "pending inquiry reframe",
+            )
+        else:
+            _require_exact_fields(
+                plan,
+                {"action", "inquiry_id", "outcome", "reason"},
+                "pending inquiry plan",
+            )
+        return
+    if kind == "checkpoint":
+        _require_exact_fields(
+            plan, CHECKPOINT_FIELDS - {"scientific_commit"}, "pending checkpoint plan"
+        )
+        return
+    if kind == "model_role":
+        fields = {"action", "candidate_id", "reason", "evidence"}
+        if isinstance(plan, dict) and plan.get("action") == "retain":
+            fields.add("label")
+        _require_exact_fields(plan, fields, "pending model_role plan")
+        return
+    if kind == "restore_recipe":
+        _require_exact_fields(
+            plan,
+            {
+                "parent",
+                "restore",
+                "remove_created",
+                "candidate_id",
+                "parameters",
+                "session_id",
+            },
+            "pending restore_recipe plan",
+        )
+        return
+    _require_exact_fields(
+        plan, {"status", "reason", "model"}, "pending campaign_conclusion plan"
+    )
+
+
+def _validate_pending_data(kind: str, data: object) -> None:
+    data = _require_exact_fields(
+        data, PENDING_DATA_FIELDS[kind], f"pending {kind} data"
+    )
+    if data["result"] is not None and not isinstance(data["result"], dict):
+        raise TypeError(f"pending {kind} result must be an object or null")
+    if kind == "training":
+        _validate_manifest(data["scientific_manifest"], "training manifest")
+        parent = data["parent"]
+        if parent is not None:
+            _require_exact_fields(
+                parent,
+                {
+                    "id",
+                    "artifact",
+                    "fingerprint",
+                    "scientific_commit",
+                    "parameters",
+                    "training_steps",
+                },
+                "pending training parent",
+            )
+        archived = data["archived_candidates"]
+        if archived is not None:
+            if not isinstance(archived, list):
+                raise TypeError("pending archived_candidates must be a list or null")
+            for candidate in archived:
+                _require_exact_fields(
+                    candidate,
+                    {
+                        "name",
+                        "artifact",
+                        "fingerprint",
+                        "timesteps",
+                        "training_success",
+                        "ep_rew_mean",
+                    },
+                    "pending archived candidate",
+                )
+        return
+    if kind == "measurement":
+        if not isinstance(data["measurements"], list):
+            raise TypeError("pending measurement measurements must be a list")
+        planned_fields = {
+            "research_evaluation": {
+                "instrument",
+                "candidate",
+                "episodes",
+                "seed",
+                "label",
+                "candidate_id",
+                "artifact",
+                "model_fingerprint",
+            },
+            "task_reference": {
+                "instrument",
+                "candidate",
+                "label",
+                "candidate_id",
+                "artifact",
+                "model_fingerprint",
+            },
+            "python_module": {"instrument", "module", "args", "artifact", "label"},
+        }
+        for entry in data["measurements"]:
+            if not isinstance(entry, dict) or entry.get("instrument") not in planned_fields:
+                raise ValueError("pending measurement has an invalid instrument")
+            _require_exact_fields(
+                entry,
+                planned_fields[entry["instrument"]],
+                "pending measurement entry",
+            )
+        comparison_fields = {
+            "candidate",
+            "reference",
+            "candidate_model_fingerprint",
+            "reference_model_fingerprint",
+            "shared_episode_seeds",
+            "candidate_measurement_indexes",
+            "reference_measurement_indexes",
+        }
+        if not isinstance(data["paired_comparisons"], list):
+            raise TypeError("pending paired_comparisons must be a list")
+        for comparison in data["paired_comparisons"]:
+            _require_exact_fields(
+                comparison, comparison_fields, "pending paired comparison"
+            )
+        if not isinstance(data["partial_results"], list):
+            raise TypeError("pending partial_results must be a list")
+        for partial in data["partial_results"]:
+            if not isinstance(partial, dict):
+                raise TypeError("pending partial measurement must be an object")
+            fields = (
+                {"instrument", "module", "args", "label", "metrics"}
+                if partial.get("instrument") == "python_module"
+                else {"instrument", "candidate", "candidate_id", "label", "metrics"}
+            )
+            _require_exact_fields(partial, fields, "pending partial measurement")
+            if not isinstance(partial["metrics"], dict):
+                raise TypeError("pending partial measurement metrics must be an object")
+        contract = data["task_reference_contract"]
+        if contract is not None:
+            _require_exact_fields(
+                contract,
+                {"panel", "panel_version", "episodes", "seed"},
+                "pending task-reference contract",
+            )
+        provenance = data["module_provenance"]
+        if provenance is not None:
+            provenance = _require_exact_fields(
+                provenance,
+                {
+                    "code_parent_commit",
+                    "scientific_manifest",
+                    "effective_parameters",
+                    "module_paths",
+                    "module_manifest",
+                    "campaign_lab_manifest",
+                    "campaign_lab_publication",
+                },
+                "pending module provenance",
+            )
+            _validate_manifest(
+                provenance["scientific_manifest"], "module scientific manifest"
+            )
+            _validate_manifest(provenance["module_manifest"], "module manifest")
+            publication = provenance["campaign_lab_publication"]
+            if publication is not None:
+                _require_exact_fields(
+                    publication,
+                    {"commit", "manifest", "fingerprint"},
+                    "campaign laboratory publication",
+                )
+        return
+    if kind == "checkpoint":
+        _validate_manifest(data["scientific_manifest"], "checkpoint manifest")
+    if kind == "model_role" and data["publication"] is not None:
+        _require_exact_fields(
+            data["publication"],
+            {"source", "destination", "fingerprint"},
+            "pending model_role publication",
+        )
+    if kind == "restore_recipe":
+        _validate_manifest(data["pre_restore_manifest"], "pre-restore manifest")
+    _validate_pending_plan(kind, data["plan"])
+
+
+def _validate_completed_event_result(kind: str, result: dict) -> None:
+    if kind == "measurement":
+        fields = {"status", "measurements", "paired_comparisons", "tool_provenance"}
+    elif kind == "training":
+        fields = {
+            "status",
+            "initialization",
+            "parent",
+            "seed",
+            "requested_steps",
+            "completed_steps",
+            "scientific_commit",
+            "mechanical_provenance",
+            "candidates",
+            "learning_dynamics",
+        }
+    elif kind == "inquiry":
+        fields = {"status", "action", "inquiry_id"}
+        if result.get("action") == "close":
+            fields |= {"outcome", "reason"}
+    elif kind == "checkpoint":
+        fields = {"status", "session_id"}
+    elif kind == "model_role":
+        fields = {"status", "action", "candidate", "evidence"}
+    elif kind == "restore_recipe":
+        fields = {"status", "candidate", "scientific_commit", "restored_paths"}
+    else:
+        fields = {"status", "model"}
+    _require_exact_fields(result, fields, f"completed {kind} result")
+
+
+def _validate_pending_operation(pending: object) -> None:
+    pending = _require_exact_fields(
+        pending, PENDING_FIELDS, "pending_operation"
+    )
+    kind = pending.get("kind")
+    if kind not in OPERATION_KINDS:
+        raise ValueError("pending_operation has an unsupported kind")
+    for field in ("id", "session_id", "request_fingerprint", "progress"):
+        _nonempty(pending, field, f"pending_operation {field}")
+    if pending["inquiry_id"] is not None:
+        _nonempty(
+            {"value": pending["inquiry_id"]},
+            "value",
+            "pending_operation inquiry_id",
+        )
+    if pending["failure"] is not None:
+        _nonempty({"value": pending["failure"]}, "value", "pending_operation failure")
+    if pending["supersedes"] is not None:
+        _nonempty(
+            {"value": pending["supersedes"]},
+            "value",
+            "pending_operation supersedes",
+        )
+    request = _require_exact_fields(
+        pending["request"], {kind}, "pending_operation request"
+    )
+    _validate_operation_request_shape(kind, request[kind])
+    progress = pending["progress"]
+    if kind == "measurement" and (
+        match := re.fullmatch(r"measured_(\d+)_of_(\d+)", progress)
+    ):
+        completed, total = map(int, match.groups())
+        if total != len(pending["data"]["measurements"]) or not 0 <= completed <= total:
+            raise ValueError("pending measurement progress contradicts its plan")
+    elif progress not in PENDING_PROGRESS[kind]:
+        raise ValueError(f"pending {kind} has unsupported progress {progress!r}")
+    _validate_pending_data(kind, pending["data"])
+
+
+def _validate_operation_event(event: object) -> str:
+    event = _require_exact_fields(event, EVENT_FIELDS, "operation event")
+    identifier = _nonempty(event, "id", "operation event id")
+    kind = event.get("kind")
+    if kind not in OPERATION_KINDS:
+        raise ValueError("operation event has an unsupported kind")
+    _nonempty(event, "session_id", "operation event session_id")
+    if event["inquiry_id"] is not None:
+        _nonempty({"value": event["inquiry_id"]}, "value", "operation event inquiry_id")
+    request = event["request"]
+    _validate_operation_request_shape(kind, request)
+    if event["status"] not in {"completed", "failed"}:
+        raise ValueError("operation event status must be completed or failed")
+    result = event["result"]
+    if not isinstance(result, dict):
+        raise TypeError("operation event result must be an object")
+    if event["status"] == "failed":
+        _require_exact_fields(result, {"status", "error"}, "failed operation result")
+        if result["status"] != "failed" or result["error"] != event["error"]:
+            raise ValueError("failed operation event provenance is inconsistent")
+        _nonempty(event, "error", "operation event error")
+        _nonempty(event, "superseded_by", "operation event superseded_by")
+    elif event["error"] is not None or event["superseded_by"] is not None:
+        raise ValueError("completed operation event cannot carry failure provenance")
+    else:
+        _validate_completed_event_result(kind, result)
+    if event["supersedes"] is not None:
+        _nonempty(event, "supersedes", "operation event supersedes")
+    _nonempty(event, "completed_at", "operation event completed_at")
+    return identifier
+
+
 def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> None:
     if state.get("schema_version") != STATE_SCHEMA_VERSION:
         raise RuntimeError("unsupported research state schema")
@@ -587,11 +1082,13 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
             "research state fields are invalid: "
             f"missing={sorted(missing)}, extra={sorted(extra)}"
         )
-    campaign = state["campaign"]
-    if not isinstance(campaign, dict):
-        raise TypeError("campaign must be an object")
+    campaign = _require_exact_fields(state["campaign"], CAMPAIGN_FIELDS, "campaign")
     for field in ("id", "started_at", "base_commit"):
         _nonempty(campaign, field, f"campaign {field}")
+    if campaign["recipe_source_commit"] is not None:
+        _nonempty(
+            campaign, "recipe_source_commit", "campaign recipe_source_commit"
+        )
     _positive_integer(campaign.get("max_inquiries"), "campaign max_inquiries")
     human_goal = state["human_goal"]
     if not isinstance(human_goal, dict) or set(human_goal) - {"source", "summary"}:
@@ -605,6 +1102,8 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
     if model["status"] not in {"pending", "ready"}:
         raise ValueError("scientific_model status must be pending or ready")
     _nonempty(model, "path", "scientific_model path")
+    if model["path"] != "research/scientific_model.md":
+        raise ValueError("scientific_model path is unsupported")
     if model["status"] == "ready":
         _nonempty(model, "commit", "scientific_model commit")
     elif model["commit"] is not None:
@@ -622,34 +1121,10 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         raise TypeError("operation_events must be a list")
     event_ids: set[str] = set()
     for event in events:
-        if not isinstance(event, dict) or set(event) != EVENT_FIELDS:
-            raise ValueError(f"operation event requires exactly {sorted(EVENT_FIELDS)}")
-        identifier = _nonempty(event, "id", "operation event id")
+        identifier = _validate_operation_event(event)
         if identifier in event_ids:
             raise ValueError("operation event IDs must be unique")
         event_ids.add(identifier)
-        if event["kind"] not in {
-            "measurement",
-            "training",
-            "inquiry",
-            "checkpoint",
-            "model_role",
-            "restore_recipe",
-            "campaign_conclusion",
-        }:
-            raise ValueError("operation event has an unsupported kind")
-        _nonempty(event, "session_id", "operation event session_id")
-        if event["inquiry_id"] is not None:
-            _nonempty(
-                {"value": event["inquiry_id"]},
-                "value",
-                "operation event inquiry_id",
-            )
-        if not isinstance(event["request"], dict) or not isinstance(
-            event["result"], dict
-        ):
-            raise TypeError("operation event request and result must be objects")
-        _nonempty(event, "completed_at", "operation event completed_at")
 
     _validate_active_inquiry(state["active_inquiry"])
     _validate_session(state["scientific_session"], state["active_inquiry"])
@@ -657,26 +1132,7 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
 
     pending = state["pending_operation"]
     if pending is not None:
-        if not isinstance(pending, dict) or set(pending) != PENDING_FIELDS:
-            raise ValueError(
-                f"pending_operation requires exactly {sorted(PENDING_FIELDS)}"
-            )
-        for field in ("id", "kind", "session_id", "request_fingerprint", "progress"):
-            _nonempty(pending, field, f"pending_operation {field}")
-        if pending["kind"] not in {
-            "measurement",
-            "training",
-            "inquiry",
-            "checkpoint",
-            "model_role",
-            "restore_recipe",
-            "campaign_conclusion",
-        }:
-            raise ValueError("pending_operation has an unsupported kind")
-        if not isinstance(pending["request"], dict) or not isinstance(
-            pending["data"], dict
-        ):
-            raise TypeError("pending_operation request and data must be objects")
+        _validate_pending_operation(pending)
 
     candidates = state["candidates"]
     if not isinstance(candidates, dict):
@@ -730,8 +1186,24 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
                 raise ValueError("terminal assessment names an unknown candidate")
         elif terminal["model"] is not None:
             raise ValueError("no_credible_route terminal state cannot name a model")
-    if state["official_assessment"] is not None and terminal is None:
-        raise ValueError("official_assessment requires a terminal campaign state")
+    assessment = state["official_assessment"]
+    if assessment is not None:
+        assessment = _require_exact_fields(
+            assessment, OFFICIAL_ASSESSMENT_FIELDS, "official_assessment"
+        )
+        if (
+            terminal is None
+            or terminal["status"] != "official_assessment_requested"
+        ):
+            raise ValueError(
+                "official_assessment requires an assessment-requested terminal state"
+            )
+        if assessment["status"] not in {"passed", "failed"}:
+            raise ValueError("official_assessment status must be passed or failed")
+        if assessment["model"] != terminal["model"]:
+            raise ValueError("official_assessment model must match terminal state")
+        _nonempty(assessment, "summary", "official_assessment summary")
+        _nonempty(assessment, "completed_at", "official_assessment completed_at")
 
 
 def write_state(state: dict) -> None:
@@ -762,6 +1234,7 @@ def empty_campaign_state(
     if not campaign_id:
         raise ValueError("fresh campaign state requires a campaign ID")
     campaign_copy.setdefault("max_inquiries", DEFAULT_MAX_INQUIRIES)
+    campaign_copy.setdefault("recipe_source_commit", None)
     state = {
         "schema_version": STATE_SCHEMA_VERSION,
         "campaign": campaign_copy,
@@ -830,7 +1303,29 @@ def start_scientific_session(state: dict, *, kind: str, objective: str) -> dict:
     return session
 
 
+def require_scientific_model_publication_pending(state: dict) -> None:
+    if state["scientific_model"] != {
+        "status": "pending",
+        "path": "research/scientific_model.md",
+        "commit": None,
+    }:
+        raise ValueError("the scientific model can be published only once from pending")
+    if (
+        state["active_inquiry"] is not None
+        or state["pi_checkpoint"] is not None
+        or state["scientific_session"] is not None
+        or state["operation_events"]
+        or state["pending_operation"] is not None
+        or any(state["counters"].values())
+    ):
+        raise ValueError(
+            "the scientific model must be published before scientific sessions "
+            "or operations"
+        )
+
+
 def mark_scientific_model_ready(state: dict, commit: str) -> None:
+    require_scientific_model_publication_pending(state)
     require_resolvable_commit(commit)
     state["scientific_model"] = {
         "status": "ready",

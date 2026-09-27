@@ -449,10 +449,12 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
 def planned_paired_comparisons(
     request: dict, state: dict, measurements: list[dict]
 ) -> list[dict]:
-    research_measurements: dict[str, list[dict]] = {}
-    for entry in measurements:
+    research_measurements: dict[str, list[tuple[int, dict]]] = {}
+    for index, entry in enumerate(measurements):
         if entry["instrument"] == "research_evaluation":
-            research_measurements.setdefault(entry["candidate_id"], []).append(entry)
+            research_measurements.setdefault(entry["candidate_id"], []).append(
+                (index, entry)
+            )
     planned: list[dict] = []
     for comparison in request.get("paired_comparisons", []):
         candidate = resolve_candidate(state, str(comparison["candidate"]))
@@ -463,25 +465,55 @@ def planned_paired_comparisons(
                     f"paired comparison {role} {resolved['id']!r} must have a "
                     "planned research_evaluation measurement"
                 )
-        shared_panel = any(
-            max(int(left["seed"]), int(right["seed"]))
-            < min(
-                int(left["seed"]) + int(left["episodes"]),
-                int(right["seed"]) + int(right["episodes"]),
+        candidate_episodes = {
+            seed
+            for _, entry in research_measurements[candidate["id"]]
+            for seed in range(
+                int(entry["seed"]), int(entry["seed"]) + int(entry["episodes"])
             )
-            for left in research_measurements[candidate["id"]]
-            for right in research_measurements[reference["id"]]
-        )
-        if not shared_panel:
+        }
+        reference_episodes = {
+            seed
+            for _, entry in research_measurements[reference["id"]]
+            for seed in range(
+                int(entry["seed"]), int(entry["seed"]) + int(entry["episodes"])
+            )
+        }
+        shared_episode_seeds = sorted(candidate_episodes & reference_episodes)
+        if not shared_episode_seeds:
             raise ValueError(
                 "paired comparison candidates have no shared planned episodes"
             )
+        shared = set(shared_episode_seeds)
+        candidate_measurement_indexes = [
+            index
+            for index, entry in research_measurements[candidate["id"]]
+            if shared.intersection(
+                range(
+                    int(entry["seed"]),
+                    int(entry["seed"]) + int(entry["episodes"]),
+                )
+            )
+        ]
+        reference_measurement_indexes = [
+            index
+            for index, entry in research_measurements[reference["id"]]
+            if shared.intersection(
+                range(
+                    int(entry["seed"]),
+                    int(entry["seed"]) + int(entry["episodes"]),
+                )
+            )
+        ]
         planned.append(
             {
                 "candidate": candidate["id"],
                 "reference": reference["id"],
                 "candidate_model_fingerprint": candidate["fingerprint"],
                 "reference_model_fingerprint": reference["fingerprint"],
+                "shared_episode_seeds": shared_episode_seeds,
+                "candidate_measurement_indexes": candidate_measurement_indexes,
+                "reference_measurement_indexes": reference_measurement_indexes,
             }
         )
     return planned
