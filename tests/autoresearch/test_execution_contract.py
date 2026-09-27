@@ -203,6 +203,34 @@ def test_frozen_training_operation_rejects_proposal_or_source_tampering(
         )
 
 
+def test_frozen_scientific_manifest_ignores_human_owned_harness_commits(
+    monkeypatch, tmp_path
+):
+    method = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    harness_test = tmp_path / "tests" / "benchmark" / "test_trust.py"
+    method.parent.mkdir(parents=True)
+    harness_test.parent.mkdir(parents=True)
+    method.write_text("reward = 1\n", encoding="utf-8")
+    harness_test.write_text("def test_trust(): pass\n", encoding="utf-8")
+    monkeypatch.setattr(run_experiment.paths, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda _parent: [
+            "robot_learning/scenario/reward.py",
+            "tests/benchmark/test_trust.py",
+        ],
+    )
+
+    assert run_experiment._current_scientific_manifest("parent") == [
+        {
+            "path": "robot_learning/scenario/reward.py",
+            "exists": True,
+            "fingerprint": repository.file_fingerprint(method),
+        }
+    ]
+
+
 def test_fresh_baseline_uses_the_reset_recipe_anchor(monkeypatch):
     state = {"pending_scientific_parent": "reset-parent"}
     monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])

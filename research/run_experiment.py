@@ -83,6 +83,7 @@ def _current_scientific_manifest(code_parent_commit: str) -> list[dict]:
             path
             for path in repository.scientific_delta(code_parent_commit)
             if path.replace("\\", "/") not in protocol.PARAMETER_ONLY_PATHS
+            and not protocol.is_human_owned(path)
         ]
     )
 
