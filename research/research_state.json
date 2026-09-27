@@ -114,22 +114,7 @@
   "pending_campaign_conclusion": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
-  "pending_inquiry_operation": {
-    "action": "start_method",
-    "inquiry_id": 1,
-    "method": {
-      "base_scientific_commit": "0191ff0ad79cdc23c741a0f4d317b8b97797d912",
-      "current_lineage": null,
-      "id": "branch_aware_reach_hold",
-      "inquiry_id": 1,
-      "iterations": [],
-      "lifecycle": "development",
-      "rationale": "The disjoint 200-episode panel reproduced five failures, all for targets with angles from approximately -150 to -128 degrees. Three never entered the 1 cm tolerance, while two entered for only one to three steps before leaving. This concentrates evidence on a branch- or sector-dependent approach limitation, with hold instability as a consequence after marginal entry, and justifies developing a method that makes the relevant kinematic alternatives and approach state easier to control.",
-      "resolution": null,
-      "scientific_question": "Can a target-conditioned controller with explicit inverse-kinematic branch and negative-angle-sector awareness eliminate the baseline's approach failures while preserving stable two-second holds across the full official target distribution?"
-    },
-    "progress": "artifacts_released"
-  },
+  "pending_inquiry_operation": null,
   "pending_method_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "79302c227fcfb61db91fbbcf991dc7ab70453100",
