@@ -3042,35 +3042,41 @@ def _v4_lineage_record(
     reason: str,
     state: dict | None = None,
 ) -> dict:
+    """Resolve one candidate's lineage facts into a canonical lineage record.
+
+    All record assembly lives in ``repository.lineage_record``, the single
+    constructor of the canonical schema; this function only resolves the facts
+    the record is built from.
+    """
     current = bool(source.get("_current_candidate"))
-    checkpoint_steps = int(source.get("timesteps", source.get("training_steps", 0)))
-    coordinates = source_checkpoint_coordinates(source, pending)
-    steps = coordinates.get("accumulated_steps")
-    if steps is None:
-        steps = checkpoint_steps
+    coordinates = dict(source_checkpoint_coordinates(source, pending))
+    if coordinates.get("accumulated_steps") is None:
+        # A source that records no step fact at all keeps its historical
+        # fresh-checkpoint shape: zero steps, not an unknown coordinate.
+        coordinates["accumulated_steps"] = int(
+            source.get("timesteps", source.get("training_steps", 0))
+        )
     fingerprint = repository.artifact_fingerprint(artifact)
-    return {
-        "artifact": repository.repo_relative_path(artifact),
-        "fingerprint": fingerprint,
-        "origin_experiment": int(pending["experiment"])
-        if current
-        else int(source["origin_experiment"]),
-        "candidate": str(
+    return repository.lineage_record(
+        artifact=artifact,
+        origin_experiment=(
+            int(pending["experiment"]) if current else int(source["origin_experiment"])
+        ),
+        candidate=str(
             source.get("candidate")
             if not current and source.get("candidate") is not None
             else source.get("name", source.get("candidate"))
         ),
-        "parameters": source.get("parameters", pending["parameters"]),
-        "scientific_commit": source.get("scientific_commit")
+        parameters=source.get("parameters", pending["parameters"]),
+        scientific_commit=source.get("scientific_commit")
         or pending.get("scientific_commit"),
-        "training_steps": steps,
-        **coordinates,
-        "evaluation_artifacts": repository.evaluation_artifact_paths(
-            source.get("evaluations")
-        )
-        if current
-        else list(source.get("evaluation_artifacts", [])),
-        "selected_panels": _selection_panels_for(
+        coordinates=coordinates,
+        evaluation_artifacts=(
+            repository.evaluation_artifact_paths(source.get("evaluations"))
+            if current
+            else list(source.get("evaluation_artifacts", []))
+        ),
+        selected_panels=_selection_panels_for(
             source,
             pending,
             fingerprint,
@@ -3078,8 +3084,8 @@ def _v4_lineage_record(
             if state is not None
             else None,
         ),
-        "reason": reason,
-    }
+        reason=reason,
+    )
 
 
 def _v4_artifact_publications(

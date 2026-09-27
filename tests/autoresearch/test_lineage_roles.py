@@ -1679,3 +1679,210 @@ def test_v4_stale_transaction_hash_is_refused(monkeypatch, tmp_path):
 
     assert plan["lineage_transaction"]["hash"] != stale_hash
     assert plan["lineage_transaction"]["confirmation_required"] is True
+
+
+def test_v4_closure_persists_its_own_lineage_records(monkeypatch, tmp_path):
+    """The closure persists the records its producer built, in one schema.
+
+    Regression: the producer wrote the canonical coordinate fields while the
+    repository validated records against an older field set, so the first state
+    write of a campaign died with ``extra=[...]`` inside the closure.
+    """
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    state_path = tmp_path / "research_state.json"
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = {
+        "schema_version": 4,
+        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "pending_researcher_decision": {
+            "experiment": 1,
+            "candidates": [
+                {
+                    "name": "checkpoint",
+                    "artifact": repository.repo_relative_path(candidate),
+                    "timesteps": 100_352,
+                    "evaluations": [],
+                }
+            ],
+            "parameters": {},
+            "initialization": "fresh",
+            "parent_training_steps": 0,
+        },
+    }
+    proposal = _confirm(
+        {
+            "previous_result_decision": {
+                "experiment": 1,
+                "continue_from": _candidate_selector(state, "checkpoint"),
+                "reason": "Adopt the measured candidate.",
+                "code": {"action": "keep", "reason": "Keep the recipe."},
+            }
+        },
+        state,
+    )
+
+    apply_previous_result_decision(proposal, state)
+
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    working = persisted["working_lineage"]
+    assert set(working) <= repository.LINEAGE_RECORD_SCHEMA
+    assert working["training_steps"] == 100_352
+    assert working["accumulated_steps"] == 100_352
+    assert working["run_steps"] == 100_352
+    assert working["parent_accumulated_steps"] == 0
+    assert working["identifier"] == "experiment-1/delta-100352"
+    assert persisted["pending_closure_operation"]["progress"] == "durable"
+
+
+def test_legacy_lineage_record_is_translated_into_the_canonical_schema(
+    monkeypatch, tmp_path
+):
+    """A record written before the coordinate model stays readable."""
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    legacy = {
+        "id": "alternative",
+        "artifact": "research/checkpoints/retained/alternative",
+        "fingerprint": "f" * 64,
+        "origin_experiment": 2,
+        "candidate": "checkpoint-10240",
+        "parameters": {"algorithm": {"name": "ppo"}},
+        "scientific_commit": "a" * 40,
+        "training_steps": 10_240,
+        "evaluation_artifacts": [],
+        "reason": "Retained before the coordinate model.",
+    }
+
+    repository.canonicalize_lineage_record(legacy)
+
+    assert legacy["accumulated_steps"] == 10_240
+    # An unknown run, identity or parent is left absent, never guessed.
+    assert "identifier" not in legacy
+    assert "run_steps" not in legacy
+    assert "parent_accumulated_steps" not in legacy
+    repository.validate_v4_state(
+        {
+            "schema_version": 4,
+            "campaign": {"id": "c", "started_at": "now", "base_commit": "base"},
+            "working_lineage": None,
+            "best_known_lineage": None,
+            "retained_lineages": [legacy],
+        },
+        allow_missing_artifact=True,
+    )
+    derived = {
+        "artifact": "research/checkpoints/retained/derived",
+        "fingerprint": "f" * 64,
+        "origin_experiment": 3,
+        "candidate": "checkpoint-5120",
+        "parameters": {},
+        "scientific_commit": None,
+        "run_steps": 5_120,
+        "training_steps": 5_120,
+        "evaluation_artifacts": [],
+        "reason": "Retained under the legacy naming.",
+    }
+
+    repository.canonicalize_lineage_record(derived)
+
+    assert derived["run_steps"] == 5_120
+    assert derived["parent_accumulated_steps"] == 0
+    assert derived["accumulated_steps"] == 5_120
+    assert derived["identifier"] == "experiment-3/delta-5120"
+    # A field no canonical record carries is still refused, not accommodated.
+    with pytest.raises(ValueError, match="extra="):
+        repository.canonicalize_lineage_record(
+            {
+                "artifact": "research/checkpoints/retained/other",
+                "fingerprint": "f" * 64,
+                "origin_experiment": 3,
+                "candidate": "checkpoint-5120",
+                "parameters": {},
+                "scientific_commit": None,
+                "timesteps": 5_120,
+                "training_steps": 5_120,
+                "evaluation_artifacts": [],
+                "reason": "An experiment candidate, not a lineage record.",
+            }
+        )
+
+
+def test_wrong_lineage_coordinates_are_still_refused(monkeypatch, tmp_path):
+    """The canonical schema refuses a record that is genuinely wrong."""
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+
+    def record(**overrides) -> dict:
+        built = {
+            "artifact": "research/checkpoints/retained/alternative",
+            "fingerprint": "f" * 64,
+            "origin_experiment": 2,
+            "candidate": "checkpoint-10240",
+            "parameters": {},
+            "scientific_commit": "a" * 40,
+            "training_steps": 10_240,
+            "evaluation_artifacts": [],
+            "reason": "Measured candidate.",
+            "identifier": "experiment-2/delta-10240",
+            "run_steps": 10_240,
+            "parent_accumulated_steps": 0,
+            "accumulated_steps": 10_240,
+            "parent_lineage": "",
+            "parent_fingerprint": None,
+        }
+        built.update(overrides)
+        return built
+
+    with pytest.raises(ValueError, match="accumulated_steps must equal"):
+        repository.canonicalize_lineage_record(record(accumulated_steps=10_241))
+    with pytest.raises(ValueError, match="identifier must match"):
+        repository.canonicalize_lineage_record(record(identifier="experiment-2/delta-1"))
+    with pytest.raises(ValueError, match="training_steps must equal"):
+        repository.canonicalize_lineage_record(record(training_steps=10_000))
+    with pytest.raises(TypeError, match="run_steps must be a non-negative integer"):
+        repository.canonicalize_lineage_record(record(run_steps=None))
+    with pytest.raises(ValueError, match="extra="):
+        repository.canonicalize_lineage_record(record(unknown_field=1))
+
+
+def test_lineage_record_constructor_builds_exactly_the_schema(
+    monkeypatch, tmp_path
+):
+    """The single producer constructor emits the schema and refuses bad facts."""
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    artifact = _artifact(tmp_path / "candidate", "candidate")
+    built = repository.lineage_record(
+        artifact=artifact,
+        origin_experiment=1,
+        candidate="checkpoint",
+        parameters={},
+        scientific_commit=None,
+        coordinates={
+            "identifier": "experiment-1/delta-5",
+            "run_steps": 5,
+            "parent_accumulated_steps": 0,
+            "accumulated_steps": 5,
+            "parent_lineage": "",
+            "parent_fingerprint": None,
+            "unrelated_fact": "ignored",
+        },
+        evaluation_artifacts=[],
+        reason="Fresh candidate.",
+    )
+
+    assert set(built) <= repository.LINEAGE_RECORD_SCHEMA
+    assert "unrelated_fact" not in built
+    assert built["training_steps"] == 5
+    with pytest.raises(ValueError, match="accumulated steps"):
+        repository.lineage_record(
+            artifact=artifact,
+            origin_experiment=1,
+            candidate="checkpoint",
+            parameters={},
+            scientific_commit=None,
+            coordinates={},
+            evaluation_artifacts=[],
+            reason="Unknown steps.",
+        )

@@ -15,7 +15,11 @@ import time
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
-from robot_learning.checkpoint_coordinates import coordinates_from_record
+from robot_learning.checkpoint_coordinates import (
+    COORDINATE_FIELDS,
+    canonical_identifier,
+    coordinates_from_record,
+)
 
 # Detailed evidence belongs to the evaluation artifact, not to the compact
 # history or the protocol state.
@@ -421,23 +425,141 @@ def _canonicalize_result_artifacts(result: dict) -> None:
                 _canonicalize_evaluation_artifact(evaluation)
 
 
-LINEAGE_RECORD_FIELDS = {
-    "artifact",
-    "fingerprint",
-    "origin_experiment",
-    "candidate",
-    "parameters",
-    "scientific_commit",
-    "training_steps",
-    "evaluation_artifacts",
-    "reason",
-}
+# --- the canonical lineage record schema ------------------------------------
+# One schema, one place. A schema-v4 reusable policy record is built from the
+# required identity/evidence fields below, the optional designation/selection
+# fields, and the canonical checkpoint coordinates owned by
+# `robot_learning.checkpoint_coordinates`. `lineage_record` is the only
+# constructor of that schema and `canonicalize_lineage_record` is the only
+# validator, so producers and readers cannot drift from what the repository
+# persists. A record written before the coordinate model is translated by
+# `translate_legacy_lineage_record` and never refused for being older.
+LINEAGE_RECORD_FIELDS = frozenset(
+    {
+        "artifact",
+        "fingerprint",
+        "origin_experiment",
+        "candidate",
+        "parameters",
+        "scientific_commit",
+        "training_steps",
+        "evaluation_artifacts",
+        "reason",
+    }
+)
 # Optional lineage fields. `designation_ordinal` records the best-known tenure;
 # it is present on a designated best-known record and absent elsewhere.
 # `selected_panels` records the research-evaluation panels a lineage was selected
 # on, so repeated measurement on those episodes can be recognized as
 # selection-contaminated rather than independent confirmation (issue #57).
-LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
+LINEAGE_RECORD_OPTIONAL_FIELDS = frozenset({"designation_ordinal", "selected_panels"})
+# The coordinate fields (identifier, run_steps, parent_accumulated_steps,
+# accumulated_steps, parent_lineage, parent_fingerprint) name one checkpoint on
+# its lineage. They are part of the record, not an extra: the coordinate model
+# is the lineage-aware model, and a reader must not have to guess whether the
+# steps it sees are a run or an accumulation.
+LINEAGE_RECORD_COORDINATE_FIELDS = frozenset(COORDINATE_FIELDS)
+# Fields a retaining container adds around a record: `id` labels a retained
+# lineage and `campaign_id` records the campaign that retained it.
+LINEAGE_RECORD_SCOPED_FIELDS = frozenset({"id", "campaign_id"})
+# The complete canonical schema: every field a lineage record may carry.
+LINEAGE_RECORD_SCHEMA = (
+    LINEAGE_RECORD_FIELDS
+    | LINEAGE_RECORD_OPTIONAL_FIELDS
+    | LINEAGE_RECORD_COORDINATE_FIELDS
+    | LINEAGE_RECORD_SCOPED_FIELDS
+)
+# The coordinates that count steps. They are whole and non-negative; an unknown
+# one is absent, never null and never guessed.
+COORDINATE_STEP_FIELDS = ("run_steps", "parent_accumulated_steps", "accumulated_steps")
+
+
+def translate_legacy_lineage_record(lineage: dict) -> dict:
+    """Read a record written before the coordinate model as its canonical form.
+
+    The explicit legacy translation layer of the repository contract: the
+    coordinates are derived from the record's own facts by
+    ``coordinates_from_record`` and only the values the record already proves are
+    materialized. An unknown run, parent or parent fingerprint stays absent, so a
+    legacy record remains readable without inventing a lineage for it.
+    """
+    coordinates = coordinates_from_record(lineage)
+    for field in COORDINATE_FIELDS:
+        if field in lineage:
+            continue
+        value = coordinates[field]
+        if value is None or (field == "parent_lineage" and not value):
+            continue
+        lineage[field] = value
+    return lineage
+
+
+def require_canonical_coordinates(lineage: dict) -> None:
+    """Refuse a record whose stated checkpoint coordinates are wrong.
+
+    Only stated facts are checked, so a translated legacy record whose run or
+    parent is genuinely unknown is read as incomplete rather than refused, while
+    a record that states a wrong step, a wrong identifier or a broken
+    ``accumulated_steps == parent_accumulated_steps + run_steps`` is.
+    """
+    for field in COORDINATE_STEP_FIELDS:
+        if field in lineage:
+            value = lineage[field]
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise TypeError(
+                    f"lineage record {field} must be a non-negative integer"
+                )
+    if "identifier" in lineage:
+        identifier = lineage["identifier"]
+        if identifier is not None and (
+            not isinstance(identifier, str) or not identifier.strip()
+        ):
+            raise TypeError(
+                "lineage record identifier must be a non-empty string or null"
+            )
+    if "parent_lineage" in lineage and not isinstance(lineage["parent_lineage"], str):
+        raise TypeError("lineage record parent_lineage must be a string")
+    if "parent_fingerprint" in lineage:
+        parent_fingerprint = lineage["parent_fingerprint"]
+        if parent_fingerprint is not None and not isinstance(parent_fingerprint, str):
+            raise TypeError(
+                "lineage record parent_fingerprint must be a string or null"
+            )
+    run_steps = lineage.get("run_steps")
+    parent_steps = lineage.get("parent_accumulated_steps")
+    accumulated = lineage.get("accumulated_steps")
+    stated_steps = all(
+        isinstance(value, int) and not isinstance(value, bool)
+        for value in (run_steps, parent_steps, accumulated)
+    )
+    if stated_steps and accumulated != parent_steps + run_steps:
+        raise ValueError(
+            "lineage record accumulated_steps must equal parent_accumulated_steps "
+            "plus run_steps"
+        )
+    identifier = lineage.get("identifier")
+    experiment = lineage.get("origin_experiment")
+    if (
+        isinstance(identifier, str)
+        and identifier.strip()
+        and isinstance(experiment, int)
+        and not isinstance(experiment, bool)
+        and isinstance(run_steps, int)
+        and not isinstance(run_steps, bool)
+        and identifier != canonical_identifier(experiment, run_steps)
+    ):
+        raise ValueError(
+            "lineage record identifier must match its origin experiment and run steps"
+        )
+    training_steps = lineage.get("training_steps")
+    if (
+        isinstance(training_steps, int)
+        and not isinstance(training_steps, bool)
+        and isinstance(accumulated, int)
+        and not isinstance(accumulated, bool)
+        and training_steps != accumulated
+    ):
+        raise ValueError("lineage record training_steps must equal accumulated_steps")
 
 
 def _canonicalize_selected_panel(panel: object) -> dict:
@@ -506,21 +628,24 @@ def _canonicalize_selected_panel(panel: object) -> dict:
 
 
 def canonicalize_lineage_record(lineage: dict) -> None:
-    """Validate and canonicalize one schema-v4 reusable policy record."""
+    """Translate one lineage record and validate it against the canonical schema.
+
+    Called on every read (``validate_v4_state`` from ``load_state``) and on every
+    write, so a legacy record is translated into the canonical representation
+    instead of being refused, while a record that is wrong under the canonical
+    model is still refused.
+    """
     if not isinstance(lineage, dict):
         raise TypeError("lineage record must be an object")
+    translate_legacy_lineage_record(lineage)
     missing = LINEAGE_RECORD_FIELDS - set(lineage)
-    extra = (
-        set(lineage)
-        - LINEAGE_RECORD_FIELDS
-        - LINEAGE_RECORD_OPTIONAL_FIELDS
-        - {"id", "campaign_id"}
-    )
+    extra = set(lineage) - LINEAGE_RECORD_SCHEMA
     if missing or extra:
         raise ValueError(
             "lineage record fields are invalid: "
             f"missing={sorted(missing)}, extra={sorted(extra)}"
         )
+    require_canonical_coordinates(lineage)
     lineage["artifact"] = canonical_repo_path(str(lineage["artifact"]))
     for field in ("fingerprint", "candidate", "reason"):
         if not isinstance(lineage[field], str) or not lineage[field].strip():
@@ -561,6 +686,59 @@ def canonicalize_lineage_record(lineage: dict) -> None:
     lineage["evaluation_artifacts"] = [
         canonical_repo_path(path) for path in evaluations
     ]
+
+
+def lineage_record(
+    *,
+    artifact: Path,
+    origin_experiment: int,
+    candidate: str,
+    parameters: dict,
+    scientific_commit: str | None,
+    coordinates: dict,
+    evaluation_artifacts: object,
+    reason: str,
+    selected_panels: list[dict] | None = None,
+    designation_ordinal: int | None = None,
+) -> dict:
+    """Build one canonical lineage record from a checkpoint's lineage facts.
+
+    The single constructor of ``LINEAGE_RECORD_SCHEMA``: a producer resolves the
+    facts and this function writes exactly the fields the repository persists and
+    validates them immediately, so a record the Runner would refuse at a state
+    write is refused where it is built instead of twenty minutes later, in the
+    middle of a closure transaction. Only a stated step coordinate is copied; an
+    unknown one is omitted rather than guessed.
+    """
+    accumulated = coordinates.get("accumulated_steps")
+    if accumulated is None:
+        raise ValueError(
+            "lineage record requires the checkpoint's accumulated steps"
+        )
+    record: dict = {
+        "artifact": repo_relative_path(artifact),
+        "fingerprint": artifact_fingerprint(artifact),
+        "origin_experiment": int(origin_experiment),
+        "candidate": str(candidate),
+        "parameters": parameters,
+        "scientific_commit": scientific_commit,
+        "training_steps": int(accumulated),
+        "evaluation_artifacts": [
+            canonical_repo_path(str(path)) for path in evaluation_artifacts
+        ],
+        "reason": reason,
+    }
+    for field in COORDINATE_FIELDS:
+        value = coordinates.get(field)
+        if value is None and field in COORDINATE_STEP_FIELDS:
+            continue
+        record[field] = value
+    if selected_panels is not None:
+        record["selected_panels"] = selected_panels
+    if designation_ordinal is not None:
+        record["designation_ordinal"] = designation_ordinal
+    canonicalize_lineage_record(record)
+    return record
 
 
 def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
