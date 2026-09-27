@@ -439,6 +439,59 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     assert persisted["scientific_session"]["id"] == session["id"]
 
 
+def test_python_module_publishes_changed_non_lab_science_before_execution(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    session = _start_session(state, "goal_review", "Run changed scientific code.")
+    module = tmp_path / "robot_learning" / "scenario" / "diagnostic.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("def main():\n    return None\n", encoding="utf-8")
+    relative = "robot_learning/scenario/diagnostic.py"
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [relative])
+    artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    request = {
+        "measurement": {
+            "description": "Run the changed scientific diagnostic.",
+            "rationale": "Its result informs the next goal decision.",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "robot_learning.scenario.diagnostic",
+                    "args": ["--output", str(artifact)],
+                    "artifact": repository.repo_relative_path(artifact),
+                }
+            ],
+        }
+    }
+    run_experiment.accept_operation(request, state)
+    order: list[str] = []
+
+    def publish(operation_id, scope):
+        order.append(f"publish:{operation_id}")
+        assert scope == [relative]
+        return "c" * 40
+
+    def run_module(_module, *_args):
+        order.append("execute")
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text('{"scientific_metric": 7}', encoding="utf-8")
+
+    monkeypatch.setattr(execution, "validate_changed_sources", lambda _paths: None)
+    monkeypatch.setattr(repository, "publish_scientific_recipe", publish)
+    monkeypatch.setattr(execution, "run_module", run_module)
+
+    assert run_experiment.execute_pending_operation() == 0
+    persisted = repository.read_state()
+    provenance = persisted["operation_events"][-1]["result"]["tool_provenance"]
+    assert order == ["publish:M1", "execute"]
+    assert provenance["scientific_commit"] == "c" * 40
+    assert provenance["scientific_paths"] == [relative]
+    assert provenance["campaign_lab_publication"] is None
+    assert persisted["scientific_session"]["scientific_parent_commit"] == "c" * 40
+    assert persisted["scientific_session"]["id"] == session["id"]
+
+
 def test_comparisons_are_resolved_to_planned_canonical_candidates_at_acceptance(
     monkeypatch, tmp_path
 ):
@@ -604,6 +657,9 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
     run_experiment.accept_operation(request, state)
     calls = {"count": 0}
 
+    class SimulatedCrash(BaseException):
+        pass
+
     def evaluate(
         _artifact,
         seed,
@@ -616,7 +672,7 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
         del label
         calls["count"] += 1
         if calls["count"] == 2:
-            raise RuntimeError("injected second-panel failure")
+            raise SimulatedCrash
         metrics = {
             "episodes": episodes,
             "seed": seed,
@@ -630,7 +686,7 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
         return metrics
 
     monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
-    with pytest.raises(RuntimeError, match="second-panel failure"):
+    with pytest.raises(SimulatedCrash):
         run_experiment.execute_pending_operation()
     interrupted = repository.read_state()
     partial = interrupted["pending_operation"]["data"]["partial_results"][0]
@@ -650,7 +706,7 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
 
 
 def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, capsys
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "goal_review", "Repair a failed training operation.")
@@ -678,6 +734,20 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
         run_experiment.execute_pending_operation()
     failed = repository.read_state()["pending_operation"]
     assert failed["failure"]
+    work = {"calls": 0}
+
+    def retry_work(_state, _pending):
+        work["calls"] += 1
+        return 0
+
+    monkeypatch.setattr(run_experiment, "execute_training", retry_work)
+    with pytest.raises(ValueError, match="--reaccept-pending"):
+        run_experiment.execute_pending_operation()
+    assert work["calls"] == 0
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--execute-pending"])
+    assert run_experiment.main() == 1
+    assert "--reaccept-pending" in capsys.readouterr().out
+    assert work["calls"] == 0
     second = run_experiment.reaccept_pending_operation()
     assert second["id"] == "T2"
     assert second["supersedes"] == first["id"]
@@ -705,8 +775,15 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
                 "code_parent_commit": "a" * 40,
                 "changed_files": second["data"]["scientific_manifest"],
             },
-            "candidates": [],
-            "learning_dynamics": [],
+            "candidates": ["T2:checkpoint-0"],
+            "learning_dynamics": [
+                {
+                    "candidate": "T2:checkpoint-0",
+                    "training_steps": 0,
+                    "training_success": None,
+                    "ep_rew_mean": None,
+                }
+            ],
         },
     )
     events = repository.read_state()["operation_events"]
@@ -762,11 +839,32 @@ def test_model_roles_change_only_through_explicit_evidence_backed_operation(
             "request": {
                 "description": "Recorded evidence.",
                 "rationale": "Support an explicit role assignment.",
-                "measurements": [],
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate["id"],
+                        "episodes": 1,
+                        "seed": 1,
+                    }
+                ],
             },
             "result": {
                 "status": "completed",
-                "measurements": [],
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate["id"],
+                        "candidate_id": candidate["id"],
+                        "label": "recorded evidence",
+                        "metrics": {
+                            "evaluation_artifact": (
+                                "research/evaluations/campaign/evidence.json"
+                            ),
+                            "evaluation_artifact_fingerprint": "e" * 64,
+                            "model_fingerprint": candidate["fingerprint"],
+                        },
+                    }
+                ],
                 "paired_comparisons": [],
                 "tool_provenance": None,
             },
@@ -855,6 +953,109 @@ def test_recipe_restoration_rejects_worktree_changes_after_acceptance(
     changed.append("robot_learning/scenario/new_tool.py")
     with pytest.raises(run_experiment.FrozenOperationMismatch, match="inputs changed"):
         run_experiment.execute_pending_operation()
+
+
+def test_recipe_restore_recovers_from_crash_after_restoring_progress_write(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Restore a selected recipe.")
+    candidate = _candidate(
+        "T1:checkpoint-10", _artifact(tmp_path / "archive" / "candidate")
+    )
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    request = {
+        "restore_recipe": {
+            "candidate": candidate["id"],
+            "reason": "Restore the frozen recipe.",
+        }
+    }
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
+    monkeypatch.setattr(repository, "scientific_delta", lambda _commit: [])
+    run_experiment.accept_operation(request, state)
+    original_write = repository.write_state
+    crashed = {"value": False}
+
+    class SimulatedCrash(BaseException):
+        pass
+
+    def crash_after_write(current):
+        original_write(current)
+        pending = current["pending_operation"]
+        if (
+            isinstance(pending, dict)
+            and pending["progress"] == "restoring"
+            and not crashed["value"]
+        ):
+            crashed["value"] = True
+            raise SimulatedCrash
+
+    monkeypatch.setattr(repository, "write_state", crash_after_write)
+    monkeypatch.setattr(repository, "apply_recipe_restore", lambda _plan: None)
+    monkeypatch.setattr(repository, "recipe_paths_match_commit", lambda _plan: True)
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: candidate["parameters"],
+    )
+    with pytest.raises(SimulatedCrash):
+        run_experiment.execute_pending_operation()
+    assert repository.read_state()["pending_operation"]["progress"] == "restoring"
+    monkeypatch.setattr(
+        protocol,
+        "plan_recipe_restore",
+        lambda *_args: pytest.fail("accepted preconditions were revalidated"),
+    )
+    assert run_experiment.execute_pending_operation() == 0
+
+
+def test_recipe_restore_recovers_from_crash_after_idempotent_apply(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Restore a selected recipe.")
+    candidate = _candidate(
+        "T1:checkpoint-10", _artifact(tmp_path / "archive" / "candidate")
+    )
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    request = {
+        "restore_recipe": {
+            "candidate": candidate["id"],
+            "reason": "Restore the frozen recipe.",
+        }
+    }
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
+    monkeypatch.setattr(repository, "scientific_delta", lambda _commit: [])
+    run_experiment.accept_operation(request, state)
+    applies = {"count": 0}
+
+    class SimulatedCrash(BaseException):
+        pass
+
+    def apply_then_crash(_plan):
+        applies["count"] += 1
+        if applies["count"] == 1:
+            raise SimulatedCrash
+
+    monkeypatch.setattr(repository, "apply_recipe_restore", apply_then_crash)
+    monkeypatch.setattr(repository, "recipe_paths_match_commit", lambda _plan: True)
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: candidate["parameters"],
+    )
+    with pytest.raises(SimulatedCrash):
+        run_experiment.execute_pending_operation()
+    assert repository.read_state()["pending_operation"]["progress"] == "restoring"
+    monkeypatch.setattr(
+        protocol,
+        "plan_recipe_restore",
+        lambda *_args: pytest.fail("accepted preconditions were revalidated"),
+    )
+    assert run_experiment.execute_pending_operation() == 0
+    assert applies["count"] == 2
 
 
 def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
@@ -1020,6 +1221,300 @@ def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
     }
     with pytest.raises(ValueError, match="MaxInquiries"):
         protocol.validate_operation_request(opening, state)
+
+
+def test_supersession_graph_requires_one_reciprocal_same_request_successor(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Repair one failed operation.")
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
+    request = {
+        "training": {
+            "initialization": "fresh",
+            "seed": 7,
+            "steps": 10,
+            "description": "Train one candidate.",
+            "rationale": "The result informs the next decision.",
+        }
+    }
+    first = run_experiment.accept_operation(request, state)
+    first["failure"] = "injected failure"
+    repository.write_state(state)
+    second = run_experiment.reaccept_pending_operation()
+    valid = repository.read_state()
+    repository.validate_research_state(valid, allow_missing_artifact=True)
+
+    cases = []
+
+    dangling = json.loads(json.dumps(valid))
+    dangling["pending_operation"]["supersedes"] = "T404"
+    cases.append((dangling, "dangling"))
+
+    nonreciprocal = json.loads(json.dumps(valid))
+    nonreciprocal["operation_events"][0]["superseded_by"] = "T3"
+    cases.append((nonreciprocal, "not reciprocal"))
+
+    changed_request = json.loads(json.dumps(valid))
+    changed_request["pending_operation"]["request"]["training"]["description"] = (
+        "Different request"
+    )
+    cases.append((changed_request, "preserve operation kind and request"))
+
+    cyclic = json.loads(json.dumps(valid))
+    cyclic["operation_events"][0]["supersedes"] = second["id"]
+    cases.append((cyclic, "cycle"))
+
+    multiple = json.loads(json.dumps(valid))
+    multiple["operation_events"].append(
+        {
+            "id": "T3",
+            "kind": "training",
+            "session_id": second["session_id"],
+            "inquiry_id": second["inquiry_id"],
+            "request": second["request"]["training"],
+            "result": {
+                "status": "completed",
+                "initialization": "fresh",
+                "parent": None,
+                "seed": 7,
+                "requested_steps": 10,
+                "completed_steps": 0,
+                "scientific_commit": "a" * 40,
+                "mechanical_provenance": {
+                    "code_parent_commit": "a" * 40,
+                    "changed_files": [],
+                },
+                "candidates": ["T3:checkpoint-0"],
+                "learning_dynamics": [
+                    {
+                        "candidate": "T3:checkpoint-0",
+                        "training_steps": 0,
+                        "training_success": None,
+                        "ep_rew_mean": None,
+                    }
+                ],
+            },
+            "status": "completed",
+            "error": None,
+            "supersedes": first["id"],
+            "superseded_by": None,
+            "completed_at": "now",
+        }
+    )
+    cases.append((multiple, "multiple supersession successors"))
+
+    for damaged, message in cases:
+        with pytest.raises(ValueError, match=message):
+            repository.validate_research_state(damaged, allow_missing_artifact=True)
+
+
+def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    measurement_event = {
+        "id": "M1",
+        "kind": "measurement",
+        "session_id": "S1",
+        "inquiry_id": None,
+        "request": {
+            "description": "Run a diagnostic.",
+            "rationale": "The output informs the next decision.",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "research.lab.diagnostic",
+                    "args": [],
+                    "artifact": "research/evaluations/campaign/diagnostic.json",
+                }
+            ],
+        },
+        "result": {
+            "status": "completed",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "research.lab.diagnostic",
+                    "args": [],
+                    "label": "diagnostic",
+                    "metrics": {
+                        "evaluation_artifact": (
+                            "research/evaluations/campaign/diagnostic.json"
+                        ),
+                        "evaluation_artifact_fingerprint": "f" * 64,
+                        "scientific_metric": {
+                            "extensible": [1, 2, {"interpretation": "PI-owned"}]
+                        },
+                    },
+                }
+            ],
+            "paired_comparisons": [
+                {
+                    "candidate": "T2:checkpoint-10",
+                    "reference": "T1:checkpoint-10",
+                    "episodes": 1,
+                    "candidate_wins": 1,
+                    "reference_wins": 0,
+                    "discordant_episodes": 1,
+                    "net_wins": 1,
+                    "success_delta_percent": 100.0,
+                    "candidate_model_fingerprint": "c" * 64,
+                    "reference_model_fingerprint": "r" * 64,
+                    "shared_episode_seeds": [100],
+                    "source_artifacts": [
+                        "research/evaluations/campaign/candidate.json",
+                        "research/evaluations/campaign/reference.json",
+                    ],
+                }
+            ],
+            "tool_provenance": {
+                "code_parent_commit": "a" * 40,
+                "scientific_manifest": [],
+                "scientific_paths": [],
+                "scientific_commit": None,
+                "effective_parameters": {},
+                "module_paths": ["research/lab/diagnostic.py"],
+                "module_manifest": [
+                    {
+                        "path": "research/lab/diagnostic.py",
+                        "exists": True,
+                        "fingerprint": "m" * 64,
+                    }
+                ],
+                "campaign_lab_manifest": [
+                    {
+                        "path": "research/lab/diagnostic.py",
+                        "fingerprint": "m" * 64,
+                    }
+                ],
+                "campaign_lab_publication": {
+                    "commit": "b" * 40,
+                    "manifest": [
+                        {
+                            "path": "research/lab/diagnostic.py",
+                            "fingerprint": "m" * 64,
+                        }
+                    ],
+                    "fingerprint": "p" * 64,
+                },
+            },
+        },
+        "status": "completed",
+        "error": None,
+        "supersedes": None,
+        "superseded_by": None,
+        "completed_at": "now",
+    }
+    state["operation_events"] = [measurement_event]
+    repository.validate_research_state(state, allow_missing_artifact=True)
+
+    measurement_extra = json.loads(json.dumps(state))
+    measurement_extra["operation_events"][0]["result"]["measurements"][0][
+        "runner_extra"
+    ] = True
+    with pytest.raises(ValueError, match="completed measurement requires exactly"):
+        repository.validate_research_state(
+            measurement_extra, allow_missing_artifact=True
+        )
+
+    comparison_extra = json.loads(json.dumps(state))
+    comparison_extra["operation_events"][0]["result"]["paired_comparisons"][0][
+        "runner_extra"
+    ] = True
+    with pytest.raises(
+        ValueError, match="completed paired comparison requires exactly"
+    ):
+        repository.validate_research_state(
+            comparison_extra, allow_missing_artifact=True
+        )
+
+    provenance_extra = json.loads(json.dumps(state))
+    provenance_extra["operation_events"][0]["result"]["tool_provenance"][
+        "runner_extra"
+    ] = True
+    with pytest.raises(ValueError, match="completed tool provenance requires exactly"):
+        repository.validate_research_state(
+            provenance_extra, allow_missing_artifact=True
+        )
+
+    training_event = {
+        "id": "T1",
+        "kind": "training",
+        "session_id": "S1",
+        "inquiry_id": None,
+        "request": {
+            "initialization": "fresh",
+            "seed": 7,
+            "steps": 10,
+            "description": "Train a candidate.",
+            "rationale": "The result informs the next decision.",
+        },
+        "result": {
+            "status": "completed",
+            "initialization": "fresh",
+            "parent": None,
+            "seed": 7,
+            "requested_steps": 10,
+            "completed_steps": 12,
+            "scientific_commit": "a" * 40,
+            "mechanical_provenance": {
+                "code_parent_commit": "b" * 40,
+                "changed_files": [
+                    {
+                        "path": "robot_learning/scenario/reward.py",
+                        "exists": True,
+                        "fingerprint": "f" * 64,
+                    }
+                ],
+            },
+            "candidates": ["T1:checkpoint-12"],
+            "learning_dynamics": [
+                {
+                    "candidate": "T1:checkpoint-12",
+                    "training_steps": 12,
+                    "training_success": 0.5,
+                    "ep_rew_mean": -1.0,
+                }
+            ],
+        },
+        "status": "completed",
+        "error": None,
+        "supersedes": None,
+        "superseded_by": None,
+        "completed_at": "now",
+    }
+    state["operation_events"] = [training_event]
+    repository.validate_research_state(state, allow_missing_artifact=True)
+
+    training_provenance_extra = json.loads(json.dumps(state))
+    training_provenance_extra["operation_events"][0]["result"]["mechanical_provenance"][
+        "runner_extra"
+    ] = True
+    with pytest.raises(
+        ValueError, match="completed training mechanical_provenance requires exactly"
+    ):
+        repository.validate_research_state(
+            training_provenance_extra, allow_missing_artifact=True
+        )
+
+    invalid_candidates = json.loads(json.dumps(state))
+    invalid_candidates["operation_events"][0]["result"]["candidates"] = [
+        {"id": "T1:checkpoint-12"}
+    ]
+    with pytest.raises(ValueError, match="completed training candidates"):
+        repository.validate_research_state(
+            invalid_candidates, allow_missing_artifact=True
+        )
+
+    dynamics_extra = json.loads(json.dumps(state))
+    dynamics_extra["operation_events"][0]["result"]["learning_dynamics"][0][
+        "runner_extra"
+    ] = True
+    with pytest.raises(
+        ValueError, match="completed training learning dynamic requires exactly"
+    ):
+        repository.validate_research_state(dynamics_extra, allow_missing_artifact=True)
 
 
 def test_schema_six_rejects_unknown_nested_control_fields(monkeypatch, tmp_path):

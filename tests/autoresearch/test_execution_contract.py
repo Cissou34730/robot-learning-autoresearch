@@ -227,14 +227,17 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     monkeypatch.setattr(execution, "remove_candidate_dir", lambda _path: None)
     original = repository.upsert_operation_event
 
+    class SimulatedCrash(BaseException):
+        pass
+
     def fail_once(event):
         calls["history"] += 1
         if calls["history"] == 1:
-            raise OSError("injected publication failure")
+            raise SimulatedCrash
         original(event)
 
     monkeypatch.setattr(repository, "upsert_operation_event", fail_once)
-    with pytest.raises(OSError, match="publication failure"):
+    with pytest.raises(SimulatedCrash):
         run_experiment.execute_pending_operation()
     interrupted = repository.read_state()
     assert interrupted["pending_operation"]["progress"] == "result_ready"

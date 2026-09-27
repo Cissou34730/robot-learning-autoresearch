@@ -191,6 +191,8 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             module_provenance = {
                 "code_parent_commit": parent_commit,
                 "scientific_manifest": _current_scientific_manifest(parent_commit),
+                "scientific_paths": list(changed),
+                "scientific_commit": None,
                 "effective_parameters": research_config.load_experiment_config(),
                 "module_paths": module_paths,
                 "module_manifest": _scientific_manifest(module_paths),
@@ -521,20 +523,21 @@ def _execute_model_role(state: dict, pending: dict) -> int:
 
 def _execute_recipe_restore(state: dict, pending: dict) -> int:
     plan = pending["data"]["plan"]
-    live_plan = protocol.plan_recipe_restore(
-        pending["request"]["restore_recipe"], state
-    )
-    if live_plan != plan:
-        raise FrozenOperationMismatch(
-            "recipe restoration inputs changed after the operation was accepted"
+    if pending["progress"] == "accepted":
+        live_plan = protocol.plan_recipe_restore(
+            pending["request"]["restore_recipe"], state
         )
-    _require_matching_manifest(
-        pending["data"]["pre_restore_manifest"],
-        _scientific_manifest([*plan["restore"], *plan["remove_created"]]),
-        "pre-restore scientific surface",
-    )
-    pending["progress"] = "restoring"
-    repository.write_state(state)
+        if live_plan != plan:
+            raise FrozenOperationMismatch(
+                "recipe restoration inputs changed after the operation was accepted"
+            )
+        _require_matching_manifest(
+            pending["data"]["pre_restore_manifest"],
+            _scientific_manifest([*plan["restore"], *plan["remove_created"]]),
+            "pre-restore scientific surface",
+        )
+        pending["progress"] = "restoring"
+        repository.write_state(state)
     repository.apply_recipe_restore(plan)
     restored = research_config.load_experiment_config()
     if restored != plan["parameters"]:
@@ -727,6 +730,22 @@ def execute_measurement(state: dict, pending: dict) -> int:
         )
     _revalidate_module_provenance(data)
     module_provenance = data.get("module_provenance")
+    if isinstance(module_provenance, dict):
+        scientific_paths = list(module_provenance["scientific_paths"])
+        if scientific_paths and module_provenance["scientific_commit"] is None:
+            changed_paths = [
+                entry["path"] for entry in module_provenance["scientific_manifest"]
+            ]
+            if changed_paths:
+                execution.validate_changed_sources(changed_paths)
+            module_provenance["scientific_commit"] = (
+                repository.publish_scientific_recipe(pending["id"], scientific_paths)
+            )
+            repository.write_state(state)
+        elif module_provenance["scientific_commit"] is not None:
+            repository.require_resolvable_commit(
+                str(module_provenance["scientific_commit"])
+            )
     if (
         isinstance(module_provenance, dict)
         and module_provenance["campaign_lab_publication"] is None
@@ -941,6 +960,13 @@ def execute_measurement(state: dict, pending: dict) -> int:
             artifact = item["metrics"]["evaluation_artifact"]
             if artifact not in candidate["evaluation_artifacts"]:
                 candidate["evaluation_artifacts"].append(artifact)
+        if (
+            isinstance(module_provenance, dict)
+            and module_provenance["scientific_commit"] is not None
+        ):
+            current["scientific_session"]["scientific_parent_commit"] = str(
+                module_provenance["scientific_commit"]
+            )
 
     _complete_operation(state, result, apply)
     return 0
@@ -1125,6 +1151,11 @@ def execute_pending_operation() -> int:
     pending = state["pending_operation"]
     if not isinstance(pending, dict):
         raise TypeError("there is no pending Runner operation")
+    if pending["failure"] is not None:
+        raise ValueError(
+            f"pending operation {pending['id']} failed and must be reaccepted "
+            "with --reaccept-pending"
+        )
     request = pending["request"]
     if _canonical_fingerprint(request) != pending["request_fingerprint"]:
         raise FrozenOperationMismatch("accepted operation request changed")
@@ -1213,8 +1244,7 @@ def main() -> int:
     if args.reaccept_pending:
         pending = reaccept_pending_operation()
         print(
-            f"OPERATION_REACCEPTED: {pending['id']} supersedes "
-            f"{pending['supersedes']}"
+            f"OPERATION_REACCEPTED: {pending['id']} supersedes {pending['supersedes']}"
         )
         return 0
     if args.start_session:
@@ -1233,6 +1263,12 @@ def main() -> int:
     repository.synchronize_operation_log()
     state = repository.load_state(allow_missing_artifact=True)
     if isinstance(state["pending_operation"], dict):
+        if state["pending_operation"]["failure"] is not None:
+            print(
+                f"ERROR: pending operation {state['pending_operation']['id']} failed; "
+                "run --reaccept-pending before execution"
+            )
+            return 1
         return execute_pending_operation()
     if args.execute_pending:
         print("ERROR: there is no pending Runner operation")

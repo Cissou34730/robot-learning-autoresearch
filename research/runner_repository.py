@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -698,7 +699,10 @@ def _validate_operation_request_shape(kind: str, request: object) -> None:
             "python_module": {"instrument", "module", "args", "artifact", "label"},
         }
         for entry in measurements:
-            if not isinstance(entry, dict) or entry.get("instrument") not in entry_fields:
+            if (
+                not isinstance(entry, dict)
+                or entry.get("instrument") not in entry_fields
+            ):
                 raise ValueError("measurement request has an invalid instrument")
             fields = entry_fields[entry["instrument"]]
             if frozenset(entry) not in {
@@ -708,8 +712,7 @@ def _validate_operation_request_shape(kind: str, request: object) -> None:
                 raise ValueError("measurement request entry fields are invalid")
         comparisons = request.get("paired_comparisons", [])
         if not isinstance(comparisons, list) or any(
-            not isinstance(item, dict)
-            or set(item) != {"candidate", "reference"}
+            not isinstance(item, dict) or set(item) != {"candidate", "reference"}
             for item in comparisons
         ):
             raise ValueError("paired comparison fields are invalid")
@@ -744,9 +747,51 @@ def _validate_manifest(value: object, description: str) -> None:
     if not isinstance(value, list):
         raise TypeError(f"{description} must be a list")
     for entry in value:
-        _require_exact_fields(
+        entry = _require_exact_fields(
             entry, {"path", "exists", "fingerprint"}, f"{description} entry"
         )
+        _nonempty(entry, "path", f"{description} path")
+        if not isinstance(entry["exists"], bool):
+            raise TypeError(f"{description} exists must be a boolean")
+        fingerprint = entry["fingerprint"]
+        if entry["exists"]:
+            _nonempty(entry, "fingerprint", f"{description} fingerprint")
+        elif fingerprint is not None:
+            raise ValueError(f"{description} missing path cannot have a fingerprint")
+
+
+def _validate_file_manifest(value: object, description: str) -> None:
+    if not isinstance(value, list):
+        raise TypeError(f"{description} must be a list")
+    for entry in value:
+        entry = _require_exact_fields(
+            entry, {"path", "fingerprint"}, f"{description} entry"
+        )
+        _nonempty(entry, "path", f"{description} path")
+        _nonempty(entry, "fingerprint", f"{description} fingerprint")
+
+
+def _validate_string_list(
+    value: object, description: str, *, allow_empty: bool = True
+) -> list[str]:
+    if not isinstance(value, list) or any(
+        not isinstance(item, str) or not item.strip() for item in value
+    ):
+        raise ValueError(f"{description} must be a list of non-empty strings")
+    if not allow_empty and not value:
+        raise ValueError(f"{description} must not be empty")
+    if len(set(value)) != len(value):
+        raise ValueError(f"{description} must not contain duplicates")
+    return value
+
+
+def _validate_number_or_none(value: object, description: str) -> None:
+    if value is None:
+        return
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"{description} must be a number or null")
+    if not math.isfinite(float(value)):
+        raise ValueError(f"{description} must be finite")
 
 
 def _validate_pending_plan(kind: str, plan: object) -> None:
@@ -888,7 +933,10 @@ def _validate_pending_data(kind: str, data: object) -> None:
             "python_module": {"instrument", "module", "args", "artifact", "label"},
         }
         for entry in data["measurements"]:
-            if not isinstance(entry, dict) or entry.get("instrument") not in planned_fields:
+            if (
+                not isinstance(entry, dict)
+                or entry.get("instrument") not in planned_fields
+            ):
                 raise ValueError("pending measurement has an invalid instrument")
             _require_exact_fields(
                 entry,
@@ -937,6 +985,8 @@ def _validate_pending_data(kind: str, data: object) -> None:
                 {
                     "code_parent_commit",
                     "scientific_manifest",
+                    "scientific_paths",
+                    "scientific_commit",
                     "effective_parameters",
                     "module_paths",
                     "module_manifest",
@@ -948,13 +998,47 @@ def _validate_pending_data(kind: str, data: object) -> None:
             _validate_manifest(
                 provenance["scientific_manifest"], "module scientific manifest"
             )
+            _validate_string_list(
+                provenance["scientific_paths"], "module scientific_paths"
+            )
+            if provenance["scientific_commit"] is not None:
+                _nonempty(
+                    provenance,
+                    "scientific_commit",
+                    "module scientific_commit",
+                )
+            if not isinstance(provenance["effective_parameters"], dict):
+                raise TypeError("module effective_parameters must be an object")
+            _validate_string_list(
+                provenance["module_paths"],
+                "module paths",
+                allow_empty=False,
+            )
             _validate_manifest(provenance["module_manifest"], "module manifest")
+            _validate_file_manifest(
+                provenance["campaign_lab_manifest"],
+                "campaign laboratory manifest",
+            )
             publication = provenance["campaign_lab_publication"]
             if publication is not None:
-                _require_exact_fields(
+                publication = _require_exact_fields(
                     publication,
                     {"commit", "manifest", "fingerprint"},
                     "campaign laboratory publication",
+                )
+                _nonempty(
+                    publication,
+                    "commit",
+                    "campaign laboratory publication commit",
+                )
+                _validate_file_manifest(
+                    publication["manifest"],
+                    "campaign laboratory publication manifest",
+                )
+                _nonempty(
+                    publication,
+                    "fingerprint",
+                    "campaign laboratory publication fingerprint",
                 )
         return
     if kind == "checkpoint":
@@ -968,6 +1052,303 @@ def _validate_pending_data(kind: str, data: object) -> None:
     if kind == "restore_recipe":
         _validate_manifest(data["pre_restore_manifest"], "pre-restore manifest")
     _validate_pending_plan(kind, data["plan"])
+
+
+def _validate_completed_measurement_result(result: dict) -> None:
+    if result["status"] != "completed":
+        raise ValueError("completed measurement status must be completed")
+    measurements = result["measurements"]
+    if not isinstance(measurements, list):
+        raise TypeError("completed measurements must be a list")
+    if not measurements:
+        raise ValueError("completed measurements must not be empty")
+    has_python_module = False
+    for measurement in measurements:
+        if not isinstance(measurement, dict):
+            raise TypeError("completed measurement must be an object")
+        instrument = measurement.get("instrument")
+        fields = (
+            {"instrument", "module", "args", "label", "metrics"}
+            if instrument == "python_module"
+            else {"instrument", "candidate", "candidate_id", "label", "metrics"}
+        )
+        measurement = _require_exact_fields(
+            measurement, fields, "completed measurement"
+        )
+        if instrument not in {
+            "python_module",
+            "research_evaluation",
+            "task_reference",
+        }:
+            raise ValueError("completed measurement has an invalid instrument")
+        _nonempty(measurement, "label", "completed measurement label")
+        if instrument == "python_module":
+            has_python_module = True
+            _nonempty(measurement, "module", "completed measurement module")
+            if not isinstance(measurement["args"], list) or any(
+                not isinstance(item, str) for item in measurement["args"]
+            ):
+                raise TypeError("completed measurement args must be strings")
+        else:
+            _nonempty(measurement, "candidate", "completed measurement candidate")
+            _nonempty(measurement, "candidate_id", "completed measurement candidate_id")
+        metrics = measurement["metrics"]
+        if not isinstance(metrics, dict):
+            raise TypeError("completed measurement metrics must be an object")
+        _nonempty(
+            metrics,
+            "evaluation_artifact",
+            "completed measurement evaluation_artifact",
+        )
+        _nonempty(
+            metrics,
+            "evaluation_artifact_fingerprint",
+            "completed measurement evaluation_artifact_fingerprint",
+        )
+        if instrument != "python_module":
+            _nonempty(
+                metrics,
+                "model_fingerprint",
+                "completed measurement model_fingerprint",
+            )
+
+    comparisons = result["paired_comparisons"]
+    if not isinstance(comparisons, list):
+        raise TypeError("completed paired_comparisons must be a list")
+    comparison_fields = {
+        "candidate",
+        "reference",
+        "episodes",
+        "candidate_wins",
+        "reference_wins",
+        "discordant_episodes",
+        "net_wins",
+        "success_delta_percent",
+        "candidate_model_fingerprint",
+        "reference_model_fingerprint",
+        "shared_episode_seeds",
+        "source_artifacts",
+    }
+    for comparison in comparisons:
+        comparison = _require_exact_fields(
+            comparison, comparison_fields, "completed paired comparison"
+        )
+        for field in (
+            "candidate",
+            "reference",
+            "candidate_model_fingerprint",
+            "reference_model_fingerprint",
+        ):
+            _nonempty(comparison, field, f"completed paired comparison {field}")
+        episodes = _positive_integer(
+            comparison["episodes"], "completed paired comparison episodes"
+        )
+        candidate_wins = _positive_integer(
+            comparison["candidate_wins"],
+            "completed paired comparison candidate_wins",
+            allow_zero=True,
+        )
+        reference_wins = _positive_integer(
+            comparison["reference_wins"],
+            "completed paired comparison reference_wins",
+            allow_zero=True,
+        )
+        discordant = _positive_integer(
+            comparison["discordant_episodes"],
+            "completed paired comparison discordant_episodes",
+            allow_zero=True,
+        )
+        net_wins = comparison["net_wins"]
+        if isinstance(net_wins, bool) or not isinstance(net_wins, int):
+            raise TypeError("completed paired comparison net_wins must be an integer")
+        if candidate_wins + reference_wins != discordant:
+            raise ValueError("completed paired comparison discordance is inconsistent")
+        if candidate_wins - reference_wins != net_wins:
+            raise ValueError("completed paired comparison net_wins is inconsistent")
+        if discordant > episodes:
+            raise ValueError("completed paired comparison discordance exceeds episodes")
+        if comparison["success_delta_percent"] is None:
+            raise TypeError(
+                "completed paired comparison success_delta_percent must be a number"
+            )
+        _validate_number_or_none(
+            comparison["success_delta_percent"],
+            "completed paired comparison success_delta_percent",
+        )
+        seeds = comparison["shared_episode_seeds"]
+        if (
+            not isinstance(seeds, list)
+            or len(seeds) != episodes
+            or any(
+                isinstance(seed, bool) or not isinstance(seed, int) or seed < 0
+                for seed in seeds
+            )
+            or len(set(seeds)) != len(seeds)
+        ):
+            raise ValueError(
+                "completed paired comparison shared_episode_seeds are invalid"
+            )
+        _validate_string_list(
+            comparison["source_artifacts"],
+            "completed paired comparison source_artifacts",
+            allow_empty=False,
+        )
+
+    provenance = result["tool_provenance"]
+    if provenance is None:
+        if has_python_module:
+            raise ValueError(
+                "completed python_module measurement requires tool provenance"
+            )
+        return
+    if not has_python_module:
+        raise ValueError(
+            "completed tool provenance requires a python_module measurement"
+        )
+    provenance = _require_exact_fields(
+        provenance,
+        {
+            "code_parent_commit",
+            "scientific_manifest",
+            "scientific_paths",
+            "scientific_commit",
+            "effective_parameters",
+            "module_paths",
+            "module_manifest",
+            "campaign_lab_manifest",
+            "campaign_lab_publication",
+        },
+        "completed tool provenance",
+    )
+    _nonempty(provenance, "code_parent_commit", "tool provenance code_parent_commit")
+    _validate_manifest(
+        provenance["scientific_manifest"], "tool provenance scientific_manifest"
+    )
+    _validate_string_list(
+        provenance["scientific_paths"], "tool provenance scientific_paths"
+    )
+    if provenance["scientific_commit"] is not None:
+        _nonempty(provenance, "scientific_commit", "tool provenance scientific_commit")
+    elif provenance["scientific_paths"]:
+        raise ValueError(
+            "tool provenance with scientific changes requires scientific_commit"
+        )
+    if not isinstance(provenance["effective_parameters"], dict):
+        raise TypeError("tool provenance effective_parameters must be an object")
+    _validate_string_list(
+        provenance["module_paths"],
+        "tool provenance module_paths",
+        allow_empty=False,
+    )
+    _validate_manifest(provenance["module_manifest"], "tool provenance module_manifest")
+    if sorted(provenance["module_paths"]) != sorted(
+        entry["path"] for entry in provenance["module_manifest"]
+    ):
+        raise ValueError("tool provenance module paths and manifest differ")
+    _validate_file_manifest(
+        provenance["campaign_lab_manifest"],
+        "tool provenance campaign_lab_manifest",
+    )
+    publication = provenance["campaign_lab_publication"]
+    if publication is not None:
+        publication = _require_exact_fields(
+            publication,
+            {"commit", "manifest", "fingerprint"},
+            "tool provenance campaign_lab_publication",
+        )
+        _nonempty(
+            publication,
+            "commit",
+            "tool provenance campaign_lab_publication commit",
+        )
+        _validate_file_manifest(
+            publication["manifest"],
+            "tool provenance campaign_lab_publication manifest",
+        )
+        _nonempty(
+            publication,
+            "fingerprint",
+            "tool provenance campaign_lab_publication fingerprint",
+        )
+
+
+def _validate_completed_training_result(result: dict) -> None:
+    if result["status"] != "completed":
+        raise ValueError("completed training status must be completed")
+    if result["initialization"] not in {"fresh", "transfer"}:
+        raise ValueError("completed training initialization is invalid")
+    if result["initialization"] == "fresh":
+        if result["parent"] is not None:
+            raise ValueError("fresh completed training cannot name a parent")
+    else:
+        _nonempty(result, "parent", "completed training parent")
+    _positive_integer(result["seed"], "completed training seed", allow_zero=True)
+    _positive_integer(result["requested_steps"], "completed training requested_steps")
+    _positive_integer(
+        result["completed_steps"],
+        "completed training completed_steps",
+        allow_zero=True,
+    )
+    _nonempty(result, "scientific_commit", "completed training scientific_commit")
+    provenance = _require_exact_fields(
+        result["mechanical_provenance"],
+        {"code_parent_commit", "changed_files"},
+        "completed training mechanical_provenance",
+    )
+    _nonempty(
+        provenance,
+        "code_parent_commit",
+        "completed training code_parent_commit",
+    )
+    _validate_manifest(provenance["changed_files"], "completed training changed_files")
+    candidates = _validate_string_list(
+        result["candidates"],
+        "completed training candidates",
+        allow_empty=False,
+    )
+    dynamics = result["learning_dynamics"]
+    if not isinstance(dynamics, list):
+        raise TypeError("completed training learning_dynamics must be a list")
+    dynamic_candidates: list[str] = []
+    for item in dynamics:
+        item = _require_exact_fields(
+            item,
+            {
+                "candidate",
+                "training_steps",
+                "training_success",
+                "ep_rew_mean",
+            },
+            "completed training learning dynamic",
+        )
+        dynamic_candidates.append(
+            _nonempty(
+                item,
+                "candidate",
+                "completed training learning dynamic candidate",
+            )
+        )
+        _positive_integer(
+            item["training_steps"],
+            "completed training learning dynamic training_steps",
+            allow_zero=True,
+        )
+        _validate_number_or_none(
+            item["training_success"],
+            "completed training learning dynamic training_success",
+        )
+        _validate_number_or_none(
+            item["ep_rew_mean"],
+            "completed training learning dynamic ep_rew_mean",
+        )
+    if dynamic_candidates != candidates:
+        raise ValueError(
+            "completed training learning_dynamics must match candidates in order"
+        )
+    if max(item["training_steps"] for item in dynamics) != result["completed_steps"]:
+        raise ValueError(
+            "completed training learning_dynamics contradict completed_steps"
+        )
 
 
 def _validate_completed_event_result(kind: str, result: dict) -> None:
@@ -999,12 +1380,14 @@ def _validate_completed_event_result(kind: str, result: dict) -> None:
     else:
         fields = {"status", "model"}
     _require_exact_fields(result, fields, f"completed {kind} result")
+    if kind == "measurement":
+        _validate_completed_measurement_result(result)
+    elif kind == "training":
+        _validate_completed_training_result(result)
 
 
 def _validate_pending_operation(pending: object) -> None:
-    pending = _require_exact_fields(
-        pending, PENDING_FIELDS, "pending_operation"
-    )
+    pending = _require_exact_fields(pending, PENDING_FIELDS, "pending_operation")
     kind = pending.get("kind")
     if kind not in OPERATION_KINDS:
         raise ValueError("pending_operation has an unsupported kind")
@@ -1072,6 +1455,80 @@ def _validate_operation_event(event: object) -> str:
     return identifier
 
 
+def _node_request(node: dict) -> object:
+    request = node["request"]
+    kind = node["kind"]
+    if isinstance(request, dict) and set(request) == {kind}:
+        return request[kind]
+    return request
+
+
+def _validate_supersession_graph(events: list[dict], pending: dict | None) -> None:
+    nodes = {event["id"]: event for event in events}
+    if pending is not None:
+        identifier = pending["id"]
+        existing = nodes.get(identifier)
+        if existing is None:
+            nodes[identifier] = pending
+        elif (
+            pending["progress"] != "completed"
+            or pending["kind"] != existing["kind"]
+            or pending["supersedes"] != existing["supersedes"]
+            or _node_request(pending) != _node_request(existing)
+        ):
+            raise ValueError("pending operation ID conflicts with an operation event")
+
+    for identifier in nodes:
+        visited: set[str] = set()
+        current: str | None = identifier
+        while current is not None:
+            if current in visited:
+                raise ValueError("operation supersession graph contains a cycle")
+            visited.add(current)
+            predecessor = nodes[current].get("supersedes")
+            if predecessor is not None and predecessor not in nodes:
+                raise ValueError("operation supersession link is dangling")
+            current = predecessor
+
+    successors: dict[str, str] = {}
+    for identifier, node in nodes.items():
+        predecessor_id = node.get("supersedes")
+        if predecessor_id is None:
+            continue
+        existing_successor = successors.get(predecessor_id)
+        if existing_successor is not None and existing_successor != identifier:
+            raise ValueError("operation has multiple supersession successors")
+        successors[predecessor_id] = identifier
+
+    for identifier, node in nodes.items():
+        predecessor_id = node.get("supersedes")
+        if predecessor_id is None:
+            continue
+        predecessor = nodes[predecessor_id]
+        if predecessor.get("status") != "failed":
+            raise ValueError("only a failed operation can be superseded")
+        if predecessor.get("superseded_by") != identifier:
+            raise ValueError("operation supersession links are not reciprocal")
+        if predecessor["kind"] != node["kind"] or _node_request(
+            predecessor
+        ) != _node_request(node):
+            raise ValueError(
+                "superseding operation must preserve operation kind and request"
+            )
+
+    for event in events:
+        successor_id = event["superseded_by"]
+        if successor_id is None:
+            continue
+        successor = nodes.get(successor_id)
+        if successor is None:
+            raise ValueError("operation superseded_by link is dangling")
+        if successor.get("supersedes") != event["id"]:
+            raise ValueError("operation supersession links are not reciprocal")
+        if successors.get(event["id"]) != successor_id:
+            raise ValueError("operation has multiple supersession successors")
+
+
 def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> None:
     if state.get("schema_version") != STATE_SCHEMA_VERSION:
         raise RuntimeError("unsupported research state schema")
@@ -1086,9 +1543,7 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
     for field in ("id", "started_at", "base_commit"):
         _nonempty(campaign, field, f"campaign {field}")
     if campaign["recipe_source_commit"] is not None:
-        _nonempty(
-            campaign, "recipe_source_commit", "campaign recipe_source_commit"
-        )
+        _nonempty(campaign, "recipe_source_commit", "campaign recipe_source_commit")
     _positive_integer(campaign.get("max_inquiries"), "campaign max_inquiries")
     human_goal = state["human_goal"]
     if not isinstance(human_goal, dict) or set(human_goal) - {"source", "summary"}:
@@ -1133,6 +1588,7 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
     pending = state["pending_operation"]
     if pending is not None:
         _validate_pending_operation(pending)
+    _validate_supersession_graph(events, pending)
 
     candidates = state["candidates"]
     if not isinstance(candidates, dict):
@@ -1191,10 +1647,7 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         assessment = _require_exact_fields(
             assessment, OFFICIAL_ASSESSMENT_FIELDS, "official_assessment"
         )
-        if (
-            terminal is None
-            or terminal["status"] != "official_assessment_requested"
-        ):
+        if terminal is None or terminal["status"] != "official_assessment_requested":
             raise ValueError(
                 "official_assessment requires an assessment-requested terminal state"
             )
