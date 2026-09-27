@@ -45,8 +45,8 @@ RUNNER_MEMORY_PREFIXES = (
     "research/evaluations/",
     "research/checkpoints/accepted/",
     "research/checkpoints/retained/",
-    "research/migration_backups/",
 )
+STATE_SCHEMA_VERSION = 5
 
 
 def repo_relative_path(path: Path) -> str:
@@ -75,8 +75,8 @@ def canonical_repo_path(value: str) -> str:
 
 ARTIFACT_FILES = ("model.zip", "artifact.json")
 INFERENCE_ARTIFACT_FILES = (*ARTIFACT_FILES, "policy_runtime.pkl")
-# Legacy artifacts remain readable for explicit migration, never for evaluation.
-# load_runtime() requires the executable contract before running a policy.
+# Optional training-state files support recovery but never replace the
+# executable inference contract required by load_runtime().
 OPTIONAL_ARTIFACT_FILES = (
     "vecnormalize.pkl",
     "replay_buffer.pkl",
@@ -502,26 +502,7 @@ LINEAGE_RECORD_OPTIONAL_FIELDS = {"designation_ordinal", "selected_panels"}
 
 
 def _canonicalize_selected_panel(panel: object) -> dict:
-    """Validate one recorded selection-panel identity, preserving the instrument.
-
-    Issue #57: selection exposure covers every panel type in the contract, so the
-    record keeps the instrument plus the research interval or the fixed
-    task-reference panel identity. A legacy ``[seed, episodes]`` pair is read as a
-    research-evaluation panel.
-    """
-    if isinstance(panel, (list, tuple)) and len(panel) == 2:
-        seed, episodes = panel
-        if all(
-            isinstance(value, int) and not isinstance(value, bool) for value in panel
-        ):
-            return {
-                "instrument": "research_evaluation",
-                "seed": int(seed),
-                "episodes": int(episodes),
-            }
-        raise TypeError(
-            "lineage record selected_panels entries must be panel identity objects"
-        )
+    """Validate one recorded selection-panel identity."""
     if not isinstance(panel, dict):
         raise TypeError(
             "lineage record selected_panels entries must be panel identity objects"
@@ -563,7 +544,7 @@ def _canonicalize_selected_panel(panel: object) -> dict:
 
 
 def canonicalize_lineage_record(lineage: dict) -> None:
-    """Validate and canonicalize one schema-v4 reusable policy record."""
+    """Validate and canonicalize one reusable policy record."""
     if not isinstance(lineage, dict):
         raise TypeError("lineage record must be an object")
     missing = LINEAGE_RECORD_FIELDS - set(lineage)
@@ -620,87 +601,253 @@ def canonicalize_lineage_record(lineage: dict) -> None:
     ]
 
 
-def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
-    if state.get("schema_version") != 4:
+def _require_nonempty_string(record: dict, field: str, description: str) -> str:
+    value = record.get(field)
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{description} must be a non-empty string")
+    return value.strip()
+
+
+def _validate_inquiry_session(state: dict, campaign_id: str) -> None:
+    session = state.get("inquiry_session")
+    if session is None:
+        return
+    if not isinstance(session, dict):
+        raise TypeError("inquiry_session must be an object or null")
+    if session.get("campaign_id") != campaign_id:
+        raise ValueError("inquiry_session belongs to another campaign")
+    if session.get("role") != "principal_investigator":
+        raise ValueError("inquiry_session role must be principal_investigator")
+    if session.get("status") not in {"allocated", "starting", "started"}:
+        raise ValueError("inquiry_session has invalid status")
+    _require_nonempty_string(session, "id", "inquiry_session id")
+    inquiry_id = session.get("inquiry_id")
+    if (
+        not isinstance(inquiry_id, int)
+        or isinstance(inquiry_id, bool)
+        or inquiry_id < 1
+    ):
+        raise ValueError("inquiry_session inquiry_id must be a positive integer")
+
+
+def _validate_active_inquiry(state: dict) -> None:
+    active = state.get("active_inquiry")
+    if active is None:
+        return
+    if not isinstance(active, dict):
+        raise TypeError("active_inquiry must be an object or null")
+    required = {
+        "id",
+        "question",
+        "scope",
+        "closure_condition",
+        "status",
+        "session_id",
+        "reframes",
+    }
+    if set(active) != required:
+        raise ValueError(
+            "active_inquiry requires exactly id, question, scope, "
+            "closure_condition, status, session_id, and reframes"
+        )
+    if (
+        not isinstance(active["id"], int)
+        or isinstance(active["id"], bool)
+        or active["id"] < 1
+    ):
+        raise ValueError("active_inquiry id must be a positive integer")
+    for field in ("question", "scope", "closure_condition", "session_id"):
+        _require_nonempty_string(active, field, f"active_inquiry {field}")
+    if active["status"] != "active":
+        raise ValueError("active_inquiry status must be active")
+    if not isinstance(active["reframes"], list):
+        raise TypeError("active_inquiry reframes must be a list")
+    for reframe in active["reframes"]:
+        if not isinstance(reframe, dict):
+            raise TypeError("active_inquiry reframes entries must be objects")
+        for field in ("question", "scope", "closure_condition", "rationale"):
+            _require_nonempty_string(reframe, field, f"active_inquiry reframe {field}")
+    session = state.get("inquiry_session")
+    if not isinstance(session, dict):
+        raise TypeError("an active inquiry requires its inquiry_session")
+    if (
+        session.get("inquiry_id") != active["id"]
+        or session.get("id") != active["session_id"]
+    ):
+        raise ValueError("active_inquiry must own the current inquiry_session")
+
+
+def _validate_active_method(state: dict) -> None:
+    method = state.get("active_method")
+    if method is None:
+        return
+    if not isinstance(method, dict):
+        raise TypeError("active_method must be an object or null")
+    required = {
+        "id",
+        "inquiry_id",
+        "scientific_question",
+        "rationale",
+        "lifecycle",
+        "base_scientific_commit",
+        "current_lineage",
+        "iterations",
+        "resolution",
+    }
+    if set(method) != required:
+        raise ValueError(
+            "active_method requires exactly id, inquiry_id, scientific_question, "
+            "rationale, lifecycle, base_scientific_commit, current_lineage, "
+            "iterations, and resolution"
+        )
+    for field in (
+        "id",
+        "scientific_question",
+        "rationale",
+        "lifecycle",
+        "base_scientific_commit",
+    ):
+        _require_nonempty_string(method, field, f"active_method {field}")
+    if Path(str(method["id"])).name != method["id"] or method["id"] in {".", ".."}:
+        raise ValueError("active_method id must be file-name-safe")
+    active = state.get("active_inquiry")
+    if not isinstance(active, dict) or method.get("inquiry_id") != active.get("id"):
+        raise ValueError("active_method must belong to the active inquiry")
+    if method["lifecycle"] not in {
+        "concept",
+        "development",
+        "mature",
+        "promoted",
+        "retained",
+        "abandoned",
+    }:
+        raise ValueError("active_method has an unsupported lifecycle")
+    lineage = method["current_lineage"]
+    if lineage is not None:
+        canonicalize_lineage_record(lineage)
+    iterations = method["iterations"]
+    if not isinstance(iterations, list):
+        raise TypeError("active_method iterations must be a list")
+    for iteration in iterations:
+        if not isinstance(iteration, dict):
+            raise TypeError("active_method iteration entries must be objects")
+        experiment = iteration.get("experiment")
+        if (
+            not isinstance(experiment, int)
+            or isinstance(experiment, bool)
+            or experiment < 1
+        ):
+            raise ValueError(
+                "active_method iteration experiment must be a positive integer"
+            )
+        _require_nonempty_string(iteration, "status", "active_method iteration status")
+    resolution = method["resolution"]
+    if resolution is not None:
+        if not isinstance(resolution, dict):
+            raise TypeError("active_method resolution must be an object or null")
+        required_resolution = {"action", "outcome", "reason", "inquiry_id"}
+        if not required_resolution.issubset(resolution):
+            raise ValueError(
+                "active_method resolution requires action, outcome, reason, and inquiry_id"
+            )
+        if resolution["action"] not in {"promote", "retain", "abandon"}:
+            raise ValueError("active_method resolution has an unsupported action")
+        for field in ("outcome", "reason"):
+            _require_nonempty_string(
+                resolution, field, f"active_method resolution {field}"
+            )
+        if resolution["inquiry_id"] != method["inquiry_id"]:
+            raise ValueError("active_method resolution belongs to another inquiry")
+    resolved_lifecycles = {"promoted", "retained", "abandoned"}
+    if method["lifecycle"] in resolved_lifecycles:
+        if not isinstance(resolution, dict):
+            raise ValueError("a resolved active_method requires its resolution record")
+        expected_action = {
+            "promoted": "promote",
+            "retained": "retain",
+            "abandoned": "abandon",
+        }[method["lifecycle"]]
+        if resolution["action"] != expected_action:
+            raise ValueError("active_method lifecycle must match its resolution action")
+    elif resolution is not None:
+        raise ValueError("an unresolved active_method cannot carry a resolution")
+    if method["lifecycle"] in {"mature", "promoted", "retained"} and lineage is None:
+        raise ValueError(
+            f"active_method lifecycle {method['lifecycle']} requires a current lineage"
+        )
+    if method["lifecycle"] == "abandoned" and lineage is not None:
+        raise ValueError("an abandoned active_method cannot retain its method lineage")
+
+
+def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> None:
+    if state.get("schema_version") != STATE_SCHEMA_VERSION:
         raise RuntimeError("unsupported research state schema")
-    required = {"working_lineage", "best_known_lineage", "retained_lineages"}
+    required = {
+        "schema_version",
+        "campaign",
+        "campaign_experiment_counters",
+        "campaign_inquiry_counters",
+        "last_experiment",
+        "last_allocated_experiment",
+        "last_allocated_inquiry",
+        "last_inquiry",
+        "working_lineage",
+        "best_known_lineage",
+        "best_known_designation_counter",
+        "retained_lineages",
+        "active_inquiry",
+        "active_method",
+        "inquiry_session",
+        "pending_inquiry_operation",
+        "campaign_lab",
+        "pending_scientific_parent",
+        "pending_scientific_commit",
+        "pending_training_operation",
+        "pending_analysis",
+        "pending_evaluation_request",
+        "pending_baseline_decision",
+        "pending_method_decision",
+        "pending_final_benchmark",
+        "pending_campaign_conclusion",
+        "campaign_conclusion",
+        "terminal_campaign_status",
+        "last_lineage_decision",
+        "last_verdict",
+        "official_metrics",
+        "official_benchmark_artifact",
+        "official_benchmark_model",
+        "official_benchmark_verdict",
+        "preparation_measurement",
+    }
     missing = required - set(state)
     if missing:
         raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
+    extra = set(state) - required
+    if extra:
+        raise RuntimeError(
+            f"research state contains unsupported schema fields: {sorted(extra)}"
+        )
     campaign = state.get("campaign")
     if not isinstance(campaign, dict) or not all(
         campaign.get(field) for field in ("id", "started_at", "base_commit")
     ):
         raise RuntimeError("research state is missing a valid campaign identity")
     campaign_id = str(campaign["id"])
-    state.setdefault(
-        "campaign_inquiry_counters",
-        {
-            campaign_id: max(
-                int(state.get("last_allocated_inquiry") or 0),
-                int(state.get("last_inquiry") or 0),
-            )
-        },
-    )
-    state.setdefault("last_allocated_inquiry", 0)
-    state.setdefault("last_inquiry", 0)
-    state.setdefault("active_inquiry", None)
-    state.setdefault("inquiry_lineage", None)
-    state.setdefault("pending_inquiry_operation", None)
-    state.setdefault("principal_investigator_session", None)
-    state.setdefault("campaign_lab", None)
     inquiry_counters = state["campaign_inquiry_counters"]
     if not isinstance(inquiry_counters, dict):
         raise TypeError("campaign_inquiry_counters must be an object")
-    inquiry_counter = inquiry_counters.setdefault(
-        campaign_id,
-        max(
-            int(state.get("last_allocated_inquiry") or 0),
-            int(state.get("last_inquiry") or 0),
-        ),
-    )
+    if campaign_id not in inquiry_counters:
+        raise RuntimeError("campaign_inquiry_counters is missing the active campaign")
+    inquiry_counter = inquiry_counters[campaign_id]
     if (
         not isinstance(inquiry_counter, int)
         or isinstance(inquiry_counter, bool)
         or inquiry_counter < 0
     ):
         raise ValueError("campaign inquiry counter must be a non-negative integer")
-    active_inquiry = state["active_inquiry"]
-    if active_inquiry is not None and (
-        not isinstance(active_inquiry, dict)
-        or active_inquiry.get("status") != "active"
-        or not isinstance(active_inquiry.get("id"), int)
-        or isinstance(active_inquiry.get("id"), bool)
-        or int(active_inquiry["id"]) < 1
-    ):
-        raise ValueError("active_inquiry must identify one active inquiry")
-    inquiry_lineage = state["inquiry_lineage"]
-    if inquiry_lineage is not None:
-        canonicalize_lineage_record(inquiry_lineage)
-        inquiry_id = inquiry_lineage.get("inquiry_id")
-        if (
-            not isinstance(inquiry_id, int)
-            or isinstance(inquiry_id, bool)
-            or not isinstance(active_inquiry, dict)
-            or inquiry_id != active_inquiry.get("id")
-        ):
-            raise ValueError(
-                "inquiry_lineage must belong to the active inquiry"
-            )
-    pi_session = state["principal_investigator_session"]
-    if pi_session is not None and (
-        not isinstance(pi_session, dict)
-        or pi_session.get("campaign_id") != campaign_id
-        or pi_session.get("role") != "principal_investigator"
-        or pi_session.get("status") not in {"allocated", "started"}
-        or not str(pi_session.get("id") or "").strip()
-    ):
-        raise ValueError("principal_investigator_session is invalid")
-    legacy_aliases = sorted(key for key in state if key.startswith("accepted_"))
-    if legacy_aliases:
-        raise RuntimeError(
-            f"schema-v4 state cannot contain legacy accepted aliases: {legacy_aliases}"
-        )
+    _validate_inquiry_session(state, campaign_id)
+    _validate_active_inquiry(state)
+    _validate_active_method(state)
     for role in ("working_lineage", "best_known_lineage"):
         lineage = state.get(role)
         if lineage is not None:
@@ -730,10 +877,16 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
                 require_complete_inference_artifact(
                     resolve_repo_path(lineage["artifact"]), role
                 )
-        if inquiry_lineage is not None:
+        active_method = state.get("active_method")
+        method_lineage = (
+            active_method.get("current_lineage")
+            if isinstance(active_method, dict)
+            else None
+        )
+        if isinstance(method_lineage, dict):
             require_complete_inference_artifact(
-                resolve_repo_path(inquiry_lineage["artifact"]),
-                "inquiry_lineage",
+                resolve_repo_path(method_lineage["artifact"]),
+                "active_method current lineage",
             )
         for lineage in retained:
             require_complete_inference_artifact(
@@ -744,16 +897,7 @@ def validate_v4_state(state: dict, *, allow_missing_artifact: bool) -> None:
 
 def write_state(state: dict) -> None:
     """Persist state after canonicalizing its known repository references."""
-    if state.get("schema_version") == 4:
-        validate_v4_state(state, allow_missing_artifact=True)
-    accepted = state.get("accepted_artifact")
-    if accepted:
-        state["accepted_artifact"] = canonical_repo_path(str(accepted))
-    if "accepted_evaluations" in state:
-        state["accepted_evaluations"] = [
-            canonical_repo_path(str(path))
-            for path in state.get("accepted_evaluations") or []
-        ]
+    validate_research_state(state, allow_missing_artifact=True)
     for lineage in state.get("retained_lineages") or []:
         if not isinstance(lineage, dict):
             continue
@@ -788,17 +932,6 @@ def write_state(state: dict) -> None:
         result = pending_evaluation.get("result")
         if isinstance(result, dict):
             _canonicalize_result_artifacts(result)
-    pending_decision = state.get("pending_researcher_decision")
-    if isinstance(pending_decision, dict):
-        for candidate in pending_decision.get("candidates") or []:
-            if isinstance(candidate, dict):
-                _canonicalize_candidate_artifacts(candidate)
-        for evaluation in pending_decision.get("champion_evaluations") or []:
-            if isinstance(evaluation, dict):
-                _canonicalize_evaluation_artifact(evaluation)
-        for evaluation in pending_decision.get("task_reference_evaluations") or []:
-            if isinstance(evaluation, dict):
-                _canonicalize_evaluation_artifact(evaluation)
     pending_analysis = state.get("pending_analysis")
     if isinstance(pending_analysis, dict):
         for candidate in pending_analysis.get("candidates") or []:
@@ -820,13 +953,13 @@ def write_state(state: dict) -> None:
     atomic_write_json(paths.STATE_PATH, state)
 
 
-def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
-    """Build a native empty v4 campaign without importing prior lineage evidence."""
+def empty_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
+    """Build an empty inquiry-centered campaign without prior evidence."""
     campaign_id = str(campaign.get("id") or "")
     if not campaign_id:
         raise ValueError("fresh campaign state requires a campaign ID")
     state = {
-        "schema_version": 4,
+        "schema_version": STATE_SCHEMA_VERSION,
         "working_lineage": None,
         "best_known_lineage": None,
         "campaign": copy.deepcopy(campaign),
@@ -838,28 +971,31 @@ def empty_v4_campaign_state(*, campaign: dict, last_verdict: str) -> dict:
         "last_allocated_inquiry": 0,
         "last_inquiry": 0,
         "active_inquiry": None,
-        "inquiry_lineage": None,
+        "active_method": None,
+        "inquiry_session": None,
         "pending_inquiry_operation": None,
-        "principal_investigator_session": None,
         "campaign_lab": None,
         "pending_scientific_parent": None,
         "pending_training_operation": None,
         "pending_analysis": None,
         "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
-        "pending_closure_operation": None,
+        "preparation_measurement": None,
+        "pending_baseline_decision": None,
+        "pending_method_decision": None,
         "pending_final_benchmark": None,
         "pending_campaign_conclusion": None,
         "campaign_conclusion": None,
-        "preparation_conclusion_only": None,
         "terminal_campaign_status": None,
         "last_lineage_decision": None,
         "last_verdict": last_verdict,
+        "best_known_designation_counter": 0,
         "official_metrics": None,
+        "official_benchmark_artifact": None,
         "official_benchmark_model": None,
         "official_benchmark_verdict": None,
+        "pending_scientific_commit": None,
     }
-    validate_v4_state(copy.deepcopy(state), allow_missing_artifact=True)
+    validate_research_state(copy.deepcopy(state), allow_missing_artifact=True)
     return state
 
 
@@ -888,192 +1024,10 @@ def load_state(
     if not paths.STATE_PATH.exists():
         raise RuntimeError("research state is missing; refusing to run")
     state = read_state()
-    if state.get("schema_version") == 4:
-        validate_v4_state(state, allow_missing_artifact=allow_missing_artifact)
-        return state
-    required = {"schema_version", "accepted_artifact"}
-    missing = required - set(state)
-    if missing:
-        raise RuntimeError(f"research state is incomplete: {sorted(missing)}")
-    if state["schema_version"] != 3:
-        raise RuntimeError("unsupported research state schema")
-    # Campaign identity is mandatory: every v3 state is scoped to a campaign.
-    campaign = state.get("campaign")
-    if not isinstance(campaign, dict) or not all(
-        campaign.get(field) for field in ("id", "started_at", "base_commit")
-    ):
-        raise RuntimeError("research state is missing a valid campaign identity")
-    if not allow_missing_artifact:
-        artifact = resolve_repo_path(state["accepted_artifact"])
-        for filename in ARTIFACT_FILES:
-            if not (artifact / filename).exists():
-                raise RuntimeError(f"accepted artifact is incomplete: {filename}")
-    if not allow_unmeasured and state.get("accepted_metrics") is None:
-        raise RuntimeError("accepted checkpoint has no baseline metrics")
+    validate_research_state(state, allow_missing_artifact=allow_missing_artifact)
+    if not allow_unmeasured and state.get("working_lineage") is None:
+        raise RuntimeError("campaign has no measured working lineage")
     return state
-
-
-def _migration_scientific_commit(state: dict, artifact: Path) -> str | None:
-    """Use legacy provenance only when it still resolves in this repository."""
-    candidates = [
-        state.get("accepted_scientific_commit"),
-        state.get("scientific_commit"),
-        state.get("pending_scientific_parent"),
-    ]
-    artifact_metadata = artifact / "artifact.json"
-    if artifact_metadata.is_file():
-        try:
-            candidates.append(
-                json.loads(artifact_metadata.read_text(encoding="utf-8")).get(
-                    "scientific_commit"
-                )
-            )
-        except (json.JSONDecodeError, OSError, TypeError):
-            pass
-    for candidate in candidates:
-        if not isinstance(candidate, str) or not candidate.strip():
-            continue
-        try:
-            require_resolvable_commit(candidate)
-        except RuntimeError:
-            continue
-        return candidate
-    return None
-
-
-def _translate_legacy_identifiers(value: object) -> object:
-    if isinstance(value, dict):
-        return {key: _translate_legacy_identifiers(item) for key, item in value.items()}
-    if isinstance(value, list):
-        return [_translate_legacy_identifiers(item) for item in value]
-    if value in {"accepted", "champion"}:
-        return "working"
-    return value
-
-
-def _migrated_pending_analysis(state: dict) -> dict | None:
-    pending = state.get("pending_evaluation_request") or state.get(
-        "pending_researcher_decision"
-    )
-    if pending is None:
-        return None
-    if not isinstance(pending, dict):
-        raise TypeError("legacy pending operation must be an object")
-    translated = _translate_legacy_identifiers(copy.deepcopy(pending))
-    if not isinstance(translated, dict):
-        raise TypeError("legacy pending operation must be an object")
-    return translated
-
-
-def _legacy_lineage_record(state: dict) -> dict | None:
-    artifact = resolve_repo_path(str(state["accepted_artifact"]))
-    require_complete_artifact(artifact, "legacy accepted artifact")
-    return {
-        "artifact": repo_relative_path(artifact),
-        "fingerprint": artifact_fingerprint(artifact),
-        "origin_experiment": max(1, int(state.get("last_experiment", 1))),
-        "candidate": "legacy-accepted",
-        "parameters": copy.deepcopy(state.get("accepted_parameters") or {}),
-        "scientific_commit": _migration_scientific_commit(state, artifact),
-        "training_steps": int(state.get("accepted_training_steps", 0)),
-        "evaluation_artifacts": [
-            canonical_repo_path(str(path))
-            for path in state.get("accepted_evaluations") or []
-        ],
-        "reason": "Migrated legacy accepted lineage.",
-    }
-
-
-def migrate_research_state() -> bool:
-    """Explicitly and transactionally convert a persisted v3 campaign to v4.
-
-    No normal read or validation calls this function. Backup and all validation
-    precede replacement, so validation errors leave the original control files
-    and state untouched.
-    """
-    if not paths.STATE_PATH.exists():
-        raise RuntimeError("research state is missing; refusing to migrate")
-    original_bytes = paths.STATE_PATH.read_bytes()
-    original = json.loads(original_bytes.decode("utf-8"))
-    if original.get("schema_version") == 4:
-        validate_v4_state(copy.deepcopy(original), allow_missing_artifact=True)
-        return False
-    if original.get("schema_version") != 3:
-        raise RuntimeError("only schema-v3 research state can be migrated")
-    load_state(allow_unmeasured=True, allow_missing_artifact=True)
-
-    working = _legacy_lineage_record(original)
-    measured = working is not None and original.get("accepted_metrics") is not None
-    converted = copy.deepcopy(original)
-    for field in (
-        "accepted_artifact",
-        "accepted_metrics",
-        "accepted_parameters",
-        "accepted_training_steps",
-        "accepted_evaluations",
-    ):
-        converted.pop(field, None)
-    converted.update(
-        schema_version=4,
-        working_lineage=working,
-        best_known_lineage=copy.deepcopy(working) if measured else None,
-        inquiry_lineage=None,
-        retained_lineages=converted.get("retained_lineages", []),
-        pending_analysis=_migrated_pending_analysis(original),
-        pending_evaluation_request=None,
-        pending_researcher_decision=None,
-    )
-    if measured:
-        converted["best_known_lineage"]["reason"] = (
-            "Migrated legacy designation based on recorded development measurements."
-        )
-    if original.get("official_metrics") is not None:
-        converted["terminal_campaign_status"] = (
-            "migrated prior terminal official assessment"
-        )
-    # State migration preserves legacy evidence; runtime migration separately
-    # makes an old policy executable under the current inference contract.
-    validate_v4_state(copy.deepcopy(converted), allow_missing_artifact=True)
-
-    translated_controls: dict[Path, str] = {}
-    original_controls: dict[Path, bytes] = {}
-    for control in (paths.PROPOSAL_PATH, paths.EVALUATION_REQUEST_PATH):
-        if not control.exists():
-            continue
-        original_controls[control] = control.read_bytes()
-        content = json.loads(original_controls[control].decode("utf-8"))
-        translated_controls[control] = (
-            json.dumps(_translate_legacy_identifiers(content), indent=2, sort_keys=True)
-            + "\n"
-        )
-
-    campaign_id = str(original["campaign"]["id"])
-    backup = paths.RESEARCH_DIR / "migration_backups" / f"v3-{campaign_id}"
-    if backup.exists():
-        raise RuntimeError(f"migration backup already exists: {backup}")
-    temporary_backup = backup.with_name(f".{backup.name}-{time.time_ns()}.tmp")
-    try:
-        temporary_backup.mkdir(parents=True)
-        (temporary_backup / "research_state.json").write_bytes(original_bytes)
-        for control, content in original_controls.items():
-            (temporary_backup / control.name).write_bytes(content)
-        temporary_backup.rename(backup)
-        for control, content in translated_controls.items():
-            atomic_write_text(control, content)
-        atomic_write_json(paths.STATE_PATH, converted)
-    except Exception:
-        shutil.rmtree(temporary_backup, ignore_errors=True)
-        try:
-            atomic_write_bytes(paths.STATE_PATH, original_bytes)
-            for control, content in original_controls.items():
-                atomic_write_bytes(control, content)
-        except Exception as rollback_error:
-            raise RuntimeError(
-                f"migration publication and rollback failed; recover from {backup}"
-            ) from rollback_error
-        shutil.rmtree(backup, ignore_errors=True)
-        raise
-    return True
 
 
 def anchor_scientific_parent(state: dict) -> str:
@@ -1131,36 +1085,74 @@ def current_campaign_base_commit(state: dict) -> str | None:
     return str(base_commit) if base_commit else None
 
 
-def ensure_principal_investigator_session(state: dict) -> dict:
-    """Allocate the campaign PI identity once; never infer a replacement."""
+def ensure_inquiry_session(state: dict) -> dict:
+    """Allocate exactly one principal-investigator session for one inquiry."""
     campaign_id = current_campaign_id(state)
     if not campaign_id:
-        raise ValueError("a principal-investigator session requires a campaign")
-    session = state.get("principal_investigator_session")
+        raise ValueError("an inquiry session requires a campaign")
+    session = state.get("inquiry_session")
     if isinstance(session, dict):
         if session.get("campaign_id") != campaign_id:
-            raise ValueError(
-                "principal-investigator session belongs to another campaign"
-            )
-        if session.get("status") not in {"allocated", "started"}:
-            raise ValueError("principal-investigator session has invalid status")
+            raise ValueError("inquiry session belongs to another campaign")
+        if session.get("status") not in {"allocated", "starting", "started"}:
+            raise ValueError("inquiry session has invalid status")
         if not str(session.get("id") or "").strip():
-            raise ValueError("principal-investigator session has no identity")
+            raise ValueError("inquiry session has no identity")
         return session
+    active = state.get("active_inquiry")
+    if isinstance(active, dict):
+        inquiry_id = int(active["id"])
+    else:
+        counters = state["campaign_inquiry_counters"]
+        inquiry_id = int(counters.get(campaign_id, 0)) + 1
+    if inquiry_id == 1:
+        working = state.get("working_lineage")
+        best = state.get("best_known_lineage")
+        baseline_identity = (
+            "artifact",
+            "fingerprint",
+            "origin_experiment",
+            "candidate",
+            "designation_ordinal",
+        )
+        if (
+            not isinstance(working, dict)
+            or not isinstance(best, dict)
+            or any(working.get(field) != best.get(field) for field in baseline_identity)
+            or int(working.get("origin_experiment", -1)) != 1
+            or int(working.get("designation_ordinal", -1)) != 1
+        ):
+            raise ValueError(
+                "the first inquiry requires working and best_known to name the "
+                "same initial baseline designation"
+            )
+    if not isinstance(active, dict):
+        counters[campaign_id] = inquiry_id
+        state["last_allocated_inquiry"] = inquiry_id
     session = {
         "id": str(uuid.uuid4()),
         "campaign_id": campaign_id,
+        "inquiry_id": inquiry_id,
         "role": "principal_investigator",
         "status": "allocated",
     }
-    state["principal_investigator_session"] = session
+    state["inquiry_session"] = session
     return session
 
 
-def mark_principal_investigator_session_started(state: dict) -> dict:
-    session = ensure_principal_investigator_session(state)
-    if session["status"] == "allocated":
+def mark_inquiry_session_started(state: dict) -> dict:
+    session = ensure_inquiry_session(state)
+    if session["status"] in {"allocated", "starting"}:
         session["status"] = "started"
+        write_state(state)
+    return session
+
+
+def mark_inquiry_session_starting(state: dict) -> dict:
+    """Persist intent before the backend creates or resumes its session."""
+    session = ensure_inquiry_session(state)
+    if session["status"] == "allocated":
+        session["status"] = "starting"
         write_state(state)
     return session
 
@@ -1456,19 +1448,13 @@ def experiment_log_row(record: dict) -> str:
         return operation_description(record) or "-"
 
     measurements = compact_measurement_summary(record)
-    if measurements == "unmeasured" and record.get("schema_version") != 4:
-        legacy_success = record.get("candidate_success_percent")
-        legacy_seeds = record.get("candidate_seeds_passed")
-        if legacy_success is not None or legacy_seeds is not None:
-            measurements = (
-                f"legacy success {legacy_success if legacy_success is not None else '-'}; "
-                f"seeds passed {legacy_seeds if legacy_seeds is not None else '-'}"
-            )
 
-    closure = record.get("closure_decision") or {}
+    closure = record.get("method_decision") or record.get("baseline_decision") or {}
     decisions = []
-    if closure.get("continue_from"):
-        decisions.append(f"working {closure['continue_from']}")
+    if closure.get("action"):
+        decisions.append(f"method {closure['action']}")
+    if closure.get("candidate"):
+        decisions.append(f"candidate {closure['candidate']}")
     best_known = closure.get("best_known")
     if isinstance(best_known, dict) and best_known.get("candidate"):
         decisions.append(f"best known {best_known['candidate']}")
@@ -1577,13 +1563,13 @@ def upsert_inquiry_result(result: dict) -> None:
 
 
 def upsert_result(result: dict) -> None:
-    """Atomically replace one schema-v4 experiment record and rebuild its view."""
+    """Atomically replace one experiment record and rebuild its view."""
     record = compact_result_record(result)
     record.setdefault("recorded_at", time.strftime("%Y-%m-%d"))
     campaign_id = record.get("campaign_id")
     index = record.get("index")
     if not campaign_id or not isinstance(index, int):
-        raise ValueError("a schema-v4 result needs campaign_id and integer index")
+        raise ValueError("an experiment result needs campaign_id and integer index")
     records = history_records()
     replaced = False
     updated: list[dict] = []
@@ -1731,10 +1717,16 @@ def remove_heavyweight_artifacts(artifact: Path) -> None:
 
 def role_and_retention_artifacts(state: dict) -> set[Path]:
     """Artifacts that cleanup must preserve even when labels are removed."""
+    active_method = state.get("active_method")
+    method_lineage = (
+        active_method.get("current_lineage")
+        if isinstance(active_method, dict)
+        else None
+    )
     records = [
         state.get("working_lineage"),
         state.get("best_known_lineage"),
-        state.get("inquiry_lineage"),
+        method_lineage,
         *(state.get("retained_lineages") or []),
     ]
     return {
@@ -1760,7 +1752,29 @@ def archive_candidates(
 ) -> list[dict]:
     destination = paths.campaign_checkpoint_root(campaign_id) / f"experiment-{index}"
     if destination.exists():
-        raise RuntimeError(f"challenger archive already exists: {destination}")
+        try:
+            archived = json.loads(
+                (destination / "inventory.json").read_text(encoding="utf-8")
+            )["candidates"]
+            archived_config = json.loads(
+                (destination / "parameters.json").read_text(encoding="utf-8")
+            )
+            expected = {
+                (str(item["name"]), int(item["timesteps"]))
+                for item in contenders
+                if item["kind"] == "candidate"
+            }
+            actual = {(str(item["name"]), int(item["timesteps"])) for item in archived}
+            if archived_config != config or actual != expected:
+                raise ValueError("archived candidate identity changed")
+            for item in archived:
+                require_complete_inference_artifact(
+                    resolve_repo_path(item["artifact"]),
+                    f"archived candidate {item['name']!r}",
+                )
+            return archived
+        except (KeyError, OSError, TypeError, ValueError):
+            shutil.rmtree(destination)
     destination.mkdir(parents=True)
     archived: list[dict] = []
     for contender in contenders:

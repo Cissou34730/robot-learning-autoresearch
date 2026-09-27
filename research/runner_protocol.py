@@ -176,12 +176,13 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
-# The reasoning a proposal must make explicit: what the objective gains, why
-# this initialization, and which observation would change the next decision.
-REQUIRED_REASONING_FIELDS = (
+# A training operation states its scientific design without prescribing whether
+# the method is an incumbent-local intervention or a new approach.
+REQUIRED_INVESTIGATION_FIELDS = (
     "objective_link",
     "initialization_reason",
     "expected_observation",
+    "rationale",
 )
 # --- ownership -------------------------------------------------------------
 
@@ -295,7 +296,6 @@ def allocated_experiment_index(state: dict, campaign_id: str | None = None) -> i
     Runner ran, which then seeds the counter.
     """
     if campaign_id is None:
-        # Backward compat: global fallback for legacy code paths
         return max(
             int(state.get("last_allocated_experiment") or 0),
             int(state.get("last_experiment") or 0),
@@ -366,24 +366,11 @@ def allocated_inquiry_index(state: dict, campaign_id: str | None = None) -> int:
     return int((state.get("campaign_inquiry_counters") or {}).get(campaign_id, 0))
 
 
-def ensure_active_inquiry(state: dict) -> dict:
-    """Return the active inquiry, allocating one durable identity if needed."""
+def require_active_inquiry(state: dict) -> dict:
+    """Return the declared active inquiry."""
     active = state.get("active_inquiry")
-    if isinstance(active, dict):
-        inquiry_id = active.get("id")
-        if isinstance(inquiry_id, int) and not isinstance(inquiry_id, bool):
-            return active
-        raise ValueError("active inquiry state is invalid")
-    if active is not None:
-        raise ValueError("active inquiry state is invalid")
-    campaign_id = repository.current_campaign_id(state)
-    if not campaign_id:
-        raise ValueError("an inquiry requires an active campaign")
-    inquiry_id = allocated_inquiry_index(state, campaign_id) + 1
-    state.setdefault("campaign_inquiry_counters", {})[campaign_id] = inquiry_id
-    state["last_allocated_inquiry"] = inquiry_id
-    active = {"id": inquiry_id, "status": "active"}
-    state["active_inquiry"] = active
+    if not isinstance(active, dict):
+        raise TypeError("this operation requires an active inquiry")
     return active
 
 
@@ -535,29 +522,16 @@ def retained_lineage(state: dict, identifier: str) -> dict | None:
 
 def lineage_role(state: dict, identifier: str) -> dict | None:
     """Resolve a Researcher-facing lineage ID without changing its identity."""
-    if identifier == "developing_method":
-        lineage = state.get("inquiry_lineage")
-        active = state.get("active_inquiry")
-        if (
-            not isinstance(lineage, dict)
-            or not isinstance(active, dict)
-            or lineage.get("inquiry_id") != active.get("id")
-        ):
-            return None
-        return lineage
+    if identifier == "active_method":
+        method = state.get("active_method")
+        lineage = method.get("current_lineage") if isinstance(method, dict) else None
+        return lineage if isinstance(lineage, dict) else None
     if identifier in {"working", "best_known"}:
         lineage = state.get(f"{identifier}_lineage")
         return lineage if isinstance(lineage, dict) else None
     lineage = retained_lineage(state, identifier)
     if lineage is not None:
         return lineage
-    if state.get("schema_version") == 3 and identifier in {"accepted", "champion"}:
-        return {
-            "artifact": state.get("accepted_artifact"),
-            "training_steps": int(state.get("accepted_training_steps", 0)),
-            "parameters": state.get("accepted_parameters"),
-            "evaluation_artifacts": state.get("accepted_evaluations", []),
-        }
     return None
 
 
@@ -590,15 +564,14 @@ def resolved_training_parent(
             raise ValueError(
                 f"training parent {identifier!r} is incomplete: {filename}"
             )
-    if state.get("schema_version") == 4:
-        repository.require_complete_inference_artifact(
-            artifact, f"training parent {identifier!r}"
+    repository.require_complete_inference_artifact(
+        artifact, f"training parent {identifier!r}"
+    )
+    fingerprint = str(lineage.get("fingerprint") or "").strip()
+    if not fingerprint or repository.artifact_fingerprint(artifact) != fingerprint:
+        raise ValueError(
+            f"training parent {identifier!r} fingerprint does not match its artifact"
         )
-        fingerprint = str(lineage.get("fingerprint") or "").strip()
-        if not fingerprint or repository.artifact_fingerprint(artifact) != fingerprint:
-            raise ValueError(
-                f"training parent {identifier!r} fingerprint does not match its artifact"
-            )
     if str(proposal.get("kind", "training")).strip().lower() == "continuation":
         if not str(lineage.get("scientific_commit") or "").strip():
             raise ValueError(
@@ -623,62 +596,59 @@ def resolved_training_parent(
 # --- proposal validation ---------------------------------------------------
 
 
-def _validate_reasoning_statement(field: str, value: object) -> None:
+def _validate_investigation_statement(field: str, value: object) -> None:
     """Require an explicit statement. The check is explicitness, not merit."""
     if isinstance(value, str) and value.strip():
         return
-    raise ValueError(f"reasoning.{field} must be a non-empty string")
+    raise ValueError(f"investigation_design.{field} must be a non-empty string")
 
 
-def validate_scientific_reasoning(proposal: dict) -> None:
-    """Check explicit reasoning, not its scientific merit or truthfulness."""
-    reasoning = proposal.get("reasoning")
-    if not isinstance(reasoning, dict):
-        raise TypeError("proposal reasoning must be an object")
+def validate_investigation_design(proposal: dict) -> None:
+    """Check an explicit, method-neutral scientific design."""
+    design = proposal.get("investigation_design")
+    if not isinstance(design, dict):
+        raise TypeError("proposal investigation_design must be an object")
 
-    for field in REQUIRED_REASONING_FIELDS:
-        _validate_reasoning_statement(field, reasoning.get(field))
-    if "scientific_model" in reasoning:
-        scientific_model = reasoning["scientific_model"]
+    for field in REQUIRED_INVESTIGATION_FIELDS:
+        _validate_investigation_statement(field, design.get(field))
+    if "scientific_model" in design:
+        scientific_model = design["scientific_model"]
         if not isinstance(scientific_model, dict):
-            raise TypeError("reasoning.scientific_model must be an object")
+            raise TypeError("investigation_design.scientific_model must be an object")
         if not scientific_model:
-            raise ValueError("reasoning.scientific_model must not be empty")
+            raise ValueError("investigation_design.scientific_model must not be empty")
         for field, value in scientific_model.items():
-            _validate_reasoning_statement(f"scientific_model.{field}", value)
-    if proposal["kind"] in {"training", "continuation"}:
-        policy_intervention = reasoning.get("policy_intervention")
-        if not isinstance(policy_intervention, dict):
-            raise TypeError("reasoning.policy_intervention must be an object")
-        _validate_reasoning_statement(
-            "policy_intervention.behavioral_test",
-            policy_intervention.get("behavioral_test"),
+            _validate_investigation_statement(f"scientific_model.{field}", value)
+    predicted_path = design.get("predicted_behavioral_path")
+    open_question = design.get("open_question")
+    if not (isinstance(predicted_path, str) and predicted_path.strip()) and not (
+        isinstance(open_question, str) and open_question.strip()
+    ):
+        raise ValueError(
+            "investigation_design requires predicted_behavioral_path or open_question"
         )
-        behavioral_path = policy_intervention.get("behavioral_path")
-        open_behavior_question = policy_intervention.get(
-            "open_behavior_question",
-            policy_intervention.get("exploratory_uncertainty"),
+    if predicted_path is not None and not (
+        isinstance(predicted_path, str) and predicted_path.strip()
+    ):
+        raise ValueError(
+            "investigation_design.predicted_behavioral_path must be non-empty"
         )
-        if not (
-            isinstance(behavioral_path, str) and behavioral_path.strip()
-        ) and not (
-            isinstance(open_behavior_question, str)
-            and open_behavior_question.strip()
-        ):
-            raise ValueError(
-                "reasoning.policy_intervention requires behavioral_path or "
-                "open_behavior_question"
-            )
-    evidence = reasoning.get("evidence")
+    if open_question is not None and not (
+        isinstance(open_question, str) and open_question.strip()
+    ):
+        raise ValueError("investigation_design.open_question must be non-empty")
+    evidence = design.get("evidence")
     if not isinstance(evidence, list) or not evidence:
-        raise ValueError("reasoning.evidence must be a non-empty list")
+        raise ValueError("investigation_design.evidence must be a non-empty list")
     for item in evidence:
         if not isinstance(item, dict):
-            raise TypeError("each reasoning.evidence entry must be an object")
+            raise TypeError(
+                "each investigation_design.evidence entry must be an object"
+            )
         for field in ("source", "observation"):
             if not isinstance(item.get(field), str) or not item[field].strip():
                 raise ValueError(
-                    f"reasoning.evidence.{field} must be a non-empty string"
+                    f"investigation_design.evidence.{field} must be a non-empty string"
                 )
 
 
@@ -703,7 +673,7 @@ def scientific_strategy_section(text: str, campaign_id: str | None) -> str:
 
 def validate_research_memory(proposal: dict, state: dict) -> None:
     """Validate references and the memory format without inventing conclusions."""
-    for item in proposal["reasoning"]["evidence"]:
+    for item in proposal["investigation_design"]["evidence"]:
         source = repository.resolve_repo_path(item["source"])
         if not source.is_file():
             raise ValueError(
@@ -851,6 +821,7 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
     forbidden = {
         "previous_result_decision",
         "previous_experiment_postmortem",
+        "reasoning",
     } & set(proposal)
     if forbidden:
         raise ValueError(
@@ -858,21 +829,16 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
         )
     required = {
         "kind",
-        "family",
+        "method_id",
         "initialization",
+        "investigation_design",
     }
     missing = sorted(field for field in required if field not in proposal)
     if missing:
         raise ValueError(f"training proposal is missing required fields: {missing}")
-    require_nonempty_string("family", "training proposal family")
-    # One statement of what the experiment asks, phrased as a hypothesis or as
-    # an open question. Which of the two it is carries no protocol consequence.
-    question = proposal.get("hypothesis") or proposal.get("scientific_question")
-    if not isinstance(question, str) or not question.strip():
-        raise ValueError(
-            "hypothesis must be a non-empty string, "
-            "unless the proposal states a scientific_question instead"
-        )
+    require_nonempty_string("method_id", "training proposal method_id")
+    if "family" in proposal:
+        require_nonempty_string("family", "training proposal family")
     kind = proposal["kind"]
     if kind not in {"training", "continuation", "replication"}:
         raise ValueError(
@@ -922,7 +888,7 @@ def validate_training_proposal(proposal: dict, *, baseline: bool) -> None:
             raise ValueError("extends_lineage is only valid for a training proposal")
         if initialization != "transfer":
             raise ValueError("extends_lineage requires transfer initialization")
-    validate_scientific_reasoning(proposal)
+    validate_investigation_design(proposal)
 
 
 def validate_proposal_phase(proposal: dict, state: dict) -> str:
@@ -940,39 +906,49 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
         raise ValueError("the campaign has received its terminal official assessment")
     if state.get("pending_inquiry_operation") is not None:
         raise ValueError(
-            "an inquiry closure is pending; resume it before submitting a proposal"
+            "an inquiry operation is pending; resume it before submitting a proposal"
+        )
+    if (
+        state.get("pending_baseline_decision") is not None
+        or state.get("pending_method_decision") is not None
+    ):
+        raise ValueError(
+            "a decision operation is pending; resume it before submitting a proposal"
         )
     if state.get("pending_final_benchmark") is not None:
         raise ValueError(
             "the final benchmark is pending; no research proposal is accepted"
         )
-    if state.get("schema_version") == 4 and state.get("pending_analysis") is not None:
-        if set(proposal) != {"previous_result_decision"}:
-            raise ValueError(
-                "the current analysis phase requires a closure proposal containing "
-                "only previous_result_decision"
-            )
-        return "lineage"
+    if state.get("pending_analysis") is not None:
+        pending = state["pending_analysis"]
+        expected = "baseline_decision" if pending.get("baseline") else "method_decision"
+        if set(proposal) != {expected}:
+            raise ValueError(f"the current analysis phase requires only {expected}")
+        return "baseline" if pending.get("baseline") else "method_decision"
     if state.get("pending_evaluation_request") is not None:
         raise ValueError(
             "research evaluation is pending; use evaluation_request.json, not "
             "proposal.json"
         )
-    if state.get("pending_researcher_decision") is not None:
-        if set(proposal) != {"previous_result_decision"}:
-            raise ValueError(
-                "the current phase requires a lineage proposal containing only "
-                "previous_result_decision"
-            )
-        return "lineage"
-    if "inquiry_decision" in proposal:
-        if set(proposal) != {"inquiry_decision"}:
-            raise ValueError("an inquiry decision must contain only inquiry_decision")
+    if "inquiry" in proposal:
+        if set(proposal) != {"inquiry"}:
+            raise ValueError("an inquiry operation must contain only inquiry")
         return "inquiry"
+    if "method" in proposal:
+        if set(proposal) != {"method"}:
+            raise ValueError("a method operation must contain only method")
+        return "method"
+    if "method_decision" in proposal:
+        if set(proposal) != {"method_decision"}:
+            raise ValueError("a method decision must contain only method_decision")
+        return "method_decision"
     if "campaign_conclusion" in proposal:
-        if state.get("pending_closure_operation") is not None:
+        if (
+            state.get("pending_baseline_decision") is not None
+            or state.get("pending_method_decision") is not None
+        ):
             raise ValueError(
-                "a campaign conclusion is not accepted while a closure operation "
+                "a campaign conclusion is not accepted while a decision operation "
                 "is pending"
             )
         if set(proposal) != {"campaign_conclusion"}:
@@ -980,33 +956,37 @@ def validate_proposal_phase(proposal: dict, state: dict) -> str:
                 "a campaign conclusion must contain only campaign_conclusion"
             )
         return "conclusion"
-    if state.get("preparation_conclusion_only"):
+    retired = {"previous_result_decision", "inquiry_decision"} & set(proposal)
+    if retired:
         raise ValueError(
-            "the experiment budget is exhausted; only a campaign conclusion may be "
-            "prepared in this phase"
-        )
-    if "previous_result_decision" in proposal:
-        raise ValueError(
-            "the previous experiment lineage is already resolved; the current "
-            "phase requires a new training proposal without previous_result_decision"
+            f"retired proposal fields are not supported: {sorted(retired)}"
         )
     baseline = bool(proposal.get("baseline", False))
     validate_training_proposal(proposal, baseline=baseline)
     return "training"
 
 
-def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
+def validate_proposal_against_state(
+    proposal: dict,
+    raw_state: dict,
+    *,
+    training_allocation_closed: bool = False,
+) -> str:
     """Fully validate a proposal for its phase without mutating repository state."""
     contract = validate_proposal_phase(proposal, raw_state)
     if contract == "conclusion":
         plan_campaign_conclusion(proposal, raw_state)
     elif contract == "inquiry":
-        plan_inquiry_decision(proposal, raw_state)
-    elif contract == "lineage":
+        plan_inquiry_operation(proposal, raw_state)
+    elif contract == "method":
+        plan_method_start(proposal, raw_state)
+    elif contract == "method_decision":
+        plan_method_decision(proposal, raw_state)
+    elif contract == "baseline":
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
         )
-        plan_previous_result_decision(proposal, state)
+        plan_baseline_decision(proposal, state)
     elif proposal.get("kind") == "replication":
         campaign_id = repository.current_campaign_id(raw_state)
         recorded = (
@@ -1018,50 +998,159 @@ def validate_proposal_against_state(proposal: dict, raw_state: dict) -> str:
                 "replication_of must reference an existing experiment in the "
                 "current campaign"
             )
+    if (
+        contract == "training"
+        and proposal.get("baseline")
+        and not isinstance(raw_state.get("pending_training_operation"), dict)
+    ):
+        campaign_id = repository.current_campaign_id(raw_state)
+        counter = (
+            raw_state.get("campaign_experiment_counters", {}).get(campaign_id, 0)
+            if campaign_id
+            else 0
+        )
+        inquiry_counter = (
+            raw_state.get("campaign_inquiry_counters", {}).get(campaign_id, 0)
+            if campaign_id
+            else 0
+        )
+        occupied = any(
+            raw_state.get(field) is not None
+            for field in (
+                "working_lineage",
+                "best_known_lineage",
+                "active_inquiry",
+                "active_method",
+                "inquiry_session",
+            )
+        ) or bool(raw_state.get("retained_lineages"))
+        if (
+            int(raw_state.get("last_experiment", 0)) != 0
+            or int(raw_state.get("last_allocated_experiment", 0)) != 0
+            or int(counter) != 0
+            or int(raw_state.get("last_inquiry", 0)) != 0
+            or int(raw_state.get("last_allocated_inquiry", 0)) != 0
+            or int(inquiry_counter) != 0
+            or occupied
+            or not paths.BASELINE_PENDING_PATH.is_file()
+        ):
+            raise ValueError(
+                "baseline is valid only for a true fresh campaign with zero "
+                "experiment counters, no lineages or inquiry state, and "
+                "BASELINE_PENDING"
+            )
+    if (
+        contract == "training"
+        and training_allocation_closed
+        and not isinstance(raw_state.get("pending_training_operation"), dict)
+    ):
+        raise ValueError(
+            "the training allocation cap is reached; choose a non-training "
+            "inquiry operation or campaign conclusion"
+        )
     if contract == "training" and not proposal.get("baseline"):
+        active = raw_state.get("active_inquiry")
+        method = raw_state.get("active_method")
+        if not isinstance(active, dict):
+            raise ValueError("non-baseline training requires an active inquiry")
+        if not isinstance(method, dict):
+            raise ValueError("non-baseline training requires a declared active_method")
+        if method.get("lifecycle") not in {"concept", "development", "mature"}:
+            raise ValueError("the active_method is not available for another iteration")
+        if proposal.get("method_id") != method.get("id"):
+            raise ValueError("training proposal method_id must match active_method.id")
         validate_research_memory(proposal, raw_state)
     return contract
 
 
-def plan_inquiry_decision(proposal: dict, state: dict) -> dict:
-    """Validate the minimal non-terminal transition that closes an inquiry."""
-    if state.get("schema_version") != 4:
-        raise ValueError("inquiry_decision is only valid in a version-4 campaign")
-    if state.get("preparation_conclusion_only"):
-        raise ValueError(
-            "the experiment budget is exhausted; only a campaign conclusion may "
-            "be prepared"
-        )
-    active = state.get("active_inquiry")
-    if not isinstance(active, dict):
-        raise TypeError("there is no active inquiry to close")
+def _inquiry_fields(operation: dict) -> dict:
+    values = {}
+    for field in ("question", "scope", "closure_condition"):
+        value = operation.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"inquiry {field} must be a non-empty string")
+        values[field] = value.strip()
+    return values
+
+
+def plan_inquiry_operation(proposal: dict, state: dict) -> dict:
+    """Validate opening, reframing, or closing one bounded inquiry."""
     if any(
         state.get(field) is not None
         for field in (
             "pending_analysis",
             "pending_evaluation_request",
-            "pending_researcher_decision",
-            "pending_closure_operation",
+            "pending_baseline_decision",
+            "pending_method_decision",
             "pending_final_benchmark",
             "pending_campaign_conclusion",
         )
     ):
         raise ValueError("the current pending operation must be resolved first")
-    decision = proposal.get("inquiry_decision")
-    if not isinstance(decision, dict):
-        raise TypeError("inquiry_decision must be an object")
-    allowed = {"action", "outcome", "developing_method"}
-    extra = set(decision) - allowed
-    if extra or not {"action", "outcome"} <= set(decision):
-        raise ValueError(
-            "inquiry_decision requires action and outcome, with an optional "
-            "developing_method disposition"
-        )
-    if decision.get("action") != "close":
-        raise ValueError("inquiry_decision action must be close")
-    outcome = str(decision.get("outcome", "")).strip()
+    operation = proposal.get("inquiry")
+    if not isinstance(operation, dict):
+        raise TypeError("inquiry must be an object")
+    action = str(operation.get("action", "")).strip()
+    active = state.get("active_inquiry")
+    session = state.get("inquiry_session")
+    if action == "open":
+        if isinstance(active, dict):
+            raise ValueError("an inquiry is already active")
+        if not isinstance(session, dict):
+            raise ValueError("opening an inquiry requires its allocated session")
+        expected = {"action", "question", "scope", "closure_condition"}
+        if set(operation) != expected:
+            raise ValueError(
+                "opening an inquiry requires exactly action, question, scope, "
+                "and closure_condition"
+            )
+        return {
+            "action": "open",
+            "inquiry_id": int(session["inquiry_id"]),
+            "session_id": str(session["id"]),
+            **_inquiry_fields(operation),
+        }
+    if not isinstance(active, dict):
+        raise TypeError(f"inquiry {action or 'operation'} requires an active inquiry")
+    if action == "reframe":
+        expected = {
+            "action",
+            "question",
+            "scope",
+            "closure_condition",
+            "rationale",
+        }
+        if set(operation) != expected:
+            raise ValueError(
+                "reframing an inquiry requires exactly action, question, scope, "
+                "closure_condition, and rationale"
+            )
+        rationale = str(operation.get("rationale", "")).strip()
+        if not rationale:
+            raise ValueError("inquiry reframe rationale must be non-empty")
+        return {
+            "action": "reframe",
+            "inquiry_id": int(active["id"]),
+            "rationale": rationale,
+            **_inquiry_fields(operation),
+        }
+    if action != "close":
+        raise ValueError("inquiry action must be open, reframe, or close")
+    if set(operation) != {"action", "outcome"}:
+        raise ValueError("closing an inquiry requires exactly action and outcome")
+    outcome = str(operation.get("outcome", "")).strip()
     if not outcome:
-        raise ValueError("inquiry_decision outcome must be non-empty")
+        raise ValueError("inquiry outcome must be non-empty")
+    method = state.get("active_method")
+    if isinstance(method, dict) and method.get("lifecycle") not in {
+        "promoted",
+        "retained",
+        "abandoned",
+    }:
+        raise ValueError(
+            "close the active method by promoting, retaining, or abandoning it "
+            "before closing the inquiry"
+        )
     section = scientific_strategy_section(
         paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
         if paths.POSTMORTEM_PATH.exists()
@@ -1073,68 +1162,389 @@ def plan_inquiry_decision(proposal: dict, state: dict) -> dict:
             "postmortems.md needs the current campaign's Scientific strategy section"
         )
     scientific_strategy_registers(section)
-    developing = state.get("inquiry_lineage")
-    disposition = decision.get("developing_method")
-    if isinstance(developing, dict):
-        if not isinstance(disposition, dict):
-            raise TypeError(
-                "closing an inquiry with a developing method requires an "
-                "explicit promote, retain, or abandon disposition"
-            )
-        disposition_action = str(disposition.get("action", "")).strip()
-        expected_fields = (
-            {"action", "id", "reason"}
-            if disposition_action == "retain"
-            else {"action", "reason"}
-        )
-        if set(disposition) != expected_fields or disposition_action not in {
-            "promote",
-            "retain",
-            "abandon",
-        }:
-            raise ValueError(
-                "developing_method disposition must be promote or abandon "
-                "with a reason, or retain with id and reason"
-            )
-        disposition_reason = str(disposition.get("reason", "")).strip()
-        if not disposition_reason:
-            raise ValueError(
-                "developing_method disposition requires a non-empty reason"
-            )
-        disposition = dict(disposition)
-        if disposition_action in {"promote", "retain"}:
-            repository.require_complete_inference_artifact(
-                repository.resolve_repo_path(developing["artifact"]),
-                "developing method",
-            )
-        if disposition_action == "retain":
-            identifier = str(disposition.get("id", "")).strip()
-            retained_ids = {
-                str(lineage.get("id"))
-                for lineage in state.get("retained_lineages", [])
-                if isinstance(lineage, dict)
-            }
-            if (
-                not identifier
-                or Path(identifier).name != identifier
-                or identifier in {".", ".."}
-                or identifier in retained_ids
-            ):
-                raise ValueError(
-                    "retained developing-method ID must be unique and "
-                    "file-name-safe"
-                )
-            disposition["id"] = identifier
-    elif disposition is not None:
-        raise ValueError(
-            "developing_method disposition requires an active developing method"
-        )
     return {
         "action": "close",
         "outcome": outcome,
         "inquiry_id": int(active["id"]),
-        "developing_method": copy.deepcopy(developing),
-        "developing_method_disposition": disposition,
+        "active_method": copy.deepcopy(method),
+    }
+
+
+def plan_method_start(proposal: dict, state: dict) -> dict:
+    """Validate a first-class method declaration before any method training."""
+    active = require_active_inquiry(state)
+    if state.get("active_method") is not None:
+        raise ValueError("the active inquiry already has an active_method")
+    operation = proposal.get("method")
+    if not isinstance(operation, dict):
+        raise TypeError("method must be an object")
+    expected = {
+        "action",
+        "id",
+        "scientific_question",
+        "rationale",
+        "lifecycle",
+    }
+    if set(operation) != expected or operation.get("action") != "start":
+        raise ValueError(
+            "method start requires exactly action=start, id, scientific_question, "
+            "rationale, and lifecycle"
+        )
+    identifier = str(operation.get("id", "")).strip()
+    if (
+        not identifier
+        or Path(identifier).name != identifier
+        or identifier in {".", ".."}
+    ):
+        raise ValueError("method id must be non-empty and file-name-safe")
+    for field in ("scientific_question", "rationale"):
+        if not isinstance(operation.get(field), str) or not operation[field].strip():
+            raise ValueError(f"method {field} must be a non-empty string")
+    lifecycle = str(operation.get("lifecycle", "")).strip()
+    if lifecycle not in {"concept", "development"}:
+        raise ValueError("a new method lifecycle must be concept or development")
+    base_scientific_commit = str(state.get("pending_scientific_parent") or "").strip()
+    if not base_scientific_commit:
+        raise ValueError(
+            "method start requires the anchored pre-method scientific parent"
+        )
+    return {
+        "action": "start",
+        "method": {
+            "id": identifier,
+            "inquiry_id": int(active["id"]),
+            "scientific_question": operation["scientific_question"].strip(),
+            "rationale": operation["rationale"].strip(),
+            "lifecycle": lifecycle,
+            "base_scientific_commit": base_scientific_commit,
+            "current_lineage": None,
+            "iterations": [],
+            "resolution": None,
+        },
+    }
+
+
+def _method_inquiry_context(state: dict, method: dict) -> dict:
+    """Expose inquiry measurements through the method-decision evidence machinery."""
+    lineage = method.get("current_lineage")
+    active = require_active_inquiry(state)
+    ledger = state.get("preparation_measurement")
+    if not (isinstance(ledger, dict) and ledger.get("inquiry_id") == active.get("id")):
+        ledger = {}
+    return {
+        "experiment": (
+            int(lineage["origin_experiment"])
+            if isinstance(lineage, dict)
+            else int(state.get("last_experiment", 0))
+        ),
+        "inquiry_id": int(active["id"]),
+        "method_id": str(method["id"]),
+        "candidates": [],
+        "parameters": copy.deepcopy(lineage.get("parameters", {}))
+        if isinstance(lineage, dict)
+        else {},
+        "code_parent_commit": str(method["base_scientific_commit"]),
+        "preparation_evaluations": copy.deepcopy(
+            ledger.get("partial_evaluations") or []
+        ),
+        "preparation_task_reference_evaluations": copy.deepcopy(
+            ledger.get("partial_task_reference_evaluations") or []
+        ),
+    }
+
+
+def plan_method_decision(proposal: dict, state: dict) -> dict:
+    """Plan one method transition from analysis or directly from inquiry."""
+    active = require_active_inquiry(state)
+    if any(
+        state.get(field) is not None
+        for field in (
+            "pending_evaluation_request",
+            "pending_baseline_decision",
+            "pending_method_decision",
+            "pending_final_benchmark",
+            "pending_campaign_conclusion",
+        )
+    ):
+        raise ValueError("the current pending operation must be resolved first")
+    method = state.get("active_method")
+    if not isinstance(method, dict):
+        raise TypeError("method decision requires an active_method")
+    lifecycle = str(method.get("lifecycle", ""))
+    if lifecycle in {"promoted", "retained", "abandoned"}:
+        raise ValueError("the active_method is already resolved")
+    analysis = state.get("pending_analysis")
+    if isinstance(analysis, dict) and analysis.get("baseline"):
+        raise ValueError("baseline analysis requires baseline_decision")
+    has_pending_analysis = isinstance(analysis, dict)
+    pending = (
+        copy.deepcopy(analysis)
+        if has_pending_analysis
+        else _method_inquiry_context(state, method)
+    )
+    if has_pending_analysis and pending.get("method_id") != method.get("id"):
+        raise ValueError("pending training does not belong to active_method")
+    decision = proposal.get("method_decision")
+    if not isinstance(decision, dict):
+        raise TypeError("method_decision must be an object")
+    allowed = {
+        "experiment",
+        "action",
+        "outcome",
+        "reason",
+        "candidate",
+        "code",
+        "retained_id",
+        "best_known",
+    }
+    extra = set(decision) - allowed
+    if extra:
+        raise ValueError(f"unsupported method_decision fields: {sorted(extra)}")
+    action = str(decision.get("action", "")).strip()
+    if action not in {
+        "continue",
+        "refine",
+        "mature",
+        "promote",
+        "retain",
+        "abandon",
+    }:
+        raise ValueError(
+            "method_decision action must be continue, refine, mature, promote, "
+            "retain, or abandon"
+        )
+    outcome = str(decision.get("outcome", "")).strip()
+    reason = str(decision.get("reason", "")).strip()
+    if not outcome or not reason:
+        raise ValueError("method_decision requires non-empty outcome and reason")
+    if has_pending_analysis:
+        if int(decision.get("experiment", -1)) != int(pending["experiment"]):
+            raise ValueError("method_decision references the wrong experiment")
+        assessment = validate_postmortem_evidence(
+            int(pending["experiment"]),
+            pending_evaluation_artifacts(pending),
+            campaign_id=repository.current_campaign_id(state),
+            pending=pending,
+            require_hypothesis_assessment=True,
+        )
+    else:
+        if "experiment" in decision:
+            raise ValueError(
+                "an inquiry method_decision must not allocate or reference an experiment"
+            )
+        if action in {"continue", "refine", "mature"}:
+            raise ValueError(
+                f"method action {action} requires pending post-training analysis"
+            )
+        assessment = None
+
+    sources = _lineage_sources(pending, state)
+    code_context = copy.deepcopy(pending)
+    if action == "abandon" or not has_pending_analysis:
+        code_context["code_parent_commit"] = str(method["base_scientific_commit"])
+    code_action, code_reason, code_plan = _code_decision_plan(
+        decision, code_context, state, sources
+    )
+    if action == "abandon":
+        if code_action == "keep":
+            raise ValueError("abandoning a method requires explicit revert or restore")
+        if (
+            code_action == "restore"
+            and decision["code"].get("lineage") == "active_method"
+        ):
+            raise ValueError(
+                "abandoning a method cannot restore its own scientific recipe"
+            )
+
+    previous_lineage = copy.deepcopy(method.get("current_lineage"))
+    selected_name = str(decision.get("candidate", "")).strip()
+    selected_record = None
+    if action in {"continue", "refine", "mature"}:
+        if not selected_name and isinstance(previous_lineage, dict):
+            selected_name = "active_method"
+        if not selected_name:
+            raise ValueError(f"method action {action} requires a selectable lineage")
+        selected_record = _selected_record(
+            name=selected_name,
+            reason=outcome,
+            sources=sources,
+            pending=pending,
+            description="selected method lineage",
+        )
+    elif action in {"promote", "retain"}:
+        if not isinstance(previous_lineage, dict):
+            raise ValueError(f"method action {action} requires a current lineage")
+        if selected_name and selected_name != "active_method":
+            raise ValueError(
+                f"method action {action} operates on the current active_method lineage"
+            )
+        selected_name = "active_method"
+        selected_record = _selected_record(
+            name=selected_name,
+            reason=outcome,
+            sources=sources,
+            pending=pending,
+            description="current method lineage",
+        )
+    elif "candidate" in decision:
+        raise ValueError("abandon must not select a candidate")
+
+    next_method = copy.deepcopy(method)
+    if selected_record is not None:
+        next_method["current_lineage"] = copy.deepcopy(selected_record)
+    if has_pending_analysis:
+        iteration = next(
+            (
+                item
+                for item in next_method["iterations"]
+                if item.get("experiment") == int(pending["experiment"])
+            ),
+            None,
+        )
+        if iteration is None:
+            raise ValueError("active_method has no record of this training iteration")
+        iteration.update(
+            status=action,
+            outcome=outcome,
+            candidate=selected_name or None,
+        )
+    resolution = {
+        "action": action,
+        "outcome": outcome,
+        "reason": reason,
+        "inquiry_id": int(active["id"]),
+    }
+    if has_pending_analysis:
+        resolution["experiment"] = int(pending["experiment"])
+    working = copy.deepcopy(state.get("working_lineage"))
+    best = copy.deepcopy(state.get("best_known_lineage"))
+    prior_working = copy.deepcopy(working)
+    prior_best = copy.deepcopy(best)
+    retained = [copy.deepcopy(item) for item in state.get("retained_lineages", [])]
+    designation_counter = designation_counter_for(state)
+    best_name = None
+
+    if action in {"continue", "refine"}:
+        next_method.update(lifecycle="development", resolution=None)
+    elif action == "mature":
+        next_method.update(lifecycle="mature", resolution=None)
+    elif action == "promote":
+        if lifecycle != "mature":
+            raise ValueError("promotion requires a method already marked mature")
+        _require_measured_designation(
+            selected_record, pending, state, "promoted method lineage"
+        )
+        _require_paired_promotion_evidence(
+            "active_method", selected_record, pending, state
+        )
+        next_method.update(
+            lifecycle="promoted",
+            current_lineage=copy.deepcopy(selected_record),
+            resolution=resolution,
+        )
+        working = copy.deepcopy(selected_record)
+        working["reason"] = outcome
+        best_decision = decision.get("best_known")
+        if best_decision is not None:
+            if not isinstance(best_decision, dict) or set(best_decision) != {
+                "candidate",
+                "reason",
+            }:
+                raise ValueError("best_known requires exactly candidate and reason")
+            if best_decision.get("candidate") != "active_method":
+                raise ValueError(
+                    "method promotion can designate only active_method as best_known"
+                )
+            best = copy.deepcopy(selected_record)
+            best["reason"] = str(best_decision.get("reason", "")).strip()
+            if not best["reason"]:
+                raise ValueError("best_known reason must be non-empty")
+            _require_measured_designation(
+                best, pending, state, "best-known designation"
+            )
+            designation_counter = next_designation_ordinal(
+                state.get("best_known_lineage"),
+                str(best["fingerprint"]),
+                designation_counter,
+            )
+            best["designation_ordinal"] = designation_counter
+            best_name = "active_method"
+    elif action == "retain":
+        identifier = str(decision.get("retained_id", "")).strip()
+        known = {str(item.get("id")) for item in retained}
+        if (
+            not identifier
+            or Path(identifier).name != identifier
+            or identifier in {".", ".."}
+            or identifier in known
+        ):
+            raise ValueError(
+                "retained_id must be unique, non-empty, and file-name-safe"
+            )
+        retained.append({"id": identifier, **copy.deepcopy(selected_record)})
+        resolution["retained_id"] = identifier
+        next_method.update(
+            lifecycle="retained",
+            current_lineage=copy.deepcopy(selected_record),
+            resolution=resolution,
+        )
+    else:
+        if "retained_id" in decision or "best_known" in decision:
+            raise ValueError("abandon cannot retain or designate the method")
+        next_method.update(
+            lifecycle="abandoned",
+            current_lineage=None,
+            resolution=resolution,
+        )
+    if action != "retain" and "retained_id" in decision:
+        raise ValueError("retained_id is valid only for retain")
+    if action != "promote" and "best_known" in decision:
+        raise ValueError("best_known is valid only for promote")
+
+    publications = _artifact_publications(
+        state,
+        working,
+        best,
+        retained,
+        next_method.get("current_lineage"),
+    )
+    if action != "promote":
+        working = prior_working
+    if best_name is None:
+        best = prior_best
+    released = (
+        previous_lineage
+        if isinstance(previous_lineage, dict)
+        and (
+            next_method.get("current_lineage") is None
+            or next_method["current_lineage"].get("fingerprint")
+            != previous_lineage.get("fingerprint")
+        )
+        else None
+    )
+    return {
+        "kind": "method_decision",
+        "inquiry_id": int(active["id"]),
+        "method_id": str(method["id"]),
+        "pending": pending,
+        "updates_experiment": has_pending_analysis,
+        "decision": copy.deepcopy(decision),
+        "method_action": action,
+        "method_candidate": selected_name or None,
+        "working_name": "active_method" if action == "promote" else "working",
+        "working_record": working,
+        "best_known_name": best_name,
+        "best_known_record": best,
+        "active_method": next_method,
+        "released_method_lineage": released,
+        "retained": retained,
+        "removed_retained": [],
+        "artifact_publications": publications,
+        "code_action": code_action,
+        "code_reason": code_reason,
+        "code_plan": code_plan,
+        "hypothesis_assessment": assessment,
+        "designation_counter": designation_counter,
     }
 
 
@@ -1151,12 +1561,15 @@ def plan_campaign_conclusion(proposal: dict, state: dict) -> dict:
     Researcher may request another round, prepare an experiment, request the
     official assessment, or conclude that no further experiment is warranted.
     """
-    if state.get("schema_version") != 4:
-        raise ValueError("campaign_conclusion is only valid in a version-4 campaign")
-    if state.get("pending_closure_operation") is not None:
+    if (
+        state.get("pending_baseline_decision") is not None
+        or state.get("pending_method_decision") is not None
+    ):
         raise ValueError(
-            "a campaign conclusion is not accepted while a closure operation is pending"
+            "a campaign conclusion is not accepted while a decision operation is pending"
         )
+    if state.get("active_inquiry") is not None:
+        raise ValueError("close the active inquiry before concluding the campaign")
     if set(proposal) != {"campaign_conclusion"}:
         raise ValueError("a campaign conclusion must contain only campaign_conclusion")
     conclusion = proposal["campaign_conclusion"]
@@ -1204,32 +1617,7 @@ def requested_measurements(request: dict) -> list[dict]:
     return measurements
 
 
-def ignore_legacy_purpose(request: dict) -> dict:
-    """Return the request without the legacy ``purpose`` field.
-
-    Historical or already-accepted requests may carry ``purpose``; it is ignored
-    when loading them. Newly submitted requests are validated without this and
-    reject the field as unsupported.
-    """
-    measurements = request.get("measurements")
-    if not isinstance(measurements, list):
-        return request
-    cleaned = [
-        (
-            {key: value for key, value in entry.items() if key != "purpose"}
-            if isinstance(entry, dict)
-            else entry
-        )
-        for entry in measurements
-    ]
-    return {**request, "measurements": cleaned}
-
-
-def validate_evaluation_request(
-    request: dict,
-    *,
-    allow_legacy_need_more_evidence: bool = False,
-) -> None:
+def validate_evaluation_request(request: dict) -> None:
     """Require the researcher's scientific framing on a newly written request."""
     for field in ("question", "reason"):
         value = request.get(field)
@@ -1241,13 +1629,10 @@ def validate_evaluation_request(
                 f"{field} is obsolete; submit measurements through measurements"
             )
     if "need_more_evidence" in request:
-        if not allow_legacy_need_more_evidence:
-            raise ValueError(
-                "need_more_evidence is obsolete; submit another measurement "
-                "request or close the analysis"
-            )
-        if type(request["need_more_evidence"]) is not bool:
-            raise ValueError("need_more_evidence must be true or false")
+        raise ValueError(
+            "need_more_evidence is retired; submit another measurement request "
+            "or a method-iteration decision"
+        )
     comparisons = request.get("paired_comparisons", [])
     if not isinstance(comparisons, list):
         raise TypeError("paired_comparisons must be a list")
@@ -1421,14 +1806,12 @@ def validate_panel_independence(
 def available_evaluation_candidates(pending: dict, state: dict) -> dict:
     """Models a request may name, including independent reusable lineage roles."""
     available = {item["name"]: item for item in pending["candidates"]}
-    identifiers = ["working", "best_known", "developing_method"]
+    identifiers = ["working", "best_known", "active_method"]
     identifiers.extend(
         str(lineage.get("id"))
         for lineage in state.get("retained_lineages", [])
         if str(lineage.get("id", "")).strip()
     )
-    if state.get("schema_version") == 3 and pending.get("champion_available"):
-        identifiers.append("champion")
     for identifier in identifiers:
         lineage = lineage_role(state, identifier)
         if lineage is None:
@@ -1462,15 +1845,14 @@ def upcoming_experiment_index(state: dict) -> int:
 def preparation_ledger(state: dict) -> dict | None:
     """The accumulated preparation ledger for the active inquiry, if any.
 
-    Legacy ledgers may only carry a forecast experiment. New ledgers carry an
-    inquiry identity so repeated rounds remain associated even when no training
-    experiment is ever allocated.
+    Ledgers carry an inquiry identity so repeated rounds remain associated even
+    when no training experiment is allocated.
     """
     ledger = state.get("preparation_measurement")
     if not isinstance(ledger, dict):
         return None
-    experiment = ledger.get("experiment")
-    if not isinstance(experiment, int) or isinstance(experiment, bool):
+    inquiry_id = ledger.get("inquiry_id")
+    if not isinstance(inquiry_id, int) or isinstance(inquiry_id, bool):
         return None
     return ledger
 
@@ -1478,7 +1860,7 @@ def preparation_ledger(state: dict) -> dict | None:
 def _current_lineage_fingerprints(state: dict) -> dict[str, str]:
     """The currently resolved fingerprint of every requestable saved lineage."""
     fingerprints: dict[str, str] = {}
-    for identifier in ("working", "best_known", "developing_method"):
+    for identifier in ("working", "best_known", "active_method"):
         lineage = lineage_role(state, identifier)
         if isinstance(lineage, dict):
             fingerprints[identifier] = str(lineage.get("fingerprint") or "")
@@ -1518,44 +1900,30 @@ def preparation_measurement_context(state: dict) -> dict:
     every recorded model still matches its current lineage.
     """
     experiment = upcoming_experiment_index(state)
-    active = state.get("active_inquiry")
-    inquiry_id = (
-        int(active["id"])
-        if isinstance(active, dict) and isinstance(active.get("id"), int)
-        else allocated_inquiry_index(state, repository.current_campaign_id(state)) + 1
-    )
+    active = require_active_inquiry(state)
+    inquiry_id = int(active["id"])
     ledger = preparation_ledger(state)
     rounds: list[dict] = []
     partials: list[dict] = []
     references: list[dict] = []
-    ledger_inquiry = -1
-    if ledger is not None:
-        recorded_inquiry = ledger.get("inquiry_id")
-        if recorded_inquiry is None:
-            recorded_experiment = ledger.get("experiment")
-            if (
-                isinstance(recorded_experiment, int)
-                and not isinstance(recorded_experiment, bool)
-                and recorded_experiment == experiment
-            ):
-                ledger_inquiry = inquiry_id
-        elif isinstance(recorded_inquiry, int) and not isinstance(
-            recorded_inquiry, bool
-        ):
-            ledger_inquiry = recorded_inquiry
+    ledger_inquiry = int(ledger["inquiry_id"]) if ledger is not None else -1
     if ledger is not None and ledger_inquiry == inquiry_id:
+        rounds = [dict(record) for record in ledger.get("rounds") or []]
         fingerprints = _current_lineage_fingerprints(state)
         recorded_partials = list(ledger.get("partial_evaluations") or [])
         recorded_references = list(
             ledger.get("partial_task_reference_evaluations") or []
         )
-        if all(
-            _preparation_entry_matches(entry, fingerprints)
-            for entry in [*recorded_partials, *recorded_references]
-        ):
-            rounds = [dict(record) for record in ledger.get("rounds") or []]
-            partials = recorded_partials
-            references = recorded_references
+        partials = [
+            entry
+            for entry in recorded_partials
+            if _preparation_entry_matches(entry, fingerprints)
+        ]
+        references = [
+            entry
+            for entry in recorded_references
+            if _preparation_entry_matches(entry, fingerprints)
+        ]
     return {
         "experiment": experiment,
         "inquiry_id": inquiry_id,
@@ -1578,12 +1946,10 @@ def preparation_measurement_context(state: dict) -> dict:
 
 
 def planned_measurements(
-    request: dict, available: dict, *, allow_legacy_need_more_evidence: bool = False
+    request: dict, available: dict
 ) -> tuple[list[dict], list[dict]]:
     """Resolve all typed measurements before either evaluator starts."""
-    validate_evaluation_request(
-        request, allow_legacy_need_more_evidence=allow_legacy_need_more_evidence
-    )
+    validate_evaluation_request(request)
     requested_names = {
         str(spec["candidate"]).strip() for spec in requested_measurements(request)
     }
@@ -1677,43 +2043,13 @@ def validate_paired_comparison_plan(
     resolved_models: dict[str, dict] | None = None,
 ) -> list[dict]:
     """Validate comparison identities that will exist after this request."""
-    if state is not None and state.get("schema_version") == 4:
-        if resolved_models is None:
-            resolved_models = resolved_measurement_models(request, available)
-        return _resolved_paired_evidence_plan(
-            request, pending, state, requested, resolved_models
-        )
-
-    expected_panels: dict[str, set[tuple[int, int]]] = {
-        name: set() for name in available
-    }
-    for item in pending.get("partial_evaluations", []) or []:
-        name = str(item.get("candidate", "")).strip()
-        if name in expected_panels:
-            expected_panels[name].add((int(item["seed"]), int(item["episodes"])))
-    for item in requested:
-        expected_panels[item["candidate"]].add((item["seed"], item["episodes"]))
-
-    for comparison in request.get("paired_comparisons", []):
-        candidate = comparison["candidate"].strip()
-        reference = comparison["reference"].strip()
-        if candidate not in available:
-            raise ValueError(f"unknown paired comparison candidate {candidate!r}")
-        if reference not in available:
-            raise ValueError(f"unknown paired comparison reference {reference!r}")
-        candidate_panels = expected_panels[candidate]
-        reference_panels = expected_panels[reference]
-        if not candidate_panels or not reference_panels:
-            raise ValueError(
-                f"paired comparison {candidate!r} vs {reference!r} requires "
-                "research-evaluation data for both models"
-            )
-        if candidate_panels != reference_panels:
-            raise ValueError(
-                f"paired comparison {candidate!r} vs {reference!r} requires "
-                "identical (seed, episodes) panels"
-            )
-    return []
+    if state is None:
+        raise ValueError("paired comparison validation requires campaign state")
+    if resolved_models is None:
+        resolved_models = resolved_measurement_models(request, available)
+    return _resolved_paired_evidence_plan(
+        request, pending, state, requested, resolved_models
+    )
 
 
 def validate_preparation_evaluation_request(
@@ -1725,34 +2061,27 @@ def validate_preparation_evaluation_request(
     """Validate a preparation request that may name saved lineages only.
 
     Preparation has no pending experiment, so the requestable models are the
-    eligible saved lineages (``working``, ``best_known``,
-    ``developing_method`` or a retained ID).
+    eligible saved lineages (``working``, ``best_known``, ``active_method`` or a
+    retained ID).
     Naming an experiment's candidate fails as an unknown candidate. The returned
     synthetic context is what execution resolves the request against.
     """
-    if state.get("schema_version") != 4:
-        raise ValueError(
-            "preparation measurements are only valid in a version-4 campaign"
-        )
+    require_active_inquiry(state)
     if state.get("pending_analysis") is not None:
         raise ValueError(
             "post-training analysis is pending; submit its deliverable instead"
         )
     if state.get("pending_evaluation_request") is not None:
         raise ValueError("a measurement request is already pending")
-    if state.get("pending_researcher_decision") is not None:
-        raise ValueError("a lineage decision is pending; no measurement is accepted")
-    if state.get("pending_closure_operation") is not None:
-        raise ValueError("a closure operation is pending; no measurement is accepted")
+    if (
+        state.get("pending_baseline_decision") is not None
+        or state.get("pending_method_decision") is not None
+    ):
+        raise ValueError("a decision operation is pending; no measurement is accepted")
     if state.get("pending_final_benchmark") is not None:
         raise ValueError("the final benchmark is pending; no measurement is accepted")
     if state.get("pending_inquiry_operation") is not None:
-        raise ValueError("an inquiry closure is pending; no measurement is accepted")
-    if state.get("preparation_conclusion_only"):
-        raise ValueError(
-            "the experiment budget is exhausted; only a campaign conclusion may "
-            "be prepared"
-        )
+        raise ValueError("an inquiry operation is pending; no measurement is accepted")
     if "experiment" in request:
         raise ValueError(
             "a preparation measurement must omit experiment; it names saved "
@@ -2001,16 +2330,23 @@ def plan_code_lineage_decision(
     # that happened afterwards. Campaign memory recorded in either set before
     # this boundary existed can still be listed, and rejecting science must never
     # restore history to an older version.
-    changed = repository.scientific_change_paths(
-        list(
-            dict.fromkeys(
-                [
-                    *(str(path) for path in pending.get("research_change_paths", [])),
-                    *(current_paths or []),
-                ]
+    changed = [
+        path
+        for path in repository.scientific_change_paths(
+            list(
+                dict.fromkeys(
+                    [
+                        *(
+                            str(path)
+                            for path in pending.get("research_change_paths", [])
+                        ),
+                        *(current_paths or []),
+                    ]
+                )
             )
         )
-    )
+        if is_researcher_owned(path) or path.replace("\\", "/") in PARAMETER_ONLY_PATHS
+    ]
     if not changed:
         return {"restore": [], "remove_created": []}
     repository.require_resolvable_commit(parent)
@@ -2049,202 +2385,6 @@ def plan_lineage_restore(lineage: dict) -> dict:
     return {"parent": commit, "restore": restorable, "remove_created": created}
 
 
-def plan_previous_result_decision(proposal: dict, state: dict) -> dict:
-    if state.get("schema_version") == 4:
-        return plan_v4_previous_result_decision(proposal, state)
-    pending = state.get("pending_researcher_decision")
-    if pending is None:
-        raise ValueError("there is no researcher decision awaiting resolution")
-    if set(proposal) != {"previous_result_decision"}:
-        raise ValueError(
-            "a lineage proposal must contain only previous_result_decision"
-        )
-    decision = proposal.get("previous_result_decision")
-    if not isinstance(decision, dict):
-        raise TypeError(
-            "the previous experiment is awaiting a researcher decision; add "
-            "previous_result_decision to the proposal"
-        )
-    if int(decision.get("experiment", -1)) != int(pending["experiment"]):
-        raise ValueError("previous_result_decision references the wrong experiment")
-    measured_evidence = pending_evaluation_artifacts(pending)
-    if measured_evidence:
-        validate_postmortem_evidence(
-            int(pending["experiment"]),
-            measured_evidence,
-            campaign_id=repository.current_campaign_id(state),
-        )
-    selected_name = str(decision.get("continue_from", "")).strip()
-    reason = str(decision.get("reason", "")).strip()
-    if not reason:
-        raise ValueError("previous_result_decision requires a reason")
-    allowed = {
-        "experiment",
-        "continue_from",
-        "reason",
-        "code",
-        "retain",
-        "remove_retained",
-        "request_final_benchmark",
-        "terminal_reason",
-    }
-    extra = set(decision) - allowed
-    if extra:
-        raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
-    sources = {item["name"]: item for item in pending["candidates"]}
-    if pending.get("champion_available"):
-        sources["champion"] = {
-            "name": "champion",
-            "artifact": state["accepted_artifact"],
-            "timesteps": int(state.get("accepted_training_steps", 0)),
-            "summary": state.get("accepted_metrics"),
-            "evaluations": pending.get("champion_evaluations", []),
-            "parameters": state.get("accepted_parameters"),
-        }
-    if selected_name == "champion" and "champion" not in sources:
-        raise ValueError("there is no existing champion to continue from")
-    selected = sources.get(selected_name)
-    if selected is None:
-        raise ValueError(f"continue_from must be one of {sorted(sources)}")
-    selected_artifact = repository.resolve_repo_path(selected["artifact"])
-    repository.require_complete_artifact(
-        selected_artifact, f"selected lineage {selected_name!r}"
-    )
-
-    code_decision = decision.get("code")
-    if not isinstance(code_decision, dict):
-        raise TypeError(
-            "previous_result_decision requires a code decision with action and reason"
-        )
-    if set(code_decision) != {"action", "reason"}:
-        raise ValueError("code decision contains unsupported fields")
-    code_action = str(code_decision.get("action", "")).strip().lower()
-    code_reason = str(code_decision.get("reason", "")).strip()
-    if code_action not in {"keep", "revert"} or not code_reason:
-        raise ValueError("code decision must be keep or revert with a reason")
-    parent = str(pending.get("code_parent_commit", "")).strip()
-    # The frozen change set describes the intervention that trained; the science
-    # that must be undone is whatever stands against the parent now.
-    code_plan = plan_code_lineage_decision(
-        pending,
-        code_action,
-        current_paths=(
-            repository.scientific_delta(parent)
-            if parent and code_action == "revert"
-            else None
-        ),
-    )
-    code_plan["parent"] = parent
-
-    retained = list(state.get("retained_lineages", []))
-    retained_by_id = {str(lineage.get("id")): lineage for lineage in retained}
-    removal_ids = decision.get("remove_retained", [])
-    if not isinstance(removal_ids, list) or any(
-        not str(identifier).strip() for identifier in removal_ids
-    ):
-        raise ValueError("remove_retained must be a list of retained lineage IDs")
-    removal_ids = [str(identifier).strip() for identifier in removal_ids]
-    if len(set(removal_ids)) != len(removal_ids):
-        raise ValueError("remove_retained contains duplicate IDs")
-    missing = set(removal_ids) - set(retained_by_id)
-    if missing:
-        raise ValueError(f"unknown retained lineages: {sorted(missing)}")
-
-    requested = decision.get("retain", [])
-    if not isinstance(requested, list):
-        raise TypeError("retain must be a list")
-    retained_ids = set(retained_by_id)
-    retention_plans: list[dict] = []
-    for item in requested:
-        if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
-            raise ValueError(
-                "each retained lineage requires only candidate, id, and reason"
-            )
-        candidate_name = str(item["candidate"]).strip()
-        identifier = str(item["id"]).strip()
-        retention_reason = str(item["reason"]).strip()
-        if (
-            not identifier
-            or Path(identifier).name != identifier
-            or identifier in {".", ".."}
-        ):
-            raise ValueError(
-                "retained lineage ID must be a stable file-name-safe identifier"
-            )
-        if not retention_reason or candidate_name not in sources:
-            raise ValueError(
-                "retained lineages require an available candidate, id, and reason"
-            )
-        if candidate_name == selected_name:
-            raise ValueError("do not retain the lineage becoming active")
-        if identifier in retained_ids or identifier in removal_ids:
-            raise ValueError(f"conflicting retained lineage ID: {identifier}")
-        source = sources[candidate_name]
-        source_artifact = repository.resolve_repo_path(source["artifact"])
-        repository.require_complete_artifact(
-            source_artifact, f"retained lineage {identifier!r}"
-        )
-        campaign_id = repository.current_campaign_id(state)
-        destination = paths.campaign_retained_root(campaign_id) / identifier
-        if destination.exists():
-            raise ValueError(
-                f"retained lineage destination already exists: {identifier}"
-            )
-        retention_plans.append(
-            {
-                "source": source_artifact,
-                "destination": destination,
-                "record": {
-                    "id": identifier,
-                    "artifact": repository.repo_relative_path(destination),
-                    "origin_experiment": int(pending["experiment"]),
-                    "campaign_id": campaign_id,
-                    "candidate": candidate_name,
-                    "reason": retention_reason,
-                    "parameters": source.get("parameters", pending["parameters"]),
-                    "training_steps": int(source["timesteps"]),
-                    "evaluation_artifacts": repository.evaluation_artifact_paths(
-                        source.get("evaluations")
-                    ),
-                },
-            }
-        )
-        retained_ids.add(identifier)
-
-    request_final = decision.get("request_final_benchmark", False)
-    if not isinstance(request_final, bool):
-        raise TypeError("request_final_benchmark must be true or false")
-    terminal_reason = str(decision.get("terminal_reason", "")).strip()
-    if request_final and not terminal_reason:
-        raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
-    selected_fingerprint = repository.artifact_fingerprint(selected_artifact)
-    if (
-        request_final
-        and state.get("official_benchmark_artifact") == selected_fingerprint
-    ):
-        raise ValueError(
-            "the selected accepted artifact already received an official benchmark"
-        )
-    return {
-        "pending": pending,
-        "decision": decision,
-        "selected": selected,
-        "selected_name": selected_name,
-        "selected_artifact": selected_artifact,
-        "selected_fingerprint": selected_fingerprint,
-        "code_action": code_action,
-        "code_reason": code_reason,
-        "code_plan": code_plan,
-        "retained": [
-            lineage for lineage in retained if lineage["id"] not in removal_ids
-        ],
-        "retentions": retention_plans,
-        "removed_retained": [retained_by_id[identifier] for identifier in removal_ids],
-        "request_final_benchmark": request_final,
-        "terminal_reason": terminal_reason if request_final else None,
-    }
-
-
 def next_designation_ordinal(
     existing_best: dict | None, fingerprint: str, counter: int
 ) -> int:
@@ -2279,12 +2419,12 @@ def designation_counter_for(state: dict) -> int:
     return recorded
 
 
-def _v4_sources(pending: dict, state: dict) -> dict[str, dict]:
+def _lineage_sources(pending: dict, state: dict) -> dict[str, dict]:
     sources = {
         item["name"]: {**item, "_current_candidate": True}
         for item in pending["candidates"]
     }
-    for identifier in ("working", "best_known", "developing_method"):
+    for identifier in ("working", "best_known", "active_method"):
         lineage = lineage_role(state, identifier)
         if lineage is not None:
             sources[identifier] = {**lineage, "name": identifier}
@@ -2319,18 +2459,7 @@ def _selection_panel_key(identity: dict) -> tuple:
 
 
 def _normalized_selection_panel(item: object) -> dict | None:
-    """Accept the instrument-preserving record or a legacy ``[seed, episodes]``."""
-    if isinstance(item, (list, tuple)) and len(item) == 2:
-        seed, episodes = item
-        if all(
-            isinstance(value, int) and not isinstance(value, bool) for value in item
-        ):
-            return {
-                "instrument": "research_evaluation",
-                "seed": int(seed),
-                "episodes": int(episodes),
-            }
-        return None
+    """Accept an instrument-preserving panel identity object."""
     if isinstance(item, dict):
         instrument = item.get("instrument")
         if instrument == "task_reference":
@@ -2427,9 +2556,7 @@ def _selection_panels_for(source: dict, pending: dict, fingerprint: str) -> list
     return panels
 
 
-def _v4_lineage_record(
-    source: dict, pending: dict, artifact: Path, reason: str
-) -> dict:
+def _lineage_record(source: dict, pending: dict, artifact: Path, reason: str) -> dict:
     current = bool(source.get("_current_candidate"))
     checkpoint_steps = int(source.get("timesteps", source.get("training_steps", 0)))
     steps = (
@@ -2463,20 +2590,22 @@ def _v4_lineage_record(
     }
 
 
-def _v4_artifact_publications(
+def _artifact_publications(
     state: dict,
-    working_record: dict,
+    working_record: dict | None,
     best_known_record: dict | None,
     retained: list[dict],
-    inquiry_record: dict | None = None,
+    method_record: dict | None = None,
 ) -> list[dict]:
     """Freeze complete durable-artifact work before closure mutation begins."""
     campaign_id = repository.current_campaign_id(state)
-    records = [("working", working_record)]
+    records = []
+    if working_record is not None:
+        records.append(("working", working_record))
     if best_known_record is not None:
         records.append(("best_known", best_known_record))
-    if inquiry_record is not None:
-        records.append(("developing_method", inquiry_record))
+    if method_record is not None:
+        records.append(("active_method", method_record))
     records.extend((f"retained:{item['id']}", item) for item in retained)
     grouped: dict[str, list[tuple[str, dict, Path]]] = {}
     for role, record in records:
@@ -3035,8 +3164,7 @@ def refresh_repaired_paired_evidence_plan(
                     and candidate.get("candidate_seed") == panel.get("candidate_seed")
                     and candidate.get("reference_episodes")
                     == panel.get("reference_episodes")
-                    and candidate.get("reference_seed")
-                    == panel.get("reference_seed")
+                    and candidate.get("reference_seed") == panel.get("reference_seed")
                     and candidate.get("evaluation_semantics") == current_semantics
                 ),
                 None,
@@ -3061,10 +3189,9 @@ def refresh_repaired_paired_evidence_plan(
                     int(panel.get("reference_seed", -1)),
                 )
             )
-            if (
-                candidate_path not in matched.get("candidate_artifacts", [])
-                or reference_path not in matched.get("reference_artifacts", [])
-            ):
+            if candidate_path not in matched.get(
+                "candidate_artifacts", []
+            ) or reference_path not in matched.get("reference_artifacts", []):
                 raise ValueError(
                     "implementation repair changed evaluation semantics, but the "
                     "accepted request does not measure both sides of paired panel "
@@ -3139,337 +3266,193 @@ def _validated_designation_evidence(
     return records
 
 
-def plan_v4_previous_result_decision(proposal: dict, state: dict) -> dict:
-    pending = state.get("pending_analysis") or state.get("pending_researcher_decision")
-    if pending is None:
-        raise ValueError("there is no post-training analysis awaiting closure")
-    if not isinstance(pending, dict):
-        raise TypeError("pending researcher decision must be an object")
-    if set(proposal) != {"previous_result_decision"}:
-        raise ValueError(
-            "a lineage proposal must contain only previous_result_decision"
-        )
-    decision = proposal["previous_result_decision"]
-    if not isinstance(decision, dict) or int(decision.get("experiment", -1)) != int(
-        pending["experiment"]
-    ):
-        raise ValueError("previous_result_decision references the wrong experiment")
-    hypothesis_assessment = None
-    if state.get("pending_analysis") is not None:
-        hypothesis_assessment = validate_postmortem_evidence(
-            int(pending["experiment"]),
-            pending_evaluation_artifacts(pending),
-            campaign_id=repository.current_campaign_id(state),
-            pending=pending,
-            require_hypothesis_assessment=not bool(pending.get("baseline")),
-        )
-    allowed = {
-        "experiment",
-        "continue_from",
-        "reason",
-        "code",
-        "best_known",
-        "developing_method",
-        "retain",
-        "remove_retained",
-        "request_final_benchmark",
-        "terminal_reason",
-    }
-    extra = set(decision) - allowed
-    if extra:
-        raise ValueError(f"unsupported lineage decision fields: {sorted(extra)}")
-    working_name, working_reason = (
-        str(decision.get("continue_from", "")).strip(),
-        str(decision.get("reason", "")).strip(),
-    )
-    sources = _v4_sources(pending, state)
-    if not working_reason or working_name not in sources:
-        raise ValueError(
-            f"continue_from must be one of {sorted(sources)} with a reason"
-        )
-    working_source = sources[working_name]
-    working_artifact = repository.resolve_repo_path(working_source["artifact"])
-    repository.require_complete_artifact(
-        working_artifact, f"selected lineage {working_name!r}"
-    )
+def _code_decision_plan(
+    decision: dict, pending: dict, state: dict, sources: dict[str, dict]
+) -> tuple[str, str, dict]:
     code = decision.get("code")
     if not isinstance(code, dict):
         raise TypeError("code decision requires action and reason")
-    code_action, code_reason = (
-        str(code.get("action", "")).lower(),
-        str(code.get("reason", "")).strip(),
+    action = str(code.get("action", "")).strip().lower()
+    reason = str(code.get("reason", "")).strip()
+    allowed = (
+        {"action", "reason", "lineage"}
+        if action == "restore"
+        else {
+            "action",
+            "reason",
+        }
     )
-    if code_action not in {"keep", "revert", "restore"} or not code_reason:
-        raise ValueError("code decision must be keep, revert, or restore with a reason")
-    allowed_code_fields = {"action", "reason"}
-    if code_action == "restore":
-        allowed_code_fields.add("lineage")
-    if set(code) != allowed_code_fields:
+    if (
+        action not in {"keep", "revert", "restore"}
+        or not reason
+        or set(code) != allowed
+    ):
         raise ValueError(
-            "code restore requires lineage; other code actions require only action and reason"
+            "code decision must be keep or revert with action and reason, or "
+            "restore with action, reason, and lineage"
         )
     parent = str(pending.get("code_parent_commit", "")).strip()
-    if code_action == "restore":
-        restore_name = str(code["lineage"]).strip()
-        restore_source = _v4_sources(pending, state).get(restore_name)
-        if restore_name not in {
-            "working",
-            "best_known",
-            "developing_method",
-        } and not (
-            retained_lineage(state, restore_name)
-        ):
-            raise ValueError(
-                "code restore lineage must be working, best_known, "
-                "developing_method, or a retained lineage ID"
-            )
-        if restore_source is None:
-            raise ValueError(f"code restore lineage {restore_name!r} is unavailable")
-        code_plan = plan_lineage_restore(restore_source)
-        code_plan["lineage"] = restore_name
+    if action == "restore":
+        lineage_name = str(code.get("lineage", "")).strip()
+        source = sources.get(lineage_name)
+        if source is None:
+            raise ValueError(f"code restore lineage must be one of {sorted(sources)}")
+        plan = plan_lineage_restore(source)
+        plan["lineage"] = lineage_name
     else:
-        code_plan = plan_code_lineage_decision(
+        plan = plan_code_lineage_decision(
             pending,
-            code_action,
+            action,
             current_paths=(
                 repository.scientific_delta(parent)
-                if parent and code_action == "revert"
+                if parent and action == "revert"
                 else None
             ),
         )
-        code_plan["parent"] = parent
-    designation_counter = designation_counter_for(state)
-    best_decision, best_record, best_name = (
-        decision.get("best_known"),
-        dict(state["best_known_lineage"])
-        if state.get("best_known_lineage") is not None
-        else None,
-        None,
-    )
-    if best_decision is not None:
-        available_names = sorted(sources)
-        requested_name = (
-            str(best_decision.get("candidate", "")).strip()
-            if isinstance(best_decision, dict)
-            else ""
-        )
-        if not isinstance(best_decision, dict) or set(best_decision) != {
-            "candidate",
-            "reason",
-        }:
-            raise ValueError(
-                f"best_known request for model identifier {requested_name!r} is invalid; "
-                "it requires exactly candidate and reason; "
-                f"available model identifiers: {available_names}"
-            )
-        best_name = str(best_decision["candidate"]).strip()
-        if best_name not in sources or not str(best_decision["reason"]).strip():
-            raise ValueError(
-                f"best_known candidate {best_name!r} is unavailable or has no reason; "
-                f"requested model identifier: {best_name!r}; "
-                f"available model identifiers: {available_names}"
-            )
-        best_source = sources[best_name]
-        best_artifact = repository.resolve_repo_path(best_source["artifact"])
-        repository.require_complete_artifact(best_artifact, "best-known lineage")
-        evidence_catalog = _development_evidence_catalog(pending, state)
-        best_fingerprint = repository.artifact_fingerprint(best_artifact)
-        selected_evidence = {
-            path
-            for path, record in evidence_catalog.items()
-            if record["model_fingerprint"] == best_fingerprint
-        }
-        existing_best = state.get("best_known_lineage")
-        same_model = (
-            existing_best is not None
-            and existing_best.get("fingerprint") == best_fingerprint
-        )
-        if not same_model and not selected_evidence:
-            raise ValueError(
-                f"best_known candidate {best_name!r} has no recorded measurement "
-                "in the current campaign state; "
-                f"requested model identifier: {best_name!r}; "
-                f"available model identifiers: {available_names}. "
-                "Record a measurement for this model before designating it."
-            )
-        if same_model:
-            # Issue #57: an explicit re-designation may re-measure the incumbent
-            # on a new panel; the selection exposure must include that panel
-            # instead of copying the stale record unchanged.
-            best_record = dict(existing_best)
-            best_record["selected_panels"] = _selection_panels_for(
-                existing_best, pending, best_fingerprint
-            )
-        else:
-            selected_records = _validated_designation_evidence(
-                selected_evidence,
-                expected_fingerprint=best_fingerprint,
-                catalog=evidence_catalog,
-                description=f"best_known candidate {best_name!r}",
-            )
-            best_record = _v4_lineage_record(
-                best_source,
-                pending,
-                best_artifact,
-                str(best_decision["reason"]).strip(),
-            )
-            best_record["evaluation_artifacts"] = sorted(
-                set(best_record["evaluation_artifacts"])
-                | {record["evaluation_artifact"] for record in selected_records}
-            )
-            # A new designation, including a return to a previously designated
-            # fingerprint, starts a new tenure.
-            designation_counter = next_designation_ordinal(
-                existing_best, best_fingerprint, designation_counter
-            )
-            best_record["designation_ordinal"] = designation_counter
-    existing_inquiry = (
-        dict(state["inquiry_lineage"])
-        if isinstance(state.get("inquiry_lineage"), dict)
-        else None
-    )
-    inquiry_name = None
-    inquiry_record = (
-        dict(existing_inquiry) if existing_inquiry is not None else None
-    )
-    if "developing_method" in decision:
-        inquiry_decision = decision["developing_method"]
-        if inquiry_decision is None:
-            inquiry_record = None
-        else:
-            if not isinstance(inquiry_decision, dict) or set(inquiry_decision) != {
-                "candidate",
-                "reason",
-            }:
-                raise ValueError(
-                    "developing_method must be null or contain exactly "
-                    "candidate and reason"
-                )
-            active_inquiry = state.get("active_inquiry")
-            if not isinstance(active_inquiry, dict):
-                raise ValueError(
-                    "a developing method requires an active inquiry"
-                )
-            inquiry_name = str(inquiry_decision["candidate"]).strip()
-            inquiry_reason = str(inquiry_decision["reason"]).strip()
-            if inquiry_name not in sources or not inquiry_reason:
-                raise ValueError(
-                    f"developing_method candidate {inquiry_name!r} is "
-                    "unavailable or has no reason; "
-                    f"available model identifiers: {sorted(sources)}"
-                )
-            inquiry_source = sources[inquiry_name]
-            inquiry_artifact = repository.resolve_repo_path(
-                inquiry_source["artifact"]
-            )
-            repository.require_complete_artifact(
-                inquiry_artifact, "developing method"
-            )
-            inquiry_record = _v4_lineage_record(
-                inquiry_source,
-                pending,
-                inquiry_artifact,
-                inquiry_reason,
-            )
-            inquiry_record["inquiry_id"] = int(active_inquiry["id"])
-    retained = [dict(lineage) for lineage in state.get("retained_lineages", [])]
-    removal_ids = decision.get("remove_retained", [])
-    if not isinstance(removal_ids, list) or len(set(removal_ids)) != len(removal_ids):
+        plan["parent"] = parent
+    return action, reason, plan
+
+
+def _selected_record(
+    *,
+    name: str,
+    reason: str,
+    sources: dict[str, dict],
+    pending: dict,
+    description: str,
+) -> dict:
+    if name not in sources or not reason:
         raise ValueError(
-            "remove_retained must be a list of unique retained lineage IDs"
+            f"{description} must name one of {sorted(sources)} with a reason"
         )
-    removed = [lineage for lineage in retained if lineage["id"] in removal_ids]
-    if len(removed) != len(removal_ids):
-        raise ValueError("unknown retained lineages in remove_retained")
-    retained_ids = {item["id"] for item in retained}
-    if {
-        name
-        for name in (working_name, best_name, inquiry_name)
-        if name in retained_ids
-    } & set(removal_ids):
-        raise ValueError("cannot remove a retained lineage selected for a role")
-    new_retained: list[dict] = []
-    known_ids = retained_ids - set(removal_ids)
-    for item in decision.get("retain", []):
-        if not isinstance(item, dict) or set(item) != {"candidate", "id", "reason"}:
-            raise ValueError(
-                "each retained lineage requires only candidate, id, and reason"
-            )
-        candidate_name, identifier, reason = (
-            str(item["candidate"]).strip(),
-            str(item["id"]).strip(),
-            str(item["reason"]).strip(),
+    source = sources[name]
+    artifact = repository.resolve_repo_path(source["artifact"])
+    repository.require_complete_inference_artifact(artifact, description)
+    return _lineage_record(source, pending, artifact, reason)
+
+
+def _require_measured_designation(
+    record: dict, pending: dict, state: dict, description: str
+) -> None:
+    catalog = _development_evidence_catalog(pending, state)
+    fingerprint = str(record["fingerprint"])
+    matching = {
+        path
+        for path, evidence in catalog.items()
+        if evidence["model_fingerprint"] == fingerprint
+    }
+    if not matching:
+        raise ValueError(f"{description} has no recorded campaign measurement")
+    validated = _validated_designation_evidence(
+        matching,
+        expected_fingerprint=fingerprint,
+        catalog=catalog,
+        description=description,
+    )
+    record["evaluation_artifacts"] = sorted(
+        set(record["evaluation_artifacts"])
+        | {item["evaluation_artifact"] for item in validated}
+    )
+
+
+def _require_paired_promotion_evidence(
+    selected_name: str,
+    selected_record: dict,
+    pending: dict,
+    state: dict,
+) -> None:
+    working = state.get("working_lineage")
+    if not isinstance(working, dict):
+        raise TypeError("method promotion requires a current working lineage")
+    if selected_record["fingerprint"] == working.get("fingerprint"):
+        raise ValueError(
+            "method promotion must compare a distinct model against working"
         )
-        if (
-            not identifier
-            or Path(identifier).name != identifier
-            or identifier in {".", ".."}
-            or identifier in known_ids
-        ):
-            raise ValueError("retained lineage ID must be unique and file-name-safe")
-        if candidate_name not in sources or not reason:
-            raise ValueError(
-                "retained lineages require an available candidate and reason"
-            )
-        source = sources[candidate_name]
+    request = {
+        "paired_comparisons": [{"candidate": selected_name, "reference": "working"}]
+    }
+    available = available_evaluation_candidates(pending, state)
+    resolved = {}
+    for name in (selected_name, "working"):
+        source = available[name]
         artifact = repository.resolve_repo_path(source["artifact"])
         repository.require_complete_artifact(
-            artifact, f"retained lineage {identifier!r}"
+            artifact, f"promotion evidence model {name!r}"
         )
-        new_retained.append(
-            {"id": identifier, **_v4_lineage_record(source, pending, artifact, reason)}
-        )
-        known_ids.add(identifier)
-    request_final = decision.get("request_final_benchmark", False)
-    if not isinstance(request_final, bool):
-        raise TypeError("request_final_benchmark must be true or false")
-    terminal_reason = str(decision.get("terminal_reason", "")).strip()
-    if request_final and not terminal_reason:
-        raise ValueError("request_final_benchmark requires a non-empty terminal_reason")
-    if request_final and best_record is None:
-        raise ValueError("a final benchmark requires a designated best-known model")
-    retained_records = [
-        lineage for lineage in retained if lineage["id"] not in removal_ids
-    ] + new_retained
-    working_record = _v4_lineage_record(
-        working_source, pending, working_artifact, working_reason
+        resolved[name] = {
+            "artifact": repository.repo_relative_path(artifact),
+            "fingerprint": repository.artifact_fingerprint(artifact),
+        }
+    if resolved[selected_name]["fingerprint"] != selected_record["fingerprint"]:
+        raise ValueError("promoted method candidate identity changed")
+    plan = validate_paired_comparison_plan(
+        request,
+        pending,
+        available,
+        [],
+        state=state,
+        resolved_models=resolved,
     )
-    publications = _v4_artifact_publications(
+    if not plan:
+        raise ValueError(
+            "method promotion requires compatible paired evidence against working"
+        )
+
+
+def plan_baseline_decision(proposal: dict, state: dict) -> dict:
+    """Select the measured baseline before the first inquiry can open."""
+    pending = state.get("pending_analysis")
+    if not isinstance(pending, dict) or not pending.get("baseline"):
+        raise ValueError("there is no baseline awaiting selection")
+    decision = proposal.get("baseline_decision")
+    if not isinstance(decision, dict):
+        raise TypeError("baseline_decision must be an object")
+    if set(decision) != {"experiment", "candidate", "reason"}:
+        raise ValueError(
+            "baseline_decision requires exactly experiment, candidate, and reason"
+        )
+    if int(decision.get("experiment", -1)) != int(pending["experiment"]):
+        raise ValueError("baseline_decision references the wrong experiment")
+    sources = {
+        item["name"]: {**item, "_current_candidate": True}
+        for item in pending["candidates"]
+    }
+    candidate = str(decision.get("candidate", "")).strip()
+    reason = str(decision.get("reason", "")).strip()
+    record = _selected_record(
+        name=candidate,
+        reason=reason,
+        sources=sources,
+        pending=pending,
+        description="selected baseline",
+    )
+    _require_measured_designation(record, pending, state, "selected baseline")
+    record["designation_ordinal"] = 1
+    publications = _artifact_publications(
         state,
-        working_record,
-        best_record,
-        retained_records,
-        inquiry_record,
-    )
-    released_inquiry_lineage = (
-        existing_inquiry
-        if existing_inquiry is not None
-        and (
-            inquiry_record is None
-            or inquiry_record.get("fingerprint")
-            != existing_inquiry.get("fingerprint")
-        )
-        else None
+        record,
+        copy.deepcopy(record),
+        list(state.get("retained_lineages", [])),
     )
     return {
+        "kind": "baseline",
         "pending": pending,
         "decision": decision,
-        "working_name": working_name,
-        "working_record": working_record,
-        "best_known_record": best_record,
-        "best_known_name": best_name,
-        "inquiry_lineage_record": inquiry_record,
-        "inquiry_lineage_name": inquiry_name,
-        "released_inquiry_lineage": released_inquiry_lineage,
-        "code_action": code_action,
-        "code_reason": code_reason,
-        "code_plan": code_plan,
-        "retained": retained_records,
+        "working_name": candidate,
+        "working_record": record,
+        "best_known_name": candidate,
+        "best_known_record": copy.deepcopy(record),
+        "active_method": None,
+        "released_method_lineage": None,
+        "retained": list(state.get("retained_lineages", [])),
+        "removed_retained": [],
         "artifact_publications": publications,
-        "retentions": [],
-        "removed_retained": removed,
-        "request_final_benchmark": request_final,
-        "terminal_reason": terminal_reason if request_final else None,
-        "hypothesis_assessment": hypothesis_assessment,
-        "designation_counter": designation_counter,
+        "code_action": "keep",
+        "code_reason": "Preserve the unchanged baseline recipe.",
+        "code_plan": {
+            "parent": str(pending.get("code_parent_commit", "")).strip(),
+            "restore": [],
+            "remove_created": [],
+        },
+        "designation_counter": 1,
     }

@@ -207,6 +207,7 @@ def _training_parent_operation(
             "recipe_published",
             "training_dispatched",
             "training_completed",
+            "candidates_archived",
         }:
             _verify_operation_surface(
                 existing,
@@ -259,6 +260,7 @@ def _apply_training_parent_operation(
         "recipe_published",
         "training_dispatched",
         "training_completed",
+        "candidates_archived",
     }:
         raise ValueError(
             f"unknown training operation progress: {operation.get('progress')!r}"
@@ -324,7 +326,7 @@ def anchored_scientific_delta(raw_state: dict) -> list[str]:
     if not parent:
         raise ValueError(
             "research phase requires an existing pending scientific parent; "
-            "run --begin-hypothesis before proposing an experiment"
+            "run --begin-inquiry before proposing an operation"
         )
     repository.require_resolvable_commit(parent)
     return repository.scientific_delta(parent)
@@ -369,9 +371,7 @@ def validate_research_delta(raw_state: dict) -> list[str]:
     return code_changes
 
 
-def _researcher_failure_path(
-    error: Exception, code_changes: list[str]
-) -> str | None:
+def _researcher_failure_path(error: Exception, code_changes: list[str]) -> str | None:
     """Return the causal changed Researcher path for an execution traceback."""
     matches = _TRACEBACK_FILE.findall(str(error))
     if not matches:
@@ -466,9 +466,7 @@ def complete_implementation_repair() -> int:
     """Validate a repair without allowing the accepted measurement to change."""
     state = repository.read_state()
     pending = state.get("pending_evaluation_request")
-    repair = (
-        pending.get("implementation_error") if isinstance(pending, dict) else None
-    )
+    repair = pending.get("implementation_error") if isinstance(pending, dict) else None
     if not isinstance(repair, dict):
         print("IMPLEMENTATION_REPAIR_INVALID: no implementation error is pending")
         return 1
@@ -523,50 +521,32 @@ def validate_training_proposal_delta(proposal: dict, raw_state: dict) -> None:
         protocol.plan_lineage_restore(parent)
 
 
-# --- hypothesis phase ------------------------------------------------------
+# --- inquiry phase ---------------------------------------------------------
 
 
-def begin_hypothesis_phase(conclusion_only: bool = False) -> int:
+def begin_inquiry_phase() -> int:
     """Anchor the parent at HEAD before the researcher may change any science.
 
-    ``conclusion_only`` is set by the launcher when no training experiment may
-    be allocated; the phase then accepts only a campaign conclusion. Commits
-    made since the previous anchor are adopted here rather than attributed to
-    the proposal the researcher is about to write.
+    Commits made since the previous anchor are adopted here rather than
+    attributed to the proposal the researcher is about to write.
     """
     state = repository.read_state()
     parent = repository.reanchor_scientific_parent(state)
-    inquiry = (
-        state.get("active_inquiry")
-        if conclusion_only
-        else protocol.ensure_active_inquiry(state)
-    )
-    session = repository.ensure_principal_investigator_session(state)
-    state["preparation_conclusion_only"] = True if conclusion_only else None
+    inquiry = state.get("active_inquiry")
+    session = repository.ensure_inquiry_session(state)
     repository.write_state(state)
     console.announce(
         f"[runner] scientific parent: {parent[:12]}; "
-        f"inquiry: {inquiry.get('id') if isinstance(inquiry, dict) else 'none'}; "
-        f"PI session: {session['id']}"
+        f"inquiry: {inquiry.get('id') if isinstance(inquiry, dict) else 'not opened'}; "
+        f"PI session: {session['id'] if isinstance(session, dict) else 'none'}"
     )
-    return 0
-
-
-def migrate_research_state() -> int:
-    """Explicit human-only migration from the legacy v3 state schema."""
-    try:
-        changed = repository.migrate_research_state()
-    except (OSError, RuntimeError, TypeError, ValueError) as error:
-        print(f"RESEARCH_STATE_MIGRATION_INVALID: {error}")
-        return 1
-    print("RESEARCH_STATE_MIGRATED" if changed else "RESEARCH_STATE_ALREADY_CURRENT")
     return 0
 
 
 # --- non-mutating preflights -----------------------------------------------
 
 
-def check_proposal() -> int:
+def check_proposal(*, training_allocation_closed: bool = False) -> int:
     """Non-mutating orchestration preflight for researcher-produced proposals."""
     if not paths.PROPOSAL_PATH.exists():
         print("PROPOSAL_INVALID: research/proposal.json was not created")
@@ -575,10 +555,14 @@ def check_proposal() -> int:
         proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
         state = repository.read_state()
         reanchor_phase_parent(state)
-        contract = protocol.validate_proposal_against_state(proposal, state)
+        contract = protocol.validate_proposal_against_state(
+            proposal,
+            state,
+            training_allocation_closed=training_allocation_closed,
+        )
         if contract == "training":
             validate_training_proposal_delta(proposal, state)
-        elif contract == "lineage":
+        elif contract in {"baseline", "method_decision", "method"}:
             validate_research_delta(state)
         elif contract in {"inquiry", "conclusion"}:
             validate_campaign_conclusion_delta(state)
@@ -610,9 +594,7 @@ def check_evaluation_request() -> int:
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
         if not isinstance(request, dict):
             raise TypeError("evaluation_request.json must contain a JSON object")
-        protocol.validate_evaluation_request(
-            request, allow_legacy_need_more_evidence=True
-        )
+        protocol.validate_evaluation_request(request)
         experiment = int(pending["experiment"])
         if int(request.get("experiment", -1)) != experiment:
             raise ValueError(
@@ -621,14 +603,8 @@ def check_evaluation_request() -> int:
             )
         validate_research_delta(state)
         available = protocol.available_evaluation_candidates(pending, state)
-        requested, _ = protocol.planned_measurements(
-            request, available, allow_legacy_need_more_evidence=True
-        )
-        resolved_models = (
-            protocol.resolved_measurement_models(request, available)
-            if state.get("schema_version") == 4
-            else None
-        )
+        requested, _ = protocol.planned_measurements(request, available)
+        resolved_models = protocol.resolved_measurement_models(request, available)
         protocol.validate_paired_comparison_plan(
             request,
             pending,
@@ -664,12 +640,12 @@ def _protected_panel_overlap():
 
 
 def check_analysis_deliverable() -> int:
-    """Preflight the single actionable submission allowed during v4 analysis."""
+    """Preflight the single actionable post-training analysis submission."""
     try:
         state = repository.read_state()
         reanchor_phase_parent(state)
         pending = state.get("pending_analysis")
-        if state.get("schema_version") != 4 or not isinstance(pending, dict):
+        if not isinstance(pending, dict):
             raise TypeError("no experiment is awaiting post-training analysis")
         if paths.POSTMORTEM_PATH.exists():
             protocol.scientific_strategy_section(
@@ -677,7 +653,7 @@ def check_analysis_deliverable() -> int:
                 repository.current_campaign_id(state),
             )
         measurement_valid = False
-        closure_valid = False
+        decision_valid = False
         if paths.EVALUATION_REQUEST_PATH.exists():
             request = json.loads(
                 paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8")
@@ -707,18 +683,21 @@ def check_analysis_deliverable() -> int:
             measurement_valid = True
         if paths.PROPOSAL_PATH.exists():
             proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
-            protocol.validate_proposal_against_state(proposal, state)
+            protocol.validate_proposal_against_state(
+                proposal,
+                state,
+            )
             validate_research_delta(state)
-            closure_valid = True
-        if measurement_valid and closure_valid:
+            decision_valid = True
+        if measurement_valid and decision_valid:
             raise ValueError(
                 "analysis has conflicting actionable measurement and closure deliverables"
             )
         if measurement_valid:
             print("ANALYSIS_DELIVERABLE_VALID: measurement")
             return 0
-        if closure_valid:
-            print("ANALYSIS_DELIVERABLE_VALID: closure")
+        if decision_valid:
+            print("ANALYSIS_DELIVERABLE_VALID: decision")
             return 0
         raise ValueError("analysis requires evaluation_request.json or proposal.json")
     except (
@@ -733,7 +712,7 @@ def check_analysis_deliverable() -> int:
         return 1
 
 
-def check_preparation_deliverable() -> int:
+def check_preparation_deliverable(*, training_allocation_closed: bool = False) -> int:
     """Preflight the preparation phase's proposal or saved-lineage measurement.
 
     Preparation can produce either a training/lineage/conclusion proposal or a
@@ -749,7 +728,7 @@ def check_preparation_deliverable() -> int:
         )
         return 1
     if not evaluation_present:
-        return check_proposal()
+        return check_proposal(training_allocation_closed=training_allocation_closed)
     try:
         state = repository.read_state()
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
@@ -782,33 +761,6 @@ def check_scientific_model_deliverable() -> int:
         print(f"SCIENTIFIC_MODEL_DELIVERABLE_INVALID: {error}")
         return 1
     print("SCIENTIFIC_MODEL_DELIVERABLE_VALID")
-    return 0
-
-
-def check_lineage_evidence(experiment: int) -> int:
-    """Preflight for the loop: is the pending lineage decision attested yet?"""
-    state = repository.read_state()
-    reanchor_phase_parent(state)
-    pending = state.get("pending_researcher_decision")
-    if not isinstance(pending, dict) or int(pending.get("experiment", -1)) != (
-        experiment
-    ):
-        print(f"ERROR: experiment {experiment} is not awaiting a lineage decision.")
-        return 1
-    measured = protocol.pending_evaluation_artifacts(pending)
-    if not measured:
-        return 0
-    campaign_id = repository.current_campaign_id(state)
-
-    try:
-        protocol.validate_postmortem_evidence(
-            experiment,
-            measured,
-            campaign_id=campaign_id,
-        )
-    except ValueError as error:
-        print(f"ERROR: {error}")
-        return 1
     return 0
 
 
@@ -964,6 +916,27 @@ def _round_already_resolves(
     return False
 
 
+def append_preparation_measurement(
+    state: dict,
+    pending: dict,
+    *,
+    executed: list[dict],
+    reference_executed: list[dict],
+) -> None:
+    """Append one completed inquiry measurement without replacing earlier rounds."""
+    state["preparation_measurement"] = {
+        "experiment": int(pending["experiment"]),
+        "inquiry_id": pending.get("inquiry_id"),
+        "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
+        "rounds": [
+            dict(round_record)
+            for round_record in (pending.get("evaluation_rounds") or [])
+        ],
+        "partial_evaluations": list(executed),
+        "partial_task_reference_evaluations": list(reference_executed),
+    }
+
+
 def execute_pending_evaluations() -> int:
     from robot_learning.scenario.evaluation import summarize_research_evaluations
     from robot_learning.scenario.task_reference import task_reference_panel
@@ -972,24 +945,20 @@ def execute_pending_evaluations() -> int:
     reanchor_phase_parent(state)
     repository.publish_campaign_laboratory(state)
     campaign_id = repository.current_campaign_id(state)
-    is_v4 = state.get("schema_version") == 4
     preparation = False
-    if is_v4:
-        pending = state.get("pending_analysis")
-        if pending is None:
-            pending = state.get("pending_evaluation_request")
-            if pending is None and paths.EVALUATION_REQUEST_PATH.exists():
-                pending = protocol.preparation_measurement_context(state)
-                state["pending_evaluation_request"] = pending
-                repository.write_state(state)
-            if isinstance(pending, dict) and pending.get("preparation"):
-                preparation = True
-    else:
+    pending = state.get("pending_analysis")
+    if pending is None:
         pending = state.get("pending_evaluation_request")
+        if pending is None and paths.EVALUATION_REQUEST_PATH.exists():
+            pending = protocol.preparation_measurement_context(state)
+            state["pending_evaluation_request"] = pending
+            repository.write_state(state)
+        if isinstance(pending, dict) and pending.get("preparation"):
+            preparation = True
     if not isinstance(pending, dict):
         raise TypeError("there is no trained experiment awaiting evaluation")
     if preparation:
-        active_inquiry = protocol.ensure_active_inquiry(state)
+        active_inquiry = protocol.require_active_inquiry(state)
         pending_inquiry = pending.get("inquiry_id")
         if pending_inquiry is None:
             pending["inquiry_id"] = int(active_inquiry["id"])
@@ -1012,25 +981,20 @@ def execute_pending_evaluations() -> int:
         return RESEARCHER_IMPLEMENTATION_ERROR_EXIT
     if paths.EVALUATION_REQUEST_PATH.exists():
         request = json.loads(paths.EVALUATION_REQUEST_PATH.read_text(encoding="utf-8"))
-        protocol.validate_evaluation_request(
-            request, allow_legacy_need_more_evidence=not is_v4
+        protocol.validate_evaluation_request(request)
+        protocol.validate_panel_independence(
+            request,
+            protocol.recorded_research_panels(state, pending),
+            protected_overlap=_protected_panel_overlap(),
         )
-        if is_v4:
-            protocol.validate_panel_independence(
-                request,
-                protocol.recorded_research_panels(state, pending),
-                protected_overlap=_protected_panel_overlap(),
-            )
     else:
         accepted_plan = pending.get("evaluation_plan")
         if not isinstance(accepted_plan, dict):
             print("ERROR: research/evaluation_request.json not found.")
             return 1
-        request = protocol.ignore_legacy_purpose(accepted_plan)
-    accepted_v4_plan = is_v4 and isinstance(pending.get("evaluation_plan"), dict)
-    if accepted_v4_plan and request != protocol.ignore_legacy_purpose(
-        pending["evaluation_plan"]
-    ):
+        request = accepted_plan
+    accepted_plan_exists = isinstance(pending.get("evaluation_plan"), dict)
+    if accepted_plan_exists and request != pending["evaluation_plan"]:
         raise ValueError("accepted measurement plan changed")
     if preparation and "experiment" in request:
         raise ValueError(
@@ -1044,22 +1008,10 @@ def execute_pending_evaluations() -> int:
     available = protocol.available_evaluation_candidates(pending, state)
     # The whole plan is resolved first, so nothing is measured for a request
     # that a later entry would have invalidated.
-    requested, requested_references = protocol.planned_measurements(
-        request,
-        available,
-        allow_legacy_need_more_evidence=(
-            not is_v4
-            or (
-                not paths.EVALUATION_REQUEST_PATH.exists()
-                and "need_more_evidence" in request
-            )
-        ),
-    )
-    resolved_models = (
-        protocol.resolved_measurement_models(request, available) if is_v4 else {}
-    )
+    requested, requested_references = protocol.planned_measurements(request, available)
+    resolved_models = protocol.resolved_measurement_models(request, available)
     evidence_plan: list[dict] = []
-    if accepted_v4_plan:
+    if accepted_plan_exists:
         frozen_models = pending.get("evaluation_plan_models")
         if not isinstance(frozen_models, dict):
             raise ValueError("accepted measurement plan has no frozen model identities")
@@ -1094,19 +1046,18 @@ def execute_pending_evaluations() -> int:
             pending,
             available,
             requested,
-            state=state if is_v4 else None,
-            resolved_models=resolved_models if is_v4 else None,
+            state=state,
+            resolved_models=resolved_models,
         )
     active_round: dict | None = None
-    if paths.EVALUATION_REQUEST_PATH.exists() and not accepted_v4_plan:
+    if paths.EVALUATION_REQUEST_PATH.exists() and not accepted_plan_exists:
         pending["evaluation_plan"] = request
-        if is_v4:
-            pending["evaluation_plan_models"] = resolved_models
-            pending["evaluation_evidence_plan"] = evidence_plan
-            active_round = _begin_evaluation_round(pending, experiment, request)
+        pending["evaluation_plan_models"] = resolved_models
+        pending["evaluation_evidence_plan"] = evidence_plan
+        active_round = _begin_evaluation_round(pending, experiment, request)
         pending.setdefault("partial_evaluations", [])
         repository.write_state(state)
-    elif is_v4:
+    else:
         rounds = pending.get("evaluation_rounds")
         if isinstance(rounds, list) and rounds:
             active_round = rounds[-1]
@@ -1140,7 +1091,7 @@ def execute_pending_evaluations() -> int:
 
     def resolved_fingerprint(name: str) -> str:
         """The currently resolved artifact fingerprint of a requested model."""
-        model = resolved_models.get(name) if is_v4 else None
+        model = resolved_models.get(name)
         return str(model.get("fingerprint", "")) if isinstance(model, dict) else ""
 
     completed_keys = {
@@ -1248,15 +1199,14 @@ def execute_pending_evaluations() -> int:
                         state, pending, error, causal_path
                     )
                 raise
-            if is_v4:
-                _seal_paired_evidence_artifact(
-                    evidence_plan,
-                    output_path,
-                    candidate=name,
-                    episodes=episodes,
-                    seed=seed,
-                    semantics=semantics,
-                )
+            _seal_paired_evidence_artifact(
+                evidence_plan,
+                output_path,
+                candidate=name,
+                episodes=episodes,
+                seed=seed,
+                semantics=semantics,
+            )
             # The artifact keeps the detail, including whatever researcher-owned
             # evidence the scenario emitted; state keeps only a reference to it.
             clean_metrics = repository.measurement_record(metrics)
@@ -1264,13 +1214,10 @@ def execute_pending_evaluations() -> int:
                 paths.ROOT
             ).as_posix()
             clean_metrics["evaluation_semantics"] = semantics
-            if is_v4:
-                clean_metrics["evaluation_artifact_fingerprint"] = (
-                    repository.file_fingerprint(output_path)
-                )
-                clean_metrics["model_fingerprint"] = resolved_models[name][
-                    "fingerprint"
-                ]
+            clean_metrics["evaluation_artifact_fingerprint"] = (
+                repository.file_fingerprint(output_path)
+            )
+            clean_metrics["model_fingerprint"] = resolved_models[name]["fingerprint"]
             contender.setdefault("evaluations", []).append(clean_metrics)
             executed.append(
                 {
@@ -1283,11 +1230,7 @@ def execute_pending_evaluations() -> int:
                     "label": label,
                     "evaluation_semantics": semantics,
                     "metrics": clean_metrics,
-                    **(
-                        {"model_fingerprint": resolved_models[name]["fingerprint"]}
-                        if is_v4
-                        else {}
-                    ),
+                    "model_fingerprint": resolved_models[name]["fingerprint"],
                 }
             )
             completed_keys.add(key)
@@ -1390,15 +1333,9 @@ def execute_pending_evaluations() -> int:
                     "evaluation_artifact": output_path.relative_to(
                         paths.ROOT
                     ).as_posix(),
-                    **(
-                        {
-                            "model_fingerprint": resolved_models[name]["fingerprint"],
-                            "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                                output_path
-                            ),
-                        }
-                        if is_v4
-                        else {}
+                    "model_fingerprint": resolved_models[name]["fingerprint"],
+                    "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                        output_path
                     ),
                 }
             )
@@ -1447,7 +1384,7 @@ def execute_pending_evaluations() -> int:
     comparisons = execution.requested_paired_comparisons(
         request,
         comparison_inputs,
-        evidence_plan=evidence_plan if is_v4 else None,
+        evidence_plan=evidence_plan,
     )
     result = pending["result"]
     result.update(
@@ -1465,34 +1402,10 @@ def execute_pending_evaluations() -> int:
     if active_round is not None:
         active_round["results"]["paired_comparisons"] = list(comparisons)
         active_round["status"] = "completed"
-    if is_v4:
-        rounds = pending.get("evaluation_rounds")
-        if isinstance(rounds, list):
-            result["evaluation_rounds"] = [
-                dict(round_record) for round_record in rounds
-            ]
-    measured = [item for item in candidates if item.get("summary") is not None]
-    if measured and not is_v4:
-        primary = measured[0]["summary"]
-        result["candidate_metrics"] = primary
-        result["candidate_success_percent"] = primary["pooled_success_percent"]
-
-    researcher_context = {
-        "experiment": experiment,
-        "candidates": candidates,
-        "champion_available": bool(pending.get("champion_available")),
-        "champion_summary": champion_summary,
-        "champion_evaluations": champion_evaluations,
-        "task_reference_evaluations": reference_executed,
-        "parameters": pending["parameters"],
-        "initialization": pending["initialization"],
-        "training_budget_steps": pending["training_budget_steps"],
-        "parent_training_steps": pending["parent_training_steps"],
-        "code_parent_commit": pending.get("code_parent_commit"),
-        "research_change_paths": pending.get("research_change_paths", []),
-    }
-    more_evidence = bool(request.get("need_more_evidence", False)) and not is_v4
-    if is_v4 and not preparation:
+    rounds = pending.get("evaluation_rounds")
+    if isinstance(rounds, list):
+        result["evaluation_rounds"] = [dict(round_record) for round_record in rounds]
+    if not preparation:
         pending["evaluation_plan"] = None
         pending["evaluation_plan_models"] = None
         pending["evaluation_evidence_plan"] = None
@@ -1500,7 +1413,7 @@ def execute_pending_evaluations() -> int:
         pending["partial_task_reference_evaluations"] = reference_executed
         state["pending_analysis"] = pending
         state["last_verdict"] = "measured as requested; awaiting researcher analysis"
-    elif is_v4 and preparation:
+    else:
         # A preparation measurement is evidence for the upcoming decision, not a
         # trained experiment: accumulate the completed rounds under the forecast
         # experiment and return to preparation instead of analysis.
@@ -1509,48 +1422,26 @@ def execute_pending_evaluations() -> int:
         pending["evaluation_evidence_plan"] = None
         pending["partial_evaluations"] = executed
         pending["partial_task_reference_evaluations"] = reference_executed
-        state["preparation_measurement"] = {
-            "experiment": experiment,
-            "inquiry_id": pending.get("inquiry_id"),
-            "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
-            "rounds": [
-                dict(round_record)
-                for round_record in (pending.get("evaluation_rounds") or [])
-            ],
-            "partial_evaluations": executed,
-            "partial_task_reference_evaluations": reference_executed,
-        }
+        append_preparation_measurement(
+            state,
+            pending,
+            executed=executed,
+            reference_executed=reference_executed,
+        )
         state["pending_evaluation_request"] = None
         state["last_verdict"] = "preparation measurement complete"
-    elif more_evidence:
-        pending["evaluation_plan"] = None
-        pending["partial_evaluations"] = executed
-        pending["partial_task_reference_evaluations"] = reference_executed
-        state["pending_evaluation_request"] = pending
-        state["pending_researcher_decision"] = None
-        state["last_verdict"] = (
-            "measured; researcher requested another evaluation round"
-        )
-    else:
-        state["pending_researcher_decision"] = researcher_context
-        state["pending_evaluation_request"] = None
-        state["last_verdict"] = result["verdict"]
     if not preparation:
         state["last_experiment"] = experiment
     if pending.get("baseline"):
         paths.BASELINE_PENDING_PATH.unlink(missing_ok=True)
     repository.write_state(state)
     paths.EVALUATION_REQUEST_PATH.unlink(missing_ok=True)
-    if is_v4 and not preparation:
+    if not preparation:
         repository.upsert_result(result)
-    elif not is_v4 and not more_evidence:
-        repository.append_result(result)
     if preparation:
         next_phase = "Researcher experiment preparation"
-    elif is_v4 or more_evidence:
-        next_phase = "Researcher post-training analysis"
     else:
-        next_phase = "Researcher lineage decision"
+        next_phase = "Researcher post-training analysis"
     console.announce(
         "\n"
         + console.render_evidence_card(
@@ -1565,124 +1456,40 @@ def execute_pending_evaluations() -> int:
     return 0
 
 
-# --- lineage phase ---------------------------------------------------------
+# --- analysis decision -----------------------------------------------------
 
 
-def apply_previous_result_decision(proposal: dict, state: dict) -> bool:
-    if state.get("schema_version") == 4 and isinstance(
-        state.get("pending_closure_operation"), dict
-    ):
-        return apply_pending_v4_closure(state)
-    plan = protocol.plan_previous_result_decision(proposal, state)
-    if state.get("schema_version") == 4:
-        return apply_v4_previous_result_decision(plan, state)
-    pending = plan["pending"]
-    selected = plan["selected"]
-    selected_name = plan["selected_name"]
-    # Copy alternatives first: a retained champion must survive replacement.
-    for retention in plan["retentions"]:
-        repository.copy_artifact(retention["source"], retention["destination"])
-    if selected_name != "champion":
-        repository.copy_artifact(plan["selected_artifact"], paths.ACCEPTED_DIR)
-        state["accepted_artifact"] = repository.repo_relative_path(paths.ACCEPTED_DIR)
-        state["accepted_metrics"] = selected.get("summary")
-        state["accepted_parameters"] = pending["parameters"]
-        state["accepted_training_steps"] = (
-            int(pending.get("parent_training_steps", 0))
-            + int(pending["training_budget_steps"])
-            if pending["initialization"] == "transfer"
-            else int(pending["training_budget_steps"])
-        )
-        state["official_metrics"] = None
-    else:
-        state["accepted_metrics"] = selected.get("summary")
-        state["accepted_artifact"] = repository.repo_relative_path(
-            repository.resolve_repo_path(state["accepted_artifact"])
-        )
-    state["accepted_evaluations"] = repository.evaluation_artifact_paths(
-        selected.get("evaluations")
-    )
-    repository.apply_code_lineage_decision(plan["code_plan"])
-    state["retained_lineages"] = plan["retained"] + [
-        retention["record"] for retention in plan["retentions"]
-    ]
-    state["last_lineage_decision"] = {
-        "experiment": int(pending["experiment"]),
-        "continue_from": selected_name,
-        "reason": plan["decision"]["reason"],
-        "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
-        "code_parent_commit": pending.get("code_parent_commit"),
-    }
-    state["pending_researcher_decision"] = None
-    state["last_verdict"] = f"researcher selected {selected_name}"
-    repository.write_state(state)
-    # Retain compact challenger history while removing every duplicate reusable artifact.
-    for candidate in pending["candidates"]:
-        repository.remove_heavyweight_artifacts(
-            repository.resolve_repo_path(candidate["artifact"])
-        )
-    for lineage in plan["removed_retained"]:
-        repository.remove_heavyweight_artifacts(
-            repository.resolve_repo_path(lineage["artifact"])
-        )
-    # Completed evaluations are research history and survive their checkpoints.
-    if plan["request_final_benchmark"]:
-        state["pending_final_benchmark"] = {
-            "experiment": int(pending["experiment"]),
-            "selected": selected_name,
-            "artifact": state["accepted_artifact"],
-            "fingerprint": plan["selected_fingerprint"],
-            "terminal_reason": plan.get("terminal_reason"),
-        }
-        repository.write_state(state)
-        console.announce(
-            "\n"
-            + console.render_final_benchmark_card(
-                selected=selected_name,
-                artifact=str(state["accepted_artifact"]),
-                fingerprint=str(plan["selected_fingerprint"]),
-                terminal_reason=plan.get("terminal_reason"),
-                request=True,
-            )
-            + "\n"
-        )
-    console.announce("\n" + console.render_decision_card(plan) + "\n")
-    return False
-
-
-def apply_v4_previous_result_decision(plan: dict, state: dict) -> bool:
-    operation = state.get("pending_closure_operation")
+def apply_baseline_decision(plan: dict, state: dict) -> bool:
+    if plan.get("kind") != "baseline":
+        raise ValueError("the analysis executor is reserved for baseline selection")
+    operation = state.get("pending_baseline_decision")
     if operation is None:
-        pending_field = (
-            "pending_analysis"
-            if state.get("pending_analysis") is plan["pending"]
-            else "pending_researcher_decision"
-        )
         operation = {
             "experiment": int(plan["pending"]["experiment"]),
             "selected": plan["working_name"],
             "code_action": plan["code_action"],
-            "plan": _serialize_closure_plan(plan, pending_field=pending_field),
+            "plan": _serialize_baseline_plan(plan),
             "progress": "planned",
         }
-        state["pending_closure_operation"] = operation
+        state["pending_baseline_decision"] = operation
         repository.write_state(state)
-    return apply_pending_v4_closure(state)
+    return complete_pending_baseline_decision(state)
 
 
-def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
+def _serialize_baseline_plan(plan: dict) -> dict:
     code_plan = plan["code_plan"]
     return {
+        "kind": plan["kind"],
         "pending": plan["pending"],
-        "pending_field": pending_field,
         "decision": plan["decision"],
         "working_name": plan["working_name"],
         "working_record": plan["working_record"],
         "best_known_record": plan["best_known_record"],
         "best_known_name": plan["best_known_name"],
-        "inquiry_lineage_record": plan["inquiry_lineage_record"],
-        "inquiry_lineage_name": plan["inquiry_lineage_name"],
-        "released_inquiry_lineage": plan["released_inquiry_lineage"],
+        "active_method": plan["active_method"],
+        "method_action": plan.get("method_action"),
+        "method_candidate": plan.get("method_candidate"),
+        "released_method_lineage": plan["released_method_lineage"],
         "code_action": plan["code_action"],
         "code_reason": plan["code_reason"],
         "code_plan": {
@@ -1696,26 +1503,17 @@ def _serialize_closure_plan(plan: dict, *, pending_field: str) -> dict:
         "retained": plan["retained"],
         "removed_retained": plan["removed_retained"],
         "artifact_publications": plan["artifact_publications"],
-        "request_final_benchmark": plan["request_final_benchmark"],
-        "terminal_reason": plan.get("terminal_reason"),
         "hypothesis_assessment": plan.get("hypothesis_assessment"),
         "designation_counter": plan.get("designation_counter", 0),
     }
 
 
-def apply_pending_v4_closure(state: dict) -> bool:
-    operation = state.get("pending_closure_operation")
+def complete_pending_baseline_decision(state: dict) -> bool:
+    operation = state.get("pending_baseline_decision")
     if not isinstance(operation, dict):
-        raise TypeError("there is no pending closure operation")
+        raise TypeError("there is no pending analysis operation")
     plan = operation["plan"]
     pending = plan["pending"]
-    pending_field = plan.get("pending_field")
-    if pending_field not in {"pending_analysis", "pending_researcher_decision"}:
-        pending_field = (
-            "pending_analysis"
-            if isinstance(state.get("pending_analysis"), dict)
-            else "pending_researcher_decision"
-        )
     progress = operation.get("progress")
     if progress not in {
         "planned",
@@ -1724,8 +1522,9 @@ def apply_pending_v4_closure(state: dict) -> bool:
         "role_result_written",
         "durable",
         "cleanup_complete",
+        "cleanup_durable",
     }:
-        raise ValueError(f"unknown v4 closure progress: {progress!r}")
+        raise ValueError(f"unknown analysis operation progress: {progress!r}")
     if progress in {"durable", "cleanup_complete"}:
         return False
     if progress == "planned":
@@ -1744,85 +1543,58 @@ def apply_pending_v4_closure(state: dict) -> bool:
         repository.write_state(state)
         progress = "code_applied"
     if progress not in {"code_applied", "role_result_written"}:
-        raise RuntimeError(f"cannot write v4 closure roles from progress {progress!r}")
-    # Closing the experiment retires any preparation ledger not already carried
-    # into its analysis record when training started.
+        raise RuntimeError(f"cannot write analysis decision from progress {progress!r}")
     state["preparation_measurement"] = None
     state["working_lineage"] = plan["working_record"]
     state["best_known_lineage"] = plan["best_known_record"]
-    state["inquiry_lineage"] = plan.get(
-        "inquiry_lineage_record", state.get("inquiry_lineage")
-    )
+    state["active_method"] = plan.get("active_method")
     state["retained_lineages"] = plan["retained"]
     state["best_known_designation_counter"] = plan.get(
         "designation_counter", state.get("best_known_designation_counter", 0)
     )
     state["last_lineage_decision"] = {
         "experiment": int(pending["experiment"]),
-        "continue_from": plan["working_name"],
-        "reason": plan["decision"]["reason"],
+        "operation": plan["kind"],
+        "method_action": plan.get("method_action"),
+        "method_candidate": plan.get("method_candidate"),
+        "working": plan["working_name"],
         "best_known": plan["best_known_name"],
-        "developing_method": plan.get("inquiry_lineage_name"),
         "code": {"action": plan["code_action"], "reason": plan["code_reason"]},
         "code_parent_commit": pending.get("code_parent_commit"),
     }
-    state["last_verdict"] = f"researcher selected {plan['working_name']} as working"
-    if plan["request_final_benchmark"]:
-        best_known = plan["best_known_record"]
-        state["pending_final_benchmark"] = {
-            "experiment": int(pending["experiment"]),
-            "selected": "best_known",
-            "artifact": best_known["artifact"],
-            "fingerprint": best_known["fingerprint"],
-            "best_known": best_known,
-            "terminal_reason": plan.get("terminal_reason"),
+    state["last_verdict"] = "baseline selected"
+    result = pending["result"]
+    result.update(
+        {
+            "status": "analyzed",
+            "verdict": state["last_verdict"],
+            "decision_pending": False,
+            "baseline_decision": plan["decision"],
+            "postmortem": repository.repo_relative_path(paths.POSTMORTEM_PATH),
+            "working_lineage": plan["working_record"],
+            "best_known_lineage": plan["best_known_record"],
+            "active_method": plan.get("active_method"),
         }
-        console.announce(
-            "\n"
-            + console.render_final_benchmark_card(
-                selected="best_known",
-                artifact=str(best_known["artifact"]),
-                fingerprint=str(best_known["fingerprint"]),
-                lineage=best_known,
-                terminal_reason=plan.get("terminal_reason"),
-                request=True,
-            )
-            + "\n"
-        )
-    if pending_field == "pending_analysis":
-        result = pending["result"]
-        result.update(
-            {
-                "status": "closed",
-                "verdict": state["last_verdict"],
-                "decision_pending": False,
-                "closure_decision": plan["decision"],
-                "postmortem": repository.repo_relative_path(paths.POSTMORTEM_PATH),
-                "working_lineage": plan["working_record"],
-                "best_known_lineage": plan["best_known_record"],
-                "inquiry_lineage": plan.get("inquiry_lineage_record"),
-            }
-        )
-        if plan.get("hypothesis_assessment") is not None:
-            result["hypothesis_assessment"] = plan["hypothesis_assessment"]
-        repository.upsert_result(result)
-        state["pending_analysis"] = None
-    else:
-        state["pending_researcher_decision"] = None
+    )
+    if plan.get("hypothesis_assessment") is not None:
+        result["hypothesis_assessment"] = plan["hypothesis_assessment"]
+    repository.upsert_result(result)
+    state["pending_analysis"] = None
     operation["progress"] = "role_result_written"
     repository.write_state(state)
     operation["progress"] = "durable"
     repository.write_state(state)
+    console.announce("\n" + console.render_decision_card(plan) + "\n")
     return False
 
 
-def finalize_pending_v4_closure(state: dict) -> None:
+def finalize_pending_baseline_decision(state: dict) -> None:
     """Clean only after the scientific and campaign-memory commits are published."""
-    operation = state.get("pending_closure_operation")
+    operation = state.get("pending_baseline_decision")
     if not isinstance(operation, dict):
-        raise TypeError("there is no pending closure operation")
+        raise TypeError("there is no pending analysis operation")
     if operation.get("progress") not in {"durable", "cleanup_complete"}:
-        raise RuntimeError("cannot clean a v4 closure before durable publication")
+        raise RuntimeError("cannot clean analysis artifacts before publication")
     if operation.get("progress") == "cleanup_complete":
         return
     plan = operation["plan"]
@@ -1836,60 +1608,53 @@ def finalize_pending_v4_closure(state: dict) -> None:
         artifact = repository.resolve_repo_path(lineage["artifact"])
         if artifact not in protected:
             repository.remove_heavyweight_artifacts(artifact)
-    released_inquiry = plan.get("released_inquiry_lineage")
-    if isinstance(released_inquiry, dict) and released_inquiry.get("artifact"):
-        artifact = repository.resolve_repo_path(released_inquiry["artifact"])
+    released_method = plan.get("released_method_lineage")
+    if isinstance(released_method, dict) and released_method.get("artifact"):
+        artifact = repository.resolve_repo_path(released_method["artifact"])
         if artifact not in protected:
             repository.remove_heavyweight_artifacts(artifact)
     operation["progress"] = "cleanup_complete"
     repository.write_state(state)
 
 
-def publish_v4_closure_completion(state: dict) -> None:
+def publish_baseline_completion(state: dict) -> None:
     """Publish cleanup and clear the operation without losing retry state."""
-    operation = state.get("pending_closure_operation")
+    operation = state.get("pending_baseline_decision")
     if not isinstance(operation, dict):
-        raise TypeError("there is no pending closure operation")
+        raise TypeError("there is no pending analysis operation")
     experiment = int(operation["experiment"])
-    finalize_pending_v4_closure(state)
+    finalize_pending_baseline_decision(state)
     if not repository.commit_runner_memory(
-        f"complete experiment {experiment} lineage cleanup"
+        f"complete experiment {experiment} analysis cleanup"
     ):
         repository.push_head()
     try:
-        state["pending_closure_operation"] = None
+        state["pending_baseline_decision"] = None
         repository.write_state(state)
         if not repository.commit_runner_memory(
-            f"clear experiment {experiment} lineage operation"
+            f"clear experiment {experiment} analysis operation"
         ):
             repository.push_head()
     except BaseException:
-        state["pending_closure_operation"] = operation
+        state["pending_baseline_decision"] = operation
         repository.write_state(state)
         raise
 
 
-def resolve_pending_lineage(proposal: dict, raw_state: dict) -> int:
+def resolve_baseline_decision(proposal: dict, raw_state: dict) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
     repository.publish_campaign_laboratory(state)
-    apply_previous_result_decision(proposal, state)
+    plan = protocol.plan_baseline_decision(proposal, state)
+    apply_baseline_decision(plan, state)
+    decision = next(iter(proposal.values()))
     repository.commit_lineage_decision(
-        int(
-            (
-                raw_state["pending_analysis"]
-                if raw_state.get("schema_version") == 4
-                else raw_state["pending_researcher_decision"]
-            )["experiment"]
-        ),
-        str(proposal["previous_result_decision"]["continue_from"]),
-        code_action=str(proposal["previous_result_decision"]["code"]["action"])
-        .strip()
-        .lower(),
+        int(raw_state["pending_analysis"]["experiment"]),
+        str(decision.get("candidate") or plan["working_name"]),
+        code_action=str(plan["code_action"]),
         state=state,
     )
     paths.PROPOSAL_PATH.unlink(missing_ok=True)
-    if state.get("schema_version") == 4:
-        publish_v4_closure_completion(state)
+    publish_baseline_completion(state)
     return 0
 
 
@@ -1912,7 +1677,7 @@ def apply_campaign_conclusion(operation: dict, state: dict) -> None:
     }
     # A clean conclusion releases the preparation anchor for both outcomes.
     state["pending_scientific_parent"] = None
-    state["preparation_conclusion_only"] = None
+    state["inquiry_session"] = None
     if action == "request_final_benchmark":
         best_known = state.get("best_known_lineage")
         if not isinstance(best_known, dict):
@@ -2032,13 +1797,6 @@ def _preparation_ledger_matches_inquiry(
     state: dict, ledger: dict, inquiry_id: int
 ) -> bool:
     recorded_inquiry = ledger.get("inquiry_id")
-    if recorded_inquiry is None:
-        recorded_experiment = ledger.get("experiment")
-        return (
-            isinstance(recorded_experiment, int)
-            and not isinstance(recorded_experiment, bool)
-            and recorded_experiment == protocol.upcoming_experiment_index(state)
-        )
     return (
         isinstance(recorded_inquiry, int)
         and not isinstance(recorded_inquiry, bool)
@@ -2046,92 +1804,286 @@ def _preparation_ledger_matches_inquiry(
     )
 
 
-def complete_inquiry_decision(state: dict) -> None:
+def _serialize_method_decision_plan(plan: dict) -> dict:
+    serialized = copy.deepcopy(plan)
+    serialized["code_plan"]["remove_created"] = [
+        repository.repo_relative_path(path)
+        for path in plan["code_plan"]["remove_created"]
+    ]
+    return serialized
+
+
+def _publish_method_science(plan: dict) -> None:
+    action = str(plan["method_action"])
+    method_id = str(plan["method_id"])
+    if not repository.commit_paths(
+        repository.campaign_commit_message(f"{action} method {method_id} science"),
+        repository.assert_research_surface(),
+    ):
+        repository.push_head()
+
+
+def complete_method_decision_operation(state: dict) -> None:
+    """Execute one retry-safe method transition from analysis or inquiry."""
+    operation = state.get("pending_method_decision")
+    if not isinstance(operation, dict):
+        raise TypeError("there is no pending method decision")
+    progress = operation.get("progress")
+    allowed = {
+        "planned",
+        "artifacts_published",
+        "code_applied",
+        "science_published",
+        "decision_recorded",
+        "memory_published",
+        "cleanup_complete",
+        "cleanup_published",
+    }
+    if progress not in allowed:
+        raise ValueError(f"unknown method decision progress: {progress!r}")
+    plan = operation["plan"]
+    if progress == "planned":
+        for publication in plan.get("artifact_publications", []):
+            repository.publish_artifact(publication)
+        operation["progress"] = "artifacts_published"
+        repository.write_state(state)
+        progress = "artifacts_published"
+    if progress == "artifacts_published":
+        code_plan = copy.deepcopy(plan["code_plan"])
+        code_plan["remove_created"] = [
+            repository.resolve_repo_path(path) for path in code_plan["remove_created"]
+        ]
+        repository.apply_code_lineage_decision(code_plan)
+        operation["progress"] = "code_applied"
+        repository.write_state(state)
+        progress = "code_applied"
+    if progress == "code_applied":
+        _publish_method_science(plan)
+        operation["progress"] = "science_published"
+        repository.write_state(state)
+        progress = "science_published"
+    if progress == "science_published":
+        state["working_lineage"] = copy.deepcopy(plan["working_record"])
+        state["best_known_lineage"] = copy.deepcopy(plan["best_known_record"])
+        state["active_method"] = copy.deepcopy(plan["active_method"])
+        state["retained_lineages"] = copy.deepcopy(plan["retained"])
+        state["best_known_designation_counter"] = int(plan["designation_counter"])
+        state["pending_scientific_parent"] = None
+        state["last_lineage_decision"] = {
+            "inquiry": int(plan["inquiry_id"]),
+            **(
+                {"experiment": int(plan["pending"]["experiment"])}
+                if plan["updates_experiment"]
+                else {}
+            ),
+            "operation": "method_decision",
+            "method": plan["method_id"],
+            "method_action": plan["method_action"],
+            "working": plan["working_name"],
+            "best_known": plan["best_known_name"],
+            "outcome": plan["decision"]["outcome"],
+            "reason": plan["decision"]["reason"],
+            "code": {
+                "action": plan["code_action"],
+                "reason": plan["code_reason"],
+            },
+        }
+        state["last_verdict"] = (
+            f"method {plan['method_id']} {plan['method_action']} recorded"
+        )
+        if plan["updates_experiment"]:
+            result = copy.deepcopy(plan["pending"]["result"])
+            result.update(
+                {
+                    "status": "analyzed",
+                    "verdict": state["last_verdict"],
+                    "decision_pending": False,
+                    "method_decision": copy.deepcopy(plan["decision"]),
+                    "postmortem": repository.repo_relative_path(paths.POSTMORTEM_PATH),
+                    "working_lineage": copy.deepcopy(plan["working_record"]),
+                    "best_known_lineage": copy.deepcopy(plan["best_known_record"]),
+                    "active_method": copy.deepcopy(plan["active_method"]),
+                }
+            )
+            if plan.get("hypothesis_assessment") is not None:
+                result["hypothesis_assessment"] = plan["hypothesis_assessment"]
+            repository.upsert_result(result)
+            state["pending_analysis"] = None
+        operation["progress"] = "decision_recorded"
+        repository.write_state(state)
+        progress = "decision_recorded"
+    if progress == "decision_recorded":
+        _publish_runner_memory(f"{plan['method_action']} method {plan['method_id']}")
+        operation["progress"] = "memory_published"
+        repository.write_state(state)
+        progress = "memory_published"
+    if progress == "memory_published":
+        protected = repository.role_and_retention_artifacts(state)
+        if plan["updates_experiment"]:
+            for candidate in plan["pending"].get("candidates", []):
+                artifact = repository.resolve_repo_path(candidate["artifact"])
+                if artifact not in protected:
+                    repository.remove_heavyweight_artifacts(artifact)
+        for lineage in plan.get("removed_retained", []):
+            artifact = repository.resolve_repo_path(lineage["artifact"])
+            if artifact not in protected:
+                repository.remove_heavyweight_artifacts(artifact)
+        released = plan.get("released_method_lineage")
+        if isinstance(released, dict) and released.get("artifact"):
+            artifact = repository.resolve_repo_path(released["artifact"])
+            if artifact not in protected:
+                repository.remove_heavyweight_artifacts(artifact)
+        operation["progress"] = "cleanup_complete"
+        repository.write_state(state)
+        progress = "cleanup_complete"
+    if progress == "cleanup_complete":
+        _publish_runner_memory(f"complete method {plan['method_id']} cleanup")
+        operation["progress"] = "cleanup_published"
+        repository.write_state(state)
+        progress = "cleanup_published"
+    if progress == "cleanup_published":
+        try:
+            paths.PROPOSAL_PATH.unlink(missing_ok=True)
+            state["pending_method_decision"] = None
+            repository.write_state(state)
+            _publish_runner_memory(f"clear method {plan['method_id']} decision")
+        except BaseException:
+            state["pending_method_decision"] = operation
+            repository.write_state(state)
+            raise
+
+
+def resolve_method_decision(proposal: dict) -> int:
+    state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
+    repository.publish_campaign_laboratory(state)
+    if not isinstance(state.get("pending_method_decision"), dict):
+        plan = protocol.plan_method_decision(proposal, state)
+        state["pending_method_decision"] = {
+            "method_id": str(plan["method_id"]),
+            "action": str(plan["method_action"]),
+            "plan": _serialize_method_decision_plan(plan),
+            "progress": "planned",
+        }
+        repository.write_state(state)
+    complete_method_decision_operation(state)
+    return 0
+
+
+def complete_inquiry_operation(state: dict) -> None:
     operation = state.get("pending_inquiry_operation")
     if not isinstance(operation, dict):
-        raise TypeError("there is no pending inquiry closure")
+        raise TypeError("there is no pending inquiry operation")
     progress = operation.get("progress")
-    if progress not in {"planned", "recorded", "lineage_released", "durable"}:
-        raise ValueError(f"unknown inquiry closure progress: {progress!r}")
+    if progress not in {"planned", "recorded", "artifacts_released", "durable"}:
+        raise ValueError(f"unknown inquiry operation progress: {progress!r}")
     inquiry_id = int(operation["inquiry_id"])
     if progress == "planned":
-        developing = operation.get("developing_method")
-        disposition = operation.get("developing_method_disposition")
-        ledger = state.get("preparation_measurement")
-        inquiry_ledger = (
-            ledger
-            if isinstance(ledger, dict)
-            and _preparation_ledger_matches_inquiry(state, ledger, inquiry_id)
-            else {}
-        )
-        experiment_indices = [
-            int(record["index"])
-            for record in repository.result_records_for_campaign(
-                str(repository.current_campaign_id(state))
-            )
-            if int(record.get("inquiry_id", -1)) == inquiry_id
-        ]
-        strategy = protocol.scientific_strategy_section(
-            paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
-            if paths.POSTMORTEM_PATH.exists()
-            else "",
-            repository.current_campaign_id(state),
-        )
-        repository.upsert_inquiry_result(
-            {
-                "schema_version": 1,
-                "record_type": "inquiry",
-                "campaign_id": repository.current_campaign_id(state),
-                "inquiry_id": inquiry_id,
-                "status": "closed",
-                "outcome": operation["outcome"],
-                "experiments": experiment_indices,
-                "measurement_rounds": _inquiry_measurement_rounds(state, inquiry_id),
-                "preparation_evaluations": list(
-                    inquiry_ledger.get("partial_evaluations") or []
-                ),
-                "preparation_task_reference_evaluations": list(
-                    inquiry_ledger.get("partial_task_reference_evaluations") or []
-                ),
-                "scientific_strategy": strategy,
-                "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
-                "developing_method": copy.deepcopy(
-                    developing
-                ),
-                "developing_method_disposition": copy.deepcopy(disposition),
+        action = operation["action"]
+        if action == "open":
+            state["active_inquiry"] = {
+                "id": inquiry_id,
+                "question": operation["question"],
+                "scope": operation["scope"],
+                "closure_condition": operation["closure_condition"],
+                "status": "active",
+                "session_id": operation["session_id"],
+                "reframes": [],
             }
-        )
-        if isinstance(developing, dict) and isinstance(disposition, dict):
-            selected = copy.deepcopy(developing)
-            selected.pop("inquiry_id", None)
-            selected["reason"] = str(disposition["reason"]).strip()
-            action = disposition["action"]
-            if action == "promote":
-                state["working_lineage"] = selected
-            elif action == "retain":
-                state.setdefault("retained_lineages", []).append(
-                    {"id": disposition["id"], **selected}
+            state["last_verdict"] = f"inquiry {inquiry_id} opened"
+        elif action == "reframe":
+            active = protocol.require_active_inquiry(state)
+            active["reframes"].append(
+                {
+                    "question": active["question"],
+                    "scope": active["scope"],
+                    "closure_condition": active["closure_condition"],
+                    "rationale": operation["rationale"],
+                }
+            )
+            active.update(
+                question=operation["question"],
+                scope=operation["scope"],
+                closure_condition=operation["closure_condition"],
+            )
+            state["last_verdict"] = f"inquiry {inquiry_id} reframed"
+        elif action == "start_method":
+            state["active_method"] = copy.deepcopy(operation["method"])
+            state["last_verdict"] = (
+                f"method {operation['method']['id']} started for inquiry {inquiry_id}"
+            )
+        elif action != "close":
+            raise ValueError(f"unknown inquiry operation action: {action!r}")
+
+        if action != "close":
+            operation["progress"] = "recorded"
+            repository.write_state(state)
+            progress = "recorded"
+        else:
+            active = protocol.require_active_inquiry(state)
+            method = copy.deepcopy(state.get("active_method"))
+            ledger = state.get("preparation_measurement")
+            inquiry_ledger = (
+                ledger
+                if isinstance(ledger, dict)
+                and _preparation_ledger_matches_inquiry(state, ledger, inquiry_id)
+                else {}
+            )
+            experiment_indices = [
+                int(record["index"])
+                for record in repository.result_records_for_campaign(
+                    str(repository.current_campaign_id(state))
                 )
-        state["last_inquiry"] = inquiry_id
-        state["active_inquiry"] = None
-        state["inquiry_lineage"] = None
-        state["preparation_measurement"] = None
-        state["pending_scientific_parent"] = None
-        state["last_verdict"] = f"inquiry {inquiry_id} closed"
-        operation["progress"] = "recorded"
-        repository.write_state(state)
-        progress = "recorded"
+                if int(record.get("inquiry_id", -1)) == inquiry_id
+            ]
+            strategy = protocol.scientific_strategy_section(
+                paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
+                if paths.POSTMORTEM_PATH.exists()
+                else "",
+                repository.current_campaign_id(state),
+            )
+            repository.upsert_inquiry_result(
+                {
+                    "schema_version": 1,
+                    "record_type": "inquiry",
+                    "campaign_id": repository.current_campaign_id(state),
+                    "inquiry_id": inquiry_id,
+                    "question": active["question"],
+                    "scope": active["scope"],
+                    "closure_condition": active["closure_condition"],
+                    "reframes": copy.deepcopy(active["reframes"]),
+                    "status": "closed",
+                    "outcome": operation["outcome"],
+                    "experiments": experiment_indices,
+                    "measurement_rounds": _inquiry_measurement_rounds(
+                        state, inquiry_id
+                    ),
+                    "preparation_evaluations": list(
+                        inquiry_ledger.get("partial_evaluations") or []
+                    ),
+                    "preparation_task_reference_evaluations": list(
+                        inquiry_ledger.get("partial_task_reference_evaluations") or []
+                    ),
+                    "scientific_strategy": strategy,
+                    "campaign_lab": copy.deepcopy(state.get("campaign_lab")),
+                    "method": method,
+                }
+            )
+            state["last_inquiry"] = inquiry_id
+            state["active_inquiry"] = None
+            state["active_method"] = None
+            state["inquiry_session"] = None
+            state["preparation_measurement"] = None
+            state["pending_scientific_parent"] = None
+            state["last_verdict"] = f"inquiry {inquiry_id} closed"
+            operation["progress"] = "recorded"
+            repository.write_state(state)
+            progress = "recorded"
     if progress == "recorded":
-        developing = operation.get("developing_method")
-        if isinstance(developing, dict) and developing.get("artifact"):
-            artifact = repository.resolve_repo_path(developing["artifact"])
-            if artifact not in repository.role_and_retention_artifacts(state):
-                repository.remove_heavyweight_artifacts(artifact)
-        operation["progress"] = "lineage_released"
+        operation["progress"] = "artifacts_released"
         repository.write_state(state)
-        progress = "lineage_released"
-    if progress == "lineage_released":
-        _publish_runner_memory(f"close inquiry {inquiry_id}")
+        progress = "artifacts_released"
+    if progress == "artifacts_released":
+        _publish_runner_memory(f"{operation['action']} inquiry {inquiry_id}")
         operation["progress"] = "durable"
         repository.write_state(state)
         progress = "durable"
@@ -2139,17 +2091,25 @@ def complete_inquiry_decision(state: dict) -> None:
         paths.PROPOSAL_PATH.unlink(missing_ok=True)
         state["pending_inquiry_operation"] = None
         repository.write_state(state)
-        _publish_runner_memory(f"clear inquiry {inquiry_id} closure")
+        _publish_runner_memory(f"clear inquiry {inquiry_id} operation")
 
 
-def resolve_inquiry_decision(proposal: dict) -> int:
+def resolve_inquiry_operation(proposal: dict, contract: str) -> int:
     state = repository.load_state(allow_unmeasured=True, allow_missing_artifact=True)
     repository.publish_campaign_laboratory(state)
     if not isinstance(state.get("pending_inquiry_operation"), dict):
-        plan = protocol.plan_inquiry_decision(proposal, state)
+        if contract == "method":
+            plan = protocol.plan_method_start(proposal, state)
+            plan = {
+                **plan,
+                "action": "start_method",
+                "inquiry_id": int(state["active_inquiry"]["id"]),
+            }
+        else:
+            plan = protocol.plan_inquiry_operation(proposal, state)
         state["pending_inquiry_operation"] = {**plan, "progress": "planned"}
         repository.write_state(state)
-    complete_inquiry_decision(state)
+    complete_inquiry_operation(state)
     return 0
 
 
@@ -2171,35 +2131,23 @@ def execute_pending_final_benchmark() -> int:
         raise TypeError(
             "there is no accepted lineage awaiting final benchmark evaluation"
         )
-    if state.get("schema_version") == 4:
-        best_known = state.get("best_known_lineage")
-        frozen_best_known = pending.get("best_known")
-        if not isinstance(best_known, dict) or not isinstance(frozen_best_known, dict):
-            raise ValueError("pending final benchmark requires a v4 best-known lineage")
-        if pending.get("selected") != "best_known":
-            raise ValueError("pending final benchmark must target best_known")
-        if (
-            frozen_best_known.get("artifact") != best_known.get("artifact")
-            or frozen_best_known.get("fingerprint") != best_known.get("fingerprint")
-            or pending.get("artifact") != best_known.get("artifact")
-            or pending.get("fingerprint") != best_known.get("fingerprint")
-        ):
-            raise ValueError(
-                "pending final benchmark does not match the v4 best-known lineage"
-            )
-        artifact = str(best_known["artifact"])
-        fingerprint = str(best_known["fingerprint"])
-    else:
-        artifact = str(pending.get("artifact", "")).strip()
-        fingerprint = str(pending.get("fingerprint", "")).strip()
-    if state.get("schema_version") != 4:
-        accepted_reference = str(state.get("accepted_artifact", "")).strip()
-        if repository.resolve_repo_path(artifact) != repository.resolve_repo_path(
-            accepted_reference
-        ):
-            raise ValueError(
-                "pending final benchmark does not identify the accepted artifact"
-            )
+    best_known = state.get("best_known_lineage")
+    frozen_best_known = pending.get("best_known")
+    if not isinstance(best_known, dict) or not isinstance(frozen_best_known, dict):
+        raise TypeError("pending final benchmark requires a best-known lineage")
+    if pending.get("selected") != "best_known":
+        raise ValueError("pending final benchmark must target best_known")
+    if (
+        frozen_best_known.get("artifact") != best_known.get("artifact")
+        or frozen_best_known.get("fingerprint") != best_known.get("fingerprint")
+        or pending.get("artifact") != best_known.get("artifact")
+        or pending.get("fingerprint") != best_known.get("fingerprint")
+    ):
+        raise ValueError(
+            "pending final benchmark does not match the best-known lineage"
+        )
+    artifact = str(best_known["artifact"])
+    fingerprint = str(best_known["fingerprint"])
     accepted_artifact = repository.resolve_repo_path(artifact)
     repository.require_complete_artifact(
         accepted_artifact, "pending final benchmark artifact"
@@ -2337,12 +2285,12 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         researcher_change.strip() if isinstance(researcher_change, str) else ""
     )
     change = protocol.operation_description(proposal)
-    stated_question = proposal.get("scientific_question")
-    investigation_is_question = (
-        isinstance(stated_question, str) and stated_question.strip()
-    )
+    design = proposal.get("investigation_design") or {}
     investigation = str(
-        stated_question if investigation_is_question else proposal["hypothesis"]
+        design.get("open_question")
+        or design.get("predicted_behavioral_path")
+        or proposal.get("hypothesis")
+        or ""
     ).strip()
     experiment_kind, parameter_overrides, baseline, initialization = (
         proposal_training_settings(proposal)
@@ -2357,6 +2305,8 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     repository.publish_campaign_laboratory(state)
     active_inquiry = state.get("active_inquiry")
     inquiry_id = int(active_inquiry["id"]) if isinstance(active_inquiry, dict) else None
+    active_method = state.get("active_method")
+    method_id = str(active_method["id"]) if isinstance(active_method, dict) else None
 
     # A preserved proposal is the same experiment: recovery and restart reuse
     # the identity the interrupted run allocated instead of consuming a new one.
@@ -2403,7 +2353,9 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         "campaign_id": campaign_id,
         "change": change,
         "kind": experiment_kind,
-        "family": str(proposal.get("family", "")).strip() or experiment_kind,
+        "family": (
+            str(proposal.get("family", "")).strip() or method_id or experiment_kind
+        ),
         "initialization": initialization,
         "parameter_changes": [],
         "code_changes": [],
@@ -2412,18 +2364,20 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     }
     if inquiry_id is not None:
         result["inquiry_id"] = inquiry_id
+    if method_id is not None:
+        result["method_id"] = method_id
     if state.get("campaign_lab") is not None:
         result["campaign_lab"] = copy.deepcopy(state["campaign_lab"])
     if researcher_change and researcher_change != change:
         result["researcher_change"] = researcher_change
-    if investigation_is_question:
+    if design.get("open_question"):
         result["scientific_question"] = investigation
-    else:
+    elif investigation:
         result["hypothesis"] = investigation
     # Freeze the pre-training rationale: later revisions of scientific memory
     # must not retroactively change what this experiment was intended to test.
-    if "reasoning" in proposal:
-        result["reasoning"] = proposal["reasoning"]
+    if "investigation_design" in proposal:
+        result["investigation_design"] = proposal["investigation_design"]
         result["scientific_strategy"] = protocol.scientific_strategy_section(
             paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
             if paths.POSTMORTEM_PATH.exists()
@@ -2433,6 +2387,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     result["proposal_snapshot"] = copy.deepcopy(proposal)
     if inquiry_id is not None:
         result["proposal_snapshot"]["inquiry_id"] = inquiry_id
+    paths.RESTART_PENDING_PATH.parent.mkdir(parents=True, exist_ok=True)
     try:
         existing_operation = state.get("pending_training_operation")
         if isinstance(existing_operation, dict):
@@ -2445,12 +2400,20 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         else:
             code_changes = repository.scientific_delta(code_parent_commit)
         result["code_changes"] = code_changes
+        semantic_code_changes = code_changes
+        if experiment_kind == "continuation":
+            # A continuation deliberately restores the frozen parent's complete
+            # recipe. Validate ownership of the surface being replaced, but do
+            # not misclassify those discarded workspace changes as edits to the
+            # continued method.
+            protocol.validate_research_delta_ownership(code_changes)
+            semantic_code_changes = []
         protocol.validate_experiment_semantics(
             proposal,
             experiment_kind,
             initialization,
             parameter_overrides,
-            code_changes,
+            semantic_code_changes,
             baseline,
         )
         operation = _training_parent_operation(
@@ -2489,6 +2452,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             "recipe_published",
             "training_dispatched",
             "training_completed",
+            "candidates_archived",
         }
         if configuration_frozen:
             effective_manifest = operation.get("effective_scientific_manifest")
@@ -2581,6 +2545,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             "recipe_published",
             "training_dispatched",
             "training_completed",
+            "candidates_archived",
         }:
             scientific_commit = str(operation["scientific_commit"])
             repository.require_resolvable_commit(scientific_commit)
@@ -2608,7 +2573,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             args.timesteps,
             initialization,
             fresh_baseline,
-            int(state.get("accepted_training_steps", args.timesteps)),
+            int(parent_training_steps or args.timesteps),
         )
         result["training_budget_steps"] = effective_timesteps
         training_seed = int(proposal.get("training_seed", TRAIN_SEED))
@@ -2618,136 +2583,155 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
             result["replication_of"] = int(proposal["replication_of"])
         console.announce("\n" + console.render_experiment_card(result) + "\n")
         resume = parent_artifact / "model.zip" if initialization == "transfer" else None
-        completed_candidate_available = False
-
-        if resuming and candidate_dir.exists():
-            complete = all(
-                (candidate_dir / filename).is_file()
-                for filename in repository.INFERENCE_ARTIFACT_FILES
-            )
-            if (
-                complete
-                and operation is not None
-                and operation.get("progress")
-                in {"training_dispatched", "training_completed"}
-                and args.reuse_candidate is None
-            ):
-                metadata = json.loads(
-                    (candidate_dir / "artifact.json").read_text(encoding="utf-8")
+        archived_candidates = (
+            copy.deepcopy(operation.get("archived_candidates"))
+            if operation is not None
+            and operation.get("progress") == "candidates_archived"
+            else None
+        )
+        if archived_candidates is not None:
+            for candidate in archived_candidates:
+                repository.require_complete_inference_artifact(
+                    repository.resolve_repo_path(candidate["artifact"]),
+                    f"archived candidate {candidate['name']!r}",
                 )
-                if bool(metadata.get("completed", True)):
-                    execution.validate_reusable_candidate(
-                        candidate_dir,
-                        timesteps=effective_timesteps,
-                        seed=training_seed,
-                        resume=resume,
-                        config=effective_config,
+            console.announce(
+                f"[recovery] reusing archived candidates for experiment {index}"
+            )
+        else:
+            completed_candidate_available = False
+            if resuming and candidate_dir.exists():
+                complete = all(
+                    (candidate_dir / filename).is_file()
+                    for filename in repository.INFERENCE_ARTIFACT_FILES
+                )
+                if (
+                    complete
+                    and operation is not None
+                    and operation.get("progress")
+                    in {"training_dispatched", "training_completed"}
+                    and args.reuse_candidate is None
+                ):
+                    metadata = json.loads(
+                        (candidate_dir / "artifact.json").read_text(encoding="utf-8")
                     )
-                    execution.candidate_directories(candidate_dir)
-                    completed_candidate_available = True
-                    operation["progress"] = "training_completed"
-                    repository.write_state(state)
-                    console.announce(
-                        f"[recovery] reusing completed candidate from {candidate_dir}"
-                    )
+                    if bool(metadata.get("completed", True)):
+                        execution.validate_reusable_candidate(
+                            candidate_dir,
+                            timesteps=effective_timesteps,
+                            seed=training_seed,
+                            resume=resume,
+                            config=effective_config,
+                        )
+                        execution.candidate_directories(candidate_dir)
+                        completed_candidate_available = True
+                        operation["progress"] = "training_completed"
+                        repository.write_state(state)
+                        console.announce(
+                            f"[recovery] reusing completed candidate from {candidate_dir}"
+                        )
+                    else:
+                        recovery_candidate = (
+                            paths.campaign_candidate_root(campaign_id)
+                            / f"recovery-experiment-{index}"
+                        )
+                        if recovery_candidate.exists():
+                            execution.remove_candidate_dir(recovery_candidate)
+                        candidate_dir.replace(recovery_candidate)
                 else:
-                    recovery_candidate = (
-                        paths.campaign_candidate_root(campaign_id)
-                        / f"recovery-experiment-{index}"
-                    )
-                    if recovery_candidate.exists():
-                        execution.remove_candidate_dir(recovery_candidate)
-                    candidate_dir.replace(recovery_candidate)
-            else:
-                # Only the experiment's own leftovers: a new identity that collided
-                # with existing data was skipped rather than allocated.
-                console.announce(
-                    f"[cleanup] removing stale candidate {candidate_dir.name}"
-                )
-                execution.remove_candidate_dir(candidate_dir)
-
-        def active_training_log() -> Path:
-            attempt = execution.training_attempt(
-                index,
-                recoverable_continuation=recoverable_continuation,
-                campaign_id=campaign_id,
-            )
-            return paths.training_log_path(index, attempt, campaign_id=campaign_id)
-
-        if operation is not None and not completed_candidate_available:
-            operation["progress"] = "training_dispatched"
-            repository.write_state(state)
-
-        if completed_candidate_available:
-            pass
-        elif recovery_candidate is not None:
-            reusable = recovery_candidate
-            reused_candidate = reusable
-            execution.validate_reusable_candidate(
-                reusable,
-                timesteps=effective_timesteps,
-                seed=training_seed,
-                resume=resume,
-                config=effective_config,
-            )
-            artifact = json.loads(
-                (reusable / "artifact.json").read_text(encoding="utf-8")
-            )
-            completed_timesteps = int(artifact["timesteps"])
-            if bool(artifact.get("completed", True)):
-                console.announce(
-                    f"[recovery] reusing completed candidate from {reusable}"
-                )
-                execution.copy_candidate_outputs(reusable, candidate_dir)
-            else:
-                remaining_timesteps = max(effective_timesteps - completed_timesteps, 0)
-                if remaining_timesteps == 0:
                     console.announce(
-                        "[recovery] interrupted training already reached its budget"
+                        f"[cleanup] removing stale candidate {candidate_dir.name}"
+                    )
+                    execution.remove_candidate_dir(candidate_dir)
+
+            def active_training_log() -> Path:
+                attempt = execution.training_attempt(
+                    index,
+                    recoverable_continuation=recoverable_continuation,
+                    campaign_id=campaign_id,
+                )
+                return paths.training_log_path(index, attempt, campaign_id=campaign_id)
+
+            if operation is not None and not completed_candidate_available:
+                operation["progress"] = "training_dispatched"
+                repository.write_state(state)
+
+            if completed_candidate_available:
+                pass
+            elif recovery_candidate is not None:
+                reusable = recovery_candidate
+                reused_candidate = reusable
+                execution.validate_reusable_candidate(
+                    reusable,
+                    timesteps=effective_timesteps,
+                    seed=training_seed,
+                    resume=resume,
+                    config=effective_config,
+                )
+                artifact = json.loads(
+                    (reusable / "artifact.json").read_text(encoding="utf-8")
+                )
+                completed_timesteps = int(artifact["timesteps"])
+                if bool(artifact.get("completed", True)):
+                    console.announce(
+                        f"[recovery] reusing completed candidate from {reusable}"
                     )
                     execution.copy_candidate_outputs(reusable, candidate_dir)
                 else:
-                    console.announce(
-                        f"[recovery] resuming at {completed_timesteps:,} / "
-                        f"{effective_timesteps:,} steps"
+                    remaining_timesteps = max(
+                        effective_timesteps - completed_timesteps, 0
                     )
-                    created_candidate_dirs.append(candidate_dir)
-                    training_elapsed = execution.train_candidate(
-                        candidate_dir,
-                        remaining_timesteps,
-                        training_seed,
-                        reusable / "model.zip",
-                        active_training_log(),
-                        label=(
-                            "resumed baseline training"
-                            if baseline
-                            else "resumed candidate training"
-                        ),
-                        continue_timesteps=True,
-                        target_timesteps=effective_timesteps,
-                    )
-        else:
-            created_candidate_dirs.append(candidate_dir)
-            training_elapsed = execution.train_candidate(
-                candidate_dir,
-                effective_timesteps,
-                training_seed,
-                resume,
-                active_training_log(),
-                label="baseline training" if baseline else "candidate training",
+                    if remaining_timesteps == 0:
+                        console.announce(
+                            "[recovery] interrupted training already reached its budget"
+                        )
+                        execution.copy_candidate_outputs(reusable, candidate_dir)
+                    else:
+                        console.announce(
+                            f"[recovery] resuming at {completed_timesteps:,} / "
+                            f"{effective_timesteps:,} steps"
+                        )
+                        created_candidate_dirs.append(candidate_dir)
+                        training_elapsed = execution.train_candidate(
+                            candidate_dir,
+                            remaining_timesteps,
+                            training_seed,
+                            reusable / "model.zip",
+                            active_training_log(),
+                            label=(
+                                "resumed baseline training"
+                                if baseline
+                                else "resumed candidate training"
+                            ),
+                            continue_timesteps=True,
+                            target_timesteps=effective_timesteps,
+                        )
+            else:
+                created_candidate_dirs.append(candidate_dir)
+                training_elapsed = execution.train_candidate(
+                    candidate_dir,
+                    effective_timesteps,
+                    training_seed,
+                    resume,
+                    active_training_log(),
+                    label="baseline training" if baseline else "candidate training",
+                )
+            if operation is not None and not completed_candidate_available:
+                operation["progress"] = "training_completed"
+                repository.write_state(state)
+            contenders = [
+                {**candidate, "kind": "candidate", "evaluations": []}
+                for candidate in execution.candidate_directories(candidate_dir)
+            ]
+            archived_candidates = repository.archive_candidates(
+                index, contenders, effective_config, campaign_id=campaign_id
             )
-        if operation is not None and not completed_candidate_available:
-            operation["progress"] = "training_completed"
-            repository.write_state(state)
-        contenders = [
-            {**candidate, "kind": "candidate", "evaluations": []}
-            for candidate in execution.candidate_directories(candidate_dir)
-        ]
-        archived_candidates = repository.archive_candidates(
-            index, contenders, effective_config, campaign_id=campaign_id
-        )
-        for candidate in archived_candidates:
-            candidate["scientific_commit"] = scientific_commit
+            for candidate in archived_candidates:
+                candidate["scientific_commit"] = scientific_commit
+            if operation is not None:
+                operation["archived_candidates"] = copy.deepcopy(archived_candidates)
+                operation["progress"] = "candidates_archived"
+                repository.write_state(state)
         verdict = "trained; awaiting researcher analysis"
         completed_steps = max(
             (int(candidate["timesteps"]) for candidate in archived_candidates),
@@ -2768,6 +2752,7 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         pending = {
             "experiment": index,
             **({"inquiry_id": inquiry_id} if inquiry_id is not None else {}),
+            **({"method_id": method_id} if method_id is not None else {}),
             "candidates": archived_candidates,
             "champion_available": not fresh_baseline,
             "parameters": effective_config,
@@ -2785,20 +2770,29 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
         if parent is not None:
             pending["training_parent_lineage"] = copy.deepcopy(parent)
         result["candidates"] = archived_candidates
-        transfer_preparation_measurements(state, result, pending, index)
-        state.update({"last_experiment": index, "last_verdict": verdict})
-        if state.get("schema_version") == 4:
-            state["pending_analysis"] = pending
-        else:
-            state["pending_evaluation_request"] = pending
+        final_state = copy.deepcopy(state)
+        transfer_preparation_measurements(final_state, result, pending, index)
+        final_state.update({"last_experiment": index, "last_verdict": verdict})
+        final_state["pending_analysis"] = pending
+        final_method = final_state.get("active_method")
+        if isinstance(final_method, dict) and not any(
+            item.get("experiment") == index for item in final_method["iterations"]
+        ):
+            final_method["iterations"].append(
+                {
+                    "experiment": index,
+                    "status": "awaiting_analysis",
+                    "investigation_design": copy.deepcopy(design),
+                }
+            )
         result.update({"status": "trained", "verdict": verdict})
-        state["pending_training_operation"] = None
+        repository.upsert_result(result)
+        final_state["pending_training_operation"] = None
+        repository.write_state(final_state)
+        state = final_state
         if args.reuse_candidate is not None:
             paths.RECOVERY_PENDING_PATH.unlink(missing_ok=True)
         paths.RESTART_PENDING_PATH.unlink(missing_ok=True)
-        repository.write_state(state)
-        if state.get("schema_version") == 4:
-            repository.upsert_result(result)
     except FrozenOperationMismatch as error:
         result["error"] = str(error)[:500]
         operation = state.get("pending_training_operation")
@@ -2855,20 +2849,32 @@ def run_training_experiment(proposal: dict, args: argparse.Namespace) -> int:
     except Exception as error:  # noqa: BLE001
         result["error"] = str(error)[:500]
         operation = state.get("pending_training_operation")
-        if isinstance(operation, dict) and operation.get("recipe_restore") is not None:
+        if isinstance(operation, dict):
             operation["last_error"] = result["error"]
             preserve_proposal = True
             paths.RESTART_PENDING_PATH.write_text(
-                "Retry the frozen continuation operation.\n", encoding="utf-8"
+                "Retry the accepted training operation.\n", encoding="utf-8"
             )
             repository.write_state(state)
             console.announce(
-                f"[error] experiment {index} continuation remains recoverable: "
+                f"[error] experiment {index} training operation remains recoverable: "
                 f"{result['error']}"
             )
             return 1
         result["verdict"] = "invalid; researcher changes preserved"
         state["pending_training_operation"] = None
+        method = state.get("active_method")
+        if isinstance(method, dict) and not any(
+            item.get("experiment") == index for item in method["iterations"]
+        ):
+            method["iterations"].append(
+                {
+                    "experiment": index,
+                    "status": "training_error",
+                    "outcome": result["error"],
+                    "investigation_design": copy.deepcopy(design),
+                }
+            )
         repository.append_result(result)
         repository.write_state(state)
         repository.commit_result(index, change)
@@ -2905,7 +2911,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--reuse-candidate", type=Path, default=None)
     parser.add_argument("--evaluate-pending", action="store_true")
     parser.add_argument("--evaluate-pending-final", action="store_true")
-    parser.add_argument("--check-lineage-evidence", type=int, default=None)
     parser.add_argument("--check-proposal", action="store_true")
     parser.add_argument("--check-preparation-deliverable", action="store_true")
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
@@ -2913,32 +2918,33 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-analysis-deliverable", action="store_true")
     parser.add_argument("--record-implementation-repair-attempt", action="store_true")
     parser.add_argument("--complete-implementation-repair", action="store_true")
-    parser.add_argument("--begin-hypothesis", action="store_true")
-    parser.add_argument("--conclusion-only", action="store_true")
-    parser.add_argument("--migrate-research-state", action="store_true")
-    parser.add_argument(
-        "--mark-principal-investigator-session-started", action="store_true"
-    )
+    parser.add_argument("--begin-inquiry", action="store_true")
+    parser.add_argument("--training-cap-reached", action="store_true")
+    parser.add_argument("--mark-inquiry-session-starting", action="store_true")
+    parser.add_argument("--mark-inquiry-session-started", action="store_true")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    if args.migrate_research_state:
-        migrated = migrate_research_state()
-        print("RESEARCH_STATE_MIGRATED" if migrated else "RESEARCH_STATE_ALREADY_V4")
-        return 0
-    if args.begin_hypothesis:
-        return begin_hypothesis_phase(conclusion_only=args.conclusion_only)
-    if args.mark_principal_investigator_session_started:
+    if args.begin_inquiry:
+        return begin_inquiry_phase()
+    if args.mark_inquiry_session_starting:
         state = repository.read_state()
-        session = repository.mark_principal_investigator_session_started(state)
-        print(f"PRINCIPAL_INVESTIGATOR_SESSION_STARTED: {session['id']}")
+        session = repository.mark_inquiry_session_starting(state)
+        print(f"INQUIRY_SESSION_STARTING: {session['id']}")
+        return 0
+    if args.mark_inquiry_session_started:
+        state = repository.read_state()
+        session = repository.mark_inquiry_session_started(state)
+        print(f"INQUIRY_SESSION_STARTED: {session['id']}")
         return 0
     if args.check_proposal:
-        return check_proposal()
+        return check_proposal(training_allocation_closed=args.training_cap_reached)
     if getattr(args, "check_preparation_deliverable", False):
-        return check_preparation_deliverable()
+        return check_preparation_deliverable(
+            training_allocation_closed=args.training_cap_reached
+        )
     if getattr(args, "check_scientific_model_deliverable", False):
         return check_scientific_model_deliverable()
     if args.check_evaluation_request:
@@ -2949,8 +2955,6 @@ def main() -> int:
         return record_implementation_repair_attempt()
     if args.complete_implementation_repair:
         return complete_implementation_repair()
-    if args.check_lineage_evidence is not None:
-        return check_lineage_evidence(args.check_lineage_evidence)
     # Past this point the Runner may write history, so the derived human-readable
     # view is reconciled first: an interruption between the two writes is never
     # inherited as a second, competing history.
@@ -2968,7 +2972,7 @@ def main() -> int:
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
         )
-        complete_inquiry_decision(state)
+        complete_inquiry_operation(state)
         return 0
     if isinstance(repository.read_state().get("pending_campaign_conclusion"), dict):
         state = repository.load_state(
@@ -2976,19 +2980,25 @@ def main() -> int:
         )
         complete_campaign_conclusion(state)
         return 0
-    if repository.read_state().get("pending_closure_operation"):
+    if repository.read_state().get("pending_baseline_decision"):
         state = repository.load_state(
             allow_unmeasured=True, allow_missing_artifact=True
         )
-        operation = state["pending_closure_operation"]
-        apply_pending_v4_closure(state)
+        operation = state["pending_baseline_decision"]
+        complete_pending_baseline_decision(state)
         repository.commit_lineage_decision(
             int(operation["experiment"]),
             str(operation["selected"]),
             code_action=str(operation["code_action"]),
             state=state,
         )
-        publish_v4_closure_completion(state)
+        publish_baseline_completion(state)
+        return 0
+    if repository.read_state().get("pending_method_decision"):
+        state = repository.load_state(
+            allow_unmeasured=True, allow_missing_artifact=True
+        )
+        complete_method_decision_operation(state)
         return 0
     if not paths.PROPOSAL_PATH.exists():
         print("ERROR: research/proposal.json not found.")
@@ -2998,21 +3008,30 @@ def main() -> int:
         proposal = json.loads(paths.PROPOSAL_PATH.read_text(encoding="utf-8"))
         raw_state = repository.read_state()
         proposal_contract = protocol.validate_proposal_against_state(
-            proposal, raw_state
+            proposal,
+            raw_state,
+            training_allocation_closed=args.training_cap_reached,
         )
     except PROPOSAL_ERRORS as error:
         print(f"ERROR: invalid proposal for current phase: {error}")
         return 1
-    if proposal_contract == "lineage":
+    if proposal_contract == "baseline":
         reanchor_phase_parent(raw_state)
         validate_research_delta(raw_state)
-        return resolve_pending_lineage(proposal, raw_state)
+        return resolve_baseline_decision(proposal, raw_state)
     if proposal_contract == "conclusion":
         validate_campaign_conclusion_delta(raw_state)
         return resolve_campaign_conclusion(proposal, raw_state)
+    if proposal_contract == "method_decision":
+        reanchor_phase_parent(raw_state)
+        validate_research_delta(raw_state)
+        return resolve_method_decision(proposal)
+    if proposal_contract == "method":
+        validate_research_delta(raw_state)
+        return resolve_inquiry_operation(proposal, proposal_contract)
     if proposal_contract == "inquiry":
         validate_campaign_conclusion_delta(raw_state)
-        return resolve_inquiry_decision(proposal)
+        return resolve_inquiry_operation(proposal, proposal_contract)
     try:
         return run_training_experiment(proposal, args)
     except KeyboardInterrupt:

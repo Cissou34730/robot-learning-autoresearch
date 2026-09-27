@@ -378,22 +378,26 @@ def baseline_restore_paths(commit: str, state: dict) -> list[str]:
 
 def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
     state = git_json(commit, "research/research_state.json")
-    if state.get("schema_version") != 4:
+    if state.get("schema_version") != repository.STATE_SCHEMA_VERSION:
         raise ValueError(
-            "BaselineRef must use schema v4; unverifiable legacy baselines must be migrated before reset"
+            "BaselineRef must use the current inquiry-centered state schema"
         )
-    repository.validate_v4_state(state, allow_missing_artifact=True)
+    repository.validate_research_state(state, allow_missing_artifact=True)
     working = state.get("working_lineage")
     best = state.get("best_known_lineage")
     pending_fields = (
         "active_inquiry",
+        "active_method",
+        "inquiry_session",
         "pending_inquiry_operation",
         "preparation_measurement",
         "pending_analysis",
         "pending_training_operation",
         "pending_evaluation_request",
-        "pending_researcher_decision",
-        "pending_closure_operation",
+        "pending_baseline_decision",
+        "pending_method_decision",
+        "pending_campaign_conclusion",
+        "campaign_conclusion",
         "pending_scientific_parent",
         "pending_final_benchmark",
         "terminal_campaign_status",
@@ -486,15 +490,14 @@ def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
             raise ValueError(
                 f"BaselineRef cannot bind model identity to evidence {evidence}"
             )
-    closure = record.get("closure_decision") or {}
-    best_decision = closure.get("best_known") or {}
+    decision = record.get("baseline_decision") or {}
     if (
-        record.get("status") != "closed"
-        or closure.get("continue_from") != working["candidate"]
-        or best_decision.get("candidate") != best["candidate"]
+        record.get("status") != "analyzed"
+        or decision.get("candidate") != working["candidate"]
+        or working["fingerprint"] != best["fingerprint"]
     ):
         raise ValueError(
-            "BaselineRef history does not contain the recorded v4 designation"
+            "BaselineRef history does not contain the recorded baseline designation"
         )
     verify_task_compatibility(commit)
     return state, matching, baseline_restore_paths(commit, state)
@@ -791,7 +794,7 @@ def validate_restored_recipe() -> None:
 
 def empty_state(base_commit: str, recipe_source: str | None) -> dict:
     campaign_id = str(uuid.uuid4())
-    return repository.empty_v4_campaign_state(
+    return repository.empty_campaign_state(
         campaign={
             "id": campaign_id,
             "started_at": datetime.now(UTC).isoformat(),
@@ -902,8 +905,9 @@ def reset_baseline(
 ) -> tuple[str, str, Path]:
     source = resolve_commit(reference, "BaselineRef")
     state, records, restore = verify_baseline_source(source)
-    state["principal_investigator_session"] = None
+    state["inquiry_session"] = None
     state["active_inquiry"] = None
+    state["active_method"] = None
     state["pending_inquiry_operation"] = None
     state["campaign_lab"] = None
     state["campaign_inquiry_counters"] = {str(state["campaign"]["id"]): 0}
@@ -939,7 +943,7 @@ def reset_baseline(
             if log_source == paths.ROOT.resolve():
                 log_source = backup / "files"
             tracked_logs = copy_external_logs(log_source, campaign_id)
-        repository.validate_v4_state(state, allow_missing_artifact=False)
+        repository.validate_research_state(state, allow_missing_artifact=False)
         repository.atomic_write_text(
             paths.LOG_PATH, repository.render_experiment_log(records)
         )

@@ -257,12 +257,7 @@ def render_training_summary_card(
             f"{_candidate_metric(candidate, 'ep_rew_mean')} | "
             f"{training_success.removeprefix('success ')}"
         )
-    next_phase = (
-        "Researcher post-training analysis"
-        if result.get("schema_version") == 4
-        else "Researcher evaluation design"
-    )
-    lines.extend(["", "Next", f"  {next_phase}"])
+    lines.extend(["", "Next", "  Researcher post-training analysis"])
     return "\n".join(lines)
 
 
@@ -398,36 +393,27 @@ def render_evidence_card(
 def render_decision_card(plan: dict) -> str:
     pending = plan["pending"]
     if "working_name" in plan:
+        decision = plan["decision"]
         lines = [
             f"=== Research decision · Experiment {int(pending['experiment'])} ===",
             "",
+            "Operation",
+            str(plan.get("kind", "analysis")),
+            "",
+            "Method action",
+            str(plan.get("method_action") or "baseline selection"),
+            "",
+            "Outcome",
+            str(decision.get("outcome") or decision.get("reason") or "-"),
+            "",
             "Working lineage",
-            plan["working_name"],
-            "",
-            "Reason",
-            str(plan["decision"]["reason"]).strip(),
-            "",
-            "Hypothesis assessment",
-            str(plan.get("hypothesis_assessment") or "baseline exempt"),
+            str(plan.get("working_name") or "unchanged"),
             "",
             "Best-known model",
-            plan.get("best_known_name") or "unchanged",
-            "",
-            "Developing method for the active inquiry",
-            (
-                plan.get("inquiry_lineage_name")
-                or (
-                    "released"
-                    if "developing_method" in plan["decision"]
-                    else "unchanged"
-                )
-            ),
+            str(plan.get("best_known_name") or "unchanged"),
             "",
             "Scientific recipe",
             plan["code_action"],
-            "",
-            "Final benchmark",
-            "requested" if plan["request_final_benchmark"] else "not requested",
         ]
         return "\n".join(lines)
     retained = [
