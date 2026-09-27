@@ -2443,55 +2443,6 @@ def _consumed_research_intervals(records: list[dict]) -> list[str]:
     ]
 
 
-def _comparison_uncertainty(uncertainty: object) -> str:
-    """Render a researcher-reported uncertainty measure without interpreting it."""
-    if isinstance(uncertainty, dict):
-        measure = str(
-            uncertainty.get("measure")
-            or uncertainty.get("name")
-            or uncertainty.get("method")
-            or "uncertainty"
-        )
-        return f"{measure} = {uncertainty.get('value')}"
-    return str(uncertainty)
-
-
-def _comparison_assessment_lines(assessment: dict, reference: str) -> list[str]:
-    """Display the Researcher's structured assessment beside the paired counts."""
-    lines = [
-        (
-            "  - Assessment: method "
-            f"`{assessment.get('method', '-')}` "
-            f"v`{assessment.get('method_version', '-')}`."
-        )
-    ]
-    lines.append(
-        "    - Uncertainty: "
-        + _compact(
-            _comparison_uncertainty(assessment.get("uncertainty")),
-            400,
-            reference=reference,
-        )
-    )
-    lines.extend(
-        _indented_label_block(
-            "Interpretation",
-            str(assessment.get("interpretation", "")),
-            600,
-            reference,
-        )
-    )
-    lines.extend(
-        _indented_label_block(
-            "Limitations",
-            str(assessment.get("limitations", "")),
-            600,
-            reference,
-        )
-    )
-    return lines
-
-
 def _v4_measurement_rounds_section(
     state: dict, results: list[dict], pending: dict | None
 ) -> list[str]:
@@ -2737,9 +2688,6 @@ def _v4_measurement_rounds_section(
                 f"vs {item.get('reference_wins', '-')} discordant wins over "
                 f"{item.get('episodes', '-')} episodes.{qualifier}"
             )
-            assessment = item.get("assessment")
-            if isinstance(assessment, dict):
-                lines.extend(_comparison_assessment_lines(assessment, source_reference))
         if precedent:
             lines.extend(
                 [

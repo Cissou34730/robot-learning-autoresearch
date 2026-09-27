@@ -626,50 +626,6 @@ def evaluate_artifact(
     return metrics
 
 
-def _validate_comparison_assessment(
-    assessment: dict,
-    result: dict,
-    provenance: dict,
-    candidate_name: str,
-    reference_name: str,
-) -> None:
-    """Reconcile an assessment with the protected comparison the Runner measured.
-
-    Only the referenced protected counts and artifacts are checked. The method,
-    version, uncertainty, interpretation and limitations are the Researcher's and
-    are persisted unchanged.
-    """
-    record = assessment["record"]
-    if (record["candidate"].strip(), record["reference"].strip()) != (
-        candidate_name,
-        reference_name,
-    ):
-        raise ValueError(
-            f"paired comparison {candidate_name!r} vs {reference_name!r} assessment "
-            "record does not reference this comparison"
-        )
-    mismatched = [
-        field
-        for field in ("episodes", "candidate_wins", "reference_wins")
-        if int(record[field]) != int(result[field])
-    ]
-    if mismatched:
-        raise ValueError(
-            f"paired comparison {candidate_name!r} vs {reference_name!r} assessment "
-            f"record does not match the measured ledger: {sorted(mismatched)}"
-        )
-    source_artifacts = provenance.get("source_artifacts")
-    if source_artifacts is None:
-        return
-    available = set(source_artifacts)
-    unknown = sorted(path for path in record["artifacts"] if path not in available)
-    if unknown:
-        raise ValueError(
-            f"paired comparison {candidate_name!r} vs {reference_name!r} assessment "
-            f"references artifacts outside the measured ledger: {unknown}"
-        )
-
-
 def requested_paired_comparisons(
     request: dict,
     evaluations_by_candidate: dict[str, list[dict]],
@@ -806,20 +762,14 @@ def requested_paired_comparisons(
             raise ValueError(
                 f"paired comparison {candidate_name!r} vs {reference_name!r}: {error}"
             ) from error
-        assessment = comparison.get("assessment")
-        if assessment is not None:
-            _validate_comparison_assessment(
-                assessment, result, provenance, candidate_name, reference_name
-            )
-        record = {
-            "candidate": candidate_name,
-            "reference": reference_name,
-            **result,
-            **provenance,
-        }
-        if assessment is not None:
-            record["assessment"] = assessment
-        results.append(record)
+        results.append(
+            {
+                "candidate": candidate_name,
+                "reference": reference_name,
+                **result,
+                **provenance,
+            }
+        )
     return results
 
 

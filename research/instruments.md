@@ -107,22 +107,7 @@ Write `research/evaluation_request.json`:
   "paired_comparisons": [
     {
       "candidate": "<measured model>",
-      "reference": "<other measured model>",
-      "assessment": {
-        "record": {
-          "candidate": "<measured model>",
-          "reference": "<other measured model>",
-          "artifacts": ["<repository-relative measurement artifact>"],
-          "episodes": "<distinct shared episodes>",
-          "candidate_wins": "<protected candidate wins>",
-          "reference_wins": "<protected reference wins>"
-        },
-        "method": "<analysis method identifier>",
-        "method_version": "<method version>",
-        "uncertainty": {"measure": "<measure name>", "value": "<resulting value>"},
-        "interpretation": "<what the Researcher reads in the counts>",
-        "limitations": "<stated limits of the assessment>"
-      }
+      "reference": "<other measured model>"
     }
   ]
 }
@@ -214,19 +199,6 @@ distinct coverage; `episode_executions` and `repeated_episodes` report execution
 count and repeated coverage separately. Conflicting outcomes for the same
 deterministic episode are rejected. Pooled comparison uses success only;
 per-episode `reward_total` is not comparable across a reward change.
-
-An optional researcher-authored `assessment` may accompany a paired comparison.
-It references the protected paired-comparison record — the artifacts, the
-distinct shared `episodes`, and the protected `candidate_wins` and
-`reference_wins` — and records the analysis `method` and `method_version`, the
-resulting `uncertainty` measure, the Researcher's `interpretation`, and stated
-`limitations`. The default researcher-owned implementation may use the existing
-exact paired test, and the Researcher remains free to record another justified
-method. The Runner validates only that the referenced artifacts and protected
-counts match the measured ledger, then persists the assessment unchanged in the
-comparison and in the closure record; the brief displays it beside the counts.
-The Runner never scores the methods, imposes a significance threshold, requires a
-minimum episode count, or constrains which lineage the Researcher selects.
 
 Each completed measurement round returns to the phase that requested it: post-
 training analysis for an analysis request, experiment preparation for a saved-

@@ -1605,26 +1605,6 @@ def apply_pending_v4_closure(state: dict) -> bool:
         )
         if plan.get("hypothesis_assessment") is not None:
             result["hypothesis_assessment"] = plan["hypothesis_assessment"]
-        # Carry every researcher-authored comparison assessment into the closure
-        # record, beside the protected paired counts it references.
-        assessment_sources = [result]
-        rounds = result.get("evaluation_rounds")
-        if isinstance(rounds, list):
-            assessment_sources.extend(
-                round_record["results"]
-                for round_record in rounds
-                if isinstance(round_record, dict)
-                and isinstance(round_record.get("results"), dict)
-            )
-        comparison_assessments = [
-            comparison["assessment"]
-            for source in assessment_sources
-            for comparison in source.get("paired_comparisons") or []
-            if isinstance(comparison, dict)
-            and isinstance(comparison.get("assessment"), dict)
-        ]
-        if comparison_assessments:
-            result["comparison_assessments"] = comparison_assessments
         ledger = result.get("question_ledger")
         if isinstance(ledger, dict):
             disposition = protocol.expected_observation_disposition(
