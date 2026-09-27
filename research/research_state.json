@@ -113,7 +113,7 @@
       "evidence": "A transfer training experiment from best_known with a new intervention aimed at the recurring inner-radius failures could address whether another scientific change improves the remaining four failures. However, the only targeted intervention tested so far, expanding training targets from 14-20 cm to 6-20 cm, was weakened: all three changed-recipe checkpoints tied the control at 196/200 with zero paired wins and the same failures.",
       "reason": "The remaining training path is speculative because the measured failures have not identified a validated mechanism or a specific next intervention. The current best-known model is already near the 98% threshold, while its official performance is completely unmeasured; requesting the frozen official assessment has greater decision value than spending the last available experiment on an unsupported change."
     },
-    "progress": "planned",
+    "progress": "committed",
     "reason": "The standing best-known checkpoint-100352 is near the objective but development evidence is mixed: it scored 195/200 and 194/200 on two disjoint research panels, 196/200 on the task-reference panel, and 196/200 on the latest research panel. The latest full-range continuation matched its four failures rather than improving them. These finite development measurements do not establish the official result, so either official verdict remains plausible.",
     "terminal_expectation": {
       "expected_verdict": "uncertain",
