@@ -39,16 +39,17 @@ the six research-evaluation artifacts and three task-reference artifacts under
 
 ## f7e0bace-c0b5-4892-95a4-a1440c71de04 / Scientific strategy
 
-**Current synthesis:** The baseline recipe produces a policy near the human
-objective on development panels. Checkpoint-100352 is currently best known
-because it leads on disjoint research measurements, while later training to
-checkpoint-120832 did not improve measured success.
+**Current synthesis:** The baseline PPO recipe produces a near-threshold
+reach-and-hold policy on development panels. Checkpoint-100352 is currently
+best known at 393/400 pooled successes across two disjoint research panels,
+while the later checkpoint-120832 reached 391/400 under the unchanged recipe.
 
-**Lessons and limits:** Training proxies are useful for locating candidate
-checkpoints but do not reliably rank task policies. The research measurements
-support lineage selection, but their finite panels and the reused
-task-reference panel do not establish official success; only the final
-assessment can do that.
+**Lessons and limits:** Measured task success, rather than training proxies,
+distinguishes the late checkpoints. The finite research panels and reused
+task-reference panel support lineage comparison but do not establish official
+success. Residual failures include occasional full-episode misses and
+interrupted holds, but the current evidence does not isolate their cause.
 
-**Open questions:** Whether checkpoint-100352 reaches at least 98% on the
-official 200-episode panel remains unresolved.
+**Open questions:** Whether the residual failure rate can be reduced without
+damaging the broad competence already learned, and whether checkpoint-100352
+reaches at least 98% on the official 200-episode panel, remain unresolved.
