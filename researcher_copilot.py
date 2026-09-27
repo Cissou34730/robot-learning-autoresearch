@@ -973,18 +973,19 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
 
 
 async def open_session(client, args, options: dict):
-    if args.resume or args.resume_or_create:
+    if args.resume:
         try:
             return await client.resume_session(args.session_id, **options)
         except Exception as error:
-            if args.resume_or_create:
-                return await client.create_session(
-                    session_id=args.session_id, **options
-                )
             raise RuntimeError(
                 "could not resume the persisted researcher session "
                 f"{args.session_id!r}; refusing to create a replacement"
             ) from error
+    if args.resume_or_create:
+        metadata = await client.get_session_metadata(args.session_id)
+        if metadata is not None:
+            return await client.resume_session(args.session_id, **options)
+        return await client.create_session(session_id=args.session_id, **options)
     return await client.create_session(session_id=args.session_id, **options)
 
 

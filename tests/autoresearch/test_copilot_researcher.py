@@ -1017,6 +1017,9 @@ class FakeClient:
         self.created.append(kwargs)
         return FakeSession(kwargs["session_id"])
 
+    async def get_session_metadata(self, session_id):
+        return None
+
     async def resume_session(self, session_id, **kwargs):
         self.resumed.append((session_id, kwargs))
         return FakeSession(session_id)
@@ -1058,13 +1061,25 @@ def test_a_missing_persisted_session_fails_without_creating_a_replacement():
     assert client.created == []
 
 
-def test_first_invocation_recovery_resumes_or_creates_the_same_session():
-    class MissingSessionClient(FakeClient):
-        async def resume_session(self, session_id, **kwargs):
-            self.resumed.append((session_id, kwargs))
-            raise LookupError("missing")
+def test_first_invocation_recovery_creates_the_missing_persisted_session():
+    client = FakeClient()
+    args = adapter.parse_args(
+        ["p", "--session-id", "campaign-pi", "--resume-or-create"]
+    )
 
-    client = MissingSessionClient()
+    session = asyncio.run(adapter.open_session(client, args, {}))
+
+    assert client.resumed == []
+    assert client.created == [{"session_id": "campaign-pi"}]
+    assert session.session_id == "campaign-pi"
+
+
+def test_first_invocation_recovery_resumes_an_existing_persisted_session():
+    class ExistingSessionClient(FakeClient):
+        async def get_session_metadata(self, session_id):
+            return SimpleNamespace(session_id=session_id)
+
+    client = ExistingSessionClient()
     args = adapter.parse_args(
         ["p", "--session-id", "campaign-pi", "--resume-or-create"]
     )
@@ -1072,8 +1087,25 @@ def test_first_invocation_recovery_resumes_or_creates_the_same_session():
     session = asyncio.run(adapter.open_session(client, args, {}))
 
     assert client.resumed == [("campaign-pi", {})]
-    assert client.created == [{"session_id": "campaign-pi"}]
+    assert client.created == []
     assert session.session_id == "campaign-pi"
+
+
+def test_first_invocation_recovery_does_not_guess_when_lookup_fails():
+    class FailingLookupClient(FakeClient):
+        async def get_session_metadata(self, session_id):
+            raise RuntimeError(f"lookup failed for {session_id}")
+
+    client = FailingLookupClient()
+    args = adapter.parse_args(
+        ["p", "--session-id", "campaign-pi", "--resume-or-create"]
+    )
+
+    with pytest.raises(RuntimeError, match="lookup failed"):
+        asyncio.run(adapter.open_session(client, args, {}))
+
+    assert client.resumed == []
+    assert client.created == []
 
 
 def install_fake_sdk(monkeypatch, client):
